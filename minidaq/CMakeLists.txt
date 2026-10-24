@@ -10,6 +10,7 @@ add_library(minidaq_core
   src/sim/readout_link.cpp
   src/processing/energy_filter.cpp
   src/processing/coincidence_sorter.cpp
+  src/processing/stream_merger.cpp
   src/rt/realtime.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
 target_include_directories(minidaq_core PUBLIC
