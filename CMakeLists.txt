@@ -19,6 +19,7 @@ endif()
 
 option(MINIDAQ_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 option(MINIDAQ_BUILD_TESTS "Build unit and component tests" ON)
+option(MINIDAQ_BUILD_BENCHMARKS "Build Google Benchmark micro-benchmarks" ON)
 option(MINIDAQ_BUILD_EXERCISES "Build exercise solutions (and their tests)" ON)
 option(MINIDAQ_BUILD_STARTERS "Build exercise starters (their tests fail until you solve them)" OFF)
 option(MINIDAQ_USE_SYSTEM_DEPS "Use system packages for GoogleTest/Benchmark/json instead of pinned FetchContent" OFF)
@@ -35,6 +36,10 @@ if(MINIDAQ_BUILD_TESTS)
 endif()
 
 add_subdirectory(minidaq)
+
+if(MINIDAQ_BUILD_BENCHMARKS)
+  add_subdirectory(benchmarks)
+endif()
 
 if(MINIDAQ_BUILD_EXERCISES OR MINIDAQ_BUILD_STARTERS)
   add_subdirectory(exercises)

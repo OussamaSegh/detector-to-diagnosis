@@ -376,7 +376,7 @@ provides it. This is the kind of portability decision you should record in an
 architecture decision record (Chapter 6), because a future toolchain upgrade can delete
 the shim.
 
-```{.cpp include="minidaq/include/minidaq/core/expected.hpp" lines="1-30"}
+```{.cpp include="minidaq/include/minidaq/core/expected.hpp" lines="1-24"}
 ```
 
 The parser that the rest of the pipeline uses for MiniDAQ's 16-byte debug record shows
@@ -514,7 +514,7 @@ a ring of 24 detector blocks, three blocks deep axially, each with 16 by 16 crys
 18,432 crystals in total. Crystal ids pack the ring index and the position around the
 ring, and the helpers decompose them with integer arithmetic that the compiler can check:
 
-```{.cpp include="minidaq/include/minidaq/core/geometry.hpp" lines="1-58"}
+```{.cpp include="minidaq/include/minidaq/core/geometry.hpp" lines="1-56"}
 ```
 
 The transaxial positions need sine and cosine. `std::sin` and `std::cos` are not

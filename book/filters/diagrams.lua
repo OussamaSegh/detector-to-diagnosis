@@ -25,6 +25,8 @@ function CodeBlock(el)
       io.stderr:write("diagrams: graphviz failed for diagram " .. counter .. "\n" .. tostring(out) .. "\n")
       error("graphviz failure")
     end
+    -- Graphviz emits a DOCTYPE with an external DTD, which EPUB 3 forbids.
+    out = out:gsub("<!DOCTYPE.-%]?>%s*", "", 1)
     local f = io.open(svg, "w")
     f:write(out)
     f:close()

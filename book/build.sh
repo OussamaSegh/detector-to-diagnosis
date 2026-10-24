@@ -43,6 +43,7 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
       --css "$here/templates/epub.css" \
       --epub-cover-image "$here/assets/cover.png" \
       -o "$out/$stem-v$version.epub" "${files[@]}"
+    python3 "$here/tools/fix_epub.py" "$out/$stem-v$version.epub"
     echo "built $out/$stem-v$version.epub"
     if command -v java >/dev/null && [ -f /usr/share/java/epubcheck.jar ]; then
       java -jar /usr/share/java/epubcheck.jar "$out/$stem-v$version.epub" 2>&1 | grep -v JAVA_TOOL_OPTIONS | grep -E "ERROR|WARNING|Messages" || true

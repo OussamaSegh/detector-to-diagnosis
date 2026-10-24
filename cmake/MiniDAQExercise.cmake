@@ -1,5 +1,7 @@
 # minidaq_exercise(<dir> [LIBS <targets>...] [NO_GTEST_MAIN])
 # Builds <dir>/starter and/or <dir>/solution together with <dir>/tests.
+# Files named bench_*.cpp in a variant directory become a separate Google
+# Benchmark executable <target>_bench instead of being part of the test binary.
 function(minidaq_exercise dir)
   cmake_parse_arguments(EX "NO_GTEST_MAIN" "" "LIBS" ${ARGN})
   get_filename_component(_abs ${dir} ABSOLUTE)
@@ -19,17 +21,28 @@ function(minidaq_exercise dir)
   foreach(_v IN LISTS _variants)
     set(_t ${_ch}_${_name}_${_v})
     file(GLOB _srcs CONFIGURE_DEPENDS ${_abs}/${_v}/*.cpp)
+    file(GLOB _bench CONFIGURE_DEPENDS ${_abs}/${_v}/bench_*.cpp)
+    if(_bench)
+      list(REMOVE_ITEM _srcs ${_bench})
+      if(MINIDAQ_BUILD_BENCHMARKS)
+        set(_lib_srcs ${_srcs})
+        add_executable(${_t}_bench ${_bench} ${_lib_srcs})
+        target_include_directories(${_t}_bench PRIVATE ${_abs}/${_v})
+        target_link_libraries(${_t}_bench PRIVATE minidaq::core benchmark::benchmark_main ${EX_LIBS})
+      endif()
+    endif()
     add_executable(${_t} ${_srcs} ${_tests})
     target_include_directories(${_t} PRIVATE ${_abs}/${_v})
-    target_link_libraries(${_t} PRIVATE minidaq::core minidaq::warnings ${EX_LIBS})
+    if(_v STREQUAL "starter")
+      # Starters intentionally contain unused parameters and TODO stubs.
+      target_link_libraries(${_t} PRIVATE minidaq::core minidaq::warnings_no_error ${EX_LIBS})
+    else()
+      target_link_libraries(${_t} PRIVATE minidaq::core minidaq::warnings ${EX_LIBS})
+    endif()
     if(EX_NO_GTEST_MAIN)
       target_link_libraries(${_t} PRIVATE GTest::gtest GTest::gmock)
     else()
       target_link_libraries(${_t} PRIVATE GTest::gtest_main GTest::gmock)
-    endif()
-    if(_v STREQUAL "starter")
-      # Starters intentionally contain unused parameters and TODO stubs.
-      target_compile_options(${_t} PRIVATE -Wno-error)
     endif()
     gtest_discover_tests(${_t}
       TEST_PREFIX "${_ch}/${_name}/${_v}/"

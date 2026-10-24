@@ -8,6 +8,9 @@
 --   snippet  name of a region marked in the source with
 --            // [snippet:NAME]  ...  // [/snippet:NAME]   (or # for Python/CMake/YAML)
 --   lines    "A-B" line range (1-based, inclusive) when no snippet is given
+--   from/to  literal text: include from the first line containing `from` up to
+--            and including the next line containing `to` (robust to edits);
+--            to="=}" matches a line that is exactly "}" after trimming
 --   caption  optional text placed before the path in the listing caption
 -- Without snippet or lines, the whole file is included (SPDX lines removed).
 -- The book never contains code that is not in the repository, so every listing
@@ -87,6 +90,28 @@ function CodeBlock(el)
       return pandoc.Para({ pandoc.Strong(pandoc.Str("MISSING SNIPPET: " .. snippet)) })
     end
     lines = dedent(s)
+  elseif el.attributes["from"] then
+    -- `to` is searched from the line after the `from` line onwards.
+    local from, to = el.attributes["from"], el.attributes["to"]
+    local s, started = {}, false
+    for _, l in ipairs(lines) do
+      if started then
+        if not is_marker(l) then table.insert(s, l) end
+        if to then
+          -- "=text" matches a line whose trimmed content is exactly text.
+          local exact = to:sub(1, 1) == "=" and to:sub(2) or nil
+          if (exact and l:match("^%s*(.-)%s*$") == exact) or (not exact and l:find(to, 1, true)) then break end
+        end
+      elseif l:find(from, 1, true) then
+        started = true
+        table.insert(s, l)
+      end
+    end
+    if not started then
+      io.stderr:write("include-code: text '" .. from .. "' not found in " .. path .. "\n")
+      missing = missing + 1
+    end
+    lines = dedent(s)
   elseif range then
     local a, b = range:match("^(%d+)%-(%d+)$")
     a, b = tonumber(a), tonumber(b)
@@ -106,7 +131,9 @@ function CodeBlock(el)
 
   local attrs = {}
   for k, v in pairs(el.attributes) do
-    if k ~= "include" and k ~= "snippet" and k ~= "lines" and k ~= "caption" then attrs[k] = v end
+    if k ~= "include" and k ~= "snippet" and k ~= "lines" and k ~= "caption" and k ~= "from" and k ~= "to" then
+      attrs[k] = v
+    end
   end
   local block = pandoc.CodeBlock(table.concat(lines, "\n"), pandoc.Attr(el.identifier, el.classes, attrs))
 

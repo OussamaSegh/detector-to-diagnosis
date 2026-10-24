@@ -1,0 +1,6 @@
+minidaq_exercise(e1_stream_budget)
+minidaq_exercise(e2_aos_soa)
+minidaq_exercise(e3_pmr_arena)
+minidaq_exercise(e4_packed_word)
+minidaq_exercise(e5_false_sharing)
+minidaq_exercise(e6_struct_layout)

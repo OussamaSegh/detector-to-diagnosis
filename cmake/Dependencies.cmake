@@ -19,3 +19,18 @@ if(MINIDAQ_BUILD_TESTS OR MINIDAQ_BUILD_EXERCISES OR MINIDAQ_BUILD_STARTERS)
     FetchContent_MakeAvailable(googletest)
   endif()
 endif()
+
+if(MINIDAQ_BUILD_BENCHMARKS)
+  if(MINIDAQ_USE_SYSTEM_DEPS)
+    find_package(benchmark 1.8 REQUIRED)
+  else()
+    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_ENABLE_WERROR OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(googlebenchmark
+      GIT_REPOSITORY https://github.com/google/benchmark.git
+      GIT_TAG        96afad55c79e02f5dfca1374e772c2be72ba631b # v1.9.1
+      SYSTEM)
+    FetchContent_MakeAvailable(googlebenchmark)
+  endif()
+endif()

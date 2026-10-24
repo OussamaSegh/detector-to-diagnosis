@@ -1,3 +1,4 @@
 # Order of source files for the solutions manual
 solutions/intro.md
 solutions/ch01.md
+solutions/ch02.md
