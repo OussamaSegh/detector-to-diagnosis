@@ -1,0 +1,54 @@
+# build/release/benchmarks/bm_sorter --benchmark_repetitions=5 --benchmark_report_aggregates_only=true
+# Model name: Intel(R) Xeon(R) Processor @ 2.30GHz, 4 vCPU (VM), c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, Release (-O2)
+2026-10-24T21:47:33+00:00
+Running build/release/benchmarks/bm_sorter
+Run on (4 X 2300 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x4)
+  L1 Instruction 32 KiB (x4)
+  L2 Unified 2048 KiB (x4)
+  L3 Unified 266240 KiB (x1)
+Load Average: 0.65, 0.75, 0.85
+------------------------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations UserCounters...
+------------------------------------------------------------------------------------
+BM_Sorter/0/1/0_mean            26.2 ms         26.1 ms            5 coinc_per_single=0.0387439 in_window=0.448772 items_per_second=68.507M/s
+BM_Sorter/0/1/0_median          26.1 ms         26.1 ms            5 coinc_per_single=0.0387439 in_window=0.448772 items_per_second=68.453M/s
+BM_Sorter/0/1/0_stddev         0.280 ms        0.290 ms            5 coinc_per_single=0 in_window=5.8902n items_per_second=757.894k/s
+BM_Sorter/0/1/0_cv              1.07 %          1.11 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=1.11%
+BM_Sorter/1/1/0_mean            26.3 ms         26.2 ms            5 coinc_per_single=0.042131 in_window=0.448772 items_per_second=68.2325M/s
+BM_Sorter/1/1/0_median          26.1 ms         25.9 ms            5 coinc_per_single=0.042131 in_window=0.448772 items_per_second=68.986M/s
+BM_Sorter/1/1/0_stddev         0.612 ms        0.560 ms            5 coinc_per_single=0 in_window=5.8902n items_per_second=1.44676M/s
+BM_Sorter/1/1/0_cv              2.33 %          2.14 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=2.12%
+BM_Sorter/2/1/0_mean            26.2 ms         26.1 ms            5 coinc_per_single=0.0400198 in_window=0.448772 items_per_second=68.4712M/s
+BM_Sorter/2/1/0_median          26.2 ms         26.0 ms            5 coinc_per_single=0.0400198 in_window=0.448772 items_per_second=68.8163M/s
+BM_Sorter/2/1/0_stddev         0.332 ms        0.351 ms            5 coinc_per_single=0 in_window=5.8902n items_per_second=907.546k/s
+BM_Sorter/2/1/0_cv              1.27 %          1.35 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=1.33%
+BM_Sorter/3/1/0_mean            26.0 ms         25.9 ms            5 coinc_per_single=0.0387853 in_window=0.448772 items_per_second=68.9277M/s
+BM_Sorter/3/1/0_median          25.9 ms         25.8 ms            5 coinc_per_single=0.0387853 in_window=0.448772 items_per_second=69.1747M/s
+BM_Sorter/3/1/0_stddev         0.266 ms        0.262 ms            5 coinc_per_single=0 in_window=5.8902n items_per_second=688.138k/s
+BM_Sorter/3/1/0_cv              1.02 %          1.01 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=1.00%
+BM_Sorter/0/0/0_mean            20.1 ms         20.1 ms            5 coinc_per_single=0.0333666 in_window=0.448772 items_per_second=89.1421M/s
+BM_Sorter/0/0/0_median          20.0 ms         20.0 ms            5 coinc_per_single=0.0333666 in_window=0.448772 items_per_second=89.4683M/s
+BM_Sorter/0/0/0_stddev         0.283 ms        0.283 ms            5 coinc_per_single=0 in_window=5.8902n items_per_second=1.24057M/s
+BM_Sorter/0/0/0_cv              1.41 %          1.41 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=1.39%
+BM_Sorter/0/1/1_mean            26.3 ms         26.1 ms            5 coinc_per_single=0.034737 in_window=0.448772 items_per_second=68.4133M/s
+BM_Sorter/0/1/1_median          26.0 ms         26.0 ms            5 coinc_per_single=0.034737 in_window=0.448772 items_per_second=68.7971M/s
+BM_Sorter/0/1/1_stddev         0.644 ms        0.673 ms            5 coinc_per_single=0 in_window=5.8902n items_per_second=1.70827M/s
+BM_Sorter/0/1/1_cv              2.45 %          2.57 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=2.50%
+BM_SorterPerSingle_mean         26.9 ms         26.6 ms            5 coinc_per_single=0.0401004 in_window=0.448772 items_per_second=67.3029M/s
+BM_SorterPerSingle_median       26.4 ms         26.1 ms            5 coinc_per_single=0.0401004 in_window=0.448772 items_per_second=68.411M/s
+BM_SorterPerSingle_stddev      0.956 ms        0.754 ms            5 coinc_per_single=520.625p in_window=5.8902n items_per_second=1.86097M/s
+BM_SorterPerSingle_cv           3.55 %          2.84 %             5 coinc_per_single=0.00% in_window=0.00% items_per_second=2.77%
+BM_Merger/4_mean                57.6 ms         57.4 ms            5 items_per_second=31.1224M/s
+BM_Merger/4_median              57.6 ms         57.4 ms            5 items_per_second=31.1456M/s
+BM_Merger/4_stddev             0.177 ms        0.099 ms            5 items_per_second=53.3715k/s
+BM_Merger/4_cv                  0.31 %          0.17 %             5 items_per_second=0.17%
+BM_Merger/24_mean                130 ms          129 ms            5 items_per_second=13.846M/s
+BM_Merger/24_median              127 ms          127 ms            5 items_per_second=14.084M/s
+BM_Merger/24_stddev             7.77 ms         6.99 ms            5 items_per_second=700.164k/s
+BM_Merger/24_cv                 5.97 %          5.41 %             5 items_per_second=5.06%
+BM_Merger/72_mean                163 ms          163 ms            5 items_per_second=10.9872M/s
+BM_Merger/72_median              162 ms          162 ms            5 items_per_second=11.0397M/s
+BM_Merger/72_stddev             2.42 ms         2.25 ms            5 items_per_second=149.846k/s
+BM_Merger/72_cv                 1.48 %          1.38 %             5 items_per_second=1.36%

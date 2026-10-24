@@ -1,4 +1,4 @@
-# Micro-benchmarks (Chapters 2, 3, 5). Run them from a Release build:
+# Micro-benchmarks (Chapters 2, 3, 5, 10). Run them from a Release build:
 #   cmake --preset release && cmake --build --preset release
 #   build/release/benchmarks/bm_layout --benchmark_repetitions=5
 # Every published number in the book states machine, compiler and flags.
@@ -17,3 +17,4 @@ minidaq_benchmark(bm_pipeline)
 minidaq_benchmark(bm_histogram)
 minidaq_benchmark(bm_energy_filter)
 minidaq_benchmark(bm_sort)
+minidaq_benchmark(bm_sorter)
