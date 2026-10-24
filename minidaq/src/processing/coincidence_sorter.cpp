@@ -115,7 +115,9 @@ void CoincidenceSorter::push(std::span<const Single> in, std::vector<Coincidence
   for (const Single& s : in) {
     ++stats_.singles_in;
     const auto e = static_cast<double>(s.energy.count());
-    if (!(e >= cfg_.energy_low_kev && e <= cfg_.energy_high_kev)) {  // NaN fails too
+    // Not "e < low || e > high", which lets NaN through.
+    // NOLINTNEXTLINE(readability-simplify-boolean-expr)
+    if (!(e >= cfg_.energy_low_kev && e <= cfg_.energy_high_kev)) {
       ++stats_.energy_rejected;
       continue;
     }

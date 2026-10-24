@@ -46,6 +46,8 @@ the patch version.
   minimum sector difference of 1. Coincidence counts from earlier versions are not
   comparable.
 - `PipelineConfig::coincidence_window` is replaced by `PipelineConfig::sorter`.
+- Solutions manual: chapter titles no longer repeat "Chapter N:" before the chapter number
+  the layout already prints.
 - CI uses `actions/checkout@v5` (Node.js 20 is deprecated on GitHub's runners).
 - The configuration schema test walks nested objects of the JSON Schema document.
 - Chapter 6's component diagram is frozen in the book (`book/src/diagrams/`); the live
@@ -72,6 +74,9 @@ the patch version.
   a pair twice, once from each opener's window; a per-single window now pairs its opener
   only. The delayed window's winner of goods now compares summed energy, as the prompt
   window does.
+- `clang-tidy` asked for the energy gate in De Morgan form, which would let NaN energies
+  through; the NaN-safe form stays, with a documented suppression.
+- A 0.6 pt overfull table in the Chapter 5 solutions.
 
 ## [0.1.0] - 2026-10-24
 
