@@ -1,0 +1,19 @@
+# python3 measurements/ch11/bottleneck.py build/release/minidaq/apps
+# Intel(R) Xeon(R) Processor @ 2.30GHz, 4 vCPU (VM), GCC 13.3, Release (-O2)
+Chapter 11: which MiniDAQ stage saturates first as the activity rises.
+busy %: sum of a stage's batch service times over the wall time. The source's figure is the
+time spent inside the replay source (clock reads and copies), not a limit of the pipeline.
+
+ MBq  singles/s dropped %  source  decode    sort    pair   write e2e p99 us
+  20   3.34e+06      0.00    23.2     1.6     3.7     4.2     0.0       1302
+  20   3.34e+06      0.00    22.9     1.4     3.5     4.0     0.0       1286
+  50   8.35e+06      0.00    57.4     3.8    10.0    11.1     0.0       2310
+  50   8.35e+06      0.00    53.4     3.6     9.8    10.8     0.0       1368
+ 100   1.67e+07      0.00    63.8     6.8    19.6    23.0     0.1       1655
+ 100   1.67e+07      0.00    63.5     6.7    19.1    22.9     0.0        979
+ 200   3.34e+07      0.00    64.1    10.8    36.6    45.7     0.0       2114
+ 200   3.34e+07      0.00    64.6    11.0    35.5    45.3     0.0        823
+ 300   5.01e+07      0.00    65.0    15.4    50.9    70.2     0.1       1458
+ 300   5.01e+07      0.00    65.3    15.1    53.4    72.9     0.1       4981
+ 400   6.68e+07      0.06    65.6    19.8    68.1    97.5     0.1       6488
+ 400   6.68e+07      0.17    65.7    19.0    69.0    97.3     0.1      12255

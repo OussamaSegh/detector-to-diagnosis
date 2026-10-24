@@ -62,13 +62,16 @@ class ReplaySource {
     }
     const auto n = static_cast<std::size_t>(std::min<std::uint64_t>({due - delivered_, out.size(), max_burst_}));
     for (std::size_t i = 0; i < n; ++i) {
-      const std::uint64_t index = delivered_ + i;
-      const std::uint64_t loop = index / words_.size();
-      const std::uint64_t w = words_[index % words_.size()];
+      const std::uint64_t w = words_[pos_];
       // Shift the 38-bit time field by whole loops; it wraps like the hardware
-      // counter, and the decoder unwraps it.
-      const std::uint64_t t = (w + loop * period_codes_) & packed::time_mask;
-      out[i] = (w & ~packed::time_mask) | t;
+      // counter, and the decoder unwraps it. (Position and shift are carried
+      // from word to word: a division per word made this source slower than
+      // the stages it feeds.)
+      out[i] = (w & ~packed::time_mask) | ((w + shift_) & packed::time_mask);
+      if (++pos_ == words_.size()) {
+        pos_ = 0;
+        shift_ = (shift_ + period_codes_) & packed::time_mask;
+      }
     }
     delivered_ += n;
     return n;
@@ -104,6 +107,8 @@ class ReplaySource {
   double rate_per_ns_ = 0.0;
   std::int64_t start_ns_ = 0;
   std::uint64_t delivered_ = 0;
+  std::size_t pos_ = 0;       // next word of the recording
+  std::uint64_t shift_ = 0;   // time shift of the current loop, in 5 ps codes
 };
 
 }  // namespace minidaq::sim
