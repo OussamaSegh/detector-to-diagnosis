@@ -1,0 +1,5 @@
+minidaq_python_exercise(e1_time_window)
+minidaq_python_exercise(e2_energy_window)
+minidaq_exercise(e3_randoms)
+minidaq_exercise(e4_klein_nishina)
+minidaq_exercise(e5_rates_vs_activity)

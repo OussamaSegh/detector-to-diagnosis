@@ -16,6 +16,8 @@ add_executable(minidaq_unit_tests
   unit/test_realtime.cpp
   unit/test_paced_source.cpp
   unit/test_energy_filter.cpp
+  unit/test_physics.cpp
+  unit/test_detector_simulator.cpp
   unit/test_acquisition_state.cpp
   unit/test_config.cpp
   unit/test_acquisition_service.cpp

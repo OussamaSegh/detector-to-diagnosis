@@ -70,6 +70,11 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
     (cd "$build/tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$stem.tex" >"$stem.latexmk.log" 2>&1) \
       || { echo "LaTeX failed, see $build/tex/$stem.log"; grep -n -A3 "^!" "$build/tex/$stem.log" | head -30; exit 1; }
     cp "$build/tex/$stem.pdf" "$out/$stem-v$version.pdf"
+    # A glyph the font does not have is silently left out of the PDF.
+    if grep -q "Missing character" "$build/tex/$stem.log"; then
+      echo "PDF has characters its fonts cannot show:"; grep "Missing character" "$build/tex/$stem.log" | sort | uniq -c
+      exit 1
+    fi
     echo "built $out/$stem-v$version.pdf ($(pdfinfo "$out/$stem-v$version.pdf" 2>/dev/null | awk '/Pages/{print $2}') pages)"
   fi
 }

@@ -8,6 +8,27 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+- Chapter 8: `minidaq/sim/physics.hpp` (Compton kinematics, Klein-Nishina shape, water
+  attenuation from the NIST table, ray geometry); `DetectorSimulator` (Poisson decays in a
+  point or cylinder source, non-collinearity, Compton scatter in a water phantom, a crystal
+  ring with depth of interaction, photofraction, energy and time blur, threshold,
+  time-ordered output with ground truth per single); `count_coincidences`, a reference
+  counter by truth; the tool `minidaq_sim`; figure script
+  `book/tools/figures/ch08_energy_spectrum.py`; exercises 8.1 to 8.5 (8.1 and 8.2 in
+  Python).
+
+### Changed
+- CI uses `actions/checkout@v5` (Node.js 20 is deprecated on GitHub's runners).
+
+### Fixed
+- `clang-tidy` in CI failed on every file: newer CMake versions scan C++20 sources for
+  modules and write `@modmap` arguments into `compile_commands.json`.
+  `CMAKE_CXX_SCAN_FOR_MODULES` is off (MiniDAQ uses no modules).
+- `Pipeline.DropPolicyCountsEveryLostWord` depended on a slow sink being slower than the
+  source, which a fast GitHub runner broke in the debug build; the sink now stalls until
+  the source has read everything.
+
 ## [0.1.0] - 2026-10-24
 
 Part I, Modern, low-latency C++ (Chapters 1 to 7), complete and reviewed.
