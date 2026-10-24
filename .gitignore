@@ -1,0 +1,13 @@
+/build/
+/.deps/
+/out/
+__pycache__/
+*.egg-info/
+.venv/
+/book/build/
+*.profraw
+*.gcda
+*.gcno
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
