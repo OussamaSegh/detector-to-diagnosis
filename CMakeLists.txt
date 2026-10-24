@@ -15,6 +15,10 @@ if(PROJECT_IS_TOP_LEVEL)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# MiniDAQ uses no C++20 modules. Newer CMake versions scan for them with Clang
+# and put @file.modmap arguments into compile_commands.json, which clang-tidy
+# cannot read (seen with the CMake on GitHub's ubuntu-24.04 runner).
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 endif()
 
 option(MINIDAQ_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)

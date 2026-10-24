@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <mutex>
@@ -113,8 +114,26 @@ TEST(Pipeline, DropPolicyCountsEveryLostWord) {
   cfg.source_overflow = OverflowPolicy::drop;
   cfg.batches_per_channel = 2;
   sim::SyntheticSource gen{{}};
-  AcquisitionPipeline p{cfg, [&](std::span<std::uint64_t> out) { return gen.generate(out); },
-                        [](std::span<const Coincidence>) { std::this_thread::sleep_for(200us); }};  // slow disk
+  // The sink stalls until the source has read everything (or 10 s have
+  // passed), so the channels must fill and the source must drop. A sink that is
+  // merely slow is not enough: on a fast machine a debug build's source can be
+  // slower still, and nothing drops (seen on a GitHub runner).
+  std::atomic<bool> source_done{false};
+  AcquisitionPipeline p{cfg,
+                        [&](std::span<std::uint64_t> out) {
+                          const std::size_t got = gen.generate(out);
+                          if (gen.generated() >= n) {
+                            source_done.store(true, std::memory_order_release);
+                          }
+                          return got;
+                        },
+                        [&](std::span<const Coincidence>) {
+                          const auto deadline = std::chrono::steady_clock::now() + 10s;
+                          while (!source_done.load(std::memory_order_acquire) &&
+                                 std::chrono::steady_clock::now() < deadline) {
+                            std::this_thread::sleep_for(100us);
+                          }
+                        }};
   p.start();
   p.wait();
   const auto st = p.stats();
