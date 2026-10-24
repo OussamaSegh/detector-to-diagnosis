@@ -42,8 +42,10 @@ enum class WindowMode : std::uint8_t {
   // the group. Each single belongs to exactly one window (non-paralysable).
   fixed,
   // Every single opens its own window and is paired with the singles up to
-  // window_ps after it. A single can be in several groups, so a pair can be
-  // part of a multiple seen from one opener and a clean pair from another.
+  // window_ps after it: the window's pairs are (opener, later single), so
+  // each pair is considered once, in the window of its earlier single. A
+  // single can be in several windows, so b-c can be a clean pair in b's window
+  // while c also makes a with b a multiple in a's.
   per_single,
 };
 

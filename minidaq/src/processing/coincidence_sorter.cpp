@@ -206,7 +206,11 @@ void CoincidenceSorter::resolve_prompts(std::size_t b, std::size_t e, std::vecto
   std::size_t wi = 0;
   std::size_t wj = 0;
   float best = -std::numeric_limits<float>::infinity();
-  for (std::size_t i = b; i < e; ++i) {
+  // Per single, a window's pairs are its opener's: a pair of two later singles
+  // belongs to the window of the earlier one, and taking it here as well
+  // would emit it twice.
+  const std::size_t last_first = cfg_.mode == WindowMode::fixed ? e : b + 1;
+  for (std::size_t i = b; i < last_first; ++i) {
     for (std::size_t j = i + 1; j < e; ++j) {
       if (!good(buf_[i], buf_[j])) {
         ++stats_.geometry_rejected;

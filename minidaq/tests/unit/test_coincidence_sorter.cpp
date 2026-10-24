@@ -106,6 +106,16 @@ TEST(CoincidenceSorter, FixedAndPerSingleWindowsDiffer) {
   EXPECT_EQ(st.multiple_windows, 1U);
   c.mode = WindowMode::per_single;
   EXPECT_EQ(run(c, triple).size(), 1U);
+
+  // Per single, a window's pairs all contain its opener, so no pair is found
+  // twice: a's window gives a-b and a-c, b's window gives b-c.
+  c.multiples = MultiplesPolicy::take_all_goods;
+  const auto all = run(c, triple);
+  ASSERT_EQ(all.size(), 3U);
+  EXPECT_EQ(all[0].first.time, Picoseconds{0});
+  EXPECT_EQ(all[1].first.time, Picoseconds{0});
+  EXPECT_EQ(all[2].first.time, Picoseconds{1 * ns});
+  EXPECT_EQ(all[2].second.time, Picoseconds{2 * ns});
 }
 
 TEST(CoincidenceSorter, MultiplesPolicies) {
