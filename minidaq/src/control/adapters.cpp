@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: MIT
+#include "minidaq/control/adapters.hpp"
+
+#include <cstdio>
+
+namespace minidaq::control {
+
+namespace {
+sim::SyntheticConfig synthetic(const config::SourceSettings& s) {
+  sim::SyntheticConfig c;
+  c.rate_hz = s.rate_hz;
+  c.pair_fraction = s.pair_fraction;
+  c.seed = s.seed;
+  return c;
+}
+}  // namespace
+
+SimulatedDetector::SimulatedDetector(const config::SourceSettings& s) : source_{synthetic(s), s.rate_hz} {
+  char buf[96];
+  std::snprintf(buf, sizeof buf, "simulated detector, %.3g singles/s, seed %llu", s.rate_hz,
+                static_cast<unsigned long long>(s.seed));
+  description_ = buf;
+}
+
+std::unique_ptr<DetectorPort> make_default_detector(const config::AcquisitionConfig& c, std::string& error) {
+  if (c.source.type == "synthetic") {
+    return std::make_unique<SimulatedDetector>(c.source);
+  }
+  error = "no adapter for source type \"" + c.source.type + "\"";
+  return nullptr;
+}
+
+std::unique_ptr<CoincidenceSinkPort> make_default_sink(const config::AcquisitionConfig&, std::string&) {
+  return std::make_unique<CountingSink>();
+}
+
+ServiceOptions with_default_adapters(ServiceOptions o) {
+  if (!o.detector) {
+    o.detector = make_default_detector;
+  }
+  if (!o.sink) {
+    o.sink = make_default_sink;
+  }
+  return o;
+}
+
+}  // namespace minidaq::control

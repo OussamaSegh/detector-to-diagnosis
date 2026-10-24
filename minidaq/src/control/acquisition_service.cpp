@@ -1,0 +1,311 @@
+// SPDX-License-Identifier: MIT
+#include "minidaq/control/acquisition_service.hpp"
+
+#include <fstream>
+#include <sstream>
+
+#include <nlohmann/json.hpp>
+
+namespace minidaq::control {
+
+namespace {
+
+using nlohmann::json;
+
+json latency_json(const LatencyHistogram& h) {
+  const LatencySummary s = h.summary();
+  return json{{"count", s.count}, {"p50", s.p50}, {"p99", s.p99}, {"p999", s.p999}, {"max", s.max}};
+}
+
+json interval_json(const LatencyHistogram& h, const HistogramCounts& before, const HistogramCounts& after) {
+  const LatencySummary s = interval_summary(h, before, after);
+  return json{{"count", s.count}, {"p50", s.p50}, {"p99", s.p99}, {"p999", s.p999}, {"max", s.max}};
+}
+
+bool read_file(const std::string& path, std::string& out) {
+  std::ifstream in{path};
+  if (!in) {
+    return false;
+  }
+  std::ostringstream ss;
+  ss << in.rdbuf();
+  out = ss.str();
+  return true;
+}
+
+}  // namespace
+
+AcquisitionService::AcquisitionService(ServiceOptions options)
+    : opt_{std::move(options)},
+      machine_{[this](const Transition& t) {
+        note("service", "transition",
+             std::string{to_string(t.from)} + " -> " + std::string{to_string(t.to)} + " (" +
+                 std::string{to_string(t.event)} + ")");
+        {
+          const std::lock_guard lock{wait_mu_};  // pairs with wait_for()
+          observed_.store(t.to);
+        }
+        wait_cv_.notify_all();
+      }} {
+  monitor_ = std::jthread{[this](std::stop_token st) { monitor(st); }};
+}
+
+AcquisitionService::~AcquisitionService() {
+  monitor_.request_stop();
+  if (monitor_.joinable()) {
+    monitor_.join();
+  }
+  const std::lock_guard lock{mu_};
+  if (pipeline_) {
+    pipeline_->request_stop();
+    pipeline_->wait();
+  }
+}
+
+void AcquisitionService::note(std::string_view who, std::string_view action, std::string_view detail,
+                              bool ok) const {
+  if (opt_.audit) {
+    opt_.audit(AuditRecord{utc_now_iso8601(), std::string{who}, std::string{action}, std::string{detail}, ok});
+  }
+}
+
+CommandResult AcquisitionService::result(bool ok, std::string code, std::string message) const {
+  return CommandResult{ok, machine_.state(), std::move(code), std::move(message)};
+}
+
+CommandResult AcquisitionService::illegal(AcqEvent e) const {
+  return result(false, "illegal_transition", IllegalTransition{machine_.state(), e}.message());
+}
+
+// [snippet:configure]
+CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg, std::string_view who) {
+  const std::lock_guard lock{mu_};
+  if (!next_state(machine_.state(), AcqEvent::configure)) {
+    note(who, "configure", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::configure}.message(), false);
+    return illegal(AcqEvent::configure);
+  }
+  std::optional<rt::RtProfile> profile;
+  if (!cfg.rt_profile.empty()) {
+    std::string text;
+    if (!read_file(cfg.rt_profile, text)) {
+      note(who, "configure", "rejected: cannot read " + cfg.rt_profile, false);
+      return result(false, "config_error", "/rt_profile: cannot read \"" + cfg.rt_profile + "\"");
+    }
+    auto parsed = rt::parse_profile(text);
+    if (!parsed) {
+      note(who, "configure", "rejected: bad profile " + cfg.rt_profile, false);
+      return result(false, "config_error", "/rt_profile: " + parsed.error().message);
+    }
+    profile = *parsed;
+  }
+  config_ = cfg;
+  profile_ = profile;
+  note(who, "configure", config::to_json(cfg).dump());
+  (void)machine_.apply(AcqEvent::configure);
+  return result(true);
+}
+// [/snippet:configure]
+
+CommandResult AcquisitionService::start(std::string_view who) {
+  const std::lock_guard lock{mu_};
+  if (machine_.state() != AcqState::configured) {
+    note(who, "start", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::start}.message(), false);
+    return illegal(AcqEvent::start);
+  }
+  // Fresh ports for every run: a detector's clock and counters start at zero.
+  std::string error;
+  if (!opt_.detector || !opt_.sink) {
+    note(who, "start", "no detector or sink adapter", false);
+    return result(false, "device_error", "no detector or sink adapter configured");
+  }
+  auto detector = opt_.detector(*config_, error);
+  if (!detector) {
+    note(who, "start", "device error: " + error, false);
+    return result(false, "device_error", error);
+  }
+  auto sink = opt_.sink(*config_, error);
+  if (!sink) {
+    note(who, "start", "sink error: " + error, false);
+    return result(false, "device_error", error);
+  }
+  pipeline_.reset();  // the previous run's counters go now, not earlier
+  detector_ = std::move(detector);
+  sink_ = std::move(sink);
+  PipelineConfig pc = config::to_pipeline_config(*config_);
+  if (profile_) {
+    pc.rt = *profile_;
+  }
+  pc.due_time_ns = detector_->due_times();
+  DetectorPort* d = detector_.get();
+  CoincidenceSinkPort* s = sink_.get();
+  pipeline_ = std::make_unique<AcquisitionPipeline>(
+      pc, [d](std::span<std::uint64_t> out) { return d->read(out); },
+      [s](std::span<const Coincidence> c) { s->write(c); });
+  ++run_id_;
+  fault_.clear();
+  run_started_utc_ = utc_now_iso8601();
+  run_started_ = std::chrono::steady_clock::now();
+  run_ended_set_ = false;
+  snapshot_previous_.reset();
+  snapshot_latest_.reset();
+  pipeline_->start();
+  take_latency_snapshot_locked();
+  note(who, "start", "run " + std::to_string(run_id_) + ", " + detector_->describe());
+  (void)machine_.apply(AcqEvent::start);
+  return result(true);
+}
+
+CommandResult AcquisitionService::stop(std::string_view who) {
+  const std::lock_guard lock{mu_};
+  if (machine_.state() != AcqState::running) {
+    note(who, "stop", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::stop}.message(), false);
+    return illegal(AcqEvent::stop);
+  }
+  pipeline_->request_stop();  // the stages drain; the monitor sees them finish
+  note(who, "stop", "run " + std::to_string(run_id_));
+  (void)machine_.apply(AcqEvent::stop);
+  return result(true);
+}
+
+CommandResult AcquisitionService::reset(std::string_view who) {
+  const std::lock_guard lock{mu_};
+  if (!next_state(machine_.state(), AcqEvent::reset)) {
+    note(who, "reset", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::reset}.message(), false);
+    return illegal(AcqEvent::reset);
+  }
+  if (pipeline_) {
+    // After a fault the stages may still be draining; wait for them here,
+    // so that idle really means "nothing is running".
+    pipeline_->request_stop();
+    pipeline_->wait();
+  }
+  pipeline_.reset();
+  detector_.reset();
+  sink_.reset();
+  config_.reset();
+  profile_.reset();
+  snapshot_previous_.reset();
+  snapshot_latest_.reset();
+  fault_.clear();
+  note(who, "reset", "");
+  (void)machine_.apply(AcqEvent::reset);
+  return result(true);
+}
+
+void AcquisitionService::enter_fault_locked(std::string reason, std::string_view who) {
+  if (pipeline_) {
+    pipeline_->request_stop();  // stop taking data; reset() waits for the drain
+  }
+  fault_ = std::move(reason);
+  run_ended_ = std::chrono::steady_clock::now();
+  run_ended_set_ = true;
+  note(who, "fault", fault_, false);
+  (void)machine_.apply(AcqEvent::error);
+}
+
+void AcquisitionService::take_latency_snapshot_locked() {
+  LatencySnapshot snap;
+  snap.taken = std::chrono::steady_clock::now();
+  for (std::size_t i = 0; i < num_stages; ++i) {
+    snap.histograms[i] = snapshot_counts(pipeline_->stage_latency(static_cast<StageId>(i)));
+  }
+  snap.histograms[num_stages] = snapshot_counts(pipeline_->end_to_end_latency());
+  snapshot_previous_ = std::move(snapshot_latest_);
+  snapshot_latest_ = std::move(snap);
+}
+
+// [snippet:monitor]
+void AcquisitionService::check_run_locked() {
+  const AcqState s = machine_.state();
+  if (s != AcqState::running && s != AcqState::stopping) {
+    return;
+  }
+  if (auto f = detector_ ? detector_->fault() : std::nullopt) {
+    return enter_fault_locked("detector: " + *f, "service");
+  }
+  if (auto f = sink_ ? sink_->fault() : std::nullopt) {
+    return enter_fault_locked("sink: " + *f, "service");
+  }
+  if (pipeline_ && pipeline_->late_singles() > 0) {
+    // The sorter cannot put these back in order, so coincidences may be
+    // missing or wrong: stop instead of producing them silently (Chapter 1).
+    return enter_fault_locked("sort: " + std::to_string(pipeline_->late_singles()) +
+                                  " singles arrived out of time order",
+                              "service");
+  }
+  if (snapshot_latest_ && std::chrono::steady_clock::now() - snapshot_latest_->taken >= opt_.interval_period) {
+    take_latency_snapshot_locked();
+  }
+  if (pipeline_ && pipeline_->finished()) {
+    pipeline_->wait();  // all stages are done: this only joins the threads
+    run_ended_ = std::chrono::steady_clock::now();
+    run_ended_set_ = true;
+    note("service", "run_ended", "run " + std::to_string(run_id_));
+    (void)machine_.apply(AcqEvent::drained);
+  }
+}
+
+void AcquisitionService::monitor(std::stop_token st) {
+  while (!st.stop_requested()) {
+    {
+      const std::lock_guard lock{mu_};
+      check_run_locked();
+    }
+    std::unique_lock lock{wait_mu_};
+    wait_cv_.wait_for(lock, st, opt_.monitor_period, [] { return false; });
+  }
+}
+// [/snippet:monitor]
+
+bool AcquisitionService::wait_for(AcqState s, std::chrono::milliseconds timeout) const {
+  std::unique_lock lock{wait_mu_};
+  return wait_cv_.wait_for(lock, timeout, [&] { return observed_.load() == s; });
+}
+
+json AcquisitionService::status() const {
+  const std::lock_guard lock{mu_};
+  json j;
+  j["state"] = std::string{to_string(machine_.state())};
+  j["run_id"] = run_id_;
+  j["fault"] = fault_.empty() ? json(nullptr) : json(fault_);
+  j["config"] = config_ ? config::to_json(*config_) : json(nullptr);
+  j["detector"] = detector_ ? json(detector_->describe()) : json(nullptr);
+  j["sink"] = sink_ ? json(sink_->describe()) : json(nullptr);
+  if (pipeline_) {
+    const auto end = run_ended_set_ ? run_ended_ : std::chrono::steady_clock::now();
+    j["run"] = {{"started_utc", run_started_utc_},
+                {"elapsed_s", std::chrono::duration<double>(end - run_started_).count()}};
+    json stages = json::array();
+    for (const StageSnapshot& st : pipeline_->stats()) {
+      stages.push_back({{"name", st.name},
+                        {"in", st.items_in},
+                        {"out", st.items_out},
+                        {"dropped", st.items_dropped},
+                        {"filtered", st.items_filtered},
+                        {"batches", st.batches}});
+    }
+    j["stages"] = std::move(stages);
+    json lat;
+    for (std::size_t i = 0; i < num_stages; ++i) {
+      lat[std::string{pipeline_->stats()[i].name}] = latency_json(pipeline_->stage_latency(static_cast<StageId>(i)));
+    }
+    lat["end_to_end"] = latency_json(pipeline_->end_to_end_latency());
+    j["latency_ns"] = std::move(lat);
+    j["late_singles"] = pipeline_->late_singles();
+    if (snapshot_previous_ && snapshot_latest_) {
+      // The last completed interval: between the two most recent snapshots.
+      json recent;
+      recent["interval_s"] = std::chrono::duration<double>(snapshot_latest_->taken - snapshot_previous_->taken).count();
+      for (std::size_t i = 0; i <= num_stages; ++i) {
+        const LatencyHistogram& h = i < num_stages ? pipeline_->stage_latency(static_cast<StageId>(i))
+                                                   : pipeline_->end_to_end_latency();
+        const std::string name = i < num_stages ? std::string{pipeline_->stats()[i].name} : "end_to_end";
+        recent[name] = interval_json(h, snapshot_previous_->histograms[i], snapshot_latest_->histograms[i]);
+      }
+      j["recent_latency_ns"] = std::move(recent);
+    }
+  }
+  return j;
+}
+
+}  // namespace minidaq::control

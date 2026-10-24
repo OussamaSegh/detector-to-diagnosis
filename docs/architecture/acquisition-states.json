@@ -1,0 +1,81 @@
+{
+  "comment": "The acquisition state machine (Chapter 6). Must equal minidaq::control::transitions; test_acquisition_state.cpp checks it.",
+  "states": [
+    "idle",
+    "configured",
+    "running",
+    "stopping",
+    "fault"
+  ],
+  "events": [
+    "configure",
+    "start",
+    "stop",
+    "drained",
+    "error",
+    "reset"
+  ],
+  "initial": "idle",
+  "transitions": [
+    {
+      "from": "idle",
+      "event": "configure",
+      "to": "configured"
+    },
+    {
+      "from": "configured",
+      "event": "configure",
+      "to": "configured"
+    },
+    {
+      "from": "configured",
+      "event": "start",
+      "to": "running"
+    },
+    {
+      "from": "configured",
+      "event": "reset",
+      "to": "idle"
+    },
+    {
+      "from": "running",
+      "event": "stop",
+      "to": "stopping"
+    },
+    {
+      "from": "running",
+      "event": "drained",
+      "to": "configured"
+    },
+    {
+      "from": "stopping",
+      "event": "drained",
+      "to": "configured"
+    },
+    {
+      "from": "idle",
+      "event": "error",
+      "to": "fault"
+    },
+    {
+      "from": "configured",
+      "event": "error",
+      "to": "fault"
+    },
+    {
+      "from": "running",
+      "event": "error",
+      "to": "fault"
+    },
+    {
+      "from": "stopping",
+      "event": "error",
+      "to": "fault"
+    },
+    {
+      "from": "fault",
+      "event": "reset",
+      "to": "idle"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+# MiniDAQ software architecture description
+
+Version 1 (MiniDAQ 0.1.0, Chapter 6). Status: draft for review.
+
+This document describes the current architecture of MiniDAQ. It follows the structure that an
+architecture description in an IEC 62304 software development process is expected to cover
+(software items, their interfaces, SOUP, segregation, verification), written for a teaching
+project. It is not a document of the manufacturer's quality management system, and it does not
+reproduce the standard: read the standard and your organization's procedures for the actual
+requirements. The reasoning behind individual decisions is in the architecture decision records
+in [`docs/adr/`](../adr/README.md).
+
+## 1. Purpose and scope
+
+MiniDAQ receives a stream of detector singles, decodes and time-sorts them, pairs them into
+coincidences and hands the coincidences to a sink, while an operator configures, starts, stops
+and monitors the acquisition over a control API. Version 0.1.0 covers:
+
+- the acquisition pipeline (Chapters 2 to 5),
+- the control plane: configuration, state machine, service, audit trail and TCP control API
+  (Chapter 6).
+
+Not yet covered: a real network receiver (Chapter 9), the coincidence sorter that replaces
+the placeholder pairing (Chapter 10), list-mode files (Chapter 12, [ADR 0007](../adr/0007-list-mode-file-format.md)),
+authentication of control clients (Chapter 17).
+
+## 2. Context and external interfaces
+
+| External entity | Interface | Direction | Notes |
+|---|---|---|---|
+| Detector readout | Packed 64-bit single words (`minidaq/format/packed_single.hpp`) through `DetectorPort` | in | Simulated today (`SimulatedDetector`); UDP in Chapter 9 |
+| Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort` | out | Counting sink today; file writer in Chapter 12 |
+| Operator, scripts, test harness | Control protocol 1.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)) | in/out | `minidaq_ctl` is the reference client |
+| Configuration files | JSON, schema version 1.0 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
+| Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
+| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets | both | Real-time settings from an `rt_profile` (Chapter 4) |
+
+## 3. Requirements that shape the architecture
+
+| Concern | Requirement (book level, not a product requirement) | Where it is met |
+|---|---|---|
+| Throughput | Sustain 10 M singles/s with margin, 30 M/s at high activity (assumption: confirm with team) | Batched SPSC pipeline, [performance budget](../performance-budget.md) |
+| Data integrity | No silent loss inside the PC; every drop and every filtered item is counted | Stage counters; only the source may drop, by policy |
+| Ordering | Coincidences are never formed from out-of-order singles | Sort stage counts late singles; the service faults the run |
+| Latency | Bounded end-to-end latency, measured from when data was due | Per-stage and end-to-end histograms; `max_batch_delay_us` |
+| Control | Commands are accepted only in states where they are safe | Table-driven state machine ([ADR 0005](../adr/0005-acquisition-state-machine.md)) |
+| Availability of a run | A control client failure does not stop an acquisition | Service owns the run ([ADR 0003](../adr/0003-control-protocol.md)) |
+| Accountability | Who did what, when, with what result | Audit trail of commands, transitions, connections and faults |
+| Testability | Every hardware dependency can be simulated | Ports and adapters (section 4) |
+
+## 4. Software items and layers
+
+![MiniDAQ components. Arrows point from a component to what it uses.](components.svg)
+
+Source: [components.dot](components.dot). MiniDAQ has four layers. A layer may use only the
+layers below it; [`layers.json`](layers.json) states the rule and `tools/check_layers.py`
+enforces it on every `#include` as part of the unit tests (`architecture.layers`).
+
+| Layer | Items | Responsibility | May use |
+|---|---|---|---|
+| core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
+| application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
+| adapters (`minidaq_control`) | `SimulatedDetector`, `CountingSink`, `JsonLinesAuditLog`, control protocol, `ControlServer` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
+| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency` | Wiring: choose adapters, parse command lines, handle signals | everything |
+
+The application layer depends on interfaces (ports) that it owns; adapters implement them.
+This is dependency inversion: the policy does not depend on the details, so the service can be
+tested with scripted detectors and fault-injecting sinks, and a real receiver replaces the
+simulator without changing the service.
+
+## 5. Interfaces between items
+
+| Interface | Provider | Users | Contract |
+|---|---|---|---|
+| `DetectorPort` | adapters | pipeline source stage (via service) | `read()` fills a span and returns at once (0: no data); `fault()` is thread-safe and polled from the monitor; `due_times()` optional |
+| `CoincidenceSinkPort` | adapters | pipeline write stage | `write()` on the writer thread, must not throw; `fault()` as above |
+| `AuditSink` | adapters (file), tests | service, server | Called synchronously on control threads only, never on stage threads |
+| `AcquisitionPipeline` | core | service | `start()`, `request_stop()`, `wait()`, `finished()`, counters and histograms readable from any thread |
+| `AcquisitionService` | application | protocol, server, tests | `configure`, `start`, `stop`, `reset` return a `CommandResult`; `status()` returns a JSON snapshot; thread-safe |
+| `handle_request` | adapters | server | One request line in, one response line out; never throws |
+| Configuration | application | apps, protocol | `parse_config` returns a validated `AcquisitionConfig` or all errors with JSON Pointer paths |
+
+## 6. Dynamic behavior
+
+### Threads
+
+| Thread | Count | Created by | Real-time | Work |
+|---|---|---|---|---|
+| Pipeline stages | 5 | `AcquisitionPipeline::start` | Optional, from `rt_profile` | Source, decode, sort, pair, write |
+| Service monitor | 1 | `AcquisitionService` | No | Every 20 ms: port faults, late singles, end of run, latency snapshots |
+| Control server | 1 | `ControlServer::start` | No | `poll()` over up to 8 clients |
+| Main | 1 | process | No | Waits for SIGINT/SIGTERM, then shuts down in order |
+
+Control threads take the service's mutex; stage threads never do. The only shared state
+between them is atomics (counters, histograms, the stop request).
+
+### Acquisition states
+
+![The acquisition state machine](states.svg)
+
+Source: [states.dot](states.dot) and [acquisition-states.json](acquisition-states.json),
+which a unit test compares with the transition table in the code.
+
+### A run
+
+1. `configure`: the configuration is validated (and its `rt_profile` read) before the state
+   changes; an invalid configuration changes nothing.
+2. `start`: the service creates fresh ports from the factories, builds a pipeline and starts
+   it. A factory failure is a `device_error` and leaves the state at configured.
+3. The run ends when the source has delivered `stop_after_s` worth of data, or on `stop`
+   (state stopping while the stages drain). The monitor sees all stages finished and applies
+   `drained`: back to configured, ready for another run with the same configuration.
+4. A port fault or out-of-order singles: the monitor stops the source and applies `error`. The
+   fault stays visible in `status` until a client sends `reset`, which waits for the stages to
+   drain.
+
+## 7. Configuration
+
+A configuration file has a `schema_version` (`MAJOR.MINOR`). The reader accepts its own major
+version and any minor version up to its own; a newer minor version is refused with a clear
+message rather than half-understood. Unknown keys are errors with a "did you mean"
+suggestion, so a misspelled key cannot silently fall back to a default. `status` reports the
+effective configuration, defaults included, and the audit trail records it at every
+`configure`.
+
+## 8. Observability
+
+- **Counters** per stage (in, out, dropped, filtered, batches, stalls, idle polls): relaxed
+  atomics written by one thread each.
+- **Latency histograms** per stage and end to end, cumulative for the run and for the last
+  completed interval (`recent_latency_ns`, 1 s by default).
+- **Status**: one JSON snapshot with state, run, fault, effective configuration, counters,
+  latencies and late singles.
+- **Audit trail**: control actions, transitions, faults, client connections. The hot path does
+  not log; the monitor thread turns counters and faults into records.
+
+## 9. SOUP
+
+| Item | Version | Used by | Why | Requirements on it |
+|---|---|---|---|---|
+| nlohmann/json | 3.11.3, SHA-256 pinned | application, adapters, apps (not core) | Configuration and control protocol ([ADR 0004](../adr/0004-json-library.md)) | Correct parsing of untrusted input; errors catchable; not on the hot path |
+| GoogleTest | 1.15.2 | tests only | Unit and exercise tests | Not shipped |
+| Google Benchmark | 1.9.1 | benchmarks only | Performance measurements | Not shipped |
+| C++ standard library, Linux C library and kernel interfaces | as provided by the platform | everything | Threads, atomics, sockets, real-time scheduling | Platform qualification (Chapter 25) |
+
+The full SOUP list with anomaly review comes with Chapter 7 (SBOM) and Chapter 14.
+
+## 10. Segregation
+
+- The hot path (`minidaq_core`) has no dependency on the control plane, JSON or sockets;
+  `tools/check_layers.py` and the separate library target make this a build-time fact.
+- Control clients run in separate processes and reach the service only through the protocol;
+  a client crash cannot corrupt the service's memory.
+- Within the server process there is no memory isolation between the control plane and the
+  pipeline. Any segregation claim used as a risk control must be justified in the risk
+  analysis (Chapter 15); this document does not make one.
+
+## 11. How this architecture is verified
+
+| Check | How | Where |
+|---|---|---|
+| Layering | Include check on every test run | `tools/check_layers.py`, test `architecture.layers` |
+| State machine | Every state/event pair, listener order, concurrency; JSON copy equals code | `test_acquisition_state.cpp` |
+| Service behavior | Lifecycle, faults, illegal commands, conservation of counts, with simulated ports | `test_acquisition_service.cpp` |
+| Protocol and server | Framing, versioning, errors, disconnects, overlong requests | `test_control_protocol.cpp` |
+| Configuration | Reader rules; schema document agrees with the reader | `test_config.cpp` |
+| Concurrency | All of the above under ThreadSanitizer | `tsan` preset |
+| Review | This document and each ADR are reviewed with the code that implements them | pull requests |
+
+## 12. Decisions and open issues
+
+Decisions: [ADR 0001 to 0007](../adr/README.md).
+
+Open issues:
+
+- No authentication or encryption on the control API (Chapter 17).
+- The monitor polls every 20 ms, so a port fault is noticed up to 20 ms late; if a risk
+  analysis needs faster reaction, the stage that sees the fault must stop the pipeline itself.
+- Late singles end the run; whether a tolerance is acceptable is a physics and risk question
+  for Chapter 10 and Chapter 15.

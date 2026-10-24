@@ -1,0 +1,23 @@
+// The acquisition state machine (Chapter 6). Every edge is one row of
+// minidaq::control::transitions; tests compare this file with
+// acquisition-states.json, which a unit test compares with the code.
+digraph acquisition_states {
+  rankdir=LR;
+  node [shape=box, style="rounded,filled", fillcolor="#eef3fb", fontname="Helvetica"];
+  edge [fontname="Helvetica", fontsize=10];
+  start [shape=point, width=0.15, label=""];
+  start -> idle;
+  idle -> configured [label="configure"];
+  configured -> configured [label="configure"];
+  configured -> running [label="start"];
+  configured -> idle [label="reset"];
+  running -> stopping [label="stop"];
+  running -> configured [label="drained"];
+  stopping -> configured [label="drained"];
+  idle -> fault [label="error"];
+  configured -> fault [label="error"];
+  running -> fault [label="error"];
+  stopping -> fault [label="error"];
+  fault -> idle [label="reset"];
+  fault [fillcolor="#fbe9e7"];
+}

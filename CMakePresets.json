@@ -78,6 +78,19 @@
       }
     },
     {
+      "name": "gcc-cxx23",
+      "displayName": "GCC release, C++23 (std::expected instead of the shim, ADR 0006)",
+      "inherits": [
+        "base",
+        "gcc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "CMAKE_CXX_STANDARD": "23"
+      }
+    },
+    {
       "name": "asan-ubsan",
       "displayName": "ASan + UBSan (Clang)",
       "inherits": [
@@ -133,6 +146,10 @@
       "configurePreset": "clang-release"
     },
     {
+      "name": "gcc-cxx23",
+      "configurePreset": "gcc-cxx23"
+    },
+    {
       "name": "asan-ubsan",
       "configurePreset": "asan-ubsan"
     },
@@ -176,6 +193,11 @@
       "name": "clang-release",
       "inherits": "base",
       "configurePreset": "clang-release"
+    },
+    {
+      "name": "gcc-cxx23",
+      "inherits": "base",
+      "configurePreset": "gcc-cxx23"
     },
     {
       "name": "asan-ubsan",

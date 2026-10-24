@@ -398,7 +398,7 @@ offers two mechanisms:
 With memory locked and prefaulted, the remaining ways for a stage to enter the kernel are the
 ones it calls itself: system calls (a `write` to a log file, a `clock_gettime` that falls out
 of the virtual dynamic shared object, or vDSO, into a real system call), and blocking on a
-lock. Keep logging off the hot path (Chapter 6 gives the pipeline an asynchronous log), never
+lock. Keep logging off the hot path (in Chapter 6 the stages only count, and a monitor thread in the control service turns counts and faults into log and audit records), never
 call a function that may allocate (Chapter 2), and count the faults in tests so that a
 regression shows up as a failing test rather than as a field report.
 

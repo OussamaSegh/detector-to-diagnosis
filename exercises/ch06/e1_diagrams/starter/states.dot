@@ -1,0 +1,10 @@
+// Exercise 6.1: the acquisition state machine.
+// TODO: one edge per row of minidaq::control::transitions.
+digraph acquisition_states {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+  start [shape=point];
+  start -> idle;
+  idle -> configured [label="configure"];
+  configured -> running [label="start"];
+}

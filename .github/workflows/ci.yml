@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [debug, clang-release, asan-ubsan, tsan]
+        preset: [debug, clang-release, gcc-cxx23, asan-ubsan, tsan]
     steps:
       - uses: actions/checkout@v4
       - name: Install toolchain

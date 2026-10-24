@@ -34,6 +34,20 @@ the patch version.
   exact Mann-Whitney test); `perf` workflow for a self-hosted runner and the baseline
   `benchmarks/baseline/book-vm.json`; `docs/performance-budget.md`; compiler-flag experiment
   (`measurements/ch05/flags/`); exercises 5.1 to 5.5 (5.3 in Python, run by CTest).
+- Chapter 6: library `minidaq_control` with the configuration model and validating reader
+  (all errors with JSON Pointer paths, unknown keys with suggestions, `schema_version` rules),
+  the table-driven acquisition state machine (ordered listener calls without holding the state
+  lock), ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) and adapters (simulated
+  detector, counting sink, JSON Lines audit log), `AcquisitionService` with a monitor thread,
+  and the control protocol 1.0 (newline-delimited JSON over TCP, `LineFramer`, `poll` server);
+  applications `minidaq_server` and `minidaq_ctl`; configurations `default.json` and
+  `short-run.json`; `histogram_interval.hpp` and `recent_latency_ns` in status; the run faults
+  on out-of-order singles; nlohmann/json 3.11.3 (control plane only); `docs/architecture/`
+  (architecture description v1, diagrams, state table, configuration JSON Schema, layer rules)
+  and ADRs 0001 to 0007; `tools/check_layers.py` as the test `architecture.layers`; preset
+  `gcc-cxx23` (C++23, `std::expected`) in `ci/run_all.sh` and CI; exercises 6.1 to 6.5 (6.1
+  and 6.3 in Python).
+- Code listings can include Graphviz files from the repository (`{.dot include=...}`).
 - Book build fails when a code block's attributes are not parsed (they would otherwise
   render as raw text).
 
@@ -57,5 +71,8 @@ the patch version.
 - Listing of `EnergyWindowStage` in the Chapter 2 solutions stopped at an inner `};`.
 - Exercise 2.3 allocation test is skipped under TSan as well as ASan (both replace `operator new`).
 - Removed `-Wnull-dereference`: GCC 13 reports false positives inside libstdc++ at `-O2`.
+- Chapter 4 promised "an asynchronous log" for the pipeline in Chapter 6; the text now
+  describes what Chapter 6 does (stages count, a monitor thread reports).
+- `minidaq_ctl --help` printed a connection error instead of the usage.
 - Exercise test labels: only the variant (`starter`/`solution`) is used as a CTest label.
 - EPUB: Graphviz DOCTYPE stripped and SVG files renamed from `.svgz` so epubcheck passes.

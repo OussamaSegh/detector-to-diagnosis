@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/minidaq/acquisition-config-1.0.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 1.0",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "type": "object",
+  "required": ["schema_version"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "MAJOR.MINOR. A reader accepts its own major version and minor versions up to its own.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "description": { "type": "string" },
+    "rt_profile": {
+      "description": "Path of a real-time profile (Chapter 4); empty for none. Read when the configuration is applied.",
+      "type": "string"
+    },
+    "stop_after_s": {
+      "description": "Stop after this many seconds of data at source.rate_hz; 0 runs until stopped.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 604800
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["synthetic"] },
+        "rate_hz": { "type": "number", "minimum": 1, "maximum": 1e9 },
+        "pair_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 }
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "batch_size": { "type": "integer", "minimum": 1, "maximum": 1048576 },
+        "batches_per_channel": { "type": "integer", "minimum": 2, "maximum": 4096 },
+        "coincidence_window_ps": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "overflow": { "enum": ["block", "drop"] },
+        "max_batch_delay_us": { "type": "integer", "minimum": 1, "maximum": 1000000 }
+      }
+    }
+  }
+}

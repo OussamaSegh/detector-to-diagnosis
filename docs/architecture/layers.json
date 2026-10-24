@@ -1,0 +1,19 @@
+{
+  "comment": "MiniDAQ's layers (Chapter 6, architecture.md section 4). tools/check_layers.py reads this file and fails the build's tests if an #include crosses a layer boundary the wrong way. Modules are paths below minidaq/include/minidaq/ and minidaq/src/ without the extension; the longest matching prefix decides the layer.",
+  "layers": {
+    "core": ["core/", "format/", "pipeline/", "metrics/", "processing/", "rt/", "sim/"],
+    "application": ["config/", "control/acquisition_state", "control/acquisition_service", "control/ports", "control/audit"],
+    "adapters": ["control/adapters", "control/audit_log", "control/control_protocol", "control/control_server"],
+    "apps": ["apps/"]
+  },
+  "may_include": {
+    "core": ["core"],
+    "application": ["core", "application"],
+    "adapters": ["core", "application", "adapters"],
+    "apps": ["core", "application", "adapters"]
+  },
+  "forbidden_external": {
+    "core": ["nlohmann/", "sys/socket.h", "netinet/", "arpa/"],
+    "application": ["sys/socket.h", "netinet/", "arpa/"]
+  }
+}

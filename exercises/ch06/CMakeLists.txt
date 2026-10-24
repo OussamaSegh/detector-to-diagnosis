@@ -1,0 +1,5 @@
+minidaq_python_exercise(e1_diagrams)
+minidaq_exercise(e2_state_machine)
+minidaq_python_exercise(e3_adrs)
+minidaq_exercise(e4_frame_reader)
+minidaq_exercise(e5_fault_injection LIBS minidaq::control)

@@ -1,0 +1,9 @@
+// Exercise 6.1: MiniDAQ components. An edge a -> b means "a uses b".
+// TODO: at least 12 components, each with class="core|application|adapters|app".
+digraph components {
+  rankdir=TB;
+  node [shape=box, style=rounded];
+  pipeline [class="core", label="AcquisitionPipeline"];
+  acquisition_service [class="application", label="AcquisitionService"];
+  acquisition_service -> pipeline;
+}

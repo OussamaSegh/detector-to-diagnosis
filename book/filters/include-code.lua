@@ -143,6 +143,11 @@ function CodeBlock(el)
       attrs[k] = v
     end
   end
+  if el.classes:includes("dot") then
+    -- A diagram kept in the repository: diagrams.lua renders it with its caption.
+    attrs["caption"] = el.attributes["caption"]
+    return pandoc.CodeBlock(table.concat(lines, "\n"), pandoc.Attr(el.identifier, el.classes, attrs))
+  end
   local block = pandoc.CodeBlock(table.concat(lines, "\n"), pandoc.Attr(el.identifier, el.classes, attrs))
 
   local cap = { pandoc.Str("Listing:"), pandoc.Space() }

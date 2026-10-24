@@ -7,6 +7,7 @@
 #include <random>
 #include <vector>
 
+#include "minidaq/metrics/histogram_interval.hpp"
 #include "minidaq/metrics/latency_histogram.hpp"
 
 using minidaq::LatencyHistogram;
@@ -116,4 +117,31 @@ TEST(LatencyHistogram, CountAtExposesBuckets) {
   EXPECT_EQ(h.count_at(h.index_of(5)), 2U);
   EXPECT_EQ(h.count_at(h.index_of(1'000'000)), 1U);
   EXPECT_EQ(h.count_at(h.bucket_count()), 0U);  // out of range reads as empty
+}
+
+TEST(HistogramInterval, PercentilesOfOnlyTheValuesBetweenTwoSnapshots) {
+  minidaq::LatencyHistogram h;
+  for (int i = 0; i < 1000; ++i) {
+    h.record(100);
+  }
+  const auto before = minidaq::snapshot_counts(h);
+  for (int i = 0; i < 99; ++i) {
+    h.record(5'000);
+  }
+  h.record(1'000'000);
+  const auto after = minidaq::snapshot_counts(h);
+
+  const auto s = minidaq::interval_summary(h, before, after);
+  EXPECT_EQ(s.count, 100U);
+  EXPECT_NEAR(static_cast<double>(s.p50), 5'000.0, 5'000.0 / 128);
+  EXPECT_NEAR(static_cast<double>(s.p99), 5'000.0, 5'000.0 / 128);
+  EXPECT_NEAR(static_cast<double>(s.max), 1e6, 1e6 / 128);
+  EXPECT_LE(s.min, 5'000);
+  EXPECT_GT(s.min, 4'900);
+  EXPECT_EQ(h.summary().p50, 100) << "the cumulative view is unchanged";
+
+  EXPECT_EQ(minidaq::interval_summary(h, after, after).count, 0U) << "nothing happened";
+  EXPECT_EQ(minidaq::interval_summary(h, after, before).count, 0U) << "wrong order";
+  minidaq::LatencyHistogram other{1000};
+  EXPECT_EQ(minidaq::interval_summary(other, before, after).count, 0U) << "different histogram";
 }
