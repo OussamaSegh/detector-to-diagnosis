@@ -8,6 +8,10 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-24
+
+Part I, Modern, low-latency C++ (Chapters 1 to 7), complete and reviewed.
+
 ### Added
 - Chapter 1: core types (`Quantity`, `Picoseconds`, `KeV`, `CrystalId`, `Single`,
   `Coincidence`), `minidaq::Expected`, constexpr geometry, raw16 parser; exercises 1.1 to 1.6;
