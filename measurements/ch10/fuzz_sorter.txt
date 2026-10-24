@@ -1,0 +1,11 @@
+# fuzz_sorter campaign, 2026-10-24, book VM, Clang 18.1.3, -fsanitize=fuzzer,address,undefined
+# taskset -c 3 build/fuzz/fuzz/fuzz_sorter -max_total_time=600 -timeout=5 -rss_limit_mb=2048 CORPUS fuzz/corpus/sorter
+# last new coverage at #845905
+#6	INITED cov: 282 ft: 473 corp: 5/1300b exec/s: 0 rss: 34Mb
+#3874747	DONE   cov: 313 ft: 1543 corp: 321/63Kb lim: 4096 exec/s: 6447 rss: 146Mb
+Done 3874747 runs in 601 second(s)
+stat::number_of_executed_units: 3874747
+stat::average_exec_per_sec:     6447
+stat::new_units_added:          2270
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              146
