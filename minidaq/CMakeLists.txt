@@ -8,6 +8,7 @@ add_library(minidaq_core
   src/sim/detector_simulator.cpp
   src/sim/truth_counter.cpp
   src/sim/readout_link.cpp
+  src/sim/dead_time.cpp
   src/processing/energy_filter.cpp
   src/processing/coincidence_sorter.cpp
   src/processing/stream_merger.cpp
