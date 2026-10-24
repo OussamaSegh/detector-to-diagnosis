@@ -12,6 +12,7 @@ add_executable(minidaq_unit_tests
   unit/test_stream_merger.cpp
   unit/test_dead_time.cpp
   unit/test_count_rates.cpp
+  unit/test_replay_source.cpp
   unit/test_spsc_ring.cpp
   unit/test_mpmc_queue.cpp
   unit/test_channel.cpp

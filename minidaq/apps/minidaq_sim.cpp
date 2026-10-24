@@ -2,10 +2,13 @@
 // minidaq_sim: run the detector simulator, print where the photons went and
 // the coincidence counts by truth, optionally write the singles (Chapter 8).
 // Then run the coincidence sorter on the same singles and classify what it
-// found with the ground truth (Chapter 10).
+// found with the ground truth (Chapter 10). Optionally apply front-end dead
+// time and pile-up first, use a NEMA-style line source, and print one line of
+// count rates for scripts (Chapter 11).
 //
 //   minidaq_sim --activity 5e6 --seconds 0.5 --phantom 90 --truth singles.csv
 //   minidaq_sim --activity 20e6 --policy take_winner_of_goods --fov 120
+//   minidaq_sim --nema 1 --activity 100e6 --deadtime paralyzable --tau 200 --pileup 1
 #include <algorithm>
 #include <cstdio>
 #include <memory>
@@ -17,6 +20,8 @@
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
+#include "minidaq/processing/count_rates.hpp"
+#include "minidaq/sim/dead_time.hpp"
 #include "minidaq/sim/detector_simulator.hpp"
 #include "minidaq/sim/truth_counter.hpp"
 
@@ -31,7 +36,9 @@ constexpr const char* usage =
     "usage: minidaq_sim [--activity BQ] [--seconds S] [--source point|cylinder] [--phantom RADIUS_MM]\n"
     "                   [--window PS] [--elow KEV] [--ehigh KEV] [--ctr PS] [--seed N]\n"
     "                   [--words FILE] [--truth FILE.csv]\n"
-    "                   [--mode fixed|per_single] [--policy NAME] [--delay PS] [--sectors N] [--fov MM]\n";
+    "                   [--mode fixed|per_single] [--policy NAME] [--delay PS] [--sectors N] [--fov MM]\n"
+    "                   [--deadtime none|non_paralyzable|paralyzable] [--tau NS] [--pileup 0|1]\n"
+    "                   [--deadtime-unit block|crystal] [--nema 0|1]\n";
 
 double percent(std::uint64_t part, std::uint64_t whole) {
   return whole == 0 ? 0.0 : 100.0 * static_cast<double>(part) / static_cast<double>(whole);
@@ -40,8 +47,8 @@ double percent(std::uint64_t part, std::uint64_t whole) {
 // [snippet:classify]
 // Runs the sorter on the simulated singles and classifies each coincidence it
 // found by looking its two singles up in the ground truth.
-void print_sorter_report(const minidaq::SorterConfig& cfg, const std::vector<minidaq::sim::TruthSingle>& truth,
-                         double seconds) {
+minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
+                                        const std::vector<minidaq::sim::TruthSingle>& truth, double seconds) {
   using namespace minidaq;
   std::vector<Single> singles;
   singles.reserve(truth.size());
@@ -102,6 +109,7 @@ void print_sorter_report(const minidaq::SorterConfig& cfg, const std::vector<min
               static_cast<unsigned long long>(st.multiple_windows),
               static_cast<unsigned long long>(st.singles_in_multiples),
               static_cast<unsigned long long>(st.geometry_rejected), static_cast<unsigned long long>(ambiguous));
+  return CountRates{.trues = rate(trues), .scatters = rate(scatters), .randoms = rate(randoms)};
 }
 
 }  // namespace
@@ -116,6 +124,8 @@ int main(int argc, char** argv) {
   std::string words_path;
   std::string truth_path;
   minidaq::SorterConfig sorter;
+  DeadTimeConfig dead;
+  bool nema = false;
   for (int i = 1; i < argc; i += 2) {  // every option takes a value
     const std::string_view a{argv[i]};
     const std::string_view v = i + 1 < argc ? argv[i + 1] : "";
@@ -157,6 +167,23 @@ int main(int argc, char** argv) {
       ok = minidaq::parse_into(v, sorter.min_sector_difference, std::uint32_t{0}, std::uint32_t{12});
     } else if (a == "--fov") {
       ok = minidaq::parse_into(v, sorter.fov_radius_mm, 0.0, 149.0);
+    } else if (a == "--deadtime") {
+      const auto m = parse_dead_time_model(v);
+      ok = m.has_value();
+      dead.model = ok ? *m : dead.model;
+    } else if (a == "--tau") {
+      double tau_ns = 0.0;
+      ok = minidaq::parse_into(v, tau_ns, 0.0, 100'000.0);
+      dead.tau = minidaq::Picoseconds{static_cast<std::int64_t>(tau_ns * 1e3)};
+    } else if (a == "--pileup") {
+      ok = v == "0" || v == "1";
+      dead.pileup = v == "1";
+    } else if (a == "--deadtime-unit") {
+      ok = v == "block" || v == "crystal";
+      dead.unit = v == "crystal" ? DeadTimeUnit::crystal : DeadTimeUnit::block;
+    } else if (a == "--nema") {
+      ok = v == "0" || v == "1";
+      nema = v == "1";
     } else if (a == "--words" && !v.empty()) {
       words_path = v;
     } else if (a == "--truth" && !v.empty()) {
@@ -177,6 +204,19 @@ int main(int argc, char** argv) {
   if (phantom_mm > 0.0) {
     cfg.phantom = {phantom_mm, 180.0};
   }
+  if (nema) {
+    // NEMA NU 2-style count-rate phantom: a 203 mm diameter, 700 mm long
+    // cylinder with a line source 45 mm off the axis (verify: the dimensions
+    // against the NU 2 edition in use). Our water stands in for polyethylene,
+    // and most of the 700 mm lie outside this short scanner's axial field of
+    // view, as they would in a brain scanner.
+    cfg.phantom = {101.5, 700.0};
+    cfg.source = {SourceShape::Kind::cylinder, {0.0, -45.0, 0.0}, 1.6, 700.0};
+  }
+  if (auto v = validate(dead); !v) {
+    std::fprintf(stderr, "minidaq_sim: %s\n", v.error().c_str());
+    return 2;
+  }
   if (auto v = validate(cfg); !v) {
     std::fprintf(stderr, "minidaq_sim: %s\n", v.error().c_str());
     return 2;
@@ -190,7 +230,12 @@ int main(int argc, char** argv) {
   }
 
   DetectorSimulator sim{cfg};
-  const auto singles = sim.generate_until(minidaq::Picoseconds{static_cast<std::int64_t>(seconds * 1e12)});
+  const auto generated = sim.generate_until(minidaq::Picoseconds{static_cast<std::int64_t>(seconds * 1e12)});
+  DeadTime front_end{dead};
+  std::vector<TruthSingle> singles;
+  singles.reserve(generated.size());
+  front_end.push(generated, singles);
+  front_end.flush(singles);
   const auto& st = sim.stats();
   const auto counts = count_coincidences(singles, window);
 
@@ -207,6 +252,14 @@ int main(int argc, char** argv) {
               percent(st.below_threshold, st.photons));
   std::printf("  recorded singles     %11llu  %5.1f%%\n", static_cast<unsigned long long>(st.singles),
               percent(st.singles, st.photons));
+  if (dead.model != DeadTimeModel::none) {
+    const auto& d = front_end.stats();
+    std::printf("dead time %s per %s, %.0f ns%s: %llu lost (%.1f%%), %llu piled up\n",
+                std::string{to_string(dead.model)}.c_str(), dead.unit == DeadTimeUnit::block ? "block" : "crystal",
+                static_cast<double>(dead.tau.count()) / 1e3, dead.pileup ? ", pile-up" : "",
+                static_cast<unsigned long long>(d.lost), percent(d.lost, d.singles_in),
+                static_cast<unsigned long long>(d.piled_up));
+  }
   std::printf("window %lld ps, energy %.0f to %.0f keV: %llu singles\n",
               static_cast<long long>(window.width.count()), window.energy_low_kev, window.energy_high_kev,
               static_cast<unsigned long long>(counts.singles));
@@ -222,7 +275,11 @@ int main(int argc, char** argv) {
   std::printf("  multiples %10llu  %8.0f /s\n", static_cast<unsigned long long>(counts.multiples),
               static_cast<double>(counts.multiples) / seconds);
 
-  print_sorter_report(sorter, singles, seconds);
+  const minidaq::CountRates r = print_sorter_report(sorter, singles, seconds);
+  // One line for scripts (measurements/ch11/countrate.py): rates per second.
+  std::printf("countrate activity=%.6g singles=%.6g trues=%.6g scatters=%.6g randoms=%.6g sf=%.4f necr1=%.6g necr2=%.6g\n",
+              cfg.activity_bq, static_cast<double>(singles.size()) / seconds, r.trues, r.scatters, r.randoms,
+              r.scatter_fraction(), r.necr(1.0), r.necr(2.0));
 
   if (!words_path.empty()) {
     const File f{std::fopen(words_path.c_str(), "wb")};  // NOLINT(cppcoreguidelines-owning-memory): owned by File
