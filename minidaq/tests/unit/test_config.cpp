@@ -36,7 +36,7 @@ std::string read(const std::string& path) {
 
 TEST(Config, MinimalDocumentGetsDefaults) {
   // REQ: SRS-CFG-001
-  const auto c = parse_config(R"({"schema_version": "1.1"})");
+  const auto c = parse_config(R"({"schema_version": "1.2"})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(*c, AcquisitionConfig{});
   // An older minor version is accepted; only the recorded version differs.
@@ -69,7 +69,7 @@ TEST(Config, SchemaVersionRules) {
   // REQ: SRS-CFG-002
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0"})"), "/schema_version", "major version 2"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3"})"), "/schema_version", "newer MiniDAQ"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": 1.0})"), "/schema_version", "must be a string"));
 }
@@ -122,7 +122,9 @@ TEST(Config, PipelineSettingsAreApplied) {
   c.stop_after_s = 1.5;
   const PipelineConfig p = to_pipeline_config(c);
   EXPECT_EQ(p.batch_size, 1024U);
-  EXPECT_EQ(p.coincidence_window, Picoseconds{3000});
+  EXPECT_EQ(p.sorter.window, Picoseconds{3000});
+  EXPECT_EQ(p.sorter.delay, Picoseconds{100'000});
+  EXPECT_EQ(p.sorter.multiples, MultiplesPolicy::kill_all);
   EXPECT_EQ(p.max_batch_delay, std::chrono::microseconds{250});
   EXPECT_EQ(p.total_words, 3'000'000U);
 }
@@ -132,7 +134,7 @@ TEST(Config, PipelineSettingsAreApplied) {
 TEST(Config, SchemaDocumentAgreesWithTheReader) {
   const auto schema = nlohmann::json::parse(read(MINIDAQ_SOURCE_DIR "/docs/architecture/acquisition-config.schema.json"));
   const auto effective = to_json(AcquisitionConfig{});
-  const auto base = nlohmann::json::parse(R"({"schema_version": "1.1"})");
+  const auto base = nlohmann::json::parse(R"({"schema_version": "1.2"})");
 
   // Walks the schema and the effective configuration together, at any depth:
   // the same keys at every level, and every leaf's enum and range accepted
@@ -150,6 +152,15 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
       }
       auto with = [&](const nlohmann::json& v) {
         auto doc = base;
+        // The energy window's ends are checked against each other: open the
+        // other end fully so that each end's own range is what is tested.
+        if (path == "/sorter/energy_low_kev") {
+          doc["sorter"]["energy_high_kev"] = 10'000.0;
+        } else if (path == "/sorter/energy_high_kev") {
+          doc["sorter"]["energy_low_kev"] = 0.0;
+        } else if (path == "/pipeline/coincidence_window_ps") {
+          doc["sorter"]["delay_ps"] = 0;  // the delay must exceed the window
+        }
         doc[nlohmann::json::json_pointer{path}] = v;
         return parse_config(doc.dump()).has_value();
       };
@@ -202,6 +213,33 @@ TEST(Config, UdpSource) {
                   "/stop_after_s", "synthetic"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"prot": 1}}})"), "/source/udp/prot",
                   "did you mean \"port\""));
+}
+
+TEST(Config, SorterSettings) {
+  // REQ: SRS-CFG-011
+  const auto c = parse_config(R"({"schema_version": "1.2", "pipeline": {"coincidence_window_ps": 3000},
+      "sorter": {"delay_ps": 50000, "mode": "per_single", "multiples": "take_winner_of_goods",
+                 "energy_low_kev": 400, "energy_high_kev": 650, "min_sector_difference": 2, "fov_radius_mm": 125}})");
+  ASSERT_TRUE(c) << format_errors(c.error());
+  const PipelineConfig p = to_pipeline_config(*c);
+  EXPECT_EQ(p.sorter.window, Picoseconds{3000});
+  EXPECT_EQ(p.sorter.delay, Picoseconds{50'000});
+  EXPECT_EQ(p.sorter.mode, WindowMode::per_single);
+  EXPECT_EQ(p.sorter.multiples, MultiplesPolicy::take_winner_of_goods);
+  EXPECT_EQ(p.sorter.energy_low_kev, 400.0);
+  EXPECT_EQ(p.sorter.min_sector_difference, 2U);
+  EXPECT_EQ(p.sorter.fov_radius_mm, 125.0);
+  EXPECT_TRUE(validate(p.sorter)) << "every configuration the parser accepts is a valid sorter";
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"delay_ps": 2000}})"), "/sorter/delay_ps",
+                  "coincidence_window_ps"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"energy_low_kev": 600}})"),
+                  "/sorter/energy_low_kev", "must not exceed"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"multiples": "keep_all"}})"), "/sorter/multiples",
+                  "take_all_goods"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"min_sector_difference": 4294967297}})"),
+                  "/sorter/min_sector_difference", "between 0 and 12"))
+      << "2^32 + 1 must not wrap to 1";
+  EXPECT_TRUE(parse_config(R"({"schema_version": "1.2", "sorter": {"delay_ps": 0}})")) << "0 turns the delayed window off";
 }
 
 TEST(Config, NumberOverflowIsAnErrorNotACrash) {

@@ -11,10 +11,11 @@
 // would. Downstream stages always block: losing data inside the PC silently
 // is never acceptable (Chapter 15).
 //
-// Chapter 3 versions of sort and pair are deliberately simple placeholders:
-// sort reorders within a batch and counts singles older than the last one
-// emitted; pair takes non-overlapping pairs of consecutive singles within the
-// window. Chapter 10 replaces both with the real coincidence sorter.
+// The sort stage reorders within a batch and counts singles older than the
+// last one emitted (a stream from one source is already in time order; many
+// boards need the StreamMerger of Chapter 10 first). The pair stage is the
+// CoincidenceSorter of Chapter 10; until Chapter 10 it was a placeholder that
+// paired consecutive singles.
 #pragma once
 
 #include <array>
@@ -33,6 +34,7 @@
 #include "minidaq/pipeline/channel.hpp"
 #include "minidaq/metrics/latency_histogram.hpp"
 #include "minidaq/pipeline/stage_stats.hpp"
+#include "minidaq/processing/coincidence_sorter.hpp"
 #include "minidaq/rt/realtime.hpp"
 
 namespace minidaq {
@@ -42,7 +44,7 @@ enum class OverflowPolicy : std::uint8_t { block, drop };
 struct PipelineConfig {
   std::size_t batch_size = 4096;
   std::size_t batches_per_channel = 64;
-  Picoseconds coincidence_window{4'000};
+  SorterConfig sorter{};  // the pair stage (Chapter 10)
   OverflowPolicy source_overflow = OverflowPolicy::block;
   std::uint64_t total_words = 0;  // stop after this many words (0: run until stopped)
   // A partially filled batch is sent once its oldest word is this old: bounds
@@ -88,6 +90,7 @@ class AcquisitionPipeline {
   // Called on the writer thread for each batch of coincidences. Must not throw.
   using CoincidenceSink = std::function<void(std::span<const Coincidence>)>;
 
+  // Throws std::invalid_argument if cfg.sorter is invalid.
   AcquisitionPipeline(const PipelineConfig& cfg, WordSource source, CoincidenceSink sink);
   ~AcquisitionPipeline();
   AcquisitionPipeline(const AcquisitionPipeline&) = delete;
@@ -106,6 +109,10 @@ class AcquisitionPipeline {
 
   [[nodiscard]] std::array<StageSnapshot, num_stages> stats() const noexcept;
   [[nodiscard]] std::uint64_t late_singles() const noexcept { return late_singles_.load(std::memory_order_relaxed); }
+  // The pair stage's sorter counters, updated after every batch. While the
+  // pipeline runs, fields may be from consecutive batches; after wait() they
+  // are exact.
+  [[nodiscard]] SorterStats sorter_stats() const noexcept;
 
   // Per-stage service time of each batch, in ns (time spent processing, not waiting).
   [[nodiscard]] const LatencyHistogram& stage_latency(StageId id) const noexcept {
@@ -139,6 +146,9 @@ class AcquisitionPipeline {
   Channel<Coincidence> pairs_;
   std::array<StageStats, num_stages> stats_{};
   alignas(cache_line_size) std::atomic<std::uint64_t> late_singles_{0};
+  std::unique_ptr<CoincidenceSorter> sorter_;  // used by the pair thread only
+  static constexpr std::size_t sorter_fields = 11;
+  alignas(cache_line_size) std::array<std::atomic<std::uint64_t>, sorter_fields> sorter_stats_{};
   std::atomic<std::size_t> finished_stages_{0};
   std::array<std::unique_ptr<LatencyHistogram>, num_stages> stage_latency_;
   std::unique_ptr<LatencyHistogram> end_to_end_;

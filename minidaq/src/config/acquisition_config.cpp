@@ -244,7 +244,28 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
     r.get("max_batch_delay_us", c.pipeline.max_batch_delay_us, std::int64_t{1}, std::int64_t{1'000'000});
     r.finish();
   }
+  if (const json* so = top.object("sorter")) {
+    ObjectReader r{*so, top.child("sorter"), errors};
+    auto& st = c.sorter;
+    r.get("delay_ps", st.delay_ps, std::int64_t{0}, std::int64_t{1'000'000'000});
+    r.get("mode", st.mode, {"fixed", "per_single"});
+    r.get("multiples", st.multiples, {"kill_all", "take_all_goods", "take_winner_of_goods", "keep_if_only_one_good"});
+    r.get("energy_low_kev", st.energy_low_kev, 0.0, 10'000.0);
+    r.get("energy_high_kev", st.energy_high_kev, 0.0, 10'000.0);
+    std::uint64_t sectors = st.min_sector_difference;  // 64 bits first, as for the UDP port
+    r.get("min_sector_difference", sectors, std::uint64_t{0}, std::uint64_t{12});
+    st.min_sector_difference = static_cast<std::uint32_t>(sectors);
+    r.get("fov_radius_mm", st.fov_radius_mm, 0.0, 149.0);
+    r.finish();
+  }
   top.finish();
+  // Rules that involve two values, reported at the value a user would change.
+  if (c.sorter.delay_ps != 0 && c.sorter.delay_ps <= c.pipeline.coincidence_window_ps) {
+    errors.push_back({"/sorter/delay_ps", "must be 0 (off) or more than /pipeline/coincidence_window_ps"});
+  }
+  if (c.sorter.energy_low_kev > c.sorter.energy_high_kev) {
+    errors.push_back({"/sorter/energy_low_kev", "must not exceed /sorter/energy_high_kev"});
+  }
   if (c.source.type == "udp" && c.stop_after_s > 0) {
     // stop_after_s is turned into a word count from rate_hz, which a network
     // source does not have: stop a UDP run with the stop command.
@@ -290,6 +311,14 @@ json to_json(const AcquisitionConfig& c) {
         {"coincidence_window_ps", c.pipeline.coincidence_window_ps},
         {"overflow", c.pipeline.overflow == OverflowPolicy::drop ? "drop" : "block"},
         {"max_batch_delay_us", c.pipeline.max_batch_delay_us}}},
+      {"sorter",
+       {{"delay_ps", c.sorter.delay_ps},
+        {"mode", c.sorter.mode},
+        {"multiples", c.sorter.multiples},
+        {"energy_low_kev", c.sorter.energy_low_kev},
+        {"energy_high_kev", c.sorter.energy_high_kev},
+        {"min_sector_difference", c.sorter.min_sector_difference},
+        {"fov_radius_mm", c.sorter.fov_radius_mm}}},
       {"rt_profile", c.rt_profile},
       {"stop_after_s", c.stop_after_s},
   };
@@ -307,7 +336,15 @@ PipelineConfig to_pipeline_config(const AcquisitionConfig& c) {
   PipelineConfig p;
   p.batch_size = c.pipeline.batch_size;
   p.batches_per_channel = c.pipeline.batches_per_channel;
-  p.coincidence_window = Picoseconds{c.pipeline.coincidence_window_ps};
+  p.sorter.window = Picoseconds{c.pipeline.coincidence_window_ps};
+  p.sorter.delay = Picoseconds{c.sorter.delay_ps};
+  // The parser accepted only known names, so these cannot fail.
+  p.sorter.mode = parse_window_mode(c.sorter.mode).value();
+  p.sorter.multiples = parse_multiples_policy(c.sorter.multiples).value();
+  p.sorter.energy_low_kev = c.sorter.energy_low_kev;
+  p.sorter.energy_high_kev = c.sorter.energy_high_kev;
+  p.sorter.min_sector_difference = c.sorter.min_sector_difference;
+  p.sorter.fov_radius_mm = c.sorter.fov_radius_mm;
   p.source_overflow = c.pipeline.overflow;
   p.max_batch_delay = std::chrono::microseconds{c.pipeline.max_batch_delay_us};
   if (c.stop_after_s > 0) {

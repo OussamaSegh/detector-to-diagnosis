@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/minidaq/acquisition-config-1.1.schema.json",
-  "title": "MiniDAQ acquisition configuration, schema version 1.1",
-  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6; version 1.1 adds the UDP source of Chapter 9). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "$id": "https://example.invalid/minidaq/acquisition-config-1.2.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 1.2",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6; version 1.1 adds the UDP source of Chapter 9, 1.2 the coincidence sorter settings of Chapter 10). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
   "type": "object",
   "required": ["schema_version"],
   "additionalProperties": false,
@@ -54,6 +54,20 @@
         "coincidence_window_ps": { "type": "integer", "minimum": 1, "maximum": 1000000 },
         "overflow": { "enum": ["block", "drop"] },
         "max_batch_delay_us": { "type": "integer", "minimum": 1, "maximum": 1000000 }
+      }
+    },
+    "sorter": {
+      "description": "The coincidence sorter (Chapter 10). The window is /pipeline/coincidence_window_ps. delay_ps must be 0 or more than the window; energy_low_kev must not exceed energy_high_kev.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delay_ps": { "type": "integer", "minimum": 0, "maximum": 1000000000 },
+        "mode": { "enum": ["fixed", "per_single"] },
+        "multiples": { "enum": ["kill_all", "take_all_goods", "take_winner_of_goods", "keep_if_only_one_good"] },
+        "energy_low_kev": { "type": "number", "minimum": 0.0, "maximum": 10000.0 },
+        "energy_high_kev": { "type": "number", "minimum": 0.0, "maximum": 10000.0 },
+        "min_sector_difference": { "type": "integer", "minimum": 0, "maximum": 12 },
+        "fov_radius_mm": { "type": "number", "minimum": 0.0, "maximum": 149.0 }
       }
     }
   }

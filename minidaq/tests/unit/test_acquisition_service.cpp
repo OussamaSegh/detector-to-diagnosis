@@ -266,6 +266,8 @@ TEST(AcquisitionService, OutOfOrderSinglesAreAFault) {
   const auto st = svc.status();
   EXPECT_EQ(st["fault"], "sort: 512 singles arrived out of time order");
   EXPECT_EQ(st["late_singles"], 512);
+  ASSERT_TRUE(st.contains("sorter")) << "the sorter's counters are part of the status";
+  EXPECT_TRUE(st["sorter"].contains("out_of_order"));
 }
 
 TEST(AcquisitionService, StatusReportsTheLastIntervalSeparately) {

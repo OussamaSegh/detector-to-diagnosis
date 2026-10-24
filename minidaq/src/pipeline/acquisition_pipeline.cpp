@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <limits>
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -21,6 +20,7 @@ AcquisitionPipeline::AcquisitionPipeline(const PipelineConfig& cfg, WordSource s
       decoded_{cfg.batches_per_channel, cfg.batch_size},
       sorted_{cfg.batches_per_channel, cfg.batch_size},
       pairs_{cfg.batches_per_channel, cfg.batch_size},
+      sorter_{std::make_unique<CoincidenceSorter>(cfg.sorter)},
       end_to_end_{std::make_unique<LatencyHistogram>()} {
   for (auto& h : stage_latency_) {
     h = std::make_unique<LatencyHistogram>();
@@ -255,21 +255,109 @@ void AcquisitionPipeline::run_sort() {
   finished_stages_.fetch_add(1);
 }
 
+namespace {
+
+// The SorterStats fields, in one place, for copying to and from the atomics.
+constexpr std::uint64_t SorterStats::*sorter_members[] = {
+    &SorterStats::singles_in,       &SorterStats::energy_rejected,      &SorterStats::out_of_order,
+    &SorterStats::singles_alone,    &SorterStats::pair_windows,         &SorterStats::multiple_windows,
+    &SorterStats::singles_in_multiples, &SorterStats::geometry_rejected, &SorterStats::prompts,
+    &SorterStats::prompts_from_multiples, &SorterStats::delayed};
+
+// Which input batch a single came from, by data time, so that an output batch
+// carries the origin (arrival time) of the oldest data in it. The sorter holds
+// singles across batches, so this is not simply the current input batch.
+class OriginTrack {
+ public:
+  void add(Picoseconds last_time, std::int64_t origin_ns) noexcept {
+    if (n_ == ring_.size()) {
+      pop();  // more batches than the sorter could still hold: forget the oldest
+    }
+    ring_[(head_ + n_) % ring_.size()] = {last_time, origin_ns};
+    ++n_;
+  }
+  // Origin of the batch holding a single at time t (the oldest batch if t is older).
+  [[nodiscard]] std::int64_t origin_of(Picoseconds t) const noexcept {
+    for (std::size_t i = 0; i < n_; ++i) {
+      const Entry& e = ring_[(head_ + i) % ring_.size()];
+      if (e.last_time >= t) {
+        return e.origin_ns;
+      }
+    }
+    return n_ > 0 ? ring_[(head_ + n_ - 1) % ring_.size()].origin_ns : 0;
+  }
+  // Forgets batches whose singles are all older than t.
+  void drop_before(Picoseconds t) noexcept {
+    while (n_ > 1 && ring_[head_].last_time < t) {
+      pop();
+    }
+  }
+  void clear() noexcept { n_ = 0; }
+
+ private:
+  struct Entry {
+    Picoseconds last_time{};
+    std::int64_t origin_ns = 0;
+  };
+  void pop() noexcept {
+    head_ = (head_ + 1) % ring_.size();
+    --n_;
+  }
+  std::array<Entry, 256> ring_{};
+  std::size_t head_ = 0;
+  std::size_t n_ = 0;
+};
+
+}  // namespace
+
+SorterStats AcquisitionPipeline::sorter_stats() const noexcept {
+  static_assert(std::size(sorter_members) == sorter_fields, "one atomic per SorterStats field");
+  SorterStats st;
+  for (std::size_t i = 0; i < sorter_fields; ++i) {
+    st.*sorter_members[i] = sorter_stats_[i].load(std::memory_order_relaxed);
+  }
+  return st;
+}
+
+// [snippet:pair]
 void AcquisitionPipeline::run_pair() {
   enter_stage(StageId::pair);
   StageStats& s = stats_of(StageId::pair);
   LatencyHistogram& lat = latency_of(StageId::pair);
   Backoff idle{cfg_.backoff};
-  std::optional<Single> carry;
-  std::int64_t carry_origin_ns = 0;  // origin of the batch the carried single came from
-  Batch<Coincidence>* out = nullptr;
-  auto flush = [&] {
-    if (out != nullptr && out->size > 0) {
-      StageStats::add(s.items_out, out->size);
+  CoincidenceSorter& sorter = *sorter_;
+  std::vector<Coincidence> found;
+  found.reserve(2 * cfg_.batch_size);  // take_all_goods can find more pairs than singles
+  OriginTrack origins;
+  std::uint64_t removed_before = 0;
+  // Copies what the sorter found into output batches; returns the time spent
+  // waiting for free batches, which is not the stage's own work.
+  auto publish = [&] {
+    std::int64_t waited_ns = 0;
+    std::size_t i = 0;
+    while (i < found.size()) {
+      const std::int64_t w0 = monotonic_ns();
+      Batch<Coincidence>* out = acquire_blocking(pairs_, s);
+      waited_ns += monotonic_ns() - w0;
+      out->origin_ns = origins.origin_of(found[i].first.time);  // the oldest data in this batch
+      const std::size_t n = std::min(out->capacity(), found.size() - i);
+      std::copy_n(found.begin() + static_cast<std::ptrdiff_t>(i), n, out->items.begin());
+      out->size = n;
+      i += n;
+      StageStats::add(s.items_out, n);
       StageStats::add(s.batches, 1);
       pairs_.publish(out);
-      out = nullptr;
     }
+    found.clear();
+    const SorterStats& st = sorter.stats();
+    for (std::size_t f = 0; f < sorter_fields; ++f) {
+      sorter_stats_[f].store(st.*sorter_members[f], std::memory_order_relaxed);
+    }
+    // Singles removed before windowing (energy gate, order) are "filtered".
+    const std::uint64_t removed = st.energy_rejected + st.out_of_order;
+    StageStats::add(s.items_filtered, removed - removed_before);
+    removed_before = removed;
+    return waited_ns;
   };
   for (;;) {
     Batch<Single>* in = sorted_.receive();
@@ -286,40 +374,26 @@ void AcquisitionPipeline::run_pair() {
     }
     idle.reset();
     const std::int64_t t0 = monotonic_ns();
-    std::int64_t waited_ns = 0;
-    for (const Single& x : in->view()) {
-      if (carry && x.time - carry->time <= cfg_.coincidence_window) {
-        if (out == nullptr) {
-          const std::int64_t w0 = monotonic_ns();
-          out = acquire_blocking(pairs_, s);
-          waited_ns += monotonic_ns() - w0;
-          out->origin_ns = carry_origin_ns;  // oldest data that went into this batch
-        }
-        out->push_unchecked(Coincidence{*carry, x, CoincidenceKind::prompt});
-        carry.reset();
-        if (out->full()) {
-          flush();
-        }
-      } else {
-        if (carry) {
-          StageStats::add(s.items_filtered, 1);  // previous single found no partner
-        }
-        carry = x;
-        carry_origin_ns = in->origin_ns;
-      }
+    if (in->size > 0) {
+      origins.add(in->view().back().time, in->origin_ns);
     }
+    sorter.push(in->view(), found);
     StageStats::add(s.items_in, in->size);
     sorted_.release(in);
+    const std::int64_t waited_ns = publish();  // never hold coincidences across input batches
+    if (sorter.held() == 0) {
+      origins.clear();
+    } else {
+      origins.drop_before(sorter.oldest_held_time());
+    }
     lat.record(monotonic_ns() - t0 - waited_ns);
-    flush();  // keep latency low: never hold a partial batch across input batches
   }
-  flush();
-  if (carry) {
-    StageStats::add(s.items_filtered, 1);  // last single of the run
-  }
+  sorter.flush(found);  // end of the run: close every open window
+  (void)publish();
   pairs_.close();
   finished_stages_.fetch_add(1);
 }
+// [/snippet:pair]
 
 void AcquisitionPipeline::run_write() {
   enter_stage(StageId::write);

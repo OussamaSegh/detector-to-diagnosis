@@ -10,7 +10,6 @@
 #include <chrono>
 #include <cstdint>
 #include <mutex>
-#include <optional>
 #include <thread>
 #include <vector>
 
@@ -18,6 +17,7 @@
 #include "minidaq/core/geometry.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/pipeline/acquisition_pipeline.hpp"
+#include "minidaq/processing/coincidence_sorter.hpp"
 #include "minidaq/sim/synthetic_source.hpp"
 
 using namespace minidaq;
@@ -33,10 +33,11 @@ PipelineConfig small_config(std::uint64_t total) {
   return cfg;
 }
 
-// Sequential version of decode + per-batch sort + pair. The source in the test
-// delivers full batches, so batch boundaries fall every batch_size words.
+// Sequential version of decode + per-batch sort + the coincidence sorter. The
+// source in the test delivers full batches, so batch boundaries fall every
+// batch_size words.
 std::vector<Coincidence> reference(const std::vector<std::uint64_t>& words, std::size_t batch_size,
-                                   Picoseconds window) {
+                                   const SorterConfig& sorter) {
   std::vector<Single> singles(words.size());
   packed::StreamDecoder dec{ScannerGeometry::num_crystals};
   singles.resize(dec.decode(words, singles));
@@ -46,19 +47,13 @@ std::vector<Coincidence> reference(const std::vector<std::uint64_t>& words, std:
     std::sort(first, last, time_order);
   }
   std::vector<Coincidence> out;
-  std::optional<Single> carry;
-  for (const Single& x : singles) {
-    if (carry && x.time - carry->time <= window) {
-      out.push_back(Coincidence{*carry, x, CoincidenceKind::prompt});
-      carry.reset();
-    } else {
-      carry = x;
-    }
-  }
+  CoincidenceSorter s{sorter};
+  s.push(singles, out);
+  s.flush(out);
   return out;
 }
 
-void expect_conservation(const std::array<StageSnapshot, num_stages>& st) {
+void expect_conservation(const std::array<StageSnapshot, num_stages>& st, const SorterStats& so) {
   const auto& [src, dec, srt, par, wri] = st;
   EXPECT_EQ(src.items_in, src.items_out + src.items_dropped) << "source";
   EXPECT_EQ(dec.items_in, src.items_out) << "decode received what source sent";
@@ -66,7 +61,12 @@ void expect_conservation(const std::array<StageSnapshot, num_stages>& st) {
   EXPECT_EQ(srt.items_in, dec.items_out) << "sort";
   EXPECT_EQ(srt.items_out, srt.items_in);
   EXPECT_EQ(par.items_in, srt.items_out) << "pair";
-  EXPECT_EQ(par.items_in, 2 * par.items_out + par.items_filtered) << "pair: two singles per coincidence";
+  EXPECT_EQ(par.items_in, so.singles_in) << "pair: the sorter saw every single";
+  EXPECT_EQ(par.items_filtered, so.energy_rejected + so.out_of_order);
+  EXPECT_EQ(par.items_out, so.prompts + so.delayed);
+  EXPECT_EQ(so.singles_in, so.energy_rejected + so.out_of_order + so.singles_alone + 2 * so.pair_windows +
+                               so.singles_in_multiples)
+      << "sorter: every single in exactly one window (fixed mode)";
   EXPECT_EQ(wri.items_in, par.items_out) << "write received every coincidence";
 }
 
@@ -93,14 +93,14 @@ TEST(Pipeline, MatchesSingleThreadedReference) {
   p.wait();
   ASSERT_TRUE(p.finished());
 
-  const auto want = reference(words, small_config(n).batch_size, PipelineConfig{}.coincidence_window);
+  const auto want = reference(words, small_config(n).batch_size, PipelineConfig{}.sorter);
   ASSERT_EQ(got.size(), want.size());
   for (std::size_t i = 0; i < want.size(); ++i) {
     ASSERT_EQ(got[i].first.time, want[i].first.time) << i;
     ASSERT_EQ(got[i], want[i]) << i;
   }
   const auto st = p.stats();
-  expect_conservation(st);
+  expect_conservation(st, p.sorter_stats());
   EXPECT_EQ(st[0].items_out, n);
   EXPECT_EQ(st[0].items_dropped, 0U) << "block policy never drops";
   EXPECT_EQ(p.late_singles(), 0U);
@@ -137,7 +137,7 @@ TEST(Pipeline, DropPolicyCountsEveryLostWord) {
   p.start();
   p.wait();
   const auto st = p.stats();
-  expect_conservation(st);
+  expect_conservation(st, p.sorter_stats());
   EXPECT_EQ(st[0].items_in, n) << "the source read everything the hardware sent";
   EXPECT_GT(st[0].items_dropped, 0U) << "a slow sink with the drop policy must drop";
   EXPECT_EQ(st[0].items_out + st[0].items_dropped, n);
@@ -154,7 +154,7 @@ TEST(Pipeline, StopRequestDrainsInFlightData) {
   p.request_stop();
   p.wait();
   const auto st = p.stats();
-  expect_conservation(st);
+  expect_conservation(st, p.sorter_stats());
   EXPECT_GT(st[0].items_out, 0U);
   EXPECT_EQ(delivered, st[4].items_in);
 }

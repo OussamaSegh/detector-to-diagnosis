@@ -31,7 +31,7 @@
 namespace minidaq::config {
 
 inline constexpr int supported_major = 1;
-inline constexpr int supported_minor = 1;  // 1.1: source type "udp" (Chapter 9)
+inline constexpr int supported_minor = 2;  // 1.1: source type "udp" (Chapter 9); 1.2: "sorter" (Chapter 10)
 
 // The UDP readout link (Chapter 9, minidaq/control/udp_detector.hpp).
 struct UdpSettings {
@@ -61,12 +61,26 @@ struct PipelineSettings {
   friend bool operator==(const PipelineSettings&, const PipelineSettings&) = default;
 };
 
+// The coincidence sorter (Chapter 10, minidaq/processing/coincidence_sorter.hpp).
+// The window itself stays /pipeline/coincidence_window_ps, as in 1.0.
+struct SorterSettings {
+  std::int64_t delay_ps = 100'000;  // 0: no delayed window
+  std::string mode = "fixed";       // "fixed" or "per_single"
+  std::string multiples = "kill_all";
+  double energy_low_kev = 435.0;
+  double energy_high_kev = 585.0;
+  std::uint32_t min_sector_difference = 1;
+  double fov_radius_mm = 0.0;  // 0: no cut
+  friend bool operator==(const SorterSettings&, const SorterSettings&) = default;
+};
+
 struct AcquisitionConfig {
   int schema_major = supported_major;
   int schema_minor = supported_minor;
   std::string description;
   SourceSettings source;
   PipelineSettings pipeline;
+  SorterSettings sorter;
   std::string rt_profile;   // path of a real-time profile file (Chapter 4); empty: none
   double stop_after_s = 0;  // 0: run until stopped
 

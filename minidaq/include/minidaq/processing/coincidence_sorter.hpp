@@ -121,6 +121,8 @@ class CoincidenceSorter {
   [[nodiscard]] const SorterConfig& config() const noexcept { return cfg_; }
   // Singles held, waiting for their windows to complete.
   [[nodiscard]] std::size_t held() const noexcept { return buf_.size() - first_; }
+  // Time of the oldest single held; only meaningful while held() > 0.
+  [[nodiscard]] Picoseconds oldest_held_time() const noexcept { return buf_[first_].time; }
 
   // Is the pair good? Exposed for tests and for Exercise 10.2.
   [[nodiscard]] bool good(const Single& a, const Single& b) const noexcept;

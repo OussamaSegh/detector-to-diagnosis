@@ -343,6 +343,18 @@ json AcquisitionService::status() const {
     lat["end_to_end"] = latency_json(pipeline_->end_to_end_latency());
     j["latency_ns"] = std::move(lat);
     j["late_singles"] = pipeline_->late_singles();
+    const SorterStats so = pipeline_->sorter_stats();
+    j["sorter"] = {{"singles_in", so.singles_in},
+                   {"energy_rejected", so.energy_rejected},
+                   {"out_of_order", so.out_of_order},
+                   {"singles_alone", so.singles_alone},
+                   {"pair_windows", so.pair_windows},
+                   {"multiple_windows", so.multiple_windows},
+                   {"singles_in_multiples", so.singles_in_multiples},
+                   {"geometry_rejected", so.geometry_rejected},
+                   {"prompts", so.prompts},
+                   {"prompts_from_multiples", so.prompts_from_multiples},
+                   {"delayed", so.delayed}};
     if (snapshot_previous_ && snapshot_latest_) {
       // The last completed interval: between the two most recent snapshots.
       json recent;
