@@ -31,13 +31,24 @@
 namespace minidaq::config {
 
 inline constexpr int supported_major = 1;
-inline constexpr int supported_minor = 0;
+inline constexpr int supported_minor = 1;  // 1.1: source type "udp" (Chapter 9)
+
+// The UDP readout link (Chapter 9, minidaq/control/udp_detector.hpp).
+struct UdpSettings {
+  std::string address = "127.0.0.1";  // IPv4 address to listen on
+  std::uint16_t port = 7701;           // 0: any free port (tests)
+  std::size_t receive_buffer_bytes = std::size_t{8} << 20;
+  std::size_t reorder_window_packets = 64;  // a power of two
+  std::int64_t max_hold_us = 1'000;         // a gap older than this is declared lost
+  friend bool operator==(const UdpSettings&, const UdpSettings&) = default;
+};
 
 struct SourceSettings {
-  std::string type = "synthetic";  // the only type until Chapter 9 adds "udp"
-  double rate_hz = 10e6;           // singles per second
-  double pair_fraction = 0.3;
-  std::uint64_t seed = 1;
+  std::string type = "synthetic";  // "synthetic" or "udp"
+  double rate_hz = 10e6;           // synthetic: singles per second
+  double pair_fraction = 0.3;      // synthetic
+  std::uint64_t seed = 1;          // synthetic
+  UdpSettings udp;                 // udp
   friend bool operator==(const SourceSettings&, const SourceSettings&) = default;
 };
 

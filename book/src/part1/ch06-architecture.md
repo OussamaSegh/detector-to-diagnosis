@@ -74,7 +74,7 @@ them for a particular device, protocol or test.
 
 ### MiniDAQ's four layers
 
-```{.dot include="docs/architecture/components.dot" caption="MiniDAQ's components after this chapter. An arrow means \"uses\". Every arrow points down or within a layer; the dashed arrow is a network connection, not a code dependency." width="100%"}
+```{.dot include="book/src/diagrams/ch06-components.dot" caption="MiniDAQ's components after this chapter. An arrow means \"uses\". Every arrow points down or within a layer; the dashed arrow is a network connection, not a code dependency." width="100%"}
 ```
 
 | Layer | What is in it | May use |

@@ -3,7 +3,7 @@
   "layers": {
     "core": ["core/", "format/", "pipeline/", "metrics/", "processing/", "rt/", "sim/"],
     "application": ["config/", "control/acquisition_state", "control/acquisition_service", "control/ports", "control/audit"],
-    "adapters": ["control/adapters", "control/audit_log", "control/control_protocol", "control/control_server"],
+    "adapters": ["control/adapters", "control/audit_log", "control/control_protocol", "control/control_server", "control/udp_detector"],
     "apps": ["apps/"]
   },
   "may_include": {

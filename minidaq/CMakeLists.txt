@@ -2,10 +2,12 @@
 add_library(minidaq_core
   src/format/raw_single.cpp
   src/format/packed_single.cpp
+  src/format/readout_packet.cpp
   src/pipeline/acquisition_pipeline.cpp
   src/sim/synthetic_source.cpp
   src/sim/detector_simulator.cpp
   src/sim/truth_counter.cpp
+  src/sim/readout_link.cpp
   src/processing/energy_filter.cpp
   src/rt/realtime.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
@@ -25,7 +27,8 @@ add_library(minidaq_control
   src/control/audit_log.cpp
   src/control/acquisition_service.cpp
   src/control/control_protocol.cpp
-  src/control/control_server.cpp)
+  src/control/control_server.cpp
+  src/control/udp_detector.cpp)
 add_library(minidaq::control ALIAS minidaq_control)
 target_link_libraries(minidaq_control PUBLIC minidaq::core nlohmann_json::nlohmann_json PRIVATE minidaq::warnings)
 target_compile_definitions(minidaq_control PRIVATE MINIDAQ_VERSION_STRING="${MINIDAQ_VERSION_FULL}")

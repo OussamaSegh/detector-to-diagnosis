@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <fstream>
+#include <functional>
 #include <sstream>
 
 #include <nlohmann/json.hpp>
@@ -35,9 +36,13 @@ std::string read(const std::string& path) {
 
 TEST(Config, MinimalDocumentGetsDefaults) {
   // REQ: SRS-CFG-001
-  const auto c = parse_config(R"({"schema_version": "1.0"})");
+  const auto c = parse_config(R"({"schema_version": "1.1"})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(*c, AcquisitionConfig{});
+  // An older minor version is accepted; only the recorded version differs.
+  const auto old = parse_config(R"({"schema_version": "1.0"})");
+  ASSERT_TRUE(old);
+  EXPECT_EQ(old->schema_minor, 0);
 }
 
 TEST(Config, ShippedConfigurationsAreValid) {
@@ -64,7 +69,7 @@ TEST(Config, SchemaVersionRules) {
   // REQ: SRS-CFG-002
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0"})"), "/schema_version", "major version 2"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2"})"), "/schema_version", "newer MiniDAQ"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": 1.0})"), "/schema_version", "must be a string"));
 }
@@ -80,14 +85,14 @@ TEST(Config, UnknownKeysAreErrorsWithSuggestions) {
 TEST(Config, TypesAndRangesAreCheckedAndAllErrorsReported) {
   const auto e = errors_of(R"({
     "schema_version": "1.0",
-    "source": {"rate_hz": "fast", "pair_fraction": 1.5, "type": "udp", "seed": -1},
+    "source": {"rate_hz": "fast", "pair_fraction": 1.5, "type": "tcp", "seed": -1},
     "pipeline": {"batch_size": 0, "batches_per_channel": 2.5, "overflow": "ignore"},
     "stop_after_s": -1
   })");
   EXPECT_EQ(e.size(), 8U) << format_errors(e);
   EXPECT_TRUE(has(e, "/source/rate_hz", "must be a number"));
   EXPECT_TRUE(has(e, "/source/pair_fraction", "between 0.0 and 1.0"));
-  EXPECT_TRUE(has(e, "/source/type", "must be one of \"synthetic\""));
+  EXPECT_TRUE(has(e, "/source/type", "must be one of \"synthetic\", \"udp\""));
   EXPECT_TRUE(has(e, "/source/seed", "non-negative integer"));
   EXPECT_TRUE(has(e, "/pipeline/batch_size", "between 1 and 1048576"));
   EXPECT_TRUE(has(e, "/pipeline/batches_per_channel", "non-negative integer"));
@@ -127,25 +132,25 @@ TEST(Config, PipelineSettingsAreApplied) {
 TEST(Config, SchemaDocumentAgreesWithTheReader) {
   const auto schema = nlohmann::json::parse(read(MINIDAQ_SOURCE_DIR "/docs/architecture/acquisition-config.schema.json"));
   const auto effective = to_json(AcquisitionConfig{});
-  const auto base = nlohmann::json::parse(R"({"schema_version": "1.0"})");
+  const auto base = nlohmann::json::parse(R"({"schema_version": "1.1"})");
 
-  ASSERT_EQ(schema["properties"].size(), effective.size()) << "same top-level keys";
-  for (const auto& [key, prop] : schema["properties"].items()) {
-    ASSERT_TRUE(effective.contains(key)) << key;
-    const bool object = prop.value("type", "") == "object";
-    if (object) {
-      EXPECT_EQ(prop["properties"].size(), effective[key].size()) << key;
-    }
-    const auto leaves = object ? prop["properties"] : nlohmann::json{{key, prop}};
-    for (const auto& [leaf, spec] : leaves.items()) {
-      const nlohmann::json::json_pointer ptr{object ? "/" + key + "/" + leaf : "/" + key};
-      SCOPED_TRACE(ptr.to_string());
-      if (object) {
-        ASSERT_TRUE(effective[key].contains(leaf));
+  // Walks the schema and the effective configuration together, at any depth:
+  // the same keys at every level, and every leaf's enum and range accepted
+  // exactly as the schema says.
+  std::function<void(const nlohmann::json&, const nlohmann::json&, const std::string&)> check;
+  check = [&](const nlohmann::json& props, const nlohmann::json& eff, const std::string& at) {
+    ASSERT_EQ(props.size(), eff.size()) << "same keys at '" << at << "'";
+    for (const auto& [key, spec] : props.items()) {
+      const std::string path = at + "/" + key;
+      SCOPED_TRACE(path);
+      ASSERT_TRUE(eff.contains(key));
+      if (spec.value("type", "") == "object") {
+        check(spec["properties"], eff[key], path);
+        continue;
       }
       auto with = [&](const nlohmann::json& v) {
         auto doc = base;
-        doc[ptr] = v;
+        doc[nlohmann::json::json_pointer{path}] = v;
         return parse_config(doc.dump()).has_value();
       };
       if (spec.contains("enum")) {
@@ -175,7 +180,28 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
         EXPECT_FALSE(with(1.5)) << "integers only";
       }
     }
-  }
+  };
+  check(schema["properties"], effective, "");
+}
+
+TEST(Config, UdpSource) {
+  // REQ: SRS-CFG-010
+  const auto c = parse_config(R"({"schema_version": "1.1",
+      "source": {"type": "udp", "udp": {"address": "0.0.0.0", "port": 9000, "reorder_window_packets": 128}}})");
+  ASSERT_TRUE(c) << format_errors(c.error());
+  EXPECT_EQ(c->source.type, "udp");
+  EXPECT_EQ(c->source.udp.address, "0.0.0.0");
+  EXPECT_EQ(c->source.udp.port, 9000);
+  EXPECT_EQ(c->source.udp.reorder_window_packets, 128U);
+  EXPECT_EQ(c->source.udp.max_hold_us, 1000);  // default
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"reorder_window_packets": 100}}})"),
+                  "/source/udp/reorder_window_packets", "power of two"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"port": 70000}}})"), "/source/udp/port",
+                  "between 0 and 65535"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "stop_after_s": 2, "source": {"type": "udp"}})"),
+                  "/stop_after_s", "synthetic"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"prot": 1}}})"), "/source/udp/prot",
+                  "did you mean \"port\""));
 }
 
 TEST(Config, NumberOverflowIsAnErrorNotACrash) {

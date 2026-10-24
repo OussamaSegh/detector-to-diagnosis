@@ -1,0 +1,5 @@
+minidaq_exercise(e1_tdc_word)
+minidaq_exercise(e2_link_monitor)
+minidaq_exercise(e3_clock_drift)
+minidaq_python_exercise(e4_time_walk)
+minidaq_python_exercise(e5_link_budget)

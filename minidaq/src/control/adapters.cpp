@@ -3,6 +3,8 @@
 
 #include <cstdio>
 
+#include "minidaq/control/udp_detector.hpp"
+
 namespace minidaq::control {
 
 namespace {
@@ -26,6 +28,14 @@ SimulatedDetector::SimulatedDetector(const config::SourceSettings& s) : source_{
 std::unique_ptr<DetectorPort> make_default_detector(const config::AcquisitionConfig& c, std::string& error) {
   if (c.source.type == "synthetic") {
     return std::make_unique<SimulatedDetector>(c.source);
+  }
+  if (c.source.type == "udp") {
+    auto d = UdpDetector::open(c.source.udp);
+    if (!d) {
+      error = d.error();
+      return nullptr;
+    }
+    return std::move(*d);
   }
   error = "no adapter for source type \"" + c.source.type + "\"";
   return nullptr;

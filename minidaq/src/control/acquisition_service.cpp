@@ -151,6 +151,13 @@ CommandResult AcquisitionService::start(std::string_view who) {
   }
   const config::AcquisitionConfig& cfg = *config_;
   // Fresh ports for every run: a detector's clock and counters start at zero.
+  // The previous run's adapters are released first, because a device that
+  // owns an exclusive resource cannot be opened twice: the UDP detector of
+  // Chapter 9 holds its port. The previous run's counters go with them, also
+  // when this start then fails.
+  pipeline_.reset();  // first: it calls into the detector and the sink
+  detector_.reset();
+  sink_.reset();
   std::string error;
   if (!opt_.detector || !opt_.sink) {
     note(who, "start", "no detector or sink adapter", false);
@@ -166,7 +173,6 @@ CommandResult AcquisitionService::start(std::string_view who) {
     note(who, "start", "sink error: " + error, false);
     return result(false, "device_error", error);
   }
-  pipeline_.reset();  // the previous run's counters go now, not earlier
   detector_ = std::move(detector);
   sink_ = std::move(sink);
   PipelineConfig pc = config::to_pipeline_config(cfg);
@@ -308,6 +314,13 @@ json AcquisitionService::status() const {
   j["fault"] = fault_.empty() ? json(nullptr) : json(fault_);
   j["config"] = config_ ? config::to_json(*config_) : json(nullptr);
   j["detector"] = detector_ ? json(detector_->describe()) : json(nullptr);
+  if (detector_) {
+    json counters = json::object();
+    for (const auto& c : detector_->counters()) {
+      counters[c.name] = c.value;
+    }
+    j["detector_counters"] = std::move(counters);
+  }
   j["sink"] = sink_ ? json(sink_->describe()) : json(nullptr);
   if (pipeline_) {
     const auto end = run_ended_set_ ? run_ended_ : std::chrono::steady_clock::now();

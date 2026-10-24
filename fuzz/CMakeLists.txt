@@ -21,5 +21,6 @@ endfunction()
 
 minidaq_fuzzer(fuzz_decoder LIBS minidaq::core)
 minidaq_fuzzer(fuzz_raw16 LIBS minidaq::core)
+minidaq_fuzzer(fuzz_packet LIBS minidaq::core)
 minidaq_fuzzer(fuzz_config LIBS minidaq::control)
 minidaq_fuzzer(fuzz_protocol LIBS minidaq::control)

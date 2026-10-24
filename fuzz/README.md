@@ -9,6 +9,7 @@ the process (Chapter 7).
 | `fuzz_raw16` | 16-byte raw format | serialize round trip |
 | `fuzz_config` | `config::parse_config` | a rejection always has an error; an accepted configuration survives `to_json` and `parse_config` unchanged and converts to a pipeline configuration |
 | `fuzz_protocol` | `LineFramer` and `handle_request` | every response is one line of JSON with `api` and a boolean `ok` |
+| `fuzz_packet` | `readout::parse_packet` and `SequenceTracker` (Chapter 9) | accepted packets re-encode to the same bytes; every packet offered is delivered or stale; delivered sequence numbers increase by at most the maximum gap between resyncs; delivered words match |
 
 ## Build and run
 
@@ -45,3 +46,4 @@ configuration target, before the fix; these campaigns ran after it.
 | Date | Target | Input | Defect | Fix |
 |---|---|---|---|---|
 | 2026-10-24 | `fuzz_config` (20 s smoke run) | `6e688` (`corpus/config/regress-number-overflow`) | `json::out_of_range` escaped `parse_config` and terminated the program | catch `json::exception`; test `Config.NumberOverflowIsAnErrorNotACrash` |
+| 2026-10-24 | `fuzz_packet` (first 2-minute run, after about 240,000 executions) | a sequence number 2^31 ahead (`corpus/packet/crash-jump-2pow31`) | the tracker counted a jump into the undefined half of serial arithmetic as two billion lost packets, and then delivered out of sequence order | a jump beyond `max_gap_packets` (2^24) is a resync; test `SequenceTracker.AJumpBeyondTheMaximumGapIsARestart`; 3.7 M executions clean after the fix |

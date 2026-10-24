@@ -15,3 +15,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0006](0006-cpp20-with-expected-shim.md) | C++20 with a std::expected shim | Accepted |
 | [0007](0007-list-mode-file-format.md) | List-mode file format | Proposed |
 | [0008](0008-hardened-release-builds.md) | Hardened release builds | Accepted |
+| [0009](0009-udp-readout-link.md) | UDP readout link with sequence numbers and a bounded reorder buffer | Accepted |

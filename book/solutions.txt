@@ -8,3 +8,4 @@ solutions/ch05.md
 solutions/ch06.md
 solutions/ch07.md
 solutions/ch08.md
+solutions/ch09.md

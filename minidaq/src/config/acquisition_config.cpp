@@ -2,6 +2,7 @@
 #include "minidaq/config/acquisition_config.hpp"
 
 #include <algorithm>
+#include <bit>
 #include <charconv>
 #include <cmath>
 #include <initializer_list>
@@ -209,10 +210,27 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
 
   if (const json* src = top.object("source")) {
     ObjectReader r{*src, top.child("source"), errors};
-    r.get("type", c.source.type, {"synthetic"});
+    r.get("type", c.source.type, {"synthetic", "udp"});
     r.get("rate_hz", c.source.rate_hz, 1.0, max_rate_hz);
     r.get("pair_fraction", c.source.pair_fraction, 0.0, 1.0);
     r.get("seed", c.source.seed, std::uint64_t{0}, std::numeric_limits<std::uint64_t>::max());
+    if (const json* u = r.object("udp")) {
+      ObjectReader ur{*u, r.child("udp"), errors};
+      auto& udp = c.source.udp;
+      ur.get("address", udp.address);
+      // Read as 64 bits and narrow after the range check: get<std::uint16_t>()
+      // would wrap 70000 to 4464 before the check could see it.
+      std::uint64_t port = udp.port;
+      ur.get("port", port, std::uint64_t{0}, std::uint64_t{65535});
+      udp.port = static_cast<std::uint16_t>(port);
+      ur.get("receive_buffer_bytes", udp.receive_buffer_bytes, std::size_t{1} << 16, std::size_t{1} << 30);
+      ur.get("reorder_window_packets", udp.reorder_window_packets, std::size_t{1}, std::size_t{4096});
+      if (!std::has_single_bit(udp.reorder_window_packets)) {
+        errors.push_back({"/source/udp/reorder_window_packets", "must be a power of two"});
+      }
+      ur.get("max_hold_us", udp.max_hold_us, std::int64_t{1}, std::int64_t{1'000'000});
+      ur.finish();
+    }
     r.finish();
   }
   if (const json* p = top.object("pipeline")) {
@@ -227,6 +245,11 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
     r.finish();
   }
   top.finish();
+  if (c.source.type == "udp" && c.stop_after_s > 0) {
+    // stop_after_s is turned into a word count from rate_hz, which a network
+    // source does not have: stop a UDP run with the stop command.
+    errors.push_back({"/stop_after_s", "is supported only for source type \"synthetic\""});
+  }
   if (!errors.empty()) {
     return Unexpected{std::move(errors)};
   }
@@ -254,7 +277,13 @@ json to_json(const AcquisitionConfig& c) {
        {{"type", c.source.type},
         {"rate_hz", c.source.rate_hz},
         {"pair_fraction", c.source.pair_fraction},
-        {"seed", c.source.seed}}},
+        {"seed", c.source.seed},
+        {"udp",
+         {{"address", c.source.udp.address},
+          {"port", c.source.udp.port},
+          {"receive_buffer_bytes", c.source.udp.receive_buffer_bytes},
+          {"reorder_window_packets", c.source.udp.reorder_window_packets},
+          {"max_hold_us", c.source.udp.max_hold_us}}}}},
       {"pipeline",
        {{"batch_size", c.pipeline.batch_size},
         {"batches_per_channel", c.pipeline.batches_per_channel},

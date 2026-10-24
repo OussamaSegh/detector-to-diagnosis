@@ -1,0 +1,72 @@
+// MiniDAQ components and their dependencies (Chapter 6). An edge A -> B means
+// "A uses B" (A includes B's header). Each node's class is its layer from
+// layers.json; the arrows must only point to layers a node may depend on.
+digraph components {
+  rankdir=TB;
+  ranksep=0.45; nodesep=0.25;
+  newrank=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_apps {
+    label="apps"; style=dashed; color="#888888";
+    minidaq_server [class="app", fillcolor="#f3e5f5", label="minidaq_server"];
+    minidaq_ctl [class="app", fillcolor="#f3e5f5", label="minidaq_ctl"];
+  }
+  subgraph cluster_adapters {
+    label="adapters"; style=dashed; color="#888888";
+    control_server [class="adapters", fillcolor="#fff3e0", label="ControlServer\n(TCP, poll)"];
+    control_protocol [class="adapters", fillcolor="#fff3e0", label="control protocol\n(NDJSON, LineFramer)"];
+    simulated_detector [class="adapters", fillcolor="#fff3e0", label="SimulatedDetector"];
+    counting_sink [class="adapters", fillcolor="#fff3e0", label="CountingSink"];
+    audit_log [class="adapters", fillcolor="#fff3e0", label="JsonLinesAuditLog"];
+  }
+  subgraph cluster_application {
+    label="application"; style=dashed; color="#888888";
+    acquisition_service [class="application", fillcolor="#e8f5e9", label="AcquisitionService"];
+    state_machine [class="application", fillcolor="#e8f5e9", label="StateMachine\n(transition table)"];
+    config [class="application", fillcolor="#e8f5e9", label="AcquisitionConfig\n(parse, validate)"];
+    ports [class="application", fillcolor="#e8f5e9", label="ports: DetectorPort,\nCoincidenceSinkPort, AuditSink"];
+  }
+  subgraph cluster_core {
+    label="core (minidaq_core)"; style=dashed; color="#888888";
+    pipeline [class="core", fillcolor="#e3f2fd", label="AcquisitionPipeline\n(stages, Channels)"];
+    format [class="core", fillcolor="#e3f2fd", label="format\n(packed words, decoder)"];
+    metrics [class="core", fillcolor="#e3f2fd", label="metrics\n(latency histograms)"];
+    rt [class="core", fillcolor="#e3f2fd", label="rt\n(pinning, memory locking)"];
+    sim [class="core", fillcolor="#e3f2fd", label="sim\n(synthetic source)"];
+    types [class="core", fillcolor="#e3f2fd", label="core types\n(Single, units, Expected)"];
+  }
+
+  minidaq_server -> control_server;
+  minidaq_server -> acquisition_service;
+  minidaq_server -> simulated_detector;
+  minidaq_server -> counting_sink;
+  minidaq_server -> audit_log;
+  minidaq_ctl -> control_server [style=dashed, label="TCP only"];
+
+  control_server -> control_protocol;
+  control_server -> acquisition_service;
+  control_protocol -> acquisition_service;
+  control_protocol -> config;
+  simulated_detector -> ports;
+  simulated_detector -> sim;
+  counting_sink -> ports;
+  audit_log -> ports;
+
+  acquisition_service -> state_machine;
+  acquisition_service -> config;
+  acquisition_service -> ports;
+  acquisition_service -> pipeline;
+  acquisition_service -> metrics;
+  config -> pipeline;
+  config -> rt;
+  ports -> config;
+
+  pipeline -> format;
+  pipeline -> metrics;
+  pipeline -> rt;
+  pipeline -> types;
+  format -> types;
+  sim -> format;
+}

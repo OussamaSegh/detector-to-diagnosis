@@ -16,11 +16,17 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <vector>
 
 #include "minidaq/config/acquisition_config.hpp"
 #include "minidaq/core/single.hpp"
 
 namespace minidaq::control {
+
+struct DetectorCounter {
+  std::string name;
+  std::uint64_t value = 0;
+};
 
 // [snippet:ports]
 // Where packed words come from. read() runs on the pipeline's source thread
@@ -36,6 +42,9 @@ class DetectorPort {
   // service from its monitor thread, never from the hot path. Thread-safe.
   [[nodiscard]] virtual std::optional<std::string> fault() const { return std::nullopt; }
   [[nodiscard]] virtual std::string describe() const = 0;
+  // Device-specific counters for the status report (Chapter 9: packets lost,
+  // reordered, ...). Thread-safe, like fault().
+  [[nodiscard]] virtual std::vector<DetectorCounter> counters() const { return {}; }
 };
 
 // Where coincidences go. write() runs on the pipeline's writer thread.

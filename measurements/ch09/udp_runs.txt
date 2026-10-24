@@ -1,0 +1,30 @@
+== real time, clean link
+   sender: singles 895956 in 1 s of detector time (2e+06 Bq) | packets 4923 of up to 182 words, sequence 0 .. 4922 | injected: lost 0, delayed 0, duplicated 0 | sent 4923 datagrams, 7.25 MB in 1.000 s: 4924 packets/s, 58.0 Mbit/s, 0 send errors
+   receiver: UDP readout on 127.0.0.1:7702, receive buffer 4194304 B (less than requested: raise net.core.rmem_max)
+   datagrams 4923, delivered 4923, lost 0, reordered 0, stale 0, words 895956
+   decode out 895956, late singles 0, fault None
+== real time, injected faults
+   sender: singles 895956 in 1 s of detector time (2e+06 Bq) | packets 4923 of up to 182 words, sequence 0 .. 4922 | injected: lost 1, delayed 7, duplicated 5 | sent 4927 datagrams, 7.25 MB in 1.000 s: 4928 packets/s, 58.0 Mbit/s, 0 send errors
+   receiver: UDP readout on 127.0.0.1:7702, receive buffer 4194304 B (less than requested: raise net.core.rmem_max)
+   datagrams 4927, delivered 4920, lost 3, reordered 5, stale 7, words 895410
+   decode out 895410, late singles 0, fault None
+== same faults, 5 ms hold
+   sender: singles 895956 in 1 s of detector time (2e+06 Bq) | packets 4923 of up to 182 words, sequence 0 .. 4922 | injected: lost 1, delayed 7, duplicated 5 | sent 4927 datagrams, 7.25 MB in 1.000 s: 4928 packets/s, 58.0 Mbit/s, 0 send errors
+   receiver: UDP readout on 127.0.0.1:7702, receive buffer 4194304 B (less than requested: raise net.core.rmem_max)
+   datagrams 4927, delivered 4922, lost 1, reordered 7, stale 5, words 895774
+   decode out 895774, late singles 0, fault None
+== as fast as possible, 4 MiB buffer
+   sender: singles 2236860 in 1 s of detector time (5e+06 Bq) | packets 12291 of up to 182 words, sequence 0 .. 12290 | injected: lost 0, delayed 0, duplicated 0 | sent 12291 datagrams, 18.1 MB in 0.026 s: 473502 packets/s, 5575.7 Mbit/s, 0 send errors
+   receiver: UDP readout on 127.0.0.1:7702, receive buffer 4194304 B (less than requested: raise net.core.rmem_max)
+   datagrams 12291, delivered 12291, lost 0, reordered 0, stale 0, words 2236860
+   decode out 2236860, late singles 0, fault None
+== as fast as possible, 64 KiB buffer
+   sender: singles 2236860 in 1 s of detector time (5e+06 Bq) | packets 12291 of up to 182 words, sequence 0 .. 12290 | injected: lost 0, delayed 0, duplicated 0 | sent 12291 datagrams, 18.1 MB in 0.022 s: 570908 packets/s, 6722.7 Mbit/s, 0 send errors
+   receiver: UDP readout on 127.0.0.1:7702, receive buffer 65536 B
+   datagrams 5037, delivered 5037, lost 7090, reordered 0, stale 0, words 916734
+   decode out 916734, late singles 0, fault None
+== as fast as possible, 32 words/packet
+   sender: singles 2236860 in 1 s of detector time (5e+06 Bq) | packets 69902 of up to 32 words, sequence 0 .. 69901 | injected: lost 0, delayed 0, duplicated 0 | sent 69902 datagrams, 19 MB in 0.125 s: 557301 packets/s, 1212.7 Mbit/s, 0 send errors
+   receiver: UDP readout on 127.0.0.1:7702, receive buffer 4194304 B (less than requested: raise net.core.rmem_max)
+   datagrams 69902, delivered 69902, lost 0, reordered 0, stale 0, words 2236860
+   decode out 2236860, late singles 0, fault None

@@ -17,9 +17,22 @@ the patch version.
   counter by truth; the tool `minidaq_sim`; figure script
   `book/tools/figures/ch08_energy_spectrum.py`; exercises 8.1 to 8.5 (8.1 and 8.2 in
   Python).
+- Chapter 9: readout packet format MDQ-R1 (`minidaq/format/readout_packet.hpp`) with a
+  field-by-field parser, serial-number arithmetic and `SequenceTracker` (in-order delivery
+  within a window and a hold time; every packet delivered, lost, stale or rejected; resync on
+  a source restart); `sim::Packetizer` and `sim::LinkFaults` (reproducible loss, reordering,
+  duplication); `control::UdpDetector` (non-blocking `recvmmsg`, reports the receive buffer
+  the kernel granted); `DetectorPort::counters()` and `detector_counters` in the status
+  report; configuration schema 1.1 with `source.type` `"udp"`; the tool `minidaq_send`; the
+  configuration `udp-loopback.json`; fuzz target `fuzz_packet`; loopback measurements
+  (`measurements/ch09/`); ADR 0009; figure script `ch09_time_walk.py`; exercises 9.1 to 9.5
+  (9.4 and 9.5 in Python).
 
 ### Changed
 - CI uses `actions/checkout@v5` (Node.js 20 is deprecated on GitHub's runners).
+- The configuration schema test walks nested objects of the JSON Schema document.
+- Chapter 6's component diagram is frozen in the book (`book/src/diagrams/`); the live
+  diagram in `docs/architecture/` now shows the UDP readout.
 
 ### Fixed
 - `clang-tidy` in CI failed on every file: newer CMake versions scan C++20 sources for
@@ -28,6 +41,16 @@ the patch version.
 - `Pipeline.DropPolicyCountsEveryLostWord` depended on a slow sink being slower than the
   source, which a fast GitHub runner broke in the debug build; the sink now stalls until
   the source has read everything.
+- `PacedSource.NeverDeliversAheadOfTheClock` failed in the ThreadSanitizer build on a
+  GitHub runner, which could not generate 1 M words/s under instrumentation; the test now
+  paces at 200 k words/s and checks the same two bounds.
+- Exercise 9.3 built `std::normal_distribution` with a standard deviation of zero for an
+  ideal clock, which the standard does not allow; the hardened build's library assertions
+  caught it. Zero jitter now draws nothing.
+- `AcquisitionService::start` created the new run's detector before releasing the previous
+  one, so a second run on the same UDP port failed with "address already in use"; the
+  previous run's pipeline and ports are now released first.
+- Configuration validation of the detector simulator accepted NaN in several fields.
 
 ## [0.1.0] - 2026-10-24
 

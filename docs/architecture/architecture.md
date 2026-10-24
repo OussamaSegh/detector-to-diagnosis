@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 1 (MiniDAQ 0.1.0, Chapter 6). Status: draft for review.
+Version 2 (MiniDAQ 0.2.0-dev, Chapter 9; version 1 was Chapter 6). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -18,9 +18,12 @@ and monitors the acquisition over a control API. Version 0.1.0 covers:
 
 - the acquisition pipeline (Chapters 2 to 5),
 - the control plane: configuration, state machine, service, audit trail and TCP control API
-  (Chapter 6).
+  (Chapter 6),
+- a detector simulator with ground truth (Chapter 8),
+- a UDP readout link: MDQ-R1 packets, sequence tracking, the UDP detector adapter
+  (Chapter 9, [ADR 0009](../adr/0009-udp-readout-link.md)).
 
-Not yet covered: a real network receiver (Chapter 9), the coincidence sorter that replaces
+Not yet covered: merging several readout links, the coincidence sorter that replaces
 the placeholder pairing (Chapter 10), list-mode files (Chapter 12, [ADR 0007](../adr/0007-list-mode-file-format.md)),
 authentication of control clients (Chapter 17).
 
@@ -28,7 +31,7 @@ authentication of control clients (Chapter 17).
 
 | External entity | Interface | Direction | Notes |
 |---|---|---|---|
-| Detector readout | Packed 64-bit single words (`minidaq/format/packed_single.hpp`) through `DetectorPort` | in | Simulated today (`SimulatedDetector`); UDP in Chapter 9 |
+| Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort` | out | Counting sink today; file writer in Chapter 12 |
 | Operator, scripts, test harness | Control protocol 1.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)) | in/out | `minidaq_ctl` is the reference client |
 | Configuration files | JSON, schema version 1.0 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
@@ -60,8 +63,8 @@ enforces it on every `#include` as part of the unit tests (`architecture.layers`
 |---|---|---|---|
 | core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
 | application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
-| adapters (`minidaq_control`) | `SimulatedDetector`, `CountingSink`, `JsonLinesAuditLog`, control protocol, `ControlServer` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
-| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency` | Wiring: choose adapters, parse command lines, handle signals | everything |
+| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `CountingSink`, `JsonLinesAuditLog`, control protocol, `ControlServer` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
+| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send` | Wiring: choose adapters, parse command lines, handle signals | everything |
 
 The application layer depends on interfaces (ports) that it owns; adapters implement them.
 This is dependency inversion: the policy does not depend on the details, so the service can be
@@ -72,7 +75,7 @@ simulator without changing the service.
 
 | Interface | Provider | Users | Contract |
 |---|---|---|---|
-| `DetectorPort` | adapters | pipeline source stage (via service) | `read()` fills a span and returns at once (0: no data); `fault()` is thread-safe and polled from the monitor; `due_times()` optional |
+| `DetectorPort` | adapters | pipeline source stage (via service) | `read()` fills a span and returns at once (0: no data); `fault()` and `counters()` are thread-safe and read from control threads; `due_times()` optional |
 | `CoincidenceSinkPort` | adapters | pipeline write stage | `write()` on the writer thread, must not throw; `fault()` as above |
 | `AuditSink` | adapters (file), tests | service, server | Called synchronously on control threads only, never on stage threads |
 | `AcquisitionPipeline` | core | service | `start()`, `request_stop()`, `wait()`, `finished()`, counters and histograms readable from any thread |
@@ -105,8 +108,10 @@ which a unit test compares with the transition table in the code.
 
 1. `configure`: the configuration is validated (and its `rt_profile` read) before the state
    changes; an invalid configuration changes nothing.
-2. `start`: the service creates fresh ports from the factories, builds a pipeline and starts
-   it. A factory failure is a `device_error` and leaves the state at configured.
+2. `start`: the service releases the previous run's pipeline and ports (a port may hold an
+   exclusive resource, such as a UDP port), creates fresh ports from the factories, builds a
+   pipeline and starts it. A factory failure is a `device_error` and leaves the state at
+   configured.
 3. The run ends when the source has delivered `stop_after_s` worth of data, or on `stop`
    (state stopping while the stages drain). The monitor sees all stages finished and applies
    `drained`: back to configured, ready for another run with the same configuration.
@@ -121,7 +126,8 @@ version and any minor version up to its own; a newer minor version is refused wi
 message rather than half-understood. Unknown keys are errors with a "did you mean"
 suggestion, so a misspelled key cannot silently fall back to a default. `status` reports the
 effective configuration, defaults included, and the audit trail records it at every
-`configure`.
+`configure`. Schema 1.1 (Chapter 9) adds `source.type` `"udp"` and the `source.udp` section;
+`stop_after_s` applies to the synthetic source only.
 
 ## 8. Observability
 
@@ -130,7 +136,9 @@ effective configuration, defaults included, and the audit trail records it at ev
 - **Latency histograms** per stage and end to end, cumulative for the run and for the last
   completed interval (`recent_latency_ns`, 1 s by default).
 - **Status**: one JSON snapshot with state, run, fault, effective configuration, counters,
-  latencies and late singles.
+  latencies, late singles and the detector's own counters (`detector_counters`: for the UDP
+  link, datagrams, packets delivered, lost, reordered and stale, rejections by reason,
+  resyncs and the granted receive buffer).
 - **Audit trail**: control actions, transitions, faults, client connections. The hot path does
   not log; the monitor thread turns counters and faults into records.
 

@@ -7,6 +7,7 @@ add_executable(minidaq_unit_tests
   unit/test_geometry.cpp
   unit/test_raw_single.cpp
   unit/test_packed_single.cpp
+  unit/test_readout_packet.cpp
   unit/test_spsc_ring.cpp
   unit/test_mpmc_queue.cpp
   unit/test_channel.cpp
@@ -22,7 +23,8 @@ add_executable(minidaq_unit_tests
   unit/test_config.cpp
   unit/test_acquisition_service.cpp
   unit/test_control_protocol.cpp
-  unit/test_audit_log.cpp)
+  unit/test_audit_log.cpp
+  unit/test_udp_detector.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::warnings GTest::gtest_main)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}")

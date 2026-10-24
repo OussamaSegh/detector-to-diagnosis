@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/minidaq/acquisition-config-1.0.schema.json",
-  "title": "MiniDAQ acquisition configuration, schema version 1.0",
-  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "$id": "https://example.invalid/minidaq/acquisition-config-1.1.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 1.1",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6; version 1.1 adds the UDP source of Chapter 9). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
   "type": "object",
   "required": ["schema_version"],
   "additionalProperties": false,
@@ -18,7 +18,7 @@
       "type": "string"
     },
     "stop_after_s": {
-      "description": "Stop after this many seconds of data at source.rate_hz; 0 runs until stopped.",
+      "description": "Stop after this many seconds of data at source.rate_hz; 0 runs until stopped. Synthetic source only.",
       "type": "number",
       "minimum": 0,
       "maximum": 604800
@@ -27,10 +27,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "type": { "enum": ["synthetic"] },
-        "rate_hz": { "type": "number", "minimum": 1, "maximum": 1e9 },
-        "pair_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
-        "seed": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 }
+        "type": { "enum": ["synthetic", "udp"] },
+        "rate_hz": { "description": "synthetic only", "type": "number", "minimum": 1, "maximum": 1e9 },
+        "pair_fraction": { "description": "synthetic only", "type": "number", "minimum": 0, "maximum": 1 },
+        "seed": { "description": "synthetic only", "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+        "udp": {
+          "description": "udp only (schema 1.1): the MDQ-R1 readout link of Chapter 9",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "address": { "description": "IPv4 address to listen on", "type": "string" },
+            "port": { "description": "0 picks any free port", "type": "integer", "minimum": 0, "maximum": 65535 },
+            "receive_buffer_bytes": { "type": "integer", "minimum": 65536, "maximum": 1073741824 },
+            "reorder_window_packets": { "enum": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096] },
+            "max_hold_us": { "type": "integer", "minimum": 1, "maximum": 1000000 }
+          }
+        }
       }
     },
     "pipeline": {

@@ -1,4 +1,4 @@
-// MiniDAQ components and their dependencies (Chapter 6). An edge A -> B means
+// MiniDAQ components and their dependencies (Chapter 6, updated in Chapter 9). An edge A -> B means
 // "A uses B" (A includes B's header). Each node's class is its layer from
 // layers.json; the arrows must only point to layers a node may depend on.
 digraph components {
@@ -12,12 +12,14 @@ digraph components {
     label="apps"; style=dashed; color="#888888";
     minidaq_server [class="app", fillcolor="#f3e5f5", label="minidaq_server"];
     minidaq_ctl [class="app", fillcolor="#f3e5f5", label="minidaq_ctl"];
+    minidaq_send [class="app", fillcolor="#f3e5f5", label="minidaq_send\n(plays a readout board)"];
   }
   subgraph cluster_adapters {
     label="adapters"; style=dashed; color="#888888";
     control_server [class="adapters", fillcolor="#fff3e0", label="ControlServer\n(TCP, poll)"];
     control_protocol [class="adapters", fillcolor="#fff3e0", label="control protocol\n(NDJSON, LineFramer)"];
     simulated_detector [class="adapters", fillcolor="#fff3e0", label="SimulatedDetector"];
+    udp_detector [class="adapters", fillcolor="#fff3e0", label="UdpDetector\n(socket, recvmmsg)"];
     counting_sink [class="adapters", fillcolor="#fff3e0", label="CountingSink"];
     audit_log [class="adapters", fillcolor="#fff3e0", label="JsonLinesAuditLog"];
   }
@@ -31,10 +33,10 @@ digraph components {
   subgraph cluster_core {
     label="core (minidaq_core)"; style=dashed; color="#888888";
     pipeline [class="core", fillcolor="#e3f2fd", label="AcquisitionPipeline\n(stages, Channels)"];
-    format [class="core", fillcolor="#e3f2fd", label="format\n(packed words, decoder)"];
+    format [class="core", fillcolor="#e3f2fd", label="format\n(packed words, decoder,\nMDQ-R1, SequenceTracker)"];
     metrics [class="core", fillcolor="#e3f2fd", label="metrics\n(latency histograms)"];
     rt [class="core", fillcolor="#e3f2fd", label="rt\n(pinning, memory locking)"];
-    sim [class="core", fillcolor="#e3f2fd", label="sim\n(synthetic source)"];
+    sim [class="core", fillcolor="#e3f2fd", label="sim\n(synthetic source, detector\nsimulator, readout link)"];
     types [class="core", fillcolor="#e3f2fd", label="core types\n(Single, units, Expected)"];
   }
 
@@ -44,6 +46,9 @@ digraph components {
   minidaq_server -> counting_sink;
   minidaq_server -> audit_log;
   minidaq_ctl -> control_server [style=dashed, label="TCP only"];
+  minidaq_server -> udp_detector;
+  minidaq_send -> sim;
+  minidaq_send -> udp_detector [style=dashed, label="UDP only"];
 
   control_server -> control_protocol;
   control_server -> acquisition_service;
@@ -51,6 +56,8 @@ digraph components {
   control_protocol -> config;
   simulated_detector -> ports;
   simulated_detector -> sim;
+  udp_detector -> ports;
+  udp_detector -> format;
   counting_sink -> ports;
   audit_log -> ports;
 
