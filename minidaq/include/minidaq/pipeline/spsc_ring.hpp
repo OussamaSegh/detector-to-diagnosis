@@ -43,6 +43,9 @@ class SpscRing {
 
   SpscRing(const SpscRing&) = delete;
   SpscRing& operator=(const SpscRing&) = delete;
+  SpscRing(SpscRing&&) = delete;
+  SpscRing& operator=(SpscRing&&) = delete;
+  ~SpscRing() = default;
 
   [[nodiscard]] std::size_t capacity() const noexcept { return capacity_; }
 

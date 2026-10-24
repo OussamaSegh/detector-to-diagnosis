@@ -5,13 +5,11 @@
 //
 //   minidaq_jitter --seconds 30 --interval-us 200 --cpu 1 --fifo 80 --mlock
 //   minidaq_jitter --seconds 30 --interval-us 200 --cpu 1 --slack-ns 1
-#include <time.h>
-
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <ctime>
 #include <string_view>
 
+#include "minidaq/core/parse_number.hpp"
 #include "minidaq/metrics/latency_histogram.hpp"
 #include "minidaq/rt/realtime.hpp"
 
@@ -29,26 +27,34 @@ struct Options {
 bool parse(int argc, char** argv, Options& o) {
   for (int i = 1; i < argc; ++i) {
     const std::string_view a{argv[i]};
-    auto next = [&]() -> const char* { return i + 1 < argc ? argv[++i] : nullptr; };
-    const char* v = nullptr;
+    const std::string_view v = i + 1 < argc ? argv[i + 1] : "";
+    bool ok = true;
     if (a == "--mlock") {
       o.mlock = true;
-    } else if (a == "--seconds" && (v = next())) {
-      o.seconds = std::atof(v);
-    } else if (a == "--interval-us" && (v = next())) {
-      o.interval_us = std::atol(v);
-    } else if (a == "--cpu" && (v = next())) {
-      o.cpu = std::atoi(v);
-    } else if (a == "--slack-ns" && (v = next())) {
-      o.slack_ns = std::atol(v);
-    } else if (a == "--fifo" && (v = next())) {
-      o.fifo_priority = std::atoi(v);
+    } else if (a == "--seconds") {
+      ok = minidaq::parse_into(v, o.seconds, 1e-3, 86400.0);
+      ++i;
+    } else if (a == "--interval-us") {
+      ok = minidaq::parse_into(v, o.interval_us, 1L, 1'000'000L);
+      ++i;
+    } else if (a == "--cpu") {
+      ok = minidaq::parse_into(v, o.cpu, 0, 4095);
+      ++i;
+    } else if (a == "--slack-ns") {
+      ok = minidaq::parse_into(v, o.slack_ns, 1L, 1'000'000'000L);
+      ++i;
+    } else if (a == "--fifo") {
+      ok = minidaq::parse_into(v, o.fifo_priority, 1, 99);
+      ++i;
     } else {
+      ok = false;
+    }
+    if (!ok) {
       std::fprintf(stderr, "usage: %s [--seconds S] [--interval-us N] [--cpu C] [--fifo PRIO] [--slack-ns N] [--mlock]\n", argv[0]);
       return false;
     }
   }
-  return o.interval_us > 0 && o.seconds > 0;
+  return true;
 }
 
 std::int64_t to_ns(const timespec& t) { return std::int64_t{t.tv_sec} * 1'000'000'000 + t.tv_nsec; }
@@ -67,7 +73,8 @@ int main(int argc, char** argv) {
     }
   }
   const auto st = rt::apply_stage(
-      {o.cpu, o.fifo_priority > 0 ? rt::SchedPolicy::fifo : rt::SchedPolicy::other, o.fifo_priority}, 256 * 1024);
+      {o.cpu, o.fifo_priority > 0 ? rt::SchedPolicy::fifo : rt::SchedPolicy::other, o.fifo_priority},
+      std::size_t{256} * 1024);
   if (st.error) {
     std::fprintf(stderr, "real-time settings: %s\n", st.error.message().c_str());
   }
@@ -83,7 +90,7 @@ int main(int argc, char** argv) {
   timespec next{};
   clock_gettime(CLOCK_MONOTONIC, &next);
   for (std::int64_t i = 0; i < loops; ++i) {
-    std::int64_t deadline = to_ns(next) + interval_ns;
+    const std::int64_t deadline = to_ns(next) + interval_ns;
     next.tv_sec = static_cast<time_t>(deadline / 1'000'000'000);
     next.tv_nsec = static_cast<long>(deadline % 1'000'000'000);
     // Absolute deadline: an oversleep in one cycle does not shift later ones.

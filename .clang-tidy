@@ -1,0 +1,74 @@
+# MiniDAQ's curated clang-tidy configuration (Chapter 7).
+# Policy: the library and the applications have zero findings; every
+# suppression is a NOLINT(check) comment with a reason, or a check disabled
+# here with a reason. Run: tools/static_analysis.sh (also runs cppcheck)
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  cert-*,
+  clang-analyzer-*,
+  -clang-analyzer-optin.performance.Padding,
+  concurrency-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-avoid-do-while,
+  misc-*,
+  -misc-include-cleaner,
+  -misc-non-private-member-variables-in-classes,
+  -misc-no-recursion,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
+  performance-*,
+  portability-*,
+  readability-braces-around-statements,
+  readability-container-size-empty,
+  readability-delete-null-pointer,
+  readability-else-after-return,
+  readability-inconsistent-declaration-parameter-name,
+  readability-make-member-function-const,
+  readability-misleading-indentation,
+  readability-qualified-auto,
+  readability-redundant-*,
+  -readability-redundant-member-init,
+  readability-simplify-boolean-expr,
+  readability-static-accessed-through-instance
+# Reasons for the exclusions above:
+#  easily-swappable-parameters: (lo, hi) pairs are everywhere and strong types cover the risky ones.
+#  avoid-magic-numbers: bit layouts and physical constants are clearer as literals next to a comment.
+#  avoid-c-arrays / pro-bounds-*: std::array and std::span are the rule; the remaining uses are
+#    measured hot loops with indices checked by construction (Chapter 2) and char buffers
+#    handed to C APIs (sockets, strftime, snprintf), which decay to pointers by design.
+#  pro-type-vararg: printf-style output in the command-line tools and open()/fcntl(); the
+#    format strings are checked by the compiler (-Wformat=2 in cmake/Warnings.cmake).
+#  non-private-member-variables: plain aggregates (Single, StageSnapshot) are public by design.
+#  avoid-do-while: no reason to forbid it.
+#  include-cleaner: too many false positives with the standard library in clang-tidy 18.
+#  no-recursion: none on the hot path; the configuration reader may recurse on nested objects.
+#  use-trailing-return-type: a style choice MiniDAQ does not make.
+#  optin.performance.Padding: MiniDAQ pads on purpose; the channel and ring indices sit on
+#    separate cache lines against false sharing (Chapter 2).
+#  redundant-member-init: `Picoseconds time{};` says "zero" to the reader and stays correct if
+#    the member's type becomes a scalar; the check calls it redundant.
+#  cert-err33-c (option below): the default list minus fprintf, fputs, fputc, putc and
+#    vfprintf. Their failures are on stdout/stderr of a command-line tool, where nothing useful
+#    can be done; fwrite, fflush, fclose and snprintf stay checked, and the audit trail checks them.
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*/minidaq/include/minidaq/.*'
+FormatStyle: none
+CheckOptions:
+  - key: readability-braces-around-statements.ShortStatementLines
+    value: 0
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: true
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'std::shared_ptr;std::function'
+  - key: cert-err33-c.CheckedFunctions
+    value: '::aligned_alloc;::asctime_s;::at_quick_exit;::atexit;::bsearch;::bsearch_s;::btowc;::c16rtomb;::c32rtomb;::calloc;::clock;::cnd_broadcast;::cnd_init;::cnd_signal;::cnd_timedwait;::cnd_wait;::ctime_s;::fclose;::fflush;::fgetc;::fgetpos;::fgets;::fgetwc;::fopen;::fopen_s;::fprintf_s;::fputwc;::fputws;::fread;::freopen;::freopen_s;::fscanf;::fscanf_s;::fseek;::fsetpos;::ftell;::fwprintf;::fwprintf_s;::fwrite;::fwscanf;::fwscanf_s;::getc;::getchar;::getenv;::getenv_s;::gets_s;::getwc;::getwchar;::gmtime;::gmtime_s;::localtime;::localtime_s;::malloc;::mbrtoc16;::mbrtoc32;::mbsrtowcs;::mbsrtowcs_s;::mbstowcs;::mbstowcs_s;::memchr;::mktime;::mtx_init;::mtx_lock;::mtx_timedlock;::mtx_trylock;::mtx_unlock;::printf_s;::putwc;::raise;::realloc;::remove;::rename;::scanf;::scanf_s;::setlocale;::setvbuf;::signal;::snprintf;::snprintf_s;::sprintf;::sprintf_s;::sscanf;::sscanf_s;::strchr;::strerror_s;::strftime;::strpbrk;::strrchr;::strstr;::strtod;::strtof;::strtoimax;::strtok;::strtok_s;::strtol;::strtold;::strtoll;::strtoul;::strtoull;::strtoumax;::strxfrm;::swprintf;::swprintf_s;::swscanf;::swscanf_s;::thrd_create;::thrd_detach;::thrd_join;::thrd_sleep;::time;::timespec_get;::tmpfile;::tmpfile_s;::tmpnam;::tmpnam_s;::tss_create;::tss_get;::tss_set;::ungetc;::ungetwc;::vfprintf_s;::vfscanf;::vfscanf_s;::vfwprintf;::vfwprintf_s;::vfwscanf;::vfwscanf_s;::vprintf_s;::vscanf;::vscanf_s;::vsnprintf;::vsnprintf_s;::vsprintf;::vsprintf_s;::vsscanf;::vsscanf_s;::vswprintf;::vswprintf_s;::vswscanf;::vswscanf_s;::vwprintf_s;::vwscanf;::vwscanf_s;::wcrtomb;::wcschr;::wcsftime;::wcspbrk;::wcsrchr;::wcsrtombs;::wcsrtombs_s;::wcsstr;::wcstod;::wcstof;::wcstoimax;::wcstok;::wcstok_s;::wcstol;::wcstold;::wcstoll;::wcstombs;::wcstombs_s;::wcstoul;::wcstoull;::wcstoumax;::wcsxfrm;::wctob;::wctrans;::wctype;::wmemchr;::wprintf_s;::wscanf;::wscanf_s'

@@ -105,7 +105,7 @@ void prefault_stack(std::size_t bytes) noexcept {
   // Touch one byte per 4 KiB page of a stack buffer, from a separate frame,
   // so the kernel maps those pages now rather than on first use in the hot
   // path. With mlockall(MCL_FUTURE) they then stay resident.
-  constexpr std::size_t chunk = 64 * 1024;
+  constexpr std::size_t chunk = std::size_t{64} * 1024;
   volatile unsigned char buf[chunk];  // volatile: the stores must happen
   if (bytes > chunk) {
     prefault_stack(bytes - chunk);  // deeper pages first; not a tail call,
@@ -155,7 +155,7 @@ PageFaults thread_page_faults() noexcept {
   if (getrusage(RUSAGE_THREAD, &u) != 0) {
     return {};
   }
-  return {u.ru_minflt, u.ru_majflt};
+  return {u.ru_minflt, u.ru_majflt};  // NOLINT(cppcoreguidelines-pro-type-union-access): glibc wraps rusage fields in unions
 }
 
 Expected<RtProfile, ProfileError> parse_profile(std::string_view text) {
@@ -198,6 +198,7 @@ Expected<RtProfile, ProfileError> parse_profile(std::string_view text) {
       continue;
     }
     const auto dot = key.find('.');
+    // NOLINTNEXTLINE(readability-qualified-auto): a pointer only in some standard libraries
     const auto it = std::find(stage_names.begin(), stage_names.end(), key.substr(0, dot));
     if (dot == std::string_view::npos || it == stage_names.end()) {
       return Unexpected{ProfileError{line_no, "unknown key '" + std::string{key} + "'"}};

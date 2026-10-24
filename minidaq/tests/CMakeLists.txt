@@ -2,6 +2,7 @@
 # tools/trace_matrix.py collects into the traceability matrix (Chapter 14).
 add_executable(minidaq_unit_tests
   unit/test_quantity.cpp
+  unit/test_parse_number.cpp
   unit/test_expected.cpp
   unit/test_geometry.cpp
   unit/test_raw_single.cpp
@@ -18,7 +19,8 @@ add_executable(minidaq_unit_tests
   unit/test_acquisition_state.cpp
   unit/test_config.cpp
   unit/test_acquisition_service.cpp
-  unit/test_control_protocol.cpp)
+  unit/test_control_protocol.cpp
+  unit/test_audit_log.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::warnings GTest::gtest_main)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
@@ -37,4 +39,19 @@ find_package(Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
   add_test(NAME architecture.layers COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_layers.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(architecture.layers PROPERTIES LABELS "unit")
+endif()
+
+if(Python3_Interpreter_FOUND)
+  # The SBOM is generated from cmake/Dependencies.cmake and must validate
+  # against the vendored CycloneDX 1.5 schema (skipped without jsonschema).
+  add_test(NAME tools.sbom COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/make_sbom.py --validate ${PROJECT_SOURCE_DIR})
+  set_tests_properties(tools.sbom PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77)
+  # A hardened build must produce hardened binaries: read them, do not trust the flags.
+  if(MINIDAQ_HARDENING)
+    add_test(NAME build.hardening
+      COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_hardening.py
+              $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl> $<TARGET_FILE:minidaq_latency>
+              $<TARGET_FILE:minidaq_jitter> $<TARGET_FILE:minidaq_unit_tests>)
+    set_tests_properties(build.hardening PROPERTIES LABELS "unit")
+  endif()
 endif()

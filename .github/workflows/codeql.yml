@@ -1,0 +1,31 @@
+# CodeQL (Chapter 7): GitHub's semantic code analysis for C++, on every push
+# to main, every pull request and once a week. Results appear under
+# Security > Code scanning. Not run in the book's build environment.
+name: codeql
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: c-cpp
+          queries: security-and-quality
+      - name: Build (CodeQL observes the compiler)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+          cmake --preset release -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF
+          cmake --build --preset release
+      - uses: github/codeql-action/analyze@v3

@@ -63,6 +63,8 @@ class AcquisitionService {
   ~AcquisitionService();  // stops a running acquisition and drains it
   AcquisitionService(const AcquisitionService&) = delete;
   AcquisitionService& operator=(const AcquisitionService&) = delete;
+  AcquisitionService(AcquisitionService&&) = delete;
+  AcquisitionService& operator=(AcquisitionService&&) = delete;
 
   // [snippet:commands]
   CommandResult configure(const config::AcquisitionConfig& cfg, std::string_view who);
@@ -81,7 +83,7 @@ class AcquisitionService {
   void note(std::string_view who, std::string_view action, std::string_view detail, bool ok = true) const;
 
  private:
-  void monitor(std::stop_token st);
+  void monitor(const std::stop_token& st);
   void check_run_locked();
   void enter_fault_locked(std::string reason, std::string_view who);
   void take_latency_snapshot_locked();

@@ -7,7 +7,6 @@
 
 #if defined(__x86_64__)
 #include <immintrin.h>
-#define MINIDAQ_X86 1
 #endif
 
 namespace minidaq {
@@ -38,10 +37,13 @@ std::size_t filter_branchless(std::span<const Single> in, Single* out, float lo,
 }
 // [/snippet:branchless]
 
-#if MINIDAQ_X86
+#if defined(__x86_64__)
 // Each Single is 16 bytes: time (8), crystal (4), energy (4). In a vector of
 // floats, the energies are lanes 3, 7, 11 and 15.
 
+// Intrinsics load and store through float*: the Single array is reinterpreted
+// as packed floats, which is what the layout static_asserts in single.hpp allow.
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 // [snippet:avx2]
 // Two singles per 256-bit register. The compare yields one bit per float
 // lane; bits 3 and 7 are the two energies. If only the second single is kept,
@@ -98,6 +100,7 @@ __attribute__((target("avx512f"))) std::size_t filter_avx512(std::span<const Sin
   return k + filter_branchless(in.subspan(i), out + k, lo, hi);
 }
 // [/snippet:avx512]
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 #endif
 
 }  // namespace
@@ -121,7 +124,7 @@ bool kernel_available(FilterKernel k) noexcept {
     case FilterKernel::simd:
     case FilterKernel::best:
       return true;
-#if MINIDAQ_X86
+#if defined(__x86_64__)
     case FilterKernel::avx2:
       return __builtin_cpu_supports("avx2") != 0;
     case FilterKernel::avx512:
@@ -171,7 +174,7 @@ std::size_t filter_energy(std::span<const Single> in, std::span<Single> out, Ene
   const float hi = w.hi.count();
   switch (k) {
     case FilterKernel::branchy: return filter_branchy(in, out.data(), lo, hi);
-#if MINIDAQ_X86
+#if defined(__x86_64__)
     case FilterKernel::avx2: return filter_avx2(in, out.data(), lo, hi);
     case FilterKernel::avx512: return filter_avx512(in, out.data(), lo, hi);
 #endif

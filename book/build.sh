@@ -25,6 +25,7 @@ common=(
   --lua-filter "$here/filters/boxes.lua"
   --metadata "version=$version" --metadata "date=$date_str"
   --lua-filter "$here/filters/vars.lua"
+  --lua-filter "$here/filters/breakable-code.lua"
   --resource-path "$here:$here/assets:$build"
   --highlight-style tango
   --number-sections

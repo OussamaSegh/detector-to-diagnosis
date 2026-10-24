@@ -1,0 +1,14 @@
+# cppcheck suppressions for MiniDAQ (Chapter 7). Every entry has a reason.
+# Run: tools/static_analysis.sh, which also runs clang-tidy.
+
+# Expected<T, E> converts implicitly from T and from Unexpected<E>, like
+# std::expected; that is the point of the type.
+noExplicitConstructor:*/minidaq/core/expected.hpp
+
+# A style opinion: the remaining raw loops are short table scans that read
+# more plainly than the algorithm call (clang-tidy's modernize checks agree).
+useStlAlgorithm
+
+# cppcheck 2.13 cannot parse the immediately invoked constexpr lambda that
+# builds the crystal table; the file compiles with GCC and Clang and is checked by clang-tidy.
+syntaxError:*/minidaq/core/geometry.hpp

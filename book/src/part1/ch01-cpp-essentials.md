@@ -596,9 +596,9 @@ Chapter 3.
 
 | Tool | Catches | Typical slowdown | How MiniDAQ uses it |
 |---|---|---|---|
-| Compiler warnings (`-Wall -Wextra -Wpedantic -Wconversion -Wshadow ...`) | Many conversions, shadowing, some lifetime bugs | none | Every target, with `-Werror` |
+| Compiler warnings (`-Wall`, `-Wextra`, `-Wpedantic`, `-Wconversion`, `-Wshadow` and more) | Many conversions, shadowing, some lifetime bugs | none | Every target, with `-Werror` |
 | AddressSanitizer (ASan) | Lifetime and bounds errors, leaks | about 2x | `asan-ubsan` preset, every CI run |
-| UndefinedBehaviorSanitizer (UBSan) | Overflow, shifts, alignment, null, bad casts | small | combined with ASan |
+| Undefined behavior sanitizer (UBSan) | Overflow, shifts, alignment, null, bad casts | small | combined with ASan |
 | ThreadSanitizer (TSan) | Data races, some deadlocks | 5x to 15x | `tsan` preset from Chapter 3 |
 | MemorySanitizer (MSan) | Reads of uninitialized memory | about 3x | not used: needs every library rebuilt with it |
 | Valgrind memcheck | Lifetime, uninitialized reads | 20x to 50x | occasional, for binaries you cannot rebuild |

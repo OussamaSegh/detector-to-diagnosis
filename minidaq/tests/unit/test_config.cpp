@@ -177,3 +177,14 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
     }
   }
 }
+
+TEST(Config, NumberOverflowIsAnErrorNotACrash) {
+  // Regression: fuzz/fuzz_config found that "6e688" escaped parse_config as an
+  // nlohmann out_of_range exception and terminated the program.
+  for (const char* text : {"6e688", R"({"schema_version": "1.0", "source": {"rate_hz": 1e999}})"}) {
+    const auto r = parse_config(text);
+    ASSERT_FALSE(r.has_value()) << text;
+    ASSERT_EQ(r.error().size(), 1U);
+    EXPECT_NE(r.error()[0].message.find("number overflow"), std::string::npos) << r.error()[0].message;
+  }
+}

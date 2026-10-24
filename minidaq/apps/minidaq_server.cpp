@@ -8,7 +8,7 @@
 // object per line to the socket.
 #include <csignal>
 #include <cstdio>
-#include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <memory>
 #include <sstream>
@@ -20,6 +20,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/audit_log.hpp"
 #include "minidaq/control/control_server.hpp"
+#include "minidaq/core/parse_number.hpp"
 
 int main(int argc, char** argv) {
   using namespace minidaq;
@@ -31,7 +32,10 @@ int main(int argc, char** argv) {
     const std::string_view a{argv[i]};
     const char* v = i + 1 < argc ? argv[i + 1] : nullptr;
     if (a == "--port" && v) {
-      port = static_cast<std::uint16_t>(std::atoi(v));
+      if (!parse_into<std::uint16_t>(v, port, 0, 65535)) {  // 0: any free port (tests use it)
+        std::fprintf(stderr, "--port: \"%s\" is not a port number (0 to 65535)\n", v);
+        return 2;
+      }
     } else if (a == "--bind" && v) {
       bind = v;
     } else if (a == "--audit" && v) {
@@ -63,7 +67,7 @@ int main(int argc, char** argv) {
   }
   control::AcquisitionService service{opt};
   if (!config_path.empty()) {
-    std::ifstream in{config_path};
+    const std::ifstream in{config_path};
     std::stringstream text;
     text << in.rdbuf();
     auto cfg = config::parse_config(text.str());
@@ -86,10 +90,12 @@ int main(int argc, char** argv) {
   }
   std::printf("minidaq_server: control API on %s:%u (state %s)\n", bind.c_str(), *bound,
               std::string{to_string(service.state())}.c_str());
-  std::fflush(stdout);
+  (void)std::fflush(stdout);  // a line for a human or a test harness; nothing to do if it fails
 
   int sig = 0;
-  sigwait(&signals, &sig);
+  if (sigwait(&signals, &sig) != 0) {  // fails only for an invalid set
+    std::fprintf(stderr, "sigwait failed\n");
+  }
   std::printf("minidaq_server: signal %d, shutting down\n", sig);
   server.stop();
   if (service.state() == control::AcqState::running) {
@@ -97,5 +103,10 @@ int main(int argc, char** argv) {
     (void)service.wait_for(control::AcqState::configured, std::chrono::seconds{10});
   }
   service.note("signal", "shutdown", "signal " + std::to_string(sig));
+  if (audit && audit->failed_writes() > 0) {
+    std::fprintf(stderr, "minidaq_server: %llu audit records could not be written to %s\n",
+                 static_cast<unsigned long long>(audit->failed_writes()), audit_path.c_str());
+    return 1;
+  }
   return 0;
 }

@@ -295,3 +295,18 @@ TEST(AcquisitionService, WithoutAdaptersStartIsADeviceError) {
   EXPECT_EQ(r.code, "device_error");
   EXPECT_EQ(svc.state(), AcqState::configured);
 }
+
+TEST(AcquisitionService, ProfilePathMustBeASmallRegularFile) {
+  // The rt_profile path arrives from a control client: untrusted input.
+  Script script;
+  AcquisitionService svc{options(script)};
+  auto c = small();
+  for (const char* path : {"/dev/zero", "/tmp", "/nonexistent/rt.conf"}) {
+    c.rt_profile = path;
+    const auto r = svc.configure(c, "test");
+    EXPECT_EQ(r.code, "config_error") << path;
+    EXPECT_EQ(svc.state(), AcqState::idle);
+  }
+  c.rt_profile = "/dev/zero";
+  EXPECT_NE(svc.configure(c, "test").message.find("not a regular file"), std::string::npos);
+}

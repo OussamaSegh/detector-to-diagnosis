@@ -33,8 +33,10 @@ using BoardId = StrongId<BoardTag, std::uint16_t>;
 
 }  // namespace minidaq
 
+// Specializing std::hash for a program-defined type is allowed ([namespace.std]);
+// clang-tidy 18's cert-dcl58-cpp flags partial specializations regardless.
 template <typename Tag, typename Rep>
-struct std::hash<minidaq::StrongId<Tag, Rep>> {
+struct std::hash<minidaq::StrongId<Tag, Rep>> {  // NOLINT(cert-dcl58-cpp)
   [[nodiscard]] std::size_t operator()(minidaq::StrongId<Tag, Rep> id) const noexcept {
     return std::hash<Rep>{}(id.value());
   }

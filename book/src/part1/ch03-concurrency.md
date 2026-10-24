@@ -568,16 +568,19 @@ second:
 Why is the largest batch slowest? The first hypothesis was cache footprint. 64 batches of
 4,096 singles is 4 MiB per channel, far beyond the 2 MiB L2. But shrinking the channel to 8
 batches barely helped, so that hypothesis is wrong. Timing the stages separately finds the
-real cause. Decoding runs at 230 to 260 M words/s and is not the problem. Sorting each batch on
-its own runs at about 90 M singles/s for batches of 64, 42 to 50 for 512, and 35 to 37 for
-4,096. Sorting is O(n log n), so its cost *per single* grows with the batch size, and at 4,096
+real cause. Decoding runs at 230 to 260 M words/s in this setup (one run per batch size, at
+this chapter's tag; Chapter 5's dedicated benchmark measures 330) and is not the problem.
+Sorting each batch on its own runs at about 90 M singles/s for batches of 64, 42 to 50 for
+512, and 35 to 37 for 4,096. Sorting is O(n log n), so its cost *per single* grows with the batch size, and at 4,096
 the sort stage alone runs at the speed of the whole pipeline. At 64, sorting is cheap and the
 per-batch hand-off and scheduling overhead of five threads on four cores dominates. Exercise
 3.3 has you add busy-time accounting so the pipeline reports its own bottleneck. Chapter 5
-does the same with a profiler.
+does the same with a profiler, and finds that the sort was also more than three times slower than it
+had to be.
 
 Even the slowest configuration handles 33 M words/s. That is more than three times the 10 M
-singles/s this book assumes as a peak scanner rate (assumption: confirm with team). On the real
+singles/s this book uses as its working rate (assumption: confirm with team), but only just
+above the 30 M singles/s of Chapter 2's high-activity estimate: no margin at all. On the real
 acquisition PC, with pinned cores and without a hypervisor, expect better numbers. Measure
 them.
 
@@ -802,10 +805,10 @@ account for every item, a block or drop policy at the entry, and a drain-on-stop
    repetitions.
 
 **Definition of done.** `ci/run_all.sh` is green on all four presets (debug, clang-release,
-asan-ubsan, tsan). `Pipeline.MatchesSingleThreadedReference` and
-`Pipeline.DropPolicyCountsEveryLostWord` pass 50 times in a row
-(`ctest --preset tsan -R Pipeline --repeat until-fail:50`). `bm_pipeline` moves more than 10 M
-words/s in a Release build on your machine. Tag `ch03`.
+asan-ubsan, tsan). The pipeline tests `MatchesSingleThreadedReference` and
+`DropPolicyCountsEveryLostWord` pass 50 times in a row (with `ctest --preset tsan -R Pipeline`
+and `--repeat until-fail:50`). `bm_pipeline` moves more than 10 M words/s in a Release build
+on your machine. Tag `ch03`.
 
 ## Check yourself {.unnumbered}
 

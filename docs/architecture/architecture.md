@@ -143,7 +143,8 @@ effective configuration, defaults included, and the audit trail records it at ev
 | Google Benchmark | 1.9.1 | benchmarks only | Performance measurements | Not shipped |
 | C++ standard library, Linux C library and kernel interfaces | as provided by the platform | everything | Threads, atomics, sockets, real-time scheduling | Platform qualification (Chapter 25) |
 
-The full SOUP list with anomaly review comes with Chapter 7 (SBOM) and Chapter 14.
+The full SOUP list, with requirements on each item and the anomaly review, is
+[`docs/regulatory/soup-list.md`](../regulatory/soup-list.md) (Chapter 7); `tools/make_sbom.py` generates the CycloneDX SBOM from the same pins.
 
 ## 10. Segregation
 
@@ -169,7 +170,7 @@ The full SOUP list with anomaly review comes with Chapter 7 (SBOM) and Chapter 1
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0007](../adr/README.md).
+Decisions: [ADR 0001 to 0008](../adr/README.md).
 
 Open issues:
 

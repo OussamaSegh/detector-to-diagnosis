@@ -3,14 +3,15 @@
 // report per-stage service time and end-to-end latency percentiles (Chapter 4).
 //
 //   minidaq_latency --rate 10e6 --seconds 20 --profile minidaq/profiles/rt-pin.conf
+#include <array>
 #include <cstdio>
-#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <thread>
 
+#include "minidaq/core/parse_number.hpp"
 #include "minidaq/pipeline/acquisition_pipeline.hpp"
 #include "minidaq/sim/paced_source.hpp"
 
@@ -32,16 +33,20 @@ int main(int argc, char** argv) {
   std::string profile_path;
   for (int i = 1; i < argc; i += 2) {  // every option takes a value
     const std::string_view a{argv[i]};
-    const char* v = i + 1 < argc ? argv[i + 1] : nullptr;
-    if (a == "--rate" && v) {
-      rate = std::atof(v);
-    } else if (a == "--seconds" && v) {
-      seconds = std::atof(v);
-    } else if (a == "--batch" && v) {
-      batch = static_cast<std::size_t>(std::atol(v));
-    } else if (a == "--profile" && v) {
+    const std::string_view v = i + 1 < argc ? argv[i + 1] : "";
+    bool ok = true;
+    if (a == "--rate") {
+      ok = minidaq::parse_into(v, rate, 1.0, 1e9);
+    } else if (a == "--seconds") {
+      ok = minidaq::parse_into(v, seconds, 1e-3, 86400.0);
+    } else if (a == "--batch") {
+      ok = minidaq::parse_into(v, batch, std::size_t{1}, std::size_t{1} << 20);
+    } else if (a == "--profile" && !v.empty()) {
       profile_path = v;
     } else {
+      ok = false;
+    }
+    if (!ok) {
       std::fprintf(stderr, "usage: %s [--rate WORDS_PER_S] [--seconds S] [--batch N] [--profile FILE]\n", argv[0]);
       return 2;
     }
@@ -50,7 +55,7 @@ int main(int argc, char** argv) {
   cfg.batch_size = batch;
   cfg.source_overflow = minidaq::OverflowPolicy::drop;  // measure, do not back-pressure the "hardware"
   if (!profile_path.empty()) {
-    std::ifstream f{profile_path};
+    const std::ifstream f{profile_path};
     std::stringstream ss;
     ss << f.rdbuf();
     auto p = minidaq::rt::parse_profile(ss.str());
@@ -86,7 +91,7 @@ int main(int argc, char** argv) {
               static_cast<unsigned long long>(st[0].items_dropped), static_cast<unsigned long long>(behind));
   std::printf("%-12s %9s %9s %9s %9s %9s %10s   (microseconds)\n", "stage", "batches", "p50", "p99", "p99.9",
               "p99.99", "max");
-  const char* names[] = {"source", "decode", "sort", "pair", "write"};
+  constexpr std::array<const char*, minidaq::num_stages> names{"source", "decode", "sort", "pair", "write"};
   for (std::size_t i = 0; i < minidaq::num_stages; ++i) {
     print_row(names[i], pipe.stage_latency(static_cast<minidaq::StageId>(i)).summary());
   }

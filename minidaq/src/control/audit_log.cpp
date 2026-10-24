@@ -17,25 +17,31 @@ std::string to_json_line(const AuditRecord& r) {
 }
 
 JsonLinesAuditLog::JsonLinesAuditLog(const std::string& path, bool sync)
-    : file_{std::fopen(path.c_str(), "a")}, sync_{sync} {}
+    : file_{std::fopen(path.c_str(), "a")}, sync_{sync} {}  // NOLINT(cppcoreguidelines-owning-memory): owned by file_
 
-JsonLinesAuditLog::~JsonLinesAuditLog() {
-  if (file_ != nullptr) {
-    std::fclose(file_);
-  }
-}
-
+// [snippet:append]
 void JsonLinesAuditLog::append(const AuditRecord& r) {
   const std::string line = to_json_line(r) + "\n";
   const std::lock_guard lock{mu_};
   if (file_ == nullptr) {
     return;
   }
-  std::fwrite(line.data(), 1, line.size(), file_);
-  std::fflush(file_);
+  // fwrite may buffer: the error of a full disk often appears only at fflush.
+  bool ok = std::fwrite(line.data(), 1, line.size(), file_.get()) == line.size();
+  ok = std::fflush(file_.get()) == 0 && ok;
   if (sync_) {
-    ::fsync(::fileno(file_));
+    ok = ::fsync(::fileno(file_.get())) == 0 && ok;
   }
+  if (!ok) {
+    ++failed_writes_;
+    std::clearerr(file_.get());  // so that the next record is tried, and judged, on its own
+  }
+}
+// [/snippet:append]
+
+std::uint64_t JsonLinesAuditLog::failed_writes() const {
+  const std::lock_guard lock{mu_};
+  return failed_writes_;
 }
 
 }  // namespace minidaq::control

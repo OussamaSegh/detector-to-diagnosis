@@ -24,10 +24,13 @@ option(MINIDAQ_BUILD_EXERCISES "Build exercise solutions (and their tests)" ON)
 option(MINIDAQ_BUILD_STARTERS "Build exercise starters (their tests fail until you solve them)" OFF)
 option(MINIDAQ_USE_SYSTEM_DEPS "Use system packages for GoogleTest/Benchmark/json instead of pinned FetchContent" OFF)
 set(MINIDAQ_SANITIZERS "" CACHE STRING "Semicolon list of sanitizers: address;undefined | thread")
+option(MINIDAQ_BUILD_FUZZERS "Build libFuzzer targets (Clang only; instruments all code for coverage)" OFF)
+option(MINIDAQ_HARDENING "Compiler and linker hardening for shipped builds (ADR 0008)" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(Warnings)
 include(Sanitizers)
+include(Hardening)
 include(Dependencies)
 
 if(MINIDAQ_BUILD_TESTS)
@@ -39,6 +42,10 @@ add_subdirectory(minidaq)
 
 if(MINIDAQ_BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)
+endif()
+
+if(MINIDAQ_BUILD_FUZZERS)
+  add_subdirectory(fuzz)
 endif()
 
 if(MINIDAQ_BUILD_EXERCISES OR MINIDAQ_BUILD_STARTERS)

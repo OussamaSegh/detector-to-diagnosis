@@ -1,0 +1,19 @@
+# decoder campaign, started 2026-10-24T17:45:25Z (UTC)
+INFO: Seed: 3407605694
+#5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+# lines where coverage (cov:) increased
+#5 INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+#6 NEW cov: 85 ft: 192 corp: 5/2781b lim: 1601 exec/s: 0 rss: 33Mb L: 513/1601 MS: 1 ShuffleBytes-
+#10 NEW cov: 86 ft: 221 corp: 8/3492b lim: 1601 exec/s: 0 rss: 33Mb L: 25/1601 MS: 1 ShuffleBytes-
+#21 NEW cov: 87 ft: 262 corp: 18/11125b lim: 1601 exec/s: 0 rss: 34Mb L: 19/1601 MS: 1 EraseBytes-
+#36 NEW cov: 88 ft: 280 corp: 23/13506b lim: 1601 exec/s: 0 rss: 34Mb L: 589/1601 MS: 1 InsertRepeatedBytes-
+#126 NEW cov: 89 ft: 320 corp: 33/18Kb lim: 1601 exec/s: 0 rss: 36Mb L: 12/1601 MS: 1 EraseBytes-
+#1519 NEW cov: 99 ft: 427 corp: 62/28Kb lim: 1601 exec/s: 0 rss: 43Mb L: 8/1597 MS: 2 EraseBytes-EraseBytes-
+#7755 NEW cov: 101 ft: 446 corp: 75/31Kb lim: 1601 exec/s: 0 rss: 71Mb L: 1/1597 MS: 1 EraseBytes-
+#102580804	DONE   cov: 101 ft: 460 corp: 85/25Kb lim: 4096 exec/s: 28486 rss: 472Mb
+Done 102580804 runs in 3601 second(s)
+stat::number_of_executed_units: 102580804
+stat::average_exec_per_sec:     28486
+stat::new_units_added:          785
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              472

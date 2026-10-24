@@ -26,7 +26,7 @@
 namespace minidaq::control {
 
 inline constexpr std::string_view api_version = "1.0";
-inline constexpr std::size_t max_request_bytes = 64 * 1024;
+inline constexpr std::size_t max_request_bytes = std::size_t{64} * 1024;
 
 // [snippet:framer]
 // Splits a byte stream into lines. TCP delivers bytes, not messages: one

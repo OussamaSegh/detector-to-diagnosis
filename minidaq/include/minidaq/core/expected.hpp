@@ -50,6 +50,9 @@ Unexpected(E) -> Unexpected<E>;
 // Value-or-error. Unlike std::expected, accessing the wrong alternative
 // aborts instead of throwing: MiniDAQ hot-path code is built to run without
 // exceptions, and reading the value of a failed parse is always a bug.
+// The union is the storage of the shim: has_value_ says which member is alive,
+// and every access below checks it (std::expected is built the same way).
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 template <typename T, typename E>
 class Expected {
   static_assert(!std::is_reference_v<T> && !std::is_reference_v<E>);
@@ -171,6 +174,7 @@ class Expected {
   };
   bool has_value_;
 };
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 // Expected<void, E>: success carries no value (for example a write).
 template <typename E>

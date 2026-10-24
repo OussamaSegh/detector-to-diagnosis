@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
 #include "minidaq/control/acquisition_service.hpp"
 
-#include <fstream>
-#include <sstream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <cerrno>
 
 #include <nlohmann/json.hpp>
 
@@ -22,16 +25,49 @@ json interval_json(const LatencyHistogram& h, const HistogramCounts& before, con
   return json{{"count", s.count}, {"p50", s.p50}, {"p99", s.p99}, {"p999", s.p999}, {"max", s.max}};
 }
 
-bool read_file(const std::string& path, std::string& out) {
-  std::ifstream in{path};
-  if (!in) {
-    return false;
+// [snippet:read_small_file]
+// The path comes from a control client, so it is untrusted input (Chapter 7):
+// only regular files, and only small ones. Without these checks "/dev/zero"
+// would make the control thread read forever, and a FIFO would block it.
+// Open first, then check the open descriptor: checking the path and opening
+// it afterwards would leave a window in which the file can be swapped.
+constexpr std::size_t max_profile_bytes = std::size_t{64} * 1024;
+
+std::string read_small_file(const std::string& path, std::string& out) {
+  const int fd = ::open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NONBLOCK);  // a FIFO must not block
+  if (fd < 0) {
+    return "cannot read \"" + path + "\"";
   }
-  std::ostringstream ss;
-  ss << in.rdbuf();
-  out = ss.str();
-  return true;
+  struct stat st {};
+  std::string problem;
+  if (::fstat(fd, &st) != 0 || !S_ISREG(st.st_mode)) {
+    problem = "\"" + path + "\" is not a regular file";
+  } else if (static_cast<std::size_t>(st.st_size) > max_profile_bytes) {
+    problem = "\"" + path + "\" is larger than 64 KiB";
+  } else {
+    std::string buf(max_profile_bytes + 1, '\0');  // +1: notice a file that grew
+    std::size_t n = 0;
+    for (;;) {
+      const ssize_t r = ::read(fd, buf.data() + n, buf.size() - n);
+      if (r > 0) {
+        n += static_cast<std::size_t>(r);
+        if (n == buf.size()) {
+          break;
+        }
+      } else if (r == 0 || errno != EINTR) {
+        break;
+      }
+    }
+    if (n > max_profile_bytes) {
+      problem = "\"" + path + "\" is larger than 64 KiB";
+    } else {
+      out.assign(buf.data(), n);
+    }
+  }
+  ::close(fd);
+  return problem;
 }
+// [/snippet:read_small_file]
 
 }  // namespace
 
@@ -47,7 +83,7 @@ AcquisitionService::AcquisitionService(ServiceOptions options)
         }
         wait_cv_.notify_all();
       }} {
-  monitor_ = std::jthread{[this](std::stop_token st) { monitor(st); }};
+  monitor_ = std::jthread{[this](const std::stop_token& st) { monitor(st); }};
 }
 
 AcquisitionService::~AcquisitionService() {
@@ -87,9 +123,9 @@ CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg
   std::optional<rt::RtProfile> profile;
   if (!cfg.rt_profile.empty()) {
     std::string text;
-    if (!read_file(cfg.rt_profile, text)) {
-      note(who, "configure", "rejected: cannot read " + cfg.rt_profile, false);
-      return result(false, "config_error", "/rt_profile: cannot read \"" + cfg.rt_profile + "\"");
+    if (const std::string problem = read_small_file(cfg.rt_profile, text); !problem.empty()) {
+      note(who, "configure", "rejected: " + problem, false);
+      return result(false, "config_error", "/rt_profile: " + problem);
     }
     auto parsed = rt::parse_profile(text);
     if (!parsed) {
@@ -108,22 +144,24 @@ CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg
 
 CommandResult AcquisitionService::start(std::string_view who) {
   const std::lock_guard lock{mu_};
-  if (machine_.state() != AcqState::configured) {
+  // configured implies a configuration; test both rather than rely on the invariant.
+  if (machine_.state() != AcqState::configured || !config_) {
     note(who, "start", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::start}.message(), false);
     return illegal(AcqEvent::start);
   }
+  const config::AcquisitionConfig& cfg = *config_;
   // Fresh ports for every run: a detector's clock and counters start at zero.
   std::string error;
   if (!opt_.detector || !opt_.sink) {
     note(who, "start", "no detector or sink adapter", false);
     return result(false, "device_error", "no detector or sink adapter configured");
   }
-  auto detector = opt_.detector(*config_, error);
+  auto detector = opt_.detector(cfg, error);
   if (!detector) {
     note(who, "start", "device error: " + error, false);
     return result(false, "device_error", error);
   }
-  auto sink = opt_.sink(*config_, error);
+  auto sink = opt_.sink(cfg, error);
   if (!sink) {
     note(who, "start", "sink error: " + error, false);
     return result(false, "device_error", error);
@@ -131,7 +169,7 @@ CommandResult AcquisitionService::start(std::string_view who) {
   pipeline_.reset();  // the previous run's counters go now, not earlier
   detector_ = std::move(detector);
   sink_ = std::move(sink);
-  PipelineConfig pc = config::to_pipeline_config(*config_);
+  PipelineConfig pc = config::to_pipeline_config(cfg);
   if (profile_) {
     pc.rt = *profile_;
   }
@@ -245,7 +283,7 @@ void AcquisitionService::check_run_locked() {
   }
 }
 
-void AcquisitionService::monitor(std::stop_token st) {
+void AcquisitionService::monitor(const std::stop_token& st) {
   while (!st.stop_requested()) {
     {
       const std::lock_guard lock{mu_};

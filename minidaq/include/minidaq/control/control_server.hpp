@@ -26,6 +26,8 @@ class ControlServer {
   ~ControlServer();
   ControlServer(const ControlServer&) = delete;
   ControlServer& operator=(const ControlServer&) = delete;
+  ControlServer(ControlServer&&) = delete;
+  ControlServer& operator=(ControlServer&&) = delete;
 
   // Binds and starts serving; returns the port (useful with port 0).
   [[nodiscard]] Expected<std::uint16_t, std::string> start();
@@ -33,7 +35,7 @@ class ControlServer {
   [[nodiscard]] std::size_t clients() const noexcept { return clients_.load(std::memory_order_relaxed); }
 
  private:
-  void run(std::stop_token st);
+  void run(const std::stop_token& st);
 
   AcquisitionService& service_;
   std::uint16_t port_;

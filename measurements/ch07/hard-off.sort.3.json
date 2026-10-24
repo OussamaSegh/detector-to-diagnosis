@@ -1,0 +1,57 @@
+{
+  "context": {
+    "date": "2026-10-24T17:42:09+00:00",
+    "host_name": "vm",
+    "executable": "build/hard-off/benchmarks/bm_sort",
+    "num_cpus": 4,
+    "mhz_per_cpu": 2300,
+    "cpu_scaling_enabled": false,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 49152,
+        "num_sharing": 1
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 2097152,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 272629760,
+        "num_sharing": 4
+      }
+    ],
+    "load_avg": [0.955566,0.279785,0.0913086],
+    "library_version": "v1.9.1",
+    "library_build_type": "release",
+    "json_schema_version": 1
+  },
+  "benchmarks": [
+    {
+      "name": "BM_SortLambda/4096/0",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_SortLambda/4096/0",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 14274,
+      "real_time": 3.1624619588124580e+04,
+      "cpu_time": 3.1625969314838592e+04,
+      "time_unit": "ns",
+      "items_per_second": 1.2951381692760314e+08
+    }
+  ]
+}

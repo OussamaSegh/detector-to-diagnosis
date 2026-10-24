@@ -42,7 +42,7 @@ class LatencyHistogram {
   // max_value: largest value tracked exactly (larger ones are clamped and counted).
   // sub_bucket_bits: S, precision (relative error < 2^-S). Default: 0.8%, up to ~18 minutes in ns.
   explicit LatencyHistogram(std::int64_t max_value = std::int64_t{1} << 40, unsigned sub_bucket_bits = 7)
-      : sub_bits_{sub_bucket_bits},
+      : sub_bits_{std::clamp(sub_bucket_bits, 1U, 20U)},  // half_ > 0, and shifts stay below 64
         half_{std::uint64_t{1} << sub_bucket_bits},
         max_value_{static_cast<std::uint64_t>(std::max<std::int64_t>(max_value, 1))},
         size_{index_of(max_value_) + 1},
@@ -50,7 +50,14 @@ class LatencyHistogram {
 
   LatencyHistogram(const LatencyHistogram&) = delete;
   LatencyHistogram& operator=(const LatencyHistogram&) = delete;
+  LatencyHistogram(LatencyHistogram&&) = delete;
+  LatencyHistogram& operator=(LatencyHistogram&&) = delete;
+  ~LatencyHistogram() = default;
 
+  // The analyzer cannot see the constructor's invariant (1 <= sub_bits_ <= 20,
+  // so half_ >= 2 and every shift below is smaller than 64); the unit tests
+  // cover every bucket boundary.
+  // NOLINTBEGIN(clang-analyzer-core.BitwiseShift)
   // [snippet:index]
   // Bucket index of a value. Values below 2*half map to themselves; above,
   // e is the number of low bits dropped, so each bucket is 2^e wide while the
@@ -79,6 +86,7 @@ class LatencyHistogram {
     return lowest_in(i) + (std::uint64_t{1} << e) - 1;
   }
   // [/snippet:index]
+  // NOLINTEND(clang-analyzer-core.BitwiseShift)
 
   // [snippet:record]
   // Single writer: plain load + store instead of fetch_add avoids a locked

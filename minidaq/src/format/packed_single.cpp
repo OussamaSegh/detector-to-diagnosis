@@ -44,7 +44,7 @@ std::size_t StreamDecoder::decode_bytes(std::span<const std::byte> bytes, std::s
   const std::size_t n = nwords < out.size() ? nwords : out.size();
   std::size_t written = 0;
   for (std::size_t i = 0; i < n; ++i) {
-    std::uint64_t w;
+    std::uint64_t w = 0;
     std::memcpy(&w, bytes.data() + i * sizeof w, sizeof w);
     w = from_little_endian(w);
     written += decode(std::span<const std::uint64_t>(&w, 1), out.subspan(written, 1));

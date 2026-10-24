@@ -91,6 +91,19 @@
       }
     },
     {
+      "name": "hardened",
+      "displayName": "GCC release with hardening (ADR 0008): what ships",
+      "inherits": [
+        "base",
+        "gcc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
+        "MINIDAQ_HARDENING": "ON"
+      }
+    },
+    {
       "name": "asan-ubsan",
       "displayName": "ASan + UBSan (Clang)",
       "inherits": [
@@ -112,6 +125,21 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "MINIDAQ_SANITIZERS": "thread"
+      }
+    },
+    {
+      "name": "fuzz",
+      "displayName": "libFuzzer + ASan + UBSan (Clang), with the exercises' fuzz targets",
+      "inherits": [
+        "base",
+        "clang"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "MINIDAQ_SANITIZERS": "address;undefined",
+        "MINIDAQ_BUILD_FUZZERS": "ON",
+        "MINIDAQ_BUILD_BENCHMARKS": "OFF",
+        "MINIDAQ_BUILD_EXERCISES": "ON"
       }
     },
     {
@@ -150,12 +178,20 @@
       "configurePreset": "gcc-cxx23"
     },
     {
+      "name": "hardened",
+      "configurePreset": "hardened"
+    },
+    {
       "name": "asan-ubsan",
       "configurePreset": "asan-ubsan"
     },
     {
       "name": "tsan",
       "configurePreset": "tsan"
+    },
+    {
+      "name": "fuzz",
+      "configurePreset": "fuzz"
     },
     {
       "name": "coverage",
@@ -200,6 +236,11 @@
       "configurePreset": "gcc-cxx23"
     },
     {
+      "name": "hardened",
+      "inherits": "base",
+      "configurePreset": "hardened"
+    },
+    {
       "name": "asan-ubsan",
       "inherits": "base",
       "configurePreset": "asan-ubsan",
@@ -215,6 +256,11 @@
       "environment": {
         "TSAN_OPTIONS": "halt_on_error=1:second_deadlock_stack=1"
       }
+    },
+    {
+      "name": "fuzz",
+      "inherits": "base",
+      "configurePreset": "fuzz"
     },
     {
       "name": "coverage",

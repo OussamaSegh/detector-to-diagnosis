@@ -17,9 +17,10 @@ sim::SyntheticConfig synthetic(const config::SourceSettings& s) {
 
 SimulatedDetector::SimulatedDetector(const config::SourceSettings& s) : source_{synthetic(s), s.rate_hz} {
   char buf[96];
-  std::snprintf(buf, sizeof buf, "simulated detector, %.3g singles/s, seed %llu", s.rate_hz,
-                static_cast<unsigned long long>(s.seed));
-  description_ = buf;
+  // snprintf truncates rather than overflows; a negative result is an encoding error.
+  const int n = std::snprintf(buf, sizeof buf, "simulated detector, %.3g singles/s, seed %llu", s.rate_hz,
+                              static_cast<unsigned long long>(s.seed));
+  description_ = n >= 0 ? buf : "simulated detector";
 }
 
 std::unique_ptr<DetectorPort> make_default_detector(const config::AcquisitionConfig& c, std::string& error) {

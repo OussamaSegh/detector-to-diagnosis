@@ -439,7 +439,7 @@ Linux exposes several clocks through `clock_gettime` (see the `clock_gettime(2)`
 MiniDAQ's `monotonic_ns()` is `steady_clock`, which libstdc++ implements with
 `CLOCK_MONOTONIC`. With the `tsc` clock source, reading it does not enter the kernel: the vDSO
 reads the time-stamp counter and converts it in user space. On the book's VM, one read costs
-28.3 ns (`bm_histogram`'s `BM_MonotonicClock`); about 20 ns is typical on bare metal (verify on
+28.3 ns (`BM_MonotonicClock` in `bm_histogram`); about 20 ns is typical on bare metal (verify on
 the acquisition PC). That is cheap, but not free: at 50 M singles per second you do not
 timestamp singles with it, you timestamp batches.
 

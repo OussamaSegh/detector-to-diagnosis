@@ -96,13 +96,13 @@ class TimeUnwrapper {
 
   [[nodiscard]] constexpr Picoseconds unwrap(std::uint64_t time_code) noexcept {
     constexpr std::uint64_t half = std::uint64_t{1} << (time_bits - 1);
-    std::int64_t epoch = epoch_;
+    std::int64_t wraps = epoch_;
     if (has_last_) {
       if (time_code < last_ && last_ - time_code > half) {
-        epoch = ++epoch_;  // counter wrapped forward
+        wraps = ++epoch_;  // counter wrapped forward
         last_ = time_code;
       } else if (time_code > last_ && time_code - last_ > half) {
-        epoch = epoch_ - 1;  // a slightly late word from before the wrap
+        wraps = epoch_ - 1;  // a slightly late word from before the wrap
       } else if (time_code > last_) {
         last_ = time_code;
       }
@@ -110,7 +110,7 @@ class TimeUnwrapper {
       last_ = time_code;
       has_last_ = true;
     }
-    return Picoseconds{(epoch * wrap_period_ps) + static_cast<std::int64_t>(time_code) * time_lsb_ps};
+    return Picoseconds{(wraps * wrap_period_ps) + static_cast<std::int64_t>(time_code) * time_lsb_ps};
   }
   [[nodiscard]] constexpr std::int64_t epoch() const noexcept { return epoch_; }
 

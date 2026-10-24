@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 
 presets=("$@")
 if [ ${#presets[@]} -eq 0 ]; then
-  presets=(debug clang-release gcc-cxx23 asan-ubsan tsan)
+  presets=(debug clang-release gcc-cxx23 hardened asan-ubsan tsan)
 fi
 
 for p in "${presets[@]}"; do

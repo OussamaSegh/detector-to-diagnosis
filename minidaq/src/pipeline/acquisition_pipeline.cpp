@@ -13,7 +13,7 @@
 
 namespace minidaq {
 
-AcquisitionPipeline::AcquisitionPipeline(PipelineConfig cfg, WordSource source, CoincidenceSink sink)
+AcquisitionPipeline::AcquisitionPipeline(const PipelineConfig& cfg, WordSource source, CoincidenceSink sink)
     : cfg_{cfg},
       source_{std::move(source)},
       sink_{std::move(sink)},
@@ -42,7 +42,7 @@ void AcquisitionPipeline::start() {
   threads_[3] = std::jthread([this] { run_pair(); });
   threads_[2] = std::jthread([this] { run_sort(); });
   threads_[1] = std::jthread([this] { run_decode(); });
-  threads_[0] = std::jthread([this](std::stop_token st) { run_source(st); });
+  threads_[0] = std::jthread([this](const std::stop_token& st) { run_source(st); });
   ready_.wait();  // every stage has applied its settings and written rt_status_
 }
 
@@ -95,7 +95,7 @@ Batch<T>* AcquisitionPipeline::acquire_blocking(Channel<T>& ch, StageStats& s) {
 }
 
 // [snippet:source]
-void AcquisitionPipeline::run_source(std::stop_token st) {
+void AcquisitionPipeline::run_source(const std::stop_token& st) {
   enter_stage(StageId::source);
   StageStats& s = stats_of(StageId::source);
   LatencyHistogram& lat = latency_of(StageId::source);
@@ -181,15 +181,16 @@ void AcquisitionPipeline::run_decode() {
   Backoff idle{cfg_.backoff};
   for (;;) {
     Batch<std::uint64_t>* in = words_.receive();
-    if (in == nullptr) {
-      if (words_.closed() && (in = words_.receive()) == nullptr) {
+    if (in == nullptr && words_.closed()) {
+      in = words_.receive();  // a batch published just before the close
+      if (in == nullptr) {
         break;  // closed and drained
       }
-      if (in == nullptr) {
-        StageStats::add(s.input_idle, 1);
-        idle.pause();
-        continue;
-      }
+    }
+    if (in == nullptr) {
+      StageStats::add(s.input_idle, 1);
+      idle.pause();
+      continue;
     }
     idle.reset();
     Batch<Single>* out = acquire_blocking(decoded_, s);
@@ -217,15 +218,16 @@ void AcquisitionPipeline::run_sort() {
   Picoseconds last_emitted{std::numeric_limits<std::int64_t>::min()};
   for (;;) {
     Batch<Single>* in = decoded_.receive();
-    if (in == nullptr) {
-      if (decoded_.closed() && (in = decoded_.receive()) == nullptr) {
-        break;
-      }
+    if (in == nullptr && decoded_.closed()) {
+      in = decoded_.receive();  // a batch published just before the close
       if (in == nullptr) {
-        StageStats::add(s.input_idle, 1);
-        idle.pause();
-        continue;
+        break;  // closed and drained
       }
+    }
+    if (in == nullptr) {
+      StageStats::add(s.input_idle, 1);
+      idle.pause();
+      continue;
     }
     idle.reset();
     Batch<Single>* out = acquire_blocking(sorted_, s);
@@ -271,15 +273,16 @@ void AcquisitionPipeline::run_pair() {
   };
   for (;;) {
     Batch<Single>* in = sorted_.receive();
-    if (in == nullptr) {
-      if (sorted_.closed() && (in = sorted_.receive()) == nullptr) {
-        break;
-      }
+    if (in == nullptr && sorted_.closed()) {
+      in = sorted_.receive();  // a batch published just before the close
       if (in == nullptr) {
-        StageStats::add(s.input_idle, 1);
-        idle.pause();
-        continue;
+        break;  // closed and drained
       }
+    }
+    if (in == nullptr) {
+      StageStats::add(s.input_idle, 1);
+      idle.pause();
+      continue;
     }
     idle.reset();
     const std::int64_t t0 = monotonic_ns();
@@ -325,15 +328,16 @@ void AcquisitionPipeline::run_write() {
   Backoff idle{cfg_.backoff};
   for (;;) {
     Batch<Coincidence>* in = pairs_.receive();
-    if (in == nullptr) {
-      if (pairs_.closed() && (in = pairs_.receive()) == nullptr) {
-        break;
-      }
+    if (in == nullptr && pairs_.closed()) {
+      in = pairs_.receive();  // a batch published just before the close
       if (in == nullptr) {
-        StageStats::add(s.input_idle, 1);
-        idle.pause();
-        continue;
+        break;  // closed and drained
       }
+    }
+    if (in == nullptr) {
+      StageStats::add(s.input_idle, 1);
+      idle.pause();
+      continue;
     }
     idle.reset();
     const std::int64_t t0 = monotonic_ns();

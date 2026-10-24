@@ -47,6 +47,9 @@ std::string escape_pointer(std::string_view key) {
   return out;
 }
 
+// ObjectReader lives for one call of a parse function and refers to that call's
+// JSON object and error list; references are the honest type for that.
+// NOLINTBEGIN(cppcoreguidelines-avoid-const-or-ref-data-members)
 // [snippet:reader]
 // Reads one JSON object: each get() checks presence, type and range, records
 // an error with the value's JSON Pointer instead of throwing, and remembers
@@ -157,6 +160,7 @@ class ObjectReader {
   std::set<std::string, std::less<>> known_;
 };
 // [/snippet:reader]
+// NOLINTEND(cppcoreguidelines-avoid-const-or-ref-data-members)
 
 bool parse_version(std::string_view s, int& major, int& minor) {
   const auto dot = s.find('.');
@@ -234,7 +238,9 @@ Expected<AcquisitionConfig, ConfigErrors> parse_config(std::string_view json_tex
   json doc;
   try {
     doc = json::parse(json_text, nullptr, /*allow_exceptions=*/true, /*ignore_comments=*/true);
-  } catch (const json::parse_error& e) {
+  } catch (const json::exception& e) {
+    // Not only parse_error: a number too large for a double ("1e999") is an
+    // out_of_range exception. Found by fuzz/fuzz_config (Chapter 7).
     return Unexpected{ConfigErrors{{"", std::string{"not valid JSON: "} + e.what()}}};
   }
   return config_from_json(doc);

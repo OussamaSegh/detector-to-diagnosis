@@ -2,7 +2,6 @@
 #include "minidaq/control/control_server.hpp"
 
 #include <arpa/inet.h>
-#include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <poll.h>
@@ -11,8 +10,8 @@
 #include <unistd.h>
 
 #include <cerrno>
-#include <cstring>
 #include <map>
+#include <system_error>
 #include <vector>
 
 #include "minidaq/control/control_protocol.hpp"
@@ -34,7 +33,10 @@ std::string peer_name(const sockaddr_in& a) {
   return "tcp:" + std::string{ip} + ":" + std::to_string(ntohs(a.sin_port));
 }
 
-void set_nonblocking(int fd) { ::fcntl(fd, F_SETFL, ::fcntl(fd, F_GETFL, 0) | O_NONBLOCK); }
+std::string errno_text(const char* what) { return std::string{what} + ": " + std::system_category().message(errno); }
+
+// The sockets API takes every address family through a sockaddr*.
+sockaddr* as_sockaddr(sockaddr_in* a) { return reinterpret_cast<sockaddr*>(a); }  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
 }  // namespace
 
@@ -53,30 +55,36 @@ ControlServer::~ControlServer() {
 }
 
 Expected<std::uint16_t, std::string> ControlServer::start() {
-  listen_fd_ = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  listen_fd_ = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC | SOCK_NONBLOCK, 0);
   if (listen_fd_ < 0) {
-    return Unexpected{std::string{"socket: "} + std::strerror(errno)};
+    return Unexpected{errno_text("socket")};
   }
   const int one = 1;
-  ::setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+  // Restart without waiting for TIME_WAIT; a failure only delays a restart.
+  (void)::setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
   sockaddr_in addr{};
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port_);
   if (::inet_pton(AF_INET, bind_address_.c_str(), &addr.sin_addr) != 1) {
     return Unexpected{"bad bind address \"" + bind_address_ + "\""};
   }
-  if (::bind(listen_fd_, reinterpret_cast<const sockaddr*>(&addr), sizeof addr) != 0) {
-    return Unexpected{std::string{"bind: "} + std::strerror(errno)};
+  if (::bind(listen_fd_, as_sockaddr(&addr), sizeof addr) != 0) {
+    return Unexpected{errno_text("bind")};
   }
   if (::listen(listen_fd_, 8) != 0) {
-    return Unexpected{std::string{"listen: "} + std::strerror(errno)};
+    return Unexpected{errno_text("listen")};
   }
   socklen_t len = sizeof addr;
-  ::getsockname(listen_fd_, reinterpret_cast<sockaddr*>(&addr), &len);
-  set_nonblocking(listen_fd_);
+  if (::getsockname(listen_fd_, as_sockaddr(&addr), &len) != 0) {  // the port, if port_ was 0
+    return Unexpected{errno_text("getsockname")};
+  }
+  // Without the eventfd, stop() could not wake the poll() and would wait for its timeout.
   wake_fd_ = ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-  thread_ = std::jthread{[this](std::stop_token st) { run(st); }};
-  port_ = ntohs(addr.sin_port);
+  if (wake_fd_ < 0) {
+    return Unexpected{errno_text("eventfd")};
+  }
+  port_ = ntohs(addr.sin_port);  // set before the thread starts, so that the thread could read it
+  thread_ = std::jthread{[this](const std::stop_token& st) { run(st); }};
   service_.note("server", "listen", bind_address_ + ":" + std::to_string(port_));
   return port_;
 }
@@ -91,14 +99,14 @@ void ControlServer::stop() {
 }
 
 // [snippet:loop]
-void ControlServer::run(std::stop_token st) {
-  std::map<int, Client> clients;
+void ControlServer::run(const std::stop_token& st) {
+  std::map<int, Client> connections;
   std::vector<pollfd> fds;
   while (!st.stop_requested()) {
     fds.clear();
     fds.push_back({listen_fd_, POLLIN, 0});
     fds.push_back({wake_fd_, POLLIN, 0});
-    for (const auto& [fd, c] : clients) {
+    for (const auto& [fd, c] : connections) {
       fds.push_back({fd, static_cast<short>(POLLIN | (c.out.empty() ? 0 : POLLOUT)), 0});
     }
     if (::poll(fds.data(), fds.size(), 1000) < 0 && errno != EINTR) {
@@ -107,25 +115,26 @@ void ControlServer::run(std::stop_token st) {
     if ((fds[0].revents & POLLIN) != 0) {
       sockaddr_in peer{};
       socklen_t len = sizeof peer;
-      const int fd = ::accept4(listen_fd_, reinterpret_cast<sockaddr*>(&peer), &len, SOCK_NONBLOCK | SOCK_CLOEXEC);
+      const int fd = ::accept4(listen_fd_, as_sockaddr(&peer), &len, SOCK_NONBLOCK | SOCK_CLOEXEC);
       if (fd >= 0) {
         Client c;
         c.name = peer_name(peer);
-        if (clients.size() >= max_clients_) {
+        if (connections.size() >= max_clients_) {
           c.out = R"({"api":"1.0","id":null,"ok":false,"error":{"code":"busy","message":"too many clients"}})" "\n";
           c.closing = true;
           service_.note(c.name, "connect", "refused: too many clients", false);
         } else {
           const int one = 1;
-          ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof one);
+          // Small responses go out at once; a failure only adds latency.
+          (void)::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof one);
           service_.note(c.name, "connect", "");
         }
-        clients.emplace(fd, std::move(c));
+        connections.emplace(fd, std::move(c));
       }
     }
     for (std::size_t i = 2; i < fds.size(); ++i) {
       const int fd = fds[i].fd;
-      Client& c = clients.at(fd);
+      Client& c = connections.at(fd);
       bool drop = (fds[i].revents & (POLLERR | POLLNVAL)) != 0;
       if (!drop && (fds[i].revents & (POLLIN | POLLHUP)) != 0 && !c.closing) {
         char buf[4096];
@@ -158,12 +167,12 @@ void ControlServer::run(std::stop_token st) {
           service_.note(c.name, "disconnect", "");
         }
         ::close(fd);
-        clients.erase(fd);
+        connections.erase(fd);
       }
     }
-    clients_.store(clients.size(), std::memory_order_relaxed);
+    clients_.store(connections.size(), std::memory_order_relaxed);
   }
-  for (const auto& [fd, c] : clients) {
+  for (const auto& [fd, c] : connections) {
     ::close(fd);
   }
   clients_.store(0, std::memory_order_relaxed);

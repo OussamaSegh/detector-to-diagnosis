@@ -10,3 +10,12 @@ if(MINIDAQ_SANITIZERS)
   add_compile_options(-fsanitize=${_san} -fno-omit-frame-pointer -fno-sanitize-recover=all)
   add_link_options(-fsanitize=${_san})
 endif()
+
+# Fuzzing (Chapter 7): every object gets libFuzzer's coverage instrumentation,
+# so the fuzzer sees the branches of the library code it is testing.
+if(MINIDAQ_BUILD_FUZZERS)
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(FATAL_ERROR "MINIDAQ_BUILD_FUZZERS needs Clang (libFuzzer)")
+  endif()
+  add_compile_options(-fsanitize=fuzzer-no-link)
+endif()

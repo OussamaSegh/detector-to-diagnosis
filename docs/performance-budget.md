@@ -32,6 +32,15 @@ repetitions. Raw results: `measurements/ch05/`.
 | Latency histogram | One `record()` per batch | 3 ns per batch (under 0.001 ns per single) | | | `bm_histogram` `BM_HistogramRecord` |
 | Whole pipeline | All five stages, 5 threads on 4 vCPUs, batch 4,096 | 11.6 (86 M words/s) | 8.6x | 2.9x | `bm_pipeline` `BM_Pipeline/4096/64/real_time` |
 
+## Hardened builds (Chapter 7)
+
+Shipped builds use the `hardened` preset (ADR 0008). Measured against a build with every
+protection off, on the same machine, medians of 5 interleaved runs: decode, energy filter,
+histogram and the whole pipeline show no difference outside the VM's noise; the sort is 8 to
+18% slower (36 µs per batch of 4,096, 8.8 ns per single, margin 11x at 10 M/s and 3.8x at
+30 M/s), caused by `_GLIBCXX_ASSERTIONS`. Raw results: `measurements/ch07/`. The numbers in
+the table above are from the `release` preset at tag `ch05`.
+
 ## Reading the table
 
 - The whole pipeline is the binding row: at the high-activity rate its margin is under 3x on

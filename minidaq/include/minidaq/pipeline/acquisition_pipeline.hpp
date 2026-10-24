@@ -88,10 +88,12 @@ class AcquisitionPipeline {
   // Called on the writer thread for each batch of coincidences. Must not throw.
   using CoincidenceSink = std::function<void(std::span<const Coincidence>)>;
 
-  AcquisitionPipeline(PipelineConfig cfg, WordSource source, CoincidenceSink sink);
+  AcquisitionPipeline(const PipelineConfig& cfg, WordSource source, CoincidenceSink sink);
   ~AcquisitionPipeline();
   AcquisitionPipeline(const AcquisitionPipeline&) = delete;
   AcquisitionPipeline& operator=(const AcquisitionPipeline&) = delete;
+  AcquisitionPipeline(AcquisitionPipeline&&) = delete;
+  AcquisitionPipeline& operator=(AcquisitionPipeline&&) = delete;
 
   // Starts the stages and returns once every stage thread has applied its
   // real-time settings, so rt_status() is complete when start() returns.
@@ -116,7 +118,7 @@ class AcquisitionPipeline {
   [[nodiscard]] bool memory_locked() const noexcept { return memory_locked_; }
 
  private:
-  void run_source(std::stop_token st);
+  void run_source(const std::stop_token& st);
   void run_decode();
   void run_sort();
   void run_pair();

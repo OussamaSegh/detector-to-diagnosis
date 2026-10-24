@@ -300,6 +300,21 @@ The test is not built under AddressSanitizer, which installs its own allocator. 
 later adds a `std::string` or a `std::vector` to the decoder's hot path, this test fails and
 names the problem.
 
+::: box-mistakes
+- **Measuring the average and concluding allocation is free.** The table above says
+  allocation costs about 12% on average. The case that hurts is the rare `malloc` that calls
+  `mmap`, or a first touch that faults, and those show up only in tail latency (Chapter 4).
+- **`reserve()` in the loop instead of at start-up.** `reserve` on a fresh vector allocates;
+  doing it per batch keeps every allocation and adds a call.
+- **Hidden allocations.** `std::string` concatenation, `std::function` holding a large
+  lambda, `std::to_string`, exceptions, `std::vector` copies passed by value, and the first
+  `push_back` after `shrink_to_fit` all allocate. The counting test finds them; reading the
+  code often does not.
+- **An arena without a limit.** A `monotonic_buffer_resource` whose upstream is the default
+  resource falls back to `new` when its buffer is exhausted, silently. Use
+  `null_memory_resource()` as the upstream when "too small" must be an error.
+:::
+
 ## Bit-level packing: 64-bit event words
 
 ### The intuition
@@ -449,6 +464,50 @@ increment or store that takes hundreds of cycles; on bare metal Linux, `perf c2c
 followed by `perf c2c report` lists cache lines with "HITM" (hit in another core's
 modified line) accesses and the offsets touched within each line. If two threads touch
 different offsets of the same line, you have false sharing.
+
+### Worked example: laying out per-stage counters
+
+Chapter 3's pipeline has five stages, and each counts what passes through it: items in and
+out, batches, drops, filtered items, stalls and idle polls. That is seven 64-bit counters,
+56 bytes. Each stage increments its own counters on every batch; a monitor thread reads all
+of them about once a second.
+
+Put the five sets of counters in a plain array and look at the addresses. Stage 0 occupies
+bytes 0 to 55, stage 1 bytes 56 to 111, stage 2 bytes 112 to 167, and so on. Bytes 56 to 63,
+stage 1's first counter, sit in the same 64-byte line as stage 0's counters; stage 2 starts
+in the line where stage 1 ends. Every pair of neighboring stages, which run on different
+cores, now writes to a shared line on every batch. The measurement above says what that
+costs: a factor of six on the increments, for data that is logically private.
+
+MiniDAQ's `StageStats` is declared `alignas(cache_line_size)`. Alignment rounds the size up
+to a multiple of the alignment, so the struct is 64 bytes, and an array of five occupies
+five lines with one stage per line. Two consequences are worth checking whenever you change
+such a struct:
+
+- An eighth counter still fits in 64 bytes; a ninth makes the struct 128 bytes. Nothing
+  breaks, but the memory doubles, and a `static_assert(sizeof(StageStats) == 64)` next to
+  the struct turns that into a decision someone has to make.
+- The monitor thread's reads still move each line to its core, once a second. That is
+  true sharing at a rate nobody can measure. False sharing matters when *both* sides write,
+  or one side reads, at the rate of the data.
+
+The same reasoning sets the layout of `SpscRing` in Chapter 3: the producer's index and its
+private copy of the consumer's index share one line, written only by the producer, and the
+consumer's side has its own line.
+
+::: box-mistakes
+- **Padding the array, not the element.** `alignas(64)` on the array aligns its start; the
+  elements are still packed together. Align the element type.
+- **Padding everything.** A cache line per small object multiplies memory and spreads the
+  hot data of one thread over more lines. Pad only data written by different threads.
+- **Per-thread data in a `std::vector<T>` sized at run time.** The elements are contiguous;
+  if `T` is a counter or a small histogram, neighboring threads share lines. Use an aligned
+  element type, as above.
+- **Trusting the benchmark in a VM to show it.** Under a hypervisor two vCPUs may share a
+  physical core, where false sharing costs less; on bare metal with cores on different
+  sockets it costs more. Find it by reading the layout, and confirm with `perf c2c` where
+  you can.
+:::
 
 ::: box-regulated
 Memory layout decisions become regulated artifacts in two ways.

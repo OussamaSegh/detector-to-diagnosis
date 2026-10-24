@@ -1,0 +1,110 @@
+{
+  "context": {
+    "date": "2026-10-24T17:41:30+00:00",
+    "host_name": "vm",
+    "executable": "build/release/benchmarks/bm_energy_filter",
+    "num_cpus": 4,
+    "mhz_per_cpu": 2300,
+    "cpu_scaling_enabled": false,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 49152,
+        "num_sharing": 1
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 2097152,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 272629760,
+        "num_sharing": 4
+      }
+    ],
+    "load_avg": [0.234863,0.0678711,0.0161133],
+    "library_version": "v1.9.1",
+    "library_build_type": "release",
+    "json_schema_version": 1
+  },
+  "benchmarks": [
+    {
+      "name": "BM_EnergyFilter/0/50/0/4096",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_EnergyFilter/0/50/0/4096",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 19207,
+      "real_time": 2.1491203363353847e+01,
+      "cpu_time": 2.1468688603113453e+01,
+      "time_unit": "us",
+      "items_per_second": 1.9078948303372318e+08,
+      "kept_pct": 5.0017963218162649e+01,
+      "label": "branchy"
+    },
+    {
+      "name": "BM_EnergyFilter/1/50/0/4096",
+      "family_index": 0,
+      "per_family_instance_index": 1,
+      "run_name": "BM_EnergyFilter/1/50/0/4096",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 95391,
+      "real_time": 4.4264162971339092e+00,
+      "cpu_time": 4.4234769737186950e+00,
+      "time_unit": "us",
+      "items_per_second": 9.2596842355813277e+08,
+      "kept_pct": 5.0017934255868610e+01,
+      "label": "branchless"
+    },
+    {
+      "name": "BM_EnergyFilter/2/50/0/4096",
+      "family_index": 0,
+      "per_family_instance_index": 2,
+      "run_name": "BM_EnergyFilter/2/50/0/4096",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 94966,
+      "real_time": 4.4180225238508299e+00,
+      "cpu_time": 4.4067884506033739e+00,
+      "time_unit": "us",
+      "items_per_second": 9.2947506918313241e+08,
+      "kept_pct": 5.0017931479259680e+01,
+      "label": "avx2"
+    },
+    {
+      "name": "BM_EnergyFilter/3/50/0/4096",
+      "family_index": 0,
+      "per_family_instance_index": 3,
+      "run_name": "BM_EnergyFilter/3/50/0/4096",
+      "run_type": "iteration",
+      "repetitions": 1,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 86179,
+      "real_time": 4.8751659917137440e+00,
+      "cpu_time": 4.8702043769363774e+00,
+      "time_unit": "us",
+      "items_per_second": 8.4103246660391819e+08,
+      "kept_pct": 5.0017958623910701e+01,
+      "label": "avx512"
+    }
+  ]
+}
