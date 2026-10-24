@@ -12,11 +12,11 @@ whole stream at once):
 
 | Boards | Heap merger | Slice and sort |
 |---:|---:|---:|
-| 4 | 28.0 M singles/s | 48.1 M singles/s |
-| 24 | 12.7 M singles/s | 28.4 M singles/s |
-| 72 | 10.1 M singles/s | 20.3 M singles/s |
+| 4 | 30.4 M singles/s | 48.4 M singles/s |
+| 24 | 13.3 M singles/s | 28.4 M singles/s |
+| 72 | 10.1 M singles/s | 20.6 M singles/s |
 
-Slice and sort is about twice as fast at every size here. A heap operation per single costs
+Slice and sort is 1.6 times as fast for 4 boards and about twice as fast for 24 and 72. A heap operation per single costs
 about log2(boards) comparisons with poorly predictable branches; a sort of a 10 us slice
 works on a contiguous array that fits in cache, made of a few long sorted runs.
 

@@ -21,6 +21,11 @@ cut short.
 - A pair that straddles the nominal middle, with a delayed partner in the second half, is
   found once.
 
+The starter passes the first test. On realistic data, singles are about 170 ns apart and a
+window is 4 ns, so an equal-size cut rarely lands inside a window or a delayed window: a
+bug that shows up once in many runs, at a rate no one notices in a count. The other two
+tests build exactly the cases that break it.
+
 **Hints.** In fixed mode, which singles open windows depends on history. When does the
 history stop mattering? A slice needs to see some singles beyond its end, but it must not
 let them open windows: how do you tell its own coincidences from the ones that belong to
