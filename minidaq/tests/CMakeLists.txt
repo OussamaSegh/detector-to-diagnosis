@@ -10,7 +10,10 @@ add_executable(minidaq_unit_tests
   unit/test_mpmc_queue.cpp
   unit/test_channel.cpp
   unit/test_pipeline.cpp
-  unit/test_memory_model.cpp)
+  unit/test_memory_model.cpp
+  unit/test_latency_histogram.cpp
+  unit/test_realtime.cpp
+  unit/test_paced_source.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::core minidaq::warnings GTest::gtest_main)
 gtest_discover_tests(minidaq_unit_tests PROPERTIES LABELS "unit")
 

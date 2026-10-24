@@ -31,6 +31,7 @@ struct Batch {
   std::vector<T> items;  // fixed capacity; only the first `size` are valid
   std::size_t size = 0;
   std::uint64_t sequence = 0;  // batch number, for gap detection downstream
+  std::int64_t origin_ns = 0;  // monotonic time the oldest data in it entered the PC (Chapter 4)
 
   [[nodiscard]] std::span<T> view() noexcept { return {items.data(), size}; }
   [[nodiscard]] std::span<const T> view() const noexcept { return {items.data(), size}; }

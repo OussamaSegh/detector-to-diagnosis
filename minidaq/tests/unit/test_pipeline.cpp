@@ -13,6 +13,7 @@
 #include <thread>
 #include <vector>
 
+#include "minidaq/core/clock.hpp"
 #include "minidaq/core/geometry.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/pipeline/acquisition_pipeline.hpp"
@@ -163,4 +164,65 @@ TEST(Pipeline, DestructorStopsARunningPipeline) {
     std::this_thread::sleep_for(10ms);
   }  // must not hang or crash
   EXPECT_GT(gen.generated(), 0U);
+}
+
+TEST(Pipeline, RecordsStageAndEndToEndLatency) {
+  // REQ: SRS-RT-010
+  sim::SyntheticSource gen{{}};
+  constexpr std::uint64_t n = 100'000;
+  AcquisitionPipeline p{small_config(n), [&](std::span<std::uint64_t> out) { return gen.generate(out); }, nullptr};
+  p.start();
+  p.wait();
+  const auto st = p.stats();
+  for (std::size_t i = 0; i < num_stages; ++i) {
+    const auto& h = p.stage_latency(static_cast<StageId>(i));
+    EXPECT_GT(h.count(), 0U) << st[i].name;
+    EXPECT_GT(h.summary().max, 0) << st[i].name;
+  }
+  // One service-time sample per batch for source, decode, sort and write.
+  EXPECT_EQ(p.stage_latency(StageId::decode).count(), st[1].batches);
+  EXPECT_EQ(p.stage_latency(StageId::write).count(), st[4].batches);
+  EXPECT_EQ(p.end_to_end_latency().count(), st[4].batches);
+  const auto e2e = p.end_to_end_latency().summary();
+  EXPECT_GE(e2e.min, p.stage_latency(StageId::write).summary().min) << "end to end includes the write";
+}
+
+TEST(Pipeline, MeasuresFromDueTimeWhenTheSourceKnowsIt) {
+  // REQ: SRS-RT-012
+  // A source that says its data was due one second ago: every end-to-end
+  // sample must include that second (no coordinated omission).
+  sim::SyntheticSource gen{{}};
+  PipelineConfig cfg = small_config(20'000);
+  const std::int64_t long_ago = monotonic_ns() - 1'000'000'000;
+  std::uint64_t asked_max = 0;
+  cfg.due_time_ns = [&](std::uint64_t index) {
+    asked_max = std::max(asked_max, index);
+    return long_ago;
+  };
+  AcquisitionPipeline p{cfg, [&](std::span<std::uint64_t> out) { return gen.generate(out); }, nullptr};
+  p.start();
+  p.wait();
+  const auto e2e = p.end_to_end_latency().summary();
+  ASSERT_GT(e2e.count, 0U);
+  EXPECT_GE(e2e.min, 1'000'000'000);
+  EXPECT_LT(asked_max, 20'000U) << "indices count words from 0";
+}
+
+TEST(Pipeline, AppliesRealTimeProfileBeforeStartReturns) {
+  // REQ: SRS-RT-011
+  PipelineConfig cfg = small_config(10'000);
+  cfg.rt.stages[1].cpu = 0;  // pin decode to CPU 0
+  cfg.rt.prefault_stack_bytes = 64 * 1024;
+  sim::SyntheticSource gen{{}};
+  AcquisitionPipeline p{cfg, [&](std::span<std::uint64_t> out) { return gen.generate(out); }, nullptr};
+  p.start();
+  const auto& rt = p.rt_status();  // complete as soon as start() returns
+  for (const auto& s : rt) {
+    EXPECT_TRUE(s.applied);
+    EXPECT_TRUE(s.scheduled);
+  }
+  EXPECT_TRUE(rt[1].pinned);
+  EXPECT_EQ(rt[1].running_cpu, 0);
+  EXPECT_FALSE(rt[0].pinned);
+  p.wait();
 }

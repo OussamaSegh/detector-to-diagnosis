@@ -19,6 +19,13 @@ the patch version.
   (with separate dropped and filtered counts), five-thread `AcquisitionPipeline` with block/drop
   entry policy and drain-on-stop, `SyntheticSource`; memory-model litmus tests; benchmarks
   `bm_spsc` and `bm_pipeline`; exercises 3.1 to 3.6; `tsan` preset in `ci/run_all.sh` and CI.
+- Chapter 4: `LatencyHistogram` (log-linear, fixed memory, single writer, `count_at`),
+  `monotonic_ns()`, real-time helpers (`minidaq::rt`: pinning, scheduling, timer slack, stack
+  prefault, `mlockall`, per-thread page faults, profile files), `PacedSource` with `due_ns` and
+  `behind`, pipeline real-time profile applied before `start()` returns, per-stage and
+  end-to-end latency histograms, `max_batch_delay`, `due_time_ns`; tools `minidaq_jitter` and
+  `minidaq_latency`; profiles `default`, `rt-pin`, `rt-fifo`; benchmark `bm_histogram`;
+  exercises 4.1 to 4.6; raw measurements under `measurements/ch04/`.
 - Book build fails when a code block's attributes are not parsed (they would otherwise
   render as raw text).
 
@@ -31,6 +38,12 @@ the patch version.
 - Exercise starters build with warnings but without `-Werror` (`minidaq::warnings_no_error`).
 
 ### Fixed
+- End-to-end latency was measured from when the source read a batch's first word, which hid
+  the source's own stalls (coordinated omission); it is now measured from the due time when the
+  source provides one, and `minidaq_latency` reports the backlog next to drops.
+- cyclictest baseline in Chapter 4: `--policy=other -p0` runs at `SCHED_FIFO` 2; the normal-policy
+  runs were repeated with `--policy=other` and no `-p`.
+- Chapter 2 overstated the cost of a page fault ("several microseconds"); measured 1.5 µs.
 - Listing of `EnergyWindowStage` in the Chapter 2 solutions stopped at an inner `};`.
 - Exercise 2.3 allocation test is skipped under TSan as well as ASan (both replace `operator new`).
 - Removed `-Wnull-dereference`: GCC 13 reports false positives inside libstdc++ at `-O2`.

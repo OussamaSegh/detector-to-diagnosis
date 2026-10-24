@@ -1,0 +1,6 @@
+minidaq_exercise(e1_cyclictest)
+minidaq_exercise(e2_pin_stages)
+minidaq_exercise(e3_stage_histograms)
+minidaq_exercise(e4_prefault_arena)
+minidaq_exercise(e5_tsc_clock)
+minidaq_exercise(e6_coordinated_omission)

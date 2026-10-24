@@ -4,3 +4,4 @@ src/part1/part1.md
 src/part1/ch01-cpp-essentials.md
 src/part1/ch02-memory.md
 src/part1/ch03-concurrency.md
+src/part1/ch04-realtime.md

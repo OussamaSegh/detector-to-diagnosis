@@ -283,7 +283,7 @@ reusing a vector. That is an honest and useful result: glibc's allocator is very
 repetitive pattern of same-sized allocations, so the *average* cost of allocation here is
 small. The reasons to remove allocation from the hot path are about the *worst* case:
 a `malloc` that needs to call `mmap`, a first touch of a new page that costs a page fault
-(several microseconds), a lock contended by another thread. Chapter 4 measures those as
+(more than a microsecond), a lock contended by another thread. Chapter 4 measures those as
 tail latency. The habit to build: **allocate at start-up, recycle in the loop, and prove it
 with a test.**
 
