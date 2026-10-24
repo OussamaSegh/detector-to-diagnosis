@@ -1,0 +1,6 @@
+minidaq_exercise(e1_strong_types)
+minidaq_exercise(e2_rule_of_zero)
+minidaq_exercise(e3_parse_single)
+minidaq_exercise(e4_ub_hunt)
+minidaq_exercise(e5_constexpr_lut)
+minidaq_exercise(e6_event_concepts)

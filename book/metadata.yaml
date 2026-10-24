@@ -1,0 +1,31 @@
+title: "The NeuroLF Engineer"
+subtitle: "Modern C++, PET Data Acquisition and Medical Device Software"
+author:
+  - "A practice book prepared with Claude"
+lang: en-US
+rights: "Personal study edition. Code: MIT License. Not a substitute for a manufacturer's QMS procedures."
+description: "A practice-heavy book for a C++ engineer who leads the data acquisition system of a brain PET scanner. Built around MiniDAQ, a simulated PET DAQ documented as a regulated medical device."
+subject: "C++; PET; data acquisition; IEC 62304; ISO 14971"
+documentclass: book
+classoption:
+  - openany
+  - 10pt
+geometry:
+  - paperwidth=7in
+  - paperheight=10in
+  - inner=0.85in
+  - outer=0.7in
+  - top=0.8in
+  - bottom=0.8in
+mainfont: "TeX Gyre Pagella"
+sansfont: "TeX Gyre Heros"
+monofont: "Inconsolata"
+monofontoptions:
+  - Scale=0.92
+mathfont: "TeX Gyre Pagella Math"
+colorlinks: true
+linkcolor: "nlfblue"
+urlcolor: "nlfblue"
+toccolor: "black"
+links-as-notes: false
+secnumdepth: 2

@@ -1,0 +1,27 @@
+# MiniDAQ CI (Chapter 1 baseline; Chapter 20 grows it into the full regulated pipeline).
+name: ci
+on:
+  push:
+    branches: [main]
+    tags: ["ch*", "book-v*"]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [debug, clang-release, asan-ubsan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }} -LE starter

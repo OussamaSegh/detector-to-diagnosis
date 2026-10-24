@@ -1,0 +1,34 @@
+% The NeuroLF Engineer: LaTeX preamble additions (used with pandoc's default template).
+\usepackage[most]{tcolorbox}
+\usepackage{makeidx}
+\makeindex
+\usepackage{fvextra}
+% Break long code lines instead of overflowing the margin.
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\},fontsize=\small}
+\fvset{breaklines=true,breakanywhere=true}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\textsc{The NeuroLF Engineer}}
+\fancyhead[RO]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+\usepackage{microtype}
+\usepackage{needspace}
+\setlength{\emergencystretch}{3em}
+\definecolor{nlfblue}{HTML}{1F4E79}
+\definecolor{nlfred}{HTML}{8B1E2D}
+\definecolor{nlfgreen}{HTML}{2E6B3A}
+\definecolor{nlfgold}{HTML}{8A6D1D}
+\definecolor{nlfgrey}{HTML}{4A4A4A}
+\tcbset{nlfbox/.style={enhanced,breakable,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,fonttitle=\bfseries\sffamily\small,before skip=8pt,after skip=8pt}}
+\newtcolorbox{boxwhy}[1]{nlfbox,colback=nlfblue!4,colframe=nlfblue,title={#1}}
+\newtcolorbox{boxregulated}[1]{nlfbox,colback=nlfred!4,colframe=nlfred,title={#1}}
+\newtcolorbox{boxaskteam}[1]{nlfbox,colback=nlfgreen!5,colframe=nlfgreen,title={#1}}
+\newtcolorbox{boxmistakes}[1]{nlfbox,colback=nlfgold!6,colframe=nlfgold,title={#1}}
+\newtcolorbox{boxnote}[1]{nlfbox,colback=nlfgrey!4,colframe=nlfgrey,title={#1}}
+\newtcolorbox{boxmilestone}[1]{nlfbox,colback=nlfblue!8,colframe=nlfblue!70!black,title={#1}}
+% Listing captions produced by include-code.lua
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}

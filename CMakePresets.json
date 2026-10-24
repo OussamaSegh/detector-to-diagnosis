@@ -1,0 +1,182 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "FETCHCONTENT_BASE_DIR": "${sourceDir}/.deps",
+        "FETCHCONTENT_UPDATES_DISCONNECTED": "ON"
+      }
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug (GCC)",
+      "inherits": [
+        "base",
+        "gcc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release (GCC, -O2)",
+      "inherits": [
+        "base",
+        "gcc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
+      }
+    },
+    {
+      "name": "clang-release",
+      "displayName": "Release (Clang)",
+      "inherits": [
+        "base",
+        "clang"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
+      }
+    },
+    {
+      "name": "asan-ubsan",
+      "displayName": "ASan + UBSan (Clang)",
+      "inherits": [
+        "base",
+        "clang"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "MINIDAQ_SANITIZERS": "address;undefined"
+      }
+    },
+    {
+      "name": "tsan",
+      "displayName": "ThreadSanitizer (Clang)",
+      "inherits": [
+        "base",
+        "clang"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "MINIDAQ_SANITIZERS": "thread"
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "Coverage (GCC, gcov)",
+      "inherits": [
+        "base",
+        "gcc"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS": "--coverage -fprofile-update=atomic",
+        "CMAKE_EXE_LINKER_FLAGS": "--coverage"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "clang-release",
+      "configurePreset": "clang-release"
+    },
+    {
+      "name": "asan-ubsan",
+      "configurePreset": "asan-ubsan"
+    },
+    {
+      "name": "tsan",
+      "configurePreset": "tsan"
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "timeout": 300
+      }
+    },
+    {
+      "name": "debug",
+      "inherits": "base",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "inherits": "base",
+      "configurePreset": "release"
+    },
+    {
+      "name": "clang-release",
+      "inherits": "base",
+      "configurePreset": "clang-release"
+    },
+    {
+      "name": "asan-ubsan",
+      "inherits": "base",
+      "configurePreset": "asan-ubsan",
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1"
+      }
+    },
+    {
+      "name": "tsan",
+      "inherits": "base",
+      "configurePreset": "tsan",
+      "environment": {
+        "TSAN_OPTIONS": "halt_on_error=1:second_deadlock_stack=1"
+      }
+    },
+    {
+      "name": "coverage",
+      "inherits": "base",
+      "configurePreset": "coverage"
+    }
+  ]
+}
