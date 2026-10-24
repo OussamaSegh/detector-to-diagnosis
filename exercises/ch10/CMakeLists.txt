@@ -1,0 +1,4 @@
+minidaq_exercise(e1_reference_sorter)
+minidaq_exercise(e2_multiples_policies)
+minidaq_exercise(e3_parallel_slices)
+minidaq_exercise(e4_fast_sorter)

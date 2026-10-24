@@ -253,8 +253,8 @@ void CoincidenceSorter::resolve_delayed(std::size_t o, std::size_t b, std::size_
       if (n == 1 || cfg_.multiples == MultiplesPolicy::take_all_goods) {
         out.push_back(Coincidence{buf_[o], buf_[j], CoincidenceKind::delayed});
         ++stats_.delayed;
-      } else if (buf_[j].energy.count() > best) {
-        best = buf_[j].energy.count();  // the opener is in every pair: compare the partner
+      } else if (const float sum = buf_[o].energy.count() + buf_[j].energy.count(); sum > best) {
+        best = sum;  // as for prompts: the highest summed energy, ties keep the earlier pair
         w = j;
       }
     }
