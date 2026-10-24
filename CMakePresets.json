@@ -79,13 +79,13 @@
     },
     {
       "name": "tsan",
-      "displayName": "ThreadSanitizer (Clang)",
+      "displayName": "ThreadSanitizer (Clang, -O0: see Chapter 3)",
       "inherits": [
         "base",
         "clang"
       ],
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_BUILD_TYPE": "Debug",
         "MINIDAQ_SANITIZERS": "thread"
       }
     },

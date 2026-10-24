@@ -15,12 +15,24 @@ the patch version.
 - Chapter 2: MDQ-P1 packed 64-bit single, `TimeUnwrapper`, zero-allocation `StreamDecoder`,
   allocation-counting test binary; Google Benchmark (pinned) and benchmarks `bm_latency`,
   `bm_layout`, `bm_alloc`, `bm_false_sharing`, `bm_decode`; exercises 2.1 to 2.6.
+- Chapter 3: `SpscRing`, `MpmcQueue` (Vyukov), `Channel`/`Batch`, `Backoff`, `StageStats`
+  (with separate dropped and filtered counts), five-thread `AcquisitionPipeline` with block/drop
+  entry policy and drain-on-stop, `SyntheticSource`; memory-model litmus tests; benchmarks
+  `bm_spsc` and `bm_pipeline`; exercises 3.1 to 3.6; `tsan` preset in `ci/run_all.sh` and CI.
+- Book build fails when a code block's attributes are not parsed (they would otherwise
+  render as raw text).
 
 ### Changed
+- `tsan` preset builds at `-O0`: with Clang 18 at `-O1` and above, TSan did not instrument
+  loads from a stack object and missed a seeded race (documented in Chapter 3).
+- `to="=}"` in listing includes matches the closing line at the indentation of the `from`
+  line, not the first inner brace.
 - Release presets use `-O2` explicitly (CMake's default Release is `-O3`).
 - Exercise starters build with warnings but without `-Werror` (`minidaq::warnings_no_error`).
 
 ### Fixed
+- Listing of `EnergyWindowStage` in the Chapter 2 solutions stopped at an inner `};`.
+- Exercise 2.3 allocation test is skipped under TSan as well as ASan (both replace `operator new`).
 - Removed `-Wnull-dereference`: GCC 13 reports false positives inside libstdc++ at `-O2`.
 - Exercise test labels: only the variant (`starter`/`solution`) is used as a CTest label.
 - EPUB: Graphviz DOCTYPE stripped and SVG files renamed from `.svgz` so epubcheck passes.

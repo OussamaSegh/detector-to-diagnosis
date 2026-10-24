@@ -5,7 +5,12 @@ add_executable(minidaq_unit_tests
   unit/test_expected.cpp
   unit/test_geometry.cpp
   unit/test_raw_single.cpp
-  unit/test_packed_single.cpp)
+  unit/test_packed_single.cpp
+  unit/test_spsc_ring.cpp
+  unit/test_mpmc_queue.cpp
+  unit/test_channel.cpp
+  unit/test_pipeline.cpp
+  unit/test_memory_model.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::core minidaq::warnings GTest::gtest_main)
 gtest_discover_tests(minidaq_unit_tests PROPERTIES LABELS "unit")
 

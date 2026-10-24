@@ -7,15 +7,17 @@
 
 #include "stage.hpp"
 
-#if defined(__SANITIZE_ADDRESS__)
-#define EX_ASAN 1
+// ASan and TSan both supply their own operator new, so the counting
+// replacement below cannot be linked into sanitizer builds.
+#if defined(__SANITIZE_ADDRESS__) || defined(__SANITIZE_THREAD__)
+#define EX_SANITIZED 1
 #elif defined(__has_feature)
-#if __has_feature(address_sanitizer)
-#define EX_ASAN 1
+#if __has_feature(address_sanitizer) || __has_feature(thread_sanitizer)
+#define EX_SANITIZED 1
 #endif
 #endif
 
-#ifndef EX_ASAN
+#ifndef EX_SANITIZED
 namespace {
 std::atomic<std::size_t> g_news{0};
 }
@@ -69,8 +71,8 @@ TEST(Stage, FiltersInOrder) {
 }
 
 TEST(Stage, SteadyStateDoesNotAllocate) {
-#ifdef EX_ASAN
-  GTEST_SKIP() << "allocation counting is disabled under AddressSanitizer";
+#ifdef EX_SANITIZED
+  GTEST_SKIP() << "allocation counting is disabled under ASan/TSan";
 #else
   ex::EnergyWindowStage st{435.0F, 587.0F, 4096};
   const auto in = batch(4096, 2);

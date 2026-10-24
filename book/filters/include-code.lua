@@ -10,7 +10,8 @@
 --   lines    "A-B" line range (1-based, inclusive) when no snippet is given
 --   from/to  literal text: include from the first line containing `from` up to
 --            and including the next line containing `to` (robust to edits);
---            to="=}" matches a line that is exactly "}" after trimming
+--            to="=}" matches a line that is exactly "}" at the indentation of
+--            the `from` line (the brace that closes that block)
 --   caption  optional text placed before the path in the listing caption
 -- Without snippet or lines, the whole file is included (SPDX lines removed).
 -- The book never contains code that is not in the repository, so every listing
@@ -93,17 +94,24 @@ function CodeBlock(el)
   elseif el.attributes["from"] then
     -- `to` is searched from the line after the `from` line onwards.
     local from, to = el.attributes["from"], el.attributes["to"]
-    local s, started = {}, false
+    local s, started, indent = {}, false, ""
     for _, l in ipairs(lines) do
       if started then
         if not is_marker(l) then table.insert(s, l) end
         if to then
-          -- "=text" matches a line whose trimmed content is exactly text.
+          -- "=text" matches a line whose trimmed content is exactly text and
+          -- whose indentation equals the `from` line's, so to="=}" finds the
+          -- brace that closes the block, not an inner one.
           local exact = to:sub(1, 1) == "=" and to:sub(2) or nil
-          if (exact and l:match("^%s*(.-)%s*$") == exact) or (not exact and l:find(to, 1, true)) then break end
+          if exact then
+            if l:match("^%s*(.-)%s*$") == exact and l:match("^(%s*)") == indent then break end
+          elseif l:find(to, 1, true) then
+            break
+          end
         end
       elseif l:find(from, 1, true) then
         started = true
+        indent = l:match("^(%s*)")
         table.insert(s, l)
       end
     end

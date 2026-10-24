@@ -2,3 +2,4 @@
 solutions/intro.md
 solutions/ch01.md
 solutions/ch02.md
+solutions/ch03.md

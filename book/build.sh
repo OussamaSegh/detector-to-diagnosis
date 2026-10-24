@@ -58,6 +58,11 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
       --include-after-body "$here/templates/book-after.tex" \
       -V date="Version $version, $date_str" \
       -s -o "$tex" "${files[@]}"
+    # A fenced block whose attributes Pandoc cannot parse (for example "[[" in
+    # a from/to value) silently becomes paragraph text: fail instead.
+    if grep -nE '\\\{\.(cpp|python|cmake|yaml|text|dot)' "$tex" | head -5 | grep . ; then
+      echo "unprocessed code-block attributes in $tex (see lines above)"; exit 1
+    fi
     (cd "$build/tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$stem.tex" >"$stem.latexmk.log" 2>&1) \
       || { echo "LaTeX failed, see $build/tex/$stem.log"; grep -n -A3 "^!" "$build/tex/$stem.log" | head -30; exit 1; }
     cp "$build/tex/$stem.pdf" "$out/$stem-v$version.pdf"

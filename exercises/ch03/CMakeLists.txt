@@ -1,0 +1,6 @@
+minidaq_exercise(e1_spsc_ring)
+minidaq_exercise(e2_seeded_race)
+minidaq_exercise(e3_four_stage_pipeline)
+minidaq_exercise(e4_latch_barrier)
+minidaq_exercise(e5_drop_policy)
+minidaq_exercise(e6_stop_token)
