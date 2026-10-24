@@ -58,6 +58,9 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
       --include-after-body "$here/templates/book-after.tex" \
       -V date="Version $version, $date_str" \
       -s -o "$tex" "${files[@]}"
+    # Images are referenced relative to book/ (src/img/...); LaTeX runs in
+    # build/tex, so give it the same view.
+    ln -sfn "$here/src" "$build/tex/src"
     # A fenced block whose attributes Pandoc cannot parse (for example "[[" in
     # a from/to value) silently becomes paragraph text: fail instead.
     if grep -nE '\\\{\.(cpp|python|cmake|yaml|text|dot)' "$tex" | head -5 | grep . ; then

@@ -1,0 +1,181 @@
+{
+  "context": {
+    "date": "2026-10-24T13:56:34+00:00",
+    "host_name": "vm",
+    "executable": "build/flags-lto/benchmarks/bm_pipeline",
+    "num_cpus": 4,
+    "mhz_per_cpu": 2300,
+    "cpu_scaling_enabled": false,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 49152,
+        "num_sharing": 1
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32768,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 2097152,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 272629760,
+        "num_sharing": 4
+      }
+    ],
+    "load_avg": [1.80859,1.76611,1.32373],
+    "library_version": "v1.9.1",
+    "library_build_type": "release",
+    "json_schema_version": 1
+  },
+  "benchmarks": [
+    {
+      "name": "BM_Pipeline/4096/64/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "iteration",
+      "repetitions": 5,
+      "repetition_index": 0,
+      "threads": 1,
+      "iterations": 7,
+      "real_time": 9.4224181999899358e+01,
+      "cpu_time": 7.3323472857142864e+00,
+      "time_unit": "ms",
+      "items_per_second": 8.9028185991669953e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "iteration",
+      "repetitions": 5,
+      "repetition_index": 1,
+      "threads": 1,
+      "iterations": 7,
+      "real_time": 1.0056323057142436e+02,
+      "cpu_time": 7.2492740000000042e+00,
+      "time_unit": "ms",
+      "items_per_second": 8.3416254155061647e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "iteration",
+      "repetitions": 5,
+      "repetition_index": 2,
+      "threads": 1,
+      "iterations": 7,
+      "real_time": 9.1998786142669687e+01,
+      "cpu_time": 7.0573315714285627e+00,
+      "time_unit": "ms",
+      "items_per_second": 9.1181724800054774e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "iteration",
+      "repetitions": 5,
+      "repetition_index": 3,
+      "threads": 1,
+      "iterations": 7,
+      "real_time": 9.1816359285595738e+01,
+      "cpu_time": 7.2110182857142906e+00,
+      "time_unit": "ms",
+      "items_per_second": 9.1362890723069817e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "iteration",
+      "repetitions": 5,
+      "repetition_index": 4,
+      "threads": 1,
+      "iterations": 7,
+      "real_time": 1.0390476028572137e+02,
+      "cpu_time": 7.1118631428571506e+00,
+      "time_unit": "ms",
+      "items_per_second": 8.0733625455972165e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time_mean",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "aggregate",
+      "repetitions": 5,
+      "threads": 1,
+      "aggregate_name": "mean",
+      "aggregate_unit": "time",
+      "iterations": 5,
+      "real_time": 9.6501463657062104e+01,
+      "cpu_time": 7.1923668571428596e+00,
+      "time_unit": "ms",
+      "items_per_second": 8.7144536225165680e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time_median",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "aggregate",
+      "repetitions": 5,
+      "threads": 1,
+      "aggregate_name": "median",
+      "aggregate_unit": "time",
+      "iterations": 5,
+      "real_time": 9.4224181999899372e+01,
+      "cpu_time": 7.2110182857142906e+00,
+      "time_unit": "ms",
+      "items_per_second": 8.9028185991669953e+07
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time_stddev",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "aggregate",
+      "repetitions": 5,
+      "threads": 1,
+      "aggregate_name": "stddev",
+      "aggregate_unit": "time",
+      "iterations": 5,
+      "real_time": 5.4478681829389028e+00,
+      "cpu_time": 1.0942599723182397e-01,
+      "time_unit": "ms",
+      "items_per_second": 4.8125203061097572e+06
+    },
+    {
+      "name": "BM_Pipeline/4096/64/real_time_cv",
+      "family_index": 0,
+      "per_family_instance_index": 0,
+      "run_name": "BM_Pipeline/4096/64/real_time",
+      "run_type": "aggregate",
+      "repetitions": 5,
+      "threads": 1,
+      "aggregate_name": "cv",
+      "aggregate_unit": "percentage",
+      "iterations": 5,
+      "real_time": 5.6453736311182057e-02,
+      "cpu_time": 1.5214184621735637e-02,
+      "time_unit": "ms",
+      "items_per_second": 5.5224578781107717e-02
+    }
+  ]
+}

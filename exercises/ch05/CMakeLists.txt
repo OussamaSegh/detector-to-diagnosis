@@ -1,0 +1,5 @@
+minidaq_exercise(e1_energy_filters)
+minidaq_exercise(e2_hotspot)
+minidaq_python_exercise(e3_perf_gate)
+minidaq_exercise(e4_energy_spectrum)
+minidaq_exercise(e5_speedup_ci)

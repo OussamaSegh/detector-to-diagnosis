@@ -233,7 +233,7 @@ void AcquisitionPipeline::run_sort() {
     std::copy_n(in->items.begin(), in->size, out->items.begin());
     out->size = in->size;
     auto v = out->view();
-    std::sort(v.begin(), v.end(), time_order);
+    std::sort(v.begin(), v.end(), TimeOrder{});  // a function object, so the comparison inlines
     if (!v.empty()) {
       // Singles older than what we already emitted cannot be fixed here.
       const auto late = static_cast<std::uint64_t>(std::count_if(

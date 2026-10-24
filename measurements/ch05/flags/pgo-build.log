@@ -1,0 +1,45 @@
+[1/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
+/home/claude/neurolf/.deps/googlebenchmark-src/src/check.cc: In function 'void (*& benchmark::internal::GetAbortHandler())()':
+/home/claude/neurolf/.deps/googlebenchmark-src/src/check.cc:11:1: warning: '/home/claude/neurolf/build/flags-pgo-data//home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.gcda' profile count data file not found [-Wmissing-profile]
+   11 | }  // namespace benchmark
+      | ^
+[2/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
+[3/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
+[4/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
+[5/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
+[6/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
+[7/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
+[8/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
+[9/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
+[10/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
+[11/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
+[12/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
+[13/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
+[14/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
+[15/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+[16/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
+[17/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
+[18/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
+[19/37] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/packed_single.cpp.o
+[20/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
+[21/37] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/raw_single.cpp.o
+/home/claude/neurolf/minidaq/src/format/raw_single.cpp: In function 'void minidaq::{anonymous}::store_le(std::byte*, T) [with T = unsigned int]':
+/home/claude/neurolf/minidaq/src/format/raw_single.cpp:72:1: warning: '/home/claude/neurolf/build/flags-pgo-data/#home#claude#neurolf#build#flags-pgo#minidaq#CMakeFiles#minidaq_core.dir#src#format#raw_single.cpp.gcda' profile count data file not found [-Wmissing-profile]
+   72 | }  // namespace minidaq
+      | ^
+[22/37] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/synthetic_source.cpp.o
+[23/37] Building CXX object benchmarks/CMakeFiles/bm_decode.dir/bm_decode.cpp.o
+[24/37] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/rt/realtime.cpp.o
+[25/37] Building CXX object /home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
+[26/37] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/energy_filter.cpp.o
+[27/37] Linking CXX static library /home/claude/neurolf/.deps/googlebenchmark-build/src/libbenchmark.a
+[28/37] Linking CXX static library /home/claude/neurolf/.deps/googlebenchmark-build/src/libbenchmark_main.a
+[29/37] Building CXX object benchmarks/CMakeFiles/bm_energy_filter.dir/bm_energy_filter.cpp.o
+[30/37] Building CXX object benchmarks/CMakeFiles/bm_pipeline.dir/bm_pipeline.cpp.o
+[31/37] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/pipeline/acquisition_pipeline.cpp.o
+[32/37] Linking CXX static library minidaq/libminidaq_core.a
+[33/37] Linking CXX executable benchmarks/bm_pipeline
+[34/37] Linking CXX executable benchmarks/bm_energy_filter
+[35/37] Linking CXX executable benchmarks/bm_decode
+[36/37] Building CXX object benchmarks/CMakeFiles/bm_sort.dir/bm_sort.cpp.o
+[37/37] Linking CXX executable benchmarks/bm_sort

@@ -69,6 +69,12 @@ struct PipelineConfig {
   }
   return a.crystal < b.crystal;
 }
+// As a function object, so that std::sort can inline the comparison: passing
+// time_order by name passes a function pointer, which the compiler did not
+// inline (measured in Chapter 5).
+struct TimeOrder {
+  [[nodiscard]] constexpr bool operator()(const Single& a, const Single& b) const noexcept { return time_order(a, b); }
+};
 // [/snippet:order]
 
 enum class StageId : std::uint8_t { source = 0, decode, sort, pair, write };

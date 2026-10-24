@@ -26,6 +26,14 @@ the patch version.
   end-to-end latency histograms, `max_batch_delay`, `due_time_ns`; tools `minidaq_jitter` and
   `minidaq_latency`; profiles `default`, `rt-pin`, `rt-fifo`; benchmark `bm_histogram`;
   exercises 4.1 to 4.6; raw measurements under `measurements/ch04/`.
+- Chapter 5: energy window filter `minidaq::filter_energy` with branchy, branchless, AVX2 and
+  AVX-512 kernels, run-time SIMD dispatch (`simd_kernel`) and the branchless kernel as the
+  measured default (`best_kernel`); `TimeOrder`
+  function object; benchmarks `bm_energy_filter` and `bm_sort`; `profile` preset (frame
+  pointers); tools `flamegraph.sh`, `perf_suite.sh` and `perf_gate.py` (5% threshold with an
+  exact Mann-Whitney test); `perf` workflow for a self-hosted runner and the baseline
+  `benchmarks/baseline/book-vm.json`; `docs/performance-budget.md`; compiler-flag experiment
+  (`measurements/ch05/flags/`); exercises 5.1 to 5.5 (5.3 in Python, run by CTest).
 - Book build fails when a code block's attributes are not parsed (they would otherwise
   render as raw text).
 
@@ -38,6 +46,8 @@ the patch version.
 - Exercise starters build with warnings but without `-Werror` (`minidaq::warnings_no_error`).
 
 ### Fixed
+- Sort stage passed `time_order` as a function pointer, which GCC at `-O2` did not inline: the
+  sort stage is 3 times and the pipeline at batches of 4,096 2.5 times faster with `TimeOrder{}`.
 - End-to-end latency was measured from when the source read a batch's first word, which hid
   the source's own stalls (coordinated omission); it is now measured from the due time when the
   source provides one, and `minidaq_latency` reports the backlog next to drops.

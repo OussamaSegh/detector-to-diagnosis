@@ -4,3 +4,4 @@ solutions/ch01.md
 solutions/ch02.md
 solutions/ch03.md
 solutions/ch04.md
+solutions/ch05.md

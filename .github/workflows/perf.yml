@@ -1,0 +1,32 @@
+# Performance regression gate (Chapter 5). Benchmarks are only comparable on the
+# machine that recorded the baseline, so this job runs on a dedicated
+# self-hosted runner labelled "perf" (no other jobs, fixed CPU frequency, SMT
+# off), never on shared cloud runners. It fails if a gated benchmark is more
+# than 5% slower than benchmarks/baseline/<runner>.json and the difference is
+# significant (one-sided Mann-Whitney U, alpha 0.01).
+name: perf
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ["minidaq/**", "benchmarks/**", "CMakeLists.txt", "CMakePresets.json"]
+
+jobs:
+  perf-gate:
+    runs-on: [self-hosted, linux, perf]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake --preset release -DMINIDAQ_BUILD_EXERCISES=OFF
+          cmake --build --preset release
+      - name: Run the gated benchmarks
+        run: tools/perf_suite.sh current.json build/release 2
+      - name: Compare with the baseline
+        run: python3 tools/perf_gate.py "benchmarks/baseline/${RUNNER_NAME}.json" current.json --strict
+      - name: Keep the raw results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-${{ github.sha }}
+          path: current.json

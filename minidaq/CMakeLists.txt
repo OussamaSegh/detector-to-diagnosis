@@ -4,6 +4,7 @@ add_library(minidaq_core
   src/format/packed_single.cpp
   src/pipeline/acquisition_pipeline.cpp
   src/sim/synthetic_source.cpp
+  src/processing/energy_filter.cpp
   src/rt/realtime.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
 target_include_directories(minidaq_core PUBLIC

@@ -50,3 +50,32 @@ function(minidaq_exercise dir)
       DISCOVERY_TIMEOUT 30)
   endforeach()
 endfunction()
+
+# minidaq_python_exercise(<dir>)
+# A Python exercise: <dir>/tests holds unittest tests that import the module
+# from <dir>/starter or <dir>/solution (put on PYTHONPATH by the test).
+function(minidaq_python_exercise dir)
+  find_package(Python3 COMPONENTS Interpreter)
+  if(NOT Python3_Interpreter_FOUND)
+    message(STATUS "Python 3 not found: skipping ${dir}")
+    return()
+  endif()
+  get_filename_component(_abs ${dir} ABSOLUTE)
+  get_filename_component(_name ${_abs} NAME)
+  get_filename_component(_chdir ${_abs} DIRECTORY)
+  get_filename_component(_ch ${_chdir} NAME)
+  set(_variants)
+  if(MINIDAQ_BUILD_EXERCISES)
+    list(APPEND _variants solution)
+  endif()
+  if(MINIDAQ_BUILD_STARTERS)
+    list(APPEND _variants starter)
+  endif()
+  foreach(_v IN LISTS _variants)
+    add_test(NAME ${_ch}/${_name}/${_v}/unittest
+             COMMAND ${Python3_EXECUTABLE} -m unittest discover -s ${_abs}/tests -t ${_abs}/tests)
+    set_tests_properties(${_ch}/${_name}/${_v}/unittest PROPERTIES
+      LABELS ${_v}
+      ENVIRONMENT "PYTHONPATH=${_abs}/${_v};PYTHONDONTWRITEBYTECODE=1")
+  endforeach()
+endfunction()
