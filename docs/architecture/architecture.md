@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 2 (MiniDAQ 0.2.0-dev, Chapter 9; version 1 was Chapter 6). Status: draft for review.
+Version 3 (MiniDAQ 0.2.0-dev, Chapter 10; version 2 was Chapter 9, version 1 Chapter 6). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -21,10 +21,12 @@ and monitors the acquisition over a control API. Version 0.1.0 covers:
   (Chapter 6),
 - a detector simulator with ground truth (Chapter 8),
 - a UDP readout link: MDQ-R1 packets, sequence tracking, the UDP detector adapter
-  (Chapter 9, [ADR 0009](../adr/0009-udp-readout-link.md)).
+  (Chapter 9, [ADR 0009](../adr/0009-udp-readout-link.md)),
+- the coincidence sorter in the pair stage and a merger for many boards' streams
+  (Chapter 10, [ADR 0010](../adr/0010-coincidence-sorter-and-merger.md)).
 
-Not yet covered: merging several readout links, the coincidence sorter that replaces
-the placeholder pairing (Chapter 10), list-mode files (Chapter 12, [ADR 0007](../adr/0007-list-mode-file-format.md)),
+Not yet covered: a source that reads several readout links at once (the merger exists, the
+pipeline does not use it yet), list-mode files (Chapter 12, [ADR 0007](../adr/0007-list-mode-file-format.md)),
 authentication of control clients (Chapter 17).
 
 ## 2. Context and external interfaces
@@ -34,7 +36,7 @@ authentication of control clients (Chapter 17).
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort` | out | Counting sink today; file writer in Chapter 12 |
 | Operator, scripts, test harness | Control protocol 1.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)) | in/out | `minidaq_ctl` is the reference client |
-| Configuration files | JSON, schema version 1.0 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
+| Configuration files | JSON, schema version 1.2 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets | both | Real-time settings from an `rt_profile` (Chapter 4) |
 
@@ -44,7 +46,8 @@ authentication of control clients (Chapter 17).
 |---|---|---|
 | Throughput | Sustain 10 M singles/s with margin, 30 M/s at high activity (assumption: confirm with team) | Batched SPSC pipeline, [performance budget](../performance-budget.md) |
 | Data integrity | No silent loss inside the PC; every drop and every filtered item is counted | Stage counters; only the source may drop, by policy |
-| Ordering | Coincidences are never formed from out-of-order singles | Sort stage counts late singles; the service faults the run |
+| Ordering | Coincidences are never formed from out-of-order singles | Sort stage counts late singles; the service faults the run; the sorter and the merger count and drop singles they cannot place |
+| Coincidence rules | Every sorting rule is explicit, configured and tested against ground truth | `CoincidenceSorter` and `SorterConfig` ([ADR 0010](../adr/0010-coincidence-sorter-and-merger.md)), `test_coincidence_sorter.cpp` |
 | Latency | Bounded end-to-end latency, measured from when data was due | Per-stage and end-to-end histograms; `max_batch_delay_us` |
 | Control | Commands are accepted only in states where they are safe | Table-driven state machine ([ADR 0005](../adr/0005-acquisition-state-machine.md)) |
 | Availability of a run | A control client failure does not stop an acquisition | Service owns the run ([ADR 0003](../adr/0003-control-protocol.md)) |
@@ -127,7 +130,11 @@ message rather than half-understood. Unknown keys are errors with a "did you mea
 suggestion, so a misspelled key cannot silently fall back to a default. `status` reports the
 effective configuration, defaults included, and the audit trail records it at every
 `configure`. Schema 1.1 (Chapter 9) adds `source.type` `"udp"` and the `source.udp` section;
-`stop_after_s` applies to the synthetic source only.
+`stop_after_s` applies to the synthetic source only. Schema 1.2 (Chapter 10) adds the
+`sorter` section: delayed window, window mode, multiples policy, energy window, minimum
+sector difference and field of view. Files of 1.0 and 1.1 remain valid and get the sorter's
+defaults, which include an energy gate and a delayed window that the earlier placeholder
+pair stage did not have.
 
 ## 8. Observability
 
@@ -138,7 +145,8 @@ effective configuration, defaults included, and the audit trail records it at ev
 - **Status**: one JSON snapshot with state, run, fault, effective configuration, counters,
   latencies, late singles and the detector's own counters (`detector_counters`: for the UDP
   link, datagrams, packets delivered, lost, reordered and stale, rejections by reason,
-  resyncs and the granted receive buffer).
+  resyncs and the granted receive buffer), and the sorter's eleven counters (`sorter`: singles
+  in, rejected by energy and order, windows by size, geometry rejections, prompts, delayed).
 - **Audit trail**: control actions, transitions, faults, client connections. The hot path does
   not log; the monitor thread turns counters and faults into records.
 
@@ -173,12 +181,13 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 | Service behavior | Lifecycle, faults, illegal commands, conservation of counts, with simulated ports | `test_acquisition_service.cpp` |
 | Protocol and server | Framing, versioning, errors, disconnects, overlong requests | `test_control_protocol.cpp` |
 | Configuration | Reader rules; schema document agrees with the reader | `test_config.cpp` |
+| Coincidence sorter and merger | Exact agreement with the simulator's truth counter, chunking independence, accounting, policies, randoms bias; merger order, waiting, late boards, ties; fuzzing | `test_coincidence_sorter.cpp`, `test_stream_merger.cpp`, `fuzz/fuzz_sorter.cpp` |
 | Concurrency | All of the above under ThreadSanitizer | `tsan` preset |
 | Review | This document and each ADR are reviewed with the code that implements them | pull requests |
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0008](../adr/README.md).
+Decisions: [ADR 0001 to 0010](../adr/README.md).
 
 Open issues:
 
@@ -186,4 +195,6 @@ Open issues:
 - The monitor polls every 20 ms, so a port fault is noticed up to 20 ms late; if a risk
   analysis needs faster reaction, the stage that sees the fault must stop the pipeline itself.
 - Late singles end the run; whether a tolerance is acceptable is a physics and risk question
-  for Chapter 10 and Chapter 15.
+  for Chapter 15. The sorter itself counts and drops them, so a tolerance could be configured.
+- The sorter holds its last 104 ns of singles until more data or the end of the run; a silent
+  source needs time markers to flush them earlier.

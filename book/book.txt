@@ -11,3 +11,4 @@ src/part1/ch07-safe-secure.md
 src/part2/part2.md
 src/part2/ch08-pet-physics.md
 src/part2/ch09-readout.md
+src/part2/ch10-sorting.md

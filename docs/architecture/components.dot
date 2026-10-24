@@ -1,4 +1,4 @@
-// MiniDAQ components and their dependencies (Chapter 6, updated in Chapter 9). An edge A -> B means
+// MiniDAQ components and their dependencies (Chapter 6, updated in Chapters 9 and 10). An edge A -> B means
 // "A uses B" (A includes B's header). Each node's class is its layer from
 // layers.json; the arrows must only point to layers a node may depend on.
 digraph components {
@@ -34,6 +34,7 @@ digraph components {
     label="core (minidaq_core)"; style=dashed; color="#888888";
     pipeline [class="core", fillcolor="#e3f2fd", label="AcquisitionPipeline\n(stages, Channels)"];
     format [class="core", fillcolor="#e3f2fd", label="format\n(packed words, decoder,\nMDQ-R1, SequenceTracker)"];
+    processing [class="core", fillcolor="#e3f2fd", label="processing\n(CoincidenceSorter,\nStreamMerger)"];
     metrics [class="core", fillcolor="#e3f2fd", label="metrics\n(latency histograms)"];
     rt [class="core", fillcolor="#e3f2fd", label="rt\n(pinning, memory locking)"];
     sim [class="core", fillcolor="#e3f2fd", label="sim\n(synthetic source, detector\nsimulator, readout link)"];
@@ -70,6 +71,10 @@ digraph components {
   config -> rt;
   ports -> config;
 
+  pipeline -> processing;
+  config -> processing;
+  processing -> pipeline [style=dashed, label="TimeOrder"];
+  processing -> types;
   pipeline -> format;
   pipeline -> metrics;
   pipeline -> rt;

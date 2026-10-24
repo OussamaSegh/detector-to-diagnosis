@@ -312,6 +312,8 @@ class OriginTrack {
 
 SorterStats AcquisitionPipeline::sorter_stats() const noexcept {
   static_assert(std::size(sorter_members) == sorter_fields, "one atomic per SorterStats field");
+  // A field added to SorterStats changes its size, so it cannot be forgotten here.
+  static_assert(sizeof(SorterStats) == sorter_fields * sizeof(std::uint64_t), "sorter_members lists every field");
   SorterStats st;
   for (std::size_t i = 0; i < sorter_fields; ++i) {
     st.*sorter_members[i] = sorter_stats_[i].load(std::memory_order_relaxed);

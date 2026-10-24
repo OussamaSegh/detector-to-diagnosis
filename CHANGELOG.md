@@ -27,8 +27,25 @@ the patch version.
   configuration `udp-loopback.json`; fuzz target `fuzz_packet`; loopback measurements
   (`measurements/ch09/`); ADR 0009; figure script `ch09_time_walk.py`; exercises 9.1 to 9.5
   (9.4 and 9.5 in Python).
+- Chapter 10: `processing::CoincidenceSorter` (fixed or per-single windows; kill all, take
+  all goods, take the winner of goods and keep if only one good; energy, sector and
+  field-of-view gates; a delayed window; eleven counters with an accounting identity; the
+  same output for any chunking) and `processing::StreamMerger` (k-way heap merge released by
+  a watermark, time markers, `max_skew`, late and out-of-order counters, deterministic
+  ties); configuration schema 1.2 with a `sorter` section; the sorter's counters in the
+  status report; `minidaq_sim` options `--mode`, `--policy`, `--delay`, `--sectors`, `--fov`
+  and a report classified by truth; validation against truth from 1 to 40 MBq
+  (`measurements/ch10/validation.txt`); benchmark `bm_sorter`; fuzz target `fuzz_sorter`;
+  ADR 0010; figure scripts `ch10_windows.py` and `ch10_policies.py`; exercises 10.1 to 10.6
+  (10.6 in Python).
 
 ### Changed
+- The pipeline's pair stage is the coincidence sorter instead of a placeholder that paired
+  consecutive singles. Configuration files of schema 1.0 and 1.1 remain valid but now get the
+  sorter's defaults: a 435 to 585 keV energy gate, a delayed window at 100 ns, kill all and a
+  minimum sector difference of 1. Coincidence counts from earlier versions are not
+  comparable.
+- `PipelineConfig::coincidence_window` is replaced by `PipelineConfig::sorter`.
 - CI uses `actions/checkout@v5` (Node.js 20 is deprecated on GitHub's runners).
 - The configuration schema test walks nested objects of the JSON Schema document.
 - Chapter 6's component diagram is frozen in the book (`book/src/diagrams/`); the live
@@ -51,6 +68,10 @@ the patch version.
   one, so a second run on the same UDP port failed with "address already in use"; the
   previous run's pipeline and ports are now released first.
 - Configuration validation of the detector simulator accepted NaN in several fields.
+- Coincidence sorter (found before release): per-single windows with take all goods emitted
+  a pair twice, once from each opener's window; a per-single window now pairs its opener
+  only. The delayed window's winner of goods now compares summed energy, as the prompt
+  window does.
 
 ## [0.1.0] - 2026-10-24
 
