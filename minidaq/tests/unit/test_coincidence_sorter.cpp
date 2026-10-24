@@ -326,21 +326,50 @@ TEST(CoincidenceSorter, MatchesTheSimulatorsGroundTruth) {
   EXPECT_EQ(out.size(), ref.prompts());
 }
 
-TEST(CoincidenceSorter, TheDelayedWindowEstimatesTheRandoms) {
+// Randoms among the prompts, by truth: the two singles come from different decays.
+std::uint64_t true_randoms(const std::vector<sim::TruthSingle>& truth, const std::vector<Coincidence>& found) {
+  std::map<std::pair<std::int64_t, std::uint32_t>, std::uint64_t> decay;
+  for (const auto& t : truth) {
+    decay[{t.single.time.count(), t.single.crystal.value()}] = t.decay;
+  }
+  std::uint64_t n = 0;
+  for (const auto& c : found) {
+    if (c.kind == CoincidenceKind::prompt &&
+        decay.at({c.first.time.count(), c.first.crystal.value()}) !=
+            decay.at({c.second.time.count(), c.second.crystal.value()})) {
+      ++n;
+    }
+  }
+  return n;
+}
+
+TEST(CoincidenceSorter, TheDelayedWindowEstimateDependsOnTheMultiplesPolicy) {
   // REQ: SRS-SRT-011
-  // At 40 MBq about a third of the prompts are randoms. The delayed window
-  // must count the same number within the statistical error plus a small
-  // bias (measured in measurements/ch10/validation.txt).
-  const auto truth = simulate(40e6, 0.04, 10);
+  // At 40 MBq about 30% of the prompts are randoms. The delayed window counts
+  // them to within 15%, but not exactly, and the error depends on the
+  // multiples policy: with kill_all a random that shares its window with a
+  // true pair is killed in the prompts but still counted in the delayed
+  // window; take_all_goods keeps such randoms twice over (two pairs per
+  // triple). measurements/ch10/validation.txt has the numbers. Each bias alone
+  // is a few standard deviations; their difference is about seven.
+  const auto truth = simulate(40e6, 0.05, 10);
+  const auto singles = singles_of(truth);
   SorterConfig c = plain();
   c.delay = Picoseconds{100 * ns};
-  SorterStats st;
-  (void)run(c, singles_of(truth), &st);
-  const auto ref = sim::count_coincidences(truth, {c.window, c.energy_low_kev, c.energy_high_kev});
-  const auto randoms = static_cast<double>(ref.randoms);
-  const auto delayed = static_cast<double>(st.delayed);
-  ASSERT_GT(randoms, 5'000.0);
-  const double sigma = std::sqrt(randoms + delayed);
-  EXPECT_LT(std::abs(delayed - randoms), 4.0 * sigma + 0.03 * randoms)
-      << "delayed " << delayed << ", true randoms " << randoms;
+  double bias[2] = {};
+  double variance = 0.0;
+  int k = 0;
+  for (auto p : {MultiplesPolicy::kill_all, MultiplesPolicy::take_all_goods}) {
+    c.multiples = p;
+    SorterStats st;
+    const auto found = run(c, singles, &st);
+    const auto randoms = static_cast<double>(true_randoms(truth, found));
+    const auto delayed = static_cast<double>(st.delayed);
+    ASSERT_GT(randoms, 5'000.0);
+    EXPECT_LT(std::abs(delayed - randoms), 0.15 * randoms) << to_string(p) << ": delayed " << delayed << ", randoms " << randoms;
+    bias[k++] = delayed - randoms;
+    variance += delayed + randoms;
+  }
+  EXPECT_GT(bias[0] - bias[1], 4.0 * std::sqrt(variance))
+      << "kill_all overestimates relative to take_all_goods: " << bias[0] << " vs " << bias[1];
 }

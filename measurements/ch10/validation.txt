@@ -1,0 +1,53 @@
+Sorter: 4 ns fixed window, 435-585 keV, delayed window at 100 ns.
+singles/s: inside the energy window. err %: (delayed - true randoms) / true randoms, with one
+standard deviation from counting statistics (both counts treated as independent Poisson,
+which they are only roughly: they come from the same singles). R/P: randoms in the prompts.
+mult/s: windows with three or more singles.
+Seed 21; 90 mm water phantom, 80 mm source; the same singles for every policy at an activity.
+
+== no geometry cut
+ MBq policy                  singles/s  trues/s  scat/s  rand/s delay/s       err %  R/P %  mult/s
+   1 kill_all                   200059     9428    3398     129     147 +14.0 ±12.9    1.0      16
+   1 take_all_goods             200059     9438    3404     161     153  -5.0 ±11.0    1.2      16
+   1 take_winner_of_goods       200059     9433    3398     140     150  +7.1 ±12.2    1.1      16
+   1 keep_if_only_one_good      200059     9428    3398     129     147 +14.0 ±12.9    1.0      16
+   5 kill_all                  1000068    47198   17042    3035    3405 +12.2 ± 4.2    4.5     435
+   5 take_all_goods            1000068    47498   17195    3970    3860  -2.8 ± 3.5    5.8     435
+   5 take_winner_of_goods      1000068    47310   17068    3332    3632  +9.0 ± 4.0    4.9     435
+   5 keep_if_only_one_good     1000068    47198   17042    3035    3405 +12.2 ± 4.2    4.5     435
+  10 kill_all                  2000135    93680   33800   12215   12980  +6.3 ± 2.9    8.7    1835
+  10 take_all_goods            2000135    94980   34370   16075   14935  -7.1 ± 2.4   11.1    1835
+  10 take_winner_of_goods      2000135    94185   33890   13455   13950  +3.7 ± 2.8    9.5    1835
+  10 keep_if_only_one_good     2000135    93680   33800   12215   12980  +6.3 ± 2.9    8.7    1835
+  20 kill_all                  4000270   184820   66680   47740   50980  +6.8 ± 2.1   16.0    7180
+  20 take_all_goods            4000270   189890   68750   63200   59300  -6.2 ± 1.8   19.6    7180
+  20 take_winner_of_goods      4000270   186590   66950   52880   55110  +4.2 ± 2.0   17.3    7180
+  20 keep_if_only_one_good     4000270   184820   66680   47740   50980  +6.8 ± 2.1   16.0    7180
+  40 kill_all                  8000540   358920  129800  185940  200400  +7.8 ± 1.5   27.6   29000
+  40 take_all_goods            8000540   379260  137240  250200  234320  -6.3 ± 1.2   32.6   29000
+  40 take_winner_of_goods      8000540   365880  130780  207000  217220  +4.9 ± 1.4   29.4   29000
+  40 keep_if_only_one_good     8000540   358920  129800  185940  200400  +7.8 ± 1.5   27.6   29000
+
+== sectors at least 1 apart, 120 mm field of view
+ MBq policy                  singles/s  trues/s  scat/s  rand/s delay/s       err %  R/P %  mult/s
+   1 kill_all                   200059     9428    3398      65      79 +21.5 ±18.5    0.5      16
+   1 take_all_goods             200059     9438    3404      84      82  -2.4 ±15.3    0.6      16
+   1 take_winner_of_goods       200059     9434    3399      74      82 +10.8 ±16.9    0.6      16
+   1 keep_if_only_one_good      200059     9428    3398      65      82 +26.2 ±18.7    0.5      16
+   5 kill_all                  1000068    47198   17042    1782    1990 +11.6 ± 5.4    2.7     435
+   5 take_all_goods            1000068    47498   17195    2330    2258  -3.1 ± 4.6    3.5     435
+   5 take_winner_of_goods      1000068    47342   17090    2025    2210  +9.1 ± 5.1    3.0     435
+   5 keep_if_only_one_good     1000068    47202   17045    1785    2162 +21.1 ± 5.6    2.7     435
+  10 kill_all                  2000135    93680   33800    7305    7610  +4.2 ± 3.7    5.4    1835
+  10 take_all_goods            2000135    94980   34370    9535    8750  -8.2 ± 3.2    6.9    1835
+  10 take_winner_of_goods      2000135    94335   34005    8275    8540  +3.2 ± 3.5    6.1    1835
+  10 keep_if_only_one_good     2000135    93705   33815    7310    8335 +14.0 ± 3.8    5.4    1835
+  20 kill_all                  4000270   184820   66680   28740   30780  +7.1 ± 2.7   10.3    7180
+  20 take_all_goods            4000270   189890   68750   37840   35660  -5.8 ± 2.3   12.8    7180
+  20 take_winner_of_goods      4000270   187290   67310   32790   34780  +6.1 ± 2.5   11.4    7180
+  20 keep_if_only_one_good     4000270   184890   66750   28770   33910 +17.9 ± 2.8   10.3    7180
+  40 kill_all                  8000540   358920  129800  111880  117420  +5.0 ± 1.9   18.6   29000
+  40 take_all_goods            8000540   379260  137240  149880  137740  -8.1 ± 1.6   22.5   29000
+  40 take_winner_of_goods      8000540   368660  131980  128680  133640  +3.9 ± 1.8   20.4   29000
+  40 keep_if_only_one_good     8000540   359120  130000  112040  129560 +15.6 ± 2.0   18.6   29000
+
