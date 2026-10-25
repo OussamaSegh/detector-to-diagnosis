@@ -144,15 +144,18 @@
     },
     {
       "name": "coverage",
-      "displayName": "Coverage (GCC, gcov)",
+      "displayName": "Coverage (Clang source-based, with MC/DC)",
       "inherits": [
         "base",
-        "gcc"
+        "clang"
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "--coverage -fprofile-update=atomic",
-        "CMAKE_EXE_LINKER_FLAGS": "--coverage"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_FLAGS": "-fprofile-instr-generate -fcoverage-mapping -fcoverage-mcdc",
+        "CMAKE_EXE_LINKER_FLAGS": "-fprofile-instr-generate",
+        "MINIDAQ_BUILD_BENCHMARKS": "OFF",
+        "MINIDAQ_BUILD_EXERCISES": "ON"
       }
     }
   ],
