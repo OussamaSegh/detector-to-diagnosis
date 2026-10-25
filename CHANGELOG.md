@@ -94,6 +94,9 @@ the patch version.
   their condition, and the stress run passes 100 repetitions.
 - The architecture description still said control API 1.0, nlohmann/json 3.11.3 and ADRs 0001
   to 0012 after Chapter 16; corrected in version 7.
+- `docs.changes` failed in every GitHub build job since Chapter 16: the jobs checked out only
+  the last commit, so the commits that implemented change requests name were missing. The
+  build jobs now fetch the full history.
 
 ## [0.2.0] - 2026-10-25
 

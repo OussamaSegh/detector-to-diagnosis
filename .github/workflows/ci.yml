@@ -19,6 +19,9 @@ jobs:
         preset: [debug, clang-release, gcc-cxx23, hardened, asan-ubsan, tsan]
     steps:
       - uses: actions/checkout@v5
+        with:
+          # docs.changes checks that each implemented change request's commits exist.
+          fetch-depth: 0
       - name: Install toolchain
         run: |
           sudo apt-get update
