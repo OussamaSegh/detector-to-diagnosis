@@ -3,6 +3,7 @@
 // tested without hardware, which is what the ports are for.
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <atomic>
 #include <mutex>
 #include <vector>

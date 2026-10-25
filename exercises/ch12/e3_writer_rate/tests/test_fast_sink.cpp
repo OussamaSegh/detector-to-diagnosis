@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <chrono>
 #include <mutex>

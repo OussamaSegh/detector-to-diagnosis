@@ -3,6 +3,7 @@
 // disk, short writes, a slow disk. And once with the real file system.
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <chrono>
 #include <filesystem>
