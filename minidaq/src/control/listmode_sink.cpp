@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <exception>
 
 #include "minidaq/control/audit.hpp"
 #include "minidaq/core/geometry.hpp"
@@ -90,7 +91,10 @@ Expected<std::unique_ptr<ListModeSink>, std::string> ListModeSink::open(ListMode
 
 ListModeSink::~ListModeSink() {
   if (!closed_) {
-    (void)close("");
+    try {
+      (void)close("");
+    } catch (...) {  // NOLINT(bugprone-empty-catch): a destructor must not throw; the files stay .part
+    }
   }
   if (fd_ >= 0) {
     (void)ops_->close(fd_);  // after a fault, or if open() failed half way: the .part file stays
@@ -198,7 +202,11 @@ std::optional<std::string> ListModeSink::close(std::string_view run_record) {
   submit(true);
   io_.join();
   if (!faulted()) {
-    write_run_record(run_record);  // the I/O thread has ended: this thread owns ops_ now
+    try {
+      write_run_record(run_record);  // the I/O thread has ended: this thread owns ops_ now
+    } catch (const std::exception& e) {  // std::bad_alloc; the data files are complete regardless
+      set_fault(std::string{"run record: "} + e.what());
+    }
   }
   close_result_ = fault();
   return close_result_;
@@ -220,7 +228,8 @@ void ListModeSink::write_run_record(std::string_view run_record) {
   j["run"] = parsed.is_discarded() ? (run_record.empty() ? nlohmann::json(nullptr) : nlohmann::json(run_record))
                                    : std::move(parsed);
   // [/snippet:run_record]
-  const std::string text = j.dump(2) + "\n";
+  // Invalid UTF-8 in the caller's text is replaced, not an exception.
+  const std::string text = j.dump(2, ' ', false, nlohmann::json::error_handler_t::replace) + "\n";
   const std::string path = cfg_.directory + "/" + cfg_.prefix + "-" + cfg_.run_name + ".run.json";
   const std::string part = path + ".part";
   const auto fd = ops_->create(part);

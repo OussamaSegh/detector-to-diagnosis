@@ -12,6 +12,7 @@
 //   minidaq_sim --nema 1 --activity 100e6 --deadtime paralyzable --tau 200 --pileup 1
 //   minidaq_sim --source point --centre 40,-25,0 --phantom 0 --fov 120 --listmode out/
 #include <algorithm>
+#include <exception>
 #include <cstdio>
 #include <memory>
 #include <string>
@@ -119,9 +120,7 @@ minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
   return CountRates{.trues = rate(trues), .scatters = rate(scatters), .randoms = rate(randoms)};
 }
 
-}  // namespace
-
-int main(int argc, char** argv) {
+int run(int argc, char** argv) {
   using namespace minidaq::sim;
   SimulatorConfig cfg;
   double seconds = 0.1;
@@ -388,4 +387,15 @@ int main(int argc, char** argv) {
     }
   }
   return 0;
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+  try {
+    return run(argc, argv);
+  } catch (const std::exception& e) {  // e.g. std::bad_alloc, or JSON with invalid UTF-8
+    std::fprintf(stderr, "minidaq_sim: %s\n", e.what());
+    return 2;
+  }
 }
