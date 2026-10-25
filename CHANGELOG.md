@@ -63,6 +63,12 @@ the patch version.
   `tools.vuln_triage`); `SECURITY.md`; exercises 17.1 to 17.5 (17.2 and 17.5 in C++).
 
 ### Changed
+- After an independent review of Parts I to III: a front-matter section "How to use this book"
+  with the one 10-week schedule, its weeks and its hours (core path about 110 hours, everything
+  about 290 hours for Chapters 1 to 17), which every chapter now refers to; the chapters' own
+  week statements contradicted each other and the schedule was nowhere in the book. Wording that
+  referred to the book's internal outline ("the plan's question") is rephrased in Chapters 6, 10,
+  11 and 17 and in seven exercise READMEs. Quotations in Part I and Chapters 2 and 3 are corrected.
 - Control API 2.0 (CR-0004, ADR 0014): a connection authenticates with `auth` before any
   command but `hello`; new error codes `unauthenticated` and `forbidden`; `hello` reports
   `auth`; 1.x clients are refused with `unsupported_api`. `minidaq_server` gains `--tokens`,
@@ -108,6 +114,13 @@ the patch version.
   `ControlProtocol.EveryFieldOfEveryTypeIsAnswered`, which sends every field of a request with
   every JSON type on every change.
 - The Part III introduction described Chapters 16 and 17's additions to MiniDAQ too briefly.
+- Review nits: Chapter 1's counter-wrap story and `-Wdangling-reference` (on GCC 13.3 it comes
+  with `-Wextra`, not `-Wall`, measured); Chapter 4 shows the arithmetic of the 110 ms; Chapter 8
+  explains that the simulator's photofraction is the full-energy fraction, not the photoelectric
+  fraction; Chapter 11 cites NEMA NU 2-2024 as the current edition; Chapter 13 states the
+  NeuroLF's 510(k) K241751 (15 July 2024) and MDR CE marking (2 October 2024) with sources;
+  Chapter 14 says that requirement counts are those at each chapter's tag; Chapter 16 explains
+  ten versus thirteen controlled documents; Chapter 17 states forward secrecy and SNI exactly.
 
 ## [0.2.0] - 2026-10-25
 

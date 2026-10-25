@@ -3,8 +3,8 @@
 ::: box-why
 A data acquisition system (DAQ) is a pipeline: receive, decode, sort, pair, write. At tens
 of millions of events per second no single core can do all of it, so each stage runs on its
-own core and the stages talk through queues. The role asks you to "design and
-optimize multi-threaded applications". In a DAQ that means three things: queues that cost
+own core and the stages talk through queues. Fast, low-latency code for a detector stream on
+more than one core means three things: queues that cost
 nanoseconds rather than microseconds per hand-off, a shutdown that never loses data, and a
 precise answer to "what happens when the disk is slower than the detector?". Concurrency
 bugs are also the hardest bugs to reproduce in the field. A race that corrupts one batch in
@@ -41,8 +41,8 @@ After this chapter you can:
 Chapters 1 and 2: strong types, `Single`, the MDQ-P1 format and its decoder, cache lines and
 false sharing. You should have written a program with `std::thread` before. You do not need
 prior experience with atomics. Reading: about 3.5 hours. Exercises: 10 to 14 hours, of which
-Exercise 3.3 alone takes 4 to 6. Milestone: 3 hours. In the 10-week schedule this chapter
-fills week 2.
+Exercise 3.3 alone takes 4 to 6. Milestone: 3 hours. In the 10-week schedule at the front of the
+book, this chapter is in week 2, with Chapters 9 and 13.
 
 ## Threads, std::jthread and stop tokens
 

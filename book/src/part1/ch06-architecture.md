@@ -43,8 +43,8 @@ After this chapter you can:
 
 Chapters 1 to 5, in particular the pipeline and its counters (Chapter 3) and the latency
 histograms (Chapter 4). You need Graphviz (`dot`) for the diagrams and `nc` (netcat) to talk to
-the server by hand. Reading: about 3 hours. Exercises: 9 to 12 hours. Milestone: 4 hours. In
-the 10-week schedule this chapter fills week 5, together with Chapters 12 and 15.
+the server by hand. Reading: about 3 hours. Exercises: 9 to 12 hours. Milestone: 4 hours. In the
+10-week schedule at the front of the book, this chapter is in week 5, with Chapters 12 and 15.
 
 MiniDAQ grows a second library in this chapter. `minidaq_core` keeps the hot path: types,
 formats, the pipeline, histograms, real-time settings and the simulator. The new
@@ -436,7 +436,7 @@ benefit.
 
 ### What happens when the client disconnects
 
-This is the second check-yourself question of the plan, and the answer is a design decision,
+This is the second check-yourself question of this chapter, and the answer is a design decision,
 not an accident of the code. In MiniDAQ, **nothing happens to the acquisition**. The run
 belongs to the service, not to the connection that started it. The server records the
 disconnect in the audit trail and closes the socket; the pipeline keeps running, and any other

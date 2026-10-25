@@ -46,8 +46,9 @@ After this chapter you can:
 
 Chapter 6 (architecture and decision records), Chapter 7 (the SOUP list and the SBOM) and
 Chapter 12 (the run record and the patient-data boundary). No physics or C++ is needed beyond
-that, and the exercises are in Python. Reading: about 3 hours. Exercises: 5 hours. Milestone:
-2 hours. In the 10-week schedule this chapter is the lighter evening reading of week 2.
+that, and the exercises are in Python. Reading: about 3 hours. Exercises: 5 hours. Milestone: 2
+hours. In the 10-week schedule at the front of the book, this chapter is in week 2, the lighter
+evenings next to Chapters 3 and 9.
 
 ## Why regulation shapes software
 
@@ -281,9 +282,10 @@ market:
 
 PET scanners are "emission computed tomography systems" under 21 CFR 892.1200, class II, with
 the product code KPS, and reach the market by 510(k). FDA's public 510(k) database lists many
-such clearances, often for PET/CT systems with a second product code for the CT. The manufacturer
-announced FDA clearance of the NeuroLF in 2024, and the CE marking under the MDR in the same
-year.
+such clearances, often for PET/CT systems with a second product code for the CT. The NeuroLF
+is one of them: 510(k) K241751 (NeuroLF Basic, Pro and Advanced, and the NeuroLF Seat), product
+code KPS under 21 CFR 892.1200, found substantially equivalent on 15 July 2024. The manufacturer
+announced the CE marking under the MDR on 2 October 2024.
 
 ### What a submission says about software
 
@@ -731,6 +733,8 @@ class the scanner is in and why, and which documents of the regulatory file exis
   Premarket Submissions", guidance, 2023, updated June 2025 (verify: the current version).
 - 21 CFR 820 (Quality Management System Regulation), 21 CFR 803 (Medical Device Reporting) and
   21 CFR 892.1200 (emission computed tomography system), on the eCFR.
+- US FDA, 510(k) database entry and summary for K241751 (NeuroLF), decision date 15 July 2024;
+  Positrigo, press release on the MDR CE marking of the NeuroLF, 2 October 2024.
 - Swiss Medical Devices Ordinance (MedDO, SR 812.213) on fedlex.admin.ch, and Swissmedic's pages
   on medical devices and swissdamed.
 - Johner Institute, articles on the MDR, IEC 62304 and regulatory strategy (free online; a good

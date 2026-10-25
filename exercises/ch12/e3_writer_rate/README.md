@@ -3,8 +3,7 @@
 **Goal.** Make the list-mode writer sustain the sorter's rate on a disk whose fsync is
 slow, without giving up durability: every coincidence written, everything on stable
 storage when the run closes, and a stated bound on what a power cut can take. Then
-measure your own disk and write down the fsync policy you would ship. This is the plan's
-"make the writer sustain the sorter's rate on your disk; document fsync policy".
+measure your own disk and write down the fsync policy you would ship.
 
 **Time.** 6 hours.
 

@@ -5,8 +5,7 @@
 its own CRC, blocks of 16-byte records each protected by a payload CRC and a header CRC,
 and a reader that detects a single corrupted byte, skips exactly the damaged block and
 keeps everything else. Your files must be readable by MiniDAQ's reader, and MiniDAQ's
-files by yours. This is the plan's "implement a list-mode writer with header versioning
-and CRC32 per block; corrupt one byte and detect it".
+files by yours.
 
 **Time.** 3 hours.
 

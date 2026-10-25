@@ -3,8 +3,7 @@
 **Goal.** Measure a NEMA-style count-rate curve with MiniDAQ's simulator: trues,
 scatters and randoms against activity, the scatter fraction and the noise-equivalent
 count rate NECR = T² / (T + S + kR), and find the activity at which the NECR peaks, with
-and without front-end dead time. This is the plan's "sweep simulator activity from low to
-saturation; plot trues, randoms, scatter and NECR curves".
+and without front-end dead time.
 
 **Time.** 3 hours.
 

@@ -1,8 +1,7 @@
 # Exercise 11.3 (H): Find the first bottleneck
 
 **Goal.** Raise the rate through MiniDAQ's pipeline until something gives, and say which
-stage gave first, at which rate, and how you know. This is the plan's "find the first
-bottleneck in MiniDAQ as activity rises and document it". You write the analysis as
+stage gave first, at which rate, and how you know. You write the analysis as
 code, so the next measurement (on the next machine, or after the next optimization) is
 analyzed the same way.
 

@@ -46,11 +46,11 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 3 (the pipeline and its writer stage), Chapter 8 (lines of response, trues and
-randoms), Chapter 10 (the sorter and its delayed window) and Chapter 11 (the throughput
-budget). Exercise 12.2 and the figures use Python with matplotlib. Reading: about 3 hours.
-Exercises: 15 hours. Milestone: 5 hours. In the 10-week schedule this chapter fills the first
-half of week 5.
+Chapter 3 (the pipeline and its writer stage), Chapter 8 (lines of response, trues and randoms),
+Chapter 10 (the sorter and its delayed window) and Chapter 11 (the throughput budget). Exercise
+12.2 and the figures use Python with matplotlib. Reading: about 3 hours. Exercises: 15 hours.
+Milestone: 5 hours. In the 10-week schedule at the front of the book, this chapter is in week 5,
+with Chapters 6 and 15.
 
 ## Designing a list-mode record
 

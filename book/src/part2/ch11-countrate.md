@@ -14,21 +14,20 @@ of MiniDAQ saturates first and at which rate. The goal is that "it keeps up" bec
 with a peak and a margin.
 :::
 
-**A day in the life.** The physicist plans the first count-rate test on the new scanner. A
-line source of fluorine-18 will start at 600 MBq and decay overnight, and the DAQ will
-acquire for twelve hours. Two days before the test, someone asks you two questions. Will the
-DAQ keep up at the start? And will the counters say so if it does not? You have numbers for
-neither. You set up a dead-time model of the front end, using the 1 µs per block the
-electronics engineer quoted. You simulate the test with the NEMA phantom from 5 to 1000 MBq,
-replay the simulated singles through the acquisition software at their real rate, and read
-the utilization of every stage. The software saturates at about 70 M singles per second,
-more than the front end can deliver at any activity. The Gigabit link from the readout
-board saturates first, near 115 MBq, and the network counters of Chapter 9 would report it
-as lost packets. The scanner's NECR peaks near 70 MBq. So the test will start with the link
-losing packets for the first four hours or so. That is visible, but not catastrophic. You add a second link to the board's
-configuration, write down the activity at which each stage saturates, and attach the model to
-the test plan. The lesson of this chapter: know which part of the chain gives first, and at
-which activity, before the measurement starts.
+**A day in the life.** The physicist plans the first count-rate test on the new scanner. A line
+source of fluorine-18 will start at 600 MBq and decay overnight, and the DAQ will acquire for twelve
+hours. Two days before the test, someone asks you two questions. Will the DAQ keep up at the start?
+And will the counters say so if it does not? You have numbers for neither. You set up a dead-time
+model of the front end, using the 1 µs per block the electronics engineer quoted. You simulate the
+test with the NEMA phantom from 5 to 1000 MBq, replay the simulated singles through the acquisition
+software at their real rate, and read the utilization of every stage. The software saturates at
+about 70 M singles per second, more than the front end can deliver at any activity. The Gigabit link
+from the readout board saturates first, near 115 MBq, and the network counters of Chapter 9 would
+report it as lost packets. The scanner's NECR peaks near 70 MBq. So the test will start with the
+link losing packets for the first four hours or so. That is visible, but not catastrophic. You add a
+second link to the board's configuration, write down the activity at which each stage saturates, and
+attach the model to the test plan. The lesson of this chapter: know which part of the chain gives
+first, and at which activity, before the measurement starts.
 
 ## Learning objectives {.unnumbered}
 
@@ -46,10 +45,11 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 3 (the pipeline and its latency report), Chapter 8 (trues, scatters and randoms,
-the simulator), Chapter 9 (the link budget) and Chapter 10 (the sorter, its windows and its
+Chapter 3 (the pipeline and its latency report), Chapter 8 (trues, scatters and randoms, the
+simulator), Chapter 9 (the link budget) and Chapter 10 (the sorter, its windows and its
 multiples policies). Reading: about 3 hours. Exercises: 11 hours. Milestone: 4 hours. In the
-10-week schedule this chapter fills the second half of week 4.
+10-week schedule at the front of the book, this chapter is in week 4, with the second half of
+Chapter 10 and Chapter 14.
 
 ## Dead time and pile-up
 
@@ -293,7 +293,7 @@ activity, because it doubles the weight of the randoms.
 
 ### Why the NECR peaks
 
-The plan's first check-yourself question has a subtle answer, so work through it. Suppose
+The first check-yourself question of this chapter has a subtle answer, so work through it. Suppose
 the trues grew exactly as aA with the activity A, the scatters as bA and the randoms as cA².
 Then
 
@@ -396,7 +396,7 @@ value at 435 keV.
 
 ### Which window matters more
 
-This is the plan's second check-yourself question, and the measurements answer it for this
+This is the chapter's second check-yourself question, and the measurements answer it for this
 system. At high activity the time window matters much more: randoms grow as the square of
 the activity and linearly with τ, so the window that controls them gains more as the
 activity rises. Between 4 ns and 1 ns the NECR gains 39% at 100 MBq. The best energy
@@ -425,8 +425,9 @@ window from the curve, at the activity the protocol uses.
 ### The standard
 
 NEMA NU 2, *Performance Measurements of Positron Emission Tomographs*, is the standard that
-manufacturers use to specify a clinical PET scanner. Its 2018 edition is the current one at
-the time of writing (verify: the edition the NeuroLF's documentation cites). It does not set
+manufacturers use to specify a clinical PET scanner. The current edition is NU 2-2024; most
+published specifications, including many of the scanners you will compare with, still quote
+NU 2-2018 (verify: the edition the NeuroLF's documentation cites). It does not set
 limits. It defines how each figure of merit is measured, so that two scanners measured by it
 can be compared. For small-animal scanners, NEMA NU 4-2008 defines the same kinds of tests
 with phantoms the size of a mouse and a rat. A brain-dedicated scanner sits between the two.
@@ -443,7 +444,7 @@ analyze a test, work from the standard itself.
 - **Spatial resolution.** Point sources at several positions in the field of view are
   reconstructed with a specified algorithm. The width of the point-spread function is
   reported as its full width at half and at tenth maximum, radially, tangentially and axially
-  (verify: the positions and the reconstruction NU 2-2018 prescribes). The DAQ must deliver
+  (verify: the positions and the reconstruction NU 2-2024 prescribes). The DAQ must deliver
   unfiltered list-mode or sinogram data and the exact crystal and time information the
   reconstruction needs.
 - **Sensitivity.** A line source is measured inside a series of metal sleeves of increasing
@@ -458,7 +459,7 @@ analyze a test, work from the standard itself.
   counts outside a band around the source, and the randoms from the delayed window or the
   singles. The results are the trues, scatter, randoms and NECR curves, the peak NECR and its
   activity, and the scatter fraction (verify: the band width and the randoms estimate
-  NU 2-2018 prescribes). The DAQ must record every acquisition with its activity, start time
+  NU 2-2024 prescribes). The DAQ must record every acquisition with its activity, start time
   and duration, its counters (singles, prompts, delayed, losses), and its window settings.
   Those are the counters and the configuration record of Chapter 10.
 - **Accuracy of corrections.** From the same data, the standard measures how well the
@@ -778,9 +779,10 @@ saturate. Tag `ch11`.
 
 ## Further reading {.unnumbered}
 
-- National Electrical Manufacturers Association, *NEMA NU 2-2018: Performance Measurements
-  of Positron Emission Tomographs*, NEMA, 2018; and *NEMA NU 4-2008: Performance
-  Measurements of Small Animal Positron Emission Tomographs*, NEMA, 2008.
+- National Electrical Manufacturers Association, *NEMA NU 2-2024: Performance Measurements of
+  Positron Emission Tomographs*, NEMA, 2024, the current edition; most published scanner
+  specifications still quote NU 2-2018, so check which edition a number was measured to; and *NEMA
+  NU 4-2008: Performance Measurements of Small Animal Positron Emission Tomographs*, NEMA, 2008.
 - S. C. Strother, M. E. Casey and E. J. Hoffman, "Measuring PET scanner sensitivity:
   relating countrates to image signal-to-noise ratios using noise equivalent counts", *IEEE
   Transactions on Nuclear Science* 37(2) (1990) 783–788 (verify: the citation details).

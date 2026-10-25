@@ -42,11 +42,11 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapters 2 and 3: caches and allocation, the five-stage pipeline and its channels, and
-`std::latch`. You need a Linux machine on which you can run as root (or with
-`CAP_SYS_NICE` and `CAP_IPC_LOCK`), with `rt-tests` and `stress-ng` installed; a virtual
-machine works for everything except bare-metal numbers. Reading: about 3 hours. Exercises: 9 to
-12 hours. Milestone: 3 hours. In the 10-week schedule this chapter fills week 3, together with
-the start of Chapter 5.
+`std::latch`. You need a Linux machine on which you can run as root (or with `CAP_SYS_NICE` and
+`CAP_IPC_LOCK`), with `rt-tests` and `stress-ng` installed; a virtual machine works for
+everything except bare-metal numbers. Reading: about 3 hours. Exercises: 9 to 12 hours.
+Milestone: 3 hours. In the 10-week schedule at the front of the book, this chapter is in week 3,
+with Chapter 5 and the first half of Chapter 10.
 
 All measurements in this chapter come from the book's machine: a 4-vCPU Intel Xeon at 2.30 GHz
 in a Firecracker virtual machine (VM), Linux 6.18 with `PREEMPT_DYNAMIC` (not `PREEMPT_RT`),
@@ -571,7 +571,9 @@ sample instead of the 200 that an independent stream of requests would have seen
 named this [coordinated omission]{.idx key="coordinated omission"}. Exercise 4.6 reproduces it
 in a deterministic simulation: 10,000 requests every 1 ms, each served in 100 µs except one that
 stalls for 200 ms. The naive measurement reports p99 = p99.99 = 100 µs; measured from when each
-request *should* have started, p99 is 110 ms. The standard correction, when you can only work
+request *should* have started, p99 is 110 ms: the requests queued by the stall drain at 100 µs
+each while a new one is due every 1 ms, so the k-th of them waits about 200 − 0.9k ms, and the
+100th worst of the 10,000 (k = 99) about 110 ms. The standard correction, when you can only work
 with the naive samples and know the intended interval, adds the samples the generator omitted:
 
 ```{.cpp include="exercises/ch04/e6_coordinated_omission/solution/omission.cpp" snippet="corrected"}

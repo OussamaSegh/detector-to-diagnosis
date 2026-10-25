@@ -44,11 +44,12 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 2 to 4: caches and data layout, the five-stage pipeline, and real-time measurement.
-You need `perf` (package `linux-tools` on Ubuntu; on a kernel without a matching package, the
-binary from any recent `linux-tools-<version>` directory works) and permission to use it (root,
-or `kernel.perf_event_paranoid` at 1 or lower). Reading: about 3 hours. Exercises: 10 to 13
-hours. Milestone: 2 hours. In the 10-week schedule this chapter fills week 4.
+Chapters 2 to 4: caches and data layout, the five-stage pipeline, and real-time measurement. You
+need `perf` (package `linux-tools` on Ubuntu; on a kernel without a matching package, the binary
+from any recent `linux-tools-<version>` directory works) and permission to use it (root, or
+`kernel.perf_event_paranoid` at 1 or lower). Reading: about 3 hours. Exercises: 10 to 13 hours.
+Milestone: 2 hours. In the 10-week schedule at the front of the book, this chapter is in week 3,
+with Chapter 4 and the first half of Chapter 10.
 
 All numbers in this chapter come from the book's machine described in Chapter 4: a 4-vCPU Intel
 Xeon at 2.30 GHz in a Firecracker VM, with AVX2 and AVX-512 (F, BW, VL), Linux 6.18, GCC 13.3

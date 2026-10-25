@@ -1,8 +1,7 @@
 # Exercise 12.2 (M): From list mode to a sinogram, in Python
 
 **Goal.** Histogram a list-mode file into a 2D sinogram (192 views by 227 radial bins),
-look at it, and get the point source back from its sinusoid. This is the plan's
-"histogram list-mode into a 2D sinogram and view it in Python". Pure Python, no numpy:
+look at it, and get the point source back from its sinusoid. Pure Python, no numpy:
 the arithmetic of binning is the point.
 
 **Time.** 2 hours.

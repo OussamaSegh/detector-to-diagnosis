@@ -19,7 +19,7 @@ pair, and `classify` calls everything a true.
   the Chapter 8 truth counter exactly, and your pairs are exactly the ones MiniDAQ's
   `CoincidenceSorter` finds with the same rules.
 
-The plan for this chapter asked for agreement with the truth "within 0.5%". With the same
+A tolerance such as "within 0.5% of the truth" may look reasonable. With the same
 window rules there is no reason for any difference at all: a single extra or missing pair
 is a bug, and an exact test finds it where a tolerance would hide it.
 

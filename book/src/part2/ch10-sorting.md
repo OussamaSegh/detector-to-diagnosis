@@ -42,11 +42,11 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 3 (threads), Chapter 5 (benchmarks and profiling), Chapter 8 (the physics of
-trues, scatters and randoms, the simulator and its truth counter) and Chapter 9 (time
-stamps and board clocks). Reading: about 3.5 hours. Exercises: 12 to 16 hours. Milestone:
-6 hours. In the 10-week schedule this chapter starts at the end of week 3 and fills the
-first half of week 4.
+Chapter 3 (threads), Chapter 5 (benchmarks and profiling), Chapter 8 (the physics of trues,
+scatters and randoms, the simulator and its truth counter) and Chapter 9 (time stamps and board
+clocks). Reading: about 3.5 hours. Exercises: 12 to 16 hours. Milestone: 6 hours. In the 10-week
+schedule at the front of the book, this chapter is in weeks 3 and 4: its first half with
+Chapters 4 and 5, its second half with Chapters 11 and 14.
 
 ## The problem
 
@@ -106,7 +106,7 @@ too late to belong to it. That decision is only correct if nothing earlier can s
 arrive. With singles in time order, the first single later than t + τ proves that the
 window opened at t is complete. With singles out of order, no single proves anything: the
 partner of a single could be anywhere further down the stream, and the sorter would have to
-hold the whole run. This is the first of the plan's two questions for this chapter, and the
+hold the whole run. This is the first of two questions that this chapter answers, and the
 answer shapes everything else: put the singles in order first, with a bounded buffer, then
 sort them in one pass with a buffer of a few windows.
 
@@ -407,7 +407,7 @@ The sorter needs one stream in time order. A scanner delivers many: one per read
 each in order by itself, but not in step with the others. One board's packet for the next
 microsecond can arrive before another board's packet for this one, because their links,
 buffers and packet sizes differ. Merging the streams is the first stage of sorting, and
-the plan's second question is about it: what breaks if data from one board arrives 10 µs
+the chapter's second question is about it: what breaks if data from one board arrives 10 µs
 late?
 
 ### A k-way merge with a watermark
@@ -459,7 +459,7 @@ in both keep that board's order. The unit test `TiesComeOutInADeterministicOrder
 
 ### The 10 µs late board
 
-Now the plan's question. A board's data arrives 10 µs after the others' data for the same
+Now the second question. A board's data arrives 10 µs after the others' data for the same
 time.
 
 **With a merger that may wait 100 µs**, nothing is lost. The watermark follows the late
@@ -663,7 +663,7 @@ photon scattered, and its truth counter classifies the pairs of a simple fixed-w
 sorter. Configured with the same rules (fixed window, kill all, no geometry cut), MiniDAQ's
 sorter must find exactly the same prompts and multiples: not within 0.5%, exactly. The test
 `MatchesTheSimulatorsGroundTruth` (SRS-SRT-010) runs 50 ms at 5 MBq and compares the
-counts. The plan for this chapter suggested a tolerance of 0.5%. With identical rules there
+counts. A tolerance of 0.5% may look like a reasonable target. With identical rules there
 is no reason for any difference, and a tolerance would hide a bug that loses one pair in a
 thousand. Exercise 10.1 asks you to write the reference sorter and holds it to the same
 standard.
@@ -696,7 +696,7 @@ The campaign runs again whenever the sorter changes.
 
 How fast must the sorter be? A clinical PET scanner can produce tens of millions of singles
 per second at high activity (verify: the NeuroLF's expected peak singles rate, which
-depends on its geometry and the activities used). The plan for this chapter set a target of
+depends on its geometry and the activities used). This chapter sets a target of
 30 M singles per second on one core, with bounded latency, and the measurements are taken
 against it. As always, the target comes from the system, and Chapter 11's count-rate curves
 are where the real number is derived.
@@ -847,8 +847,8 @@ forms another pair; everything is a true). *Acceptance:* `tests/test_reference_s
 passes: an inclusive window, nothing from a window of three, the next window opened by the
 single after a window, no part for a single outside the energy window; at 10 MBq for 50 ms,
 trues, scatters and randoms equal to the Chapter 8 truth counter exactly, and pairs exactly
-those of MiniDAQ's `CoincidenceSorter`. The plan asked for "within 0.5%"; the test asks for
-exact agreement, and the README explains why. *Time:* 2 hours.
+those of MiniDAQ's `CoincidenceSorter`. The test asks for exact agreement, not "within
+0.5%", and the README explains why. *Time:* 2 hours.
 
 **Exercise 10.2 (M): Multiples policies.** *Goal:* implement the four policies as one
 function that resolves one window, then measure what each does to the trues and randoms from

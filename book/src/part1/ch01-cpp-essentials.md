@@ -9,14 +9,14 @@ and failure modes are obvious to the next engineer and provable to an auditor. T
 chapter sets the language baseline every later chapter relies on.
 :::
 
-**A day in the life.** It is 8:40 on a Tuesday. A clinical site reports that a 40-minute
-amyloid scan produced an image with a faint band artifact. The service engineer sends you
-the acquisition log. Coincidence counts look normal for 35 minutes, then the reported
-singles rate for one detector block jumps to 4.29 billion counts per second and stays
-there. You recognize the number: 4,294,967,295 is `UINT32_MAX`. Somebody computed a rate
-as `uint32_t current - uint32_t previous` after a counter reset, and the subtraction
-wrapped. The image reconstruction trusted the rate for its dead-time correction. Nothing
-crashed, every test passed, and a patient image was quietly wrong.
+**A day in the life.** It is 8:40 on a Tuesday. A clinical site reports that a 40-minute amyloid
+scan produced an image with a faint band artifact. The service engineer sends you the acquisition
+log. Coincidence counts look normal for 35 minutes, then the reported singles rate for one detector
+block jumps to about 4.29 billion counts per second, for one sample. You recognize the number: just
+under 2^32, next to `UINT32_MAX` (4,294,967,295). Somebody computed a rate as `uint32_t current -
+uint32_t previous` after a counter reset, and the subtraction wrapped to a value near four billion.
+The image reconstruction trusted the rate for its dead-time correction. Nothing crashed, every test
+passed, and a patient image was quietly wrong.
 
 This chapter is about writing code where that class of mistake is hard to make: types that
 carry their units, errors that cannot be ignored, ownership that cannot leak or dangle,
@@ -43,8 +43,8 @@ You should be comfortable with C++17: classes, templates, `std::unique_ptr`, lam
 the standard containers. You need a Linux machine (Ubuntu 24.04 or WSL2) with GCC 13,
 Clang 18, CMake 3.28 and Ninja; the repository README lists the one-line install.
 
-Reading time is about 3 hours. The exercises take 5 to 6 hours and the MiniDAQ milestone
-about 2 hours. In the 10-week schedule this chapter belongs to week 1, together with
+Reading time is about 3 hours. The exercises take 5 to 6 hours and the MiniDAQ milestone about 2
+hours. In the 10-week schedule at the front of the book, this chapter is in week 1, with
 Chapters 2 and 8.
 
 ## Ownership and lifetime
@@ -188,7 +188,8 @@ How experts avoid these:
 - **Do not hold a view, reference or iterator into a container across an operation that
   may reallocate it** (`push_back`, `insert`, `resize`, `reserve`).
 - **Compile with lifetime warnings.** GCC 13 warns about some dangling references
-  (`-Wdangling-reference`, enabled by `-Wall` in GCC 13 and later); Clang has
+  (`-Wdangling-reference`; GCC 13.3, the compiler of this book, enables it with `-Wextra`,
+  not with `-Wall` alone, so name it or use both, and check your version); Clang has
   `-Wdangling` and `-Wreturn-stack-address`. They catch the simple cases, not the
   container case.
 - **Run tests under AddressSanitizer**, which reports `stack-use-after-return` and
@@ -661,11 +662,11 @@ exponent).
 :::
 
 ::: box-regulated
-IEC 62304 asks for documented unit acceptance criteria and evidence that units meet them
-(Chapter 14). For class C software it lists additional acceptance criteria to consider,
-among them initialization of variables, memory management and memory overflows, and
-boundary conditions: exactly the defect classes this chapter's tools find. Your evidence for this chapter's
-practices is concrete and auditable:
+IEC 62304 asks for documented unit acceptance criteria and evidence that units meet them (Chapter
+14). For class C software it lists additional acceptance criteria to consider, among them
+initialization of variables, memory management and memory overflows, and boundary conditions:
+exactly the defect classes this chapter's tools find. Your evidence for this chapter's practices is
+concrete and auditable:
 
 - The **coding standard** (warning set, `-Werror`, banned constructs) is a document in the
   repository, referenced from the software development plan, and enforced by the build.

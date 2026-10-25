@@ -1,12 +1,10 @@
 # Memory, caches and data-oriented design {#ch02}
 
 ::: box-why
-The role asks for C++ "for a continuous stream of detector data".
-At tens of millions of events per second, arithmetic is almost free and memory is
-everything: one cache miss to DRAM costs as much time as a few hundred additions. The DAQ
-lead is the person who decides how events are laid out in memory, on the wire and on
-disk, and those decisions are expensive to change once firmware, files and analysis code
-depend on them.
+A DAQ's C++ code processes a continuous stream of detector data as it arrives. At tens of millions of events per second, arithmetic is almost free and memory is
+everything: one cache miss to DRAM costs as much time as a few hundred additions. The DAQ lead
+is the person who decides how events are laid out in memory, on the wire and on disk, and those
+decisions are expensive to change once firmware, files and analysis code depend on them.
 :::
 
 **A day in the life.** The physics team wants to add a "pile-up flag" and a depth-of-interaction
@@ -35,9 +33,9 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 1 (strong types, `Single`, the build). Basic knowledge of what a CPU cache is.
-Reading: about 3 hours. Exercises: 5 to 6 hours. Milestone: 2 hours. Week 1 of the
-schedule.
+Chapter 1 (strong types, `Single`, the build). Basic knowledge of what a CPU cache is. Reading:
+about 3 hours. Exercises: 5 to 6 hours. Milestone: 2 hours. In the 10-week schedule at the front
+of the book, this chapter is in week 1, with Chapters 1 and 8.
 
 ## The memory hierarchy in numbers
 

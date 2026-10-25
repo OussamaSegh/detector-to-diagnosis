@@ -48,10 +48,11 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapter 6 (the control API and its protocol), Chapter 7 (fuzzing, static analysis and the SBOM),
-Chapter 14 (software items and SOUP) and Chapter 15 (the risk file and H-08). The code uses OpenSSL
-3; you do not need to know it beforehand. The exercises are in Python and C++. Reading: about 3
-hours. Exercises: 7 to 9 hours. Milestone: 4 hours. In the 10-week schedule this chapter is the end
-of week 6; if time is short, do Exercises 17.1 to 17.3 and leave the extras.
+Chapter 14 (software items and SOUP) and Chapter 15 (the risk file and H-08). The code uses
+OpenSSL 3; you do not need to know it beforehand. The exercises are in Python and C++. Reading:
+about 3 hours. Exercises: 7 to 9 hours. Milestone: 4 hours. In the 10-week schedule at the front
+of the book, this chapter is in week 6, with Chapters 7, 16 and 18; if time is short, do
+Exercises 17.1 to 17.3 and leave the extras.
 
 ## Security in the medical device life cycle
 
@@ -377,8 +378,10 @@ independent of the transport, as ADR 0003 required: it sees a `Session`, not a s
 
 A token in plain text on the network is a token for anyone who can capture packets. TLS encrypts and
 authenticates the connection; for MiniDAQ the configuration is short, because TLS 1.3 removed most
-of what TLS 1.2 let you get wrong. Every TLS 1.3 cipher suite provides forward secrecy and
-authenticated encryption, so the only decision is to refuse older versions:
+of what TLS 1.2 let you get wrong. Every TLS 1.3 cipher suite is authenticated encryption, and
+every full handshake uses an ephemeral (EC)DHE key exchange, which gives forward secrecy; only
+resumption with a pre-shared key and no new key share would lose it, and MiniDAQ turns resumption
+off. So the only decision is to refuse older versions:
 
 ```{.cpp include="minidaq/src/control/tls.cpp" snippet="context"}
 ```
@@ -388,7 +391,8 @@ resumption adds state and a class of bugs (the package review in the SOUP list f
 CVE-2024-2511, that concerns exactly this setting). The client is where most TLS mistakes are made,
 because a client that does not verify the server's certificate gets encryption to whoever answers.
 MiniDAQ's client loads the CA certificates it trusts, sets the host name or IP address it expects,
-sends a DNS name in the handshake (SNI), and only then connects; `SSL_VERIFY_PEER` makes the
+sends the name in the handshake (SNI) only when it is a host name, never an IP address, which SNI
+may not carry, and only then connects; `SSL_VERIFY_PEER` makes the
 handshake fail if the chain or the name does not match:
 
 ```{.cpp include="minidaq/src/control/tls.cpp" snippet="connect"}
@@ -739,8 +743,8 @@ What the regulated setting adds to this chapter's examples:
 **Exercise 17.1 (M): Threat model a status page before it is built.** *Goal:* the service team asks
 for a read-only status page that the scanner room's display can show (`GET /status` over HTTPS);
 model its threats with STRIDE before anyone writes it, and finish the checker that keeps such a
-model honest. This is the plan's threat-modeling exercise applied to the next interface, since the
-control API's own model is the worked example. *Starter:* `exercises/ch17/e1_threat_model/` (the
+model honest. The exercise applies threat modeling to the next interface, since the control API's
+own model is the worked example. *Starter:* `exercises/ch17/e1_threat_model/` (the
 diagram check of `tools/check_threats.py` with TODOs for coverage and status rules, a draft with two
 threats, one of them wrong, and the proposed requirements DASH-001 to DASH-008). *Acceptance:*
 `tests/test_threats.py` passes: the checker reports missing categories, mitigations without proposed
@@ -752,7 +756,7 @@ is worth its threats. *Time:* 2 hours.
 
 **Exercise 17.2 (M): A token store that fails closed.** *Goal:* write the core of MiniDAQ's
 authentication yourself, the role of each command and a store of token digests, without OpenSSL; the
-TLS part of the plan's exercise is the chapter's worked example. *Starter:*
+TLS part is the chapter's worked example. *Starter:*
 `exercises/ch17/e2_token_roles/` (works for the happy path and has the four classic defects of
 access control code: it fails open for unknown commands, gives an unknown role a real one, accepts
 malformed and duplicate entries, and compares with `==` and an early return). *Acceptance:*
@@ -764,9 +768,9 @@ time, and what that does not prove. *Time:* 90 minutes.
 
 **Exercise 17.3 (E): Triage a vulnerability scan.** *Goal:* the CI job reported six findings for
 MiniDAQ's SBOM, with made-up identifiers; decide each one in VEX states, and finish the rules that
-check decisions. This is the plan's scanning exercise: the scan itself runs in the CI job of this
-chapter. *Starter:* `exercises/ch17/e3_vuln_triage/` (the triage tool as a module without the rules
-for `not_affected`, `exploitable` and `in_triage`, the scan report and the advisories).
+check decisions. The scan itself runs in the CI job of this chapter; the exercise is the decisions
+that follow it. *Starter:* `exercises/ch17/e3_vuln_triage/` (the triage tool as a module without the
+rules for `not_affected`, `exploitable` and `in_triage`, the scan report and the advisories).
 *Acceptance:* `tests/test_triage.py` passes: justifications, responses and fix dates are required
 where the rules say; your decisions cover every finding, mark the TLS server and host name defects
 exploitable, the DTLS defect not reachable and GoogleTest's not present, and say why the SAX defect

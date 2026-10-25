@@ -2,8 +2,7 @@
 
 **Goal.** Add a dead-time model to the simulator's output: one dead time per block,
 non-paralyzable or paralyzable, with optional pile-up, and check the recorded rate against
-the two analytical models. This is the plan's "add a dead-time model to the simulator and
-check the measured vs true rate curve".
+the two analytical models.
 
 **Time.** 2 hours.
 

@@ -4,10 +4,11 @@
 
 # Part I: Modern, low-latency C++ for data acquisition {.part}
 
-Part I is the largest part of the book (seven chapters, about 30% of your study time)
-because fast, low-latency C++ for a continuous stream of detector data is the core of the job. A NeuroLF-class scanner can produce tens of millions of
-singles per second; your code must keep up without dropping events and without unbounded
-latency, and it must stay maintainable and auditable for the life of the product.
+Part I is the largest part of the book (seven chapters, about 30% of your study time) because
+fast, low-latency C++ for a continuous stream of detector data is the core of a DAQ engineer's
+work. A NeuroLF-class scanner can produce tens of millions of singles per
+second; your code must keep up without dropping events and without unbounded latency, and it must
+stay maintainable and auditable for the life of the product.
 
 The chapters build on each other and on MiniDAQ, the running project:
 
