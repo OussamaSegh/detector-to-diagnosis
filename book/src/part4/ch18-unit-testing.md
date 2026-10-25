@@ -389,6 +389,7 @@ access     B      81.1%   330/407    67.8%   145/214    17.9%     7/39     97.2%
 readout    B      93.3%   196/210    71.7%    43/60      0.0%     0/5      92.3%    24/26   
 output     B      83.5%   380/455    67.5%   139/206    40.6%    13/32    100.0%    37/37   
 audit      B      87.9%    29/33     50.0%     7/14     25.0%     1/4     100.0%     8/8    
+server     B     not run by any test
 ctl        B       2.5%     6/237     0.0%     0/126     0.0%     0/14      9.1%     1/11   
 tools      -      52.6%   421/801    39.5%   177/448    10.7%     8/75     71.0%    22/31   
 -----------------------------------------------------------------------------------
@@ -440,15 +441,20 @@ are in the defaulted `operator==` of `SorterStats`: every comparison in the test
 statistics, so no field was ever found to differ. That is a fact about the tests (a failing
 comparison would still print both sides), and the review accepts it.
 
-Read the other rows the same way. The item that stands out is `ctl`, the operator's client: 6 of
-237 lines, because no unit test starts it. Its parts (the TLS context, the stream, the secret
-file reader, the protocol) are tested where they live, but how the client puts them together,
-including that it checks the server's certificate before it sends the token, is not. It is a
-class B item that controls a hazard, so the gap is recorded as problem report MDQ-PR-015, and
-Chapter 19's system tests close it by running the client against the server. Coverage of the
-concurrent items also moves a little from run to run: between two runs that differed only in the
-sorter's header, `pipeline` went from 98.0% to 98.3% of its lines, most likely because which
-branches of its threads run depends on the scheduler. Compare such items by their uncovered
+Read the other rows the same way. Two items stand out, and they are the two programs an operator
+runs. `server`, the `main()` of `minidaq_server` that reads the options, builds the security
+settings and handles the shutdown signal, has no row of numbers at all: no test starts the program,
+so no profile holds any of its code. An early version of `tools/coverage.py` left such an item out
+of the table, which hid the largest gap of all; now it says so. `ctl`, the operator's client, has 6
+of 237 lines, because no unit test starts it either. Its parts (the TLS context, the stream, the
+secret file reader, the protocol) are tested where they live, but how the client puts them together,
+including that it checks the server's certificate before it sends the token, is not. It is a class B
+item that controls a hazard, so the gap is recorded, with the server's, as problem report
+MDQ-PR-015, and Chapter 19's system tests close it by running the client against the server.
+
+Coverage of the concurrent items also moves a little from run to run: between two runs that differed
+only in the sorter's header, `pipeline` went from 98.0% to 98.3% of its lines, most likely because
+which branches of its threads run depends on the scheduler. Compare such items by their uncovered
 lines, not by the last digit.
 
 ### What coverage proves, and what it does not

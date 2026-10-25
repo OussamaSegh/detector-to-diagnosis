@@ -13,8 +13,10 @@ counted: the question is how much of the code that ships the tests exercise.
 
 Writes OUT/summary.txt (the table), OUT/summary.json, OUT/report.txt (llvm-cov's per-file report),
 and with --html an annotated source tree in OUT/html. The raw and merged profiles stay in BUILD
-(coverage-profiles/, coverage.profdata): they are large and can be made again. --uncovered FILE prints every line of FILE
-with a branch or an MC/DC condition that the tests did not take both ways.
+(coverage-profiles/, coverage.profdata): they are large and can be made again. --uncovered FILE
+prints every line of FILE with a branch or an MC/DC condition that the tests did not take both
+ways. A shipped item whose program no test runs has no profile at all; the table lists it as "not
+run by any test" rather than leaving it out.
 
 Coverage says which code ran, not that it was checked: a test without an assertion covers as much
 as one with. Read the numbers with Chapter 18's section on what coverage proves.
@@ -92,6 +94,10 @@ def table(rows, items):
     total = {m: [0, 0] for m in ("lines", "branches", "mcdc", "functions")}
     for it in items:
         if it["id"] not in rows:
+            # No profile holds any of its code: no test ran the program it is in. Leaving the
+            # row out would hide the largest gap of all.
+            if it.get("shipped"):
+                out.append(f"{it['id']:<10} {it.get('class') or '-':<5} not run by any test")
             continue
         r = rows[it["id"]]
         for m in total:

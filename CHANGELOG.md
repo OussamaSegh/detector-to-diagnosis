@@ -36,6 +36,8 @@ the patch version.
 - `CoincidenceSorter::config()` removed: no code called it (found by the coverage report).
 - `tools/coverage.py` keeps the raw and merged profiles in the build directory, not with the
   report.
+- `tools/coverage.py` lists a shipped item that no test runs as "not run by any test" instead of
+  leaving it out of the table (it hid the item `server`); MDQ-PR-015 covers `server` too.
 
 ## [0.3.0] - 2026-10-25
 
