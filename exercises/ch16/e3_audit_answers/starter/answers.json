@@ -1,0 +1,6 @@
+{
+  "Q1": {"answer": "All the sorter requirements in the SRS.", "evidence": ["docs/regulatory/srs.md"]},
+  "Q2": {"answer": "We test it a lot, and it should be right: the tests are all green.", "evidence": ["minidaq/tests/"]},
+  "Q3": {"answer": "Probably class B, like the rest of the server.", "evidence": []},
+  "Q4": {"answer": "The risk file covers it.", "evidence": ["docs/regulatory/risk-analysis.md"]}
+}

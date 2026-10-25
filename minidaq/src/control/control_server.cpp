@@ -11,6 +11,8 @@
 
 #include <cerrno>
 #include <map>
+#include <string>
+#include <string_view>
 #include <system_error>
 #include <vector>
 
@@ -34,6 +36,13 @@ std::string peer_name(const sockaddr_in& a) {
 }
 
 std::string errno_text(const char* what) { return std::string{what} + ": " + std::system_category().message(errno); }
+
+// A response to a connection that is refused or closed before any request is
+// handled. Code and message are fixed ASCII text, so no JSON escaping is needed.
+std::string refusal(std::string_view code, std::string_view message) {
+  return std::string{R"({"api":")"} + std::string{api_version} + R"(","id":null,"ok":false,"error":{"code":")" +
+         std::string{code} + R"(","message":")" + std::string{message} + "\"}}\n";
+}
 
 // The sockets API takes every address family through a sockaddr*.
 sockaddr* as_sockaddr(sockaddr_in* a) { return reinterpret_cast<sockaddr*>(a); }  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -120,7 +129,7 @@ void ControlServer::run(const std::stop_token& st) {
         Client c;
         c.name = peer_name(peer);
         if (connections.size() >= max_clients_) {
-          c.out = R"({"api":"1.0","id":null,"ok":false,"error":{"code":"busy","message":"too many clients"}})" "\n";
+          c.out = refusal("busy", "too many clients");
           c.closing = true;
           service_.note(c.name, "connect", "refused: too many clients", false);
         } else {
@@ -146,7 +155,7 @@ void ControlServer::run(const std::stop_token& st) {
             c.out += '\n';
           }
           if (c.framer.overflowed()) {
-            c.out += R"({"api":"1.0","id":null,"ok":false,"error":{"code":"bad_request","message":"request too long"}})" "\n";
+            c.out += refusal("bad_request", "request too long");
             c.closing = true;
             service_.note(c.name, "disconnect", "request too long", false);
           }

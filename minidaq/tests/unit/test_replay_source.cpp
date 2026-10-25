@@ -36,7 +36,7 @@ TEST(ReplaySource, LoopsWithShiftedTimesInOrder) {
   sim::ReplaySource src{recording(), 1e9};  // far faster than the test can ask
   std::vector<std::uint64_t> out(4 * 50);
   std::size_t n = src(out);  // starts the clock (and delivers nothing yet)
-  std::this_thread::sleep_for(2ms);
+  std::this_thread::sleep_for(2ms);  // sleep: minimum (lets words become due)
   while (n < out.size()) {
     n += src(std::span{out}.subspan(n));
   }
@@ -64,11 +64,17 @@ TEST(ReplaySource, RealTimeRateAndPacing) {
   (void)src(buf);
   while (monotonic_ns() - t0 < 100'000'000) {
     if (src(buf) == 0) {
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for(100us);  // sleep: poll
     }
   }
   const double elapsed_s = static_cast<double>(monotonic_ns() - t0) * 1e-9;
   EXPECT_LE(static_cast<double>(src.delivered()), rate * elapsed_s + 1.0);
-  EXPECT_GE(static_cast<double>(src.delivered()), 0.5 * rate * 0.1) << "should keep up with the rate";
+  // It does deliver once a word is due; how many words 0.1 s brings depends on
+  // how often this thread runs, so no throughput is asserted (CAPA-0001).
+  const std::uint64_t next = src.delivered();
+  while (monotonic_ns() < src.due_ns(next + 1) + 1'000) {
+    std::this_thread::sleep_for(100us);  // sleep: poll
+  }
+  EXPECT_GT(src(buf), 0U) << "a due word is delivered";
   EXPECT_THROW(sim::ReplaySource({1}, 1.0), std::invalid_argument);
 }

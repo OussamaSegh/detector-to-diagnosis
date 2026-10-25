@@ -145,7 +145,7 @@ int run(int argc, char** argv) {
     }
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::duration<double>(*seconds);
     for (int id = 1;; ++id) {
-      if (!conn.call(json{{"api", "1.0"}, {"id", id}, {"cmd", "status"}}, response)) {
+      if (!conn.call(json{{"api", "1.1"}, {"id", id}, {"cmd", "status"}}, response)) {
         std::fprintf(stderr, "%s\n", conn.error().c_str());
         return 2;
       }
@@ -163,7 +163,7 @@ int run(int argc, char** argv) {
       std::this_thread::sleep_for(std::chrono::milliseconds{100});
     }
   }
-  json request{{"api", "1.0"}, {"id", 1}, {"cmd", cmd}};
+  json request{{"api", "1.1"}, {"id", 1}, {"cmd", cmd}};  // any 1.x server accepts it (ADR 0003)
   if (cmd == "configure") {
     if (i + 1 >= argc) {
       return usage(argv[0]);

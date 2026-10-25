@@ -19,3 +19,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0010](0010-coincidence-sorter-and-merger.md) | A streaming coincidence sorter with configurable policies, and a watermark merger | Accepted |
 | [0011](0011-front-end-model-and-capacity-measurement.md) | Front-end dead time in the simulator, and capacity measured with a replayed stream | Accepted |
 | [0012](0012-mdq-l1-list-mode-format-and-writer.md) | MDQ-L1, a custom block format for list-mode data, written by a two-thread sink | Accepted |
+| [0013](0013-versioned-status-fields.md) | The status object is part of the versioned control API (API 1.1) | Accepted |

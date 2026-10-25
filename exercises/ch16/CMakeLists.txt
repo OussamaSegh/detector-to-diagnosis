@@ -1,0 +1,4 @@
+minidaq_python_exercise(e1_clause_map)
+minidaq_python_exercise(e2_window_change)
+minidaq_python_exercise(e3_audit_answers)
+minidaq_python_exercise(e5_document_control)

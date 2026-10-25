@@ -13,9 +13,10 @@ using namespace std::chrono_literals;
 
 TEST(PacedSource, NeverDeliversAheadOfTheClock) {
   // REQ: SRS-SIM-002
-  // 200 k words/s: fast enough to pace in bursts, slow enough that a
-  // ThreadSanitizer build on a shared CI runner can still keep up (it reached
-  // only 0.78 M words/s against a 1 M target).
+  // 200 k words/s, paced in bursts. How much the source delivers in 0.2 s
+  // depends on how often this thread runs, so the test checks the schedule,
+  // not a throughput: a busy machine once delivered only 54% of the words due
+  // (Chapter 16, CAPA-0001).
   constexpr double rate = 2e5;  // words per second
   minidaq::sim::PacedSource src{{}, rate, 512};
   std::vector<std::uint64_t> buf(4096);
@@ -25,19 +26,25 @@ TEST(PacedSource, NeverDeliversAheadOfTheClock) {
     const std::size_t n = src(buf);
     EXPECT_LE(n, 512U) << "max_burst";
     if (n == 0) {
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for(100us);  // sleep: poll
     }
   }
   const double elapsed_s = static_cast<double>(minidaq::monotonic_ns() - t0) * 1e-9;
   const auto delivered = static_cast<double>(src.delivered());
   EXPECT_LE(delivered, rate * elapsed_s + 1.0);
-  EXPECT_GE(delivered, 0.8 * rate * 0.2) << "should keep up with the rate";
+  // It does deliver: once the next word is due (word number n is due when
+  // n + 1 words are, plus 1 us for rounding), a call returns it.
+  const std::uint64_t next = src.delivered();
+  while (minidaq::monotonic_ns() < src.due_ns(next + 1) + 1'000) {
+    std::this_thread::sleep_for(100us);  // sleep: poll
+  }
+  EXPECT_GT(src(buf), 0U) << "a due word is delivered";
 }
 
 TEST(PacedSource, WordsAreValidMdqP1) {
   minidaq::sim::PacedSource src{{}, 1e9, 4096};
   std::vector<std::uint64_t> buf(4096);
-  std::this_thread::sleep_for(1ms);
+  std::this_thread::sleep_for(1ms);  // sleep: minimum (lets words become due)
   std::size_t n = 0;
   while (n == 0) {
     n = src(buf);

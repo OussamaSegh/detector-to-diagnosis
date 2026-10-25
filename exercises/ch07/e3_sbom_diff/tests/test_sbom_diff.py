@@ -32,10 +32,14 @@ class SbomDiff(unittest.TestCase):
         self.assertEqual(sbom_diff.diff(self.old, self.new), [])
 
     def test_upgrade_is_a_version_change_not_add_and_remove(self):
+        # A patch release after whatever version the repository pins today.
         c = find(self.new, "nlohmann-json")
-        c["version"], c["bom-ref"] = "3.12.0", "nlohmann/nlohmann-json@3.12.0"
+        old = c["version"]
+        major, minor, patch = old.split(".")
+        new = f"{major}.{minor}.{int(patch) + 1}"
+        c["version"], c["bom-ref"] = new, f"nlohmann/nlohmann-json@{new}"
         self.assertEqual(sbom_diff.diff(self.old, self.new),
-                         [("version", "nlohmann/nlohmann-json", "3.11.3 -> 3.12.0")])
+                         [("version", "nlohmann/nlohmann-json", f"{old} -> {new}")])
 
     def test_license_scope_and_hash_changes(self):
         find(self.new, "benchmark")["licenses"] = [{"license": {"id": "MIT"}}]

@@ -43,13 +43,13 @@
     },
     {
       "id": "MDQ-PR-005",
-      "title": "SOUP: nlohmann/json 3.11.3 may parse an integer as a float when errno holds EINTR",
+      "title": "SOUP: nlohmann/json 3.11.3 parses an integer as a float if the C library sets errno during a successful conversion",
       "found": "2026-10-25, Chapter 14 SOUP review",
       "item": "config",
-      "status": "open",
-      "description": "Fixed upstream in 3.12.0 (#4506). The control server parses requests after poll(), which can return EINTR.",
-      "evaluation": {"safety_relevant": false, "rationale": "The configuration reader requires integers, so such a value is rejected with a config_error and the operator sends the request again; no wrong setting is accepted. A request id may be echoed as a float."},
-      "decision": "Release with it; upgrade to 3.12.0 as a planned SOUP change (Chapter 16)."
+      "status": "closed",
+      "description": "Fixed upstream in 3.12.0 (#4506): 3.11.3 treats any nonzero errno after strtoull or strtoll as a failed integer conversion, 3.12.0 only ERANGE. The Chapter 14 review assumed that an errno left by poll() could trigger it; reading the lexer in Chapter 16 showed that errno is reset immediately before the conversion, so only a C library that sets errno on success can trigger it, which POSIX forbids.",
+      "evaluation": {"safety_relevant": false, "rationale": "The configuration reader requires integers, so such a value would be rejected with a config_error and no wrong setting accepted; with a POSIX C library the defect cannot occur."},
+      "resolution": {"change": "CR-0002: nlohmann/json 3.12.0.", "verification": "All CI presets, fuzz_config and fuzz_protocol smoke runs, docs.soup"}
     },
     {
       "id": "MDQ-PR-006",
@@ -90,6 +90,38 @@
       "description": "The synthetic source and the detector simulator are part of minidaq_core, so minidaq_server contains them and a configuration can select them.",
       "evaluation": {"safety_relevant": true, "rationale": "A clinical acquisition configured with a simulated source would produce plausible but invented data. The run record states the source type and metadata carries 'simulated', so the data is identifiable."},
       "decision": "Release with it for 0.3.0 (MiniDAQ is a teaching project); a product build excludes the simulator or refuses it outside service mode."
+    },
+    {
+      "id": "MDQ-PR-010",
+      "title": "Pipeline.DropPolicyCountsEveryLostWord failed on a fast CI runner",
+      "found": "2026-10-24, Chapter 7, GitHub CI",
+      "item": "tests",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "The test assumed that a debug build's sink is slower than its source, so that the drop policy drops; on a fast runner the sink kept up, nothing dropped, and the test failed.",
+      "evaluation": {"safety_relevant": false, "rationale": "A defect of the test, not of the pipeline: the drop policy was correct. A test that fails at random teaches people to rerun it, which can hide a real failure; that is the reason for CAPA-0001."},
+      "resolution": {"change": "dda7a3e: the sink waits until the source has read everything, so the test no longer depends on relative speeds. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).", "verification": "Pipeline.DropPolicyCountsEveryLostWord; the stress run in measurements/ch16/"}
+    },
+    {
+      "id": "MDQ-PR-011",
+      "title": "FastSorter.FastEnough failed during a CI run on the shared book machine",
+      "found": "2026-10-25, Chapter 12, ci/run_all.sh",
+      "item": "tests",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "Exercise 10.4's acceptance test compared the run times of two sorters measured one after the other; a slow spell of the shared virtual machine during one of them changed the ratio.",
+      "evaluation": {"safety_relevant": false, "rationale": "An exercise test of speed, not a test of MiniDAQ; no requirement was affected. Same cause as MDQ-PR-010."},
+      "resolution": {"change": "5d12d87: the two sorters run interleaved, best of seven, so a slow spell affects both. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).", "verification": "FastSorter.FastEnough in exercises/ch10/e4_fast_sorter"}
+    },
+    {
+      "id": "MDQ-PR-012",
+      "title": "The status gained fields without a new minor version of the control API",
+      "found": "2026-10-25, Chapter 16 internal audit (finding A-3)",
+      "item": "protocol",
+      "status": "closed",
+      "description": "detector_counters (Chapter 9), sorter (Chapter 10), sink_counters (Chapter 12) and integrity (Chapter 15) were added to the status while every response still said \"api\": \"1.0\", against the rule of ADR 0003 that new fields come with a minor version.",
+      "evaluation": {"safety_relevant": true, "rationale": "The integrity verdict is a risk control (RC-01, RC-05): a client cannot tell whether a status without it comes from an older server or is incomplete. No client misread a status, because the only clients are MiniDAQ's own."},
+      "resolution": {"change": "CR-0003: control API 1.1 with the status fields listed in status_fields (ADR 0013).", "verification": "ControlProtocol.StatusFieldsMatchTheApiVersion (SRS-CTL-033)"}
     }
   ]
 }

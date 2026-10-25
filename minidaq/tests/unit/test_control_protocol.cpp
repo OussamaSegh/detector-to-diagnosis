@@ -6,7 +6,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <mutex>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,6 +18,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/control_protocol.hpp"
 #include "minidaq/control/control_server.hpp"
+#include "eventually.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -99,6 +103,45 @@ TEST(ControlProtocol, VersioningAndMalformedInput) {
   EXPECT_EQ(call(svc, bad_utf8)["ok"], false) << "invalid UTF-8 is rejected, not a crash";
 }
 
+// [snippet:status_fields_test]
+TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
+  // REQ: SRS-CTL-033
+  ServiceOptions o = with_default_adapters();
+  o.interval_period = 30ms;
+  AcquisitionService svc{o};
+  std::set<std::string> seen;
+  const auto check = [&](const json& status, const char* when) {
+    for (const auto& [name, value] : status.items()) {
+      seen.insert(name);
+      EXPECT_TRUE(std::any_of(status_fields.begin(), status_fields.end(), [&](const StatusField& f) { return f.name == name; }))
+          << when << ": field '" << name << "' is not in status_fields of API " << api_version;
+    }
+    for (const auto& f : status_fields) {
+      if (f.always) {
+        EXPECT_TRUE(status.contains(std::string{f.name})) << when << ": no field '" << f.name << "'";
+      }
+    }
+  };
+  check(call(svc, R"({"cmd":"status"})")["status"], "idle");
+  ASSERT_EQ(call(svc, R"({"cmd":"configure","config":{"schema_version":"1.0","source":{"rate_hz":1e6}}})")["ok"], true);
+  check(call(svc, R"({"cmd":"status"})")["status"], "configured");
+  ASSERT_EQ(call(svc, R"({"cmd":"start"})")["ok"], true);
+  json running;
+  ASSERT_TRUE(test_support::eventually([&] {
+    running = call(svc, R"({"cmd":"status"})")["status"];
+    return running.contains("recent_latency_ns");
+  }));
+  check(running, "running");
+  ASSERT_EQ(call(svc, R"({"cmd":"stop"})")["ok"], true);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  check(call(svc, R"({"cmd":"status"})")["status"], "after the run");
+  for (const auto& f : status_fields) {
+    EXPECT_TRUE(seen.contains(std::string{f.name})) << "status_fields lists '" << f.name << "', which never appeared";
+  }
+  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "1.1");
+}
+// [/snippet:status_fields_test]
+
 namespace {
 
 class Client {
@@ -181,7 +224,7 @@ TEST(ControlServer, AClientThatDisconnectsDoesNotStopTheAcquisition) {
               true);
     ASSERT_EQ(c.call({{"cmd", "start"}})["state"], "running");
   }  // the client goes away mid-run
-  std::this_thread::sleep_for(50ms);
+  std::this_thread::sleep_for(50ms);  // sleep: hides only (gives a wrong stop the time to happen)
   EXPECT_EQ(svc.state(), AcqState::running);
   Client again{*port};
   const auto st = again.call({{"cmd", "status"}});

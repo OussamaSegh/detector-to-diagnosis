@@ -1,5 +1,6 @@
 # MDQ-L1: MiniDAQ list-mode file format, version 1.0
 
+Version 1 of this specification (MiniDAQ 0.3.0-dev, Chapter 16), for format version 1.0.
 Status: Accepted (ADR 0012). Implementation: `minidaq/include/minidaq/format/list_mode.hpp`
 (C++), with an independent reader in `measurements/ch12/crash.py` and
 `exercises/ch12/e2_sinogram` (Python). Requirements: SRS-LMF-001 to 008 (format) and
@@ -217,3 +218,9 @@ identifies calibration sets).
   Python implementation; `test_list_mode.cpp` reads it (SRS-LMF-008).
 - `exercises/ch12/e2_sinogram/tests/point_source.mdql`: 0.1 s of a point source written
   by `minidaq_sim --listmode`, 6,155 prompts and 12 delayeds.
+
+## 12. Document history
+
+| Version | Change |
+|---|---|
+| 1 | First controlled version (Chapter 16); the text is that of Chapter 12. The specification's version is not the format's: a change to this text that does not change the format gets a new document version and keeps format version 1.0. |

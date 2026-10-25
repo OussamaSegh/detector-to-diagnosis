@@ -19,6 +19,7 @@
 #include "minidaq/pipeline/acquisition_pipeline.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
 #include "minidaq/sim/synthetic_source.hpp"
+#include "eventually.hpp"
 
 using namespace minidaq;
 using namespace std::chrono_literals;
@@ -131,7 +132,7 @@ TEST(Pipeline, DropPolicyCountsEveryLostWord) {
                           const auto deadline = std::chrono::steady_clock::now() + 10s;
                           while (!source_done.load(std::memory_order_acquire) &&
                                  std::chrono::steady_clock::now() < deadline) {
-                            std::this_thread::sleep_for(100us);
+                            std::this_thread::sleep_for(100us);  // sleep: poll
                           }
                         }};
   p.start();
@@ -147,10 +148,17 @@ TEST(Pipeline, StopRequestDrainsInFlightData) {
   // REQ: SRS-PIPE-012
   sim::SyntheticSource gen{{}};
   std::uint64_t delivered = 0;
-  AcquisitionPipeline p{small_config(0), [&](std::span<std::uint64_t> out) { return gen.generate(out); },
+  std::atomic<std::uint64_t> produced{0};  // relaxed: it only shows that work happened
+  AcquisitionPipeline p{small_config(0),
+                        [&](std::span<std::uint64_t> out) {
+                          const std::size_t n = gen.generate(out);
+                          produced.fetch_add(n, std::memory_order_relaxed);
+                          return n;
+                        },
                         [&](std::span<const Coincidence> c) { delivered += c.size(); }};
   p.start();
-  std::this_thread::sleep_for(50ms);
+  // Stop while data is in flight: after the source has produced some, however long that takes.
+  ASSERT_TRUE(test_support::eventually([&] { return produced.load(std::memory_order_relaxed) >= 100'000; }));
   p.request_stop();
   p.wait();
   const auto st = p.stats();
@@ -160,27 +168,34 @@ TEST(Pipeline, StopRequestDrainsInFlightData) {
 }
 
 TEST(Pipeline, SourceWithNoDataDoesNotHang) {
-  int calls = 0;
+  std::atomic<int> calls{0};  // relaxed: it only shows that the source was polled
   AcquisitionPipeline p{small_config(0),
                         [&](std::span<std::uint64_t>) -> std::size_t {
-                          ++calls;
+                          calls.fetch_add(1, std::memory_order_relaxed);
                           return 0;
                         },
                         nullptr};
   p.start();
-  std::this_thread::sleep_for(20ms);
+  ASSERT_TRUE(test_support::eventually([&] { return calls.load(std::memory_order_relaxed) > 1; })) << "the source is polled";
   p.request_stop();
   p.wait();
-  EXPECT_GT(calls, 0);
+  EXPECT_GT(calls.load(), 0);
   EXPECT_EQ(p.stats()[0].items_out, 0U);
 }
 
 TEST(Pipeline, DestructorStopsARunningPipeline) {
   sim::SyntheticSource gen{{}};
+  std::atomic<std::uint64_t> produced{0};  // relaxed: it only shows that work happened
   {
-    AcquisitionPipeline p{small_config(0), [&](std::span<std::uint64_t> out) { return gen.generate(out); }, nullptr};
+    AcquisitionPipeline p{small_config(0),
+                          [&](std::span<std::uint64_t> out) {
+                            const std::size_t n = gen.generate(out);
+                            produced.fetch_add(n, std::memory_order_relaxed);
+                            return n;
+                          },
+                          nullptr};
     p.start();
-    std::this_thread::sleep_for(10ms);
+    ASSERT_TRUE(test_support::eventually([&] { return produced.load(std::memory_order_relaxed) > 0; }));
   }  // must not hang or crash
   EXPECT_GT(gen.generated(), 0U);
 }

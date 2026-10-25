@@ -1,0 +1,22 @@
+{
+  "Q1": {"answer": "Twelve: SRS-SRT-001 to SRS-SRT-012 in the SRS, version 2. Each is verified by test; the trace matrix names the test of each, and five of them implement risk controls.",
+         "evidence": ["docs/regulatory/srs.md", "docs/regulatory/trace-matrix.md"]},
+  "Q2": {"answer": "From the simulator's ground truth. Configured like its reference counter, the sorter finds exactly the same prompts (SRS-SRT-010), and its delayed window estimates the true randoms to within 15% at 40 MBq (SRS-SRT-011). The simulator shares the sorter's model of the scanner; that residual risk of H-07 is closed by phantom measurements on the scanner.",
+         "evidence": ["CoincidenceSorter.MatchesTheSimulatorsGroundTruth", "CoincidenceSorter.TheDelayedWindowEstimateDependsOnTheMultiplesPolicy", "measurements/ch10/validation.txt", "docs/regulatory/risk/hazards.json"]},
+  "Q3": {"answer": "Class B. A defect in the sorter biases every count of a scan (hazard HZ-1); after the controls outside the software, such as image review and daily quality control, the harm it can contribute to is a non-serious injury. The classification and its rationale are recorded per item.",
+         "evidence": ["docs/architecture/software-items.json", "docs/architecture/architecture.md"]},
+  "Q4": {"answer": "Hazard H-07, wrong coincidence selection, with risk controls RC-16 and RC-17 and their verification, in the hazard analysis; the FMEA of the sorter, thirteen failure modes, each with its control; and H-01, for coincidences lost without notice.",
+         "evidence": ["docs/regulatory/risk/hazards.json", "docs/regulatory/risk/fmea-sorter.json", "docs/regulatory/risk/risk-management-plan.md"]},
+  "Q5": {"answer": "ADR 0010 records the decision, the options considered and the reasons: the rules decide every count, so they are explicit, configurable, recorded with the data and testable against the ground truth.",
+         "evidence": ["docs/adr/0010-coincidence-sorter-and-merger.md"]},
+  "Q6": {"answer": "By a ten-minute fuzzing campaign with address and undefined-behavior sanitizers, 3,874,747 inputs without a failure, and by unit tests of out-of-order singles, invalid configurations and every counter.",
+         "evidence": ["fuzz/fuzz_sorter.cpp", "measurements/ch10/fuzz_sorter.txt", "CoincidenceSorter.RejectsBadConfigurations", "CoincidenceSorter.EverySingleIsAccountedFor", "CoincidenceSorter.EnergyGateAndOrder"]},
+  "Q7": {"answer": "On the reference machine the sorter's stage handles about 70 M singles/s, a margin of about 7 times at the working rate of 10 M singles/s, which is an assumption still to be confirmed for the scanner. The requirement is SRS-PERF-020, for the whole pipeline.",
+         "evidence": ["docs/performance-budget.md", "measurements/ch11/bottleneck.txt", "docs/regulatory/srs.md"]},
+  "Q8": {"answer": "One: MDQ-PR-007, the sorter holds its last 104 ns of singles until more data arrives. It loses no coincidence and was evaluated as not safety relevant.",
+         "evidence": ["docs/regulatory/known-anomalies.md", "docs/regulatory/problem-reports.json"]},
+  "Q9": {"answer": "Commit 11feccb, 2026-10-24, the Chapter 10 review. Its record is the commit and the CHANGELOG; no reviewer other than its author approved it, although SDP section 5 requires a reviewed pull request. That is a nonconformity, and I will record it as a problem report.",
+         "evidence": ["CHANGELOG.md", "docs/regulatory/sdp.md"]},
+  "Q10": {"answer": "The release is a git tag; CI builds and tests that commit with six presets and static analysis, and the release record names the commit, the results and the SBOM, which identifies every SOUP item by its pin.",
+          "evidence": ["docs/regulatory/sdp.md", "ci/run_all.sh", ".github/workflows/ci.yml", "tools/make_sbom.py"]}
+}

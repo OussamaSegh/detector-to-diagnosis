@@ -35,7 +35,7 @@ TEST(Tsc, TracksMonotonicWithinAThousandth) {
   const std::int64_t m0 = ex::monotonic_ns();
   const std::int64_t t0 = clock.now_ns();
   EXPECT_LT(std::llabs(t0 - m0), 100'000) << "offset right after calibration";
-  std::this_thread::sleep_for(std::chrono::milliseconds{100});
+  std::this_thread::sleep_for(std::chrono::milliseconds{100});  // sleep: minimum (the span both clocks measure)
   const std::int64_t m1 = ex::monotonic_ns();
   const std::int64_t t1 = clock.now_ns();
   const double elapsed_m = static_cast<double>(m1 - m0);

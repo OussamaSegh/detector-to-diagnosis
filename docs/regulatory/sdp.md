@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 2 (MiniDAQ 0.3.0-dev, Chapter 15). Status: draft for review.
+Version 3 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -88,10 +88,17 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   in `cmake/Dependencies.cmake`, mirrored in the [SOUP list](soup-list.md) and the SBOM
   (`tools/make_sbom.py`). The build machine's compilers and analyzers are recorded with
   their versions in the CI logs.
-- **Changes:** every change is a pull request with a description of why, reviewed before it
-  is merged. The reviewer checks that the requirements, the design documents, the tests and
-  the trace still agree; the documentation tests (`docs.*`, `architecture.*`) make most of
-  this mechanical. A change that touches a risk control, the safety class of an item or a
+- **Changes:** every change is reviewed before it is merged, against the checklist of the
+  [change control procedure](changes/README.md): the requirements, the design documents, the
+  tests and the trace still agree; the documentation tests (`docs.*`, `architecture.*`) make most
+  of this mechanical. A change to a requirement, a risk control, a class, a SOUP item, an
+  interface or a data format needs an approved change request first. MiniDAQ has one
+  developer, so the review of each change is the author's own, recorded in the commit, and the
+  review by a second person is the Part review at the end of each Part, recorded in the release
+  notes. That is weaker than ISO 13485 and IEC 62304 expect of a team, and is accepted only for
+  this teaching project (internal audit finding A-1, CAPA-0002); a team protects the main
+  branch and requires a reviewer who did not write the change (assumption: confirm with team
+  how the NeuroLF's reviews are recorded). A change that touches a risk control, the safety class of an item or a
   SOUP item also updates the risk file (Chapter 15) and, for SOUP, repeats the known-anomaly
   review.
 - **What a real quality system adds:** a change control board for changes after release,
@@ -109,7 +116,10 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Exercise starters | each new exercise, `ctest -L starter` | every starter fails at least one test, none hangs |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
 | Performance requirements | each release, on the reference machine | SRS-PERF-020 and SRS-PERF-021 met |
-| Code review | every change | approved by a reviewer who did not write it |
+| Stress run of the threaded tests | each release, `tools/stress_tests.sh` on the `tsan` build, 100 repetitions | no failure, result in `measurements/` (CAPA-0001) |
+| Code review | every change; every Part | the author's review against the change control checklist; a Part review of all changes of the Part (section 5) |
+| Change requests and CAPA | every change (`docs.changes`, `docs.capa`) | every request complete and consistent; every implemented one names its commits and tests |
+| Document control | every change, against the last release (`tools/design_file.py --since`) | every controlled document that changed has a new version and history row |
 | Risk management review | each release | the risk file is complete, every hazard is closed or its open status is justified for the release's intended use, the overall residual risk is acceptable (risk management plan, section 4) |
 
 Unit acceptance criteria: a unit (a class or a function with its header) is accepted when its
@@ -172,3 +182,4 @@ of Chapter 13.
 |---|---|
 | 1 | First version (Chapter 14). |
 | 2 | Risk management (Chapter 15): requirements traced to risk controls, the test `docs.risk`, and the risk file's review before release. |
+| 3 | Chapter 16: change requests, CAPA and document control as verification activities; how changes are reviewed with one developer (internal audit finding A-1, CAPA-0002). |

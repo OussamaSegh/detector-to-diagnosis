@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Status: measured on the book's machine at tag `ch05`, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
+Version 1 (MiniDAQ 0.3.0-dev, Chapter 16). Status: measured on the book's machine at tag `ch05`, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -101,3 +101,9 @@ runs them with 10 repetitions and `tools/perf_gate.py` fails the merge request i
 than 5% slower than `benchmarks/baseline/<runner>.json` with p < 0.01 (one-sided Mann-Whitney U).
 A change that intentionally slows a row updates the baseline and this table in the same merge
 request, with a reason.
+
+## Document history
+
+| Version | Change |
+|---|---|
+| 1 | First controlled version (Chapter 16). Earlier states, without versions, are in git at tags `ch05`, `ch07`, `ch11` and `ch12`. |

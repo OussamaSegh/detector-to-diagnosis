@@ -60,7 +60,7 @@ class FakeOps final : public FileOps {
   }
   Expected<std::size_t, int> write(int fd, std::span<const std::byte> data) override {
     if (d_.write_delay.count() > 0) {
-      std::this_thread::sleep_for(d_.write_delay);
+      std::this_thread::sleep_for(d_.write_delay);  // sleep: device (a slow disk)
     }
     const std::lock_guard lock{d_.mu};
     if (d_.used >= d_.capacity) {
@@ -324,11 +324,11 @@ TEST(ListModeSink, ABlockIsWrittenAtTheLatestAfterTheMaximumDelay) {
   const auto in = stream(10);  // far fewer than a block
   (*s)->write(in);
   EXPECT_EQ((*s)->stats().blocks, 0U);
-  std::this_thread::sleep_for(30ms);
+  std::this_thread::sleep_for(30ms);  // sleep: minimum (more than max_block_delay)
   (*s)->write({});  // the pipeline's writer calls write() at least every max_batch_delay
   const auto deadline = std::chrono::steady_clock::now() + 2s;
   while ((*s)->stats().blocks == 0 && std::chrono::steady_clock::now() < deadline) {
-    std::this_thread::sleep_for(1ms);
+    std::this_thread::sleep_for(1ms);  // sleep: poll
   }
   EXPECT_EQ((*s)->stats().blocks, 1U);
   std::vector<std::byte> on_disk;

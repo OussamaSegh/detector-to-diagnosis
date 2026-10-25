@@ -1,0 +1,23 @@
+{
+  "comment": "ISO 13485:2016 clauses that concern a software team, by number and topic in this book's words (not the standard's text).",
+  "clauses": {
+    "4.2.4": "Control of documents",
+    "4.2.5": "Control of records",
+    "6.2": "Competence of people",
+    "7.1": "Planning of product realization, including risk management",
+    "7.3.2": "Design and development planning",
+    "7.3.3": "Design and development inputs",
+    "7.3.4": "Design and development outputs",
+    "7.3.5": "Design and development review",
+    "7.3.6": "Design and development verification",
+    "7.3.7": "Design and development validation",
+    "7.3.8": "Design and development transfer",
+    "7.3.9": "Control of design and development changes",
+    "7.3.10": "Design and development files",
+    "7.4": "Purchasing",
+    "8.2.1": "Feedback",
+    "8.3": "Control of nonconforming product",
+    "8.5.2": "Corrective action",
+    "8.5.3": "Preventive action"
+  }
+}

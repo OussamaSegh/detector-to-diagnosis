@@ -67,7 +67,14 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.anomalies COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/anomalies.py ${PROJECT_SOURCE_DIR} --check)
   # Chapter 15: the risk file follows its criteria, and every control is implemented and verified.
   add_test(NAME docs.risk COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_risk.py ${PROJECT_SOURCE_DIR})
-  set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk PROPERTIES LABELS "unit")
+  # Chapter 16: the design and development file, document control, change requests and CAPA.
+  add_test(NAME docs.design_file COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/design_file.py ${PROJECT_SOURCE_DIR} --check)
+  add_test(NAME docs.changes COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_changes.py ${PROJECT_SOURCE_DIR})
+  add_test(NAME docs.capa COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_capa.py ${PROJECT_SOURCE_DIR})
+  # CAPA-0001: every sleep in a test states why (coding standard rule 5.5).
+  add_test(NAME tests.waits COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_waits.py ${PROJECT_SOURCE_DIR})
+  set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk docs.design_file docs.changes docs.capa
+                       tests.waits PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

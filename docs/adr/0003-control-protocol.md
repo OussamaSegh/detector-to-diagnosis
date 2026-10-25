@@ -35,7 +35,7 @@ started it, a crashed GUI, a closed laptop or a network hiccup stops a patient s
 
 Option 4, with these rules:
 
-- Every response carries `"api": "MAJOR.MINOR"` (now `1.0`), and clients should send it in
+- Every response carries `"api": "MAJOR.MINOR"` (`1.0` at this decision; `1.1` since [ADR 0013](0013-versioned-status-fields.md)), and clients should send it in
   every request. A request with a different major version is refused with
   `unsupported_api`; a request without `api` is read as the server's own version. Within a major version, new
   commands and new fields are added only in minor versions, and unknown fields are ignored,

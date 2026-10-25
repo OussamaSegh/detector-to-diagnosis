@@ -1,0 +1,8 @@
+{
+  "comment": "Exercise 16.1: MiniDAQ's documents by ISO 13485 clause. A first draft; complete it.",
+  "clauses": {
+    "7.3.3": {"evidence": ["docs/regulatory/srs.md"]},
+    "7.3.6": {"evidence": ["docs/regulatory/trace-matrix.md", "minidaq/tests/"]},
+    "7.3.7": {"evidence": ["minidaq/tests/", "ci/run_all.sh"]}
+  }
+}

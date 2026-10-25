@@ -72,7 +72,7 @@ std::vector<std::uint64_t> read_words(DetectorPort& d, std::size_t n) {
     const std::size_t got = d.read(buf);
     out.insert(out.end(), buf.begin(), buf.begin() + static_cast<std::ptrdiff_t>(got));
     if (got == 0) {
-      std::this_thread::sleep_for(std::chrono::microseconds(100));
+      std::this_thread::sleep_for(std::chrono::microseconds(100));  // sleep: poll
     }
   }
   return out;
@@ -177,7 +177,7 @@ TEST(UdpDetector, RunsAnAcquisitionThroughTheService) {
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
   nlohmann::json st;
   do {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));  // sleep: poll
     st = svc.status();
   } while (st["stages"][1]["out"].get<std::uint64_t>() < words.size() && std::chrono::steady_clock::now() < deadline);
   ASSERT_TRUE(svc.stop("test").ok);

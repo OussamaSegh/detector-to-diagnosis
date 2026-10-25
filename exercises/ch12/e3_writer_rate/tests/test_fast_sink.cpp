@@ -36,7 +36,7 @@ class SlowOps final : public control::FileOps {
   explicit SlowOps(SlowDisk& d) : d_{d} {}
   Expected<int, int> create(const std::string&) override { return 3; }
   Expected<std::size_t, int> write(int, std::span<const std::byte> b) override {
-    std::this_thread::sleep_for(20us);  // about 3 GB/s for a 64 KiB block: the disk itself is fast
+    std::this_thread::sleep_for(20us);  // sleep: device (a fast disk, 3 GB/s)
     const std::lock_guard lock{d_.mu};
     if (d_.data.size() + b.size() > d_.capacity) {
       return Unexpected{ENOSPC};
@@ -46,7 +46,7 @@ class SlowOps final : public control::FileOps {
     return b.size();
   }
   int sync(int) override {
-    std::this_thread::sleep_for(d_.sync_time);
+    std::this_thread::sleep_for(d_.sync_time);  // sleep: device (an fsync)
     const std::lock_guard lock{d_.mu};
     d_.syncs.emplace_back(d_.data.size(), Clock::now());
     return 0;
@@ -139,7 +139,7 @@ TEST(FastSink, NoDataWaitsLongerThanMaxUnsyncedForAnFsync) {
   // A slow trickle, as at a low activity: 4096 coincidences every 10 ms.
   for (std::size_t i = 0; i < in.size(); i += 4096) {
     sink.write(std::span{in}.subspan(i, std::min<std::size_t>(4096, in.size() - i)));
-    std::this_thread::sleep_for(10ms);
+    std::this_thread::sleep_for(10ms);  // sleep: device (a slow trickle of data)
   }
   ASSERT_EQ(sink.close(""), std::nullopt);
   const std::lock_guard lock{disk.mu};

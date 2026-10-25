@@ -1,0 +1,15 @@
+{
+  "comment": "An auditor's questions about MiniDAQ's coincidence sorter, in the order of a design and development audit (Exercise 16.3).",
+  "questions": [
+    {"id": "Q1", "text": "Which requirements does the coincidence sorter implement?"},
+    {"id": "Q2", "text": "How do you know that the sorter selects the right coincidences?"},
+    {"id": "Q3", "text": "What is the sorter's software safety class, and why?"},
+    {"id": "Q4", "text": "Show me the risk analysis that covers the sorter."},
+    {"id": "Q5", "text": "Why was the sorter designed this way and not another?"},
+    {"id": "Q6", "text": "How was the sorter tested against malformed or unexpected input?"},
+    {"id": "Q7", "text": "Is the sorter fast enough for the scanner's count rates?"},
+    {"id": "Q8", "text": "Which known anomalies does the sorter have in the current release?"},
+    {"id": "Q9", "text": "Who reviewed the last change to the sorter, and where is the record?"},
+    {"id": "Q10", "text": "How do you know that the sorter in the release is the one you tested?"}
+  ]
+}

@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 5 (MiniDAQ 0.3.0-dev, Chapter 14; version 4 was Chapter 11, version 3 Chapter 10, version 2 Chapter 9, version 1 Chapter 6). Status: draft for review.
+Version 6 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -266,3 +266,14 @@ Open issues:
 - The dead-time model's parameters (1 µs per block, worst-case pile-up) are illustrations;
   the NeuroLF front end's measured behavior must replace them before the count-rate curves
   are used for a decision.
+
+## 13. Document history
+
+| Version | Change |
+|---|---|
+| 1 | First version: layers, ports, control API and state machine (Chapter 6). |
+| 2 | UDP readout link (Chapter 9). |
+| 3 | Coincidence sorter and merger (Chapter 10). |
+| 4 | Front-end model and count-rate capacity (Chapter 11). |
+| 5 | Software items with their safety classes, layers and segregation (Chapter 14). |
+| 6 | This history (Chapter 16), reconstructed from git for versions 1 to 5. Version 1 was also edited in Chapter 7 (the SOUP list, ADR 0008) and version 4 in Chapter 12 (the list-mode sink, the run record, configuration schema 1.3), each before its release and without a record of the change, which is what this history now provides. |

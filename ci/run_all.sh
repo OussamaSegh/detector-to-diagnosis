@@ -21,4 +21,9 @@ for p in "${presets[@]}"; do
   fi
   ctest --preset "$p" -LE starter | grep -E "tests passed|tests failed|\*\*\*|Failed|Exception"
 done
+# Chapter 16: controlled documents changed since the last release have a new version.
+last="$(git describe --tags --abbrev=0 --match 'book-v*' HEAD 2>/dev/null || true)"
+if [ -n "$last" ]; then
+  python3 tools/design_file.py . --check --since "$last"
+fi
 echo "=== all gates passed: ${presets[*]} ==="

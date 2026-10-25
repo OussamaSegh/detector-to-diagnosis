@@ -1,6 +1,6 @@
 # MiniDAQ: regulatory context
 
-Version 1 (MiniDAQ 0.3.0, Chapter 13). Status: draft for review.
+Version 2 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
 
 This page places MiniDAQ, written as if it were the DAQ software of a dedicated brain PET
 scanner ([intended use](intended-use.md)), in the regulations of the three markets such a
@@ -128,3 +128,10 @@ records would be a defect in a risk control, and is treated as one.
    requirements?
 4. Which version of each standard does the technical documentation claim, and who updates the
    list when a new edition appears (IEC 62304 edition 2 is expected in 2028, verify)?
+
+## Document history
+
+| Version | Change |
+|---|---|
+| 1 | First version (Chapter 13). |
+| 2 | This history (Chapter 16); the text is unchanged. |

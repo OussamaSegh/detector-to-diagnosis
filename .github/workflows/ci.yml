@@ -79,3 +79,20 @@ jobs:
         with:
           name: sbom
           path: minidaq.cdx.json
+
+  document-control:
+    # Chapter 16: a controlled document that changed since the last release has a new version.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Check document versions against the last release tag
+        run: |
+          last="$(git describe --tags --abbrev=0 --match 'book-v*' HEAD 2>/dev/null || true)"
+          if [ -z "$last" ]; then
+            echo "no release tag in this clone: version check skipped"
+            python3 tools/design_file.py . --check
+          else
+            python3 tools/design_file.py . --check --since "$last"
+          fi

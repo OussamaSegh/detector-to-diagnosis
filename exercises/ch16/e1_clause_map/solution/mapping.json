@@ -1,0 +1,20 @@
+{
+  "comment": "Exercise 16.1: MiniDAQ's documents by ISO 13485 clause.",
+  "clauses": {
+    "4.2.4": {"evidence": ["docs/regulatory/sdp.md"]},
+    "4.2.5": {"evidence": ["docs/regulatory/trace-matrix.md", "docs/regulatory/known-anomalies.md"]},
+    "7.1": {"evidence": ["docs/regulatory/risk/risk-management-plan.md", "docs/regulatory/risk/hazards.json", "docs/regulatory/risk/fmea-sorter.json"]},
+    "7.3.2": {"evidence": ["docs/regulatory/sdp.md", "docs/regulatory/risk/risk-management-plan.md"]},
+    "7.3.3": {"evidence": ["docs/regulatory/intended-use.md", "docs/regulatory/regulatory-context.md", "docs/regulatory/srs.md", "docs/performance-budget.md", "docs/regulatory/risk/hazards.json"]},
+    "7.3.4": {"evidence": ["docs/architecture/architecture.md", "docs/architecture/software-items.json", "docs/formats/mdq-l1.md", "docs/coding-standard.md"]},
+    "7.3.5": {"evidence": ["docs/adr/", "CHANGELOG.md"]},
+    "7.3.6": {"evidence": ["docs/regulatory/trace-matrix.md", "minidaq/tests/", "ci/run_all.sh"]},
+    "7.3.7": {"evidence": [], "plan": "Validation is of the scanner in its use environment, with phantoms and clinical workflow; MiniDAQ's tests verify, they do not validate."},
+    "7.3.8": {"evidence": ["docs/regulatory/sdp.md", "CHANGELOG.md"]},
+    "7.3.9": {"evidence": ["docs/regulatory/sdp.md"]},
+    "7.3.10": {"evidence": [], "plan": "An index of this mapping, kept in the repository and checked on every change (MiniDAQ's design-file.json)."},
+    "7.4": {"evidence": ["docs/regulatory/soup-list.md"]},
+    "8.3": {"evidence": ["docs/regulatory/problem-reports.json", "docs/regulatory/known-anomalies.md"]},
+    "8.5.2": {"evidence": ["docs/regulatory/problem-reports.json"]}
+  }
+}

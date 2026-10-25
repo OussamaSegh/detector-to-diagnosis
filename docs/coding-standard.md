@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 1 (MiniDAQ 0.1.0, Chapter 7). Status: draft for review.
+Version 2 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -87,6 +87,14 @@ detector data.
 4. No functions that are not thread-safe (`strerror`, `localtime`, `getenv`
    after threads start) [CON33-C]. Use `std::system_category().message()`,
    `gmtime_r`. *Enforced:* `concurrency-mt-unsafe`.
+5. A test never sleeps for a fixed time and then asserts that something has
+   happened: it waits for the condition, with a deadline long enough that only
+   a hang reaches it (`test_support::eventually`, `minidaq/tests/unit/eventually.hpp`).
+   A sleep in a test states its reason, `// sleep: poll`, `minimum`, `device`
+   or `hides only`, and a test of a timing requirement asserts the requirement,
+   not the speed of the machine it runs on. A test that fails at random teaches
+   people to rerun it, which hides the day it fails for a reason (CAPA-0001).
+   *Enforced:* test `tests.waits`; the stress run of CAPA-0001.
 
 ## 6. The hot path
 
@@ -109,3 +117,10 @@ reason a reviewer can check:
 
 A suppression without a reason is a review finding. `tools/static_analysis.sh`
 must report nothing before a change is merged.
+
+## Changes
+
+| Version | Change |
+|---|---|
+| 1 | First version (Chapter 7). |
+| 2 | Rule 5.5 on waiting in tests (CAPA-0001), and this history (Chapter 16). |

@@ -1,0 +1,84 @@
+# CAPA-0001: Tests that depend on the speed of the machine
+
+| Field | Value |
+|---|---|
+| Status | implemented |
+| Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
+| Source | MDQ-PR-010, MDQ-PR-011 |
+| Owner | software lead |
+| Effectiveness check | release 0.4.0 |
+
+## Problem
+
+Two tests failed after they had been merged, each once, with the code under test correct:
+`Pipeline.DropPolicyCountsEveryLostWord` on a fast GitHub runner (MDQ-PR-010) and Exercise 10.4's
+`FastSorter.FastEnough` on the shared book machine (MDQ-PR-011). Both were fixed at once and
+neither was recorded as a problem report, which the internal audit found (A-4).
+
+## Investigation
+
+Every `sleep_for` in `minidaq/tests/` and in the exercises' tests was read (18 places), and the
+threaded tests were run under load with `tools/stress_tests.sh`: twice as many busy loops as
+CPUs, 16 tests at a time, each test repeated until it fails. At tag `ch15`, the ThreadSanitizer
+build failed 2 of 48 tests in 100 repetitions (`measurements/ch16/stress-before-tsan.txt`):
+
+- `AcquisitionService.StatusReportsTheLastIntervalSeparately` slept 150 ms and then asserted that
+  a latency interval with data had been reported;
+- `PacedSource.NeverDeliversAheadOfTheClock` asserted that the source had delivered 80% of the
+  words due in 0.2 s, which depends on how often the test's own thread runs.
+
+Reading found the same pattern, a fixed sleep followed by an assertion that something happened,
+in four more tests that the stress run did not catch (`Pipeline.StopRequestDrainsInFlightData`,
+`Pipeline.SourceWithNoDataDoesNotHang`, `Pipeline.DestructorStopsARunningPipeline`,
+`AcquisitionService.DestructionStopsARunningAcquisition`), and the throughput assertion in
+`ReplaySource.RealTimeRateAndPacing`. The exercises' stress run failed
+`FastSink.KeepsUpWithTheSorterAndLosesNothing` once in 30 repetitions
+(`measurements/ch16/stress-before-ex.txt`); it measures the time that `write()` calls take,
+which is what Exercise 12.3 asks for.
+
+## Root cause
+
+The coding standard said nothing about time in tests, and nothing checked it: a test was
+accepted when it passed on the author's machine and in CI, so an assumption about relative speed
+held until a faster or busier machine broke it. The failures were fixed one by one because no
+procedure asked whether the cause could act elsewhere.
+
+## Correction
+
+The seven tests above wait for the condition they need with `test_support::eventually`, with a
+deadline of 10 s that only a hang reaches, or assert the requirement (no word before it is due,
+and a due word is delivered) instead of a throughput. `AcquisitionService.StatusReportsTheLastIntervalSeparately`
+checks the "no interval yet" condition only when its own thread was not delayed.
+
+## Corrective action
+
+Rule 5.5 of `docs/coding-standard.md`: a test never asserts after a fixed sleep; every sleep in a
+test states its reason (`// sleep: poll`, `minimum`, `device` or `hides only`). The test
+`tests.waits` (`tools/check_test_waits.py`) fails for a sleep without a reason, in MiniDAQ's tests
+and the exercises' tests. The waiting helper is `minidaq/tests/unit/eventually.hpp`.
+
+## Preventive action
+
+`tools/stress_tests.sh` runs the threaded tests under load before each release (SDP section 6,
+with the fuzzing and the performance measurements), so that a timing assumption fails on the
+book machine before it fails in CI. Tests of a timing property by design (Exercises 4.5, 10.4,
+12.3) stay, and are named in the stress run's record.
+
+## Verification of the actions
+
+All six CI presets and static analysis pass with the changed tests. The changed tests still
+verify their requirements: SRS-PIPE-012, SRS-CTL-011 and SRS-SIM-002 have the same assertions on
+the outcome, and only the waiting changed. The stress run after the correction is
+`measurements/ch16/stress-after-tsan.txt`.
+
+## Effectiveness check
+
+Criterion: the stress run of the ThreadSanitizer build with 100 repetitions passes at the commit
+that implements this CAPA, and no MiniDAQ test fails in CI for a timing reason between that
+commit and the release of 0.4.0 (CI history and problem reports).
+Due: release 0.4.0.
+Result: filled in at the check.
+
+## Closure
+
+Not closed: the effectiveness check is due at release 0.4.0.

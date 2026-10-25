@@ -1,0 +1,39 @@
+{
+  "comment": "MiniDAQ's design and development file (Chapter 16): the design and development clauses of ISO 13485:2016 and the related QMS clauses, with the documents and records that are their evidence. Topics are named in this book's words. tools/design_file.py checks the index, document control and the generated design-file.md (test docs.design_file).",
+  "intro": "For each clause of ISO 13485:2016 that concerns design and development, the documents and records of MiniDAQ that a reviewer or an auditor opens first. In a real product these are part of the scanner's design and development file, kept in the manufacturer's document management system (assumption: confirm with team where the NeuroLF's file is kept).",
+  "clauses": [
+    {"clause": "4.2.4", "topic": "Control of documents", "evidence": ["docs/regulatory/qms/design-file.json", "tools/design_file.py"], "note": "Version and history of every controlled document, checked on every change; a changed document gets a new version before the next release."},
+    {"clause": "4.2.5", "topic": "Control of records", "evidence": ["docs/regulatory/trace-matrix.md", "docs/regulatory/known-anomalies.md", "measurements/"], "note": "Generated records are checked against their sources; measurements keep their raw output."},
+    {"clause": "7.1", "topic": "Risk management in product realization", "evidence": ["docs/regulatory/risk/"], "note": "Software part of the ISO 14971 file (Chapter 15)."},
+    {"clause": "7.3.2", "topic": "Design and development planning", "evidence": ["docs/regulatory/sdp.md", "docs/regulatory/risk/risk-management-plan.md"]},
+    {"clause": "7.3.3", "topic": "Design and development inputs", "evidence": ["docs/regulatory/intended-use.md", "docs/regulatory/regulatory-context.md", "docs/regulatory/srs.md", "docs/performance-budget.md", "docs/regulatory/standards-map.dot", "docs/regulatory/standards-map.svg"], "note": "Requirements from the intended use, the regulations, the risk controls and the performance budget."},
+    {"clause": "7.3.4", "topic": "Design and development outputs", "evidence": ["docs/architecture/", "docs/formats/", "docs/coding-standard.md", "minidaq/", "CHANGELOG.md"], "note": "Architecture with classified items, data formats, the code and its coding standard."},
+    {"clause": "7.3.5", "topic": "Design and development review", "evidence": ["docs/adr/", "CHANGELOG.md"], "note": "Decisions with their alternatives (ADRs), and the review at the end of each Part, recorded in the release notes. The review of each change that SDP section 5 asks for is the subject of internal audit finding A-1 (Chapter 16)."},
+    {"clause": "7.3.6", "topic": "Design and development verification", "evidence": ["docs/regulatory/trace-matrix.md", "minidaq/tests/", "fuzz/", "ci/run_all.sh", ".github/workflows/"], "note": "Every requirement traced to its tests or its measurement; six presets and static analysis on every change."},
+    {"clause": "7.3.7", "topic": "Design and development validation", "evidence": [], "plan": "Validation is of the scanner in its use environment: system tests with phantoms (Part IV and Chapters 26 and 27). MiniDAQ alone cannot be validated."},
+    {"clause": "7.3.8", "topic": "Design and development transfer", "evidence": ["docs/regulatory/sdp.md", "tools/make_sbom.py"], "note": "Release process and record (SDP section 8): tagged source, book files and SBOM."},
+    {"clause": "7.3.9", "topic": "Control of design and development changes", "evidence": ["docs/regulatory/changes/", "tools/check_changes.py"], "note": "Change requests with impact analysis and approval (Chapter 16)."},
+    {"clause": "7.3.10", "topic": "Design and development files", "evidence": ["docs/regulatory/qms/"], "note": "This index."},
+    {"clause": "7.4", "topic": "Purchasing (SOUP)", "evidence": ["docs/regulatory/soup-list.md", "cmake/Dependencies.cmake"], "note": "Every SOUP item identified by its pin, with its requirements and its known-anomaly review."},
+    {"clause": "8.2.1", "topic": "Feedback", "evidence": ["docs/regulatory/problem-reports.json"], "note": "In MiniDAQ, problems found by tests, fuzzing, measurements and reviews; at the scanner, complaints and service reports as well."},
+    {"clause": "8.2.4", "topic": "Internal audit", "evidence": ["docs/regulatory/qms/internal-audit-2026-10-25.md"], "note": "The audit of Chapter 16, by the author (no independent auditor in a teaching project)."},
+    {"clause": "8.3", "topic": "Control of nonconforming product", "evidence": ["docs/regulatory/problem-reports.json", "docs/regulatory/known-anomalies.md"], "note": "Every problem evaluated for safety; the open ones are stated by each release."},
+    {"clause": "8.5.2", "topic": "Corrective action", "evidence": ["docs/regulatory/capa/", "tools/check_capa.py"], "note": "CAPA records with investigation, actions and effectiveness check (Chapter 16)."},
+    {"clause": "8.5.3", "topic": "Preventive action", "evidence": ["docs/regulatory/capa/", "docs/coding-standard.md"], "note": "Preventive actions become rules of the coding standard or checks in CI."}
+  ],
+  "controlled": [
+    "docs/regulatory/intended-use.md",
+    "docs/regulatory/regulatory-context.md",
+    "docs/regulatory/sdp.md",
+    "docs/regulatory/srs.md",
+    "docs/regulatory/soup-list.md",
+    "docs/regulatory/risk/risk-management-plan.md",
+    "docs/architecture/architecture.md",
+    "docs/coding-standard.md",
+    "docs/performance-budget.md",
+    "docs/formats/mdq-l1.md",
+    "docs/regulatory/changes/README.md",
+    "docs/regulatory/capa/README.md",
+    "docs/regulatory/qms/internal-audit-2026-10-25.md"
+  ]
+}

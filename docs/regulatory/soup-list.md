@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 2 (MiniDAQ 0.3.0-dev, Chapter 14; version 1 was Chapter 7). Status: draft for review.
+Version 3 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -22,7 +22,7 @@ MiniDAQ minor version.
 
 | Field | nlohmann/json |
 |---|---|
-| Identification | nlohmann/json 3.11.3, release archive `json.tar.xz`, SHA-256 `d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d` (pinned in `cmake/Dependencies.cmake`) |
+| Identification | nlohmann/json 3.12.0, release archive `json.tar.xz`, SHA-256 `42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa` (pinned in `cmake/Dependencies.cmake`; 3.11.3 until change request CR-0002) |
 | Supplier | Niels Lohmann and contributors, https://github.com/nlohmann/json |
 | License | MIT |
 | Used by | `minidaq_control` (configuration, control protocol, audit trail), `minidaq_server`, `minidaq_ctl`. Not used by `minidaq_core`; `tools/check_layers.py` enforces that. |
@@ -36,7 +36,7 @@ MiniDAQ minor version.
 | How MiniDAQ verifies its use | Unit tests of the configuration reader and protocol (`test_config.cpp`, `test_control_protocol.cpp`); the `fuzz_config` and `fuzz_protocol` fuzz targets under AddressSanitizer and UndefinedBehaviorSanitizer (Chapter 7). |
 | Anomalies found by MiniDAQ | Numbers outside the range of `double`, such as `6e688`, raise `json::out_of_range` (406), not `json::parse_error`. MiniDAQ's reader caught only `parse_error`, and the configuration fuzzer found the resulting crash within seconds. This is documented library behavior, not a library defect; the reader now catches `json::exception` (test `Config.NumberOverflowIsAnErrorNotACrash`). |
 | Known-anomaly review | Before each release: read the library's issue tracker and release notes for the pinned version and any later ones, and evaluate each reported defect against the requirements above. Record the result below. |
-| Last review | 2026-10-25, for MiniDAQ 0.3: release notes of 3.12.0, the only release after 3.11.3 (record in [section 4](#4-known-anomaly-reviews)). Result: no reported defect affects a requirement above; keep 3.11.3 for 0.3.0 and evaluate the upgrade as a change. |
+| Last review | 2026-10-25, for MiniDAQ 0.3: 3.12.0, the pinned version, has no later release; the fixes on its development branch were read (record in [section 4](#4-known-anomaly-reviews)). Result: none affects a requirement above. |
 
 The platform that the shipped programs run on (C++ standard library, C
 library, Linux kernel interfaces) is also SOUP, but it is supplied by the
@@ -97,3 +97,40 @@ reported against 3.11.3 before each release).
 Decision: keep 3.11.3 for MiniDAQ 0.3.0. Upgrading to 3.12.0 is a SOUP change (section 3)
 that would remove anomaly MDQ-PR-005; it is planned with the rest of the change process in
 Chapter 16.
+
+Follow-up (Chapter 16): the "verify" above was resolved by reading both versions of the lexer.
+3.11.3 sets `errno` to 0 immediately before `strtoull` or `strtoll` and treats any nonzero
+`errno` afterwards as a failed integer conversion; 3.12.0 treats only `ERANGE` as one. A value of
+`errno` left by an earlier `poll()` therefore cannot trigger the defect, contrary to what this
+review assumed; it needs a C library that sets `errno` during a successful conversion, which
+POSIX forbids (verify: the C library of the target platform). MDQ-PR-005 was corrected
+accordingly, and the upgrade was made by change request CR-0002.
+
+### 2026-10-25: nlohmann/json 3.12.0, for MiniDAQ 0.3
+
+Reviewer: the book's author. Sources: the release history at json.nlohmann.me (3.12.0 of
+2025-04-11 is the latest release; its notes say that no public API was removed or renamed) and
+the list of changes on the development branch, not yet released, which names the defects found
+in 3.12.0 (verify: each against the issue tracker, which this review could not read). The archive
+was checked against the tag: its `single_include/nlohmann/json.hpp` is byte-identical to the one
+at tag `v3.12.0`.
+
+| Defect fixed after 3.12.0 | Does MiniDAQ use the affected feature? | Effect on MiniDAQ's requirements |
+|---|---|---|
+| `operator>>` and `parse` from an `std::istream` without a stream buffer, or with `eofbit` in its exception mask, crash | No: MiniDAQ parses strings | None |
+| `merge_patch` and `update` use freed memory when the argument refers into `*this` | No | None |
+| `operator[]` with a huge index empties an array instead of throwing | No: arrays are built with `push_back` | None |
+| UTF-16 and UTF-32 input with lone surrogates accepted | No: input is UTF-8 text | None |
+| `parser_callback_t` keeps discarded values in a parent object | No callbacks | None |
+| `patch` operations with invalid paths | No JSON Patch | None |
+| `to_msgpack`, `binary_t`, `std::hash`, `ordered_json` fixes | No | None |
+
+Decision: upgrade to 3.12.0 for MiniDAQ 0.3.0 (CR-0002); MDQ-PR-005 is closed by it.
+
+## Document history
+
+| Version | Change |
+|---|---|
+| 1 | First version (Chapter 7). |
+| 2 | Requirements on each item and the known-anomaly review of nlohmann/json 3.11.3 (Chapter 14). |
+| 3 | nlohmann/json 3.12.0 and its known-anomaly review (CR-0002); the follow-up of the 3.11.3 review; this history (Chapter 16). |

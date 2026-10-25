@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <mutex>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/sim/synthetic_source.hpp"
+#include "eventually.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -100,7 +102,7 @@ TEST(AcquisitionService, FullLifecycleWithConservation) {
   ASSERT_TRUE(svc.start("test").ok);
   EXPECT_EQ(svc.state(), AcqState::running);
   while (script.words.load() < 200'000) {
-    std::this_thread::sleep_for(1ms);
+    std::this_thread::sleep_for(1ms);  // sleep: poll
   }
   const auto r = svc.stop("test");
   ASSERT_TRUE(r.ok);
@@ -166,7 +168,7 @@ TEST(AcquisitionService, DetectorFaultStopsTheRunAndNeedsAReset) {
   AcquisitionService svc{options(script)};
   ASSERT_TRUE(svc.configure(small(), "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  std::this_thread::sleep_for(20ms);
+  ASSERT_TRUE(test_support::eventually([&] { return script.words.load() > 0; })) << "the run is under way";
   script.fail = true;
   ASSERT_TRUE(svc.wait_for(AcqState::fault, 5s));
   const auto st = svc.status();
@@ -215,7 +217,7 @@ TEST(AcquisitionService, DestructionStopsARunningAcquisition) {
     AcquisitionService svc{options(script)};
     ASSERT_TRUE(svc.configure(small(), "test").ok);
     ASSERT_TRUE(svc.start("test").ok);
-    std::this_thread::sleep_for(10ms);
+    ASSERT_TRUE(test_support::eventually([&] { return script.words.load() > 0; }));
   }  // must not hang
   EXPECT_GT(script.words.load(), 0U);
 }
@@ -308,17 +310,26 @@ TEST(AcquisitionService, StatusReportsTheLastIntervalSeparately) {
   o.interval_period = 30ms;
   AcquisitionService svc{o};
   ASSERT_TRUE(svc.configure(small(), "test").ok);
+  const auto t0 = std::chrono::steady_clock::now();
   ASSERT_TRUE(svc.start("test").ok);
-  EXPECT_FALSE(svc.status().contains("recent_latency_ns")) << "no complete interval yet";
-  std::this_thread::sleep_for(150ms);
-  const auto st = svc.status();
-  ASSERT_TRUE(st.contains("recent_latency_ns"));
-  const auto& recent = st["recent_latency_ns"];
-  EXPECT_GE(recent["interval_s"].get<double>(), 0.025);
-  EXPECT_LT(recent["interval_s"].get<double>(), 0.2);
-  const auto in_interval = recent["decode"]["count"].get<std::uint64_t>();
-  EXPECT_GT(in_interval, 0U);
-  EXPECT_LT(in_interval, st["latency_ns"]["decode"]["count"].get<std::uint64_t>()) << "a part of the run, not all of it";
+  const bool early = svc.status().contains("recent_latency_ns");
+  if (std::chrono::steady_clock::now() - t0 < o.interval_period) {
+    EXPECT_FALSE(early) << "no complete interval yet";  // only checkable if this thread was not delayed
+  }
+  // Wait for an interval that holds a part of the run's data, however long the machine takes.
+  nlohmann::json st;
+  ASSERT_TRUE(test_support::eventually([&] {
+    st = svc.status();
+    if (!st.contains("recent_latency_ns")) {
+      return false;
+    }
+    const auto in_interval = st["recent_latency_ns"]["decode"]["count"].get<std::uint64_t>();
+    return in_interval > 0 && in_interval < st["latency_ns"]["decode"]["count"].get<std::uint64_t>();
+  })) << st.dump(2);
+  const double since_start = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
+  const double interval_s = st["recent_latency_ns"]["interval_s"].get<double>();
+  EXPECT_GE(interval_s, 0.025);
+  EXPECT_LT(interval_s, since_start) << "an interval, not the whole run";
   ASSERT_TRUE(svc.stop("test").ok);
 }
 

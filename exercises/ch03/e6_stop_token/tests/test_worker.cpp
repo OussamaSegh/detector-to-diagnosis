@@ -57,7 +57,7 @@ TEST(Worker, StopDrainsQueuedItemsAndRefusesNewOnes) {
   std::atomic<int> handled{0};
   within(5'000ms, [&] {
     ex::Worker w{[&](int) {
-      std::this_thread::sleep_for(1ms);
+      std::this_thread::sleep_for(1ms);  // sleep: device (work that takes time)
       handled.fetch_add(1);
     }};
     for (int i = 0; i < 50; ++i) {
@@ -72,7 +72,7 @@ TEST(Worker, StopDrainsQueuedItemsAndRefusesNewOnes) {
 TEST(Worker, IdleWorkerStopsPromptly) {
   within(2'000ms, [] {
     ex::Worker w{[](int) {}};
-    std::this_thread::sleep_for(20ms);  // let it block in its wait
+    std::this_thread::sleep_for(20ms);  // sleep: minimum (lets it block in its wait)
     const auto t0 = std::chrono::steady_clock::now();
     w.stop();
     const auto dt = std::chrono::steady_clock::now() - t0;
