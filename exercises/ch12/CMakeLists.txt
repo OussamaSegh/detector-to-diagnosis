@@ -1,0 +1,1 @@
+minidaq_exercise(e1_listmode_writer)

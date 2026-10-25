@@ -18,3 +18,9 @@ minidaq_benchmark(bm_histogram)
 minidaq_benchmark(bm_energy_filter)
 minidaq_benchmark(bm_sort)
 minidaq_benchmark(bm_sorter)
+minidaq_benchmark(bm_listmode)
+
+# Chapter 12: the list-mode sink against a real disk (not a Google Benchmark:
+# one run writes gigabytes, and fsync times vary too much for repetitions).
+add_executable(writer_throughput writer_throughput.cpp)
+target_link_libraries(writer_throughput PRIVATE minidaq::control minidaq::warnings)

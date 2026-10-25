@@ -50,14 +50,14 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
     // with valid CRCs; such a block is not re-encoded.
     const std::size_t cap = n == 0 ? 1 : n;
     buf.assign(block_bytes(cap), std::byte{0});
-    BlockWriter w{buf, b.sequence, cap};
+    BlockWriter w{buf, cap};
     bool encodable = true;
     for (std::size_t i = 0; i < n && encodable; ++i) {
       const auto rec = decode_record(b, i);
       encodable = (rec.is_tag ? w.append(rec.tag) : w.append(rec.event)) == BlockWriter::Append::ok;
     }
     if (encodable) {
-      const auto again = parse_block(std::span<const std::byte>{buf}.first(w.finish(b.end_of_run())));
+      const auto again = parse_block(std::span<const std::byte>{buf}.first(w.finish(b.sequence, b.flags)));
       check(static_cast<bool>(again) && again->record_count() == n && again->sequence == b.sequence);
       for (std::size_t i = 0; i < n; ++i) {
         const auto x = decode_record(b, i);

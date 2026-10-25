@@ -1,0 +1,75 @@
+Chapter 12: list-mode writer throughput on this machine's disk, per fsync policy.
+# vm, 4 vCPU, kernel 6.18.44-fc-v153
+# /dev/vda ext4   rw,relatime,discard,no_prefetch_block_bitmaps,resv_strict,resuid=65534,resgid=65534
+# zram0    0B    0 
+vda    256G    1 
+vdb    9.6M    1
+
+# RAM 15 GiB, vm.dirty_ratio 20%, vm.dirty_background_ratio 10%
+
+== short: baseline dd 305 MiB in 1 MiB writes, one fsync at the end (conv=fsync)
+  319815680 bytes (320 MB, 305 MiB) copied, 0.377813 s, 846 MB/s
+  319815680 bytes (320 MB, 305 MiB) copied, 0.279719 s, 1.1 GB/s
+  319815680 bytes (320 MB, 305 MiB) copied, 0.279286 s, 1.1 GB/s
+
+== short: list-mode sink, 20 M coincidences per run
+  writer fsync=none every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.547 s (close 0.000 s): 36.55 M/s, 585 MB/s; files 1, waits 0 (0 ms), fsyncs 0, max fsync 0.0 ms, max block write 0.56 ms
+  writer fsync=none every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.517 s (close 0.000 s): 38.68 M/s, 619 MB/s; files 1, waits 0 (0 ms), fsyncs 0, max fsync 0.0 ms, max block write 1.58 ms
+  writer fsync=none every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.526 s (close 0.000 s): 38.05 M/s, 609 MB/s; files 1, waits 0 (0 ms), fsyncs 0, max fsync 0.0 ms, max block write 1.12 ms
+  -> short fsync=none every=256 buffers=64: median 38.05 M/s (min 36.55, max 38.68, 3 runs)
+
+  writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.824 s (close 0.286 s): 24.28 M/s, 389 MB/s; files 1, waits 0 (0 ms), fsyncs 1, max fsync 285.3 ms, max block write 0.79 ms
+  writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.833 s (close 0.296 s): 24.00 M/s, 384 MB/s; files 1, waits 0 (0 ms), fsyncs 1, max fsync 295.4 ms, max block write 0.32 ms
+  writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.831 s (close 0.280 s): 24.08 M/s, 385 MB/s; files 1, waits 0 (0 ms), fsyncs 1, max fsync 279.7 ms, max block write 0.33 ms
+  -> short fsync=close every=256 buffers=64: median 24.08 M/s (min 24.00, max 24.28, 3 runs)
+
+  writer fsync=interval every=1024 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.841 s (close 0.051 s): 23.78 M/s, 381 MB/s; files 1, waits 4 (239 ms), fsyncs 5, max fsync 70.9 ms, max block write 0.38 ms
+  writer fsync=interval every=1024 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.853 s (close 0.051 s): 23.44 M/s, 375 MB/s; files 1, waits 4 (244 ms), fsyncs 5, max fsync 70.5 ms, max block write 0.33 ms
+  writer fsync=interval every=1024 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.898 s (close 0.054 s): 22.27 M/s, 356 MB/s; files 1, waits 4 (246 ms), fsyncs 5, max fsync 70.5 ms, max block write 0.48 ms
+  -> short fsync=interval every=1024 buffers=64: median 23.44 M/s (min 22.27, max 23.78, 3 runs)
+
+  writer fsync=interval every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.817 s (close 0.018 s): 24.47 M/s, 392 MB/s; files 1, waits 18 (209 ms), fsyncs 20, max fsync 21.7 ms, max block write 0.64 ms
+  writer fsync=interval every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.768 s (close 0.017 s): 26.03 M/s, 417 MB/s; files 1, waits 18 (199 ms), fsyncs 20, max fsync 19.8 ms, max block write 0.54 ms
+  writer fsync=interval every=256 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.749 s (close 0.018 s): 26.69 M/s, 427 MB/s; files 1, waits 19 (193 ms), fsyncs 20, max fsync 18.7 ms, max block write 0.33 ms
+  -> short fsync=interval every=256 buffers=64: median 26.03 M/s (min 24.47, max 26.69, 3 runs)
+
+  writer fsync=interval every=64 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.561 s (close 0.007 s): 35.68 M/s, 571 MB/s; files 1, waits 4 (37 ms), fsyncs 77, max fsync 23.5 ms, max block write 0.34 ms
+  writer fsync=interval every=64 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.516 s (close 0.006 s): 38.73 M/s, 620 MB/s; files 1, waits 0 (0 ms), fsyncs 77, max fsync 5.9 ms, max block write 0.39 ms
+  writer fsync=interval every=64 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.546 s (close 0.006 s): 36.65 M/s, 587 MB/s; files 1, waits 12 (5 ms), fsyncs 77, max fsync 6.1 ms, max block write 1.17 ms
+  -> short fsync=interval every=64 buffers=64: median 36.65 M/s (min 35.68, max 38.73, 3 runs)
+
+  writer fsync=interval every=16 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.525 s (close 0.010 s): 38.13 M/s, 610 MB/s; files 1, waits 33 (14 ms), fsyncs 306, max fsync 3.3 ms, max block write 0.31 ms
+  writer fsync=interval every=16 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.552 s (close 0.007 s): 36.23 M/s, 580 MB/s; files 1, waits 161 (44 ms), fsyncs 306, max fsync 5.3 ms, max block write 0.53 ms
+  writer fsync=interval every=16 records=4096 buffers=64 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.576 s (close 0.002 s): 34.71 M/s, 556 MB/s; files 1, waits 17 (5 ms), fsyncs 306, max fsync 4.0 ms, max block write 0.31 ms
+  -> short fsync=interval every=16 buffers=64: median 36.23 M/s (min 34.71, max 38.13, 3 runs)
+
+  writer fsync=close every=256 records=4096 buffers=4 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.790 s (close 0.269 s): 25.32 M/s, 405 MB/s; files 1, waits 2 (0 ms), fsyncs 1, max fsync 268.8 ms, max block write 0.31 ms
+  writer fsync=close every=256 records=4096 buffers=4 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.800 s (close 0.265 s): 25.00 M/s, 400 MB/s; files 1, waits 4 (1 ms), fsyncs 1, max fsync 264.2 ms, max block write 0.51 ms
+  writer fsync=close every=256 records=4096 buffers=4 file_mb=1024: 20000768 coincidences, 320.2 MB in 0.784 s (close 0.266 s): 25.51 M/s, 408 MB/s; files 1, waits 8 (2 ms), fsyncs 1, max fsync 265.3 ms, max block write 0.75 ms
+  -> short fsync=close every=256 buffers=4: median 25.32 M/s (min 25.00, max 25.51, 3 runs)
+
+== long: baseline dd 3052 MiB in 1 MiB writes, one fsync at the end (conv=fsync)
+  3200253952 bytes (3.2 GB, 3.0 GiB) copied, 11.5091 s, 278 MB/s
+  3200253952 bytes (3.2 GB, 3.0 GiB) copied, 2.36714 s, 1.4 GB/s
+
+== long: list-mode sink, 200 M coincidences per run
+  writer fsync=none every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 6.324 s (close 0.000 s): 31.63 M/s, 506 MB/s; files 3, waits 3749 (524 ms), fsyncs 0, max fsync 0.0 ms, max block write 12.28 ms
+  writer fsync=none every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 7.491 s (close 0.015 s): 26.70 M/s, 427 MB/s; files 3, waits 11611 (1685 ms), fsyncs 0, max fsync 0.0 ms, max block write 24.22 ms
+  -> long fsync=none every=256 buffers=64: median 29.16 M/s (min 26.70, max 31.63, 2 runs)
+
+  writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 10.251 s (close 0.834 s): 19.51 M/s, 312 MB/s; files 3, waits 16788 (3870 ms), fsyncs 3, max fsync 893.0 ms, max block write 1.62 ms
+  writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 10.781 s (close 0.873 s): 18.55 M/s, 297 MB/s; files 3, waits 16975 (4100 ms), fsyncs 3, max fsync 858.2 ms, max block write 2.29 ms
+  -> long fsync=close every=256 buffers=64: median 19.03 M/s (min 18.55, max 19.51, 2 runs)
+
+  writer fsync=interval every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 10.681 s (close 0.030 s): 18.73 M/s, 300 MB/s; files 3, waits 17070 (4957 ms), fsyncs 191, max fsync 150.3 ms, max block write 2.93 ms
+  writer fsync=interval every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 10.862 s (close 0.030 s): 18.41 M/s, 295 MB/s; files 3, waits 16607 (4979 ms), fsyncs 191, max fsync 161.8 ms, max block write 3.65 ms
+  -> long fsync=interval every=256 buffers=64: median 18.57 M/s (min 18.41, max 18.73, 2 runs)
+
+  writer fsync=interval every=16 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 9.802 s (close 0.023 s): 20.41 M/s, 327 MB/s; files 3, waits 16381 (4127 ms), fsyncs 3053, max fsync 74.6 ms, max block write 6.09 ms
+  writer fsync=interval every=16 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 9.767 s (close 0.023 s): 20.48 M/s, 328 MB/s; files 3, waits 16616 (4173 ms), fsyncs 3053, max fsync 63.2 ms, max block write 3.15 ms
+  -> long fsync=interval every=16 buffers=64: median 20.45 M/s (min 20.41, max 20.48, 2 runs)
+
+  writer fsync=close every=256 records=4096 buffers=4 file_mb=1024: 200003584 coincidences, 3201.6 MB in 10.424 s (close 0.866 s): 19.19 M/s, 307 MB/s; files 3, waits 16051 (3930 ms), fsyncs 3, max fsync 891.5 ms, max block write 18.12 ms
+  writer fsync=close every=256 records=4096 buffers=4 file_mb=1024: 200003584 coincidences, 3201.6 MB in 10.424 s (close 0.801 s): 19.19 M/s, 307 MB/s; files 3, waits 15942 (3955 ms), fsyncs 3, max fsync 860.5 ms, max block write 11.40 ms
+  -> long fsync=close every=256 buffers=4: median 19.19 M/s (min 19.19, max 19.19, 2 runs)
+
