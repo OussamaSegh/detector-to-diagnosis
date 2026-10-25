@@ -33,6 +33,9 @@ function(minidaq_exercise dir)
     endif()
     add_executable(${_t} ${_srcs} ${_tests})
     target_include_directories(${_t} PRIVATE ${_abs}/${_v})
+    # Where a test finds its fixtures. Not __FILE__: the shipped build maps source paths to
+    # relative ones (MINIDAQ_REPRODUCIBLE), and ctest runs a test in the build directory.
+    target_compile_definitions(${_t} PRIVATE MINIDAQ_EXERCISE_TESTS_DIR="${_abs}/tests")
     if(_v STREQUAL "starter")
       # Starters intentionally contain unused parameters and TODO stubs.
       target_link_libraries(${_t} PRIVATE minidaq::core minidaq::warnings_no_error ${EX_LIBS})

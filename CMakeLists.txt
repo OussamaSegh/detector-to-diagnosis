@@ -30,11 +30,13 @@ option(MINIDAQ_USE_SYSTEM_DEPS "Use system packages for GoogleTest/Benchmark/jso
 set(MINIDAQ_SANITIZERS "" CACHE STRING "Semicolon list of sanitizers: address;undefined | thread")
 option(MINIDAQ_BUILD_FUZZERS "Build libFuzzer targets (Clang only; instruments all code for coverage)" OFF)
 option(MINIDAQ_HARDENING "Compiler and linker hardening for shipped builds (ADR 0008)" OFF)
+option(MINIDAQ_REPRODUCIBLE "Path-independent debug information and __FILE__ for shipped builds (Chapter 20)" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(Warnings)
 include(Sanitizers)
 include(Hardening)
+include(Reproducible)
 include(Dependencies)
 
 if(MINIDAQ_BUILD_TESTS)

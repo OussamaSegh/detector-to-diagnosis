@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 6 (MiniDAQ 0.4.0-dev, Chapter 19). Status: draft for review.
+Version 7 (MiniDAQ 0.4.0-dev, Chapter 20). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -23,7 +23,7 @@ marks what a real one would add.
 - **Not in scope:** the development and verification tools in `minidaq/apps/` that are not
   shipped (`minidaq_jitter`, `minidaq_latency`, `minidaq_send`, `minidaq_sim`,
   `minidaq_listmode`), the benchmarks, the fuzz targets and the exercises. They are
-  controlled as tools (Chapter 20).
+  controlled as tools: the [tool list](verification/tools.md) says why each is trusted.
 
 ## 2. Life cycle model
 
@@ -77,17 +77,23 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   presets; libFuzzer targets for every parser.
 - **Tests:** GoogleTest and Python `unittest`, run by CTest.
 - **Version control and review:** git; the main branch only receives reviewed changes.
-- **Tool confidence:** each tool whose output is evidence is listed with its version
-  ([SOUP list section 2](soup-list.md#2-items-used-only-to-develop-and-verify-minidaq)); how much
-  validation a tool needs before its output is trusted is decided in Chapter 20.
+- **Tool confidence:** every tool whose output is in the product or is evidence is in the
+  [tool list](verification/tools.md): its class (T3 makes part of the product, T2 can fail to
+  reveal a defect, T1 neither), what a defect in it would do, the reasons for confidence and
+  what shows it can report a failure. Off-the-shelf tools are trusted from their use, diverse
+  redundancy and checks of their output; in-house tools are tested like code and shown to fail
+  by `tools/gate_selftest.py` or their own tests. `tools/check_tools.py` checks the list, and the
+  installed versions against it in every CI run. The SOUP list's section 2 names the pinned test
+  frameworks.
 
 ## 5. Configuration management and change control
 
 - **Configuration items:** everything in this repository, identified by the git commit;
   releases by an annotated tag `book-vX.Y.Z` and the version in `VERSION`. SOUP by the pins
   in `cmake/Dependencies.cmake`, mirrored in the [SOUP list](soup-list.md) and the SBOM
-  (`tools/make_sbom.py`). The build machine's compilers and analyzers are recorded with
-  their versions in the CI logs.
+  (`tools/make_sbom.py`). The compilers and analyzers are recorded with their
+  versions in the tool list, checked against each CI runner, and written into each release
+  package (`BUILDINFO.json`).
 - **Changes:** every change is reviewed before it is merged, against the checklist of the
   [change control procedure](changes/README.md): the requirements, the design documents, the
   tests and the trace still agree; the documentation tests (`docs.*`, `architecture.*`) make most
@@ -112,6 +118,10 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Build with warnings as errors | every change, every preset | no warning |
 | Unit, integration, system and documentation tests (`ctest`; the system tests as the [system test plan](verification/stp.md) says) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
 | Static analysis | every change | zero findings |
+| Tool versions | every change (`tools/check_tools.py --environment`) | every tool with a version check matches the tool list |
+| Reproducible build | every change, `tools/repro_check.sh` (GitHub Actions) | two builds of the shipped programs from two checkouts in different directories give the same product archive |
+| Gate self-test | when the tools, the CI or the regulatory files change, every week and for each release tag (`tools/gate_selftest.py`, workflow `gates`) | every gate passes on the unchanged commit and catches its planted fault for the planted reason |
+| Performance A/B | every change to the code or the build (workflow `perf`, `tools/perf_ab.sh`) | the gated benchmarks of the change are not slower than those of its parent, both run interleaved on one runner |
 | Exercise solutions | every change (part of `ctest`) | all pass |
 | Property-based tests, wide search | each release, every property with 100 times its cases (`MINIDAQ_PROP_CASES=100`, `tools/release_checks.sh`) | all pass |
 | Structural coverage | each release, the `coverage` preset and `tools/coverage.py` (`tools/release_checks.sh`) | the report per software item is recorded; no class B item's branch coverage is lower than in the previous release without a reason; every branch of a class B file changed since the previous release that the tests do not take both ways is reached by a new test or accepted with a reason in the release record's coverage review |
@@ -124,6 +134,7 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Code review | every change; every Part | the author's review against the change control checklist; a Part review of all changes of the Part (section 5) |
 | Change requests and CAPA | every change (`docs.changes`, `docs.capa`) | every request complete and consistent; every implemented one names its commits and tests |
 | Document control | every change, against the last release (`tools/design_file.py --since`) | every controlled document that changed has a new version and history row |
+| Release package | each release (`tools/release_bundle.py make` and `verify`; CI job `release-package` on the tag) | the product archive verifies; its SHA-256 is the same from the reference machine and from CI, or the difference is explained by a recorded tool version; the evidence archive names it |
 | Risk management review | each release | the risk file is complete, every hazard is closed or its open status is justified for the release's intended use, the overall residual risk is acceptable (risk management plan, section 4) |
 
 The checks of a release run in order on one clean commit with `tools/release_checks.sh OUT`,
@@ -161,10 +172,13 @@ release record shows:
 4. the open hazards of the risk file, each with the justification for releasing with it for
    this release's intended use, and the evaluation of the overall residual risk;
 5. the SOUP list's known-anomaly review dated for this minor version (test `docs.soup`);
-6. how the release was built: the preset and the commands, so the build can be repeated;
-7. where the release is archived: the source zip with its git history, the book files and the
-   SBOM, kept for the lifetime of the product plus the retention period of the quality system
-   (assumption: confirm with team).
+6. how the release was built: the preset, the commands and the tool versions, as the product
+   archive's `BUILDINFO.json` records them, and the check that a second build gives the same
+   archive (`tools/repro_check.sh`);
+7. where the release is archived: the product archive and the evidence archive with their
+   SHA-256, the source zip with its git history, the book files and the SBOM, kept for the
+   lifetime of the product plus the retention period of the quality system (assumption: confirm
+   with team).
 
 The release record is committed with the release, and that commit adds files the checks of
 section 6 have not seen. The tag is set and the release is packaged only after CI on the release
@@ -200,3 +214,4 @@ of Chapter 13.
 | 4 | Release 0.3.0: the release checks are one script, `tools/release_checks.sh`, which fails when a check cannot run; the performance row includes the regression gate and the starters row a `Release` build (MDQ-PR-014, CAPA-0004). |
 | 5 | Chapter 18: the wide search of the property-based tests and the structural coverage review of class B items as verification activities of each release; section 8: tag only after CI on the release commit is green (MDQ-PR-016). |
 | 6 | Chapter 19: system tests of the shipped programs in every change's `ctest`, under the new system test plan; the system test report and the soak as checks of each release. |
+| 7 | Chapter 20: the tool list and its checks replace the tool row of section 4; tool versions, the reproducible build, the gate self-test and the performance A/B comparison as checks of the pipeline; the release package and its evidence archive in sections 6 and 8. |

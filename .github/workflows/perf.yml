@@ -1,36 +1,61 @@
-# Performance regression gate (Chapter 5). Benchmarks are only comparable on the
-# machine that recorded the baseline, so this job runs on a dedicated
-# self-hosted runner labelled "perf" (no other jobs, fixed CPU frequency, SMT
-# off), never on shared cloud runners. It fails if a gated benchmark is more
-# than 5% slower than benchmarks/baseline/<runner>.json and the difference is
-# significant (one-sided Mann-Whitney U, alpha 0.01). The runner provides the
-# build tools and, since Chapter 17, the OpenSSL development package.
-# Without such a runner, and for changes pushed without a pull request, this
-# workflow never starts a job and shows nothing on a commit (MDQ-PR-014): the
-# same gate runs before every release in tools/release_checks.sh (CAPA-0004).
+# Performance regression gate (Chapter 5, rebuilt in Chapter 20).
+#
+# Chapter 5's gate compared a run with a baseline recorded on one dedicated machine, and this
+# workflow waited for a self-hosted runner that did not exist: it never started a job
+# (MDQ-PR-014). On a shared cloud runner a stored baseline means nothing, because the next job
+# may run on another CPU model. So this job builds the commit before the change and the change
+# itself, and runs both on the same runner, interleaved (tools/perf_ab.sh): the comparison is
+# A/B on one machine, not against a number from another. The baseline gate on the reference
+# machine still runs before every release (tools/release_checks.sh, CAPA-0004).
 name: perf
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["minidaq/**", "benchmarks/**", "cmake/**", "CMakeLists.txt", "CMakePresets.json"]
   pull_request:
-    paths: ["minidaq/**", "benchmarks/**", "CMakeLists.txt", "CMakePresets.json"]
+    paths: ["minidaq/**", "benchmarks/**", "cmake/**", "CMakeLists.txt", "CMakePresets.json"]
+  workflow_dispatch:
+    inputs:
+      base:
+        description: "Commit to compare with (default: the parent of the head commit)"
+        required: false
+
+permissions:
+  contents: read
 
 jobs:
-  perf-gate:
-    runs-on: [self-hosted, linux, perf]
-    timeout-minutes: 30
+  perf-ab:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
-      - name: Build
+        with:
+          fetch-depth: 0
+      - name: Install toolchain
         run: |
-          cmake --preset release -DMINIDAQ_BUILD_EXERCISES=OFF
-          cmake --build --preset release
-      - name: Run the gated benchmarks
-        run: tools/perf_suite.sh current.json build/release 2
-      - name: Compare with the baseline
-        run: python3 tools/perf_gate.py "benchmarks/baseline/${RUNNER_NAME}.json" current.json --strict
-      - name: Keep the raw results
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libssl-dev
+      - name: Choose the base commit
+        id: base
+        run: |
+          base="${{ github.event.inputs.base || github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then base=$(git rev-parse HEAD~1); fi
+          echo "sha=$base" >> "$GITHUB_OUTPUT"
+          echo "base $(git log -1 --format='%h %s' "$base")"
+          echo "head $(git log -1 --format='%h %s' HEAD)"
+          nproc; lscpu | grep -E 'Model name|^CPU\(s\)'
+      - name: Build both
+        run: |
+          git worktree add --detach ../base "${{ steps.base.outputs.sha }}"
+          for d in . ../base; do
+            (cd "$d" && cmake --preset release -DMINIDAQ_BUILD_TESTS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF >/dev/null &&
+              cmake --build --preset release)
+          done
+      - name: Compare, interleaved on this runner
+        run: tools/perf_ab.sh ../base/build/release build/release perf-ab 5 1
+      - name: Keep the results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: perf-${{ github.sha }}
-          path: current.json
+          name: perf-ab-${{ github.sha }}
+          path: perf-ab/

@@ -39,6 +39,18 @@ the patch version.
   of `ctl` and `server` in `measurements/ch19/`; MDQ-PR-015 closed.
 - Exercises 19.1 to 19.5: link accounting, the power of the golden comparison, reading a soak,
   an integration test of batching, and recording and replaying a readout link.
+- Problem report MDQ-PR-020 (closed): the readout system tests needed a 4 MiB receive buffer that
+  GitHub's runners do not have; the tests now check it and CI sets `net.core.rmem_max`.
+- Chapter 20: continuous integration for regulated software. `tools/release_bundle.py` (a
+  reproducible product archive with split debug information, SBOM, `BUILDINFO.json` and a
+  manifest, an evidence archive bound to it by its SHA-256, and their verification, with
+  `tools/test_release_bundle.py`); `tools/repro_check.sh` (two builds from two checkouts, compared
+  byte for byte; CI job `reproducible-build`); the tool list
+  (`docs/regulatory/verification/tools.json`, 23 tools with class, confidence and what shows they
+  can fail) and `tools/check_tools.py` (test `docs.tools`, and the runner's tool versions in CI);
+  `tools/gate_selftest.py` (one planted fault per gate, workflow `gates`); `tools/perf_ab.sh` (the
+  benchmarks of a change and of its parent, interleaved on one CI runner, workflow `perf`); CI job
+  `release-package` for release tags; change request CR-0006; exercises 20.1 to 20.5.
 
 ### Changed
 - The `coverage` preset uses Clang source-based coverage with MC/DC instead of gcov, and builds
@@ -64,6 +76,15 @@ the patch version.
   report.
 - `tools/coverage.py` lists a shipped item that no test runs as "not run by any test" instead of
   leaving it out of the table (it hid the item `server`); MDQ-PR-015 covers `server` too.
+- The `hardened` preset, the shipped build, has debug information and maps source and build
+  paths to relative ones (`MINIDAQ_REPRODUCIBLE`); exercise tests find fixtures through
+  `MINIDAQ_EXERCISE_TESTS_DIR` instead of `__FILE__`.
+- CI runs `ctest --output-on-failure`. The `perf` workflow compares each change with its parent
+  on a GitHub runner instead of waiting for a self-hosted runner (MDQ-PR-014).
+- SDP version 7 (tool list, reproducibility, gate self-test, performance A/B and the release
+  package as checks); SOUP list version 5; design file clause 4.1.6.
+- `tests/test_perf_gate.py` of Exercise 5.3 also tests `tools/perf_gate.py` (test
+  `tools.perf_gate`).
 
 ## [0.3.0] - 2026-10-25
 

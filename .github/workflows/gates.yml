@@ -1,0 +1,37 @@
+# The gate self-test (Chapter 20): plants one known fault at a time and checks that the gate
+# meant to catch it fails, for the planted reason, and passes on the unchanged code. It builds
+# MiniDAQ and runs the static analysis three times, so it does not run on every change: when the
+# gates or the tools change, every week, and for release tags.
+name: gates
+on:
+  push:
+    branches: [main]
+    tags: ["book-v*"]
+    paths: ["tools/**", "ci/**", ".github/workflows/**", ".clang-tidy", "cmake/**", "docs/regulatory/**"]
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate-selftest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libclang-rt-18-dev libssl-dev
+          sudo sysctl -w net.core.rmem_max=4194304
+      - name: Plant each fault and run its gate
+        run: python3 tools/gate_selftest.py selftest/gate-selftest.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-selftest-${{ github.sha }}
+          path: selftest/

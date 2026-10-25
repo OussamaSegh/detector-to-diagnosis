@@ -78,10 +78,12 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.capa COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_capa.py ${PROJECT_SOURCE_DIR})
   # Chapter 17: the threat model.
   add_test(NAME docs.threats COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_threats.py ${PROJECT_SOURCE_DIR})
+  # Chapter 20: the tool list is complete and its table current.
+  add_test(NAME docs.tools COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_tools.py ${PROJECT_SOURCE_DIR} --check)
   # CAPA-0001: every sleep in a test states why (coding standard rule 5.5).
   add_test(NAME tests.waits COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_waits.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk docs.design_file docs.changes docs.capa
-                       docs.threats tests.waits PROPERTIES LABELS "unit")
+                       docs.threats docs.tools tests.waits PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)
@@ -92,6 +94,15 @@ if(Python3_Interpreter_FOUND)
   # Chapter 17: the triage rules for the findings of the vulnerability scan.
   add_test(NAME tools.vuln_triage COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_vuln_triage.py)
   set_tests_properties(tools.vuln_triage PROPERTIES LABELS "unit")
+  # Chapter 20: tools whose output is release evidence are tested like code. The perf gate is
+  # the solution of Exercise 5.3; its acceptance tests run against the copy in tools/ too.
+  add_test(NAME tools.release_bundle
+           COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_release_bundle.py ${CMAKE_CXX_COMPILER})
+  add_test(NAME tools.perf_gate
+           COMMAND ${Python3_EXECUTABLE} -m unittest discover -s ${PROJECT_SOURCE_DIR}/exercises/ch05/e3_perf_gate/tests)
+  set_tests_properties(tools.perf_gate PROPERTIES
+    ENVIRONMENT "PYTHONPATH=${PROJECT_SOURCE_DIR}/tools;PYTHONDONTWRITEBYTECODE=1")
+  set_tests_properties(tools.release_bundle tools.perf_gate PROPERTIES LABELS "unit")
   # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
   add_test(NAME tools.listmode
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)

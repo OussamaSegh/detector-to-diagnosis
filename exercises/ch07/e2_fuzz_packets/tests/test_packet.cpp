@@ -101,7 +101,7 @@ TEST(Packet, RejectsEveryLieInTheHeader) {
 TEST(Packet, CrashInputsFoundByFuzzingAreRejected) {
   // Each file in tests/crashers was written by libFuzzer while fuzzing the
   // starter. Keeping them as tests means the bug cannot come back unnoticed.
-  const auto dir = std::filesystem::path{__FILE__}.parent_path() / "crashers";
+  const auto dir = std::filesystem::path{MINIDAQ_EXERCISE_TESTS_DIR} / "crashers";
   int n = 0;
   for (const auto& entry : std::filesystem::directory_iterator{dir}) {
     std::ifstream in{entry.path(), std::ios::binary};

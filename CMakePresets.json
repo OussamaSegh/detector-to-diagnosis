@@ -99,8 +99,9 @@
       ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
-        "MINIDAQ_HARDENING": "ON"
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -g -DNDEBUG",
+        "MINIDAQ_HARDENING": "ON",
+        "MINIDAQ_REPRODUCIBLE": "ON"
       }
     },
     {

@@ -1,5 +1,7 @@
-# MiniDAQ CI (Chapter 1 baseline; Chapter 7 adds static analysis, fuzzing, the
-# hardened build and the SBOM; Chapter 20 grows it into the full regulated pipeline).
+# MiniDAQ CI (Chapter 1 baseline; Chapter 7 adds static analysis, fuzzing, the hardened build
+# and the SBOM; Chapter 17 the vulnerability scan; Chapter 20 the tool versions, the
+# reproducibility check and the release package). Its gates and their reasons are listed in the
+# development plan, section 6; tools/gate_selftest.py (workflow gates.yml) shows each can fail.
 name: ci
 on:
   push:
@@ -50,6 +52,31 @@ jobs:
         run: cmake --preset clang-release
       - name: clang-tidy and cppcheck
         run: tools/static_analysis.sh build/clang-release
+      - name: Tool versions as recorded in the tool list
+        # Chapter 20: a new compiler or analyzer on the runner is a change to the tools; this
+        # step fails until the tool list (docs/regulatory/verification/tools.json) records it.
+        run: python3 tools/check_tools.py . --check --environment
+
+  reproducible-build:
+    # Chapter 20: the shipped build, made twice from two checkouts in different directories,
+    # gives the same product archive byte for byte. repro.txt keeps the programs' SHA-256, to
+    # compare with the same commit built elsewhere.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libssl-dev
+      - name: Build twice and compare
+        run: tools/repro_check.sh repro
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reproducibility-${{ github.sha }}
+          path: repro/
 
   fuzz-smoke:
     runs-on: ubuntu-24.04
@@ -144,3 +171,29 @@ jobs:
           else
             python3 tools/design_file.py . --check --since "$last"
           fi
+
+  release-package:
+    # Chapter 20: for a release tag, the product archive of tools/release_bundle.py. Its SHA-256
+    # must equal the one of the archive made on the reference machine from the same commit; the
+    # evidence archive is made there, by tools/release_checks.sh.
+    if: startsWith(github.ref, 'refs/tags/book-v')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libssl-dev
+      - name: Build the shipped programs and package them
+        run: |
+          cmake --preset hardened -DMINIDAQ_BUILD_TESTS=OFF -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF
+          cmake --build --preset hardened --target minidaq_server minidaq_ctl
+          python3 tools/release_bundle.py make build/hardened package
+          python3 tools/release_bundle.py verify package/*.tar
+          sha256sum package/*.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-package-${{ github.ref_name }}
+          path: package/

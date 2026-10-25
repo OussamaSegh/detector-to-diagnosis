@@ -14,7 +14,7 @@ namespace {
 // Captured on the book's machine (Chapter 4, Section 4.5) with
 //   cyclictest --policy=other -m -t2 -a1,2 -i200 -D3 -h200 -q
 std::filesystem::path fixture() {
-  return std::filesystem::path{__FILE__}.parent_path() / "fixtures" / "cyclictest_other_t2_h200.txt";
+  return std::filesystem::path{MINIDAQ_EXERCISE_TESTS_DIR} / "fixtures" / "cyclictest_other_t2_h200.txt";
 }
 
 ex::CyclictestReport parse_text(const std::string& text) {

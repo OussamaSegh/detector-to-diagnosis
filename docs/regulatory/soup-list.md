@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 4 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
+Version 5 (MiniDAQ 0.4.0-dev, Chapter 20). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -75,8 +75,9 @@ defect in MiniDAQ, so they are pinned and reviewed too, with lighter records.
 | CycloneDX 1.5 JSON schemas | vendored in `tools/sbom/schemas/`, SHA-256 in its README | Apache-2.0 | SBOM validation |
 | Compilers and analyzers | GCC 13.3, Clang 18, clang-tidy 18, cppcheck 2.13, libFuzzer (Clang 18) as installed on the build machine | various | Building, checking, fuzzing |
 
-Tool qualification (how much evidence a tool needs before you rely on its
-output) is the subject of Chapter 20.
+These items are tools, not part of the product. What each is used for, what a defect in it
+would do and why its output is trusted are in the [tool list](verification/tools.md)
+(Chapter 20), which also records the versions that CI checks.
 
 ## 3. Changing this list
 
@@ -181,3 +182,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 2 | Requirements on each item and the known-anomaly review of nlohmann/json 3.11.3 (Chapter 14). |
 | 3 | nlohmann/json 3.12.0 and its known-anomaly review (CR-0002); the follow-up of the 3.11.3 review; this history (Chapter 16). |
 | 4 | OpenSSL as a platform SOUP item and its known-anomaly review (CR-0004, Chapter 17). |
+| 5 | Section 2 refers to the tool list for the confidence in each tool (Chapter 20). |

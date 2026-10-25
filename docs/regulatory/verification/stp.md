@@ -17,8 +17,8 @@ system and does not reproduce the standard. Unit verification is in the
   `minidaq_listmode` (checks the files), the harness `minidaq/tests/system/systest.py`, the
   statistics `minidaq/tests/system/stats.py`, `tools/soak.py` and `tools/test_report.py`.
   They are verified as tools: `stats.py` by `test_stats.py` against tabulated values and for
-  calibration, the others by the negative controls of section 4 (Chapter 20 treats confidence
-  in test tools in full).
+  calibration, the others by the negative controls of section 4; the [tool list](tools.md)
+  records each with the reasons it is trusted.
 - **Not in scope here:** the acquisition PC, the operating system tuning (Chapter 4) and a real
   readout board. Section 6 says what a bench with hardware adds.
 
