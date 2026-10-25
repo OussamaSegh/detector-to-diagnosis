@@ -15,6 +15,25 @@ the patch version.
   `tools/check_regulatory.py` and the test `docs.regulatory` keep them complete and their
   links valid; Part III introduction; exercises 13.1 to 13.4 (all in Python: the standards
   map, a change brief, a model of the MDR classification rules, the vigilance clocks).
+- Chapter 14: IEC 62304. `docs/regulatory/srs.md` defines all 114 software requirements
+  (112 verified by test, 2 by measurement), checked by `tools/req_lint.py` (test `docs.srs`);
+  `tools/trace_matrix.py` generates `docs/regulatory/trace-matrix.md` and fails on any gap
+  (test `docs.trace`); `docs/architecture/software-items.json` classifies every software item,
+  checked by `tools/check_items.py` (test `architecture.items`); architecture description
+  version 5 (items, safety classes, segregation); SOUP list version 2 with the known-anomaly
+  review of nlohmann/json 3.11.3 against the 3.12.0 release notes, checked against the build's
+  pins by `tools/check_soup.py` (test `docs.soup`); problem reports and the generated
+  known-anomalies list (`tools/anomalies.py`, test `docs.anomalies`); the software development
+  plan `docs/regulatory/sdp.md`; exercises 14.1 to 14.6 (all in Python).
+
+### Changed
+- Requirement tags added to `Config.TypesAndRangesAreCheckedAndAllErrorsReported`
+  (SRS-CFG-004), `RtProfile.RejectsBadInputWithLineNumbers` (SRS-RT-001) and
+  `Realtime.InvalidCpuIsAnError` (SRS-RT-002).
+
+### Fixed
+- `FastSorter.FastEnough` (Exercise 10.4) measured the two sorters in separate blocks, so a
+  slow spell of a shared machine could fail it; it now takes the best of seven interleaved runs.
 
 ## [0.2.0] - 2026-10-25
 

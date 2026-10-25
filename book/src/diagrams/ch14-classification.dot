@@ -1,0 +1,24 @@
+// The software safety classification of Chapter 14, in the order of IEC 62304's
+// amended decision (described in the book's words, not the standard's).
+digraph classification {
+  rankdir=TB; nodesep=0.3; ranksep=0.35;
+  node [fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=10];
+
+  q1 [shape=box, style=rounded, label="Can a failure of the software item\ncontribute to a hazardous situation?"];
+  q2 [shape=box, style=rounded, label="After risk controls outside the software,\nis the risk still unacceptable?"];
+  q3 [shape=box, style=rounded, label="What is the worst possible harm?"];
+  A [shape=box, label="Class A", style=filled, fillcolor="#e8f0e8"];
+  B [shape=box, label="Class B", style=filled, fillcolor="#f4f0dc"];
+  C [shape=box, label="Class C", style=filled, fillcolor="#f4e0dc"];
+  seg [shape=note, label="An item in the same process as a higher-class\nitem keeps the higher class, unless a\ndocumented segregation separates them"];
+
+  q1 -> A [label=" no"];
+  q1 -> q2 [label=" yes"];
+  q2 -> A [label=" no"];
+  q2 -> q3 [label=" yes"];
+  q3 -> B [label=" non-serious injury"];
+  q3 -> C [label=" serious injury or death"];
+  {rank=same; B; C; seg}
+  C -> seg [style=dashed, arrowhead=none];
+}
