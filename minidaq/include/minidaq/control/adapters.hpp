@@ -46,7 +46,8 @@ class CountingSink final : public CoincidenceSinkPort {
 };
 
 // The production choice of adapters: the simulated detector or the UDP
-// readout (Chapter 9) by source type, and the counting sink.
+// readout (Chapter 9) by source type, and the counting sink or the list-mode
+// file sink (Chapter 12) by output type.
 [[nodiscard]] std::unique_ptr<DetectorPort> make_default_detector(const config::AcquisitionConfig& c,
                                                                   std::string& error);
 [[nodiscard]] std::unique_ptr<CoincidenceSinkPort> make_default_sink(const config::AcquisitionConfig& c,

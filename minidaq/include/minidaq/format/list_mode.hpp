@@ -26,7 +26,8 @@
 //       0     4  magic           "MDQB" (0x4D 0x44 0x51 0x42)
 //       4     4  sequence        0 for the first block of every file, +1 per block
 //       8     4  record_count    0 .. max_block_records
-//      12     4  flags           bit 0: last block of the run; other bits must be 0
+//      12     4  flags           bit 0: last block of the run; bit 1: last block of this
+//                                file, the run continues in the next; others must be 0
 //      16     8  base_time_ps    signed; the time of the block's first record
 //      24     4  payload_crc     CRC-32 of the records
 //      28     4  header_crc      CRC-32 of bytes 0 .. 27
@@ -73,7 +74,8 @@ inline constexpr std::size_t block_header_bytes = 32;
 inline constexpr std::size_t record_bytes = 16;
 inline constexpr std::size_t max_block_records = 65536;  // 1 MiB of records; a reader's sanity limit
 inline constexpr std::size_t max_metadata_bytes = 1U << 20;
-inline constexpr std::uint32_t block_flag_end_of_run = 0x1;
+inline constexpr std::uint32_t block_flag_end_of_run = 0x1;     // the run ends with this block
+inline constexpr std::uint32_t block_flag_end_of_file = 0x2;    // the run continues in the next file
 inline constexpr std::uint16_t tag_crystal = 0x7FFF;  // crystal_a of a tag record
 inline constexpr std::uint16_t delayed_bit = 0x8000;
 inline constexpr float energy_lsb_kev = 1.0F / 32.0F;
@@ -138,6 +140,7 @@ struct FileHeader {
 // so the records are written once, where the I/O thread will read them).
 // append() either writes the record or says why it belongs in the next block;
 // finish() writes the header and the two CRCs and returns the block's size.
+// A finished writer can be reused for the next block with reset().
 class BlockWriter {
  public:
   enum class Append : std::uint8_t {
@@ -148,21 +151,33 @@ class BlockWriter {
     invalid,     // a crystal id >= 0x7FFF or a time difference outside int32: never encodable
   };
 
-  // buffer.size() must be at least block_bytes(max_records); max_records in
-  // 1 .. max_block_records.
-  BlockWriter(std::span<std::byte> buffer, std::uint32_t sequence, std::size_t max_records) noexcept;
+  // Holds at most max_records records (1 .. max_block_records), fewer if the
+  // buffer is smaller than block_bytes(max_records).
+  BlockWriter(std::span<std::byte> buffer, std::size_t max_records) noexcept;
 
   [[nodiscard]] Append append(const Coincidence& c) noexcept;
   [[nodiscard]] Append append(const Tag& t) noexcept;
-  [[nodiscard]] std::size_t finish(bool end_of_run) noexcept;
+  // The sequence number is given here, not at construction: a sink that
+  // starts a new file knows only when the block is complete that it is the
+  // first of that file.
+  [[nodiscard]] std::size_t finish(std::uint32_t sequence, std::uint32_t flags) noexcept;
+
+  // Starts an empty block in the same buffer (the caller has copied or
+  // handed off the finished one), or in a new buffer of the same size.
+  void reset() noexcept { count_ = 0; }
+  void reset(std::span<std::byte> buffer) noexcept {
+    buffer_ = buffer;
+    count_ = 0;
+  }
 
   [[nodiscard]] std::size_t records() const noexcept { return count_; }
+  [[nodiscard]] Picoseconds first_time() const noexcept { return base_; }  // valid if records() > 0
+  [[nodiscard]] Picoseconds last_time() const noexcept { return last_; }   // valid if records() > 0
   [[nodiscard]] std::uint64_t energies_clamped() const noexcept { return clamped_; }
 
  private:
   [[nodiscard]] Append place(Picoseconds time) noexcept;
   std::span<std::byte> buffer_;
-  std::uint32_t sequence_;
   std::size_t max_records_;
   std::size_t count_ = 0;
   Picoseconds base_{};
@@ -183,6 +198,9 @@ struct BlockView {
 
   [[nodiscard]] std::size_t record_count() const noexcept { return records.size() / record_bytes; }
   [[nodiscard]] bool end_of_run() const noexcept { return (flags & block_flag_end_of_run) != 0; }
+  [[nodiscard]] bool end_of_file() const noexcept {
+    return (flags & (block_flag_end_of_run | block_flag_end_of_file)) != 0;
+  }
 };
 
 // Parses and checks one block at the start of `data` (header and payload CRC).
@@ -210,6 +228,7 @@ struct ReaderStats {
   std::uint64_t records_lost = 0;    // records in blocks whose payload CRC failed
   std::uint64_t bytes_skipped = 0;   // bytes that belonged to no intact block
   bool end_of_run = false;           // the last intact block closed the run
+  bool end_of_file = false;          // the last intact block closed the file (end of run or of segment)
 };
 // [/snippet:reader_stats]
 

@@ -112,9 +112,8 @@ Expected<FileHeader, FormatError> parse_file_header(std::span<const std::byte> d
 // ---------------------------------------------------------------------------
 // Writing blocks
 
-BlockWriter::BlockWriter(std::span<std::byte> buffer, std::uint32_t sequence, std::size_t max_records) noexcept
+BlockWriter::BlockWriter(std::span<std::byte> buffer, std::size_t max_records) noexcept
     : buffer_{buffer},
-      sequence_{sequence},
       max_records_{std::min({max_records, max_block_records,
                              buffer.size() < block_header_bytes ? 0 : (buffer.size() - block_header_bytes) / record_bytes})} {}
 
@@ -178,12 +177,12 @@ BlockWriter::Append BlockWriter::append(const Tag& t) noexcept {
 }
 
 // [snippet:finish]
-std::size_t BlockWriter::finish(bool end_of_run) noexcept {
+std::size_t BlockWriter::finish(std::uint32_t sequence, std::uint32_t flags) noexcept {
   const std::size_t bytes = block_bytes(count_);
   std::copy(block_magic.begin(), block_magic.end(), buffer_.begin());
-  store_le<std::uint32_t>(buffer_, 4, sequence_);
+  store_le<std::uint32_t>(buffer_, 4, sequence);
   store_le<std::uint32_t>(buffer_, 8, static_cast<std::uint32_t>(count_));
-  store_le<std::uint32_t>(buffer_, 12, end_of_run ? block_flag_end_of_run : 0U);
+  store_le<std::uint32_t>(buffer_, 12, flags);
   store_le<std::uint64_t>(buffer_, 16, static_cast<std::uint64_t>(count_ == 0 ? 0 : base_.count()));
   store_le<std::uint32_t>(buffer_, 24, crc32(buffer_.subspan(block_header_bytes, bytes - block_header_bytes)));
   store_le<std::uint32_t>(buffer_, 28, crc32(buffer_.first(28)));
@@ -219,7 +218,7 @@ Expected<BlockView, FormatError> parse_block(std::span<const std::byte> data) no
   const std::size_t n = load_le<std::uint32_t>(data, 8);
   v.flags = load_le<std::uint32_t>(data, 12);
   v.base_time = Picoseconds{static_cast<std::int64_t>(load_le<std::uint64_t>(data, 16))};
-  if (n > max_block_records || (v.flags & ~block_flag_end_of_run) != 0) {
+  if (n > max_block_records || (v.flags & ~(block_flag_end_of_run | block_flag_end_of_file)) != 0) {
     return Unexpected{FormatError::bad_field};
   }
   if (data.size() < block_bytes(n)) {
@@ -295,6 +294,7 @@ bool Reader::next(BlockView& out) {
       stats_.records_lost += n;
       stats_.bytes_skipped += block_bytes(n);
       stats_.end_of_run = false;
+      stats_.end_of_file = false;
       next_sequence_ = load_le<std::uint32_t>(rest, 4) + 1;
       pos_ += block_bytes(n);
       continue;
@@ -302,6 +302,7 @@ bool Reader::next(BlockView& out) {
     if (!block) {
       issues_.push_back({pos_, block.error() == FormatError::too_short ? FormatError::truncated : block.error()});
       stats_.end_of_run = false;
+      stats_.end_of_file = false;
       resync(pos_ + 1);
       continue;
     }
@@ -319,6 +320,7 @@ bool Reader::next(BlockView& out) {
     ++stats_.blocks;
     stats_.records += v.record_count();
     stats_.end_of_run = v.end_of_run();
+    stats_.end_of_file = v.end_of_file();
     out = v;
     return true;
   }

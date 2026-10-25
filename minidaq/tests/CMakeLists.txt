@@ -10,6 +10,7 @@ add_executable(minidaq_unit_tests
   unit/test_readout_packet.cpp
   unit/test_crc32.cpp
   unit/test_list_mode.cpp
+  unit/test_listmode_sink.cpp
   unit/test_coincidence_sorter.cpp
   unit/test_sinogram.cpp
   unit/test_stream_merger.cpp

@@ -290,6 +290,28 @@ TEST(AcquisitionService, StatusReportsTheLastIntervalSeparately) {
   ASSERT_TRUE(svc.stop("test").ok);
 }
 
+TEST(AcquisitionService, ASinkThatCannotCloseEndsTheRunInAFault) {
+  // REQ: SRS-CTL-013
+  // Chapter 12: the data of a run must reach stable storage before the run
+  // counts as complete; a failure at the end is a fault, not a clean stop.
+  struct FailingClose final : CoincidenceSinkPort {
+    void write(std::span<const Coincidence>) override {}
+    std::optional<std::string> close() override { return "fsync /data: Input/output error"; }
+    [[nodiscard]] std::string describe() const override { return "failing close"; }
+  };
+  Script script;
+  auto o = options(script);
+  o.sink = [](const config::AcquisitionConfig&, std::string&) { return std::make_unique<FailingClose>(); };
+  AcquisitionService svc{o};
+  auto c = small();
+  c.source.rate_hz = 1e6;
+  c.stop_after_s = 0.01;
+  ASSERT_TRUE(svc.configure(c, "test").ok);
+  ASSERT_TRUE(svc.start("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, 5s)) << to_string(svc.state());
+  EXPECT_EQ(svc.status()["fault"], "sink: fsync /data: Input/output error");
+}
+
 TEST(AcquisitionService, WithoutAdaptersStartIsADeviceError) {
   AcquisitionService svc;  // ports only: nothing to read from or write to
   ASSERT_TRUE(svc.configure(small(), "test").ok);

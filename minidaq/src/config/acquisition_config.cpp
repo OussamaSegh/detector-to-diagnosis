@@ -258,6 +258,32 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
     r.get("fov_radius_mm", st.fov_radius_mm, 0.0, 149.0);
     r.finish();
   }
+  if (const json* o = top.object("output")) {
+    ObjectReader r{*o, top.child("output"), errors};
+    auto& out = c.output;
+    r.get("type", out.type, {"none", "listmode"});
+    r.get("directory", out.directory);
+    r.get("prefix", out.prefix);
+    r.get("max_file_mb", out.max_file_mb, std::uint64_t{1}, std::uint64_t{1} << 20);
+    r.get("fsync", out.fsync, {"none", "close", "interval"});
+    std::uint64_t every = out.fsync_every_blocks;
+    r.get("fsync_every_blocks", every, std::uint64_t{1}, std::uint64_t{1} << 20);
+    out.fsync_every_blocks = static_cast<std::uint32_t>(every);
+    std::uint64_t records = out.records_per_block;
+    r.get("records_per_block", records, std::uint64_t{1}, std::uint64_t{65536});
+    out.records_per_block = static_cast<std::uint32_t>(records);
+    std::uint64_t buffers = out.buffers;
+    r.get("buffers", buffers, std::uint64_t{2}, std::uint64_t{65536});
+    out.buffers = static_cast<std::uint32_t>(buffers);
+    r.get("max_block_delay_ms", out.max_block_delay_ms, std::int64_t{1}, std::int64_t{60'000});
+    r.finish();
+    if (out.directory.empty()) {
+      errors.push_back({"/output/directory", "must not be empty"});
+    }
+    if (out.prefix.empty() || out.prefix.find('/') != std::string::npos) {
+      errors.push_back({"/output/prefix", "must be non-empty and contain no '/'"});
+    }
+  }
   top.finish();
   // Rules that involve two values, reported at the value a user would change.
   if (c.sorter.delay_ps != 0 && c.sorter.delay_ps <= c.pipeline.coincidence_window_ps) {
@@ -319,6 +345,16 @@ json to_json(const AcquisitionConfig& c) {
         {"energy_high_kev", c.sorter.energy_high_kev},
         {"min_sector_difference", c.sorter.min_sector_difference},
         {"fov_radius_mm", c.sorter.fov_radius_mm}}},
+      {"output",
+       {{"type", c.output.type},
+        {"directory", c.output.directory},
+        {"prefix", c.output.prefix},
+        {"max_file_mb", c.output.max_file_mb},
+        {"fsync", c.output.fsync},
+        {"fsync_every_blocks", c.output.fsync_every_blocks},
+        {"records_per_block", c.output.records_per_block},
+        {"buffers", c.output.buffers},
+        {"max_block_delay_ms", c.output.max_block_delay_ms}}},
       {"rt_profile", c.rt_profile},
       {"stop_after_s", c.stop_after_s},
   };

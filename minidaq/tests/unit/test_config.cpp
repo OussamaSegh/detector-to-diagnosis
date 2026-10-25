@@ -36,7 +36,7 @@ std::string read(const std::string& path) {
 
 TEST(Config, MinimalDocumentGetsDefaults) {
   // REQ: SRS-CFG-001
-  const auto c = parse_config(R"({"schema_version": "1.2"})");
+  const auto c = parse_config(R"({"schema_version": "1.3"})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(*c, AcquisitionConfig{});
   // An older minor version is accepted; only the recorded version differs.
@@ -69,7 +69,7 @@ TEST(Config, SchemaVersionRules) {
   // REQ: SRS-CFG-002
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0"})"), "/schema_version", "major version 2"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.4"})"), "/schema_version", "newer MiniDAQ"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": 1.0})"), "/schema_version", "must be a string"));
 }
@@ -134,7 +134,7 @@ TEST(Config, PipelineSettingsAreApplied) {
 TEST(Config, SchemaDocumentAgreesWithTheReader) {
   const auto schema = nlohmann::json::parse(read(MINIDAQ_SOURCE_DIR "/docs/architecture/acquisition-config.schema.json"));
   const auto effective = to_json(AcquisitionConfig{});
-  const auto base = nlohmann::json::parse(R"({"schema_version": "1.2"})");
+  const auto base = nlohmann::json::parse(R"({"schema_version": "1.3"})");
 
   // Walks the schema and the effective configuration together, at any depth:
   // the same keys at every level, and every leaf's enum and range accepted
@@ -240,6 +240,28 @@ TEST(Config, SorterSettings) {
                   "/sorter/min_sector_difference", "between 0 and 12"))
       << "2^32 + 1 must not wrap to 1";
   EXPECT_TRUE(parse_config(R"({"schema_version": "1.2", "sorter": {"delay_ps": 0}})")) << "0 turns the delayed window off";
+}
+
+TEST(Config, OutputSettings) {
+  // REQ: SRS-CFG-012
+  const auto c = parse_config(R"({"schema_version": "1.3", "output": {"type": "listmode", "directory": "/data/run",
+      "prefix": "pet", "max_file_mb": 256, "fsync": "interval", "fsync_every_blocks": 32,
+      "records_per_block": 1024, "buffers": 8, "max_block_delay_ms": 20}})");
+  ASSERT_TRUE(c) << format_errors(c.error());
+  EXPECT_EQ(c->output.type, "listmode");
+  EXPECT_EQ(c->output.directory, "/data/run");
+  EXPECT_EQ(c->output.max_file_mb, 256U);
+  EXPECT_EQ(c->output.fsync, "interval");
+  EXPECT_EQ(c->output.records_per_block, 1024U);
+  EXPECT_EQ(AcquisitionConfig{}.output.type, "none") << "without an output section nothing is written, as before 1.3";
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"fsync": "always"}})"), "/output/fsync",
+                  "\"interval\""));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"prefix": "a/b"}})"), "/output/prefix", "'/'"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"directory": ""}})"), "/output/directory",
+                  "must not be empty"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"records_per_block": 4294967297}})"),
+                  "/output/records_per_block", "between 1 and 65536"))
+      << "2^32 + 1 must not wrap to 1";
 }
 
 TEST(Config, NumberOverflowIsAnErrorNotACrash) {

@@ -52,8 +52,14 @@ class CoincidenceSinkPort {
  public:
   virtual ~CoincidenceSinkPort() = default;
   virtual void write(std::span<const Coincidence> batch) = 0;
+  // Ends the run (Chapter 12): called once by the service after the last
+  // write(), when the pipeline has drained. A sink that stores data makes it
+  // durable here and returns an error if it could not.
+  [[nodiscard]] virtual std::optional<std::string> close() { return std::nullopt; }
   [[nodiscard]] virtual std::optional<std::string> fault() const { return std::nullopt; }
   [[nodiscard]] virtual std::string describe() const = 0;
+  // Sink-specific counters for the status report, like DetectorPort's. Thread-safe.
+  [[nodiscard]] virtual std::vector<DetectorCounter> counters() const { return {}; }
 };
 
 // The service creates a fresh detector and sink for every configuration.

@@ -3,6 +3,7 @@
 
 #include <cstdio>
 
+#include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/control/udp_detector.hpp"
 
 namespace minidaq::control {
@@ -41,7 +42,10 @@ std::unique_ptr<DetectorPort> make_default_detector(const config::AcquisitionCon
   return nullptr;
 }
 
-std::unique_ptr<CoincidenceSinkPort> make_default_sink(const config::AcquisitionConfig&, std::string&) {
+std::unique_ptr<CoincidenceSinkPort> make_default_sink(const config::AcquisitionConfig& c, std::string& error) {
+  if (c.output.type == "listmode") {
+    return make_listmode_sink(c, error);
+  }
   return std::make_unique<CountingSink>();
 }
 

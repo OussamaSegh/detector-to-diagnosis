@@ -36,12 +36,12 @@ File write_file(const std::vector<Coincidence>& events, std::size_t max_records,
   f.bytes = encode_file_header(meta);
   std::vector<std::byte> buf(block_bytes(max_records));
   std::uint32_t seq = 0;
-  BlockWriter w{buf, seq, max_records};
+  BlockWriter w{buf, max_records};
   auto emit = [&](bool last) {
-    const auto n = w.finish(last);
+    const auto n = w.finish(seq++, last ? block_flag_end_of_run : 0U);
     f.block_offsets.push_back(f.bytes.size());
     f.bytes.insert(f.bytes.end(), buf.begin(), buf.begin() + static_cast<std::ptrdiff_t>(n));
-    w = BlockWriter{buf, ++seq, max_records};
+    w.reset();
   };
   for (const auto& c : events) {
     if (w.append(c) != BlockWriter::Append::ok) {
@@ -160,14 +160,14 @@ TEST(ListMode, RecordsRoundTripExceptForTheEnergyQuantum) {
 TEST(ListMode, TagsShareTheRecordStream) {
   // REQ: SRS-LMF-004
   std::vector<std::byte> buf(block_bytes(8));
-  BlockWriter w{buf, 0, 8};
+  BlockWriter w{buf, 8};
   ASSERT_EQ(w.append(pair(100, 1, 2, 50)), BlockWriter::Append::ok);
   ASSERT_EQ(w.append(Tag{static_cast<std::uint16_t>(TagKind::gate), Picoseconds{150}, 3}), BlockWriter::Append::ok);
   ASSERT_EQ(w.append(Tag{static_cast<std::uint16_t>(TagKind::time_mark), Picoseconds{200}, -7}),
             BlockWriter::Append::ok);
   ASSERT_EQ(w.append(Tag{4000, Picoseconds{300}, 0}), BlockWriter::Append::ok);  // a site-specific kind
   EXPECT_EQ(w.append(Tag{0, Picoseconds{300}, 0}), BlockWriter::Append::invalid);
-  const auto n = w.finish(true);
+  const auto n = w.finish(0, block_flag_end_of_run);
   const auto b = parse_block(std::span{buf}.first(n));
   ASSERT_TRUE(b);
   ASSERT_EQ(b->record_count(), 4U);
@@ -181,7 +181,7 @@ TEST(ListMode, TagsShareTheRecordStream) {
 TEST(ListMode, ABlockClosesWhenFullOutOfTimeRangeOrOnATimeReset) {
   // REQ: SRS-LMF-005
   std::vector<std::byte> buf(block_bytes(2));
-  BlockWriter w{buf, 0, 2};
+  BlockWriter w{buf, 2};
   EXPECT_EQ(w.append(pair(1'000, 1, 2, 0)), BlockWriter::Append::ok);
   EXPECT_EQ(w.append(pair(999, 1, 2, 0)), BlockWriter::Append::time_reset);
   EXPECT_EQ(w.append(pair(1'000 + 0x1'0000'0000LL, 1, 2, 0)), BlockWriter::Append::time_range);
@@ -189,7 +189,7 @@ TEST(ListMode, ABlockClosesWhenFullOutOfTimeRangeOrOnATimeReset) {
   EXPECT_EQ(w.append(pair(1'001, 1, 2, 0)), BlockWriter::Append::full);
   EXPECT_EQ(w.records(), 2U);
   // Never encodable, whatever block it goes to.
-  BlockWriter e{buf, 1, 2};
+  BlockWriter e{buf, 2};
   EXPECT_EQ(e.append(pair(0, 0x7FFF, 2, 0)), BlockWriter::Append::invalid);
   EXPECT_EQ(e.append(pair(0, 1, 0x7FFF, 0)), BlockWriter::Append::invalid);
   EXPECT_EQ(e.append(pair(0, 1, 2, std::int64_t{1} << 31)), BlockWriter::Append::invalid);

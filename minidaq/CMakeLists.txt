@@ -34,7 +34,9 @@ add_library(minidaq_control
   src/control/acquisition_service.cpp
   src/control/control_protocol.cpp
   src/control/control_server.cpp
-  src/control/udp_detector.cpp)
+  src/control/udp_detector.cpp
+  src/control/file_ops.cpp
+  src/control/listmode_sink.cpp)
 add_library(minidaq::control ALIAS minidaq_control)
 target_link_libraries(minidaq_control PUBLIC minidaq::core nlohmann_json::nlohmann_json PRIVATE minidaq::warnings)
 target_compile_definitions(minidaq_control PRIVATE MINIDAQ_VERSION_STRING="${MINIDAQ_VERSION_FULL}")

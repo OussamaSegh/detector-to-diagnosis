@@ -31,7 +31,8 @@
 namespace minidaq::config {
 
 inline constexpr int supported_major = 1;
-inline constexpr int supported_minor = 2;  // 1.1: source type "udp" (Chapter 9); 1.2: "sorter" (Chapter 10)
+// 1.1: source type "udp" (Chapter 9); 1.2: "sorter" (Chapter 10); 1.3: "output" (Chapter 12)
+inline constexpr int supported_minor = 3;
 
 // The UDP readout link (Chapter 9, minidaq/control/udp_detector.hpp).
 struct UdpSettings {
@@ -74,6 +75,20 @@ struct SorterSettings {
   friend bool operator==(const SorterSettings&, const SorterSettings&) = default;
 };
 
+// Where the coincidences go (Chapter 12, minidaq/control/listmode_sink.hpp).
+struct OutputSettings {
+  std::string type = "none";        // "none": count and discard; "listmode": MDQ-L1 files
+  std::string directory = ".";
+  std::string prefix = "minidaq";
+  std::uint64_t max_file_mb = 1024;  // MiB per file before the next one starts
+  std::string fsync = "close";      // "none", "close" or "interval"
+  std::uint32_t fsync_every_blocks = 256;
+  std::uint32_t records_per_block = 4096;
+  std::uint32_t buffers = 64;
+  std::int64_t max_block_delay_ms = 100;
+  friend bool operator==(const OutputSettings&, const OutputSettings&) = default;
+};
+
 struct AcquisitionConfig {
   int schema_major = supported_major;
   int schema_minor = supported_minor;
@@ -81,6 +96,7 @@ struct AcquisitionConfig {
   SourceSettings source;
   PipelineSettings pipeline;
   SorterSettings sorter;
+  OutputSettings output;
   std::string rt_profile;   // path of a real-time profile file (Chapter 4); empty: none
   double stop_after_s = 0;  // 0: run until stopped
 

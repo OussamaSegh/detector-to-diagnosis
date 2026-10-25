@@ -282,6 +282,11 @@ void AcquisitionService::check_run_locked() {
   }
   if (pipeline_ && pipeline_->finished()) {
     pipeline_->wait();  // all stages are done: this only joins the threads
+    // The last write() has returned: the sink can make the run durable. A
+    // run whose data did not reach stable storage ends in a fault.
+    if (auto e = sink_ ? sink_->close() : std::nullopt) {
+      return enter_fault_locked("sink: " + *e, "service");
+    }
     run_ended_ = std::chrono::steady_clock::now();
     run_ended_set_ = true;
     note("service", "run_ended", "run " + std::to_string(run_id_));
@@ -322,6 +327,13 @@ json AcquisitionService::status() const {
     j["detector_counters"] = std::move(counters);
   }
   j["sink"] = sink_ ? json(sink_->describe()) : json(nullptr);
+  if (sink_) {
+    json counters = json::object();
+    for (const auto& c : sink_->counters()) {
+      counters[c.name] = c.value;
+    }
+    j["sink_counters"] = std::move(counters);
+  }
   if (pipeline_) {
     const auto end = run_ended_set_ ? run_ended_ : std::chrono::steady_clock::now();
     j["run"] = {{"started_utc", run_started_utc_},
