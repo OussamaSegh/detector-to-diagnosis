@@ -13,7 +13,7 @@ milestone. The two columns of hours add those estimates up (midpoints of the ran
 - **All** hours add every exercise, the extras included.
 
 | Week | Chapters | MiniDAQ by Sunday | Core, h | All, h |
-|--|-----|------|--------------------------|--|--|
+|---|------|-----------------------|---|---|
 | 1 | 1, 2, 8 | Core types, packed format, detector simulator | 17 | 35 |
 | 2 | 3, 9, 13 | Threaded pipeline, UDP readout with loss counters | 20 | 44 |
 | 3 | 4, 5, 10 (first half) | Real-time profile, benchmarks, first sorter | 16 | 45 |
