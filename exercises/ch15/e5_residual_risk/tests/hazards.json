@@ -1,0 +1,177 @@
+{
+  "comment": "MiniDAQ's hazard analysis and risk controls (Chapter 15). tools/check_risk.py checks it against the criteria below, the SRS and the tests; tools/trace_matrix.py adds the controls to the trace matrix. The criteria and every severity and probability are MiniDAQ's teaching choices (assumption: confirm with team); a real file uses the criteria of the manufacturer's risk management policy.",
+  "criteria": {
+    "severity": {
+      "S1": "Negligible: inconvenience or temporary discomfort, no injury",
+      "S2": "Minor: non-serious injury, such as a delayed diagnosis that is corrected, or a repeated scan with its additional dose",
+      "S3": "Serious: injury that needs medical intervention or causes lasting impairment, such as a wrong treatment decision",
+      "S4": "Critical: death or life-threatening injury"
+    },
+    "severity_class": {"S1": "none", "S2": "non-serious", "S3": "serious", "S4": "death"},
+    "probability": {
+      "P1": "Improbable: not expected in the life of the product",
+      "P2": "Remote: possible, not expected in a year of a site's use",
+      "P3": "Occasional: a few times a year at a site",
+      "P4": "Probable: monthly at a site",
+      "P5": "Frequent: weekly or more often at a site"
+    },
+    "acceptable_if": "severity index + probability index <= 5",
+    "software_probability": "The probability that the software fails is not estimated: it is taken as 1 (the failure occurs). The probability of harm is then the probability that the sequence after the failure leads to harm, which depends on controls outside the software and on the clinical workflow."
+  },
+  "hazards": [
+    {
+      "id": "H-01",
+      "preliminary": "HZ-1",
+      "hazard": "Coincidence data lost without notice",
+      "sequence": "Packets are lost or rejected on the readout link, words arrive corrupted, the source drops words under overload, or the sink drops blocks after a fault; the run ends normally.",
+      "hazardous_situation": "Images are reconstructed from a run whose data is incomplete, and the run is treated as complete.",
+      "harm": "A quantitation error or artifact contributes to a delayed or incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-01", "type": "protective", "description": "The service judges every run complete or incomplete from all loss counters and a fault, reports the verdict in its status and stores it in the run record next to the data.", "requirements": ["SRS-CTL-030", "SRS-OUT-011"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.ALossMakesTheRunIncomplete"}},
+        {"id": "RC-02", "type": "protective", "description": "When a run ends with incomplete data, the audit trail records which counters show the loss.", "requirements": ["SRS-CTL-031"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.ALossMakesTheRunIncomplete"}},
+        {"id": "RC-03", "type": "protective", "description": "Every loss is counted where it happens: on the link, in the decoder, in the source, in the sorter.", "requirements": ["SRS-RDO-007", "SRS-FMT-013", "SRS-PIPE-011", "SRS-SRT-009"], "effectiveness": {"method": "test", "evidence": "SequenceTracker.AccountsForEveryPacketThroughAFaultyLink"}},
+        {"id": "RC-04", "type": "inherent", "description": "The list-mode sink slows the writer down instead of dropping data when the disk is slow.", "requirements": ["SRS-OUT-006"], "effectiveness": {"method": "test", "evidence": "ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData"}},
+        {"id": "RC-05", "type": "information", "description": "The intended-use statement tells every consumer of the data to check the run record's integrity verdict before reconstruction.", "requirements": [], "effectiveness": {"method": "inspection", "evidence": "docs/regulatory/intended-use.md, section Data"}}
+      ],
+      "probability_after": "P2",
+      "residual": "Loss still happens on a busy link; it can no longer be silent. Harm now needs the consumer to ignore a verdict that the run record states.",
+      "status": "closed"
+    },
+    {
+      "id": "H-02",
+      "preliminary": "HZ-1",
+      "hazard": "Wrong event times",
+      "sequence": "Time unwrapping fails across a wrap of the time code, or singles reach the sorter out of time order.",
+      "hazardous_situation": "Coincidences are formed from the wrong singles and their time-of-flight positions are wrong.",
+      "harm": "Artifacts contribute to a delayed or incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-06", "type": "inherent", "description": "Times are unwrapped across any number of wraps, with the limit on the gap between singles stated.", "requirements": ["SRS-FMT-012"], "effectiveness": {"method": "test", "evidence": "TimeUnwrapper.ReconstructsAcrossManyWraps"}},
+        {"id": "RC-07", "type": "protective", "description": "Singles out of time order are counted and dropped, and the service ends the run in a fault.", "requirements": ["SRS-CTL-012", "SRS-SRT-005", "SRS-MRG-004"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.OutOfOrderSinglesAreAFault"}}
+      ],
+      "probability_after": "P2",
+      "residual": "A time error that keeps the order (a constant offset of one board) is not detected by these controls; the timing calibration of Chapter 26 controls it.",
+      "status": "closed"
+    },
+    {
+      "id": "H-03",
+      "preliminary": "HZ-1",
+      "hazard": "Stored data corrupted",
+      "sequence": "A disk error, a crash or a power loss damages a list-mode file.",
+      "hazardous_situation": "A damaged file is reconstructed as if it were intact.",
+      "harm": "Artifacts or a quantitation error contribute to a delayed or incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-08", "type": "protective", "description": "Every block carries CRC-32 checksums; the reader returns no record of a damaged block, reports it, and resynchronizes.", "requirements": ["SRS-LMF-002", "SRS-LMF-006", "SRS-LMF-007"], "effectiveness": {"method": "test", "evidence": "ListMode.OneCorruptByteCostsOneBlockAndNothingElse"}},
+        {"id": "RC-09", "type": "inherent", "description": "A file gets its final name only after it is durable, so a crash leaves a .part file, never a short file with a final name.", "requirements": ["SRS-OUT-003"], "effectiveness": {"method": "test", "evidence": "ListModeSink.MakesEachFileDurableBeforeItsFinalName"}},
+        {"id": "RC-10", "type": "protective", "description": "A failed write or close is a fault of the run.", "requirements": ["SRS-OUT-005", "SRS-CTL-013"], "effectiveness": {"method": "test", "evidence": "ListModeSink.AFullDiskIsAFaultAndTheFileStaysPart"}}
+      ],
+      "probability_after": "P1",
+      "residual": "A CRC-32 misses one damaged block in about four billion; the data loss it reports is H-01.",
+      "status": "closed"
+    },
+    {
+      "id": "H-04",
+      "preliminary": "HZ-3",
+      "hazard": "Acquisition settings other than intended",
+      "sequence": "A misspelled key falls back to its default, or an outdated configuration file is used.",
+      "hazardous_situation": "Data is acquired with an energy or coincidence window that differs from the one reconstruction assumes.",
+      "harm": "Wrong scatter and randoms corrections contribute to a quantitation error and an incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-11", "type": "protective", "description": "Unknown keys, unknown schema versions and type and range errors are rejected, each reported with where it is, all at once.", "requirements": ["SRS-CFG-002", "SRS-CFG-003", "SRS-CFG-004"], "effectiveness": {"method": "test", "evidence": "Config.UnknownKeysAreErrorsWithSuggestions"}},
+        {"id": "RC-12", "type": "protective", "description": "The effective configuration, defaults included, is stored in the run record and in every file's metadata.", "requirements": ["SRS-OUT-010", "SRS-OUT-012"], "effectiveness": {"method": "test", "evidence": "ListModeSink.WritesRealFilesThroughTheService"}}
+      ],
+      "probability_after": "P2",
+      "residual": "A valid but wrong configuration (the right keys, the wrong protocol) is not detected by MiniDAQ; it is recorded, so reconstruction and review can see it.",
+      "status": "closed"
+    },
+    {
+      "id": "H-05",
+      "preliminary": "HZ-2",
+      "hazard": "Acquisition interrupted",
+      "sequence": "A control client crashes or sends an overlong request, or the disk is briefly slow, and the run stops.",
+      "hazardous_situation": "The scan is incomplete and must be repeated.",
+      "harm": "Additional radiation dose from a second injection, or a delayed diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-13", "type": "inherent", "description": "The service owns the run: a client that disconnects or misbehaves loses only its own connection.", "requirements": ["SRS-CTL-023", "SRS-CTL-021"], "effectiveness": {"method": "test", "evidence": "ControlServer.AClientThatDisconnectsDoesNotStopTheAcquisition"}},
+        {"id": "RC-14", "type": "inherent", "description": "A slow disk applies backpressure instead of ending the run.", "requirements": ["SRS-OUT-006"], "effectiveness": {"method": "test", "evidence": "ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData"}}
+      ],
+      "probability_after": "P2",
+      "residual": "Hardware failures and power loss still interrupt a scan; the files written so far stay readable (H-03).",
+      "status": "closed"
+    },
+    {
+      "id": "H-06",
+      "preliminary": "HZ-3",
+      "hazard": "Simulated data stored as a patient scan",
+      "sequence": "A configuration at the scanner selects the synthetic source.",
+      "hazardous_situation": "Invented data is stored and reconstructed as a patient's scan.",
+      "harm": "An incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P3",
+      "controls": [
+        {"id": "RC-15", "type": "information", "description": "Every list-mode file's metadata states whether its data is simulated, and the run record names the source.", "requirements": ["SRS-OUT-012"], "effectiveness": {"method": "test", "evidence": "ListModeSink.WritesRealFilesThroughTheService"}}
+      ],
+      "probability_after": "P2",
+      "residual": "Acceptable before the control, reduced further as far as possible without a design change; problem report MDQ-PR-009 proposes leaving the simulator out of product builds.",
+      "status": "closed"
+    },
+    {
+      "id": "H-07",
+      "preliminary": "HZ-1",
+      "hazard": "Wrong coincidence selection",
+      "sequence": "A defect or a configuration error in the sorter accepts or rejects the wrong pairs.",
+      "hazardous_situation": "Prompts, randoms estimate or scatter fraction are biased in every scan.",
+      "harm": "A systematic quantitation error contributes to incorrect diagnoses.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-16", "type": "inherent", "description": "The sorter is verified against the simulator's ground truth and its randoms estimate against the true randoms.", "requirements": ["SRS-SRT-010", "SRS-SRT-011"], "effectiveness": {"method": "test", "evidence": "CoincidenceSorter.MatchesTheSimulatorsGroundTruth"}},
+        {"id": "RC-17", "type": "protective", "description": "Sorter configurations outside their valid ranges are rejected.", "requirements": ["SRS-SRT-007", "SRS-CFG-011"], "effectiveness": {"method": "test", "evidence": "CoincidenceSorter.RejectsBadConfigurations"}}
+      ],
+      "probability_after": "P2",
+      "residual": "The simulator shares the sorter's model of the scanner, so a wrong model is not detected; phantom measurements on the real scanner (Chapters 26 and 27) validate both.",
+      "status": "closed"
+    },
+    {
+      "id": "H-08",
+      "preliminary": "HZ-4",
+      "hazard": "Acquisition controlled by an unauthorized party",
+      "sequence": "A process on the acquisition PC, or on the network if the port is exposed, connects to the control port and sends stop or configure.",
+      "hazardous_situation": "A scan is stopped, or acquired with altered settings.",
+      "harm": "A repeated scan with its additional dose, or a quantitation error.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-18", "type": "protective", "description": "Every control action, accepted or rejected, is recorded in the audit trail with the client's address and port.", "requirements": ["SRS-CTL-032"], "effectiveness": {"method": "analysis", "evidence": "The audit trail detects misuse after the fact; it does not prevent it, so it does not reduce the probability."}}
+      ],
+      "probability_after": "P4",
+      "residual": "Not acceptable for clinical use. Planned control: authentication and authorization of control clients (Chapter 17, problem report MDQ-PR-008).",
+      "status": "open"
+    },
+    {
+      "id": "H-09",
+      "preliminary": "HZ-1",
+      "hazard": "Data of two runs mixed",
+      "sequence": "Two runs get the same name (the clock is set back, or two servers write into one directory), and the second writes into or replaces the first one's files.",
+      "hazardous_situation": "A file set holds coincidences of two acquisitions, possibly of two patients, and is reconstructed as one.",
+      "harm": "Artifacts or activity from another acquisition contribute to an incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P3",
+      "controls": [
+        {"id": "RC-19", "type": "inherent", "description": "A sink never writes into or replaces an existing file: it creates each file only if no file has its name, and gives a file its final name only if that name is free.", "requirements": ["SRS-OUT-008", "SRS-OUT-003"], "effectiveness": {"method": "test", "evidence": "ListModeSink.RejectsBadConfigurationsAndExistingFiles"}}
+      ],
+      "probability_after": "P1",
+      "residual": "A run whose name is taken does not start, and the operator repeats it; MiniDAQ holds no patient identity, so attributing a run to the right patient is the workflow software's control (intended-use.md, Data).",
+      "status": "closed"
+    }
+  ]
+}

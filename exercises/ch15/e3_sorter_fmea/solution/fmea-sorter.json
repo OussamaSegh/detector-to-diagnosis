@@ -1,0 +1,152 @@
+{
+  "comment": "Exercise 15.3: FMEA of the coincidence sorter. Severities are teaching choices (assumption: confirm with team).",
+  "item": "sorter",
+  "rows": [
+    {
+      "function": "energy gate",
+      "failure_mode": "Boundary handled wrongly: singles at exactly the low or high limit are dropped or passed against the specification",
+      "effect": "Prompts and scatter fraction are biased slightly in every scan (H-07)",
+      "cause": "A strict comparison where the requirement says inclusive; a keV to LSB conversion that rounds",
+      "severity": "S2",
+      "detection": "Unit test with singles on both limits",
+      "controls": [
+        "SRS-SRT-005"
+      ]
+    },
+    {
+      "function": "energy gate",
+      "failure_mode": "Gate not applied: the configured window is ignored and a default is used",
+      "effect": "Scatter correction assumes a window the data was not acquired with (H-04, H-07)",
+      "cause": "The configuration reader does not pass the sorter settings on",
+      "severity": "S2",
+      "detection": "Test that the configured sorter settings reach the sorter; the run record stores the effective configuration",
+      "controls": [
+        "SRS-CFG-011"
+      ]
+    },
+    {
+      "function": "order check",
+      "failure_mode": "A single earlier than the previous one is accepted",
+      "effect": "Windows that are already closed miss their partner, or pairs form from the wrong singles (H-02)",
+      "cause": "The upstream merge breaks time order; the check compares against the wrong single",
+      "severity": "S2",
+      "detection": "The out-of-order counter; the service ends the run in a fault",
+      "controls": [
+        "SRS-SRT-005"
+      ]
+    },
+    {
+      "function": "order check",
+      "failure_mode": "Out-of-order singles dropped without being counted",
+      "effect": "Data is lost and the run is reported complete (H-01)",
+      "cause": "A counter not incremented on one code path",
+      "severity": "S2",
+      "detection": "The accounting identity of the sorter's counters fails",
+      "controls": [
+        "SRS-SRT-009"
+      ]
+    },
+    {
+      "function": "windowing",
+      "failure_mode": "Window boundary off by one picosecond: a partner exactly one window later is missed or a later one is included",
+      "effect": "Prompts and randoms are biased in every scan (H-07)",
+      "cause": "A strict comparison where the requirement says less than or equal",
+      "severity": "S2",
+      "detection": "Unit test with a partner exactly at the window",
+      "controls": [
+        "SRS-SRT-001"
+      ]
+    },
+    {
+      "function": "windowing",
+      "failure_mode": "Result depends on where the input is cut into batches",
+      "effect": "Coincidences differ between runs of the same data and between thread counts (H-07)",
+      "cause": "A window that spans two batches is closed at the batch end",
+      "severity": "S2",
+      "detection": "Test that sorts the same singles in batches of every size",
+      "controls": [
+        "SRS-SRT-008",
+        "SRS-PIPE-010"
+      ]
+    },
+    {
+      "function": "multiples resolution",
+      "failure_mode": "Wrong policy applied, or a policy keeps the wrong pair",
+      "effect": "Prompts are biased at high rates, where multiples are frequent (H-07)",
+      "cause": "A missing case in a switch over the policies; the winner chosen by the wrong energy",
+      "severity": "S2",
+      "detection": "Unit tests of each policy; comparison with the simulator's ground truth",
+      "controls": [
+        "SRS-SRT-003"
+      ]
+    },
+    {
+      "function": "multiples resolution",
+      "failure_mode": "A tie between good pairs of equal summed energy is broken another way",
+      "effect": "The same singles give different coincidences in two versions of the sorter, so results cannot be reproduced or compared (H-07)",
+      "cause": "An optimization changes the loop order or the comparison; no requirement fixed the tie rule",
+      "severity": "S2",
+      "detection": "None: no test fixes the tie rule, so a change to it passes every test",
+      "controls": [
+        "NEW: When the take-winner-of-goods policy finds good pairs with equal summed energy, the coincidence sorter shall keep the pair with the earliest first single, and among those the earliest second single."
+      ]
+    },
+    {
+      "function": "geometry selection",
+      "failure_mode": "Pairs inside one sector or outside the field of view are accepted, or good pairs rejected",
+      "effect": "Coincidences that cannot be real are reconstructed, or counts are lost (H-07)",
+      "cause": "Sector difference computed without the wrap around the ring; a field-of-view distance in the wrong unit",
+      "severity": "S2",
+      "detection": "Unit tests at the sector wrap and at the field-of-view radius",
+      "controls": [
+        "SRS-SRT-004"
+      ]
+    },
+    {
+      "function": "delayed window",
+      "failure_mode": "Delayed window opened at the wrong offset or with another width than the prompt window",
+      "effect": "The randoms estimate is biased, and so is the randoms correction of every scan (H-07)",
+      "cause": "The offset measured from the wrong single; the width taken from another setting",
+      "severity": "S2",
+      "detection": "Test of the randoms estimate against the simulator's true randoms",
+      "controls": [
+        "SRS-SRT-006",
+        "SRS-SRT-011"
+      ]
+    },
+    {
+      "function": "end of run",
+      "failure_mode": "Windows still open at the end of a run are not closed",
+      "effect": "The last coincidences of every run are missing, without a counter (H-01)",
+      "cause": "flush() not called when the pipeline stops",
+      "severity": "S2",
+      "detection": "Test that a stop processes all data already read; the accounting identity",
+      "controls": [
+        "SRS-PIPE-012",
+        "SRS-SRT-009"
+      ]
+    },
+    {
+      "function": "accounting",
+      "failure_mode": "Counters do not account for every single",
+      "effect": "A loss inside the sorter is invisible to the integrity verdict (H-01)",
+      "cause": "A new path through the sorter without its counter",
+      "severity": "S2",
+      "detection": "Test of the accounting identity on simulated data",
+      "controls": [
+        "SRS-SRT-009"
+      ]
+    },
+    {
+      "function": "configuration",
+      "failure_mode": "An invalid configuration is accepted: an empty energy window, a delay inside the prompt window, a field of view outside the ring",
+      "effect": "Coincidences are formed with settings that have no physical meaning (H-04, H-07)",
+      "cause": "A missing check in validate(); a check that accepts NaN",
+      "severity": "S2",
+      "detection": "Unit test of every rejected configuration",
+      "controls": [
+        "SRS-SRT-007"
+      ]
+    }
+  ]
+}

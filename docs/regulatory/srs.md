@@ -110,6 +110,7 @@ a document of the manufacturer's quality management system and does not reproduc
 | SRS-SRT-009 | The coincidence sorter's counters shall account for every single it receives: rejected by energy, out of order, alone, or in a window of a counted size. | sorter | T |
 | SRS-SRT-010 | When configured like the simulator's reference counter, the coincidence sorter shall find exactly the prompts that the reference counter finds in the simulator's ground truth. | sorter | T |
 | SRS-SRT-011 | The coincidence sorter's delayed window shall estimate the randoms among the prompts to within 15% at 40 MBq. | sorter | T |
+| SRS-SRT-012 | When the take-winner-of-goods policy finds good pairs with equal summed energy, the coincidence sorter shall keep the pair with the earliest first single, and among those the earliest second single. | sorter | T |
 | SRS-MRG-001 | The stream merger shall merge the time-ordered streams of several boards into one time-ordered stream, whatever the sizes of the chunks it receives. | merger | T |
 | SRS-MRG-002 | The stream merger shall release a single only when every board has delivered a later single or a time marker. | merger | T |
 | SRS-MRG-003 | When one board falls behind the others by more than the configured maximum skew in µs, the stream merger shall drop and count only that board's late singles. | merger | T |
@@ -225,4 +226,4 @@ server today (section 4 of the architecture description explains the consequence
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 14), from the requirement tags of Chapters 1 to 12. Added SRS-CFG-004, SRS-PERF-020 and SRS-PERF-021, which had tests or measurements without an ID. |
-| 2 | Chapter 15: requirements of the risk controls for silent data loss and for the audit of control actions (SRS-CTL-030 to SRS-CTL-032, SRS-OUT-011, SRS-OUT-012), and SRS-FMT-013, a counter the integrity verdict relies on. |
+| 2 | Chapter 15: requirements of the risk controls for silent data loss and for the audit of control actions (SRS-CTL-030 to SRS-CTL-032, SRS-OUT-011, SRS-OUT-012), SRS-FMT-013, a counter the integrity verdict relies on, and SRS-SRT-012, a gap found by the sorter's FMEA. |

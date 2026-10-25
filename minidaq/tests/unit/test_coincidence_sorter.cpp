@@ -156,6 +156,19 @@ TEST(CoincidenceSorter, MultiplesPolicies) {
   }
 }
 
+TEST(CoincidenceSorter, TiesKeepTheEarlierPair) {
+  // REQ: SRS-SRT-012
+  // Found by the sorter's FMEA (Chapter 15): a-b and b-c have the same summed
+  // energy, and nothing fixed which one take_winner_of_goods keeps.
+  auto c = plain();
+  c.multiples = MultiplesPolicy::take_winner_of_goods;
+  const std::vector<Single> w{at(0, 0, 500.0F), at(1 * ns, 96, 511.0F), at(2 * ns, opposite0, 500.0F)};
+  const auto out = run(c, w);
+  ASSERT_EQ(out.size(), 1U);
+  EXPECT_EQ(out[0].first.time, Picoseconds{0});
+  EXPECT_EQ(out[0].second.time, Picoseconds{1 * ns});
+}
+
 TEST(CoincidenceSorter, GeometryCuts) {
   // REQ: SRS-SRT-004
   auto c = plain();

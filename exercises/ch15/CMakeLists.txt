@@ -1,2 +1,5 @@
 minidaq_python_exercise(e1_hazard_chains)
 minidaq_exercise(e2_loss_controls)
+minidaq_python_exercise(e3_sorter_fmea)
+minidaq_python_exercise(e4_fault_tree)
+minidaq_python_exercise(e5_residual_risk)

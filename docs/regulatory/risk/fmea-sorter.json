@@ -20,7 +20,10 @@
       "cause": "A strict comparison where the requirement says inclusive; a keV to LSB conversion that rounds",
       "severity": "S2",
       "detection": "Unit test with singles on both limits",
-      "controls": ["SRS-SRT-005", "RC-16"]
+      "controls": [
+        "SRS-SRT-005",
+        "RC-16"
+      ]
     },
     {
       "function": "energy gate",
@@ -29,7 +32,10 @@
       "cause": "The configuration reader does not pass the sorter settings on",
       "severity": "S2",
       "detection": "Test that the configured sorter settings reach the sorter; the run record stores the effective configuration",
-      "controls": ["SRS-CFG-011", "RC-12"]
+      "controls": [
+        "SRS-CFG-011",
+        "RC-12"
+      ]
     },
     {
       "function": "order check",
@@ -38,7 +44,10 @@
       "cause": "The upstream merge breaks time order; the check compares against the wrong single",
       "severity": "S2",
       "detection": "The out-of-order counter; the service ends the run in a fault",
-      "controls": ["SRS-SRT-005", "RC-07"]
+      "controls": [
+        "SRS-SRT-005",
+        "RC-07"
+      ]
     },
     {
       "function": "order check",
@@ -47,7 +56,10 @@
       "cause": "A counter not incremented on one code path",
       "severity": "S2",
       "detection": "The accounting identity of the sorter's counters fails",
-      "controls": ["SRS-SRT-009", "RC-01"]
+      "controls": [
+        "SRS-SRT-009",
+        "RC-01"
+      ]
     },
     {
       "function": "windowing",
@@ -56,7 +68,10 @@
       "cause": "A strict comparison where the requirement says less than or equal",
       "severity": "S2",
       "detection": "Unit test with a partner exactly at the window",
-      "controls": ["SRS-SRT-001", "RC-16"]
+      "controls": [
+        "SRS-SRT-001",
+        "RC-16"
+      ]
     },
     {
       "function": "windowing",
@@ -65,7 +80,10 @@
       "cause": "A window that spans two batches is closed at the batch end",
       "severity": "S2",
       "detection": "Test that sorts the same singles in batches of every size",
-      "controls": ["SRS-SRT-008", "SRS-PIPE-010"]
+      "controls": [
+        "SRS-SRT-008",
+        "SRS-PIPE-010"
+      ]
     },
     {
       "function": "multiples resolution",
@@ -74,7 +92,21 @@
       "cause": "A missing case in a switch over the policies; the winner chosen by the wrong energy",
       "severity": "S2",
       "detection": "Unit tests of each policy; comparison with the simulator's ground truth",
-      "controls": ["SRS-SRT-003", "RC-16"]
+      "controls": [
+        "SRS-SRT-003",
+        "RC-16"
+      ]
+    },
+    {
+      "function": "multiples resolution",
+      "failure_mode": "A tie between good pairs of equal summed energy is broken another way",
+      "effect": "The same singles give different coincidences in two versions of the sorter, so results cannot be reproduced or compared (H-07)",
+      "cause": "An optimization changes the loop order or the comparison; no requirement fixed the tie rule",
+      "severity": "S2",
+      "detection": "Test of the tie rule (before Chapter 15: none, so any change passed every test)",
+      "controls": [
+        "SRS-SRT-012"
+      ]
     },
     {
       "function": "geometry selection",
@@ -83,7 +115,10 @@
       "cause": "Sector difference computed without the wrap around the ring; a field-of-view distance in the wrong unit",
       "severity": "S2",
       "detection": "Unit tests at the sector wrap and at the field-of-view radius",
-      "controls": ["SRS-SRT-004", "RC-16"]
+      "controls": [
+        "SRS-SRT-004",
+        "RC-16"
+      ]
     },
     {
       "function": "delayed window",
@@ -92,7 +127,11 @@
       "cause": "The offset measured from the wrong single; the width taken from another setting",
       "severity": "S2",
       "detection": "Test of the randoms estimate against the simulator's true randoms",
-      "controls": ["SRS-SRT-006", "SRS-SRT-011", "RC-16"]
+      "controls": [
+        "SRS-SRT-006",
+        "SRS-SRT-011",
+        "RC-16"
+      ]
     },
     {
       "function": "end of run",
@@ -101,7 +140,10 @@
       "cause": "flush() not called when the pipeline stops",
       "severity": "S2",
       "detection": "Test that a stop processes all data already read; the accounting identity",
-      "controls": ["SRS-PIPE-012", "SRS-SRT-009"]
+      "controls": [
+        "SRS-PIPE-012",
+        "SRS-SRT-009"
+      ]
     },
     {
       "function": "accounting",
@@ -110,7 +152,10 @@
       "cause": "A new path through the sorter without its counter",
       "severity": "S2",
       "detection": "Test of the accounting identity on simulated data",
-      "controls": ["SRS-SRT-009", "RC-03"]
+      "controls": [
+        "SRS-SRT-009",
+        "RC-03"
+      ]
     },
     {
       "function": "configuration",
@@ -119,7 +164,10 @@
       "cause": "A missing check in validate(); a check that accepts NaN",
       "severity": "S2",
       "detection": "Unit test of every rejected configuration",
-      "controls": ["SRS-SRT-007", "RC-17"]
+      "controls": [
+        "SRS-SRT-007",
+        "RC-17"
+      ]
     }
   ]
 }

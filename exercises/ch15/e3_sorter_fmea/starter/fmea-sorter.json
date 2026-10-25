@@ -1,0 +1,15 @@
+{
+  "comment": "Exercise 15.3: FMEA of the coincidence sorter. A first draft; complete it.",
+  "item": "sorter",
+  "rows": [
+    {"function": "energy gate", "failure_mode": "Singles on the limits handled wrongly",
+     "effect": "Biased counts", "cause": "Strict comparison", "severity": "S2",
+     "detection": "Unit test", "controls": ["SRS-SRT-005"]},
+    {"function": "windowing", "failure_mode": "Window boundary off by one picosecond",
+     "effect": "Prompts and randoms biased in every scan (H-07)", "cause": "A strict comparison",
+     "severity": "S2", "detection": "Unit test", "controls": ["RC-16"]},
+    {"function": "end of run", "failure_mode": "Open windows not closed at the end of a run",
+     "effect": "The last coincidences of every run missing (H-01)", "cause": "flush() not called",
+     "severity": "minor", "detection": "none", "controls": ["SRS-PIPE-012"]}
+  ]
+}
