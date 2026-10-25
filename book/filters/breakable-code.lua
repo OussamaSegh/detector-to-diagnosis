@@ -3,7 +3,9 @@
 -- \texttt is never hyphenated, so a long identifier or path such as
 -- `std::hardware_destructive_interference_size` sticks out into the margin.
 -- For LaTeX output, this filter writes long inline code itself and allows a
--- line break after `_`, `/`, `.`, `,`, `(` and `::`. Headings are left alone
+-- line break after `_`, `/`, `.`, `,`, `(` and `::`, and inside a long CamelCase
+-- name (a test name such as `TheSorterFindsWhatTheReferenceFinds`) between a
+-- lower-case and an upper-case letter. Headings are left alone
 -- (they go into the table of contents and PDF bookmarks).
 
 if not FORMAT:match("latex") then
@@ -11,6 +13,7 @@ if not FORMAT:match("latex") then
 end
 
 local MIN_LENGTH = 10
+local MIN_CAMEL_LENGTH = 24
 
 local escapes = {
   ["\\"] = "\\textbackslash{}", ["{"] = "\\{", ["}"] = "\\}",
@@ -25,6 +28,7 @@ local break_after = { ["_"] = true, ["/"] = true, ["."] = true, [","] = true, ["
 local function latex_code(text)
   local out = {}
   local n = #text
+  local camel = n >= MIN_CAMEL_LENGTH
   local i = 1
   while i <= n do
     local c = text:sub(i, i)
@@ -35,6 +39,8 @@ local function latex_code(text)
       if break_after[c] and next_c ~= c then
         out[#out + 1] = "\\allowbreak{}"
       elseif c == ":" and text:sub(i - 1, i - 1) == ":" then
+        out[#out + 1] = "\\allowbreak{}"
+      elseif camel and c:match("%l") and next_c:match("%u") then
         out[#out + 1] = "\\allowbreak{}"
       end
     end
