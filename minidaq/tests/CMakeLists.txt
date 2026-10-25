@@ -59,12 +59,16 @@ if(Python3_Interpreter_FOUND)
   # against the vendored CycloneDX 1.5 schema (skipped without jsonschema).
   add_test(NAME tools.sbom COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/make_sbom.py --validate ${PROJECT_SOURCE_DIR})
   set_tests_properties(tools.sbom PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77)
+  # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
+  add_test(NAME tools.listmode
+           COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)
+  set_tests_properties(tools.listmode PROPERTIES LABELS "unit" TIMEOUT 300)
   # A hardened build must produce hardened binaries: read them, do not trust the flags.
   if(MINIDAQ_HARDENING)
     add_test(NAME build.hardening
       COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_hardening.py
               $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl> $<TARGET_FILE:minidaq_latency>
-              $<TARGET_FILE:minidaq_jitter> $<TARGET_FILE:minidaq_unit_tests>)
+              $<TARGET_FILE:minidaq_jitter> $<TARGET_FILE:minidaq_listmode> $<TARGET_FILE:minidaq_unit_tests>)
     set_tests_properties(build.hardening PROPERTIES LABELS "unit")
   endif()
 endif()

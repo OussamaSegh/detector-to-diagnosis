@@ -4,11 +4,13 @@
 // Then run the coincidence sorter on the same singles and classify what it
 // found with the ground truth (Chapter 10). Optionally apply front-end dead
 // time and pile-up first, use a NEMA-style line source, and print one line of
-// count rates for scripts (Chapter 11).
+// count rates for scripts (Chapter 11). Optionally write the coincidences to
+// MDQ-L1 list-mode files with the sink the DAQ uses (Chapter 12).
 //
 //   minidaq_sim --activity 5e6 --seconds 0.5 --phantom 90 --truth singles.csv
 //   minidaq_sim --activity 20e6 --policy take_winner_of_goods --fov 120
 //   minidaq_sim --nema 1 --activity 100e6 --deadtime paralyzable --tau 200 --pileup 1
+//   minidaq_sim --source point --centre 40,-25,0 --phantom 0 --fov 120 --listmode out/
 #include <algorithm>
 #include <cstdio>
 #include <memory>
@@ -17,6 +19,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "minidaq/config/acquisition_config.hpp"
+#include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
@@ -38,7 +42,8 @@ constexpr const char* usage =
     "                   [--words FILE] [--truth FILE.csv]\n"
     "                   [--mode fixed|per_single] [--policy NAME] [--delay PS] [--sectors N] [--fov MM]\n"
     "                   [--deadtime none|non_paralyzable|paralyzable] [--tau NS] [--pileup 0|1]\n"
-    "                   [--deadtime-unit block|crystal] [--nema 0|1]\n";
+    "                   [--deadtime-unit block|crystal] [--nema 0|1]\n"
+    "                   [--centre X,Y,Z] [--listmode DIR] [--max-file-mb N] [--fsync none|close|interval]\n";
 
 double percent(std::uint64_t part, std::uint64_t whole) {
   return whole == 0 ? 0.0 : 100.0 * static_cast<double>(part) / static_cast<double>(whole);
@@ -48,7 +53,8 @@ double percent(std::uint64_t part, std::uint64_t whole) {
 // Runs the sorter on the simulated singles and classifies each coincidence it
 // found by looking its two singles up in the ground truth.
 minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
-                                        const std::vector<minidaq::sim::TruthSingle>& truth, double seconds) {
+                                        const std::vector<minidaq::sim::TruthSingle>& truth, double seconds,
+                                        std::vector<minidaq::Coincidence>& found) {
   using namespace minidaq;
   std::vector<Single> singles;
   singles.reserve(truth.size());
@@ -66,7 +72,6 @@ minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
     }
   }
   CoincidenceSorter sorter{cfg};
-  std::vector<Coincidence> found;
   sorter.push(singles, found);
   sorter.flush(found);
   std::uint64_t trues = 0;
@@ -126,6 +131,9 @@ int main(int argc, char** argv) {
   minidaq::SorterConfig sorter;
   DeadTimeConfig dead;
   bool nema = false;
+  bool centre_given = false;
+  physics::Vec3 centre{0.0, 0.0, 0.0};
+  minidaq::config::AcquisitionConfig listmode;  // its output section, and the metadata of the files
   for (int i = 1; i < argc; i += 2) {  // every option takes a value
     const std::string_view a{argv[i]};
     const std::string_view v = i + 1 < argc ? argv[i + 1] : "";
@@ -184,6 +192,22 @@ int main(int argc, char** argv) {
     } else if (a == "--nema") {
       ok = v == "0" || v == "1";
       nema = v == "1";
+    } else if (a == "--centre") {
+      // x,y,z in mm
+      const auto c1 = v.find(',');
+      const auto c2 = c1 == std::string_view::npos ? c1 : v.find(',', c1 + 1);
+      ok = c2 != std::string_view::npos && minidaq::parse_into(v.substr(0, c1), centre.x, -140.0, 140.0) &&
+           minidaq::parse_into(v.substr(c1 + 1, c2 - c1 - 1), centre.y, -140.0, 140.0) &&
+           minidaq::parse_into(v.substr(c2 + 1), centre.z, -100.0, 100.0);
+      centre_given = true;
+    } else if (a == "--listmode" && !v.empty()) {
+      listmode.output.type = "listmode";
+      listmode.output.directory = v;
+    } else if (a == "--max-file-mb") {
+      ok = minidaq::parse_into(v, listmode.output.max_file_mb, std::uint64_t{1}, std::uint64_t{1} << 20);
+    } else if (a == "--fsync") {
+      ok = v == "none" || v == "close" || v == "interval";
+      listmode.output.fsync = v;
     } else if (a == "--words" && !v.empty()) {
       words_path = v;
     } else if (a == "--truth" && !v.empty()) {
@@ -203,6 +227,9 @@ int main(int argc, char** argv) {
   }
   if (phantom_mm > 0.0) {
     cfg.phantom = {phantom_mm, 180.0};
+  }
+  if (centre_given) {
+    cfg.source.centre_mm = centre;
   }
   if (nema) {
     // NEMA NU 2-style count-rate phantom: a 203 mm diameter, 700 mm long
@@ -275,12 +302,42 @@ int main(int argc, char** argv) {
   std::printf("  multiples %10llu  %8.0f /s\n", static_cast<unsigned long long>(counts.multiples),
               static_cast<double>(counts.multiples) / seconds);
 
-  const minidaq::CountRates r = print_sorter_report(sorter, singles, seconds);
+  std::vector<minidaq::Coincidence> found;
+  const minidaq::CountRates r = print_sorter_report(sorter, singles, seconds, found);
   // One line for scripts (measurements/ch11/countrate.py): rates per second.
   std::printf("countrate activity=%.6g singles=%.6g trues=%.6g scatters=%.6g randoms=%.6g sf=%.4f necr1=%.6g necr2=%.6g\n",
               cfg.activity_bq, static_cast<double>(singles.size()) / seconds, r.trues, r.scatters, r.randoms,
               r.scatter_fraction(), r.necr(1.0), r.necr(2.0));
 
+  if (listmode.output.type == "listmode") {
+    // The metadata records the sorter that made these coincidences.
+    listmode.description = "minidaq_sim";
+    listmode.pipeline.coincidence_window_ps = sorter.window.count();
+    listmode.sorter.delay_ps = sorter.delay.count();
+    listmode.sorter.energy_low_kev = sorter.energy_low_kev;
+    listmode.sorter.energy_high_kev = sorter.energy_high_kev;
+    listmode.sorter.fov_radius_mm = sorter.fov_radius_mm;
+    listmode.sorter.min_sector_difference = sorter.min_sector_difference;
+    std::string error;
+    auto sink = minidaq::control::make_listmode_sink(listmode, error);
+    if (!sink) {
+      std::fprintf(stderr, "minidaq_sim: %s\n", error.c_str());
+      return 1;
+    }
+    for (std::size_t i = 0; i < found.size(); i += 4096) {
+      sink->write(std::span{found}.subspan(i, std::min<std::size_t>(4096, found.size() - i)));
+    }
+    if (auto e = sink->close()) {
+      std::fprintf(stderr, "minidaq_sim: %s\n", e->c_str());
+      return 1;
+    }
+    std::printf("list mode: %s\n", sink->describe().c_str());
+    for (const auto& c : sink->counters()) {
+      if (c.name == "coincidences" || c.name == "files" || c.name == "bytes") {
+        std::printf("  %s %llu\n", c.name.c_str(), static_cast<unsigned long long>(c.value));
+      }
+    }
+  }
   if (!words_path.empty()) {
     const File f{std::fopen(words_path.c_str(), "wb")};  // NOLINT(cppcoreguidelines-owning-memory): owned by File
     bool ok = f != nullptr;
