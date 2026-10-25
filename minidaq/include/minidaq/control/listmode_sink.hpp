@@ -25,6 +25,10 @@
 //  - Rotation. A file ends before it would exceed max_file_bytes; every file
 //    ends with an empty closing block that says whether the run continues in
 //    the next file or ends here.
+//  - The run's record goes with the data. close() stores the caller's record
+//    of the run (the service's counters, the link's losses) and the sink's
+//    own counters in <prefix>-<run_name>.run.json, so a file set says how
+//    it was acquired without the DAQ's logs.
 //  - Failure is a fault, not a silent loss. A failed write, fsync or rename
 //    (a full disk, an I/O error) makes fault() report it; the service stops
 //    the run. Blocks after a fault are counted as dropped.
@@ -85,7 +89,7 @@ struct ListModeSinkStats {
   std::uint64_t files = 0;             // files completed and renamed
   std::uint64_t buffer_waits = 0;      // times write() waited for a free buffer (backpressure)
   std::uint64_t buffer_wait_ns = 0;    // total time it waited
-  std::uint64_t fsyncs = 0;
+  std::uint64_t fsyncs = 0;           // of segments and of the run record
   std::uint64_t max_fsync_ns = 0;
   std::uint64_t max_write_ns = 0;      // the slowest write of one block
   std::uint64_t blocks_dropped = 0;    // after a fault
@@ -98,7 +102,7 @@ class ListModeSink final : public CoincidenceSinkPort {
   // thread. Errors (no such directory, the file exists) are returned.
   [[nodiscard]] static Expected<std::unique_ptr<ListModeSink>, std::string> open(ListModeSinkConfig cfg,
                                                                                  std::unique_ptr<FileOps> ops);
-  ~ListModeSink() override;  // close() if it was not called
+  ~ListModeSink() override;  // close("") if it was not called
   ListModeSink(const ListModeSink&) = delete;
   ListModeSink& operator=(const ListModeSink&) = delete;
   ListModeSink(ListModeSink&&) = delete;
@@ -106,8 +110,11 @@ class ListModeSink final : public CoincidenceSinkPort {
 
   void write(std::span<const Coincidence> batch) override;
   // Flushes the last block, ends the run's last file and waits for the I/O
-  // thread. Only once; later calls return the same result.
-  [[nodiscard]] std::optional<std::string> close() override;
+  // thread, then writes the run record, <prefix>-<run_name>.run.json: the
+  // files, the sink's counters and run_record (the caller's JSON, kept as
+  // text if it does not parse), made durable like a segment. Only once;
+  // later calls return the same result.
+  [[nodiscard]] std::optional<std::string> close(std::string_view run_record) override;
   [[nodiscard]] std::optional<std::string> fault() const override;
   [[nodiscard]] std::string describe() const override;
   [[nodiscard]] std::vector<DetectorCounter> counters() const override;
@@ -131,6 +138,7 @@ class ListModeSink final : public CoincidenceSinkPort {
   [[nodiscard]] std::optional<std::string> open_file();  // I/O thread, or open() before it starts
   void finish_file(std::uint32_t sequence, std::uint32_t flags);
   void write_bytes(std::span<const std::byte> data);
+  void write_run_record(std::string_view run_record);
   void set_fault(std::string message);
   [[nodiscard]] bool faulted() const noexcept { return faulted_.load(std::memory_order_acquire); }
   [[nodiscard]] std::string part_path(std::uint32_t segment) const;

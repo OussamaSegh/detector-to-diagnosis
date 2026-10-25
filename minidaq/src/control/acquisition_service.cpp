@@ -282,9 +282,10 @@ void AcquisitionService::check_run_locked() {
   }
   if (pipeline_ && pipeline_->finished()) {
     pipeline_->wait();  // all stages are done: this only joins the threads
-    // The last write() has returned: the sink can make the run durable. A
-    // run whose data did not reach stable storage ends in a fault.
-    if (auto e = sink_ ? sink_->close() : std::nullopt) {
+    // The last write() has returned: the sink can make the run durable, with
+    // the run's record (counters included) next to the data. A run whose data
+    // did not reach stable storage ends in a fault.
+    if (auto e = sink_ ? sink_->close(status_locked().dump()) : std::nullopt) {
       return enter_fault_locked("sink: " + *e, "service");
     }
     run_ended_ = std::chrono::steady_clock::now();
@@ -313,6 +314,10 @@ bool AcquisitionService::wait_for(AcqState s, std::chrono::milliseconds timeout)
 
 json AcquisitionService::status() const {
   const std::lock_guard lock{mu_};
+  return status_locked();
+}
+
+json AcquisitionService::status_locked() const {
   json j;
   j["state"] = std::string{to_string(machine_.state())};
   j["run_id"] = run_id_;

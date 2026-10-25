@@ -85,6 +85,7 @@ class AcquisitionService {
  private:
   void monitor(const std::stop_token& st);
   void check_run_locked();
+  [[nodiscard]] nlohmann::json status_locked() const;
   void enter_fault_locked(std::string reason, std::string_view who);
   void take_latency_snapshot_locked();
   CommandResult result(bool ok, std::string code = {}, std::string message = {}) const;

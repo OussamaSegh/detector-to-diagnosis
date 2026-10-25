@@ -23,7 +23,7 @@ FastSink::FastSink(std::unique_ptr<minidaq::control::FileOps> ops, std::string p
 
 FastSink::~FastSink() {
   if (!closed_) {
-    (void)close();
+    (void)close("");
   }
 }
 
@@ -66,7 +66,7 @@ void FastSink::write(std::span<const minidaq::Coincidence> batch) {
   }
 }
 
-std::optional<std::string> FastSink::close() {
+std::optional<std::string> FastSink::close(std::string_view /*run_record*/) {
   if (closed_) {
     return fault();
   }

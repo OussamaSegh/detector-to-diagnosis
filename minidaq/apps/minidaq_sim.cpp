@@ -19,6 +19,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 #include "minidaq/config/acquisition_config.hpp"
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/core/parse_number.hpp"
@@ -327,7 +329,18 @@ int main(int argc, char** argv) {
     for (std::size_t i = 0; i < found.size(); i += 4096) {
       sink->write(std::span{found}.subspan(i, std::min<std::size_t>(4096, found.size() - i)));
     }
-    if (auto e = sink->close()) {
+    // The run record: what was simulated and the truth behind the records,
+    // which no measured run has.
+    const nlohmann::json record = {
+        {"simulation",
+         {{"program", "minidaq_sim"},
+          {"activity_bq", cfg.activity_bq},
+          {"seconds", seconds},
+          {"seed", cfg.seed},
+          {"truth", {{"trues", counts.trues}, {"scatters", counts.scatters}, {"randoms", counts.randoms},
+                     {"multiples", counts.multiples}}},
+          {"sorter_rates_per_s", {{"trues", r.trues}, {"scatters", r.scatters}, {"randoms", r.randoms}}}}}};
+    if (auto e = sink->close(record.dump())) {
       std::fprintf(stderr, "minidaq_sim: %s\n", e->c_str());
       return 1;
     }

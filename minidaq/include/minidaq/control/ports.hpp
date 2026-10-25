@@ -16,6 +16,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "minidaq/config/acquisition_config.hpp"
@@ -53,9 +54,12 @@ class CoincidenceSinkPort {
   virtual ~CoincidenceSinkPort() = default;
   virtual void write(std::span<const Coincidence> batch) = 0;
   // Ends the run (Chapter 12): called once by the service after the last
-  // write(), when the pipeline has drained. A sink that stores data makes it
-  // durable here and returns an error if it could not.
-  [[nodiscard]] virtual std::optional<std::string> close() { return std::nullopt; }
+  // write(), when the pipeline has drained. run_record is the run's record as
+  // JSON text: the service's final status, with the configuration and the
+  // counters of the link and of every stage. A sink that stores data makes it
+  // durable here, keeps the record next to it, and returns an error if it
+  // could not do both.
+  [[nodiscard]] virtual std::optional<std::string> close(std::string_view /*run_record*/) { return std::nullopt; }
   [[nodiscard]] virtual std::optional<std::string> fault() const { return std::nullopt; }
   [[nodiscard]] virtual std::string describe() const = 0;
   // Sink-specific counters for the status report, like DetectorPort's. Thread-safe.

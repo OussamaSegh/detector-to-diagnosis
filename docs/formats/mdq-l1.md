@@ -146,7 +146,8 @@ members it does not know, and a writer MAY add more.
 |---|---|
 | `format` | `"MDQ-L1"` |
 | `software` | name and version of the writer, e.g. `"MiniDAQ 0.2.0"` |
-| `created_utc` | ISO 8601 time at which the run started |
+| `created_utc` | ISO 8601 time at which the run started, from the DAQ computer's clock |
+| `simulated` | `true` if the records come from a simulation, not from a detector |
 | `file` | `{"segment": N, "run_name": "..."}` |
 | `scanner` | model; `crystals_per_ring`, `crystal_rings`, `inner_radius_mm`, `axial_pitch_mm`; how crystal ids and angles are defined |
 | `records` | `time_unit` (`"ps"`), `energy_lsb_kev` (0.03125), `delayed_window_ps`, `coincidence_window_ps` |
@@ -171,6 +172,13 @@ identifies calibration sets).
   recovery tool cuts it after that block, appends a closing block with the end-of-run
   flag and renames it (`exercises/ch12/e5_recovery`). A hole in the segment numbers, two
   `.part` files, or a damaged complete file are not crash states and need a person.
+- After the run's last segment is complete, the writer stores the *run record*
+  `<prefix>-<run_name>.run.json` the same way (`.part`, fsync, rename, fsync of the
+  directory): `{"format": "MDQ-L1 run record", "run_name", "files": [...],
+  "sink_counters": {...}, "run": {...}}`, where `run` is what the acquisition reported at
+  the end of the run: the counters of the link (packets lost, reordered, stale), of every
+  pipeline stage and the configuration. A file set without a run record ended in a crash
+  or a fault; its counters are in the DAQ's log only.
 
 ## 8. Reading rules
 

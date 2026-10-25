@@ -53,6 +53,11 @@ configuration section `/output` (schema 1.3, `type: "listmode"`).
 - Files are written as `.part`, made durable and renamed; runs rotate at 1 GiB; every file
   ends with a closing block saying whether the run continues.
 - The fsync policy is configurable (`none`, `close`, `interval`); the default is `close`.
+- At the end of a run the sink stores the run record, `<prefix>-<run_name>.run.json`,
+  with the service's final counters (link losses included), next to the segments. The
+  header cannot hold them: it is written before the run's first record.
+- The metadata says whether the data are simulated (`simulated`), so that simulated
+  data cannot pass for measured data.
 - Converters, not the DAQ, produce the formats of reconstruction tools: `minidaq_listmode
   sino` writes sinograms with an Interfile header. HDF5 and PETSIRD converters can be
   added later without touching the acquisition path.

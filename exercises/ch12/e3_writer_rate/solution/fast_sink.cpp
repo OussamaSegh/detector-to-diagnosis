@@ -28,7 +28,7 @@ FastSink::FastSink(std::unique_ptr<minidaq::control::FileOps> ops, std::string p
 
 FastSink::~FastSink() {
   if (!closed_) {
-    (void)close();
+    (void)close("");
   }
   if (io_.joinable()) {
     io_.join();
@@ -144,7 +144,7 @@ void FastSink::io_loop() {
 }
 // [/snippet:io]
 
-std::optional<std::string> FastSink::close() {
+std::optional<std::string> FastSink::close(std::string_view /*run_record*/) {
   if (closed_) {
     return fault();
   }

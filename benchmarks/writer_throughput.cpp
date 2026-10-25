@@ -116,7 +116,7 @@ int run(int argc, char** argv) {
     }
   }
   const auto t_written = Clock::now();
-  const auto err = (*sink)->close();
+  const auto err = (*sink)->close("");
   const auto t_closed = Clock::now();
   if (err) {
     std::fprintf(stderr, "writer_throughput: %s\n", err->c_str());

@@ -119,7 +119,7 @@ TEST(FastSink, KeepsUpWithTheSorterAndLosesNothing) {
     in_write += dt;
     slow_calls += dt >= disk.sync_time ? 1 : 0;
   }
-  ASSERT_EQ(sink.close(), std::nullopt);
+  ASSERT_EQ(sink.close(""), std::nullopt);
   // What write() cost beyond encoding is time spent waiting for the disk.
   EXPECT_LT(in_write - baseline, 500ms) << "the writer thread must not pay for the disk's fsyncs";
   EXPECT_LE(slow_calls, 2) << "write() calls that took as long as an fsync (20 ms)";
@@ -140,7 +140,7 @@ TEST(FastSink, NoDataWaitsLongerThanMaxUnsyncedForAnFsync) {
     sink.write(std::span{in}.subspan(i, std::min<std::size_t>(4096, in.size() - i)));
     std::this_thread::sleep_for(10ms);
   }
-  ASSERT_EQ(sink.close(), std::nullopt);
+  ASSERT_EQ(sink.close(""), std::nullopt);
   const std::lock_guard lock{disk.mu};
   ASSERT_FALSE(disk.syncs.empty());
   EXPECT_EQ(disk.syncs.back().first, disk.data.size()) << "close() makes everything durable";
@@ -163,7 +163,7 @@ TEST(FastSink, AFullDiskIsAFaultAndDoesNotHang) {
   for (std::size_t i = 0; i < in.size(); i += 4096) {
     sink.write(std::span{in}.subspan(i, std::min<std::size_t>(4096, in.size() - i)));
   }
-  const auto r = sink.close();
+  const auto r = sink.close("");
   ASSERT_TRUE(r);
   EXPECT_NE(r->find("No space left on device"), std::string::npos) << *r;
   EXPECT_EQ(sink.fault(), r);

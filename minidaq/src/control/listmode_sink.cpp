@@ -90,7 +90,7 @@ Expected<std::unique_ptr<ListModeSink>, std::string> ListModeSink::open(ListMode
 
 ListModeSink::~ListModeSink() {
   if (!closed_) {
-    (void)close();
+    (void)close("");
   }
   if (fd_ >= 0) {
     (void)ops_->close(fd_);  // after a fault, or if open() failed half way: the .part file stays
@@ -190,16 +190,70 @@ void ListModeSink::submit(bool end_of_run) {
 }
 // [/snippet:submit]
 
-std::optional<std::string> ListModeSink::close() {
+std::optional<std::string> ListModeSink::close(std::string_view run_record) {
   if (closed_) {
     return close_result_;
   }
   closed_ = true;
   submit(true);
   io_.join();
+  if (!faulted()) {
+    write_run_record(run_record);  // the I/O thread has ended: this thread owns ops_ now
+  }
   close_result_ = fault();
   return close_result_;
 }
+
+// [snippet:run_record]
+void ListModeSink::write_run_record(std::string_view run_record) {
+  nlohmann::json j;
+  j["format"] = "MDQ-L1 run record";
+  j["run_name"] = cfg_.run_name;
+  j["files"] = nlohmann::json::array();
+  for (const auto& f : files()) {
+    j["files"].push_back(f.substr(f.find_last_of('/') + 1));
+  }
+  for (const auto& c : counters()) {
+    j["sink_counters"][c.name] = c.value;
+  }
+  auto parsed = nlohmann::json::parse(run_record, nullptr, /*allow_exceptions=*/false);
+  j["run"] = parsed.is_discarded() ? (run_record.empty() ? nlohmann::json(nullptr) : nlohmann::json(run_record))
+                                   : std::move(parsed);
+  const std::string text = j.dump(2) + "\n";
+  const std::string path = cfg_.directory + "/" + cfg_.prefix + "-" + cfg_.run_name + ".run.json";
+  const std::string part = path + ".part";
+  const auto fd = ops_->create(part);
+  if (!fd) {
+    return set_fault("create " + part + ": " + errno_message(fd.error()));
+  }
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): the text's bytes
+  std::span<const std::byte> data{reinterpret_cast<const std::byte*>(text.data()), text.size()};
+  while (!data.empty()) {
+    const auto r = ops_->write(*fd, data);
+    if (!r || *r == 0) {
+      (void)ops_->close(*fd);
+      return set_fault("write " + part + ": " + (r ? std::string{"wrote nothing"} : errno_message(r.error())));
+    }
+    data = data.subspan(*r);
+  }
+  int sync_error = 0;
+  if (cfg_.fsync != FsyncPolicy::none) {
+    sync_error = ops_->sync(*fd);
+    n_.fsyncs.fetch_add(1, std::memory_order_relaxed);
+  }
+  if (const int e = ops_->close(*fd); sync_error != 0 || e != 0) {
+    return set_fault((sync_error != 0 ? "fsync " : "close ") + part + ": " + errno_message(sync_error != 0 ? sync_error : e));
+  }
+  if (const int e = ops_->rename_no_replace(part, path); e != 0) {
+    return set_fault("rename " + part + ": " + errno_message(e));
+  }
+  if (cfg_.fsync != FsyncPolicy::none) {
+    if (const int e = ops_->sync_directory(cfg_.directory); e != 0) {
+      set_fault("fsync " + cfg_.directory + ": " + errno_message(e));
+    }
+  }
+}
+// [/snippet:run_record]
 
 // ---------------------------------------------------------------------------
 // I/O side: the sink's own thread.
@@ -389,6 +443,12 @@ std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(const config::Acquisitio
       {"format", "MDQ-L1"},
       {"software", std::string{"MiniDAQ "} + MINIDAQ_VERSION_STRING},
       {"created_utc", now},
+      // Simulated data must never pass for measured data (Chapter 8). The
+      // synthetic source is a simulation; a UDP source is taken to be a
+      // detector, so a bench that feeds the link from a simulator says so in
+      // the configuration's description (assumption: confirm with team how
+      // NeuroLF marks test and phantom data).
+      {"simulated", c.source.type != "udp"},
       {"scanner",
        {{"model", "MiniDAQ reference geometry (assumption: confirm with team)"},
         {"crystals_per_ring", ScannerGeometry::crystals_per_ring},

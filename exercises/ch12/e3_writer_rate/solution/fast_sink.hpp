@@ -11,6 +11,7 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
 
@@ -42,7 +43,7 @@ class FastSink final : public minidaq::control::CoincidenceSinkPort {
   FastSink& operator=(FastSink&&) = delete;
 
   void write(std::span<const minidaq::Coincidence> batch) override;
-  [[nodiscard]] std::optional<std::string> close() override;
+  [[nodiscard]] std::optional<std::string> close(std::string_view run_record) override;
   [[nodiscard]] std::optional<std::string> fault() const override;
   [[nodiscard]] std::string describe() const override { return "exercise 12.3 sink: " + path_; }
 

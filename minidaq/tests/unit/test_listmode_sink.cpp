@@ -170,7 +170,7 @@ TEST(ListModeSink, WritesEveryCoincidenceAndClosesTheRun) {
   ASSERT_TRUE(s) << s.error();
   const auto in = stream(10'000);
   write_in_batches(**s, in);
-  EXPECT_EQ((*s)->close(), std::nullopt);
+  EXPECT_EQ((*s)->close(""), std::nullopt);
   ASSERT_EQ((*s)->files(), std::vector<std::string>{"/d/t-run1-0000.mdql"});
   EXPECT_EQ(disk.files.count("/d/t-run1-0000.mdql.part"), 0U);
   const auto back = read_file(disk.files.at("/d/t-run1-0000.mdql"));
@@ -185,7 +185,7 @@ TEST(ListModeSink, WritesEveryCoincidenceAndClosesTheRun) {
   const auto meta = nlohmann::json::parse(back.metadata);
   EXPECT_EQ(meta["format"], "MDQ-L1");
   EXPECT_EQ(meta["file"]["segment"], 0);
-  EXPECT_EQ((*s)->close(), std::nullopt) << "a second close changes nothing";
+  EXPECT_EQ((*s)->close(""), std::nullopt) << "a second close changes nothing";
 }
 
 TEST(ListModeSink, RotatesFilesAndEndsEachWithAClosingBlock) {
@@ -197,7 +197,7 @@ TEST(ListModeSink, RotatesFilesAndEndsEachWithAClosingBlock) {
   ASSERT_TRUE(s) << s.error();
   const auto in = stream(10'000);
   write_in_batches(**s, in, 333);
-  ASSERT_EQ((*s)->close(), std::nullopt);
+  ASSERT_EQ((*s)->close(""), std::nullopt);
   const auto files = (*s)->files();
   ASSERT_GT(files.size(), 5U);
   std::vector<Coincidence> all;
@@ -225,7 +225,7 @@ TEST(ListModeSink, MakesEachFileDurableBeforeItsFinalName) {
     auto s = ListModeSink::open(cfg, std::make_unique<FakeOps>(disk));
     ASSERT_TRUE(s) << s.error();
     write_in_batches(**s, stream(5'000));
-    ASSERT_EQ((*s)->close(), std::nullopt);
+    ASSERT_EQ((*s)->close(""), std::nullopt);
     const auto& log = disk.log;
     for (const auto& f : (*s)->files()) {
       const auto part = f + ".part";
@@ -243,9 +243,10 @@ TEST(ListModeSink, MakesEachFileDurableBeforeItsFinalName) {
                                                             log.end(), "syncdir /d") -
                                                   log.begin()));
     }
-    const auto syncs = static_cast<std::uint64_t>(
-        std::count_if(log.begin(), log.end(), [](const std::string& e) { return e.rfind("sync /", 0) == 0; }));
-    EXPECT_EQ((*s)->stats().fsyncs, syncs);
+    const auto syncs = static_cast<std::uint64_t>(std::count_if(log.begin(), log.end(), [](const std::string& e) {
+      return e.rfind("sync /", 0) == 0 && e.ends_with(".mdql.part");
+    }));
+    EXPECT_EQ((*s)->stats().fsyncs, syncs + (policy == FsyncPolicy::none ? 0 : 1)) << "and one for the run record";
     const auto blocks = (*s)->stats().blocks;
     const auto files = (*s)->files().size();
     if (policy == FsyncPolicy::close) {
@@ -267,7 +268,7 @@ TEST(ListModeSink, ShortWritesAreCompleted) {
   ASSERT_TRUE(s) << s.error();
   const auto in = stream(2'000);
   write_in_batches(**s, in);
-  ASSERT_EQ((*s)->close(), std::nullopt);
+  ASSERT_EQ((*s)->close(""), std::nullopt);
   EXPECT_EQ(read_file(disk.files.at("/d/t-run1-0000.mdql")).events, in);
 }
 
@@ -279,7 +280,7 @@ TEST(ListModeSink, AFullDiskIsAFaultAndTheFileStaysPart) {
   ASSERT_TRUE(s) << s.error();
   const auto in = stream(10'000);
   write_in_batches(**s, in);  // must not hang: after the fault, buffers still come back
-  const auto r = (*s)->close();
+  const auto r = (*s)->close("");
   ASSERT_TRUE(r);
   EXPECT_NE(r->find("No space left on device"), std::string::npos) << *r;
   EXPECT_EQ((*s)->fault(), r);
@@ -305,7 +306,7 @@ TEST(ListModeSink, ASlowDiskSlowsTheWriterDownInsteadOfLosingData) {
   ASSERT_TRUE(s) << s.error();
   const auto in = stream(3'000);
   write_in_batches(**s, in, 500);
-  ASSERT_EQ((*s)->close(), std::nullopt);
+  ASSERT_EQ((*s)->close(""), std::nullopt);
   const auto st = (*s)->stats();
   EXPECT_GT(st.buffer_waits, 0U);
   EXPECT_GT(st.buffer_wait_ns, 10'000'000U) << "about 2 ms per block, 47 blocks";
@@ -335,7 +336,7 @@ TEST(ListModeSink, ABlockIsWrittenAtTheLatestAfterTheMaximumDelay) {
     on_disk = disk.files.at("/d/t-run1-0000.mdql.part");
   }
   EXPECT_EQ(read_file(on_disk).events, in) << "before close, the records are in the file";
-  ASSERT_EQ((*s)->close(), std::nullopt);
+  ASSERT_EQ((*s)->close(""), std::nullopt);
 }
 
 TEST(ListModeSink, RejectsBadConfigurationsAndExistingFiles) {
@@ -376,7 +377,13 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
   EXPECT_EQ(written, st["stages"][4]["in"].get<std::uint64_t>()) << "the sink got everything the writer did";
   std::uint64_t read = 0;
   int files = 0;
+  nlohmann::json record;
   for (const auto& e : std::filesystem::directory_iterator{dir}) {
+    if (e.path().string().ends_with(".run.json")) {
+      std::ifstream in{e.path()};
+      record = nlohmann::json::parse(in);
+      continue;
+    }
     ASSERT_EQ(e.path().extension(), ".mdql") << e.path() << ": no .part file after a clean run";
     std::ifstream in{e.path(), std::ios::binary};
     const std::vector<char> raw{std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
@@ -386,9 +393,53 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
     ++files;
     const auto meta = nlohmann::json::parse(back.metadata);
     EXPECT_EQ(meta["configuration"]["output"]["type"], "listmode");
+    EXPECT_EQ(meta["simulated"], true) << "the synthetic source is a simulation";
   }
+  // The run record: the service's counters, next to the data (SRS-OUT-010).
+  ASSERT_TRUE(record.is_object()) << "no run record";
+  EXPECT_EQ(record["files"].size(), static_cast<std::size_t>(files));
+  EXPECT_EQ(record["sink_counters"]["coincidences"].get<std::uint64_t>(), written);
+  EXPECT_TRUE(record["run"]["detector_counters"].is_object()) << record.dump();
+  EXPECT_EQ(record["run"]["stages"][4]["in"], st["stages"][4]["in"]);
   EXPECT_GT(written, 0U);
   EXPECT_EQ(read, written);
   EXPECT_EQ(static_cast<std::uint64_t>(files), st["sink_counters"]["files"].get<std::uint64_t>());
   std::filesystem::remove_all(dir);
+}
+
+TEST(ListModeSink, StoresTheRunRecordNextToTheFiles) {
+  // REQ: SRS-OUT-010
+  Disk disk;
+  auto cfg = small_config();
+  cfg.max_file_bytes = 20'000;
+  auto s = ListModeSink::open(cfg, std::make_unique<FakeOps>(disk));
+  ASSERT_TRUE(s) << s.error();
+  write_in_batches(**s, stream(3'000));
+  ASSERT_EQ((*s)->close(R"({"detector_counters": {"packets_lost": 3}})"), std::nullopt);
+  const std::string path = "/d/t-run1.run.json";
+  ASSERT_EQ(disk.files.count(path), 1U);
+  const auto& raw = disk.files.at(path);
+  const auto j = nlohmann::json::parse(std::string{reinterpret_cast<const char*>(raw.data()), raw.size()});
+  EXPECT_EQ(j["format"], "MDQ-L1 run record");
+  EXPECT_EQ(j["run_name"], "run1");
+  EXPECT_EQ(j["run"]["detector_counters"]["packets_lost"], 3) << "the caller's record, as JSON";
+  EXPECT_EQ(j["sink_counters"]["coincidences"], 3000);
+  ASSERT_EQ(j["files"].size(), (*s)->files().size());
+  EXPECT_EQ(j["files"][0], "t-run1-0000.mdql") << "names relative to the directory";
+  // Written after the last segment is complete, and durable like one.
+  const auto& log = disk.log;
+  const auto renamed = index_of(log, "rename " + path + ".part " + path);
+  ASSERT_LT(renamed, log.size());
+  EXPECT_LT(index_of(log, "rename " + (*s)->files().back() + ".part " + (*s)->files().back()),
+            index_of(log, "create " + path + ".part"));
+  EXPECT_LT(index_of(log, "sync " + path + ".part"), renamed);
+  EXPECT_EQ(log.back(), "syncdir /d");
+
+  Disk disk2;
+  auto s2 = ListModeSink::open(small_config(), std::make_unique<FakeOps>(disk2));
+  ASSERT_TRUE(s2) << s2.error();
+  ASSERT_EQ((*s2)->close("not json"), std::nullopt);
+  const auto& raw2 = disk2.files.at(path);
+  const auto j2 = nlohmann::json::parse(std::string{reinterpret_cast<const char*>(raw2.data()), raw2.size()});
+  EXPECT_EQ(j2["run"], "not json") << "kept as text, not dropped";
 }

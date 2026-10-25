@@ -296,7 +296,7 @@ TEST(AcquisitionService, ASinkThatCannotCloseEndsTheRunInAFault) {
   // counts as complete; a failure at the end is a fault, not a clean stop.
   struct FailingClose final : CoincidenceSinkPort {
     void write(std::span<const Coincidence>) override {}
-    std::optional<std::string> close() override { return "fsync /data: Input/output error"; }
+    std::optional<std::string> close(std::string_view /*run_record*/) override { return "fsync /data: Input/output error"; }
     [[nodiscard]] std::string describe() const override { return "failing close"; }
   };
   Script script;
