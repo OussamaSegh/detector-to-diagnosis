@@ -13,6 +13,7 @@ add_library(minidaq_core
   src/sim/dead_time.cpp
   src/processing/energy_filter.cpp
   src/processing/coincidence_sorter.cpp
+  src/processing/sinogram.cpp
   src/processing/stream_merger.cpp
   src/rt/realtime.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
