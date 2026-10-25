@@ -240,17 +240,35 @@ Chapter 19 (system testing): commits 8284e0e, 6919df2, c3152c7, bddbd57.
 - SRS v8 (SRS-CTL-040 to 044, SRS-SYS-001 to 005), SDP v6. Exercises 19.1 to 19.5.
 - `measurements/ch19/`: soak (PASS, with a recorded latency deviation), coverage (88.6% lines),
   system test report of c3152c7 (34 of 34 pass).
+- Tag `ch19` (local) at ecc1cb3. Local CI green on bddbd57; GitHub CI on ecc1cb3 was red only
+  because of MDQ-PR-020 (runner rmem_max), fixed in 27a2b53 (GitHub CI green). The tag message
+  says so.
+
+Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (CR-0006),
+1e069f5 (MDQ-PR-021).
+
+- `hardened` preset now has `-g` and `MINIDAQ_REPRODUCIBLE` (cmake/Reproducible.cmake, the two
+  `-ffile-prefix-map` maps; source map first, so GCC (last wins) and Clang (longest) agree).
+- `tools/release_bundle.py` (make, verify, programs), `tools/repro_check.sh` (CI job
+  reproducible-build), `tools/check_tools.py` and the tool list
+  `docs/regulatory/verification/tools.json` (23 tools; also fails for non-executable scripts),
+  `tools/gate_selftest.py` (15 faults; workflow `gates.yml`), `tools/perf_ab.sh` (workflow
+  `perf.yml`, A/B on one runner). SDP v7, SOUP list v5, design file clause 4.1.6.
+- `measurements/ch20/`: gate self-test 15/15 on 27a2b53 (12 min), local reproducibility
+  (identical; server build ID fbac0e5e...), package contents (24.2 MB, 23.1 MB of it debug).
+- Trap: never write a literal requirement tag (REQ + colon) in tools/*.py; the trace matrix
+  scans tools/ too.
 
 ### In progress (as of the last update)
 
-Chapter 19, still to do: `ci/run_all.sh` on bddbd57 (running in the worktree), GitHub CI green
-on bddbd57, then tag `ch19` locally and refresh the bundle.
+Chapter 20, still to do: `ci/run_all.sh` on f63f5bf (running in the worktree), GitHub CI green
+on 1e069f5 incl. reproducible-build and perf-ab; fill «REPRO_GITHUB», «AA_LOCAL», «AA_GITHUB»
+in ch20 (A/A: `tools/perf_ab.sh B B OUT 5 1` on a quiet machine, and workflow_dispatch of
+`perf` with base = head); write `measurements/ch20/README.md`; tag `ch20`; refresh the bundle.
 
 ### Left to do, in order
 
-1. **Chapter 20**, CI for regulated software: pipeline gates, reproducible builds, release
-   bundles with evidence, and test tool confidence. Address the perf gate that never runs
-   (`perf.yml`).
+1. Finish Chapter 20 (above).
 2. **Chapter 21**, code review, debugging and incident analysis. Deepen it in place to full
    depth: gdb, core dumps, debugging a live system without stopping acquisition,
    record-and-replay, review checklists, and root cause written up as a problem report.
@@ -279,7 +297,7 @@ on bddbd57, then tag `ch19` locally and refresh the bundle.
 
 ### Waiting on the user
 
-- Push the tags ch10 to ch18 (and ch19 once it is made), book-v0.2.0 and book-v0.3.0 from the
+- Push the tags ch10 to ch19 (and ch20 once it is made), book-v0.2.0 and book-v0.3.0 from the
   zip or bundle. Cloud sessions cannot push tags.
 - Enable private vulnerability reporting on the GitHub repository (Chapter 17, SECURITY.md).
 - Answer whether to enable CodeQL code scanning (asked, no answer yet).
