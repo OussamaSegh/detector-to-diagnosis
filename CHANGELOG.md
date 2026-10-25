@@ -114,6 +114,14 @@ the patch version.
 - `clang-tidy` asked for the energy gate in De Morgan form, which would let NaN energies
   through; the NaN-safe form stays, with a documented suppression.
 - A 0.6 pt overfull table in the Chapter 5 solutions.
+- Part II review: wrong cross-references in Chapters 10 to 12 (randoms correction is
+  Chapter 27, the crystal position table Chapter 1, the latency histogram Chapter 4, the
+  stated assumptions Chapter 5's performance budget); Chapter 10 explains why the sorter's
+  energy window is narrower than Chapter 8's counter.
+- Six test files used `std::find`, `std::min`, `std::equal` or `std::fill` without
+  `<algorithm>`, which broke the Clang builds on GitHub's runners.
+- The README promised a `python/` package that arrives in later Parts; it now lists the
+  measurements directory and the command-line tools.
 
 ## [0.1.0] - 2026-10-24
 

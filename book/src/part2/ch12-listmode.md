@@ -741,7 +741,7 @@ protected, audited and erased. This is the *patient-data boundary*. Raw data out
 copied to a physicist's workstation, attached to a bug report or used to test a new
 reconstruction without disclosing health data. The DICOM images inside it carry the patient's
 name, ID and birth date, and every copy of them is personal health data under the GDPR and
-similar laws (Chapter 17).
+similar laws, which the security controls of Chapter 17 must protect.
 
 The boundary has two consequences for the DAQ. First, the raw data must not leak identity by
 the back door: no patient name in a file name, a comment field or a free-text description

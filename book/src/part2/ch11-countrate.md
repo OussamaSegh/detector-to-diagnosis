@@ -587,8 +587,8 @@ Exercise 11.5 adds it with a single line.
 
 A budget like this is a design document. It says which stage to watch when the scanner
 changes: a faster front end moves the peak up and brings the link and the sorter closer.
-Write down its assumptions (machine, build, data, dead time), as Chapter 3's performance
-report did, and repeat the measurement when any of them changes.
+Write down its assumptions (machine, build, data, dead time), as Chapter 5's performance
+budget does, and repeat the measurement when any of them changes.
 
 ::: box-mistakes
 - **Measuring capacity with synthetic data.** Uniform random energies put a different share

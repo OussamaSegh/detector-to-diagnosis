@@ -7,7 +7,7 @@ Medical Device Software*. It contains:
 |---|---|
 | `minidaq/` | MiniDAQ, a simulated PET data acquisition chain in C++20, grown one milestone per chapter |
 | `exercises/chNN/` | Every coding exercise: `starter/` (TODOs, failing tests), `solution/`, shared `tests/` |
-| `python/` | `minidaq_analysis`, the Python analysis and reconstruction package (from Part II) |
+| `measurements/chNN/` | The raw results behind every number the book quotes, and the scripts that regenerate them |
 | `docs/` | Architecture, decision records and the regulatory file (from Part III) |
 | `benchmarks/`, `fuzz/`, `tools/`, `ci/` | Benchmarks, fuzzers, generators and CI scripts |
 | `book/` | The book and solutions manual sources (Pandoc Markdown) and their build script |
@@ -43,6 +43,21 @@ Offline builds: configure with `-DMINIDAQ_USE_SYSTEM_DEPS=ON` after
 Every chapter's milestone is a git tag: `git checkout ch05` gives you the repository at the
 end of Chapter 5, which is the starting point of Chapter 6. `ch00` is the empty starting
 point. Book releases are tagged `book-vX.Y.Z`.
+
+## Tools
+
+After a build, the tools are in `build/<preset>/minidaq/apps/`. Each prints its usage with
+`--help`.
+
+| Tool | Chapter | What it does |
+|---|---|---|
+| `minidaq_server`, `minidaq_ctl` | 6 | The acquisition service behind the TCP control API, and its command-line client |
+| `minidaq_jitter`, `minidaq_latency` | 4, 11 | Wake-up jitter; per-stage service time, end-to-end latency and the first bottleneck |
+| `minidaq_sim` | 8, 10 to 12 | The detector simulator, the sorter classified by ground truth, dead time, NEMA-style count rates, list-mode output |
+| `minidaq_send` | 9 | A simulated readout link: MDQ-R1 packets over UDP, with optional loss and reordering |
+| `minidaq_listmode` | 12 | Inspect, verify and histogram MDQ-L1 list-mode files |
+
+The list-mode format is specified in [`docs/formats/mdq-l1.md`](docs/formats/mdq-l1.md).
 
 ## Exercises
 

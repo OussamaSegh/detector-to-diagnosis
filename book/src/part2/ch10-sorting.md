@@ -82,7 +82,9 @@ The rules are:
   coincidence time resolution of a few hundred picoseconds a window of a few nanoseconds is
   typical.)
 - An **energy window**, applied to each single before it takes part: 435 to 585 keV in
-  MiniDAQ's default (assumption: confirm with team). A scattered photon has lost energy, so
+  MiniDAQ's default (assumption: confirm with team), 76 and 74 keV either side of the
+  photopeak. Chapter 8's counter used 435 to 650 keV; the tighter upper edge also rejects
+  singles in which two photons have piled up (Chapter 11). A scattered photon has lost energy, so
   the window removes many scatters, and with them singles that would only make randoms.
 - A **geometry gate** on the pair: two crystals in the same module, or in neighboring
   sectors, cannot see a real annihilation inside the field of view, and a line of response
@@ -94,7 +96,7 @@ The rules are:
 The output is a stream of prompt coincidences (those found in the normal window, a mix of
 trues, scatters and randoms) and delayed coincidences (randoms only). The reconstruction
 uses the prompts as data and the delayed counts, or a model of them, to subtract the
-randoms (Chapter 26 does this for real).
+randoms (Chapter 27 does this for real).
 
 ### Why the stream must be in time order
 
@@ -260,7 +262,7 @@ pair 192 positions apart, exactly opposite, passes through the axis.
 
 MiniDAQ evaluates the cut without a square root and without a division: it compares
 (p × q)² with r² |q − p|², and takes the crystal positions from the compile-time table of
-Chapter 2 rather than computing cosines:
+Chapter 1 rather than computing cosines:
 
 ```{.cpp include="minidaq/src/processing/coincidence_sorter.cpp" snippet="good"}
 ```
@@ -610,7 +612,7 @@ batch of singles into the sorter and copies what it found into output batches:
 
 Two details deserve a comment. First, a sorter holds singles back until their windows
 complete, so a coincidence can come out one batch after the singles that made it. The
-latency histogram of Chapter 5 measures from the time a batch entered the pipeline, and a
+latency histogram of Chapter 4 measures from the time a batch entered the pipeline, and a
 coincidence must carry the origin of the batch its first single came from, not of the batch
 that happened to complete it. The pair stage keeps a small ring of recent batches, keyed by
 the time of their last single, and looks the origin up (`OriginTrack`). Second, the
