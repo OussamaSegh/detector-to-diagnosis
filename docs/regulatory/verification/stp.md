@@ -41,6 +41,9 @@ found in seconds instead of minutes (MDQ-PR-017 is the example).
 - **Reference machine:** the book's 4-vCPU virtual machine, Ubuntu 24.04, GCC 13 and Clang 18.
   The system tests use loopback only and pick free ports (`--port 0`), so they run in parallel
   with each other and with other tests, and need no privileges.
+- **Network stack:** `net.core.rmem_max` at least 4 MiB, as the acquisition PC is installed
+  (ADR 0009). The readout tests check the receive buffer the server was granted and fail before
+  they send if it is smaller; CI sets it on its runners (MDQ-PR-020).
 - **Isolation:** each test case has its own temporary directory, its own runtime directory for
   the server's start-up token (`MINIDAQ_RUNTIME_DIR`) and its own server process.
 - **Timing:** every wait has a deadline and polls for a condition (coding standard rule 5.5).

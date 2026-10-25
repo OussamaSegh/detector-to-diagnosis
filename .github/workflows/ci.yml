@@ -26,12 +26,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev
+      - name: Tune the network stack as the acquisition PC is installed (ADR 0009)
+        # The system test plan's environment (section 3): Ubuntu's default rmem_max is too small
+        # for a burst of readout packets, and the kernel would drop them (MDQ-PR-020).
+        run: sudo sysctl -w net.core.rmem_max=4194304
       - name: Configure
         run: cmake --preset ${{ matrix.preset }}
       - name: Build
         run: cmake --build --preset ${{ matrix.preset }}
       - name: Test
-        run: ctest --preset ${{ matrix.preset }} -LE starter
+        # The output of a failed test is the only record of why it failed (MDQ-PR-020).
+        run: ctest --preset ${{ matrix.preset }} -LE starter --output-on-failure
 
   static-analysis:
     runs-on: ubuntu-24.04

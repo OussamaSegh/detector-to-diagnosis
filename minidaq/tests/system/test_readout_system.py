@@ -15,6 +15,11 @@ import unittest
 from systest import Ctl, Server, SystemTest, app, eventually, write_json
 
 UDP_PORT = re.compile(r"UDP readout on [\d.]+:(\d+)")
+RECEIVE_BUFFER = re.compile(r"receive buffer (\d+) B")
+# The receive buffer the acquisition PC is installed with (ADR 0009, Chapter 9). With less, the
+# kernel drops datagrams of a burst before the server reads them, and those are losses that no
+# sender injected: the tests would measure the machine, not MiniDAQ (MDQ-PR-020).
+MIN_RECEIVE_BUFFER = 4 << 20
 
 
 def udp_config(directory, prefix, **udp):
@@ -51,7 +56,13 @@ class Readout(SystemTest):
             ctl = Ctl(server)
             ctl.ok("configure", str(cfg))
             ctl.ok("start")
-            port = int(UDP_PORT.search(ctl.status()["detector"]).group(1))
+            detector = ctl.status()["detector"]
+            port = int(UDP_PORT.search(detector).group(1))
+            granted = int(RECEIVE_BUFFER.search(detector).group(1))
+            if granted < MIN_RECEIVE_BUFFER:
+                self.fail(f"the UDP receive buffer is {granted} B, the readout tests need at least "
+                          f"{MIN_RECEIVE_BUFFER} B: set net.core.rmem_max as on the acquisition PC "
+                          "(system test plan, section 3)")
             sent = send(port, *send_args)
             expected = sent["packets"] - sent["lost"] + sent["duplicated"]
             eventually(lambda: ctl.status()["detector_counters"]["datagrams"] >= expected, 30,
