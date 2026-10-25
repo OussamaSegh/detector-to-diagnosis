@@ -55,6 +55,13 @@ if(Python3_Interpreter_FOUND)
   # Chapter 13: the regulatory file is complete, its links resolve, its map is current.
   add_test(NAME docs.regulatory COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_regulatory.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.regulatory PROPERTIES LABELS "unit")
+  # Chapter 14: requirements in testable form, every requirement traced to its verification.
+  add_test(NAME docs.srs COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/req_lint.py
+                                 ${PROJECT_SOURCE_DIR}/docs/regulatory/srs.md)
+  add_test(NAME docs.trace COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/trace.py ${PROJECT_SOURCE_DIR} --check)
+  add_test(NAME docs.soup COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_soup.py ${PROJECT_SOURCE_DIR})
+  add_test(NAME docs.anomalies COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/anomalies.py ${PROJECT_SOURCE_DIR} --check)
+  set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

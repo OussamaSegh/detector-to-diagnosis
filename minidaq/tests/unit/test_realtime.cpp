@@ -29,6 +29,7 @@ write.cpu = 3     # the disk writer gets its own core
 }
 
 TEST(RtProfile, RejectsBadInputWithLineNumbers) {
+  // REQ: SRS-RT-001
   auto e = rt::parse_profile("lock_memory = yes\n");
   ASSERT_FALSE(e);
   EXPECT_EQ(e.error().line, 1);
@@ -61,6 +62,7 @@ TEST(Realtime, PinToCpuZero) {
 }
 
 TEST(Realtime, InvalidCpuIsAnError) {
+  // REQ: SRS-RT-002
   EXPECT_FALSE(rt::pin_current_thread(-1));
   EXPECT_FALSE(rt::pin_current_thread(1 << 20));
 }

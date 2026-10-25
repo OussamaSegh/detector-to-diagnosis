@@ -83,6 +83,7 @@ TEST(Config, UnknownKeysAreErrorsWithSuggestions) {
 }
 
 TEST(Config, TypesAndRangesAreCheckedAndAllErrorsReported) {
+  // REQ: SRS-CFG-004
   const auto e = errors_of(R"({
     "schema_version": "1.0",
     "source": {"rate_hz": "fast", "pair_fraction": 1.5, "type": "tcp", "seed": -1},

@@ -1,0 +1,95 @@
+{
+  "comment": "MiniDAQ's problem reports (Chapter 14). tools/anomalies.py checks every report and generates known-anomalies.md from the open ones. Dates are when the book found the problem.",
+  "reports": [
+    {
+      "id": "MDQ-PR-001",
+      "title": "A number outside the range of double crashed the configuration reader",
+      "found": "2026-10-24, Chapter 7, fuzz_config",
+      "item": "config",
+      "status": "closed",
+      "description": "json::out_of_range (406) escaped the reader, which caught only json::parse_error; '6e688' ended the process.",
+      "evaluation": {"safety_relevant": true, "rationale": "A crash during configure is a lost scan if it happens at the scanner; no wrong value was ever accepted."},
+      "resolution": {"change": "The reader catches json::exception.", "verification": "Config.NumberOverflowIsAnErrorNotACrash; fuzz_config"}
+    },
+    {
+      "id": "MDQ-PR-002",
+      "title": "A sequence jump of 2^31 was counted as two billion lost packets",
+      "found": "2026-10-24, Chapter 9, fuzz_packet",
+      "item": "readout",
+      "status": "closed",
+      "description": "Serial-number arithmetic is undefined for a distance of exactly 2^31; the tracker took the jump as a gap.",
+      "evaluation": {"safety_relevant": true, "rationale": "Loss counters are how an operator judges a scan's completeness; a false count of two billion lost packets hides the real loss."},
+      "resolution": {"change": "A jump beyond the maximum gap is a restart of the numbering (a resynchronization), not a loss.", "verification": "SequenceTracker test for SRS-RDO-006; fuzz_packet"}
+    },
+    {
+      "id": "MDQ-PR-003",
+      "title": "A new run could not open its UDP port while the previous run's detector held it",
+      "found": "2026-10-24, Chapter 9 measurements",
+      "item": "service",
+      "status": "closed",
+      "description": "The service created the new run's ports before it released the previous run's, so a second run failed with 'address in use'.",
+      "evaluation": {"safety_relevant": true, "rationale": "The second scan of a session could not start: a delay, and a repeated injection if the tracer decays meanwhile."},
+      "resolution": {"change": "The service releases the previous run's pipeline and ports before it creates new ones.", "verification": "UdpDetector test for SRS-RDO-012"}
+    },
+    {
+      "id": "MDQ-PR-004",
+      "title": "take_all_goods counted a pair twice with per-single windows",
+      "found": "2026-10-24, Chapter 10 development",
+      "item": "sorter",
+      "status": "closed",
+      "description": "With a window per single, the pair (a, b) was formed from a's window and again from b's.",
+      "evaluation": {"safety_relevant": true, "rationale": "Duplicated prompts bias the counts and the image quantitatively without any visible sign."},
+      "resolution": {"change": "Only (opener, later single) pairs are resolved in each window.", "verification": "CoincidenceSorter tests for SRS-SRT-002, SRS-SRT-003 and SRS-SRT-009"}
+    },
+    {
+      "id": "MDQ-PR-005",
+      "title": "SOUP: nlohmann/json 3.11.3 may parse an integer as a float when errno holds EINTR",
+      "found": "2026-10-25, Chapter 14 SOUP review",
+      "item": "config",
+      "status": "open",
+      "description": "Fixed upstream in 3.12.0 (#4506). The control server parses requests after poll(), which can return EINTR.",
+      "evaluation": {"safety_relevant": false, "rationale": "The configuration reader requires integers, so such a value is rejected with a config_error and the operator sends the request again; no wrong setting is accepted. A request id may be echoed as a float."},
+      "decision": "Release with it; upgrade to 3.12.0 as a planned SOUP change (Chapter 16)."
+    },
+    {
+      "id": "MDQ-PR-006",
+      "title": "A port fault is noticed up to 20 ms late",
+      "found": "2026-10-24, Chapter 6 design",
+      "item": "service",
+      "status": "open",
+      "description": "The service's monitor polls the ports every 20 ms, so a run continues for up to 20 ms after a detector or sink fault.",
+      "evaluation": {"safety_relevant": true, "rationale": "Data acquired in those 20 ms after a fault is part of a run that ends in a fault anyway; the fault is reported and the run is not used. No data is presented as complete."},
+      "decision": "Release with it; Chapter 15 decides whether a hazard needs a faster reaction."
+    },
+    {
+      "id": "MDQ-PR-007",
+      "title": "The sorter holds its last 104 ns of singles until more data arrives",
+      "found": "2026-10-24, Chapter 10 design",
+      "item": "sorter",
+      "status": "open",
+      "description": "A single can only be judged when a later single shows that its window is closed. A source that falls silent leaves up to the window plus the delay of singles in the sorter until the end of the run.",
+      "evaluation": {"safety_relevant": false, "rationale": "The singles are processed at the end of the run, so no coincidence is lost; only their latency grows while the source is silent."},
+      "decision": "Release with it; time markers from the readout would flush the sorter (Chapter 23)."
+    },
+    {
+      "id": "MDQ-PR-008",
+      "title": "The control API has no authentication or encryption",
+      "found": "2026-10-24, Chapter 6 design",
+      "item": "protocol",
+      "status": "open",
+      "description": "Any local process that can connect to 127.0.0.1:7700 can configure, start and stop acquisitions.",
+      "evaluation": {"safety_relevant": true, "rationale": "A local attacker or a misdirected script can stop a scan or change its settings; the audit trail records it but does not prevent it."},
+      "decision": "Do not release for use beyond a test bench before Chapter 17's controls are in place."
+    },
+    {
+      "id": "MDQ-PR-009",
+      "title": "Simulation code is linked into the shipped server",
+      "found": "2026-10-25, Chapter 14 software item classification",
+      "item": "sim",
+      "status": "open",
+      "description": "The synthetic source and the detector simulator are part of minidaq_core, so minidaq_server contains them and a configuration can select them.",
+      "evaluation": {"safety_relevant": true, "rationale": "A clinical acquisition configured with a simulated source would produce plausible but invented data. The run record states the source type and metadata carries 'simulated', so the data is identifiable."},
+      "decision": "Release with it for 0.3.0 (MiniDAQ is a teaching project); a product build excludes the simulator or refuses it outside service mode."
+    }
+  ]
+}
