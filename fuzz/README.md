@@ -11,6 +11,7 @@ the process (Chapter 7).
 | `fuzz_protocol` | `LineFramer` and `handle_request` | every response is one line of JSON with `api` and a boolean `ok` |
 | `fuzz_packet` | `readout::parse_packet` and `SequenceTracker` (Chapter 9) | accepted packets re-encode to the same bytes; every packet offered is delivered or stale; delivered sequence numbers increase by at most the maximum gap between resyncs; delivered words match |
 | `fuzz_sorter` | `CoincidenceSorter` and `StreamMerger` (Chapter 10) | output and counters independent of how the input is split; every single in exactly one window (fixed mode); prompts within the window, delayed pairs within [delay, delay + window], every pair good; merging boards gives back the input times in order, nothing late |
+| `fuzz_listmode` | `listmode::Reader`, `parse_block`, `decode_record` (Chapter 12) | every byte after the file header is in a returned block or counted as skipped; a returned block's records, written again by `BlockWriter` and read back, are the same records |
 
 ## Build and run
 

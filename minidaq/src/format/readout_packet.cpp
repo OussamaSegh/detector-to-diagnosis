@@ -4,29 +4,9 @@
 #include <bit>
 #include <stdexcept>
 
+#include "minidaq/core/byte_io.hpp"
+
 namespace minidaq::readout {
-
-namespace {
-
-// Little-endian field access on bytes, independent of the host's byte order
-// and of alignment.
-template <typename T>
-T load_le(std::span<const std::byte> b, std::size_t at) noexcept {
-  T v = 0;
-  for (std::size_t i = 0; i < sizeof(T); ++i) {
-    v = static_cast<T>(v | (static_cast<T>(std::to_integer<std::uint8_t>(b[at + i])) << (8 * i)));
-  }
-  return v;
-}
-
-template <typename T>
-void store_le(std::span<std::byte> b, std::size_t at, T v) noexcept {
-  for (std::size_t i = 0; i < sizeof(T); ++i) {
-    b[at + i] = static_cast<std::byte>((v >> (8 * i)) & 0xFF);
-  }
-}
-
-}  // namespace
 
 std::string_view to_string(PacketError e) noexcept {
   switch (e) {

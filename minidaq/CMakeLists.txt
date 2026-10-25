@@ -3,6 +3,7 @@ add_library(minidaq_core
   src/format/raw_single.cpp
   src/format/packed_single.cpp
   src/format/readout_packet.cpp
+  src/format/list_mode.cpp
   src/core/crc32.cpp
   src/pipeline/acquisition_pipeline.cpp
   src/sim/synthetic_source.cpp
