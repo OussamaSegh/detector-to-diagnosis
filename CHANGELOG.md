@@ -8,6 +8,10 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-25
+
+Part II, PET physics and data acquisition (Chapters 8 to 12), complete and reviewed.
+
 ### Added
 - Chapter 8: `minidaq/sim/physics.hpp` (Compton kinematics, Klein-Nishina shape, water
   attenuation from the NIST table, ray geometry); `DetectorSimulator` (Poisson decays in a
