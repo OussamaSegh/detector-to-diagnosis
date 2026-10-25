@@ -1,0 +1,19 @@
+// From hazard to harm (Chapter 15), after the picture in ISO 14971's annex on risk concepts,
+// in this book's words. The example is MiniDAQ's hazard H-01.
+digraph chain {
+  rankdir=TB; nodesep=0.4; ranksep=0.3;
+  node [fontname="Helvetica", fontsize=10, shape=box, style=rounded];
+  edge [fontname="Helvetica", fontsize=9];
+
+  hazard [label="Hazard\nData lost without notice"];
+  seq [shape=note, style="", label="Sequence of events\npackets lost on the link;\nthe run ends normally"];
+  situation [label="Hazardous situation\nincomplete data is\nreconstructed as complete"];
+  harm [label="Harm\nquantitation error,\ndelayed or wrong diagnosis", style="rounded,filled", fillcolor="#f4e0dc"];
+  risk [shape=ellipse, style="", label="Risk = severity of the harm\nand its probability: P1 x P2"];
+
+  hazard -> seq [arrowhead=none];
+  seq -> situation [label=" P1"];
+  situation -> harm [label=" P2"];
+  {rank=same; harm; risk}
+  harm -> risk [style=dashed, arrowhead=none];
+}

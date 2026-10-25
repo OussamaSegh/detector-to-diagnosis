@@ -25,6 +25,16 @@ the patch version.
   pins by `tools/check_soup.py` (test `docs.soup`); problem reports and the generated
   known-anomalies list (`tools/anomalies.py`, test `docs.anomalies`); the software development
   plan `docs/regulatory/sdp.md`; exercises 14.1 to 14.6 (all in Python).
+- Chapter 15: ISO 14971. The software part of a risk management file in
+  `docs/regulatory/risk/`: the risk management plan, the criteria and nine hazards with
+  twenty risk controls (`hazards.json`), an FMEA of the coincidence sorter and a fault tree
+  of silent data loss; `tools/check_risk.py` (test `docs.risk`) checks them against the SRS,
+  the tests and the software item classification. The acquisition service reports an
+  integrity verdict (`assess_integrity`) in its status and in every run record, and records
+  the loss counters of an incomplete run in the audit trail. Seven new requirements
+  (SRS-CTL-030 to 032, SRS-OUT-011, SRS-OUT-012, SRS-FMT-013, SRS-SRT-012), ten new or newly
+  tagged tests, and a risk-control column in the trace matrix; exercises 15.1 to 15.5 (15.2 in
+  C++, the others in Python).
 
 ### Changed
 - Requirement tags added to `Config.TypesAndRangesAreCheckedAndAllErrorsReported`
@@ -32,6 +42,11 @@ the patch version.
   `Realtime.InvalidCpuIsAnError` (SRS-RT-002).
 
 ### Fixed
+- The sorter's FMEA found that nothing required how `take_winner_of_goods` breaks a tie
+  between pairs of equal summed energy; the existing rule (the earlier pair) is now
+  SRS-SRT-012 with a test.
+- The decoder's invalid words were counted only as "filtered", like singles outside the energy
+  window; the integrity verdict counts them as a loss, and SRS-FMT-013 requires the counter.
 - `FastSorter.FastEnough` (Exercise 10.4) measured the two sorters in separate blocks, so a
   slow spell of a shared machine could fail it; it now takes the best of seven interleaved runs.
 

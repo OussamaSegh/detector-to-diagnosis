@@ -33,6 +33,7 @@
         {"id": "RC-02", "type": "protective", "description": "When a run ends with incomplete data, the audit trail records which counters show the loss.", "requirements": ["SRS-CTL-031"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.ALossMakesTheRunIncomplete"}},
         {"id": "RC-03", "type": "protective", "description": "Every loss is counted where it happens: on the link, in the decoder, in the source, in the sorter.", "requirements": ["SRS-RDO-007", "SRS-FMT-013", "SRS-PIPE-011", "SRS-SRT-009"], "effectiveness": {"method": "test", "evidence": "SequenceTracker.AccountsForEveryPacketThroughAFaultyLink"}},
         {"id": "RC-04", "type": "inherent", "description": "The list-mode sink slows the writer down instead of dropping data when the disk is slow.", "requirements": ["SRS-OUT-006"], "effectiveness": {"method": "test", "evidence": "ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData"}},
+        {"id": "RC-20", "type": "inherent", "description": "A stop processes all data already read, closing every open window, before the stages finish: the one loss that no counter could see does not happen (fault-tree-data-loss.dot, E5).", "requirements": ["SRS-PIPE-012"], "effectiveness": {"method": "test", "evidence": "Pipeline.StopRequestDrainsInFlightData"}},
         {"id": "RC-05", "type": "information", "description": "The intended-use statement tells every consumer of the data to check the run record's integrity verdict before reconstruction.", "requirements": [], "effectiveness": {"method": "inspection", "evidence": "docs/regulatory/intended-use.md, section Data"}}
       ],
       "probability_after": "P2",
@@ -53,7 +54,7 @@
         {"id": "RC-07", "type": "protective", "description": "Singles out of time order are counted and dropped, and the service ends the run in a fault.", "requirements": ["SRS-CTL-012", "SRS-SRT-005", "SRS-MRG-004"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.OutOfOrderSinglesAreAFault"}}
       ],
       "probability_after": "P2",
-      "residual": "A time error that keeps the order (a constant offset of one board) is not detected by these controls; the timing calibration of Chapter 26 controls it.",
+      "residual": "A time error that keeps the order (a constant offset of one board) is not detected by these controls; the timing calibration of Chapter 26 controls it. RC-07 trades wrong coincidences for an interrupted scan, which H-05 analyzes.",
       "status": "closed"
     },
     {
@@ -95,7 +96,7 @@
       "id": "H-05",
       "preliminary": "HZ-2",
       "hazard": "Acquisition interrupted",
-      "sequence": "A control client crashes or sends an overlong request, or the disk is briefly slow, and the run stops.",
+      "sequence": "A control client crashes or sends an overlong request, the disk is briefly slow, or the service ends the run in a fault to protect the data (RC-07, RC-10), and the run stops.",
       "hazardous_situation": "The scan is incomplete and must be repeated.",
       "harm": "Additional radiation dose from a second injection, or a delayed diagnosis.",
       "severity": "S2",

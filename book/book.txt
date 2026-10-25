@@ -17,3 +17,4 @@ src/part2/ch12-listmode.md
 src/part3/part3.md
 src/part3/ch13-regulatory.md
 src/part3/ch14-iec62304.md
+src/part3/ch15-iso14971.md

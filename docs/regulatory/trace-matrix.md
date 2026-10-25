@@ -78,7 +78,7 @@ tests. Do not edit by hand: the test `docs.trace` fails when this file is out of
 | SRS-PIPE-004 | pipeline | T | `test_channel.cpp` ChannelStress.CloseAfterLastPublishIsNeverMissed |  |
 | SRS-PIPE-010 | pipeline | T | `test_pipeline.cpp` Pipeline.MatchesSingleThreadedReference |  |
 | SRS-PIPE-011 | pipeline | T | `test_pipeline.cpp` Pipeline.DropPolicyCountsEveryLostWord | RC-03 |
-| SRS-PIPE-012 | pipeline | T | `test_pipeline.cpp` Pipeline.StopRequestDrainsInFlightData |  |
+| SRS-PIPE-012 | pipeline | T | `test_pipeline.cpp` Pipeline.StopRequestDrainsInFlightData | RC-20 |
 | SRS-PROC-001 | processing | T | `test_energy_filter.cpp` EnergyFilter.AllKernelsMatchTheReferenceForEverySize |  |
 | SRS-RDO-001 | format | T | `test_readout_packet.cpp` ReadoutPacket.RoundTrip |  |
 | SRS-RDO-002 | format | T | `test_readout_packet.cpp` ReadoutPacket.RejectsEveryMalformedField |  |

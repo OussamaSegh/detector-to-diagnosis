@@ -1,8 +1,8 @@
 // Fault tree of hazard H-01 (Chapter 15): the top event, the gates and the basic events.
-// Basic events E1 to E5 lose data, E6 to E8 hide the loss; risk controls RC-01 to RC-05
-// (hazards.json) act on them. Exercise 15.4 works out the minimal cut sets.
+// Basic events E1 to E5 lose data, E6 to E8 hide the loss; risk controls RC-01 to RC-05 and
+// RC-20 (hazards.json) act on them. Exercise 15.4 works out the minimal cut sets.
 digraph fault_tree {
-  rankdir=TB; nodesep=0.25; ranksep=0.4;
+  rankdir=LR; nodesep=0.15; ranksep=0.4;
   node [fontname="Helvetica", fontsize=10];
   edge [arrowhead=none];
 

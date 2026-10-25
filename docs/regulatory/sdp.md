@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 14). Status: draft for review.
+Version 2 (MiniDAQ 0.3.0-dev, Chapter 15). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -58,8 +58,11 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   no test, if a test names an unknown requirement, or if the committed matrix is out of
   date. The trace from requirement to design is the item column of the SRS and the item's
   files in `software-items.json`.
-- Requirements that implement risk controls will name their hazard (Chapter 15). Until
-  then, the classification's preliminary hazards are in `software-items.json`.
+- Requirements that implement risk controls are named by the controls of the
+  [hazard analysis](risk/hazards.json), and the trace matrix lists the controls of each
+  requirement. The [risk management plan](risk/risk-management-plan.md) describes the risk
+  management activities; `tools/check_risk.py` (test `docs.risk`) checks the risk file
+  against the SRS, the tests and the classification's preliminary hazards.
 - A change to a requirement is a change like any other (section 5): the pull request changes
   the SRS, the tests and the code together.
 
@@ -107,6 +110,7 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
 | Performance requirements | each release, on the reference machine | SRS-PERF-020 and SRS-PERF-021 met |
 | Code review | every change | approved by a reviewer who did not write it |
+| Risk management review | each release | the risk file is complete, every hazard is closed or its open status is justified for the release's intended use, the overall residual risk is acceptable (risk management plan, section 4) |
 
 Unit acceptance criteria: a unit (a class or a function with its header) is accepted when its
 tests pass under every preset, it has no static analysis finding, its interface is documented
@@ -134,9 +138,11 @@ release record shows:
 1. the version and the commit, with the tag `book-vX.Y.Z`;
 2. the results of every verification of section 6 for that commit;
 3. the known anomalies, generated from the problem reports, each evaluated;
-4. the SOUP list's known-anomaly review dated for this minor version (test `docs.soup`);
-5. how the release was built: the preset and the commands, so the build can be repeated;
-6. where the release is archived: the source zip with its git history, the book files and the
+4. the open hazards of the risk file, each with the justification for releasing with it for
+   this release's intended use, and the evaluation of the overall residual risk;
+5. the SOUP list's known-anomaly review dated for this minor version (test `docs.soup`);
+6. how the release was built: the preset and the commands, so the build can be repeated;
+7. where the release is archived: the source zip with its git history, the book files and the
    SBOM, kept for the lifetime of the product plus the retention period of the quality system
    (assumption: confirm with team).
 
@@ -165,3 +171,4 @@ of Chapter 13.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 14). |
+| 2 | Risk management (Chapter 15): requirements traced to risk controls, the test `docs.risk`, and the risk file's review before release. |
