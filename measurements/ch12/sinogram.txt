@@ -1,0 +1,13 @@
+Chapter 12: list mode to sinograms, end to end, for the chapter's figure.
+
+== point: minidaq_sim --source point --centre 40,-25,0 --phantom 0 --activity 2e6 --seconds 1 --seed 12 --fov 120
+  countrate activity=2e+06 singles=976093 trues=121018 scatters=0 randoms=354 sf=0.0000 necr1=120665 necr2=120314
+  list mode: 1 file(s), 1958320 bytes
+  binned 121372 prompts, 468 delayeds; outside the FOV 0, above the ring difference 0, outside the TOF range 0, no angle 0, invalid 0
+  wrote s.hdr: 1 TOF x 95 slices x 192 views x 227 radial bins (16561920 bytes per sinogram)
+
+== cylinder: minidaq_sim --source cylinder --phantom 100 --activity 20e6 --seconds 2 --seed 12 --fov 120
+  countrate activity=2e+07 singles=8.6367e+06 trues=146891 scatters=63999.5 randoms=24121.5 sf=0.3035 necr1=91812.2 necr2=83265.8
+  list mode: 1 file(s), 8365856 bytes
+  binned 470024 prompts, 51821 delayeds; outside the FOV 0, above the ring difference 0, outside the TOF range 0, no angle 0, invalid 0
+  wrote s.hdr: 1 TOF x 95 slices x 192 views x 227 radial bins (16561920 bytes per sinogram)

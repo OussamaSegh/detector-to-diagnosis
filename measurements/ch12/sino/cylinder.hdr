@@ -1,0 +1,34 @@
+!INTERFILE :=
+; MiniDAQ SSRB sinograms (Chapter 12). The keys follow the Interfile style but are
+; MiniDAQ's own: they say how to read the data, not how STIR or CASToR would.
+originating system := MiniDAQ
+comment := from minidaq-20261025T041504983Z-0000.mdql
+prompts data file := s.prompts.u32
+delayeds data file := s.delayeds.u32
+number format := unsigned integer
+number of bytes per pixel := 4
+imagedata byte order := LITTLEENDIAN
+number of dimensions := 4
+matrix axes order := tof, slice, view, radial (radial fastest)
+matrix size [radial] := 227
+matrix size [view] := 192
+matrix size [slice] := 95
+matrix size [tof] := 1
+first radial bin r := -113
+radial positions := not arc-corrected, s(r) = -R sin(pi r / N) mm
+view angles := view v holds the normals at angles 2v * pi / N and (2v + 1) * pi / N
+crystals per ring N := 384
+ring radius R (mm) := 150
+number of rings := 48
+slice spacing (mm) := 1.225
+rebinning := SSRB, slice = ring_a + ring_b
+maximum ring difference := 47
+fov radius (mm) := 120
+tof bin width (ps) := 0
+tof variable := tau = t_a - t_b, bins centered on 0
+prompts binned := 470024
+delayeds binned := 51821
+outside fov := 0
+above ring difference := 0
+tof outside := 0
+!END OF INTERFILE :=
