@@ -1,0 +1,44 @@
+# python3 measurements/ch11/windows.py build/release/minidaq/apps
+# Intel(R) Xeon(R) Processor @ 2.30GHz, seed 11
+Chapter 11 window study: how the time and energy windows change the NECR.
+Rates per second by truth; NECR = T^2 / (T + S + kR). T n: trues counted (relative standard
+deviation about 1/sqrt(T n)). All runs use the same seed, so neighboring rows share their decays.
+
+== 30 MBq, time window (energy 435 to 585 keV)
+  window   trues/s    scat/s    rand/s      T n     SF  NECR k=1  NECR k=2
+  0.5 ns     21120     11546       582    10560  0.353     13416     13185
+    1 ns     21546     11896      1164    10773  0.356     13415     12978
+  1.5 ns     21522     11868      1724    10761  0.355     13191     12574
+    2 ns     21490     11842      2284    10745  0.355     12967     12185
+    3 ns     21420     11798      3480    10710  0.355     12502     11420
+    4 ns     21352     11770      4658    10676  0.355     12067     10743
+    6 ns     21208     11708      7126    10604  0.356     11233      9536
+    8 ns     21078     11634      9514    10539  0.356     10522      8587
+
+== 30 MBq, lower energy threshold (window 4 ns, upper 585 keV)
+   lower   trues/s    scat/s    rand/s      T n     SF  NECR k=1  NECR k=2
+ 350 keV     22142     26670      7240    11071  0.546      8747      7746
+ 400 keV     21482     17574      5630    10741  0.450     10327      9172
+ 435 keV     21352     11770      4658    10676  0.355     12067     10743
+ 460 keV     20330      7910      3932    10165  0.280     12847     11448
+ 480 keV     16586      4584      2972     8293  0.216     11395     10146
+
+== 100 MBq, time window (energy 435 to 585 keV)
+  window   trues/s    scat/s    rand/s      T n     SF  NECR k=1  NECR k=2
+  0.5 ns     38767     24880      4000     5815  0.391     22216     20976
+    1 ns     39433     25733      8013     5915  0.395     21249     19152
+  1.5 ns     39240     25687     12447     5886  0.396     19901     17143
+    2 ns     39067     25573     16447     5860  0.396     18822     15648
+    3 ns     38773     25353     24760     5816  0.395     16913     13228
+    4 ns     38433     25087     33207     5765  0.395     15271     11368
+    6 ns     37927     24560     48933     5689  0.393     12910      8970
+    8 ns     37227     24107     64467     5584  0.393     11016      7284
+
+== 100 MBq, lower energy threshold (window 4 ns, upper 585 keV)
+   lower   trues/s    scat/s    rand/s      T n     SF  NECR k=1  NECR k=2
+ 350 keV     40640     55087     52947     6096  0.576     11109      8192
+ 400 keV     39040     36780     40333     5856  0.485     13122      9740
+ 435 keV     38433     25087     33207     5765  0.395     15271     11368
+ 460 keV     36273     17380     27500     5441  0.324     16213     12110
+ 480 keV     29553     10653     20173     4433  0.265     14465     10842
+

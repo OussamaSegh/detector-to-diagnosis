@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: MIT
 """Chapter 11: which MiniDAQ stage saturates first as the activity rises.
 
-For each activity, record 4 M decays of the NEMA-style source with minidaq_sim
-(no dead time, so the singles rate grows linearly with the activity), then
-replay the recording through the pipeline in real time with minidaq_latency
-for 3 s (twice) and report how busy each stage was, what the source dropped,
-and the end-to-end latency.
+For each activity, record up to 4 M decays (at most 50 ms) of the NEMA-style
+source with minidaq_sim (no dead time, so the singles rate grows linearly with
+the activity), then replay the recording through the pipeline in real time
+with minidaq_latency for 3 s (twice) and report how busy each stage was, what
+the source dropped, and the end-to-end latency.
 
     python3 measurements/ch11/bottleneck.py build/release/minidaq/apps > measurements/ch11/bottleneck.txt
 

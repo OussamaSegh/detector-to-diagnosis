@@ -15,7 +15,7 @@ exactly t + tau is recorded. Either convention is defensible; this one matches
 added to the event the block is recording. A 511 keV event with a 200 keV pile-up becomes
 711 keV and leaves a 435 to 585 keV window: at high rates pile-up removes trues from the
 energy window and moves scatters into it (`measurements/ch11/countrate.txt`: with a 1 us
-block dead time the scatter fraction grows from 0.34 to 0.39 at 100 MBq).
+block dead time and pile-up the scatter fraction at 100 MBq is 0.40, against 0.33 without).
 
 **Two true rates.** n exp(-n tau) rises to 1 / (e tau) at n = 1 / tau and falls again. Every
 lower recorded rate is produced by one true rate on each side of the maximum. An operator

@@ -19,7 +19,7 @@ import subprocess
 import sys
 
 APPS = sys.argv[1] if len(sys.argv) > 1 else "build/release/minidaq/apps"
-ACTIVITIES_MBQ = [5, 10, 20, 50, 100, 200, 400, 700, 1000]
+ACTIVITIES_MBQ = [5, 10, 20, 30, 50, 70, 100, 140, 200, 300, 400, 700, 1000]
 # Front-end models: (label, extra minidaq_sim arguments). The 1 us block dead
 # time is an assumption for illustration (confirm with team for the NeuroLF).
 MODELS = [
@@ -29,11 +29,11 @@ MODELS = [
     ("paralyzable 1 us per block, pile-up", ["--deadtime", "paralyzable", "--tau", "1000", "--pileup", "1"]),
 ]
 SORTER = ["--ehigh", "585", "--sectors", "1", "--fov", "120"]
-DECAYS = 4e6  # per point: about 5 s of simulation each on the book's VM
+DECAYS = 1.5e7  # per point: about 20 s of simulation each on the book's VM
 
 
 def seconds_for(activity_bq):
-    return min(0.5, max(0.004, DECAYS / activity_bq))
+    return min(2.0, max(0.004, DECAYS / activity_bq))
 
 
 def run(activity_bq, extra):

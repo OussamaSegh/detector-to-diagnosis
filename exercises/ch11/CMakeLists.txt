@@ -1,1 +1,5 @@
+minidaq_exercise(e1_count_rate)
 minidaq_exercise(e2_dead_time)
+minidaq_python_exercise(e3_bottleneck)
+minidaq_python_exercise(e4_dead_time_correction)
+minidaq_python_exercise(e5_throughput_budget)
