@@ -1,0 +1,23 @@
+Chapter 12: kill -9 the list-mode writer at random moments; what survives?
+trial killed after files part    records      MB                part tail  result
+    0       1.05 s     4    1   18169856   290.9          truncated block  ok
+    1       1.38 s     5    1   23572480   377.3           block boundary  ok
+    2       1.40 s    10    1   45281280   724.9           block boundary  ok
+    3       0.46 s     3    1   14749696   236.2          truncated block  ok
+    4       0.22 s     1    1    6475776   103.7           block boundary  ok
+    5       0.87 s     5    1   24440832   391.2           block boundary  ok
+    6       0.69 s     5    1   23310336   373.1           block boundary  ok
+    7       1.66 s    12    1   53428224   855.3           block boundary  ok
+    8       1.44 s     9    1   39546880   633.1           block boundary  ok
+    9       1.28 s     9    1   41631744   666.5          truncated block  ok
+   10       1.20 s     9    1   38891520   622.6           block boundary  ok
+   11       1.39 s    10    1   42426368   679.2           block boundary  ok
+   12       0.46 s     3    1   14929920   239.0           block boundary  ok
+   13       0.99 s     7    1   33050624   529.1          truncated block  ok
+   14       0.49 s     4    1   16965632   271.6          truncated block  ok
+   15       1.83 s    15    1   66785280  1069.1          truncated block  ok
+   16       0.31 s     2    1    9756672   156.2           block boundary  ok
+   17       1.67 s    13    1   57290752   917.1           block boundary  ok
+   18       0.33 s     2    1   10412032   166.7           block boundary  ok
+   19       1.44 s    12    1   53493760   856.3           block boundary  ok
+20 of 20 trials recovered every record the writer had written, in order
