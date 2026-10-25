@@ -33,9 +33,10 @@ add_executable(minidaq_unit_tests
   unit/test_acquisition_service.cpp
   unit/test_run_integrity.cpp
   unit/test_control_protocol.cpp
+  unit/test_security.cpp
   unit/test_audit_log.cpp
   unit/test_udp_detector.cpp)
-target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::warnings GTest::gtest_main)
+target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 gtest_discover_tests(minidaq_unit_tests PROPERTIES LABELS "unit")
@@ -71,10 +72,12 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.design_file COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/design_file.py ${PROJECT_SOURCE_DIR} --check)
   add_test(NAME docs.changes COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_changes.py ${PROJECT_SOURCE_DIR})
   add_test(NAME docs.capa COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_capa.py ${PROJECT_SOURCE_DIR})
+  # Chapter 17: the threat model.
+  add_test(NAME docs.threats COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_threats.py ${PROJECT_SOURCE_DIR})
   # CAPA-0001: every sleep in a test states why (coding standard rule 5.5).
   add_test(NAME tests.waits COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_waits.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk docs.design_file docs.changes docs.capa
-                       tests.waits PROPERTIES LABELS "unit")
+                       docs.threats tests.waits PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)
@@ -82,6 +85,9 @@ if(Python3_Interpreter_FOUND)
   # against the vendored CycloneDX 1.5 schema (skipped without jsonschema).
   add_test(NAME tools.sbom COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/make_sbom.py --validate ${PROJECT_SOURCE_DIR})
   set_tests_properties(tools.sbom PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77)
+  # Chapter 17: the triage rules for the findings of the vulnerability scan.
+  add_test(NAME tools.vuln_triage COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_vuln_triage.py)
+  set_tests_properties(tools.vuln_triage PROPERTIES LABELS "unit")
   # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
   add_test(NAME tools.listmode
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)

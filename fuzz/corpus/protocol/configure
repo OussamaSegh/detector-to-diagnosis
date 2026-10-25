@@ -1,3 +1,4 @@
-{"api": "1.0", "id": 3, "cmd": "configure", "config": {"schema_version": "1.0", "source": {"rate_hz": 1e6}}}
-{"api":"1.0","id":4,"cmd":"start"}
+{"api": "2.0", "id": 10, "cmd": "auth", "token": "mdq_operator"}
+{"api": "2.0", "id": 3, "cmd": "configure", "config": {"schema_version": "1.0", "source": {"rate_hz": 1e6}}}
+{"api":"2.0","id":4,"cmd":"start"}
 {"id":5,"cmd":"reset"}

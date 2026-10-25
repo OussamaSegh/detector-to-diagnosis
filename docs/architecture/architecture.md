@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 6 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 7 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -37,7 +37,8 @@ and monitors the acquisition over a control API. Version 0.3.0-dev covers:
   [known anomalies](../regulatory/known-anomalies.md).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
-pipeline does not use it yet), authentication of control clients (Chapter 17).
+pipeline does not use it yet). The control API's security is described in the
+[threat model](../regulatory/security/threat-model.md) (Chapter 17).
 
 ## 2. Context and external interfaces
 
@@ -45,7 +46,7 @@ pipeline does not use it yet), authentication of control clients (Chapter 17).
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
-| Operator, scripts, test harness | Control protocol 1.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)) | in/out | `minidaq_ctl` is the reference client |
+| Operator, scripts, test harness | Control protocol 2.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
 | Configuration files | JSON, schema version 1.3 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets | both | Real-time settings from an `rt_profile` (Chapter 4) |
@@ -77,7 +78,7 @@ enforces it on every `#include` as part of the unit tests (`architecture.layers`
 |---|---|---|---|
 | core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
 | application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
-| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
+| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer`, `TokenStore`, `TlsStream` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
 | apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send`, `minidaq_listmode` | Wiring: choose adapters, parse command lines, handle signals | everything |
 
 The application layer depends on interfaces (ports) that it owns; adapters implement them.
@@ -111,11 +112,12 @@ assume risk controls outside the software (assumption: confirm with team).
 | config | `config/` | server | B | Validates the acquisition settings |
 | service | service, state machine, ports | server | B | Owns the run and its faults |
 | protocol | control protocol and server | server | B | Accepts commands from the network |
+| access | tokens, roles, start-up token, TLS (`control/access`, `control/tls`) | server, ctl | B | Decides who may control the acquisition |
 | readout | UDP detector, default adapters | server | B | Receives the readout link and counts its losses |
 | output | list-mode sink, file operations | server | B | Makes the data durable with its run record |
 | audit | JSON Lines audit log | server | B | Records actions (A alone); B for the same reason as metrics |
 | server | `minidaq_server` | server | B | Wiring and signals |
-| ctl | `minidaq_ctl` | its own process | A | The server validates every request it sends |
+| ctl | `minidaq_ctl` | its own process | B | Holds an operator token and verifies the server before sending it (A until CR-0004) |
 | tools | `minidaq_jitter`, `minidaq_latency`, `minidaq_send`, `minidaq_sim`, `minidaq_listmode` | not shipped | none | Development and verification tools (Chapter 20) |
 
 The software system is class B: its highest item.
@@ -209,7 +211,8 @@ the maximum block delay.
 
 | Item | Version | Used by | Why | Requirements on it |
 |---|---|---|---|---|
-| nlohmann/json | 3.11.3, SHA-256 pinned | application, adapters, apps (not core) | Configuration and control protocol ([ADR 0004](../adr/0004-json-library.md)) | Correct parsing of untrusted input; errors catchable; not on the hot path |
+| nlohmann/json | 3.12.0, SHA-256 pinned | application, adapters, apps (not core) | Configuration and control protocol ([ADR 0004](../adr/0004-json-library.md)) | Correct parsing of untrusted input; errors catchable; not on the hot path |
+| OpenSSL | 3.0 or later, the platform's (3.0.13 on the build machine) | adapters (`access`, `tls`), linked privately into `minidaq_control` | TLS 1.3, SHA-256, random tokens ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | Correct TLS 1.3 and certificate verification; a cryptographically secure random generator; security updates from the platform |
 | GoogleTest | 1.15.2 | tests only | Unit and exercise tests | Not shipped |
 | Google Benchmark | 1.9.1 | benchmarks only | Performance measurements | Not shipped |
 | C++ standard library, Linux C library and kernel interfaces | as provided by the platform | everything | Threads, atomics, sockets, real-time scheduling | Platform qualification (Chapter 25) |
@@ -228,9 +231,10 @@ The full SOUP list, with requirements on each item and the anomaly review, is
   process, and every item there has the class of the highest one, B (section 4). Items that
   would be class A alone, such as `metrics` and `audit`, are developed and verified as B.
 - `minidaq_ctl` runs in its own process and reaches the server only through the protocol,
-  whose input the server validates. This is the segregation that lets `ctl` be class A; the
-  argument rests on the operating system's process isolation and on the protocol's input
-  validation (SRS-CTL-020 to SRS-CTL-022), both verified.
+  whose input the server validates. Until Chapter 17 this segregation let `ctl` be class A.
+  Since CR-0004 it holds an operator token and must verify the server before sending it, so a
+  defect in it can disclose a token (HZ-4): process isolation no longer limits what its
+  failure can cause, and `ctl` is class B.
 - A class C item, if the risk analysis ever finds one, would need either the whole process
   at class C or a segregation that holds against its neighbors' failures, such as a separate
   process with a validated interface. Chapter 15 decides whether any hazard needs it.
@@ -243,6 +247,8 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 | State machine | Every state/event pair, listener order, concurrency; JSON copy equals code | `test_acquisition_state.cpp` |
 | Service behavior | Lifecycle, faults, illegal commands, conservation of counts, with simulated ports | `test_acquisition_service.cpp` |
 | Protocol and server | Framing, versioning, errors, disconnects, overlong requests | `test_control_protocol.cpp` |
+| Access control and TLS | Tokens, roles, secure defaults, deadlines, TLS 1.3 only, certificate verification, an intruder and an eavesdropper; the protocol fuzzer's authorization property | `test_security.cpp`, `fuzz/fuzz_protocol.cpp` |
+| Threat model | Every element analyzed for each STRIDE category; mitigations verified | `tools/check_threats.py`, test `docs.threats` |
 | Configuration | Reader rules; schema document agrees with the reader | `test_config.cpp` |
 | Coincidence sorter and merger | Exact agreement with the simulator's truth counter, chunking independence, accounting, policies, randoms bias; merger order, waiting, late boards, ties; fuzzing | `test_coincidence_sorter.cpp`, `test_stream_merger.cpp`, `fuzz/fuzz_sorter.cpp` |
 | Front-end model and capacity | Dead-time stage against both formulas and by hand, chunking, accounting; replay order and rate; count-rate and bottleneck measurements regenerated by one command each | `test_dead_time.cpp`, `test_count_rates.cpp`, `test_replay_source.cpp`, `measurements/ch11/` |
@@ -251,12 +257,13 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0012](../adr/README.md). Known anomalies, with their evaluation:
+Decisions: [ADR 0001 to 0014](../adr/README.md). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
 
-- No authentication or encryption on the control API (Chapter 17).
+- Residual security gaps (unsigned list-mode files, an audit trail that its own user can
+  rewrite, no rate limiting): [threat model, section 7](../regulatory/security/threat-model.md#7-residual-gaps).
 - The monitor polls every 20 ms, so a port fault is noticed up to 20 ms late; if a risk
   analysis needs faster reaction, the stage that sees the fault must stop the pipeline itself.
 - Late singles end the run; whether a tolerance is acceptable is a physics and risk question
@@ -277,3 +284,4 @@ Open issues:
 | 4 | Front-end model and count-rate capacity (Chapter 11). |
 | 5 | Software items with their safety classes, layers and segregation (Chapter 14). |
 | 6 | This history (Chapter 16), reconstructed from git for versions 1 to 5. Version 1 was also edited in Chapter 7 (the SOUP list, ADR 0008) and version 4 in Chapter 12 (the list-mode sink, the run record, configuration schema 1.3), each before its release and without a record of the change, which is what this history now provides. |
+| 7 | Chapter 17: the control API's security (API 2.0, item `access`, `ctl` class B, OpenSSL as SOUP, CR-0004). Also corrects what version 6 left stale: the API version (1.1 since CR-0003), the nlohmann/json version (3.12.0 since CR-0002) and the range of ADRs. |

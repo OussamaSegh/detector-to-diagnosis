@@ -1,0 +1,17 @@
+{
+  "comment": "Exercise 17.3: a scan report in the shape of Grype's JSON output. The advisories are made up (ids EX-...), modeled on real kinds of OpenSSL and JSON-library defects; tests/advisories.md describes each.",
+  "matches": [
+    {"vulnerability": {"id": "EX-2026-0101", "severity": "High", "fix": {"versions": ["3.0.13-0ubuntu3.17"], "state": "fixed"}},
+     "artifact": {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16"}},
+    {"vulnerability": {"id": "EX-2026-0102", "severity": "High", "fix": {"versions": ["3.0.13-0ubuntu3.17"], "state": "fixed"}},
+     "artifact": {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16"}},
+    {"vulnerability": {"id": "EX-2026-0103", "severity": "Medium", "fix": {"versions": ["3.0.13-0ubuntu3.17"], "state": "fixed"}},
+     "artifact": {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16"}},
+    {"vulnerability": {"id": "EX-2026-0104", "severity": "Low", "fix": {"versions": [], "state": "not-fixed"}},
+     "artifact": {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16"}},
+    {"vulnerability": {"id": "EX-2026-0105", "severity": "Critical", "fix": {"versions": [], "state": "not-fixed"}},
+     "artifact": {"name": "nlohmann-json", "version": "3.12.0"}},
+    {"vulnerability": {"id": "EX-2026-0106", "severity": "Medium", "fix": {"versions": ["1.16.0"], "state": "fixed"}},
+     "artifact": {"name": "googletest", "version": "1.15.2"}}
+  ]
+}

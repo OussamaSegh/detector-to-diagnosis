@@ -27,19 +27,22 @@ target_link_libraries(minidaq_core PUBLIC Threads::Threads PRIVATE minidaq::warn
 # API. A separate library so that the hot-path core does not depend on JSON.
 add_library(minidaq_control
   src/config/acquisition_config.cpp
+  src/control/access.cpp
   src/control/acquisition_state.cpp
   src/control/adapters.cpp
   src/control/audit.cpp
   src/control/audit_log.cpp
   src/control/acquisition_service.cpp
   src/control/run_integrity.cpp
+  src/control/tls.cpp
   src/control/control_protocol.cpp
   src/control/control_server.cpp
   src/control/udp_detector.cpp
   src/control/file_ops.cpp
   src/control/listmode_sink.cpp)
 add_library(minidaq::control ALIAS minidaq_control)
-target_link_libraries(minidaq_control PUBLIC minidaq::core nlohmann_json::nlohmann_json PRIVATE minidaq::warnings)
+target_link_libraries(minidaq_control PUBLIC minidaq::core nlohmann_json::nlohmann_json
+                      PRIVATE OpenSSL::SSL OpenSSL::Crypto minidaq::warnings)
 target_compile_definitions(minidaq_control PRIVATE MINIDAQ_VERSION_STRING="${MINIDAQ_VERSION_FULL}")
 
 add_subdirectory(apps)

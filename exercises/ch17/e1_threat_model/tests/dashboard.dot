@@ -1,0 +1,11 @@
+// Exercise 17.1: the proposed status page. The node and flow names are the element ids.
+digraph dashboard {
+  rankdir=LR;
+  browser [label="Room display or browser", shape=box];
+  subgraph cluster_pc {
+    label="Acquisition PC";
+    style=dashed;
+    webui [label="Status page adapter\n(in minidaq_server)", shape=ellipse];
+  }
+  browser -> webui [label="http: GET /status, port 8443"];
+}

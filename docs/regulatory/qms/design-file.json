@@ -4,7 +4,7 @@
   "clauses": [
     {"clause": "4.2.4", "topic": "Control of documents", "evidence": ["docs/regulatory/qms/design-file.json", "tools/design_file.py"], "note": "Version and history of every controlled document, checked on every change; a changed document gets a new version before the next release."},
     {"clause": "4.2.5", "topic": "Control of records", "evidence": ["docs/regulatory/trace-matrix.md", "docs/regulatory/known-anomalies.md", "measurements/"], "note": "Generated records are checked against their sources; measurements keep their raw output."},
-    {"clause": "7.1", "topic": "Risk management in product realization", "evidence": ["docs/regulatory/risk/"], "note": "Software part of the ISO 14971 file (Chapter 15)."},
+    {"clause": "7.1", "topic": "Risk management in product realization", "evidence": ["docs/regulatory/risk/", "docs/regulatory/security/"], "note": "Software part of the ISO 14971 file (Chapter 15), and the security risk assessment: threat model and vulnerability triage (Chapter 17)."},
     {"clause": "7.3.2", "topic": "Design and development planning", "evidence": ["docs/regulatory/sdp.md", "docs/regulatory/risk/risk-management-plan.md"]},
     {"clause": "7.3.3", "topic": "Design and development inputs", "evidence": ["docs/regulatory/intended-use.md", "docs/regulatory/regulatory-context.md", "docs/regulatory/srs.md", "docs/performance-budget.md", "docs/regulatory/standards-map.dot", "docs/regulatory/standards-map.svg"], "note": "Requirements from the intended use, the regulations, the risk controls and the performance budget."},
     {"clause": "7.3.4", "topic": "Design and development outputs", "evidence": ["docs/architecture/", "docs/formats/", "docs/coding-standard.md", "minidaq/", "CHANGELOG.md"], "note": "Architecture with classified items, data formats, the code and its coding standard."},
@@ -34,6 +34,7 @@
     "docs/formats/mdq-l1.md",
     "docs/regulatory/changes/README.md",
     "docs/regulatory/capa/README.md",
-    "docs/regulatory/qms/internal-audit-2026-10-25.md"
+    "docs/regulatory/qms/internal-audit-2026-10-25.md",
+    "docs/regulatory/security/threat-model.md"
   ]
 }

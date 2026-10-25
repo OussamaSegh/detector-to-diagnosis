@@ -1,0 +1,24 @@
+{
+  "comment": "Exercise 17.4: change a scan's list-mode data without it being noticed (threats T-27, T-31).",
+  "id": "root", "label": "Change a scan's data without it being noticed", "op": "OR", "children": [
+    {"id": "1", "label": "Change a list-mode file after the run", "op": "AND", "children": [
+      {"id": "1.1", "label": "Write to the data directory", "op": "OR", "children": [
+        {"id": "1.1.1", "label": "As another user of the PC", "blocked_by": ["ENV:data directory private"]},
+        {"id": "1.1.2", "label": "With the operator's account", "blocked_by": ["ENV:operator account protected"]},
+        {"id": "1.1.3", "label": "On a backup or a copy on its way to reconstruction", "blocked_by": ["ENV:site storage protected"]}
+      ]},
+      {"id": "1.2", "label": "Make the change pass the checks", "op": "OR", "children": [
+        {"id": "1.2.1", "label": "Change bytes and keep the old CRC", "blocked_by": ["SRS-LMF-006"]},
+        {"id": "1.2.2", "label": "Change records and recompute each block's CRC", "blocked_by": []}
+      ]}
+    ]},
+    {"id": "2", "label": "Change the acquisition settings unnoticed", "op": "AND", "children": [
+      {"id": "2.1", "label": "Configure the run with other settings", "blocked_by": ["SRS-SEC-001", "SRS-SEC-003"]},
+      {"id": "2.2", "label": "Hide the settings that the run used", "blocked_by": ["SRS-OUT-012"]}
+    ]},
+    {"id": "3", "label": "Hide the action afterwards", "op": "AND", "children": [
+      {"id": "3.1", "label": "Act with the operator's account", "blocked_by": ["ENV:operator account protected"]},
+      {"id": "3.2", "label": "Remove the records from the audit trail", "blocked_by": []}
+    ]}
+  ]
+}

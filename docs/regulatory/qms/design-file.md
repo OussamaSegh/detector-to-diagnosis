@@ -9,7 +9,7 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 |---|---|---|---|
 | 4.2.4 | Control of documents | `docs/regulatory/qms/design-file.json`<br>`tools/design_file.py` | Version and history of every controlled document, checked on every change; a changed document gets a new version before the next release. |
 | 4.2.5 | Control of records | `docs/regulatory/trace-matrix.md`<br>`docs/regulatory/known-anomalies.md`<br>`measurements/` | Generated records are checked against their sources; measurements keep their raw output. |
-| 7.1 | Risk management in product realization | `docs/regulatory/risk/` | Software part of the ISO 14971 file (Chapter 15). |
+| 7.1 | Risk management in product realization | `docs/regulatory/risk/`<br>`docs/regulatory/security/` | Software part of the ISO 14971 file (Chapter 15), and the security risk assessment: threat model and vulnerability triage (Chapter 17). |
 | 7.3.2 | Design and development planning | `docs/regulatory/sdp.md`<br>`docs/regulatory/risk/risk-management-plan.md` |  |
 | 7.3.3 | Design and development inputs | `docs/regulatory/intended-use.md`<br>`docs/regulatory/regulatory-context.md`<br>`docs/regulatory/srs.md`<br>`docs/performance-budget.md`<br>`docs/regulatory/standards-map.dot`<br>`docs/regulatory/standards-map.svg` | Requirements from the intended use, the regulations, the risk controls and the performance budget. |
 | 7.3.4 | Design and development outputs | `docs/architecture/`<br>`docs/formats/`<br>`docs/coding-standard.md`<br>`minidaq/`<br>`CHANGELOG.md` | Architecture with classified items, data formats, the code and its coding standard. |
@@ -44,3 +44,4 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/regulatory/changes/README.md`
 - `docs/regulatory/capa/README.md`
 - `docs/regulatory/qms/internal-audit-2026-10-25.md`
+- `docs/regulatory/security/threat-model.md`

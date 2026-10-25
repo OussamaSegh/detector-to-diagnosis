@@ -3,7 +3,7 @@
   "layers": {
     "core": ["core/", "format/", "pipeline/", "metrics/", "processing/", "rt/", "sim/"],
     "application": ["config/", "control/acquisition_state", "control/acquisition_service", "control/run_integrity", "control/ports", "control/audit"],
-    "adapters": ["control/adapters", "control/audit_log", "control/control_protocol", "control/control_server", "control/udp_detector", "control/file_ops", "control/listmode_sink"],
+    "adapters": ["control/access", "control/adapters", "control/audit_log", "control/control_protocol", "control/control_server", "control/udp_detector", "control/file_ops", "control/listmode_sink", "control/tls"],
     "apps": ["apps/"]
   },
   "may_include": {
@@ -13,7 +13,7 @@
     "apps": ["core", "application", "adapters"]
   },
   "forbidden_external": {
-    "core": ["nlohmann/", "sys/socket.h", "netinet/", "arpa/"],
-    "application": ["sys/socket.h", "netinet/", "arpa/"]
+    "core": ["nlohmann/", "openssl/", "sys/socket.h", "netinet/", "arpa/"],
+    "application": ["openssl/", "sys/socket.h", "netinet/", "arpa/"]
   }
 }

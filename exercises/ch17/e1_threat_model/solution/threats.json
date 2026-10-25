@@ -1,0 +1,25 @@
+{
+  "comment": "Exercise 17.1: STRIDE analysis of the proposed read-only status page (tests/dashboard.dot).",
+  "applies": {"external": "SR", "process": "STRIDE", "store": "TRID", "flow": "TID"},
+  "elements": [
+    {"id": "browser", "kind": "external", "name": "Room display or browser"},
+    {"id": "webui", "kind": "process", "name": "Status page adapter in minidaq_server"},
+    {"id": "http", "kind": "flow", "name": "HTTPS GET /status", "from": "browser", "to": "webui"}
+  ],
+  "threats": [
+    {"id": "D-01", "element": "browser", "stride": "S", "threat": "Any device on the network reads the status as if it were the room display.", "status": "mitigated", "requirements": ["DASH-003", "DASH-007"]},
+    {"id": "D-02", "element": "browser", "stride": "S", "threat": "A web page that the operator opens in the same browser sends requests to the status page with the operator's stored token (cross-site request).", "status": "mitigated", "requirements": ["DASH-002", "DASH-003"], "note": "The token travels in the Authorization header, never in a cookie, so the browser does not add it on its own; a cross-site script may set that header only after a CORS preflight (OPTIONS), which DASH-002 answers with 405. The page also has no state-changing request to forge."},
+    {"id": "D-03", "element": "browser", "stride": "R", "threat": "Nobody can tell who tried to read the status with a wrong token.", "status": "mitigated", "requirements": ["DASH-006"]},
+    {"id": "D-04", "element": "webui", "stride": "S", "threat": "A program on the PC answers on the status port before minidaq_server does and shows a false 'running, complete' status.", "status": "mitigated", "requirements": ["DASH-001"], "note": "The display verifies the server certificate; a false page without the key fails the handshake."},
+    {"id": "D-05", "element": "webui", "stride": "T", "threat": "A crafted request changes the acquisition's state, for example a POST or a GET with a query string that reaches the control protocol.", "status": "mitigated", "requirements": ["DASH-002"]},
+    {"id": "D-06", "element": "webui", "stride": "R", "threat": "The adapter's refusals leave no record, so a scan of the port goes unnoticed.", "status": "mitigated", "requirements": ["DASH-006"]},
+    {"id": "D-07", "element": "webui", "stride": "I", "threat": "The page shows a token, a file path, or an exception's text to whoever can read it.", "status": "mitigated", "requirements": ["DASH-004"]},
+    {"id": "D-08", "element": "webui", "stride": "D", "threat": "Slow clients that open connections and send nothing hold the adapter's connections, or a huge request exhausts memory, during a scan.", "status": "mitigated", "requirements": ["DASH-005"], "note": "The adapter runs in the control thread; the acquisition threads do not wait for it."},
+    {"id": "D-09", "element": "webui", "stride": "E", "threat": "An observer token, or a defect in the adapter, is used to stop the scan through the status page.", "status": "mitigated", "requirements": ["DASH-002", "DASH-003"], "note": "The adapter calls only status(); it has no path to the commands."},
+    {"id": "D-10", "element": "http", "stride": "T", "threat": "A machine between the display and the PC changes the page to show a healthy run that is in fact incomplete.", "status": "mitigated", "requirements": ["DASH-001"]},
+    {"id": "D-11", "element": "http", "stride": "I", "threat": "An eavesdropper reads the observer token from the Authorization header and the status from the response.", "status": "mitigated", "requirements": ["DASH-001", "DASH-008"]},
+    {"id": "D-12", "element": "http", "stride": "D", "threat": "A flood of connections from the network keeps the room display from updating.", "status": "environment", "assumption": "The status page is reachable only on the scanner's own network, behind the site's firewall (threat-model.md, section 6, item 4).", "requirements": ["DASH-005"]},
+    {"id": "D-13", "element": "webui", "stride": "I", "threat": "The page is embedded in a frame of another site, which then reads or overlays it.", "status": "mitigated", "requirements": ["DASH-008"]},
+    {"id": "D-14", "element": "browser", "stride": "R", "threat": "The room display denies having shown a status at a given time.", "status": "accepted", "note": "The display shows; it performs no action whose record matters. The server records what it served only when it refused it."}
+  ]
+}

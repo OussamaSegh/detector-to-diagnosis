@@ -76,10 +76,11 @@
       "title": "The control API has no authentication or encryption",
       "found": "2026-10-24, Chapter 6 design",
       "item": "protocol",
-      "status": "open",
+      "status": "closed",
       "description": "Any local process that can connect to 127.0.0.1:7700 can configure, start and stop acquisitions.",
       "evaluation": {"safety_relevant": true, "rationale": "A local attacker or a misdirected script can stop a scan or change its settings; the audit trail records it but does not prevent it."},
-      "decision": "Do not release for use beyond a test bench before Chapter 17's controls are in place."
+      "decision": "Do not release for use beyond a test bench before Chapter 17's controls are in place.",
+      "resolution": {"change": "Token authentication with observer and operator roles, TLS 1.3, secure defaults and API 2.0 (CR-0004, ADR 0014); hazard H-08 closed.", "verification": "ControlServer.AnIntruderCannotStopARunningScan, ControlServer.TheTokenNeverCrossesTheNetworkInClear and the other tests of SRS-SEC-001 to SRS-SEC-009"}
     },
     {
       "id": "MDQ-PR-009",

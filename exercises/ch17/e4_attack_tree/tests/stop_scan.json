@@ -1,0 +1,30 @@
+{
+  "comment": "The attack tree of threat-model.md, section 4: stop or reconfigure a running scan. ENV entries are the assumptions of section 6.",
+  "id": "root", "label": "Stop or reconfigure a running scan", "op": "OR", "children": [
+    {"id": "1", "label": "Send stop or configure on the control API", "op": "AND", "children": [
+      {"id": "1.1", "label": "Reach the control port", "op": "OR", "children": [
+        {"id": "1.1.1", "label": "From a process on the acquisition PC", "blocked_by": []},
+        {"id": "1.1.2", "label": "From the network", "blocked_by": ["SRS-SEC-005"]}
+      ]},
+      {"id": "1.2", "label": "Hold an operator token", "op": "OR", "children": [
+        {"id": "1.2.1", "label": "Guess one", "blocked_by": ["SRS-SEC-009", "SRS-SEC-002"]},
+        {"id": "1.2.2", "label": "Use an observer token", "blocked_by": ["SRS-SEC-003"]},
+        {"id": "1.2.3", "label": "Read it on the network", "blocked_by": ["SRS-SEC-006"]},
+        {"id": "1.2.4", "label": "Pose as the server to collect it", "blocked_by": ["SRS-SEC-007"]},
+        {"id": "1.2.5", "label": "Read the start-up token or a client's token file as another user", "blocked_by": ["SRS-SEC-009"]},
+        {"id": "1.2.6", "label": "Add a token to the token file as another user", "blocked_by": ["SRS-SEC-008"]},
+        {"id": "1.2.8", "label": "Read or add a token with the operator's account", "blocked_by": ["ENV:operator account protected"]},
+        {"id": "1.2.7", "label": "Take it from the audit trail or a log", "blocked_by": ["SRS-SEC-002"]}
+      ]}
+    ]},
+    {"id": "2", "label": "Stop the server process", "blocked_by": ["ENV:operator account protected"]},
+    {"id": "3", "label": "Make the run fail", "op": "OR", "children": [
+      {"id": "3.1", "label": "Flood the detector port", "blocked_by": ["ENV:detector link closed"]},
+      {"id": "3.2", "label": "Fill the disk", "blocked_by": []}
+    ]},
+    {"id": "4", "label": "Keep the operator from controlling the scan", "op": "OR", "children": [
+      {"id": "4.1", "label": "Hold every client slot", "blocked_by": ["SRS-SEC-004"]},
+      {"id": "4.2", "label": "Flood the control port", "blocked_by": ["ENV:network rate limit"]}
+    ]}
+  ]
+}

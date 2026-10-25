@@ -46,8 +46,30 @@ the patch version.
   `tools/stress_tests.sh`, `minidaq/tests/unit/eventually.hpp`, coding standard rule 5.5 and the
   test `tests.waits`; problem reports MDQ-PR-010 to MDQ-PR-012; exercises 16.1 to 16.5 (all in
   Python).
+- Chapter 17: cybersecurity. The threat model in `docs/regulatory/security/` (data flow
+  diagram, 34 STRIDE threats in `threats.json`, an attack tree, environment assumptions, gaps
+  and vulnerability management), checked by `tools/check_threats.py` (test `docs.threats`).
+  Token authentication with observer and operator roles and optional TLS 1.3 for the control
+  API (`control/access`, `control/tls`, ADR 0014, CR-0004): tokens stored as SHA-256 hashes and
+  compared in constant time, roles that fail closed, a verifying client, secure defaults (a
+  start-up token readable only by its user, no unauthenticated start without `--no-auth`, TLS
+  and tokens beyond loopback, a 10 s authentication deadline); `minidaq_ctl new-token`.
+  Requirements SRS-SEC-001 to 009 with twelve tests, including the effectiveness tests of the
+  new risk controls RC-21 to RC-25; the protocol fuzzer checks that no command succeeds
+  without its role. OpenSSL as platform SOUP (SOUP list version 4, with a review of the
+  package's 44 security updates) and as a component of the SBOM with its distribution package
+  URL; the CI job `vulnerability-scan` (Grype v0.120.1) with `tools/vuln_triage.py` and
+  `docs/regulatory/security/vulnerability-triage.json` (CycloneDX VEX states; test
+  `tools.vuln_triage`); `SECURITY.md`; exercises 17.1 to 17.5 (17.2 and 17.5 in C++).
 
 ### Changed
+- Control API 2.0 (CR-0004, ADR 0014): a connection authenticates with `auth` before any
+  command but `hello`; new error codes `unauthenticated` and `forbidden`; `hello` reports
+  `auth`; 1.x clients are refused with `unsupported_api`. `minidaq_server` gains `--tokens`,
+  `--tls-cert`, `--tls-key` and `--no-auth`, `minidaq_ctl` gains `--token-file` and `--tls-ca`.
+- Hazard H-08 closed (S2/P2) and MDQ-PR-008 closed; `minidaq_ctl` reclassified from class A to
+  B; new software item `access`; architecture description version 7, SRS version 4, regulatory
+  context version 3.
 - Control API 1.1 (CR-0003, ADR 0013): the status's top-level fields are listed in
   `status_fields`, and SRS-CTL-033 with `ControlProtocol.StatusFieldsMatchTheApiVersion` keeps the
   list true; `minidaq_ctl` sends 1.1, and 1.0 clients keep working.
@@ -70,6 +92,8 @@ the patch version.
 - Seven tests asserted after a fixed sleep or on a throughput that depends on the test's own
   thread (CAPA-0001); under load the ThreadSanitizer build failed two of them. They now wait for
   their condition, and the stress run passes 100 repetitions.
+- The architecture description still said control API 1.0, nlohmann/json 3.11.3 and ADRs 0001
+  to 0012 after Chapter 16; corrected in version 7.
 
 ## [0.2.0] - 2026-10-25
 

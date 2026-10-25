@@ -1,0 +1,16 @@
+{
+  "decisions": [
+    {"vulnerability": "EX-2026-0101", "component": "libssl3t64", "state": "exploitable", "response": "update", "fix_by": "2026-11-08",
+     "detail": "minidaq_server is a TLS 1.3 server and the memory is allocated before authentication, so any client that reaches the port can exhaust the server. Update the platform package; until then keep the port on loopback or behind the site firewall (threat-model.md, section 6)."},
+    {"vulnerability": "EX-2026-0102", "component": "libssl3t64", "state": "not_affected", "justification": "code_not_reachable",
+     "detail": "MiniDAQ uses TLS 1.3 over TCP only and never creates a DTLS context; the code is in the library but no input reaches it."},
+    {"vulnerability": "EX-2026-0103", "component": "libssl3t64", "state": "exploitable", "response": "update",
+     "detail": "minidaq_ctl verifies the server's host name, so a forged server can crash it. No token is sent before the check, so the effect is a lost control session, not a disclosed token. Update with the platform."},
+    {"vulnerability": "EX-2026-0104", "component": "libssl3t64", "state": "not_affected", "justification": "code_not_reachable",
+     "detail": "MiniDAQ never signs with SM2, and runs on x86-64."},
+    {"vulnerability": "EX-2026-0105", "component": "nlohmann-json", "state": "not_affected", "justification": "code_not_reachable",
+     "detail": "MiniDAQ calls json::parse on strings and never passes its own SAX handler. json::parse uses the library's internal DOM handler, which does not throw on its own: check that before accepting this decision, by reading the advisory's affected code."},
+    {"vulnerability": "EX-2026-0106", "component": "googletest", "state": "not_affected", "justification": "code_not_present",
+     "detail": "GoogleTest is linked into the tests only (SBOM scope excluded); the shipped programs do not contain it."}
+  ]
+}

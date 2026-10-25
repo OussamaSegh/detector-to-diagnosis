@@ -401,6 +401,10 @@ A session, recorded against `minidaq_server` (responses shortened only where mar
 <- {"api":"1.0","error":{"code":"unsupported_api","message":"this server speaks API 1.0"},"id":5,"ok":false,"state":"running"}
 ```
 
+This session was recorded with API 1.0. Since Chapter 17 the server speaks API 2.0, in which a
+client authenticates with an `auth` command before anything but `hello`; `minidaq_ctl` does
+that for you, so the commands of this chapter work unchanged.
+
 The compatibility rules are few and strict. Every response carries the server's `api`
 version. A request whose major version differs is refused. Unknown fields in a request are
 ignored, so a newer client may send fields an older server does not know, and new response

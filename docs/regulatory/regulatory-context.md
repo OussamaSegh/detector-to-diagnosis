@@ -1,6 +1,6 @@
 # MiniDAQ: regulatory context
 
-Version 2 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 3 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
 
 This page places MiniDAQ, written as if it were the DAQ software of a dedicated brain PET
 scanner ([intended use](intended-use.md)), in the regulations of the three markets such a
@@ -108,7 +108,7 @@ these standards depend on each other is [standards-map.svg](standards-map.svg), 
 | SOUP list | [soup-list.md](soup-list.md) | 7, 14 |
 | Risk management file | arrives with Chapter 15 | 15 |
 | Design history index, change control template | arrives with Chapter 16 | 16 |
-| Threat model and security requirements | arrives with Chapter 17 | 17 |
+| Threat model and security requirements | [threat model](security/threat-model.md), [SRS section 2.13](srs.md#213-security-sec) | 17 |
 | Architecture and decisions | [architecture](../architecture/architecture.md), [ADRs](../adr/README.md) | 6 and later |
 
 ## 7. What the DAQ gives post-market surveillance
@@ -135,3 +135,4 @@ records would be a defect in a risk control, and is treated as one.
 |---|---|
 | 1 | First version (Chapter 13). |
 | 2 | This history (Chapter 16); the text is unchanged. |
+| 3 | Chapter 17: the evidence of the threat model and the security requirements is linked. |

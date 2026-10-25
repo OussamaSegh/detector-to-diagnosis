@@ -2,6 +2,14 @@
 // minidaq_server: the acquisition service behind the TCP control API (Chapter 6).
 //
 //   minidaq_server [--port 7700] [--bind 127.0.0.1] [--audit audit.jsonl] [--config acq.json]
+//                  [--tokens tokens.json] [--tls-cert cert.pem --tls-key key.pem] [--no-auth]
+//
+// Clients authenticate with a token (Chapter 17). With --tokens, the server
+// accepts the tokens whose hashes that file lists; without it, the server makes
+// one operator token at start-up and writes it where minidaq_ctl looks for it,
+// readable only by this user, and removes it at shutdown. --no-auth turns
+// authentication off, for a test bench on loopback only. Binding to anything
+// but loopback needs --tls-cert, --tls-key and --tokens.
 //
 // Runs until SIGINT or SIGTERM; a running acquisition is stopped and drained
 // first. Control it with minidaq_ctl, or with any client that writes one JSON
@@ -9,6 +17,7 @@
 #include <csignal>
 #include <cstdio>
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <sstream>
@@ -16,10 +25,12 @@
 #include <string_view>
 
 #include "minidaq/config/acquisition_config.hpp"
+#include "minidaq/control/access.hpp"
 #include "minidaq/control/acquisition_service.hpp"
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/audit_log.hpp"
 #include "minidaq/control/control_server.hpp"
+#include "minidaq/control/tls.hpp"
 #include "minidaq/core/parse_number.hpp"
 
 int main(int argc, char** argv) {
@@ -28,9 +39,17 @@ int main(int argc, char** argv) {
   std::string bind = "127.0.0.1";
   std::string audit_path;
   std::string config_path;
-  for (int i = 1; i < argc; i += 2) {  // every option takes a value
+  std::string tokens_path;
+  std::string cert_path;
+  std::string key_path;
+  bool no_auth = false;
+  for (int i = 1; i < argc; ++i) {
     const std::string_view a{argv[i]};
-    const char* v = i + 1 < argc ? argv[i + 1] : nullptr;
+    if (a == "--no-auth") {
+      no_auth = true;
+      continue;
+    }
+    const char* v = i + 1 < argc ? argv[++i] : nullptr;  // every other option takes a value
     if (a == "--port" && v) {
       if (!parse_into<std::uint16_t>(v, port, 0, 65535)) {  // 0: any free port (tests use it)
         std::fprintf(stderr, "--port: \"%s\" is not a port number (0 to 65535)\n", v);
@@ -42,11 +61,59 @@ int main(int argc, char** argv) {
       audit_path = v;
     } else if (a == "--config" && v) {
       config_path = v;
+    } else if (a == "--tokens" && v) {
+      tokens_path = v;
+    } else if (a == "--tls-cert" && v) {
+      cert_path = v;
+    } else if (a == "--tls-key" && v) {
+      key_path = v;
     } else {
-      std::fprintf(stderr, "usage: %s [--port N] [--bind ADDR] [--audit FILE] [--config FILE]\n", argv[0]);
+      std::fprintf(stderr,
+                   "usage: %s [--port N] [--bind ADDR] [--audit FILE] [--config FILE]\n"
+                   "          [--tokens FILE] [--tls-cert FILE --tls-key FILE] [--no-auth]\n",
+                   argv[0]);
       return 2;
     }
   }
+  if (no_auth && !tokens_path.empty()) {
+    std::fprintf(stderr, "--no-auth and --tokens contradict each other\n");
+    return 2;
+  }
+  if (cert_path.empty() != key_path.empty()) {
+    std::fprintf(stderr, "--tls-cert and --tls-key go together\n");
+    return 2;
+  }
+
+  // [snippet:security]
+  control::ServerSecurity security;
+  std::string startup_token;  // made here when no token file is given; written once the port is known
+  if (!tokens_path.empty()) {
+    auto store = control::TokenStore::load(tokens_path);
+    if (!store) {
+      std::fprintf(stderr, "tokens: %s\n", store.error().c_str());
+      return 1;
+    }
+    security.tokens = std::make_shared<const control::TokenStore>(std::move(*store));
+  } else if (no_auth) {
+    security.allow_unauthenticated = true;
+  } else {
+    startup_token = control::new_token();
+    if (startup_token.empty()) {
+      std::fprintf(stderr, "cannot make a token: no random numbers from the operating system\n");
+      return 1;
+    }
+    security.tokens = std::make_shared<const control::TokenStore>(
+        control::TokenStore::single("local", control::Role::operator_, startup_token));
+  }
+  if (!cert_path.empty()) {
+    auto tls = control::TlsContext::server(cert_path, key_path);
+    if (!tls) {
+      std::fprintf(stderr, "TLS: %s\n", tls.error().c_str());
+      return 1;
+    }
+    security.tls = std::make_shared<const control::TlsContext>(std::move(*tls));
+  }
+  // [/snippet:security]
 
   // Block the signals before any thread starts, so that only sigwait() below sees them.
   sigset_t signals;
@@ -82,14 +149,26 @@ int main(int argc, char** argv) {
       return 1;
     }
   }
-  control::ControlServer server{service, port, bind};
+  control::ControlServer server{service, port, security, bind};
   const auto bound = server.start();
   if (!bound) {
     std::fprintf(stderr, "control server: %s\n", bound.error().c_str());
     return 1;
   }
-  std::printf("minidaq_server: control API on %s:%u (state %s)\n", bind.c_str(), *bound,
-              std::string{to_string(service.state())}.c_str());
+  std::filesystem::path token_file;
+  if (!startup_token.empty()) {
+    auto written = control::write_secret(control::default_token_path(*bound), startup_token);
+    if (!written) {
+      std::fprintf(stderr, "cannot write the token: %s\n", written.error().c_str());
+      return 1;
+    }
+    token_file = *written;
+  }
+  const std::string auth = !token_file.empty() ? "token in " + token_file.string()
+                           : security.tokens    ? std::string{"tokens from "} + tokens_path
+                                                : std::string{"NO AUTHENTICATION"};
+  std::printf("minidaq_server: control API on %s:%u (%s, %s; state %s)\n", bind.c_str(), *bound,
+              security.tls ? "TLS" : "plain TCP", auth.c_str(), std::string{to_string(service.state())}.c_str());
   (void)std::fflush(stdout);  // a line for a human or a test harness; nothing to do if it fails
 
   int sig = 0;
@@ -98,6 +177,10 @@ int main(int argc, char** argv) {
   }
   std::printf("minidaq_server: signal %d, shutting down\n", sig);
   server.stop();
+  if (!token_file.empty()) {
+    std::error_code ignored;  // a token file left behind is useless once the server is gone
+    std::filesystem::remove(token_file, ignored);
+  }
   if (service.state() == control::AcqState::running) {
     (void)service.stop("signal");
     (void)service.wait_for(control::AcqState::configured, std::chrono::seconds{10});

@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 3 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 4 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -215,6 +215,23 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-OUT-011 | The list-mode sink shall store the run's integrity verdict in the run record. | output | T |
 | SRS-OUT-012 | The list-mode sink shall state in every file's metadata whether its data is simulated, and the effective configuration with its defaults. | output | T |
 
+### 2.13 Security (SEC)
+
+The control API's security requirements (Chapter 17), from the threat model
+([threat-model.md](security/threat-model.md)); they implement risk controls RC-21 to RC-24 of hazard H-08.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-SEC-001 | The control server shall refuse every command except `hello` and `auth`, with the error code `unauthenticated`, on a connection that has not authenticated with a valid token. | protocol | T |
+| SRS-SEC-002 | The control server shall close a connection after an `auth` with an unknown token, and record the refusal in the audit trail with the client's address and without the token. | protocol | T |
+| SRS-SEC-003 | The control server shall allow a client with the observer role only `hello`, `auth` and `status`, refuse other commands with the error code `forbidden`, and record each refusal in the audit trail. | protocol | T |
+| SRS-SEC-004 | The control server shall close a connection that has not completed the TLS handshake and authenticated within the authentication deadline, 10 s by default. | protocol | T |
+| SRS-SEC-005 | The control server shall refuse to start without a token store unless authentication is turned off explicitly, or on an address outside `127.0.0.0/8` without both TLS and a token store. | protocol | T |
+| SRS-SEC-006 | When TLS is configured, the control server shall accept only `TLS 1.3` connections and answer no client that does not complete the handshake. | access | T |
+| SRS-SEC-007 | The control client shall verify the server's certificate against the CA it trusts and against the name or address it connected to before it sends a token. | access | T |
+| SRS-SEC-008 | The token store shall keep only the SHA-256 hashes of tokens and refuse a token file that is a symbolic link, belongs to another user, or is writable by another user. | access | T |
+| SRS-SEC-009 | The server shall make its start-up token from 256 bits of the operating system's random generator and write it to a file that only its user can read, in a directory that only its user can use. | access | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -229,3 +246,4 @@ server today (section 4 of the architecture description explains the consequence
 | 1 | First version (Chapter 14), from the requirement tags of Chapters 1 to 12. Added SRS-CFG-004, SRS-PERF-020 and SRS-PERF-021, which had tests or measurements without an ID. |
 | 2 | Chapter 15: requirements of the risk controls for silent data loss and for the audit of control actions (SRS-CTL-030 to SRS-CTL-032, SRS-OUT-011, SRS-OUT-012), SRS-FMT-013, a counter the integrity verdict relies on, and SRS-SRT-012, a gap found by the sorter's FMEA. |
 | 3 | Chapter 16: SRS-CTL-033, the status fields of API 1.1 (ADR 0013, CR-0003, problem report MDQ-PR-012). |
+| 4 | Chapter 17: security requirements SRS-SEC-001 to SRS-SEC-009, from the threat model (ADR 0014, CR-0004, problem report MDQ-PR-008). |

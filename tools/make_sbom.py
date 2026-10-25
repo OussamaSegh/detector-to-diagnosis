@@ -7,9 +7,13 @@ the vendored schema (tools/sbom/schemas/).
 Usage: tools/make_sbom.py [--validate] [-o minidaq-X.Y.Z.cdx.json] [repo-root]
 
 The SBOM is reproducible: the same sources give the same bytes, as long as
-SOURCE_DATE_EPOCH is set (otherwise the timestamp is the current time). The
-platform (compiler runtime, C library, kernel) is not listed: it comes from the
-target system and is qualified separately (Chapter 25).
+SOURCE_DATE_EPOCH is set (otherwise the timestamp is the current time) and the
+same platform libraries are installed. The platform libraries that MiniDAQ links
+for a feature of its own, OpenSSL since Chapter 17, are listed with the version
+installed on the build machine: on Debian or Ubuntu the package version, which
+includes the distribution's security fixes, so that a vulnerability scanner
+matches the right advisories. The rest of the platform (compiler runtime, C
+library, kernel) is not listed: it is qualified separately (Chapter 25).
 """
 import argparse
 import datetime
@@ -18,6 +22,8 @@ import json
 import os
 import pathlib
 import re
+import shutil
+import subprocess
 import sys
 import uuid
 
@@ -36,6 +42,14 @@ KNOWN = {
                         "description": "Micro-benchmark framework (benchmarks only, not shipped)"},
 }
 # [/snippet:known]
+
+# Platform libraries: found with find_package, supplied by the target system (Chapter 17).
+# [snippet:platform]
+PLATFORM = {
+    "openssl": {"find_package": "OpenSSL", "packages": ("libssl3t64", "libssl3"), "license": "Apache-2.0", "scope": "required",
+                "description": "TLS 1.3, SHA-256 and random tokens for the control API (platform library)"},
+}
+# [/snippet:platform]
 
 DECLARE = re.compile(r"FetchContent_Declare\(\s*(\w+)(.*?)\)", re.S)
 
@@ -84,10 +98,60 @@ def component(cmake_name, f):
     return c
 
 
+def os_release():
+    try:
+        text = pathlib.Path("/etc/os-release").read_text()
+    except OSError:
+        return {}
+    return dict(re.findall(r'^(\w+)="?([^"\n]*)"?$', text, re.M))
+
+
+def run(*cmd):
+    if not shutil.which(cmd[0]):
+        return None
+    out = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    return out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else None
+
+
+def platform_component(name, k):
+    """The installed version: the distribution's package if there is one, else the library's own."""
+    rel = os_release()
+    for pkg in k["packages"]:
+        info = run("dpkg-query", "-W", "-f=${Version} ${Architecture}", pkg)
+        if info and rel.get("ID") and rel.get("VERSION_ID"):
+            version, arch = info.split()
+            distro = f"{rel['ID']}-{rel['VERSION_ID']}"
+            purl = f"pkg:deb/{rel['ID']}/{pkg}@{version}?arch={arch}&upstream={name}&distro={distro}"
+            cpe = None  # the distribution's advisories know its backported fixes; a CPE would not
+            break
+    else:
+        m = re.match(r"OpenSSL (\d+\.\d+\.\d+)", run("openssl", "version") or "")
+        if not m:
+            raise SystemExit(f"make_sbom: cannot find the installed version of {name}")
+        version, pkg = m.group(1), name
+        purl = f"pkg:generic/{name}@{version}"
+        cpe = f"cpe:2.3:a:{name}:{name}:{version}:*:*:*:*:*:*:*"
+    c = {
+        "type": "library",
+        "bom-ref": f"{pkg}@{version}",
+        "name": pkg,
+        "version": version,
+        "description": k["description"],
+        "scope": k["scope"],
+        "licenses": [{"license": {"id": k["license"]}}],
+        "purl": purl,
+        "properties": [{"name": "minidaq:supplied-by", "value": "platform"}],
+    }
+    if cpe:
+        c["cpe"] = cpe
+    return c
+
+
 def make_bom(root):
     version = (root / "VERSION").read_text().strip()
     cmake = (root / "cmake/Dependencies.cmake").read_text()
     components = [component(n, f) for n, f in dependencies(cmake)]
+    components += [platform_component(n, k) for n, k in PLATFORM.items() if f"find_package({k['find_package']}" in cmake]
     epoch = os.environ.get("SOURCE_DATE_EPOCH")
     when = datetime.datetime.fromtimestamp(int(epoch), datetime.timezone.utc) if epoch else \
         datetime.datetime.now(datetime.timezone.utc)

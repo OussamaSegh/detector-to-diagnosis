@@ -1,0 +1,13 @@
+{
+  "comment": "Exercise 17.1: STRIDE analysis of the proposed read-only status page (tests/dashboard.dot). TODO: complete it.",
+  "applies": {"external": "SR", "process": "STRIDE", "store": "TRID", "flow": "TID"},
+  "elements": [
+    {"id": "browser", "kind": "external", "name": "Room display or browser"},
+    {"id": "webui", "kind": "process", "name": "Status page adapter in minidaq_server"},
+    {"id": "http", "kind": "flow", "name": "HTTPS GET /status", "from": "browser", "to": "webui"}
+  ],
+  "threats": [
+    {"id": "D-01", "element": "browser", "stride": "S", "threat": "Any device on the network reads the status as if it were the room display.", "status": "mitigated", "requirements": ["DASH-003", "DASH-007"]},
+    {"id": "D-02", "element": "webui", "stride": "E", "threat": "Someone stops the scan through the status page.", "status": "accepted"}
+  ]
+}

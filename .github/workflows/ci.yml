@@ -22,7 +22,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev
       - name: Configure
         run: cmake --preset ${{ matrix.preset }}
       - name: Build
@@ -37,7 +37,7 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck
+          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libssl-dev
       - name: Configure (for compile_commands.json)
         run: cmake --preset clang-release
       - name: clang-tidy and cppcheck
@@ -50,7 +50,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev
       - name: Build fuzzers
         run: |
           cmake --preset fuzz -DMINIDAQ_FUZZ_SMOKE_SECONDS=60
@@ -79,6 +79,37 @@ jobs:
         with:
           name: sbom
           path: minidaq.cdx.json
+
+  vulnerability-scan:
+    # Chapter 17: match the SBOM against vulnerability databases and apply the triage decisions
+    # (threat-model.md, section 8). Grype is pinned; its database is downloaded at each run, so
+    # a new advisory fails the next run until someone decides on it.
+    needs: sbom
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: sbom
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - name: Install Grype
+        run: go install github.com/anchore/grype/cmd/grype@v0.120.1
+      - name: Scan the SBOM
+        run: |
+          "$(go env GOPATH)/bin/grype" version
+          "$(go env GOPATH)/bin/grype" sbom:minidaq.cdx.json --distro ubuntu:24.04 -o json --file scan.json
+          "$(go env GOPATH)/bin/grype" sbom:minidaq.cdx.json --distro ubuntu:24.04 -o table
+      - name: Apply the triage decisions
+        run: python3 tools/vuln_triage.py scan.json docs/regulatory/security/vulnerability-triage.json --vex minidaq.vex.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vulnerability-scan
+          path: |
+            scan.json
+            minidaq.vex.json
 
   document-control:
     # Chapter 16: a controlled document that changed since the last release has a new version.

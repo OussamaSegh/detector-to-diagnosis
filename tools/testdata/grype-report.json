@@ -1,0 +1,11 @@
+{
+  "comment": "A made-up report in the shape of Grype's JSON output, for tools/test_vuln_triage.py. The vulnerability ids are fictional.",
+  "matches": [
+    {"vulnerability": {"id": "TEST-2026-0001", "severity": "High", "fix": {"versions": ["3.0.13-0ubuntu3.17"], "state": "fixed"}},
+     "artifact": {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16", "type": "deb"}},
+    {"vulnerability": {"id": "TEST-2026-0002", "severity": "Medium", "fix": {"versions": [], "state": "not-fixed"}},
+     "artifact": {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16", "type": "deb"}},
+    {"vulnerability": {"id": "TEST-2026-0003", "severity": "Critical", "fix": {"versions": ["3.12.1"], "state": "fixed"}},
+     "artifact": {"name": "nlohmann-json", "version": "3.12.0"}}
+  ]
+}

@@ -8,7 +8,7 @@ endforeach()
 add_executable(minidaq_server minidaq_server.cpp)
 target_link_libraries(minidaq_server PRIVATE minidaq::control minidaq::warnings)
 add_executable(minidaq_ctl minidaq_ctl.cpp)
-target_link_libraries(minidaq_ctl PRIVATE minidaq::core nlohmann_json::nlohmann_json minidaq::warnings)
+target_link_libraries(minidaq_ctl PRIVATE minidaq::control minidaq::warnings)
 
 # Chapter 12: minidaq_sim writes list mode with the DAQ's own sink.
 add_executable(minidaq_sim minidaq_sim.cpp)

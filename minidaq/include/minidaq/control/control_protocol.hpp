@@ -3,21 +3,25 @@
 //
 // One request per line, one response per line, in order:
 //
-//   -> {"api": "1.1", "id": 7, "cmd": "start"}
-//   <- {"api": "1.1", "id": 7, "ok": true, "state": "running"}
-//   <- {"api": "1.1", "id": 8, "ok": false, "state": "running",
+//   -> {"api": "2.0", "id": 1, "cmd": "auth", "token": "mdq_..."}
+//   <- {"api": "2.0", "id": 1, "ok": true, "identity": "console", "role": "operator"}
+//   -> {"api": "2.0", "id": 7, "cmd": "start"}
+//   <- {"api": "2.0", "id": 7, "ok": true, "state": "running"}
+//   <- {"api": "2.0", "id": 8, "ok": false, "state": "running",
 //       "error": {"code": "illegal_transition", "message": "cannot start in state running"}}
 //
-// Commands: hello, configure (with "config"), start, stop, reset, status.
-// Compatibility rules (docs/adr/0003): a request whose "api" major version
-// differs is refused with "unsupported_api"; unknown fields are ignored, so a
-// newer client may send fields an older server does not know; new commands
-// and new response fields are added only in minor versions; "id" is echoed
-// unchanged so a client can match responses to requests. The status object
-// is part of the versioned API too (ADR 0013): status_fields lists its
-// top-level fields for this version.
+// Commands: hello, auth (with "token"), configure (with "config"), start,
+// stop, reset, status. Compatibility rules (docs/adr/0003): a request whose
+// "api" major version differs is refused with "unsupported_api"; unknown
+// fields are ignored, so a newer client may send fields an older server does
+// not know; new commands and new response fields are added only in minor
+// versions; "id" is echoed unchanged so a client can match responses to
+// requests. The status object is part of the versioned API too (ADR 0013):
+// status_fields lists its top-level fields for this version.
 //
 // 1.0: Chapter 6. 1.1: Chapter 16, the status fields of Chapters 9 to 15.
+// 2.0: Chapter 17 (ADR 0014): a connection authenticates with "auth" before any
+// command but hello; status needs an observer, the other commands an operator.
 #pragma once
 
 #include <array>
@@ -26,11 +30,12 @@
 #include <string>
 #include <string_view>
 
+#include "minidaq/control/access.hpp"
 #include "minidaq/control/acquisition_service.hpp"
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "1.1";
+inline constexpr std::string_view api_version = "2.0";
 
 // The top-level fields of `status` in this API version. A status has no other
 // field. A field that is not `always` there appears while its part exists: a
@@ -77,8 +82,22 @@ class LineFramer {
 };
 // [/snippet:framer]
 
+// [snippet:session]
+// One client connection, as the protocol sees it.
+struct Session {
+  std::string peer;   // "tcp:127.0.0.1:50422"
+  Identity identity;  // role none until "auth" succeeds
+  bool failed_auth = false;  // set by a refused "auth": the server closes the connection
+  // For the audit trail: "console@tcp:127.0.0.1:50422", or the peer alone.
+  [[nodiscard]] std::string who() const;
+};
+// [/snippet:session]
+
 // Handles one request line and returns the response line (without "\n").
-// Never throws: malformed input gets an error response.
-[[nodiscard]] std::string handle_request(std::string_view line, AcquisitionService& service, std::string_view who);
+// Never throws: malformed input gets an error response. `tokens` checks "auth";
+// without a token store, authentication is off and the session's identity is
+// whatever the server gave it when the client connected.
+[[nodiscard]] std::string handle_request(std::string_view line, AcquisitionService& service, Session& session,
+                                         const TokenStore* tokens);
 
 }  // namespace minidaq::control

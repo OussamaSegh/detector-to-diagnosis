@@ -25,7 +25,7 @@ jobs:
       - name: Build (CodeQL observes the compiler)
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build
+          sudo apt-get install -y ninja-build libssl-dev
           cmake --preset release -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF
           cmake --build --preset release
       - uses: github/codeql-action/analyze@v3

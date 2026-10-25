@@ -47,3 +47,10 @@ else()
     SYSTEM)
   FetchContent_MakeAvailable(nlohmann_json)
 endif()
+
+# TLS and hashing for the control API (Chapter 17, ADR 0014, CR-0004). OpenSSL is
+# a platform library: the operating system image provides it and its security
+# updates, so it is found, not fetched, and the SBOM records the version that the
+# build found (tools/make_sbom.py --platform). 3.0 is the oldest supported
+# release series with TLS 1.3 and the APIs used here.
+find_package(OpenSSL 3.0 REQUIRED)

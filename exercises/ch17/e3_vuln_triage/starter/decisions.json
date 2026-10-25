@@ -1,0 +1,5 @@
+{
+  "decisions": [
+    {"vulnerability": "EX-2026-0101", "component": "libssl3t64", "state": "in_triage", "detail": "TODO"}
+  ]
+}

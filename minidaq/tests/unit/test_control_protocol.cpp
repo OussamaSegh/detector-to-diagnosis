@@ -19,6 +19,7 @@
 #include "minidaq/control/control_protocol.hpp"
 #include "minidaq/control/control_server.hpp"
 #include "eventually.hpp"
+#include "test_client.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -57,18 +58,22 @@ TEST(LineFramer, AnOverlongLineIsFatal) {
 }
 
 namespace {
-json call(AcquisitionService& svc, std::string_view line) { return json::parse(handle_request(line, svc, "test")); }
+// The protocol layer alone, for a session that is already an operator.
+json call(AcquisitionService& svc, std::string_view line) {
+  Session s{"test", {"test", Role::operator_}};
+  return json::parse(handle_request(line, svc, s, nullptr));
+}
 }  // namespace
 
 TEST(ControlProtocol, CommandsAndErrors) {
   // REQ: SRS-CTL-020
   AcquisitionService svc{with_default_adapters()};
-  auto r = call(svc, R"({"api":"1.0","id":"a1","cmd":"hello"})");
+  auto r = call(svc, R"({"api":"2.0","id":"a1","cmd":"hello"})");
   EXPECT_EQ(r["ok"], true);
   EXPECT_EQ(r["id"], "a1") << "id echoed unchanged";
   EXPECT_NE(r["server"].get<std::string>().find("minidaq"), std::string::npos);
 
-  r = call(svc, R"({"api":"1.0","id":2,"cmd":"start"})");
+  r = call(svc, R"({"api":"2.0","id":2,"cmd":"start"})");
   EXPECT_EQ(r["ok"], false);
   EXPECT_EQ(r["error"]["code"], "illegal_transition");
   EXPECT_EQ(r["state"], "idle");
@@ -89,8 +94,10 @@ TEST(ControlProtocol, CommandsAndErrors) {
 TEST(ControlProtocol, VersioningAndMalformedInput) {
   // REQ: SRS-CTL-022
   AcquisitionService svc{with_default_adapters()};
-  EXPECT_EQ(call(svc, R"({"api":"2.0","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api");
-  EXPECT_EQ(call(svc, R"({"api":"1.7","id":1,"cmd":"status","priority":"high"})")["ok"], true)
+  EXPECT_EQ(call(svc, R"({"api":"3.0","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api");
+  EXPECT_EQ(call(svc, R"({"api":"1.1","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api")
+      << "a 1.x client does not authenticate, so 2.0 refuses it (ADR 0014)";
+  EXPECT_EQ(call(svc, R"({"api":"2.7","id":1,"cmd":"status","priority":"high"})")["ok"], true)
       << "newer minor version and unknown fields are accepted";
   EXPECT_EQ(call(svc, R"({"api":2,"cmd":"status"})")["error"]["code"], "unsupported_api");
   EXPECT_EQ(call(svc, "not json")["error"]["code"], "bad_request");
@@ -138,72 +145,32 @@ TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
   for (const auto& f : status_fields) {
     EXPECT_TRUE(seen.contains(std::string{f.name})) << "status_fields lists '" << f.name << "', which never appeared";
   }
-  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "1.1");
+  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "2.0");
 }
 // [/snippet:status_fields_test]
 
 namespace {
 
-class Client {
- public:
-  explicit Client(std::uint16_t port) {
-    fd_ = ::socket(AF_INET, SOCK_STREAM, 0);
-    sockaddr_in a{};
-    a.sin_family = AF_INET;
-    a.sin_port = htons(port);
-    ::inet_pton(AF_INET, "127.0.0.1", &a.sin_addr);
-    ok_ = ::connect(fd_, reinterpret_cast<const sockaddr*>(&a), sizeof a) == 0;
-    timeval tv{5, 0};
-    ::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof tv);
-  }
-  ~Client() { close(); }
-  Client(const Client&) = delete;
-  Client& operator=(const Client&) = delete;
-  void close() {
-    if (fd_ >= 0) {
-      ::close(fd_);
-      fd_ = -1;
-    }
-  }
-  [[nodiscard]] bool ok() const { return ok_; }
-  void send(std::string_view s) { (void)::send(fd_, s.data(), s.size(), MSG_NOSIGNAL); }
-  // One response line, or "" on timeout or close.
-  std::string line() {
-    std::size_t nl;
-    while ((nl = buf_.find('\n')) == std::string::npos) {
-      char b[4096];
-      const ssize_t n = ::recv(fd_, b, sizeof b, 0);
-      if (n <= 0) {
-        return "";
-      }
-      buf_.append(b, static_cast<std::size_t>(n));
-    }
-    std::string l = buf_.substr(0, nl);
-    buf_.erase(0, nl + 1);
-    return l;
-  }
-  json call(const json& req) {
-    send(req.dump() + "\n");
-    const std::string l = line();
-    return l.empty() ? json{} : json::parse(l);
-  }
+using test_support::Client;
 
- private:
-  int fd_ = -1;
-  bool ok_ = false;
-  std::string buf_;
+// A server whose one operator token the tests know.
+struct Secured {
+  std::string token = new_token();
+  ServerSecurity security{std::make_shared<const TokenStore>(TokenStore::single("test", Role::operator_, token)), nullptr};
 };
 
 }  // namespace
 
 TEST(ControlServer, PipelinedRequestsAndManyClients) {
   AcquisitionService svc{with_default_adapters()};
-  ControlServer server{svc, 0};
+  const Secured sec;
+  ControlServer server{svc, 0, sec.security};
   const auto port = server.start();
   ASSERT_TRUE(port) << port.error();
   Client a{*port};
   Client b{*port};
   ASSERT_TRUE(a.ok() && b.ok());
+  ASSERT_TRUE(a.auth(sec.token) && b.auth(sec.token));
   // Three requests in one write: three responses, in order.
   a.send("{\"id\":1,\"cmd\":\"hello\"}\n{\"id\":2,\"cmd\":\"status\"}\n{\"id\":3,\"cmd\":\"start\"}\n");
   EXPECT_EQ(json::parse(a.line())["id"], 1);
@@ -215,11 +182,13 @@ TEST(ControlServer, PipelinedRequestsAndManyClients) {
 TEST(ControlServer, AClientThatDisconnectsDoesNotStopTheAcquisition) {
   // REQ: SRS-CTL-023
   AcquisitionService svc{with_default_adapters()};
-  ControlServer server{svc, 0};
+  const Secured sec;
+  ControlServer server{svc, 0, sec.security};
   const auto port = server.start();
   ASSERT_TRUE(port);
   {
     Client c{*port};
+    ASSERT_TRUE(c.auth(sec.token));
     ASSERT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}, {"source", {{"rate_hz", 1e6}}}}}})["ok"],
               true);
     ASSERT_EQ(c.call({{"cmd", "start"}})["state"], "running");
@@ -227,6 +196,7 @@ TEST(ControlServer, AClientThatDisconnectsDoesNotStopTheAcquisition) {
   std::this_thread::sleep_for(50ms);  // sleep: hides only (gives a wrong stop the time to happen)
   EXPECT_EQ(svc.state(), AcqState::running);
   Client again{*port};
+  ASSERT_TRUE(again.auth(sec.token));
   const auto st = again.call({{"cmd", "status"}});
   EXPECT_EQ(st["status"]["state"], "running");
   EXPECT_EQ(st["status"]["run_id"], 1) << "a new client sees the same run";
@@ -244,11 +214,13 @@ TEST(ControlServer, RecordsEveryCommandWithTheClientsAddress) {
     records.push_back(r);
   };
   AcquisitionService svc{std::move(opt)};
-  ControlServer server{svc, 0};
+  const Secured sec;
+  ControlServer server{svc, 0, sec.security};
   const auto port = server.start();
   ASSERT_TRUE(port);
   Client c{*port};
   ASSERT_TRUE(c.ok());
+  ASSERT_TRUE(c.auth(sec.token));
   EXPECT_EQ(c.call({{"cmd", "start"}})["ok"], false);  // rejected: not configured
   EXPECT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}}}})["ok"], true);
   EXPECT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}, {"sorce", {}}}}})["ok"], false);
@@ -259,7 +231,7 @@ TEST(ControlServer, RecordsEveryCommandWithTheClientsAddress) {
     if (r.action != "configure" && r.action != "start" && r.action != "stop" && r.action != "reset") {
       continue;  // transitions, connections: recorded too, not commands
     }
-    EXPECT_TRUE(r.who.starts_with("tcp:127.0.0.1:")) << r.action << " by " << r.who;
+    EXPECT_TRUE(r.who.starts_with("test@tcp:127.0.0.1:")) << r.action << " by " << r.who << ": identity and address";
     seen.emplace_back(r.action, r.ok);
   }
   const std::vector<std::pair<std::string, bool>> expected{
@@ -270,7 +242,8 @@ TEST(ControlServer, RecordsEveryCommandWithTheClientsAddress) {
 TEST(ControlServer, OverlongRequestClosesOnlyThatConnection) {
   // REQ: SRS-CTL-021
   AcquisitionService svc{with_default_adapters()};
-  ControlServer server{svc, 0};
+  const Secured sec;
+  ControlServer server{svc, 0, sec.security};
   const auto port = server.start();
   ASSERT_TRUE(port);
   Client bad{*port};
@@ -285,7 +258,8 @@ TEST(ControlServer, OverlongRequestClosesOnlyThatConnection) {
 
 TEST(ControlServer, RefusesClientsBeyondTheLimit) {
   AcquisitionService svc{with_default_adapters()};
-  ControlServer server{svc, 0, "127.0.0.1", 2};
+  const Secured sec;
+  ControlServer server{svc, 0, sec.security, "127.0.0.1", 2};
   const auto port = server.start();
   ASSERT_TRUE(port);
   Client a{*port};
@@ -300,7 +274,8 @@ TEST(ControlServer, RefusesClientsBeyondTheLimit) {
 
 TEST(ControlServer, BadBindAddressIsReported) {
   AcquisitionService svc{with_default_adapters()};
-  ControlServer server{svc, 0, "not-an-address"};
+  const Secured sec;
+  ControlServer server{svc, 0, sec.security, "not-an-address"};
   const auto r = server.start();
   ASSERT_FALSE(r);
   EXPECT_NE(r.error().find("bad bind address"), std::string::npos);

@@ -35,21 +35,23 @@ started it, a crashed GUI, a closed laptop or a network hiccup stops a patient s
 
 Option 4, with these rules:
 
-- Every response carries `"api": "MAJOR.MINOR"` (`1.0` at this decision; `1.1` since [ADR 0013](0013-versioned-status-fields.md)), and clients should send it in
-  every request. A request with a different major version is refused with
-  `unsupported_api`; a request without `api` is read as the server's own version. Within a major version, new
+- Every response carries `"api": "MAJOR.MINOR"` (`1.0` at this decision; `1.1` since
+  [ADR 0013](0013-versioned-status-fields.md); `2.0`, with authentication, since
+  [ADR 0014](0014-control-api-authentication-and-tls.md)), and clients should send it in every
+  request. A request with a different major version is refused with `unsupported_api`; a
+  request without `api` is read as the server's own version. Within a major version, new
   commands and new fields are added only in minor versions, and unknown fields are ignored,
   so an older server tolerates a newer client and the reverse.
 - A request's `"id"` is echoed unchanged. Errors are `{"code", "message"}` with a fixed set
   of codes (`bad_request`, `unsupported_api`, `unknown_command`, `illegal_transition`,
-  `config_error`, `device_error`, `busy`).
+  `config_error`, `device_error`, `busy`; `unauthenticated` and `forbidden` since ADR 0014).
 - Requests are limited to 64 KiB; a longer line closes the connection, since the stream
   cannot be resynchronized safely.
 - The server binds to 127.0.0.1 by default and serves at most 8 clients from one thread.
 - **The acquisition belongs to the service, not to a connection.** A client that
   disconnects is recorded in the audit trail and changes nothing else; any client can stop
-  the run. Stopping on disconnect would be a separate, explicit feature (a lease with a
-  heartbeat) if a risk analysis ever asks for it.
+  the run (any operator, since ADR 0014). Stopping on disconnect would be a separate,
+  explicit feature (a lease with a heartbeat) if a risk analysis ever asks for it.
 
 The message layer (`handle_request`) is independent of the transport, so moving to gRPC or
 HTTP later replaces the server, not the service or the protocol tests.
@@ -67,6 +69,7 @@ HTTP later replaces the server, not the service or the protocol tests.
 - No schema-generated client types: compatibility is enforced by tests and review, not by
   a compiler.
 - No authentication or encryption yet; binding to another interface is a deliberate,
-  documented configuration change until Chapter 17.
+  documented configuration change until Chapter 17 (resolved by ADR 0014: tokens, roles and
+  TLS 1.3).
 - We own the framing and server code (and its fuzzing, Chapter 7), and telemetry is polled
   through `status` rather than streamed.

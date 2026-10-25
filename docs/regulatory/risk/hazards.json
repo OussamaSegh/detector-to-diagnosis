@@ -152,11 +152,16 @@
       "severity": "S2",
       "probability_before": "P4",
       "controls": [
-        {"id": "RC-18", "type": "protective", "description": "Every control action, accepted or rejected, is recorded in the audit trail with the client's address and port.", "requirements": ["SRS-CTL-032"], "effectiveness": {"method": "analysis", "evidence": "The audit trail detects misuse after the fact; it does not prevent it, so it does not reduce the probability."}}
+        {"id": "RC-18", "type": "protective", "description": "Every control action, accepted or rejected, is recorded in the audit trail with the client's address and port.", "requirements": ["SRS-CTL-032"], "effectiveness": {"method": "analysis", "evidence": "The audit trail detects misuse after the fact; it does not prevent it, so it does not reduce the probability."}},
+        {"id": "RC-21", "type": "protective", "description": "A connection authenticates with a token before any command but hello, and an unknown token closes it. Tokens are 256 random bits, stored by the server only as hashes, in files that only their owner can write (Chapter 17, ADR 0014).", "requirements": ["SRS-SEC-001", "SRS-SEC-002", "SRS-SEC-008", "SRS-SEC-009"], "effectiveness": {"method": "test", "evidence": "ControlServer.AnIntruderCannotStopARunningScan"}},
+        {"id": "RC-22", "type": "protective", "description": "Roles: a client with the observer role may read the status and nothing else, so a dashboard's token cannot stop a scan.", "requirements": ["SRS-SEC-003"], "effectiveness": {"method": "test", "evidence": "ControlServer.AnIntruderCannotStopARunningScan"}},
+        {"id": "RC-23", "type": "protective", "description": "TLS 1.3, with the client verifying the server's certificate before it sends its token, protects the token and the commands on the network.", "requirements": ["SRS-SEC-006", "SRS-SEC-007"], "effectiveness": {"method": "test", "evidence": "ControlServer.TheTokenNeverCrossesTheNetworkInClear"}},
+        {"id": "RC-24", "type": "inherent", "description": "Secure defaults: the server does not start without tokens unless told to, never binds beyond loopback without TLS and tokens, and closes connections that do not authenticate in time.", "requirements": ["SRS-SEC-004", "SRS-SEC-005"], "effectiveness": {"method": "test", "evidence": "ControlServer.RefusesInsecureConfigurations"}},
+        {"id": "RC-25", "type": "information", "description": "The accompanying documentation states that the operator's account on the acquisition PC and the token files must be protected by the site, and that the control port belongs on the scanner's dedicated network (docs/regulatory/security/threat-model.md, section 6).", "requirements": [], "effectiveness": {"method": "inspection", "evidence": "docs/regulatory/security/threat-model.md, section 6"}}
       ],
-      "probability_after": "P4",
-      "residual": "Not acceptable for clinical use. Planned control: authentication and authorization of control clients (Chapter 17, problem report MDQ-PR-008).",
-      "status": "open"
+      "probability_after": "P2",
+      "residual": "Acceptable (S2/P2). Controlling the acquisition now needs an operator token: a stolen token or the operator's own account on the acquisition PC, which the site protects (RC-25). P2 is the book's estimate for that (assumption: confirm with team and the security risk assessment of the scanner).",
+      "status": "closed"
     },
     {
       "id": "H-09",

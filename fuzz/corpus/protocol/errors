@@ -1,3 +1,5 @@
 {"api": "2.0", "cmd": "stop"}
 not json
 {"cmd": 7}
+{"cmd": "auth", "token": "mdq_wrong"}
+{"cmd": "status"}

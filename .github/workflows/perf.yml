@@ -3,7 +3,8 @@
 # self-hosted runner labelled "perf" (no other jobs, fixed CPU frequency, SMT
 # off), never on shared cloud runners. It fails if a gated benchmark is more
 # than 5% slower than benchmarks/baseline/<runner>.json and the difference is
-# significant (one-sided Mann-Whitney U, alpha 0.01).
+# significant (one-sided Mann-Whitney U, alpha 0.01). The runner provides the
+# build tools and, since Chapter 17, the OpenSSL development package.
 name: perf
 on:
   workflow_dispatch:

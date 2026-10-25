@@ -1,2 +1,5 @@
-{"api": "1.0", "id": 1, "cmd": "hello"}
-{"api": "1.0", "id": 2, "cmd": "status"}
+{"api": "2.0", "id": 11, "cmd": "hello"}
+{"api": "2.0", "id": 2, "cmd": "status"}
+{"api": "2.0", "id": 3, "cmd": "auth", "token": "mdq_observer"}
+{"api": "2.0", "id": 4, "cmd": "status"}
+{"api": "2.0", "id": 5, "cmd": "start"}

@@ -1,0 +1,30 @@
+// SPDX-License-Identifier: MIT
+// MiniDAQ's data flow diagram for the threat model (Chapter 17). The node names are the element
+// ids of threats.json; tools/check_threats.py checks that the two agree. Dashed boxes are trust
+// boundaries. Render: dot -Tsvg dataflow.dot -o dataflow.svg
+digraph minidaq_dataflow {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=11, nodesep=0.4, ranksep=0.7];
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  client [label="Control client\n(minidaq_ctl, GUI, script)", shape=box];
+  detector [label="Detector\nreadout boards", shape=box];
+
+  subgraph cluster_pc {
+    label="Acquisition PC: the operator's account";
+    style=dashed;
+    server [label="minidaq_server\n(control server,\nacquisition service)", shape=ellipse];
+    config [label="Configuration\nfiles", shape=cylinder];
+    tokens [label="Token file, start-up token,\nTLS private key", shape=cylinder];
+    listmode [label="List-mode files,\nrun records", shape=cylinder];
+    audit [label="Audit trail", shape=cylinder];
+  }
+
+  client -> server [label="control: control API\nTCP 7700, TLS 1.3 + token"];
+  server -> client [label="responses", style=dotted];
+  detector -> server [label="readout: MDQ-R1\nover UDP"];
+  config -> server [label="read at configure"];
+  tokens -> server [label="read at start"];
+  server -> listmode [label="write"];
+  server -> audit [label="append"];
+}

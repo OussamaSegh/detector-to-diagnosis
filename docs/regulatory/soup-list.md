@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 3 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 4 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -38,7 +38,26 @@ MiniDAQ minor version.
 | Known-anomaly review | Before each release: read the library's issue tracker and release notes for the pinned version and any later ones, and evaluate each reported defect against the requirements above. Record the result below. |
 | Last review | 2026-10-25, for MiniDAQ 0.3: 3.12.0, the pinned version, has no later release; the fixes on its development branch were read (record in [section 4](#4-known-anomaly-reviews)). Result: none affects a requirement above. |
 
-The platform that the shipped programs run on (C++ standard library, C
+| Field | OpenSSL (platform library) |
+|---|---|
+| Identification | OpenSSL 3, `libssl` and `libcrypto`, from the target system: `find_package(OpenSSL 3.0 REQUIRED)` in `cmake/Dependencies.cmake`, not pinned by this repository. On the build machine of MiniDAQ 0.3: OpenSSL 3.0.13, Ubuntu 24.04 package `libssl3t64` version `3.0.13-0ubuntu3.16`. The SBOM records the version that the build found, with its distribution package URL. Since change request CR-0004. |
+| Supplier | The OpenSSL Project (https://openssl-library.org), packaged and patched by Canonical for Ubuntu |
+| License | Apache-2.0 |
+| Used by | `minidaq_control`, linked privately, only in the `access` item (`control/access.cpp`, `control/tls.cpp`); through it `minidaq_server` and `minidaq_ctl`. No OpenSSL header in MiniDAQ's public headers; `tools/check_layers.py` forbids it in the core and application layers. |
+| Why | Decision record [ADR 0014](../adr/0014-control-api-authentication-and-tls.md): TLS and cryptography are not written by MiniDAQ. |
+| Features used | TLS 1.3 server and client over TCP (`TLS_server_method`, `TLS_client_method`, minimum version TLS 1.3, no session tickets, no session cache); X.509 certificate chain verification with host name and IP address checks (`SSL_set1_host`, `X509_VERIFY_PARAM_set1_ip_asc`); PEM loading of a certificate chain, a private key and CA certificates; SHA-256 (`EVP_Digest`); `RAND_bytes`; `CRYPTO_memcmp`; `OPENSSL_cleanse`. Not used: DTLS, TLS 1.2 or older, ALPN, client certificates, CMS, PKCS#7, PKCS#12, CMP, CRMF, OCSP, CRLs, the low-level cipher interfaces. |
+| Functional requirements on it | Negotiates only TLS 1.3 when told to; refuses a certificate that does not chain to the trusted CA or does not match the host name or address; never sends application data before the handshake; `RAND_bytes` returns cryptographically secure random bytes or fails; `CRYPTO_memcmp` takes a time that does not depend on the contents. |
+| Performance requirements on it | None on the hot path. A handshake completes well within the 10 s authentication deadline on the acquisition PC (assumption: confirm with team for the target hardware). |
+| Hardware and software it needs | Linux, the platform's C library; installed by the operating system's package manager. |
+| Safety class of the items that use it | B: `access`, and through it `server` and `ctl` |
+| What its failure could cause | An unauthorized party controls the acquisition (a defect in verification or in the protocol), a token is disclosed (a defect in encryption), the control server crashes or hangs during a run (a defect in parsing a handshake or a certificate), which loses the control of the scan but not the acquisition threads. |
+| Risk controls outside it | The server refuses insecure configurations itself (SRS-SEC-005); authorization is MiniDAQ's code, tested independently of TLS; the acquisition threads do not use OpenSSL; the platform's security updates (threat-model.md, section 6, item 7); the vulnerability scan of the SBOM and its triage (threat-model.md, section 8). |
+| How MiniDAQ verifies its use | `test_security.cpp`: TLS 1.3 only (a TLS 1.2 client is refused), a client that trusts another CA or connects by another name is refused, an eavesdropper sees no token; the whole suite under AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer (the sanitizers instrument MiniDAQ's code, not the prebuilt library). |
+| Anomalies found by MiniDAQ | None. A write to a connection that the peer had closed raised `SIGPIPE` and ended the process; this is the documented behavior of `write(2)` on a socket, not an OpenSSL defect, and MiniDAQ blocks or ignores the signal (Chapter 17). |
+| Known-anomaly review | Before each release: read the security advisories of OpenSSL 3.0 and the changelog of the platform's package, and evaluate each fix against the features used above. Record the result below. Between releases: the vulnerability scan of the SBOM (CI job `vulnerability-scan`). |
+| Last review | 2026-10-25, for MiniDAQ 0.3: the Ubuntu package `3.0.13-0ubuntu3.16` (record in [section 4](#4-known-anomaly-reviews)). Result: the installed package contains the fixes of every advisory that affects a feature MiniDAQ uses; MiniDAQ 0.3 needs that package version or later. |
+
+The rest of the platform that the shipped programs run on (C++ standard library, C
 library, Linux kernel interfaces) is also SOUP, but it is supplied by the
 target system rather than pinned by this repository. Its identification and
 qualification belong to the platform definition (Chapter 25).
@@ -127,6 +146,33 @@ at tag `v3.12.0`.
 
 Decision: upgrade to 3.12.0 for MiniDAQ 0.3.0 (CR-0002); MDQ-PR-005 is closed by it.
 
+### 2026-10-25: OpenSSL 3.0.13 as packaged by Ubuntu 24.04 (`3.0.13-0ubuntu3.16`), for MiniDAQ 0.3
+
+Reviewer: the book's author. Source: the package's own changelog
+(`/usr/share/doc/libssl3t64/changelog.Debian.gz` on the build machine), which lists every
+security fix that Canonical backported to 3.0.13, from `0ubuntu3.1` (2024-05-14) to `0ubuntu3.16`
+(2026-09-16). The OpenSSL project's advisories could not be read from the build environment
+(verify: each entry below against the advisory, and any advisory of OpenSSL 3.0 after
+2026-09-16). The table groups its 44 security updates, which name 44 CVE identifiers (two
+updates name none), by the feature they affect; the CVE numbers are in the changelog.
+
+| Fixes in the package (examples) | Does MiniDAQ use the affected feature? | Effect on MiniDAQ |
+|---|---|---|
+| Unbounded memory growth with TLS 1.3 sessions when `SSL_OP_NO_TICKET` is set (CVE-2024-2511) | Yes: the server sets `SSL_OP_NO_TICKET`. It also turns the session cache off, which should avoid the growth (verify: against the advisory) | Fixed in `0ubuntu3.2`. Without the fix, memory growth of the control server over many connections. |
+| Denial of service in X.509 name checks (CVE-2024-6119) | Yes: `minidaq_ctl` checks the server's name or address | Fixed in `0ubuntu3.4`. Without the fix, a forged server could crash the client; no token is sent before the check. |
+| ASN.1 parsing and string conversion: heap over-read (CVE-2026-34180), heap overflow (CVE-2026-7383), ASN1_TYPE validation (CVE-2025-69420, CVE-2026-22795, CVE-2026-22796) | Yes: certificates are ASN.1, parsed by the client (the server's chain) and by the server (its own files) | Fixed in `0ubuntu3.7` and `0ubuntu3.11`. Without the fixes, a forged server certificate could crash the client or worse. |
+| X.509 extensions: relative CRL distribution point names (CVE-2026-35189) | Yes, in certificate processing; CRLs themselves are not checked | Fixed in `0ubuntu3.16`. |
+| TLS handshake buffer growth, "HollowByte" (Launchpad bug 2161371) | Yes: the server's TLS handshake | Fixed in `0ubuntu3.12` (verify: the advisory). Without the fix, a client on the network could make the server allocate memory before authenticating; the 10 s deadline limits how long. |
+| Timing side channel in scalar multiplication for non-NIST curves (CVE-2026-54872) | Possibly: TLS 1.3 key exchange may negotiate X25519 (verify: whether X25519 is affected) | Fixed in `0ubuntu3.16`. |
+| Hexadecimal conversion overflow (CVE-2026-31789) | Not directly: MiniDAQ writes its own hex | Fixed in `0ubuntu3.9`. |
+| RSA implicit rejection (`0ubuntu3.1`); timing in ECDSA (CVE-2024-13176) | No RSA decryption; ECDSA with P-256 certificates in the tests, the site chooses its own | Fixed. |
+| DTLS (CVE-2026-54874, CVE-2026-75806, CVE-2026-84782), TLS 1.2 AEAD records | No: TLS 1.3 only, no DTLS | None |
+| CMS, PKCS#7, PKCS#12, CMP, CRMF, OCSP, delta CRLs, RFC 3211 key wrap, SM2, DSA parameters, low-level OCB, SIV and `EVP_Cipher()` paths, `SSL_free_buffers`, `SSL_select_next_proto`, `BIO_f_linebuffer` | No | None |
+
+Decision: MiniDAQ 0.3.0 requires OpenSSL 3.0 with the fixes of package `3.0.13-0ubuntu3.16` or
+an equivalent later version. The vulnerability scan of the SBOM checks this from now on: an SBOM
+that records an older package version reports the fixed vulnerabilities as open.
+
 ## Document history
 
 | Version | Change |
@@ -134,3 +180,4 @@ Decision: upgrade to 3.12.0 for MiniDAQ 0.3.0 (CR-0002); MDQ-PR-005 is closed by
 | 1 | First version (Chapter 7). |
 | 2 | Requirements on each item and the known-anomaly review of nlohmann/json 3.11.3 (Chapter 14). |
 | 3 | nlohmann/json 3.12.0 and its known-anomaly review (CR-0002); the follow-up of the 3.11.3 review; this history (Chapter 16). |
+| 4 | OpenSSL as a platform SOUP item and its known-anomaly review (CR-0004, Chapter 17). |

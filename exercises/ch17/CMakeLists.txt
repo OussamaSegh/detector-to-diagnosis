@@ -1,0 +1,5 @@
+minidaq_python_exercise(e1_threat_model)
+minidaq_exercise(e2_token_roles)
+minidaq_python_exercise(e3_vuln_triage)
+minidaq_python_exercise(e4_attack_tree)
+minidaq_exercise(e5_secure_bind)

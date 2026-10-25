@@ -1,0 +1,6 @@
+{
+  "comment": "Exercise 17.4: change a scan's list-mode data without it being noticed (threats T-27, T-31). TODO: at least five leaves, under AND and OR nodes.",
+  "id": "root", "label": "Change a scan's data without it being noticed", "op": "OR", "children": [
+    {"id": "1", "label": "TODO", "blocked_by": []}
+  ]
+}

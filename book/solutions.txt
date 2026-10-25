@@ -16,3 +16,4 @@ solutions/ch13.md
 solutions/ch14.md
 solutions/ch15.md
 solutions/ch16.md
+solutions/ch17.md

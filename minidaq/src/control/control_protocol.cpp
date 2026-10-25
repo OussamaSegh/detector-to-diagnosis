@@ -64,10 +64,34 @@ bool major_matches(const std::string& v) {
 
 std::string dump(const json& j) { return j.dump(-1, ' ', false, json::error_handler_t::replace); }
 
+// [snippet:auth]
+json authenticate(const json& req, const json& id, AcquisitionService& service, Session& session,
+                  const TokenStore* tokens) {
+  if (tokens == nullptr) {  // authentication is off: the identity stays what the server gave
+    return json{{"api", api_version}, {"id", id}, {"ok", true}, {"identity", session.identity.name},
+                {"role", to_string(session.identity.role)}};
+  }
+  const auto token = req.value("token", std::string{});
+  const auto who = tokens->check(token);
+  if (!who) {
+    // The token is never recorded: a mistyped token is often one character from a real one.
+    session.failed_auth = true;
+    service.note(session.peer, "auth", "refused: unknown token", false);
+    return error_response(id, service.state(), "unauthenticated", "unknown token; the connection is closed");
+  }
+  session.identity = *who;
+  service.note(session.who(), "auth", std::string{to_string(who->role)});
+  return json{{"api", api_version}, {"id", id}, {"ok", true}, {"identity", who->name}, {"role", to_string(who->role)}};
+}
+// [/snippet:auth]
+
 }  // namespace
 
+std::string Session::who() const { return identity.name.empty() ? peer : identity.name + "@" + peer; }
+
 // [snippet:handle]
-std::string handle_request(std::string_view line, AcquisitionService& service, std::string_view who) {
+std::string handle_request(std::string_view line, AcquisitionService& service, Session& session,
+                           const TokenStore* tokens) {
   const json req = json::parse(line, nullptr, /*allow_exceptions=*/false);
   if (req.is_discarded() || !req.is_object()) {
     return dump(error_response(nullptr, service.state(), "bad_request", "a request is one JSON object per line"));
@@ -86,8 +110,23 @@ std::string handle_request(std::string_view line, AcquisitionService& service, s
                      {"id", id},
                      {"ok", true},
                      {"server", std::string{"minidaq "} + MINIDAQ_VERSION_STRING},
-                     {"commands", {"hello", "configure", "start", "stop", "reset", "status"}}});
+                     {"auth", tokens != nullptr ? "token" : "none"},
+                     {"commands", {"hello", "auth", "configure", "start", "stop", "reset", "status"}}});
   }
+  if (cmd == "auth") {
+    return dump(authenticate(req, id, service, session, tokens));
+  }
+  // [snippet:authorize]
+  const Role needed = required_role(cmd);
+  if (needed > session.identity.role) {
+    const bool anonymous = session.identity.role == Role::none;
+    service.note(session.who(), cmd, anonymous ? "refused: not authenticated" : "refused: role", false);
+    return dump(error_response(id, service.state(), anonymous ? "unauthenticated" : "forbidden",
+                               anonymous ? "authenticate first (\"auth\")"
+                                         : "\"" + cmd + "\" needs the role " + std::string{to_string(needed)}));
+  }
+  // [/snippet:authorize]
+  const std::string who = session.who();
   if (cmd == "status") {
     return dump(json{{"api", api_version}, {"id", id}, {"ok", true}, {"status", service.status()}});
   }
