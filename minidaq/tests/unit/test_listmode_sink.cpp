@@ -358,7 +358,7 @@ TEST(ListModeSink, RejectsBadConfigurationsAndExistingFiles) {
 }
 
 TEST(ListModeSink, WritesRealFilesThroughTheService) {
-  // REQ: SRS-OUT-009
+  // REQ: SRS-OUT-009, SRS-OUT-011, SRS-OUT-012
   const auto dir = std::filesystem::temp_directory_path() / ("minidaq-lm-" + std::to_string(::getpid()));
   std::filesystem::remove_all(dir);
   std::filesystem::create_directories(dir);
@@ -395,6 +395,7 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
     const auto meta = nlohmann::json::parse(back.metadata);
     EXPECT_EQ(meta["configuration"]["output"]["type"], "listmode");
     EXPECT_EQ(meta["simulated"], true) << "the synthetic source is a simulation";
+    EXPECT_TRUE(meta["configuration"]["sorter"].contains("multiples")) << "defaults are stored too";
   }
   // The run record: the service's counters, next to the data (SRS-OUT-010).
   ASSERT_TRUE(record.is_object()) << "no run record";
@@ -402,6 +403,7 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
   EXPECT_EQ(record["sink_counters"]["coincidences"].get<std::uint64_t>(), written);
   EXPECT_TRUE(record["run"]["detector_counters"].is_object()) << record.dump();
   EXPECT_EQ(record["run"]["stages"][4]["in"], st["stages"][4]["in"]);
+  EXPECT_EQ(record["run"]["integrity"]["complete"], true) << record["run"]["integrity"];
   EXPECT_GT(written, 0U);
   EXPECT_EQ(read, written);
   EXPECT_EQ(static_cast<std::uint64_t>(files), st["sink_counters"]["files"].get<std::uint64_t>());

@@ -65,6 +65,11 @@ List-mode files carry a run name, never a patient's name, ID or birth date. The 
 a run and a patient is held by the scanner's workflow software. Simulated acquisitions are
 marked as simulated in every file.
 
+Every run record carries an integrity verdict (`integrity.complete`) with the counters of any
+data lost on the way to the disk. Software that reconstructs or analyzes MiniDAQ's data checks
+the verdict first, and treats a run whose verdict is not complete as incomplete (risk control
+RC-05 in the [hazard analysis](risk/hazards.json)).
+
 ## What MiniDAQ is not
 
 - Not standalone software: it runs only as part of the scanner, and its regulatory class is the

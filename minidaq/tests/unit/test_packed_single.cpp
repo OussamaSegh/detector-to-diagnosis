@@ -82,6 +82,7 @@ TEST(TimeUnwrapper, LateWordFromBeforeTheWrap) {
 }
 
 TEST(StreamDecoder, DecodesAndCountsInvalidCrystals) {
+  // REQ: SRS-FMT-013
   std::vector<std::uint64_t> words = {
       p::encode(Single{1_ns, CrystalId{10}, 511.0_keV}),
       p::pack({ScannerGeometry::num_crystals, 100, 400}),  // invalid id for this scanner

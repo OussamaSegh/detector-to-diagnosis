@@ -27,6 +27,7 @@ struct Script {
   std::atomic<bool> fail{false};
   std::atomic<std::uint64_t> words{0};
   std::atomic<int> created{0};
+  std::atomic<std::uint64_t> lost{0};  // reported as the link's packets_lost
 };
 
 class ScriptedDetector final : public DetectorPort {
@@ -41,6 +42,9 @@ class ScriptedDetector final : public DetectorPort {
     return script_.fail.load() ? std::optional<std::string>{"link down"} : std::nullopt;
   }
   [[nodiscard]] std::string describe() const override { return "scripted"; }
+  [[nodiscard]] std::vector<DetectorCounter> counters() const override {
+    return {{"packets_lost", script_.lost.load()}};
+  }
 
  private:
   Script& script_;
@@ -270,6 +274,33 @@ TEST(AcquisitionService, OutOfOrderSinglesAreAFault) {
   ASSERT_TRUE(st.contains("sorter")) << "the sorter's counters are part of the status";
   EXPECT_TRUE(st["sorter"].contains("out_of_order"));
 }
+
+// [snippet:effectiveness]
+TEST(AcquisitionService, ALossMakesTheRunIncomplete) {
+  // REQ: SRS-CTL-030, SRS-CTL-031
+  Script script;
+  Audit audit;
+  AcquisitionService svc{options(script, &audit)};
+  auto c = small();
+  c.source.rate_hz = 1e6;
+  c.stop_after_s = 0.02;
+  ASSERT_TRUE(svc.configure(c, "test").ok);
+  ASSERT_TRUE(svc.start("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  EXPECT_EQ(svc.status()["integrity"]["complete"], true) << "a clean run is complete";
+  EXPECT_FALSE(audit.contains("data_incomplete", ""));
+
+  script.lost = 3;  // the link loses three packets in the second run; the run ends normally
+  ASSERT_TRUE(svc.start("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  const auto st = svc.status();
+  EXPECT_TRUE(st["fault"].is_null()) << "a loss is not a fault: the run ends normally";
+  EXPECT_EQ(st["integrity"]["complete"], false);
+  ASSERT_EQ(st["integrity"]["losses"].size(), 1U);
+  EXPECT_EQ(st["integrity"]["losses"][0]["counter"], "/detector_counters/packets_lost");
+  EXPECT_TRUE(audit.contains("data_incomplete", "run 2: /detector_counters/packets_lost = 3"));
+}
+// [/snippet:effectiveness]
 
 TEST(AcquisitionService, StatusReportsTheLastIntervalSeparately) {
   Script script;

@@ -32,6 +32,7 @@ add_library(minidaq_control
   src/control/audit.cpp
   src/control/audit_log.cpp
   src/control/acquisition_service.cpp
+  src/control/run_integrity.cpp
   src/control/control_protocol.cpp
   src/control/control_server.cpp
   src/control/udp_detector.cpp

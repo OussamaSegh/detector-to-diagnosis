@@ -1,0 +1,38 @@
+// Fault tree of hazard H-01 (Chapter 15): the top event, the gates and the basic events.
+// Basic events E1 to E5 lose data, E6 to E8 hide the loss; risk controls RC-01 to RC-05
+// (hazards.json) act on them. Exercise 15.4 works out the minimal cut sets.
+digraph fault_tree {
+  rankdir=TB; nodesep=0.25; ranksep=0.4;
+  node [fontname="Helvetica", fontsize=10];
+  edge [arrowhead=none];
+
+  top [shape=box, style="rounded,filled", fillcolor="#f4e0dc", label="TOP: incomplete data\nreconstructed as complete"];
+  g_and [shape=invhouse, label="AND"];
+  g_lost [shape=box, label="G1: data lost or altered\nbetween detector and disk"];
+  g_lost_or [shape=invtriangle, label="OR"];
+  g_miss [shape=box, label="G2: the loss is not noticed\nbefore reconstruction"];
+  g_miss_or [shape=invtriangle, label="OR"];
+
+  e1 [shape=ellipse, label="E1: packets lost\non the link"];
+  e2 [shape=ellipse, label="E2: source drops words\nunder overload"];
+  e3 [shape=ellipse, label="E3: singles out of\ntime order dropped"];
+  e4 [shape=ellipse, label="E4: sink drops blocks\nafter a fault"];
+  e5 [shape=ellipse, label="E5: open windows not\nclosed at the end of a run"];
+  e6 [shape=ellipse, label="E6: a loss path\nwithout a counter"];
+  e7 [shape=ellipse, label="E7: the integrity check\nmisses a counter"];
+  e8 [shape=ellipse, label="E8: the consumer does\nnot read the verdict"];
+
+  top -> g_and;
+  g_and -> g_lost;
+  g_and -> g_miss;
+  g_lost -> g_lost_or;
+  g_lost_or -> e1;
+  g_lost_or -> e2;
+  g_lost_or -> e3;
+  g_lost_or -> e4;
+  g_lost_or -> e5;
+  g_miss -> g_miss_or;
+  g_miss_or -> e6;
+  g_miss_or -> e7;
+  g_miss_or -> e8;
+}

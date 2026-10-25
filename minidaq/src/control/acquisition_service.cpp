@@ -9,6 +9,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "minidaq/control/run_integrity.hpp"
+
 namespace minidaq::control {
 
 namespace {
@@ -285,12 +287,22 @@ void AcquisitionService::check_run_locked() {
     // The last write() has returned: the sink can make the run durable, with
     // the run's record (counters included) next to the data. A run whose data
     // did not reach stable storage ends in a fault.
-    if (auto e = sink_ ? sink_->close(status_locked().dump()) : std::nullopt) {
+    const json record = status_locked();
+    if (auto e = sink_ ? sink_->close(record.dump()) : std::nullopt) {
       return enter_fault_locked("sink: " + *e, "service");
     }
     run_ended_ = std::chrono::steady_clock::now();
     run_ended_set_ = true;
     note("service", "run_ended", "run " + std::to_string(run_id_));
+    // [snippet:incomplete]
+    if (!record["integrity"]["complete"].get<bool>()) {
+      std::string losses;
+      for (const auto& l : record["integrity"]["losses"]) {
+        losses += (losses.empty() ? "" : ", ") + l["counter"].get<std::string>() + " = " + l["count"].dump();
+      }
+      note("service", "data_incomplete", "run " + std::to_string(run_id_) + ": " + losses, false);
+    }
+    // [/snippet:incomplete]
     (void)machine_.apply(AcqEvent::drained);
   }
 }
@@ -385,6 +397,7 @@ json AcquisitionService::status_locked() const {
       j["recent_latency_ns"] = std::move(recent);
     }
   }
+  j["integrity"] = assess_integrity(j);  // risk control RC-01
   return j;
 }
 

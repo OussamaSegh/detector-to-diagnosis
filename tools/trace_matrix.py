@@ -19,17 +19,22 @@ The tool fails if
 - an ID is defined twice,
 - with --check, the committed matrix differs from the one the sources produce.
 
+The column "Risk controls" lists the controls of docs/regulatory/risk/hazards.json that a
+requirement implements (Chapter 15); tools/check_risk.py checks the controls themselves.
+
 Usage:
     trace_matrix.py ROOT            print the matrix
     trace_matrix.py ROOT --write    write docs/regulatory/trace-matrix.md
     trace_matrix.py ROOT --check    fail if docs/regulatory/trace-matrix.md is out of date
 """
+import json
 import pathlib
 import re
 import sys
 
 SRS = pathlib.Path("docs/regulatory/srs.md")
 MATRIX = pathlib.Path("docs/regulatory/trace-matrix.md")
+RISK = pathlib.Path("docs/regulatory/risk/hazards.json")
 TEST_DIRS = ["minidaq/tests", "fuzz", "tools"]
 
 # [snippet:parse]
@@ -113,7 +118,20 @@ def check(reqs, evidence, dups, tags):
 # [/snippet:check]
 
 
-def render(reqs, evidence, tested):
+def risk_controls(root):
+    """Requirement ID -> the IDs of the risk controls it implements."""
+    path = root / RISK
+    out = {}
+    if path.exists():
+        for h in json.loads(path.read_text())["hazards"]:
+            for c in h["controls"]:
+                for rid in c.get("requirements", []):
+                    out.setdefault(rid, []).append(c["id"])
+    return out
+
+
+def render(reqs, evidence, tested, controls=None):
+    controls = controls or {}
     live = {k: v for k, v in reqs.items() if not v[0].startswith("Withdrawn")}
     n_tests = len({t for s in tested.values() for t in s})
     lines = [
@@ -125,15 +143,16 @@ def render(reqs, evidence, tested):
         f"{len(live)} requirements, {sum(1 for r in live if r in tested)} verified by at least one test, "
         f"{n_tests} tests.",
         "",
-        "| Requirement | Item | Method | Verified by |",
-        "|---|---|---|---|",
+        "| Requirement | Item | Method | Verified by | Risk controls |",
+        "|---|---|---|---|---|",
     ]
     for rid in sorted(live, key=lambda r: (r.split("-")[1], r)):
         _text, item, methods = live[rid]
         cells = [f"`{path.rsplit('/', 1)[-1]}` {test}" for path, test in sorted(tested.get(rid, ()))]
         if rid in evidence:
             cells.append(evidence[rid].split(":")[0])
-        lines.append(f"| {rid} | {item} | {','.join(sorted(methods))} | {'<br>'.join(cells)} |")
+        rc = ", ".join(sorted(set(controls.get(rid, []))))
+        lines.append(f"| {rid} | {item} | {','.join(sorted(methods))} | {'<br>'.join(cells)} | {rc} |")
     return "\n".join(lines) + "\n"
 
 
@@ -141,7 +160,7 @@ def main(argv):
     root = pathlib.Path(argv[1]).resolve()
     reqs, evidence, dups = parse_srs((root / SRS).read_text())
     errors, tested = check(reqs, evidence, dups, scan(root))
-    matrix = render(reqs, evidence, tested)
+    matrix = render(reqs, evidence, tested, risk_controls(root))
     mode = argv[2] if len(argv) > 2 else ""
     if mode == "--write":
         (root / MATRIX).write_text(matrix)

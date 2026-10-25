@@ -1,0 +1,17 @@
+{
+  "comment": "Exercise 15.1: MiniDAQ's hazard chains, rated before risk control. A colleague's first three; write ten.",
+  "chains": [
+    {"id": "C-01", "category": "data loss", "hazard": "Packets lost on the readout link",
+     "sequence": "The link drops packets at a high count rate; the run ends normally.",
+     "hazardous_situation": "Images are reconstructed from incomplete data.",
+     "harm": "A delayed or incorrect diagnosis.", "severity": "S2", "probability": "P4", "acceptable": false},
+    {"id": "C-02", "category": "timing", "hazard": "Wrong event times",
+     "sequence": "The time code wraps and the unwrapping fails.",
+     "hazardous_situation": "Wrong event times",
+     "harm": "Artifacts in the image.", "severity": "S2", "probability": "P3", "acceptable": false},
+    {"id": "C-03", "category": "file integrity", "hazard": "A list-mode file is damaged",
+     "sequence": "Power fails while a file is written.",
+     "hazardous_situation": "The damaged file is reconstructed as if it were intact.",
+     "harm": "Artifacts contribute to an incorrect diagnosis.", "severity": "S2", "probability": "P4", "acceptable": false}
+  ]
+}

@@ -1,0 +1,2 @@
+minidaq_python_exercise(e1_hazard_chains)
+minidaq_exercise(e2_loss_controls)

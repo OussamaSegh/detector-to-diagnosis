@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 14). Status: draft for review.
+Version 2 (MiniDAQ 0.3.0-dev, Chapter 15). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -25,8 +25,8 @@ a document of the manufacturer's quality management system and does not reproduc
 - Numbers marked as assumptions in the [performance budget](../performance-budget.md) are
   book-level numbers (assumption: confirm with team); the product's numbers come from the
   system requirements of the scanner.
-- Requirements that implement a risk control will name their hazard once the risk analysis
-  exists (Chapter 15).
+- Requirements that implement a risk control are listed with their controls in the trace
+  matrix, from the [hazard analysis](risk/hazards.json) (Chapter 15).
 
 ## 2. Requirements
 
@@ -45,6 +45,7 @@ a document of the manufacturer's quality management system and does not reproduc
 | SRS-FMT-010 | The packed single format MDQ-P1 shall pack crystal, energy code and time code into 64 bits without overlapping fields. | format | T |
 | SRS-FMT-011 | The packed single codec shall restore the crystal exactly and the time and energy within one quantization step of their codes. | format | T |
 | SRS-FMT-012 | The time unwrapper shall reconstruct the full time across any number of wraps of the time code, provided consecutive singles are less than half a wrap period apart. | format | T |
+| SRS-FMT-013 | The packed single decoder shall count and drop every word whose crystal ID is outside the scanner. | format | T |
 
 ### 2.3 Readout link (RDO)
 
@@ -178,6 +179,9 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CTL-021 | The control server shall answer a request longer than the 64 KiB limit with an error, close only that connection, and keep serving other clients. | protocol | T |
 | SRS-CTL-022 | The control protocol shall reject another major API version, malformed JSON, invalid UTF-8 and requests without a command, and accept newer minor versions and unknown fields. | protocol | T |
 | SRS-CTL-023 | When a control client disconnects during a run, the acquisition service shall continue the run. | protocol | T |
+| SRS-CTL-030 | The acquisition service shall report in its status whether the run's data is complete, list every nonzero loss counter, and report a run with a fault as incomplete. | service | T |
+| SRS-CTL-031 | When a run ends without a fault but with a nonzero loss counter, the acquisition service shall record every nonzero loss counter in the audit trail. | service | T |
+| SRS-CTL-032 | The control server shall record every configure, start, stop and reset command, accepted or rejected, in the audit trail with the client's address and port. | protocol | T |
 
 ### 2.11 List-mode format (LMF)
 
@@ -206,6 +210,8 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-OUT-008 | The list-mode sink shall refuse to open with an empty run name, a file size smaller than one block, or a file that already exists. | output | T |
 | SRS-OUT-009 | When the configuration selects list-mode output, the acquisition service shall write real files that the reader reads back completely. | output | T |
 | SRS-OUT-010 | The list-mode sink shall store the run record, the service's final status, next to the run's files. | output | T |
+| SRS-OUT-011 | The list-mode sink shall store the run's integrity verdict in the run record. | output | T |
+| SRS-OUT-012 | The list-mode sink shall state in every file's metadata whether its data is simulated, and the effective configuration with its defaults. | output | T |
 
 ## 3. Verification other than test
 
@@ -219,3 +225,4 @@ server today (section 4 of the architecture description explains the consequence
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 14), from the requirement tags of Chapters 1 to 12. Added SRS-CFG-004, SRS-PERF-020 and SRS-PERF-021, which had tests or measurements without an ID. |
+| 2 | Chapter 15: requirements of the risk controls for silent data loss and for the audit of control actions (SRS-CTL-030 to SRS-CTL-032, SRS-OUT-011, SRS-OUT-012), and SRS-FMT-013, a counter the integrity verdict relies on. |

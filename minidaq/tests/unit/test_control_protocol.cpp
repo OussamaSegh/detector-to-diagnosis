@@ -6,6 +6,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <mutex>
+#include <utility>
+#include <vector>
+
 #include <nlohmann/json.hpp>
 
 #include "minidaq/control/adapters.hpp"
@@ -185,6 +189,39 @@ TEST(ControlServer, AClientThatDisconnectsDoesNotStopTheAcquisition) {
   EXPECT_EQ(st["status"]["run_id"], 1) << "a new client sees the same run";
   EXPECT_EQ(again.call({{"cmd", "stop"}})["ok"], true);
   EXPECT_TRUE(svc.wait_for(AcqState::configured, 5s));
+}
+
+TEST(ControlServer, RecordsEveryCommandWithTheClientsAddress) {
+  // REQ: SRS-CTL-032
+  std::mutex mu;
+  std::vector<AuditRecord> records;
+  ServiceOptions opt = with_default_adapters();
+  opt.audit = [&](const AuditRecord& r) {
+    const std::lock_guard lock{mu};
+    records.push_back(r);
+  };
+  AcquisitionService svc{std::move(opt)};
+  ControlServer server{svc, 0};
+  const auto port = server.start();
+  ASSERT_TRUE(port);
+  Client c{*port};
+  ASSERT_TRUE(c.ok());
+  EXPECT_EQ(c.call({{"cmd", "start"}})["ok"], false);  // rejected: not configured
+  EXPECT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}}}})["ok"], true);
+  EXPECT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}, {"sorce", {}}}}})["ok"], false);
+  EXPECT_EQ(c.call({{"cmd", "reset"}})["ok"], true);
+  const std::lock_guard lock{mu};
+  std::vector<std::pair<std::string, bool>> seen;
+  for (const auto& r : records) {
+    if (r.action != "configure" && r.action != "start" && r.action != "stop" && r.action != "reset") {
+      continue;  // transitions, connections: recorded too, not commands
+    }
+    EXPECT_TRUE(r.who.starts_with("tcp:127.0.0.1:")) << r.action << " by " << r.who;
+    seen.emplace_back(r.action, r.ok);
+  }
+  const std::vector<std::pair<std::string, bool>> expected{
+      {"start", false}, {"configure", true}, {"configure", false}, {"reset", true}};
+  EXPECT_EQ(seen, expected);
 }
 
 TEST(ControlServer, OverlongRequestClosesOnlyThatConnection) {

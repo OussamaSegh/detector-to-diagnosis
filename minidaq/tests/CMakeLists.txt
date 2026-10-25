@@ -31,6 +31,7 @@ add_executable(minidaq_unit_tests
   unit/test_acquisition_state.cpp
   unit/test_config.cpp
   unit/test_acquisition_service.cpp
+  unit/test_run_integrity.cpp
   unit/test_control_protocol.cpp
   unit/test_audit_log.cpp
   unit/test_udp_detector.cpp)
@@ -64,7 +65,9 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.trace COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/trace_matrix.py ${PROJECT_SOURCE_DIR} --check)
   add_test(NAME docs.soup COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_soup.py ${PROJECT_SOURCE_DIR})
   add_test(NAME docs.anomalies COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/anomalies.py ${PROJECT_SOURCE_DIR} --check)
-  set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies PROPERTIES LABELS "unit")
+  # Chapter 15: the risk file follows its criteria, and every control is implemented and verified.
+  add_test(NAME docs.risk COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_risk.py ${PROJECT_SOURCE_DIR})
+  set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)
