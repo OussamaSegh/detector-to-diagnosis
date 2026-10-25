@@ -12,7 +12,7 @@ version of this file is printed on the title page and in every output file name.
 |---|---|---|---|
 | I. Modern, low-latency C++ | 1 to 7 | 0.1.0 | complete |
 | II. PET physics and data acquisition | 8 to 12 | 0.2.0 | complete |
-| III. Medical device software standards | 13 to 17 | 0.3.0 | planned |
+| III. Medical device software standards | 13 to 17 | 0.3.0 | in progress |
 | IV. Testing, verification and quality | 18 to 21 | 0.4.0 | planned |
 | V. Hardware, embedded Linux and networking | 22 to 25 | 0.5.0 | planned |
 | VI. Calibration, corrections and reconstruction | 26 to 30 | 0.6.0 | planned |

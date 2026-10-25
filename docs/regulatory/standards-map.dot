@@ -4,7 +4,7 @@
 // (a harmonised standard gives presumption of conformity with the regulation),
 // guidance (a technical report that explains how to apply the standard).
 digraph standards {
-  rankdir=LR;
+  rankdir=BT; nodesep=0.25; ranksep=0.45;
   node [shape=box, fontname="Helvetica", fontsize=10];
   edge [fontname="Helvetica", fontsize=9];
 

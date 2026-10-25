@@ -12,3 +12,4 @@ solutions/ch09.md
 solutions/ch10.md
 solutions/ch11.md
 solutions/ch12.md
+solutions/ch13.md

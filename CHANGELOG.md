@@ -8,6 +8,14 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+- Chapter 13: the regulatory file in `docs/regulatory/` starts with the intended-use
+  statement (`intended-use.md`), the regulatory context for the EU, the US and Switzerland
+  (`regulatory-context.md`) and the standards map (`standards-map.dot` and `.svg`);
+  `tools/check_regulatory.py` and the test `docs.regulatory` keep them complete and their
+  links valid; Part III introduction; exercises 13.1 to 13.4 (all in Python: the standards
+  map, a change brief, a model of the MDR classification rules, the vigilance clocks).
+
 ## [0.2.0] - 2026-10-25
 
 Part II, PET physics and data acquisition (Chapters 8 to 12), complete and reviewed.
