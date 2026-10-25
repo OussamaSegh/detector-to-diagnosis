@@ -219,6 +219,7 @@ void ListModeSink::write_run_record(std::string_view run_record) {
   auto parsed = nlohmann::json::parse(run_record, nullptr, /*allow_exceptions=*/false);
   j["run"] = parsed.is_discarded() ? (run_record.empty() ? nlohmann::json(nullptr) : nlohmann::json(run_record))
                                    : std::move(parsed);
+  // [/snippet:run_record]
   const std::string text = j.dump(2) + "\n";
   const std::string path = cfg_.directory + "/" + cfg_.prefix + "-" + cfg_.run_name + ".run.json";
   const std::string part = path + ".part";
@@ -253,7 +254,6 @@ void ListModeSink::write_run_record(std::string_view run_record) {
     }
   }
 }
-// [/snippet:run_record]
 
 // ---------------------------------------------------------------------------
 // I/O side: the sink's own thread.

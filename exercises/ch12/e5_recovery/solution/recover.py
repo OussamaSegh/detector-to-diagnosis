@@ -52,6 +52,7 @@ class Prefix:
     torn: bool = False    # bytes after `end` that are not an intact block
 
 
+# [snippet:prefix]
 def intact_prefix(data, header_bytes):
     """How much of a file can be trusted: its blocks in order from the header, up to the
     first one that is incomplete or damaged."""
@@ -71,6 +72,7 @@ def intact_prefix(data, header_bytes):
             break  # nothing may follow a closing block
     p.torn = p.end < len(data)
     return p
+# [/snippet:prefix]
 
 
 @dataclasses.dataclass
@@ -157,6 +159,7 @@ def recover(directory, dry_run=False):
         reports.append(rep)
         if rep.problems or dry_run:
             continue
+        # [snippet:repair]
         for action, path, arg in plan:
             if action == "remove":
                 os.unlink(path)
@@ -173,6 +176,7 @@ def recover(directory, dry_run=False):
                 os.link(path, final)  # fails if the name exists: never replace a file
                 os.unlink(path)
             _sync_dir(directory)
+        # [/snippet:repair]
     return reports
 
 

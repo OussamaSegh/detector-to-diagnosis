@@ -11,7 +11,7 @@
 //  - Backpressure, not loss. When the disk is slower than the data, the pool
 //    runs dry and write() waits for a buffer; the pipeline's queues fill and
 //    only the source, which is where the overflow policy is decided, can drop
-//    (Chapter 2). The sink itself never drops a coincidence while it is
+//    (Chapter 3). The sink itself never drops a coincidence while it is
 //    healthy. Its waits are counted.
 //  - Bounded data at risk. A block is handed to the I/O thread when it is full
 //    or max_block_delay after its first record, whichever is first; with the

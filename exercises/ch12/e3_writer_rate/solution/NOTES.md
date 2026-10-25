@@ -7,7 +7,7 @@ is `max_unsynced` old, or at the end of the run. Its wait has a deadline
 (`wait_until`), so a trickle of data is synced on time even if no block arrives. The
 pool of `buffers` blocks bounds the memory (32 x 64 KiB = 2 MiB); when it runs dry the
 caller waits, which is backpressure: the pipeline's queues fill and only the source can
-drop (Chapter 2). A write error makes the sink faulty; the I/O thread then stops
+drop (Chapter 3). A write error makes the sink faulty; the I/O thread then stops
 writing but keeps returning buffers, so the caller never hangs.
 
 **Why the starter was slow.** One fsync per 64 KiB: with a 20 ms fsync, 50 blocks per
@@ -40,4 +40,6 @@ spinning disk or a network file system it would not be (verify on the acquisitio
 disk). The choice: `interval` every 256 blocks with a time bound of 100 ms in
 production, so that a power cut loses at most a fraction of a second, and `close` for
 development. A virtual disk on shared storage is not an acquisition disk: the first dd
-of 3 GB ran at 259 MB/s, the second at 1.4 GB/s.
+of 3 GB ran at 278 MB/s, the second at 1.4 GB/s. (MiniDAQ's `ListModeSink` bounds the
+unsynced data by blocks only; a time bound like this exercise's `max_unsynced` is a natural
+extension.)

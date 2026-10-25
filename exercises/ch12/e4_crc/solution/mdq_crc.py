@@ -35,14 +35,17 @@ def make_table():
 TABLE = make_table()
 
 
+# [snippet:table]
 def crc32_table(data, crc=0):
     """One byte at a time, with the table: the same result, eight times fewer steps."""
     crc ^= 0xFFFFFFFF
     for byte in data:
         crc = (crc >> 8) ^ TABLE[(crc ^ byte) & 0xFF]
     return crc ^ 0xFFFFFFFF
+# [/snippet:table]
 
 
+# [snippet:count]
 def undetected_two_bit_errors(n_bytes, crc=crc32_table):
     """How many of the n_bits * (n_bits - 1) / 2 two-bit errors in an n_bytes message
     leave its CRC unchanged.
@@ -62,3 +65,4 @@ def undetected_two_bit_errors(n_bytes, crc=crc32_table):
         s = crc(bytes(e)) ^ base
         counts[s] = counts.get(s, 0) + 1
     return sum(k * (k - 1) // 2 for k in counts.values())
+# [/snippet:count]
