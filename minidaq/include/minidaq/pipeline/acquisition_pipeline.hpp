@@ -63,8 +63,10 @@ struct PipelineConfig {
 // [snippet:order]
 // Total order used by the sort stage. Time alone is not enough: MDQ-P1 has a
 // 5 ps resolution, so ties are common at high rates, and std::sort is not
-// stable. Breaking ties by crystal makes the output a pure function of the
-// input, which is what reproducible runs (and regression tests) need.
+// stable. Breaking ties by crystal makes each sorted batch a pure function of
+// the batch. Two singles with one time can still fall into two batches, in the
+// order they arrived; the coincidence sorter orders such ties itself, so that
+// runs are reproducible whatever the batches (MDQ-PR-017).
 [[nodiscard]] constexpr bool time_order(const Single& a, const Single& b) noexcept {
   if (a.time != b.time) {
     return a.time < b.time;

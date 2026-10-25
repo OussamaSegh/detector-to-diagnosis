@@ -166,6 +166,16 @@
       "description": "The release checks ran on 8821c48, a clean commit before the release commit. The release commit b63ff77 added docs/regulatory/releases/0.3.0.md, the first file in that directory, and no clause of docs/regulatory/qms/design-file.json listed it, so docs.design_file failed in every preset and the document-control job failed on b63ff77 and be79f34. The release was packaged and tagged locally without waiting for CI on the release commit.",
       "evaluation": {"safety_relevant": false, "rationale": "No code changed between 8821c48 and be79f34: the release commit adds documents and evidence, and the second commit changes a table in the book. Every software test passed on 8821c48 and on GitHub; the failing tests check the index of documents, not the software."},
       "resolution": {"change": "Commit 897a31e lists docs/regulatory/releases/ as evidence for clause 7.3.8. SDP version 5, section 8: a release is tagged and packaged only after CI on the release commit itself is green.", "verification": "tools/design_file.py . --check passes on 897a31e; GitHub CI on 897a31e."}
+    },
+    {
+      "id": "MDQ-PR-017",
+      "title": "Two runs with the same seed wrote different records: singles with equal times split across batches",
+      "found": "2026-10-25, Chapter 19 system test GoldenExact (two acquisitions with seed 1 through minidaq_server)",
+      "item": "sorter",
+      "status": "closed",
+      "description": "The sort stage orders each batch by time and then crystal (Chapter 3), so a sorted batch is a function of the batch. Two singles with the same time that fall into two batches keep the order in which they arrived, and the batches are cut by time (max_batch_delay_us), so where they fall changes from run to run. The coincidence sorter then took the earlier-arriving single as the first of the pair, so crystal_a and crystal_b (and the energies) of a pair with dt 0 could be swapped: in the first two runs compared, the records were equal up to number 135,698 of 231,650, a pair with dt 0. Counts, rates and spectra were unchanged. Each unit met its own specification; no unit test or property could see the defect, because it is in how the two units are put together.",
+      "evaluation": {"safety_relevant": false, "rationale": "Both orders describe the same coincidence: the line of response, the energies and the time are the same, and a time difference of 0 has no sign. An image does not change. What breaks is reproducibility: a regression test against golden data cannot tell this from a real change, and a field problem cannot be replayed exactly."},
+      "resolution": {"change": "The coincidence sorter puts singles with equal times in crystal order as they arrive (CoincidenceSorter::insert), so its output is a function of the singles whatever the batches; SRS-SRT-013 (SRS version 8). The reference model of the properties orders ties the same way, the sorter generator makes ties common, and the property TheOrderOfTiesDoesNotMatter permutes them.", "verification": "Properties.TheOrderOfTiesDoesNotMatter and TheSorterFindsWhatTheReferenceFinds fail without the change and pass with it; the system tests GoldenExact (same seed, and small batches with short delays) pass in every preset."}
     }
   ]
 }

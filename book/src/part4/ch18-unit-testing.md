@@ -402,7 +402,8 @@ code that ships the tests run.
 ### Reading the uncovered branches
 
 A number hides more than it shows. `tools/coverage.py build/coverage OUT --uncovered FILE` lists
-each line of a file with a branch the tests took only one way. For the coincidence sorter:
+each line of a file with a branch the tests took only one way. For the coincidence sorter at tag
+`ch18` (later chapters change the file, so its line numbers move):
 
 ```text
 $ tools/coverage.py build/coverage OUT --uncovered minidaq/src/processing/coincidence_sorter.cpp

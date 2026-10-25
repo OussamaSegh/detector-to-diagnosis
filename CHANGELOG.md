@@ -23,6 +23,14 @@ the patch version.
   report; Chapter 19's system tests close it.
 - Problem report MDQ-PR-016 (closed): the 0.3.0 release commit failed CI because the release
   record was in no clause of the design file (fixed in 897a31e).
+- Chapter 19: system tests in `minidaq/tests/system/` (label `system`) that run the shipped
+  programs: the control client against the server (exit status, roles, TLS, an impostor server
+  that must receive nothing, shutdown on a signal), acquisitions checked against golden data
+  exactly and statistically, and the readout link with injected loss, reordering and duplicates;
+  `stats.py`, plain-Python statistical tests with their own calibration tests; `tools/soak.py`.
+- Problem report MDQ-PR-017 (closed): two runs with the same seed could write different records,
+  because singles with equal times split across batches kept their arrival order; found by a
+  system test.
 
 ### Changed
 - The `coverage` preset uses Clang source-based coverage with MC/DC instead of gcov, and builds
@@ -34,6 +42,11 @@ the patch version.
   checks Exercise 18.3 in the coverage build.
 - SDP section 8: a release is tagged and packaged only after CI on the release commit is green.
 - `CoincidenceSorter::config()` removed: no code called it (found by the coverage report).
+- The coincidence sorter takes singles with equal times in crystal order (SRS-SRT-013), so its
+  output no longer depends on where the pipeline cuts its batches.
+- SRS version 8: SRS-CTL-040 to SRS-CTL-043 (the client and the server program), SRS-SYS-001 to
+  SRS-SYS-005 (system requirements), SRS-SRT-013.
+- `tools/coverage.py` runs the system tests too, so the programs they start are measured.
 - `tools/coverage.py` keeps the raw and merged profiles in the build directory, not with the
   report.
 - `tools/coverage.py` lists a shipped item that no test runs as "not run by any test" instead of

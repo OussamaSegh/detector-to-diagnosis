@@ -105,3 +105,21 @@ if(Python3_Interpreter_FOUND)
     set_tests_properties(build.hardening PROPERTIES LABELS "unit")
   endif()
 endif()
+
+# Chapter 19: system tests. Each file runs the shipped programs (minidaq_server, minidaq_ctl,
+# minidaq_send, minidaq_listmode) in their own processes, as an operator would.
+if(Python3_Interpreter_FOUND)
+  set(_time_factor 1)
+  if(MINIDAQ_SANITIZERS)
+    set(_time_factor 10)  # sanitized programs run several times slower; the deadlines stretch
+  endif()
+  foreach(name control acquisition readout)
+    add_test(NAME system.${name}
+             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_${name}_system.py)
+    set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900
+      ENVIRONMENT "MINIDAQ_APPS=$<TARGET_FILE_DIR:minidaq_server>;MINIDAQ_TEST_TIME_FACTOR=${_time_factor}")
+  endforeach()
+  # The statistics the system tests rely on, against tabulated values and for calibration.
+  add_test(NAME system.stats COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_stats.py)
+  set_tests_properties(system.stats PROPERTIES LABELS "unit")
+endif()

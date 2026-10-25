@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: MIT
 """Measures the test coverage of MiniDAQ's shipped code, per software item (Chapter 18).
 
-Runs the unit tests (ctest label "unit") of a build made with the `coverage` preset (Clang
-source-based coverage with MC/DC), merges the profiles of every process the tests started, and
+Runs the unit and system tests (ctest labels "unit" and "system", Chapter 19) of a build made with
+the `coverage` preset (Clang source-based coverage with MC/DC), merges the profiles of every
+process the tests started (the system tests start the programs themselves), and
 reports line, branch, MC/DC and function coverage for the files of each software item in
 docs/architecture/software-items.json. Test code, exercises, fuzz targets and benchmarks are not
 counted: the question is how much of the code that ships the tests exercise.
@@ -131,7 +132,7 @@ def main():
         shutil.rmtree(profiles, ignore_errors=True)
         profiles.mkdir(parents=True)
         env = dict(os.environ, LLVM_PROFILE_FILE=str(profiles / "%p-%m.profraw"))
-        tests = subprocess.run(["ctest", "--test-dir", str(build), "-L", "unit", "-j", str(args.jobs),
+        tests = subprocess.run(["ctest", "--test-dir", str(build), "-L", "unit|system", "-j", str(args.jobs),
                                 "--output-on-failure"], env=env, capture_output=True, text=True)
         (out / "ctest.txt").write_text(tests.stdout + tests.stderr)
         if tests.returncode != 0:

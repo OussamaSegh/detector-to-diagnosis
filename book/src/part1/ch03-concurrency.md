@@ -550,7 +550,8 @@ is a total order:
 
 Reproducibility is not a nicety. If two runs over the same input give different output, a
 regression test cannot tell a bug from noise, and you cannot reproduce a field problem from a
-recorded raw file.
+recorded raw file. (This fix left a gap that no unit test could see: two singles with one time
+that fall into two batches. A system test found it much later; Chapter 19 tells that story.)
 
 ### Measured: the pipeline runs at the speed of its slowest stage
 

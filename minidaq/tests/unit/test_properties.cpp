@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "minidaq/core/geometry.hpp"
@@ -151,7 +152,8 @@ SorterCase sorter_case(Source& src, bool with_delay, std::uint64_t max_singles =
   for (std::uint64_t i = 0; i < n; ++i) {
     const auto step = src.pick(4);
     if (step == 0) {
-      t += src.draw_signed(0, c.cfg.window.count() / 2);  // same decay or a near random
+      // The same time (a tie, common at 5 ps resolution), the same decay or a near random.
+      t += src.coin(0.3) ? 0 : src.draw_signed(0, c.cfg.window.count() / 2);
     } else if (step == 1) {
       t += src.draw_signed(0, 2 * c.cfg.window.count());
     } else if (step == 2) {
@@ -219,6 +221,10 @@ std::vector<Coincidence> reference_prompts(const SorterConfig& cfg, const std::v
     }
     s.push_back(x);
   }
+  // Singles with equal times count in crystal order, whatever order they came in.
+  std::stable_sort(s.begin(), s.end(), [](const Single& a, const Single& b) {
+    return a.time != b.time ? a.time < b.time : a.crystal < b.crystal;
+  });
   std::vector<Coincidence> out;
   for (std::size_t o = 0; o < s.size();) {
     std::size_t e = o + 1;
@@ -297,6 +303,45 @@ TEST(Properties, TheSorterFindsWhatTheReferenceFinds) {
               show_case, {.cases = 500});
 }
 // [/snippet:sorter_model]
+
+// The pipeline's sort stage orders equal times by crystal within a batch but
+// not across batches, so the sorter must not depend on the order of ties
+// (found by a system test, MDQ-PR-017).
+TEST(Properties, TheOrderOfTiesDoesNotMatter) {
+  // REQ: SRS-SRT-013
+  prop::check(
+      [](Source& src) {
+        auto c = sorter_case(src, true);
+        auto shuffled = c;
+        // Reverse or rotate each run of singles with equal times.
+        for (std::size_t i = 0; i < shuffled.singles.size();) {
+          std::size_t j = i + 1;
+          while (j < shuffled.singles.size() && shuffled.singles[j].time == shuffled.singles[i].time) {
+            ++j;
+          }
+          const auto first = shuffled.singles.begin() + static_cast<std::ptrdiff_t>(i);
+          const auto last = shuffled.singles.begin() + static_cast<std::ptrdiff_t>(j);
+          if (src.coin()) {
+            std::reverse(first, last);
+          } else {
+            std::rotate(first, first + static_cast<std::ptrdiff_t>(src.draw(0, j - i - 1)), last);
+          }
+          i = j;
+        }
+        return std::pair{c, shuffled};
+      },
+      [](const std::pair<SorterCase, SorterCase>& p) -> Verdict {
+        const auto a = sort_in_batches(p.first);
+        const auto b = sort_in_batches(p.second);
+        if (a.out != b.out || !(a.stats == b.stats)) {
+          return "reordering equal times changed the result: " + std::to_string(a.out.size()) + " and " +
+                 std::to_string(b.out.size()) + " coincidences";
+        }
+        return {};
+      },
+      [](const std::pair<SorterCase, SorterCase>& p) { return show_case(p.first) + " / " + show(p.second.singles); },
+      {.cases = 500});
+}
 
 // Streams long enough that the sorter compacts its buffer (after 4,096 singles).
 TEST(Properties, LongStreamsGiveTheSameResult) {

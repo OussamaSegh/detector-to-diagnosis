@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <stdexcept>
+#include <utility>
 
 #include "minidaq/core/geometry.hpp"
 
@@ -129,7 +130,7 @@ void CoincidenceSorter::push(std::span<const Single> in, std::vector<Coincidence
     last_time_ = s.time;
     // Windows that this single proves complete close before it joins the buffer.
     close_ready(s.time, out);
-    buf_.push_back(s);
+    insert(s);
   }
 }
 // [/snippet:push]
@@ -279,5 +280,20 @@ void CoincidenceSorter::compact() {
   delayed_begin_ = delayed_begin_ > first_ ? delayed_begin_ - first_ : 0;
   first_ = 0;
 }
+
+// [snippet:insert]
+// Singles with equal times may arrive in any order: the sort stage orders them
+// by crystal within a batch, not across two batches. Putting them in crystal
+// order here makes the coincidences a function of the singles alone, whatever
+// the batches (MDQ-PR-017). Every single at or after opener_ is still in an open
+// window, and none before it can have this time, so the swaps stay there.
+void CoincidenceSorter::insert(const Single& s) {
+  buf_.push_back(s);
+  for (std::size_t i = buf_.size() - 1; i > opener_ && buf_[i - 1].time == s.time && s.crystal < buf_[i - 1].crystal;
+       --i) {
+    std::swap(buf_[i - 1], buf_[i]);
+  }
+}
+// [/snippet:insert]
 
 }  // namespace minidaq

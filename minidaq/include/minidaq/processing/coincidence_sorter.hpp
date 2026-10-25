@@ -129,12 +129,12 @@ class CoincidenceSorter {
   [[nodiscard]] bool good(const Single& a, const Single& b) const noexcept;
 
  private:
-  void accept(const Single& s, std::vector<Coincidence>& out);
   void close_ready(Picoseconds now, std::vector<Coincidence>& out);
   void close_window(std::vector<Coincidence>& out);
   void resolve_prompts(std::size_t begin, std::size_t end, std::vector<Coincidence>& out);
   void resolve_delayed(std::size_t opener, std::size_t begin, std::size_t end, std::vector<Coincidence>& out);
   void compact();
+  void insert(const Single& s);
 
   SorterConfig cfg_;
   Picoseconds horizon_;            // a window is complete once data this much later has arrived

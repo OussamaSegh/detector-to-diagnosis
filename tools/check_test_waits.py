@@ -28,6 +28,7 @@ HELPER = "minidaq/tests/unit/eventually.hpp"
 
 def sources(root):
     yield from (root / "minidaq/tests").rglob("*.[ch]pp")
+    yield from (root / "minidaq/tests").rglob("*.py")
     for tests in sorted(root.glob("exercises/ch*/*/tests")):
         yield from tests.rglob("*.[ch]pp")
         yield from tests.rglob("*.py")

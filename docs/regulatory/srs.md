@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 7 (MiniDAQ 0.4.0-dev, Chapter 18). Status: draft for review.
+Version 8 (MiniDAQ 0.4.0-dev, Chapter 19). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -111,6 +111,7 @@ a document of the manufacturer's quality management system and does not reproduc
 | SRS-SRT-010 | When configured like the simulator's reference counter, the coincidence sorter shall find exactly the prompts that the reference counter finds in the simulator's ground truth. | sorter | T |
 | SRS-SRT-011 | The coincidence sorter's delayed window shall estimate the randoms among the prompts to within 15% at 40 MBq. | sorter | T |
 | SRS-SRT-012 | When the take-winner-of-goods policy finds good pairs with equal summed energy, the coincidence sorter shall keep the pair with the earliest first single, and among those the earliest second single. | sorter | T |
+| SRS-SRT-013 | The coincidence sorter shall give the same coincidences, each with the same first and second single, whatever the order in which singles with equal times arrive, and take such singles in crystal order. | sorter | T |
 | SRS-MRG-001 | The stream merger shall merge the time-ordered streams of several boards into one time-ordered stream, whatever the sizes of the chunks it receives. | merger | T |
 | SRS-MRG-002 | The stream merger shall release a single only when every board has delivered a later single or a time marker. | merger | T |
 | SRS-MRG-003 | When one board falls behind the others by more than the configured maximum skew in µs, the stream merger shall drop and count only that board's late singles. | merger | T |
@@ -186,6 +187,10 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CTL-033 | The control server's status shall have exactly the top-level fields that its API version defines, each field marked as always present in every status. | protocol | T |
 | SRS-CTL-034 | The control protocol shall answer every request that is one JSON object with one response line, whatever the type of each of its fields, and keep serving other requests. | protocol | T |
 | SRS-CTL-035 | The acquisition service shall close the sink exactly once at the end of a run without a fault, after the sink's last write and with the run's record, and never after a fault. | service | T |
+| SRS-CTL-040 | The control client shall authenticate with its token before the command, print the server's response, and exit with the status `0` if the server accepted the command, `1` if it refused the command or the token, and `2` on a usage, token-file or connection error. | ctl | T |
+| SRS-CTL-041 | When given a CA file, the control client shall connect with TLS and send nothing, neither token nor command, to a server whose certificate that CA did not sign or that is not certified for the address it connected to. | ctl | T |
+| SRS-CTL-042 | The control client's `wait` shall poll the status until the given state or the given deadline, and exit with the status `1` at the deadline. | ctl | T |
+| SRS-CTL-043 | The server program shall refuse contradicting or invalid options with a message and a nonzero exit status, and on SIGINT or SIGTERM stop and drain a running acquisition, record the shutdown in the audit trail, remove its start-up token and exit with the status `0`. | server | T |
 
 ### 2.11 List-mode format (LMF)
 
@@ -234,12 +239,26 @@ The control API's security requirements (Chapter 17), from the threat model
 | SRS-SEC-008 | The token store shall keep only the SHA-256 hashes of tokens and refuse a token file that is a symbolic link, belongs to another user, or is writable by another user. | access | T |
 | SRS-SEC-009 | The server shall make its start-up token from 256 bits of the operating system's random generator and write it to a file that only its user can read, in a directory that only its user can use. | access | T |
 
+### 2.14 System (SYS)
+
+Requirements on the programs together, verified by the system tests of Chapter 19
+(`minidaq/tests/system/`), which run the shipped programs as an operator would.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-SYS-001 | When an acquisition is commanded with the control client, the server shall write list-mode files that hold exactly the prompt and delayed coincidences that the server's status counts, and a run record with the status at the end of the run and the sink's final counters. | service | T |
+| SRS-SYS-002 | When the readout link loses, delays and duplicates packets, the server shall account for each damaged packet exactly in its link counters and report the run incomplete with the loss counter named. | readout | T |
+| SRS-SYS-003 | The server shall acquire at 1,000,000 singles/s for 8 hours without a loss, a fault or a growth of its resident memory of more than 1 MiB per hour after the first 10 minutes. | service | M |
+| SRS-SYS-004 | The server shall write identical coincidence records in two acquisitions with the same configuration and seed, whatever the batch sizes and delays of the pipeline. | service | T |
+| SRS-SYS-005 | When the seed differs from the golden run's, the server shall write an acquisition that agrees with the golden run in its prompt and delayed rates, energy spectrum and time differences, each comparison with a p-value above `0.001`. | service | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
 |---|---|---|
 | SRS-PERF-020 | M | [Performance budget](../performance-budget.md), version 2: whole pipeline with the coincidence sorter 26.4 ns per single (37.9 M words/s), margin 3.8 times at 10 M singles/s, release 0.3.0 (`measurements/release-0.3.0/`); the `hardened` build within noise of it (`pipeline-attribution.txt`). Until version 5 this row quoted 86 M words/s, measured before Chapter 10 (MDQ-PR-014). Re-measure on the acquisition PC. |
 | SRS-PERF-021 | M | [Performance budget](../performance-budget.md), list-mode writer section: about 19 M coincidences/s with fsync on the reference machine (`measurements/ch12/`), against the 2.7 M coincidences/s that the pair stage produces at 70 M singles/s. |
+| SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
 
 ## 4. Changes
 
@@ -252,3 +271,4 @@ The control API's security requirements (Chapter 17), from the threat model
 | 5 | Part III review: SRS-CTL-034, after an `auth` whose token was a number ended the server (problem report MDQ-PR-013, CAPA-0003). |
 | 6 | Release 0.3.0: the verification of SRS-PERF-020 re-measured with the coincidence sorter; the requirement is unchanged and met (problem report MDQ-PR-014, CAPA-0004). |
 | 7 | Chapter 18: SRS-CTL-035, the order of the service's calls to its sink, which the service did and no requirement or test stated; SRS-SRT-007 states the upper limit of the delay (1 ms), which the sorter enforced and the requirement left out (found by mutation testing). |
+| 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-043, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |
