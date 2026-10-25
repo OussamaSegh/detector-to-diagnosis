@@ -65,4 +65,4 @@ can be compensated in any four consecutive bytes, by the same algebra. A CRC det
 was not changed needs a key the editor does not have: a keyed MAC such as HMAC-SHA-256
 (RFC 2104, FIPS 198-1) or a digital signature over a hash of the file, and a decision
 about who holds the key. In a regulated product that is a security requirement with
-its own risk analysis (IEC 81001-5-1, Chapter 7), not a property of the file format.
+its own risk analysis (IEC 81001-5-1, Chapter 17), not a property of the file format.
