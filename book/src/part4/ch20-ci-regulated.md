@@ -594,6 +594,14 @@ ten rounds, because a sign test of five rounds cannot reach a p-value below 1/32
 is better on GitHub's runners is a question for measurement, and the A/A runs are the first half
 of it.
 
+The same holds for a speed test among the unit tests. Exercise 5.2's acceptance test asked for
+at most 18 ns per single, a third of the starter's time on the reference machine, where the
+solution takes about 13 ns. On a GitHub runner, while this chapter was written, it took 18.2 ns
+and failed the `gcc-cxx23` job once; the next run passed. That is a flaky test, and as
+Exercise 20.5 argues it got a problem report (MDQ-PR-022), not a retry. The test now times a
+copy of the starter's algorithm in the same run and asks for a third of its time, which is what
+the exercise meant from the start. A budget in nanoseconds is a claim about one machine.
+
 The baseline gate on the reference machine stays where CAPA-0004 put it, in the release checks:
 it is the one that compares against the performance budget. The A/B gate answers a different
 question, "did this change make things slower", and answers it on every change instead of once a

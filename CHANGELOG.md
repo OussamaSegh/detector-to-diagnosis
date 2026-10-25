@@ -45,6 +45,9 @@ the patch version.
   `tools/perf_ab.sh` not executable and `tools/repro_check.sh` failed on a program listing that
   did not parse. The listing is now `tools/release_bundle.py programs`, tested, and
   `tools/check_tools.py` fails for a shell script without its executable bit.
+- Problem report MDQ-PR-022 (closed): Exercise 5.2's speed test had a fixed 18 ns budget, which a
+  GitHub runner missed by 1%. It now requires a third of the time of the starter's algorithm,
+  timed in the same run.
 - Chapter 20: continuous integration for regulated software. `tools/release_bundle.py` (a
   reproducible product archive with split debug information, SBOM, `BUILDINFO.json` and a
   manifest, an evidence archive bound to it by its SHA-256, and their verification, with

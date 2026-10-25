@@ -830,8 +830,9 @@ the flame graph above shows the synthetic event source as the widest box. A copy
 without changing its statistics. *Starter:* `exercises/ch05/e2_hotspot/`. *Acceptance:*
 `tests/test_event_source.cpp` passes: order and determinism, rate within 1%, pair fraction
 within 0.005, energy mean, standard deviation and tail fractions, uniform crystals, and in a
-release build at most 18 ns per single (`EX_NS_PER_SINGLE` adjusts the budget for another
-machine). `NOTES.md` holds a table of what each change bought. *Time:* 2 to 3 hours.
+release build three times the speed of the starter's algorithm, timed in the same run
+(`EX_NS_PER_SINGLE` sets a fixed budget in ns instead). `NOTES.md` holds a table of what each
+change bought. *Time:* 2 to 3 hours.
 
 **Exercise 5.3 (H): Add a CI job that fails if throughput regresses more than 5%.** *Goal:* a
 regression gate that fails on a real 5% slowdown and passes on noise: the exact one-sided

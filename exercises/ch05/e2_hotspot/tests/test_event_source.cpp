@@ -5,6 +5,8 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
+#include <random>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -111,26 +113,82 @@ TEST(EventSource, CrystalsAreUniform) {
   }
 }
 
-// The performance acceptance test: at most 18 ns per single (a third of the
-// starter's 53.5 ns on the book's machine), best of 5 runs. On another machine,
-// time the starter first and set EX_NS_PER_SINGLE to a third of its result.
-// Only meaningful in an optimized, uninstrumented build.
+// The starter's algorithm, the reference the speed is measured against: the
+// generator must be at least 3x faster than this on the machine that runs the
+// test. A fixed budget in ns held only on the book's machine (18 ns, a third of
+// the starter's 53.5 ns there); a GitHub runner measured the solution at 18.2 ns
+// (MDQ-PR-022), so the reference runs on the same machine, interleaved with it.
+class ReferenceSource {
+ public:
+  explicit ReferenceSource(ex::SourceConfig cfg)
+      : cfg_{cfg}, rng_{cfg.seed}, gap_{cfg.rate_hz * 1e-12}, crystal_{0, cfg.crystals - 1},
+        energy_{511.0, 25.0}, unit_{0.0, 1.0} {}
+
+  void generate(std::span<ex::Single> out) {
+    for (auto& s : out) {
+      if (pending_) {
+        s = pending_single_;
+        pending_ = false;
+        continue;
+      }
+      t_ps_ += gap_(rng_);
+      s = ex::Single{minidaq::Picoseconds{static_cast<std::int64_t>(t_ps_)},
+                     minidaq::CrystalId{crystal_(rng_)}, minidaq::KeV{static_cast<float>(energy_(rng_))}};
+      if (unit_(rng_) < cfg_.pair_fraction) {
+        const std::uint32_t ring = s.crystal.value() / cfg_.crystals_per_ring;
+        const std::uint32_t pos = s.crystal.value() % cfg_.crystals_per_ring;
+        const std::uint32_t opposite = (pos + cfg_.crystals_per_ring / 2) % cfg_.crystals_per_ring;
+        const auto dt = static_cast<std::int64_t>(unit_(rng_) * static_cast<double>(cfg_.pair_spread_ps));
+        pending_single_ = ex::Single{s.time + minidaq::Picoseconds{dt},
+                                     minidaq::CrystalId{ring * cfg_.crystals_per_ring + opposite},
+                                     minidaq::KeV{static_cast<float>(energy_(rng_))}};
+        pending_ = true;
+        t_ps_ = std::fmax(t_ps_, static_cast<double>(pending_single_.time.count()));
+      }
+    }
+  }
+
+ private:
+  ex::SourceConfig cfg_;
+  std::mt19937_64 rng_;
+  std::exponential_distribution<double> gap_;
+  std::uniform_int_distribution<std::uint32_t> crystal_;
+  std::normal_distribution<double> energy_;
+  std::uniform_real_distribution<double> unit_;
+  double t_ps_ = 0.0;
+  bool pending_ = false;
+  ex::Single pending_single_{};
+};
+
+template <class Source>
+double ns_per_single(Source& src, std::vector<ex::Single>& v) {
+  const auto t0 = std::chrono::steady_clock::now();
+  src.generate(v);
+  const auto t1 = std::chrono::steady_clock::now();
+  return std::chrono::duration<double, std::nano>(t1 - t0).count() / static_cast<double>(v.size());
+}
+
+// The performance acceptance test: at least 3x faster than the starter's
+// algorithm, best of 7 interleaved runs of each. EX_NS_PER_SINGLE sets a fixed
+// budget in ns instead. Only meaningful in an optimized, uninstrumented build.
 TEST(EventSource, FastEnough) {
 #if !defined(NDEBUG) || defined(EX_SANITIZED)
   GTEST_SKIP() << "speed is only checked in release builds without sanitizers";
 #else
   ex::EventSource src{{}};
+  ReferenceSource ref{{}};
   std::vector<ex::Single> v(kN);
   double best = 1e9;
-  for (int rep = 0; rep < 5; ++rep) {
-    const auto t0 = std::chrono::steady_clock::now();
-    src.generate(v);
-    const auto t1 = std::chrono::steady_clock::now();
-    best = std::min(best, std::chrono::duration<double, std::nano>(t1 - t0).count() / static_cast<double>(kN));
+  double best_ref = 1e9;
+  for (int rep = 0; rep < 7; ++rep) {
+    best_ref = std::min(best_ref, ns_per_single(ref, v));
+    best = std::min(best, ns_per_single(src, v));
   }
   const char* env = std::getenv("EX_NS_PER_SINGLE");
-  const double budget = env != nullptr ? std::atof(env) : 18.0;
+  const double budget = env != nullptr ? std::atof(env) : best_ref / 3.0;
   RecordProperty("ns_per_single", std::to_string(best));
-  EXPECT_LT(best, budget) << "ns per single (best of 5)";
+  RecordProperty("reference_ns_per_single", std::to_string(best_ref));
+  EXPECT_LT(best, budget) << "ns per single (best of 7), against " << best_ref
+                          << " ns for the starter's algorithm";
 #endif
 }

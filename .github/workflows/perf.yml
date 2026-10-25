@@ -11,9 +11,11 @@ name: perf
 on:
   push:
     branches: [main]
-    paths: ["minidaq/**", "benchmarks/**", "cmake/**", "CMakeLists.txt", "CMakePresets.json"]
+    paths: ["minidaq/**", "benchmarks/**", "cmake/**", "CMakeLists.txt", "CMakePresets.json",
+            "tools/perf_*", ".github/workflows/perf.yml"]
   pull_request:
-    paths: ["minidaq/**", "benchmarks/**", "cmake/**", "CMakeLists.txt", "CMakePresets.json"]
+    paths: ["minidaq/**", "benchmarks/**", "cmake/**", "CMakeLists.txt", "CMakePresets.json",
+            "tools/perf_*", ".github/workflows/perf.yml"]
   workflow_dispatch:
     inputs:
       base:

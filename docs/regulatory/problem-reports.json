@@ -216,6 +216,16 @@
       "description": "tools/perf_ab.sh was committed without its executable bit, so the perf workflow stopped with 'Permission denied' before it compared anything. tools/repro_check.sh compared the two packages correctly and printed 'identical', then listed the programs with a Python one-liner whose escaped quotes, inside single quotes, reached Python literally; it did not parse, and the script, run with set -e, failed. Neither defect was on a path that a test exercised: the tests of the release package call tools/release_bundle.py directly, and no test ran the two shell scripts.",
       "evaluation": {"safety_relevant": false, "rationale": "Defects of verification tools that made them fail, never pass: no result was reported as better than it was, and no release depended on them."},
       "resolution": {"change": "perf_ab.sh is executable; tools/check_tools.py fails for a shell script in tools/ or ci/ without its executable bit (CTest docs.tools and the static-analysis job); the program listing is a subcommand of tools/release_bundle.py ('programs') with a test, and repro_check.sh calls it.", "verification": "check_tools.py reports perf_ab.sh with the bit removed and passes with it set; test tools.release_bundle covers the listing; tools/repro_check.sh passes on the reference machine; the GitHub Actions run of the correcting commit runs both jobs to their result."}
+    },
+    {
+      "id": "MDQ-PR-022",
+      "title": "Exercise 5.2's speed test had a budget in nanoseconds that held only on the reference machine",
+      "found": "2026-10-25, GitHub Actions run of 1e069f5: ch05/e2_hotspot/solution/EventSource.FastEnough failed in the preset gcc-cxx23 at 18.16 ns per single against 18 ns; the run of the next commit passed",
+      "item": "exercises",
+      "status": "closed",
+      "description": "The acceptance test of Exercise 5.2 required at most 18 ns per single, a third of the starter's 53.5 ns on the book's machine. The solution takes about 13 ns there with GCC 13, but a GitHub runner is another machine with another CPU, and its time came within 1% of the budget, so the test passed or failed by chance. The budget stood for 'three times faster than the starter', measured on one machine and then applied to all.",
+      "evaluation": {"safety_relevant": false, "rationale": "An exercise test, not a test of MiniDAQ; it could fail a correct solution but not pass a slow one on the reference machine."},
+      "resolution": {"change": "The test times a copy of the starter's algorithm in the same process, interleaved with the solution, best of 7 runs each, and requires a third of its time; EX_NS_PER_SINGLE still sets a fixed budget. The exercise, its README, Chapter 5 and the solution notes say so; Chapter 20 uses it as an example of a flaky test.", "verification": "On the reference machine the solution takes 12.7 to 13.2 ns against 47 to 50 ns for the reference with GCC (ratio 3.7 or more), and 16.6 to 17.0 ns against 258 to 261 ns with Clang; the starter fails (45 ns against 45 ns)."}
     }
   ]
 }

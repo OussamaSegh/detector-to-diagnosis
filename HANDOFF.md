@@ -295,6 +295,14 @@ in ch20 (A/A: `tools/perf_ab.sh B B OUT 5 1` on a quiet machine, and workflow_di
    MiniDAQ and its ADRs, and IEC 62304 architecture, software items and SOUP boundaries.
 10. **Release 1.0.0**: the complete packaged book, solutions and code.
 
+### Review process for each Part (user rule, 2026-10-25)
+
+When a Part is released, message the coordinator. It starts a review thread (Fable model if
+possible) that reviews that Part and opens a PR with fixes on a branch. This thread then reviews
+the PR critically (reject or adjust wrong fixes), merges it into main, pushes, and records the
+merge here. Keep working on the next Part while the review runs. Part IV (release 0.4.0) is the
+first Part this applies to.
+
 ### Waiting on the user
 
 - Push the tags ch10 to ch19 (and ch20 once it is made), book-v0.2.0 and book-v0.3.0 from the
