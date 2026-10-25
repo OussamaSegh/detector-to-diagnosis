@@ -21,14 +21,16 @@
 
 **A real crash** (Then, by hand, 1). Seven trials on this machine (the VM of the
 Chapter 12 measurements), killed after 0.1 to 1.3 s. In six, the last segment was a
-`.part` that ended exactly at a block boundary: SIGKILL ends the process between two
-write(2) calls, and what each call wrote is in the page cache. `recover` kept every
-record (for example 393,216 in segment 0047 of a 48-segment run of 49,483,776
-records), added the end-of-run block, and renamed it; `minidaq_listmode verify` then
-reported the file as ok. In one trial the kill came between the closing block of a
-segment and its rename, and `recover` only renamed it. A torn block, the case the
-tests build by hand, needs a power loss or a kernel crash, which a kill cannot produce
-(verify: with a fault injector such as dm-log-writes, as in `measurements/ch12/crash.py`).
+`.part` that `recover` closed with an end-of-run block and renamed, keeping every record
+(for example 393,216 in segment 0047 of a 48-segment run of 49,483,776 records);
+`minidaq_listmode verify` then reported the file as ok. In the seventh, the kill came
+between the closing block of a segment and its rename, and `recover` only renamed it.
+In these seven the `.part` happened to end at a block boundary, but a kill can also
+leave half a block: Linux lets a fatal signal end a large write(2) part of the way
+through, and 7 of the 20 trials of `measurements/ch12/crash.txt` ended in a truncated
+block. A block whose length is on the disk and whose contents are not (the case of the
+third test) needs a power loss or a kernel crash, which a kill cannot produce (verify:
+with a fault injector such as dm-log-writes, as `measurements/ch12/crash.py` notes).
 
 **Which bytes truncation destroys** (Then, by hand, 2). Only bytes after the last block
 whose two CRCs are right and whose sequence number is the expected one: bytes that no
