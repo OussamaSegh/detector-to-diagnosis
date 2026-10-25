@@ -1,0 +1,96 @@
+{
+  "system": {
+    "name": "MiniDAQ",
+    "class": "A"
+  },
+  "hazards": [
+    {
+      "id": "HZ-1",
+      "situation": "Coincidences are lost, duplicated or altered without being reported",
+      "severity": "non-serious"
+    },
+    {
+      "id": "HZ-2",
+      "situation": "An acquisition fails or stops before its end",
+      "severity": "non-serious"
+    },
+    {
+      "id": "HZ-3",
+      "situation": "Data is recorded with wrong or unidentifiable settings",
+      "severity": "non-serious"
+    },
+    {
+      "id": "HZ-4",
+      "situation": "An unauthorized party controls the acquisition",
+      "severity": "non-serious"
+    }
+  ],
+  "items": [
+    {
+      "id": "simulator",
+      "runs_in": "minidaq_server",
+      "shipped": false,
+      "class": null,
+      "hazards": [
+        "HZ-3"
+      ],
+      "rationale": "Only used for testing."
+    },
+    {
+      "id": "sorter",
+      "runs_in": "minidaq_server",
+      "shipped": true,
+      "class": "B",
+      "hazards": [
+        "HZ-1"
+      ],
+      "rationale": "TODO"
+    },
+    {
+      "id": "writer",
+      "runs_in": "minidaq_server",
+      "shipped": true,
+      "class": "A",
+      "hazards": [
+        "HZ-1",
+        "HZ-3"
+      ],
+      "rationale": "Makes the data durable with its run record; a defect loses data at a file boundary (HZ-1) or loses the record of how it was acquired (HZ-3)."
+    },
+    {
+      "id": "control-api",
+      "runs_in": "minidaq_server",
+      "shipped": true,
+      "class": "B",
+      "hazards": [
+        "HZ-2",
+        "HZ-4"
+      ],
+      "rationale": "Accepts commands over TCP; a defect can stop a running scan (HZ-2) or accept commands from anyone who can connect (HZ-4)."
+    },
+    {
+      "id": "audit-log",
+      "runs_in": "minidaq_server",
+      "shipped": true,
+      "class": "A",
+      "hazards": [],
+      "rationale": "Records control actions and harms no one if it fails."
+    },
+    {
+      "id": "client",
+      "runs_in": "minidaq_ctl",
+      "shipped": true,
+      "class": "A",
+      "hazards": [],
+      "rationale": "Reference client in its own process; the server validates every request, so a defect in the client can only send a valid command that the server reports back. Process segregation makes class A possible."
+    },
+    {
+      "id": "benchmarks",
+      "runs_in": null,
+      "shipped": false,
+      "class": null,
+      "hazards": [],
+      "rationale": "Not shipped: measurement programs that never run at the scanner, controlled as tools (Chapter 20)."
+    }
+  ]
+}

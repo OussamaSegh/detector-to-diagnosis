@@ -1,0 +1,6 @@
+minidaq_python_exercise(e1_item_classes)
+minidaq_python_exercise(e2_sorter_requirements)
+minidaq_python_exercise(e3_soup_list)
+minidaq_python_exercise(e4_trace_matrix)
+minidaq_python_exercise(e5_release_check)
+minidaq_python_exercise(e6_known_anomalies)

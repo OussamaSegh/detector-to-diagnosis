@@ -37,7 +37,7 @@ VAGUE = [
 VAGUE_RE = re.compile(r"(?<![\w-])(" + "|".join(re.escape(w) for w in VAGUE) + r")(?![\w-])", re.I)
 # A number of something measurable must carry its unit. Counts ("16 crystals", "2 boards"),
 # versions ("1.3"), bit patterns and identifiers are written with the noun that follows them.
-NUMBER = re.compile(r"(?<![\w.^/-])(\d+(?:[.,']\d+)*(?:\^\d+|/\d+)?)(?![\w.])(?:[\s-]*([^\s,;:)]+))?")
+NUMBER = re.compile(r"(?<![\w.^/-])(\d+(?:[.,']\d+)*(?:\^\d+|/\d+)?)(?!\w|[.,]\d)(?:[\s-]*([^\s,;:)]+))?")
 NAMED_BY = {"ieee", "iso", "iec", "rfc", "version", "versions", "schema", "api"}
 UNITS = {
     "ps", "ns", "us", "µs", "ms", "s", "min", "h", "hz", "khz", "mhz", "kev", "mev", "mm", "cm",
