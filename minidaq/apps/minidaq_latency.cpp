@@ -9,6 +9,7 @@
 //   minidaq_latency --words nema-100MBq.bin --speed 1 --seconds 5
 #include <array>
 #include <cstdio>
+#include <exception>
 #include <fstream>
 #include <memory>
 #include <sstream>
@@ -31,9 +32,7 @@ void print_row(const char* name, const minidaq::LatencySummary& s) {
               static_cast<double>(s.max) / 1e3);
 }
 
-}  // namespace
-
-int main(int argc, char** argv) {
+int run(int argc, char** argv) {
   double rate = 10e6;
   double seconds = 10.0;
   std::size_t batch = 4096;
@@ -150,7 +149,7 @@ int main(int argc, char** argv) {
   print_row("end-to-end", pipe.end_to_end_latency().summary());
   // How busy each stage was: the sum of its batch service times over the
   // run's wall time. The first stage to approach 100% is the bottleneck.
-  const double wall_ns = static_cast<double>(t_end - t_start);
+  const auto wall_ns = static_cast<double>(t_end - t_start);
   std::printf("%-12s %12s %7s %12s %12s %12s\n", "stage", "items in", "busy %", "out stalls", "in idle", "dropped");
   for (std::size_t i = 0; i < minidaq::num_stages; ++i) {
     const auto l = pipe.stage_latency(static_cast<minidaq::StageId>(i)).summary();
@@ -165,4 +164,15 @@ int main(int argc, char** argv) {
               static_cast<unsigned long long>(so.out_of_order), static_cast<unsigned long long>(so.prompts),
               static_cast<unsigned long long>(so.delayed));
   return 0;
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+  try {
+    return run(argc, argv);
+  } catch (const std::exception& e) {  // e.g. ReplaySource rejecting a recording, or std::bad_alloc
+    std::fprintf(stderr, "minidaq_latency: %s\n", e.what());
+    return 2;
+  }
 }
