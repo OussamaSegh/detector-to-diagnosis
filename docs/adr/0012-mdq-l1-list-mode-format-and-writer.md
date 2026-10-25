@@ -90,7 +90,8 @@ ADR 0007 is superseded.
 - The CRC detects accidents, not tampering; integrity against deliberate change needs a
   keyed MAC or signatures, which version 1.0 does not have.
 - Writes are not durable until fsynced: with the default policy, a power loss can lose
-  the whole current file (up to 1 GiB) even though a process crash loses nothing. Sites
+  the whole current file (up to 1 GiB), while a process crash loses only what was still in
+  the sink's buffers (the block being filled and at most the pool's 4 MiB). Sites
   that need a bound use `interval` (at most `fsync_every_blocks` blocks at risk), at a
   measured cost.
 - Kill tests show what survives a process crash only. Behavior under power loss depends

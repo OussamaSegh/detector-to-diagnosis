@@ -584,8 +584,9 @@ Three properties follow from this design:
   drop, by the back-pressure or drop policy of Chapter 3. The sink never drops a coincidence while it is
   healthy, and it counts every wait (SRS-OUT-006).
 - **Bounded staleness.** At low rates a block fills slowly. The writer hands a block off at
-  most `max_block_delay` (100 ms) after its first record, so a crash cannot take more than that
-  from the sink's buffers (SRS-OUT-007).
+  most `max_block_delay` (100 ms) after its first record (SRS-OUT-007). A process crash
+  therefore loses at most the block being filled and the blocks queued for the I/O thread,
+  which the pool bounds to 4 MiB.
 - **No allocation per block.** 64 buffers of 64 KiB, 4 MiB in all, are allocated once.
 
 A failed write, fsync, close or rename makes the sink faulted. The service stops the run
