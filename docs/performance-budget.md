@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 16). Status: measured on the book's machine at tag `ch05`, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
+Version 2 (MiniDAQ 0.3.0, release review). Status: measured on the book's machine at tag `ch05`, the whole pipeline again for release 0.3.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -27,10 +27,21 @@ repetitions. Raw results: `measurements/ch05/`.
 | Decode | Unpack an 8-byte word, unwrap time, check crystal | 3.0 (330 M words/s) | 33x | 11x | `bm_decode` `BM_DecodePacked/65536` |
 | Energy window | Branchless filter, 16-byte singles | 1.1 (900 M/s) | 90x | 30x | `bm_energy_filter` `BM_EnergyFilter/1/50/0/4096` |
 | Sort | `std::sort` of a 4,096-single batch, inlined comparator | 7.4 to 8.5 (117 to 136 M/s) | 12x | 4x | `bm_sort` `BM_SortFunctor/4096/0` |
-| Pair | Coincidence search in sorted singles | not measured separately (gap) | | | `bm_pipeline` only |
+| Pair | The coincidence sorter (Chapter 10) | not measured separately (gap); the pipeline row shows its cost | | | `bm_pipeline` only |
 | Energy spectrum | `++h[code]`, four sub-histograms | 0.44 (2.26 G/s); 0.81 for a constant code | over 100x | over 40x | Exercise 5.4 `bench_spectrum` |
 | Latency histogram | One `record()` per batch | 3 ns per batch (under 0.001 ns per single) | | | `bm_histogram` `BM_HistogramRecord` |
-| Whole pipeline | All five stages, 5 threads on 4 vCPUs, batch 4,096 | 11.6 (86 M words/s) | 8.6x | 2.9x | `bm_pipeline` `BM_Pipeline/4096/64/real_time` |
+| Whole pipeline | All five stages, 5 threads on 4 vCPUs, batch 4,096, pair stage = coincidence sorter | 26.4 (37.9 M words/s; 35.4 to 40.4) | 3.8x | 1.3x | `bm_pipeline` `BM_Pipeline/4096/64/real_time` |
+
+The whole-pipeline row was measured for release 0.3.0 (`release` preset, 10 repetitions, commit
+`4c3ac87`, `measurements/release-0.3.0/perf-current-4c3ac87.json`). Until then it showed 11.6 ns (86 M words/s), measured
+at tag `ch05` with the pair stage of Chapter 3, which only matched neighbors. Chapter 10 made the
+pair stage the coincidence sorter (commit `1b6bcd3`), which does the real work and costs most of
+the difference: interleaved runs of the `hardened` build give 96 M words/s just before that
+commit, 39 M words/s at it and 39 M words/s at the release (`pipeline-attribution.txt`). The
+change was intended; that this row and SRS-PERF-020's evidence kept the old number for seven
+chapters was not (MDQ-PR-014, CAPA-0004). This synthetic stream puts every single in the energy
+window and is a heavier load for the sorter than Chapter 11's realistic stream, in which about
+63% of the singles are filtered out before it.
 
 ## Hardened builds (Chapter 7)
 
@@ -43,8 +54,9 @@ the table above are from the `release` preset at tag `ch05`.
 
 ## Reading the table
 
-- The whole pipeline is the binding row: at the high-activity rate its margin is under 3x on
-  this machine, and the five threads share four vCPUs. On the acquisition PC, with one core per
+- The whole pipeline is the binding row: at the high-activity rate its margin is 1.3x on this
+  machine with the synthetic stream, below the 2x of a design discussion, and the five threads
+  share four vCPUs. On the acquisition PC, with one core per
   stage, re-measure before relying on it.
 - The sort is the most expensive single stage. Its cost per single grows with the batch size
   (O(n log n)); a larger batch trades sort cost for fewer hand-offs.
@@ -96,14 +108,19 @@ is a virtual disk that the host may cache (a repeated 3 GB `dd` ran at 1.4 GB/s 
 
 ## Regression gate
 
-The rows with a library benchmark (`bm_*`) are gated by `.github/workflows/perf.yml`: `tools/perf_suite.sh`
-runs them with 10 repetitions and `tools/perf_gate.py` fails the merge request if one is more
-than 5% slower than `benchmarks/baseline/<runner>.json` with p < 0.01 (one-sided Mann-Whitney U).
-A change that intentionally slows a row updates the baseline and this table in the same merge
-request, with a reason.
+The rows with a library benchmark (`bm_*`) are compared with `benchmarks/baseline/<runner>.json`
+by `tools/perf_suite.sh` (10 repetitions) and `tools/perf_gate.py`, which fails if one is more
+than 5% slower with p < 0.01 (one-sided Mann-Whitney U). Until release 0.3.0 the comparison
+was wired only into `.github/workflows/perf.yml`, which needs a self-hosted runner labelled
+`perf` that does not exist, so it never ran (MDQ-PR-014). Since then `tools/release_checks.sh`
+runs it on the reference machine before every release, and a release record without its output
+is incomplete (CAPA-0004). A change that intentionally slows a row updates the baseline and this
+table in the same change, with a reason; the `BM_Pipeline` entries were replaced at release
+0.3.0 because Chapter 10 made the pair stage the coincidence sorter.
 
 ## Document history
 
 | Version | Change |
 |---|---|
 | 1 | First controlled version (Chapter 16). Earlier states, without versions, are in git at tags `ch05`, `ch07`, `ch11` and `ch12`. |
+| 2 | Release 0.3.0: the whole pipeline re-measured with the coincidence sorter (MDQ-PR-014, CAPA-0004); the regression baseline updated for `BM_Pipeline`. |

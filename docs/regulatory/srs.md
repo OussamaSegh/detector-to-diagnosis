@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 5 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
+Version 6 (MiniDAQ 0.3.0, release review). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -237,7 +237,7 @@ The control API's security requirements (Chapter 17), from the threat model
 
 | ID | Method | Evidence |
 |---|---|---|
-| SRS-PERF-020 | M | [Performance budget](../performance-budget.md): whole pipeline 11.6 ns per single (86 M words/s), margin 8.6 times at 10 M singles/s; hardened builds within noise (`measurements/ch07/`). Re-measure on the acquisition PC. |
+| SRS-PERF-020 | M | [Performance budget](../performance-budget.md), version 2: whole pipeline with the coincidence sorter 26.4 ns per single (37.9 M words/s), margin 3.8 times at 10 M singles/s, release 0.3.0 (`measurements/release-0.3.0/`); the `hardened` build within noise of it (`pipeline-attribution.txt`). Until version 5 this row quoted 86 M words/s, measured before Chapter 10 (MDQ-PR-014). Re-measure on the acquisition PC. |
 | SRS-PERF-021 | M | [Performance budget](../performance-budget.md), list-mode writer section: about 19 M coincidences/s with fsync on the reference machine (`measurements/ch12/`), against the 2.7 M coincidences/s that the pair stage produces at 70 M singles/s. |
 
 ## 4. Changes
@@ -249,3 +249,4 @@ The control API's security requirements (Chapter 17), from the threat model
 | 3 | Chapter 16: SRS-CTL-033, the status fields of API 1.1 (ADR 0013, CR-0003, problem report MDQ-PR-012). |
 | 4 | Chapter 17: security requirements SRS-SEC-001 to SRS-SEC-009, from the threat model (ADR 0014, CR-0004, problem report MDQ-PR-008). |
 | 5 | Part III review: SRS-CTL-034, after an `auth` whose token was a number ended the server (problem report MDQ-PR-013, CAPA-0003). |
+| 6 | Release 0.3.0: the verification of SRS-PERF-020 re-measured with the coincidence sorter; the requirement is unchanged and met (problem report MDQ-PR-014, CAPA-0004). |

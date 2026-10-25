@@ -72,7 +72,7 @@ tests. Do not edit by hand: the test `docs.trace` fails when this file is out of
 | SRS-OUT-012 | output | T | `test_listmode_sink.cpp` ListModeSink.WritesRealFilesThroughTheService | RC-12, RC-15 |
 | SRS-PERF-001 | pipeline | T | `test_zero_alloc.cpp` ZeroAllocation.StreamDecoderDoesNotAllocate |  |
 | SRS-PERF-010 | metrics | T | `test_latency_histogram.cpp` LatencyHistogram.PercentilesMatchExactWithinPrecision<br>`test_latency_histogram.cpp` LatencyHistogram.RelativeErrorBound |  |
-| SRS-PERF-020 | pipeline | M | [Performance budget](../performance-budget.md) |  |
+| SRS-PERF-020 | pipeline | M | [Performance budget](../performance-budget.md), version 2 |  |
 | SRS-PERF-021 | output | M | [Performance budget](../performance-budget.md), list-mode writer section |  |
 | SRS-PIPE-001 | pipeline | T | `test_spsc_ring.cpp` SpscRing.FifoOrderAndFullEmpty |  |
 | SRS-PIPE-002 | pipeline | T | `test_spsc_ring.cpp` SpscRingStress.TwoThreadsPreserveEverySequenceNumber |  |

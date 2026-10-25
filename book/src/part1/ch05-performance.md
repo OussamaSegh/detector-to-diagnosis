@@ -738,6 +738,16 @@ Shared cloud runners are unsuitable: their hardware varies from job to job, and 
 share the cores. When an intentional change makes something slower, or the runner's hardware
 changes, re-record the baseline in the same merge request, so the review sees it.
 
+A gate is a control only when it runs. MiniDAQ's own gate did not, for twelve chapters: the
+book's repository has no `perf` runner and its changes go to `main` without merge requests, so
+the workflow never started a job, and a workflow that never starts shows neither red nor green.
+Chapter 10 then cut the pipeline's throughput by more than half on purpose, when the pair stage
+became the real coincidence sorter, and the budget kept quoting 86 M words/s until the release
+checks of 0.3.0 ran the gate by hand and it failed at once. That was recorded as a problem
+report with a corrective action, in the form Chapter 16 describes (MDQ-PR-014, CAPA-0004), and
+since then `tools/release_checks.sh` runs the gate before every release. For any check that
+depends on infrastructure, look for its last run, not for its configuration.
+
 On the book's VM, a second run of the suite against the baseline gave speed ratios from 0.952
 to 1.025, and the gate passed. The sort came out 4.8% slower: just inside the threshold, and
 with p = 0.22, clearly noise. With a threshold alone at 4%, that run would have failed. Then the

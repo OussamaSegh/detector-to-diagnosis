@@ -1,0 +1,19 @@
+# 2026-10-25T14:51:42Z hardened bm_pipeline BM_Pipeline/4096/64/real_time, 5 interleaved rounds
+# 338aa6b = parent of 1b6bcd3 (pair stage before the coincidence sorter); 1b6bcd3 = pair stage is the CoincidenceSorter; 4c3ac87 = release candidate
+ 14:51:42 up  6:09,  0 user,  load average: 0.85, 1.10, 2.37
+round 1 338aa6b 96.21 M/s
+round 1 1b6bcd3 38.28 M/s
+round 1 4c3ac87 38.93 M/s
+round 2 338aa6b 98.47 M/s
+round 2 1b6bcd3 39.07 M/s
+round 2 4c3ac87 38.76 M/s
+round 3 338aa6b 101.07 M/s
+round 3 1b6bcd3 38.26 M/s
+round 3 4c3ac87 39.41 M/s
+round 4 338aa6b 94.42 M/s
+round 4 1b6bcd3 38.90 M/s
+round 4 4c3ac87 38.76 M/s
+round 5 338aa6b 82.65 M/s
+round 5 1b6bcd3 39.78 M/s
+round 5 4c3ac87 38.56 M/s
+done

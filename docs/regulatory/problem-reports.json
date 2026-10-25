@@ -60,7 +60,7 @@
       "status": "open",
       "description": "The service's monitor polls the ports every 20 ms, so a run continues for up to 20 ms after a detector or sink fault.",
       "evaluation": {"safety_relevant": true, "rationale": "Data acquired in those 20 ms after a fault is part of a run that ends in a fault anyway; the fault is reported and the run is not used. No data is presented as complete."},
-      "decision": "Release with it; Chapter 15 decides whether a hazard needs a faster reaction."
+      "decision": "Release with it. Reviewed against the risk file for release 0.3.0: a faulted run is incomplete in its integrity verdict whatever the delay (assess_integrity, RC-01), and H-05 covers the interrupted scan; 20 ms more data in a run that ends in a fault changes neither sequence of events nor harm, so no hazard needs a faster reaction. Chapter 15 was to decide this and did not; the release review did."
     },
     {
       "id": "MDQ-PR-007",
@@ -135,6 +135,17 @@
       "description": "authenticate() read the token with req.value(\"token\", std::string{}), which throws json::type_error when the key is present with another type. Nothing caught it, so one line such as {\"cmd\":\"auth\",\"token\":5} from a client that had not authenticated ended minidaq_server (reproduced: abort, exit status 134).",
       "evaluation": {"safety_relevant": true, "rationale": "It interrupts a running scan (H-05) without a token, so for availability it bypasses the control of H-08: a process on the PC, or on the network when the server is bound beyond loopback, could end an acquisition. The files written so far stay readable (H-03). Found before release 0.3.0; no released version has it."},
       "resolution": {"change": "The token is read only when it is a string; any other value is an unknown token. The input is in the fuzz seed corpus. CAPA-0003 for the cause.", "verification": "ControlProtocol.EveryFieldOfEveryTypeIsAnswered (SRS-CTL-034), ControlProtocol.AuthenticationInTheProtocolLayer, ControlServer.AnUnknownTokenClosesTheConnection"}
+    },
+    {
+      "id": "MDQ-PR-014",
+      "title": "The pipeline's throughput evidence was stale and its regression gate never ran",
+      "found": "2026-10-25, release checks for 0.3.0 on commit 4c3ac87 (tools/perf_gate.py run by hand)",
+      "item": "pipeline",
+      "status": "closed",
+      "capa": "CAPA-0004",
+      "description": "The performance budget and the verification of SRS-PERF-020 quoted 86 M words/s for the whole pipeline, measured at tag ch05. Since commit 1b6bcd3 (Chapter 10) the pair stage is the coincidence sorter and the pipeline runs at about 39 M words/s on the reference machine (BM_Pipeline 0.44 of the baseline). The gate that should have reported it, .github/workflows/perf.yml, runs only on a self-hosted runner labelled perf, which does not exist, so it never ran and nothing reported that.",
+      "evaluation": {"safety_relevant": false, "rationale": "SRS-PERF-020 is still met: 37.9 M words/s is 3.8 times the 10 M singles/s it asks for. A pipeline slower than its input loses singles, and losses are counted and reported (RC-01, H-01), so a slower pipeline cannot lose data silently. The defect is in the evidence, not in the software."},
+      "resolution": {"change": "Performance budget version 2 and SRS version 6 with the measurement of release 0.3.0; the BM_Pipeline entries of benchmarks/baseline/book-vm.json replaced; tools/release_checks.sh runs the gate before each release (SDP version 4). CAPA-0004 for the cause.", "verification": "measurements/release-0.3.0/perf-pipeline.txt, perf-current.json, perf-gate.txt and pipeline-attribution.txt"}
     }
   ]
 }

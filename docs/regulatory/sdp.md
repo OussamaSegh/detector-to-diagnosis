@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 3 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 4 (MiniDAQ 0.3.0, release review). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -113,14 +113,20 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Unit, integration and documentation tests (`ctest`) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
 | Static analysis | every change | zero findings |
 | Exercise solutions | every change (part of `ctest`) | all pass |
-| Exercise starters | each new exercise, `ctest -L starter` | every starter fails at least one test, none hangs |
+| Exercise starters | each new exercise and each release, `ctest -L starter` on a `Release` build (`tools/release_checks.sh`) | every starter fails at least one test, none hangs |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
-| Performance requirements | each release, on the reference machine | SRS-PERF-020 and SRS-PERF-021 met |
+| Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020 and SRS-PERF-021 met; `tools/perf_gate.py` finds no row of the budget slower than the baseline, or the baseline and the budget were updated with a reason (CAPA-0004) |
 | Stress run of the threaded tests | each release, `tools/stress_tests.sh` on the `tsan` build, 100 repetitions | no failure, result in `measurements/` (CAPA-0001) |
 | Code review | every change; every Part | the author's review against the change control checklist; a Part review of all changes of the Part (section 5) |
 | Change requests and CAPA | every change (`docs.changes`, `docs.capa`) | every request complete and consistent; every implemented one names its commits and tests |
 | Document control | every change, against the last release (`tools/design_file.py --since`) | every controlled document that changed has a new version and history row |
 | Risk management review | each release | the risk file is complete, every hazard is closed or its open status is justified for the release's intended use, the overall residual risk is acceptable (risk management plan, section 4) |
+
+The checks of a release run in order on one clean commit with `tools/release_checks.sh OUT`,
+which writes one file per check into `OUT` and exits with a failure when any check fails or
+cannot run. Those files, copied to `measurements/release-X.Y.Z/`, are the evidence that the
+release record cites (section 8). A check that is wired only into a workflow is not evidence until
+the run that produced it is cited.
 
 Unit acceptance criteria: a unit (a class or a function with its header) is accepted when its
 tests pass under every preset, it has no static analysis finding, its interface is documented
@@ -183,3 +189,4 @@ of Chapter 13.
 | 1 | First version (Chapter 14). |
 | 2 | Risk management (Chapter 15): requirements traced to risk controls, the test `docs.risk`, and the risk file's review before release. |
 | 3 | Chapter 16: change requests, CAPA and document control as verification activities; how changes are reviewed with one developer (internal audit finding A-1, CAPA-0002). |
+| 4 | Release 0.3.0: the release checks are one script, `tools/release_checks.sh`, which fails when a check cannot run; the performance row includes the regression gate and the starters row a `Release` build (MDQ-PR-014, CAPA-0004). |

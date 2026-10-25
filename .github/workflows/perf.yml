@@ -5,6 +5,9 @@
 # than 5% slower than benchmarks/baseline/<runner>.json and the difference is
 # significant (one-sided Mann-Whitney U, alpha 0.01). The runner provides the
 # build tools and, since Chapter 17, the OpenSSL development package.
+# Without such a runner, and for changes pushed without a pull request, this
+# workflow never starts a job and shows nothing on a commit (MDQ-PR-014): the
+# same gate runs before every release in tools/release_checks.sh (CAPA-0004).
 name: perf
 on:
   workflow_dispatch:

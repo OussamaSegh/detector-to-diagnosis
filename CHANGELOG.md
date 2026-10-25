@@ -61,6 +61,9 @@ the patch version.
   URL; the CI job `vulnerability-scan` (Grype v0.120.1) with `tools/vuln_triage.py` and
   `docs/regulatory/security/vulnerability-triage.json` (CycloneDX VEX states; test
   `tools.vuln_triage`); `SECURITY.md`; exercises 17.1 to 17.5 (17.2 and 17.5 in C++).
+- `tools/release_checks.sh`: the release checks of the SDP in order on one clean commit, one
+  evidence file per check, a failure when a check fails or cannot run; it includes the
+  performance regression gate and checks the exercise starters one by one in a `Release` build.
 
 ### Changed
 - After an independent review of Parts I to III: a front-matter section "How to use this book"
@@ -121,6 +124,16 @@ the patch version.
   NeuroLF's 510(k) K241751 (15 July 2024) and MDR CE marking (2 October 2024) with sources;
   Chapter 14 says that requirement counts are those at each chapter's tag; Chapter 16 explains
   ten versus thirteen controlled documents; Chapter 17 states forward secrecy and SNI exactly.
+- The performance budget and SRS-PERF-020's verification still quoted 86 M words/s for the
+  whole pipeline, measured before Chapter 10 made the pair stage the coincidence sorter; it runs
+  at 37.9 M words/s, 3.8 times the requirement (MDQ-PR-014). The regression gate in
+  `perf.yml` had never run: it needs a self-hosted runner the repository does not have.
+  CAPA-0004: performance budget version 2, SRS version 6, the `BM_Pipeline` baseline replaced,
+  the gate in the release checks (SDP version 4). Chapter 5 tells the story.
+- Two exercise starters (5.2 and 10.4) passed every test in a build without optimization,
+  because their only failing test measures speed and skips itself there; the release checks
+  build the starters as `Release`.
+- MDQ-PR-006's decision said Chapter 15 would decide it; the release review did.
 
 ## [0.2.0] - 2026-10-25
 
