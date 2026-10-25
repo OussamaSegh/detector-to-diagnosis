@@ -5,7 +5,7 @@ Engineer* and MiniDAQ if the current session is lost. Read it fully before you c
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-10-25 18:40 UTC, after commit d357cfb (Chapter 18 committed, not yet tagged).
+Last updated: 2026-10-25 20:50 UTC, after commit bddbd57 (Chapter 19 committed, CI pending).
 
 ## 1. The goal
 
@@ -196,6 +196,11 @@ important ones:
 - Exercise 18.5's solution records the SHA-256 of `minidaq/include/minidaq/format/readout_packet.hpp`.
   Any change to that header makes `ch18/e5_kill_survivors/solution/survivors` fail until the
   mutation run in its README is repeated.
+- A change to MiniDAQ's behavior can break exercise solutions: the tie rule SRS-SRT-013 broke
+  Chapter 10's exercise tests (CI red on 8284e0e). Run the whole `ctest`, exercises included,
+  before every push of a library change.
+- Run the readout system tests with the CPUs loaded too (MDQ-PR-019 showed only under load).
+  `tools/test_report.py` must run on a clean tree, or the report marks itself invalid.
 
 ## 5. Status
 
@@ -221,71 +226,63 @@ For 0.3.0:
 - The writer measured 15.9 to 17.0 M coincidences/s, below Chapter 12's 18 to 20. Re-measure it
   at 0.4.0.
 
-Chapter 18 (unit and component testing) was committed in b76f319, 7ef3ee4, b3566cb and d357cfb:
+Chapter 18 (unit and component testing): commits b76f319 to a95b11c, tag `ch18` (local) at
+a95b11c, GitHub CI green. Property harness (ADR 0015), coverage and mutation tools, SRS v7, SDP v5,
+Exercises 18.1 to 18.5, `measurements/ch18/`.
 
-- The property harness (ADR 0015) and ten properties.
-- GoogleMock interaction tests.
-- `tools/coverage.py` and `tools/mutation_test.py`.
-- Sorter mutation score 93.9%, with 10 equivalent survivors argued in
-  `measurements/ch18/sorter-survivors.md`.
-- The tracker's 7 survivors are killed by Exercise 18.5's solution.
-- SRS v7, which adds the delay limit found by mutation testing.
-- SDP v5, which adds the coverage ratchet.
-- MDQ-PR-015: the `ctl` item has no automated test.
-- Exercises 18.1 to 18.5.
-- Measurements in `measurements/ch18/`.
+Chapter 19 (system testing): commits 8284e0e, 6919df2, c3152c7, bddbd57.
+
+- System tests in `minidaq/tests/system/` (Python stdlib): control (15), acquisition (5),
+  readout (4), stats (10). STP `docs/regulatory/verification/stp.md`, `tools/test_report.py`
+  (STR), `tools/soak.py`; release_checks.sh runs both.
+- Found and fixed: MDQ-PR-017 (sorter ties, SRS-SRT-013), MDQ-PR-018 (minidaq_send fault report),
+  MDQ-PR-019 (tracker reordered over-count). CR-0005. MDQ-PR-015 closed by the coverage review.
+- SRS v8 (SRS-CTL-040 to 044, SRS-SYS-001 to 005), SDP v6. Exercises 19.1 to 19.5.
+- `measurements/ch19/`: soak (PASS, with a recorded latency deviation), coverage (88.6% lines),
+  system test report of c3152c7 (34 of 34 pass).
 
 ### In progress (as of the last update)
 
-Chapter 18, still to do:
-
-- Run `ci/run_all.sh` on d357cfb.
-- Check that GitHub CI on d357cfb is green.
-- Build the book and check that it has 0 overfull hboxes.
-- Tag `ch18` locally and refresh the bundle.
+Chapter 19, still to do: `ci/run_all.sh` on bddbd57 (running in the worktree), GitHub CI green
+on bddbd57, then tag `ch19` locally and refresh the bundle.
 
 ### Left to do, in order
 
-1. **Chapter 19**, integration, system and hardware-in-the-loop testing:
-   - test levels, replayed data, soak tests, and statistical comparison with golden data
-     (Python);
-   - the STP and STR, a test protocol and a report a reviewer can sign;
-   - close MDQ-PR-015 by running `minidaq_ctl` against `minidaq_server`, including a server
-     with a certificate the client must refuse.
-2. **Chapter 20**, CI for regulated software: pipeline gates, reproducible builds, release
+1. **Chapter 20**, CI for regulated software: pipeline gates, reproducible builds, release
    bundles with evidence, and test tool confidence. Address the perf gate that never runs
    (`perf.yml`).
-3. **Chapter 21**, code review, debugging and incident analysis. Deepen it in place to full
+2. **Chapter 21**, code review, debugging and incident analysis. Deepen it in place to full
    depth: gdb, core dumps, debugging a live system without stopping acquisition,
    record-and-replay, review checklists, and root cause written up as a problem report.
-4. **Part IV review and release 0.4.0.** It includes:
+3. **Part IV review and release 0.4.0.** It includes:
    - the CAPA-0003 and CAPA-0004 effectiveness checks;
    - the writer re-measurement;
    - weeks 6 and 7 hours in the schedule table;
    - Part IV marked complete in `edition.md`.
-5. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
+4. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
    must give hardware control real depth (review gap). Release 0.5.0.
-6. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
+5. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
    image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
-7. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
+6. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
    dependency management) to full depth. Release 0.7.0.
-8. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
+7. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
    (the first 90 days: questions to ask, a ramp-up plan) to full depth. Release 0.8.0.
-9. **Part IX** (new, numbered after 34), three full chapters:
+8. **Part IX** (new, numbered after 34), three full chapters:
    - DICOM and PACS integration;
    - Git and team workflow in a regulated team;
    - AI-assisted coding (Claude Code) for medical-device software. Draw on how this book was
      built and checked: context files, small reviewed steps, tests first, tool validation, and
      traceability of AI-written changes.
-10. **Architecture appendix**, deeper than Chapter 6: patterns, interfaces and tradeoffs on
-    MiniDAQ and its ADRs, and IEC 62304 architecture, software items and SOUP boundaries.
-11. **Release 1.0.0**: the complete packaged book, solutions and code.
+9. **Architecture appendix**, deeper than Chapter 6: patterns, interfaces and tradeoffs on
+   MiniDAQ and its ADRs, and IEC 62304 architecture, software items and SOUP boundaries.
+10. **Release 1.0.0**: the complete packaged book, solutions and code.
 
 ### Waiting on the user
 
-- Push the tags ch10 to ch17 (and ch18 once it is made), book-v0.2.0 and book-v0.3.0 from the
+- Push the tags ch10 to ch18 (and ch19 once it is made), book-v0.2.0 and book-v0.3.0 from the
   zip or bundle. Cloud sessions cannot push tags.
 - Enable private vulnerability reporting on the GitHub repository (Chapter 17, SECURITY.md).
+- Answer whether to enable CodeQL code scanning (asked, no answer yet).
 
 ## 6. Decisions already made (do not reopen)
 
