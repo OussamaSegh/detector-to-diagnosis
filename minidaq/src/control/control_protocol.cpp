@@ -71,7 +71,9 @@ json authenticate(const json& req, const json& id, AcquisitionService& service, 
     return json{{"api", api_version}, {"id", id}, {"ok", true}, {"identity", session.identity.name},
                 {"role", to_string(session.identity.role)}};
   }
-  const auto token = req.value("token", std::string{});
+  // Not req.value("token", ...): it throws when "token" is there but not a string (MDQ-PR-013).
+  const auto it = req.find("token");
+  const std::string token = it != req.end() && it->is_string() ? it->get<std::string>() : std::string{};
   const auto who = tokens->check(token);
   if (!who) {
     // The token is never recorded: a mistyped token is often one character from a real one.

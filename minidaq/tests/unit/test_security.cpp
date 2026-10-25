@@ -222,6 +222,10 @@ TEST(ControlServer, AnUnknownTokenClosesTheConnection) {
   EXPECT_EQ(r["error"]["code"], "unauthenticated");
   EXPECT_EQ(c.line(), "") << "no second guess on the same connection";
   EXPECT_TRUE(audit.has("auth", "refused", false));
+  Client c2{*port};  // MDQ-PR-013: a token that is not a string once ended the server
+  EXPECT_EQ(c2.call({{"cmd", "auth"}, {"token", 5}})["error"]["code"], "unauthenticated");
+  Client c3{*port};
+  EXPECT_EQ(c3.call({{"cmd", "hello"}})["ok"], true) << "the server still answers";
   const std::lock_guard lock{audit.mu};
   for (const auto& rec : audit.records) {
     EXPECT_EQ(rec.detail.find("mdq_"), std::string::npos) << "a token in the audit trail: " << rec.detail;
@@ -397,11 +401,20 @@ TEST(ControlProtocol, AuthenticationInTheProtocolLayer) {
   const std::string token = new_token();
   const TokenStore tokens = TokenStore::single("console", Role::operator_, token);
   Session s{"tcp:192.0.2.7:4000", {}};
-  auto call = [&](const json& req) { return json::parse(handle_request(req.dump(), svc, s, &tokens)); };
+  auto call_as = [&](Session& session, const json& req) {
+    return json::parse(handle_request(req.dump(), svc, session, &tokens));
+  };
+  auto call = [&](const json& req) { return call_as(s, req); };
   EXPECT_EQ(call({{"cmd", "status"}})["error"]["code"], "unauthenticated");
   EXPECT_EQ(s.who(), "tcp:192.0.2.7:4000");
   EXPECT_EQ(call({{"cmd", "auth"}})["error"]["code"], "unauthenticated") << "no token is an unknown token";
   EXPECT_TRUE(s.failed_auth);
+  // MDQ-PR-013: a token that is not a string threw out of handle_request and ended the server.
+  for (const json& bad : {json(5), json(nullptr), json::array({token}), json{{"token", token}}, json(true)}) {
+    Session sb{"tcp:192.0.2.7:4002", {}};
+    EXPECT_EQ(call_as(sb, {{"cmd", "auth"}, {"token", bad}})["error"]["code"], "unauthenticated") << bad.dump();
+    EXPECT_TRUE(sb.failed_auth) << bad.dump();
+  }
   Session s2{"tcp:192.0.2.7:4001", {}};
   EXPECT_EQ(json::parse(handle_request(json{{"cmd", "auth"}, {"token", token}}.dump(), svc, s2, &tokens))["ok"], true);
   EXPECT_EQ(s2.who(), "console@tcp:192.0.2.7:4001");

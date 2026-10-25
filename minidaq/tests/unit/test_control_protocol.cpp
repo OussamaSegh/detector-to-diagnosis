@@ -110,6 +110,45 @@ TEST(ControlProtocol, VersioningAndMalformedInput) {
   EXPECT_EQ(call(svc, bad_utf8)["ok"], false) << "invalid UTF-8 is rejected, not a crash";
 }
 
+// [snippet:type_confusion]
+TEST(ControlProtocol, EveryFieldOfEveryTypeIsAnswered) {
+  // REQ: SRS-CTL-034
+  // MDQ-PR-013: {"cmd":"auth","token":5} threw out of handle_request and ended the server. Each
+  // field the protocol reads gets every JSON type, for every command and every kind of client.
+  AcquisitionService svc{with_default_adapters()};
+  const TokenStore tokens = TokenStore::single("op", Role::operator_, new_token());
+  const std::vector<std::string> commands{"hello", "auth",  "status", "configure",
+                                          "start", "stop",  "reset",  "launch"};
+  const std::vector<std::string> fields{"api", "id", "cmd", "token", "config"};
+  const std::vector<json> values{5, -1, 1.5, "x", "2.0", nullptr, true,
+                                 json::array(), json::array({1}), json::object(), json{{"a", 1}}};
+  const std::vector<Identity> clients{{}, {"op", Role::operator_}, {"obs", Role::observer}};
+  int requests = 0;
+  for (const auto& cmd : commands) {
+    for (const auto& field : fields) {
+      for (const auto& value : values) {
+        for (std::size_t k = 0; k <= clients.size(); ++k) {
+          json req{{"api", "2.0"}, {"id", 1}, {"cmd", cmd}};
+          req[field] = value;
+          const bool no_auth = k == clients.size();  // the last: a server started with --no-auth
+          Session s{"test", no_auth ? Identity{"local", Role::operator_} : clients[k]};
+          const TokenStore* store = no_auth ? nullptr : &tokens;
+          std::string out;
+          ASSERT_NO_THROW(out = handle_request(req.dump(), svc, s, store)) << req.dump();
+          EXPECT_EQ(out.find('\n'), std::string::npos) << req.dump();
+          const auto r = json::parse(out, nullptr, false);
+          ASSERT_TRUE(r.is_object() && r.contains("ok") && r["ok"].is_boolean())
+              << req.dump() << " -> " << out;
+          ++requests;
+        }
+      }
+    }
+  }
+  EXPECT_EQ(requests, 8 * 5 * 11 * 4);
+  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["ok"], true) << "and the protocol still answers";
+}
+// [/snippet:type_confusion]
+
 // [snippet:status_fields_test]
 TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
   // REQ: SRS-CTL-033

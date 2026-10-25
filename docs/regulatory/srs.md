@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 4 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
+Version 5 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -184,6 +184,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CTL-031 | When a run ends without a fault but with a nonzero loss counter, the acquisition service shall record every nonzero loss counter in the audit trail. | service | T |
 | SRS-CTL-032 | The control server shall record every configure, start, stop and reset command, accepted or rejected, in the audit trail with the client's address and port. | protocol | T |
 | SRS-CTL-033 | The control server's status shall have exactly the top-level fields that its API version defines, each field marked as always present in every status. | protocol | T |
+| SRS-CTL-034 | The control protocol shall answer every request that is one JSON object with one response line, whatever the type of each of its fields, and keep serving other requests. | protocol | T |
 
 ### 2.11 List-mode format (LMF)
 
@@ -247,3 +248,4 @@ The control API's security requirements (Chapter 17), from the threat model
 | 2 | Chapter 15: requirements of the risk controls for silent data loss and for the audit of control actions (SRS-CTL-030 to SRS-CTL-032, SRS-OUT-011, SRS-OUT-012), SRS-FMT-013, a counter the integrity verdict relies on, and SRS-SRT-012, a gap found by the sorter's FMEA. |
 | 3 | Chapter 16: SRS-CTL-033, the status fields of API 1.1 (ADR 0013, CR-0003, problem report MDQ-PR-012). |
 | 4 | Chapter 17: security requirements SRS-SEC-001 to SRS-SEC-009, from the threat model (ADR 0014, CR-0004, problem report MDQ-PR-008). |
+| 5 | Part III review: SRS-CTL-034, after an `auth` whose token was a number ended the server (problem report MDQ-PR-013, CAPA-0003). |

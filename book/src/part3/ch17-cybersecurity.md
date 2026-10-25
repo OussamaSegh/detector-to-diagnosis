@@ -518,8 +518,8 @@ which is why RC-23 exists. These tests are named as effectiveness evidence in `h
 ### Fuzzing with a security property
 
 Chapter 7's protocol fuzzer checked that no input crashes the server or breaks the framing. A crash
-is the easiest property to check, and the least interesting one for security: the attack that
-matters is a request that succeeds when it should not. The fuzzer now runs each input as one
+is the easiest property to check, and on its own a weak security test: the attack that matters most
+is a request that succeeds when it should not. The fuzzer now runs each input as one
 connection against a server with tokens, and aborts if a command succeeds without the role it needs:
 
 ```{.cpp include="fuzz/fuzz_protocol.cpp" snippet="property"}
@@ -529,6 +529,31 @@ Half the inputs connect to a server whose only token is an observer's, so that t
 the observer's side of the boundary too; the seed corpus contains an authenticated `configure` and
 an observer's `status`. A property like this turns the fuzzer from a crash finder into a test of the
 authorization logic over inputs nobody would write by hand.
+
+The crash check still earned its place, hours after this chapter's code went in. On the next commit
+the CI job `fuzz-smoke` stopped with `type must be string, but is number`. An `auth` request whose
+token was a number, `{"cmd":"auth","token":5}`, made `req.value("token", std::string{})` throw:
+nlohmann's `value()` returns the default when the key is missing, but throws when the key holds
+another type. Nothing caught the exception, and the server ended. One line from anyone who can
+connect, before authentication, stops a running scan: a denial of service that the tokens do not
+prevent, because it happens before them. The 60-second local run while this chapter was written had
+not reached that input; another 60 seconds on GitHub did. Problem report MDQ-PR-013 records it, and
+the handler above now reads the token only when it is a string.
+
+It was the second time. In Chapter 7 a number too large for a `double` ended the configuration
+reader the same way (MDQ-PR-001), and that fix was local. Two problems with one cause call for a
+CAPA (Chapter 16), and CAPA-0003 asks what let the second one through: nothing tested the types of a
+request's fields. A fuzzer finds such an input by chance and in time; a test can try them all on
+every change. Requirement SRS-CTL-034 says that the protocol answers every JSON object whatever its
+fields' types, and its test sends each field with every JSON type, for every command and every kind
+of client, 1,760 requests:
+
+```{.cpp include="minidaq/tests/unit/test_control_protocol.cpp" snippet="type_confusion"}
+```
+
+Rule 3.5 of the coding standard now says how to read untrusted JSON. The lesson is wider than one
+library: when a fuzzer finds a bug, ask which test would have found it every time, and write that
+test too.
 
 ### Static analysis, review and penetration testing
 
@@ -551,6 +576,8 @@ performs it for the NeuroLF).
   security test is that everyone else cannot, in every way the threat model lists.
 - **Fuzzing for crashes only.** Add the property that matters: no command succeeds without its role,
   no response contains a secret.
+- **Convenient accessors on untrusted input.** `json.value("token", std::string{})` looks like a
+  safe default and throws on a number. Check the type, then read; let a test send every type.
 - **Mocking the crypto in the security tests.** The tests of the controls must use the real TLS
   library and real certificates (MiniDAQ's tests make a throw-away CA with P-256 keys). A mock
   proves that the mock works.

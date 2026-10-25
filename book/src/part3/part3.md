@@ -19,9 +19,11 @@ exists because you built it, not because someone reconstructed it before an audi
 - **Chapter 15** is ISO 14971, risk management for software: hazards, risk controls and their
   verification. MiniDAQ gains a risk file linked into the trace matrix.
 - **Chapter 16** is ISO 13485 and daily work in a quality management system: design controls,
-  change control, CAPA and audits. MiniDAQ gains a design history index and change templates.
+  change control, CAPA and audits. MiniDAQ gains a design and development file, controlled
+  documents, change requests and CAPA records that the build checks.
 - **Chapter 17** is cybersecurity under IEC 81001-5-1 and the FDA: threat models, security
-  requirements and vulnerability management. MiniDAQ's control API gains authentication.
+  requirements and vulnerability management. MiniDAQ's control API gains tokens, roles and
+  TLS 1.3, and its SBOM is scanned for known vulnerabilities on every change.
 
 Standards are copyrighted, and this book does not reproduce their text. It names clauses
 where that helps you find your way in your organization's copies, describes what they ask in

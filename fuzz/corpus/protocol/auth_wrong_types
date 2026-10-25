@@ -1,0 +1,2 @@
+{"api": "2.0", "id": 1, "cmd": "auth", "token": 5}
+{"api": "2.0", "id": 2, "cmd": "auth", "token": ["mdq_operator"]}

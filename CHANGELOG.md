@@ -100,6 +100,14 @@ the patch version.
 - The first vulnerability scan reported nothing, which a scan that matches nothing also does.
   The job now scans a control SBOM with the original noble OpenSSL package and fails if that
   finds nothing.
+- One request from a client that had not authenticated, `{"cmd":"auth","token":5}`, ended
+  `minidaq_server`: `json::value()` throws when the key holds another type (MDQ-PR-013, found by
+  the CI fuzz job). The token is read only when it is a string. Because the same cause had ended
+  the configuration reader in Chapter 7 (MDQ-PR-001), CAPA-0003 adds rule 3.5 of the coding
+  standard (version 3), requirement SRS-CTL-034 (SRS version 5) and the test
+  `ControlProtocol.EveryFieldOfEveryTypeIsAnswered`, which sends every field of a request with
+  every JSON type on every change.
+- The Part III introduction described Chapters 16 and 17's additions to MiniDAQ too briefly.
 
 ## [0.2.0] - 2026-10-25
 

@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 2 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 3 (MiniDAQ 0.3.0-dev, Part III review). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -60,6 +60,14 @@ detector data.
    test `ProfilePathMustBeASmallRegularFile`.
 4. Each parser of external input has a fuzz target that runs in CI.
    *Enforced:* `fuzz/`, CI job `fuzz-smoke`.
+5. A value from an untrusted JSON document is read after its type is
+   checked (`find` or `contains`, then `is_string()` and the like), never
+   with `value(key, default)` or `get<T>()` alone, which throw on another
+   type. A long-running process never lets a JSON exception escape a request;
+   a one-shot tool may, if `main` reports it and exits with an error
+   (CAPA-0003). *Enforced:* test `ControlProtocol.EveryFieldOfEveryTypeIsAnswered`
+   (every field of a request with every JSON type; review adds each new
+   field to it); fuzz targets.
 
 ## 4. Resources and types
 
@@ -124,3 +132,4 @@ must report nothing before a change is merged.
 |---|---|
 | 1 | First version (Chapter 7). |
 | 2 | Rule 5.5 on waiting in tests (CAPA-0001), and this history (Chapter 16). |
+| 3 | Rule 3.5 on reading untrusted JSON (CAPA-0003, problem report MDQ-PR-013). |

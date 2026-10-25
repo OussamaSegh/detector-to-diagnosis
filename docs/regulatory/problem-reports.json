@@ -7,6 +7,7 @@
       "found": "2026-10-24, Chapter 7, fuzz_config",
       "item": "config",
       "status": "closed",
+      "capa": "CAPA-0003",
       "description": "json::out_of_range (406) escaped the reader, which caught only json::parse_error; '6e688' ended the process.",
       "evaluation": {"safety_relevant": true, "rationale": "A crash during configure is a lost scan if it happens at the scanner; no wrong value was ever accepted."},
       "resolution": {"change": "The reader catches json::exception.", "verification": "Config.NumberOverflowIsAnErrorNotACrash; fuzz_config"}
@@ -123,6 +124,17 @@
       "description": "detector_counters (Chapter 9), sorter (Chapter 10), sink_counters (Chapter 12) and integrity (Chapter 15) were added to the status while every response still said \"api\": \"1.0\", against the rule of ADR 0003 that new fields come with a minor version.",
       "evaluation": {"safety_relevant": true, "rationale": "The integrity verdict is a risk control (RC-01, RC-05): a client cannot tell whether a status without it comes from an older server or is incomplete. No client misread a status, because the only clients are MiniDAQ's own."},
       "resolution": {"change": "CR-0003: control API 1.1 with the status fields listed in status_fields (ADR 0013).", "verification": "ControlProtocol.StatusFieldsMatchTheApiVersion (SRS-CTL-033)"}
+    },
+    {
+      "id": "MDQ-PR-013",
+      "title": "An auth request whose token is not a string ended the control server",
+      "found": "2026-10-25, GitHub CI fuzz-smoke (fuzz_protocol) on commit dcb701a, after Chapter 17",
+      "item": "protocol",
+      "status": "closed",
+      "capa": "CAPA-0003",
+      "description": "authenticate() read the token with req.value(\"token\", std::string{}), which throws json::type_error when the key is present with another type. Nothing caught it, so one line such as {\"cmd\":\"auth\",\"token\":5} from a client that had not authenticated ended minidaq_server (reproduced: abort, exit status 134).",
+      "evaluation": {"safety_relevant": true, "rationale": "It interrupts a running scan (H-05) without a token, so for availability it bypasses the control of H-08: a process on the PC, or on the network when the server is bound beyond loopback, could end an acquisition. The files written so far stay readable (H-03). Found before release 0.3.0; no released version has it."},
+      "resolution": {"change": "The token is read only when it is a string; any other value is an unknown token. The input is in the fuzz seed corpus. CAPA-0003 for the cause.", "verification": "ControlProtocol.EveryFieldOfEveryTypeIsAnswered (SRS-CTL-034), ControlProtocol.AuthenticationInTheProtocolLayer, ControlServer.AnUnknownTokenClosesTheConnection"}
     }
   ]
 }
