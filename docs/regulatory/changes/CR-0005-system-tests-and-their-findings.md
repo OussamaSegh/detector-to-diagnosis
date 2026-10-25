@@ -6,7 +6,7 @@
 | Requested | 2026-10-25, by the software lead |
 | Source | problem reports MDQ-PR-015, MDQ-PR-017, MDQ-PR-018 and MDQ-PR-019; requirement changes (SRS version 8) |
 | Decision | approved, 2026-10-25, software lead |
-| Commits | 8284e0e, and the Chapter 19 commit that adds this request |
+| Commits | 8284e0e, 6919df2 |
 
 ## Description
 
