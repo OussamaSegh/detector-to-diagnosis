@@ -224,7 +224,9 @@ A vulnerability can be in MiniDAQ's own code or in its SOUP. The process:
 2. **Scan it.** The CI job `vulnerability-scan` matches the SBOM against public vulnerability
    databases with Grype (a pinned version) on every change to `main` and before each release.
    A scanner reports what the database says about a component's version; it does not know
-   whether MiniDAQ uses the affected function.
+   whether MiniDAQ uses the affected function. An empty scan is believed only because the same
+   job scans a control copy of the SBOM with the original noble OpenSSL package
+   (3.0.13-0ubuntu3) and fails if that finds nothing.
 3. **Triage every finding.** Each finding gets a decision in
    [vulnerability-triage.json](vulnerability-triage.json), in the analysis states of CycloneDX's
    vulnerability exploitability exchange (VEX): `not_affected` with a justification (for

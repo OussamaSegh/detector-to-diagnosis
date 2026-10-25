@@ -96,7 +96,8 @@ jobs:
           name: sbom
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.24"
+          # Grype 0.120.1 needs Go 1.26.8 or newer.
+          go-version: "1.26"
       - name: Install Grype
         run: go install github.com/anchore/grype/cmd/grype@v0.120.1
       - name: Scan the SBOM
@@ -104,6 +105,14 @@ jobs:
           "$(go env GOPATH)/bin/grype" version
           "$(go env GOPATH)/bin/grype" sbom:minidaq.cdx.json --distro ubuntu:24.04 -o json --file scan.json
           "$(go env GOPATH)/bin/grype" sbom:minidaq.cdx.json --distro ubuntu:24.04 -o table
+      - name: Check that the scan can find something
+        # A scan that matches nothing also reports nothing. The original noble OpenSSL package
+        # (3.0.13-0ubuntu3) has advisories fixed in later updates; if Grype finds none for it,
+        # the SBOM's identifiers no longer match the database and an empty scan proves nothing.
+        run: |
+          sed 's/3\.0\.13-0ubuntu3\.[0-9]*/3.0.13-0ubuntu3/g' minidaq.cdx.json > control.cdx.json
+          "$(go env GOPATH)/bin/grype" sbom:control.cdx.json --distro ubuntu:24.04 -o json --file control.json
+          python3 -c 'import json, sys; n = len(json.load(open("control.json"))["matches"]); print(f"control scan with libssl3t64 3.0.13-0ubuntu3: {n} finding(s)"); sys.exit(n == 0)'
       - name: Apply the triage decisions
         run: python3 tools/vuln_triage.py scan.json docs/regulatory/security/vulnerability-triage.json --vex minidaq.vex.json
       - uses: actions/upload-artifact@v4

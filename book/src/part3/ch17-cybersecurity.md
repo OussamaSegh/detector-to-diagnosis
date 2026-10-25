@@ -609,6 +609,14 @@ matches any more (the component was updated) is reported as stale. The tool also
 decisions as a CycloneDX VEX document, which is the form in which a manufacturer can tell a hospital
 which reported vulnerabilities affect the device.
 
+The first run on GitHub reported no vulnerabilities at all. That is the result you want, and the one
+to distrust most, because a scanner that cannot match a component also reports nothing: a misspelled
+package URL, a distribution the database does not know, a database that failed to load. So the job
+has a negative control. It scans a copy of the SBOM in which OpenSSL is the original noble package,
+`3.0.13-0ubuntu3`, which later security updates fixed, and fails if that scan finds nothing. A clean
+report then means "matched and fixed", not "never matched". Any check that passes by finding nothing
+deserves a control that shows it can fail.
+
 The first review of OpenSSL as SOUP was done this way, by hand, from the package's own changelog: 44
 security updates between `0ubuntu3.1` and `0ubuntu3.16`, grouped by the feature they affect. Most
 concern features MiniDAQ never uses (DTLS, CMS, PKCS#12, CMP, OCSP). A handful concern exactly what

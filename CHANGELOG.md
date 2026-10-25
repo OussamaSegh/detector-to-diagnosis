@@ -97,6 +97,9 @@ the patch version.
 - `docs.changes` failed in every GitHub build job since Chapter 16: the jobs checked out only
   the last commit, so the commits that implemented change requests name were missing. The
   build jobs now fetch the full history.
+- The first vulnerability scan reported nothing, which a scan that matches nothing also does.
+  The job now scans a control SBOM with the original noble OpenSSL package and fails if that
+  finds nothing.
 
 ## [0.2.0] - 2026-10-25
 
