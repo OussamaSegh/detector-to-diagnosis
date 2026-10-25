@@ -139,7 +139,7 @@
         {"id": "RC-17", "type": "protective", "description": "Sorter configurations outside their valid ranges are rejected.", "requirements": ["SRS-SRT-007", "SRS-CFG-011"], "effectiveness": {"method": "test", "evidence": "CoincidenceSorter.RejectsBadConfigurations"}}
       ],
       "probability_after": "P2",
-      "residual": "The simulator shares the sorter's model of the scanner, so a wrong model is not detected; phantom measurements on the real scanner (Chapters 26 and 27) validate both.",
+      "residual": "The simulator shares the sorter's model of the scanner, so a wrong model is not detected; phantom measurements on the real scanner (Chapter 30) validate both.",
       "status": "closed"
     },
     {

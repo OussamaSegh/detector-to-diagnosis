@@ -46,6 +46,7 @@ def check(name, text, known):
         errors.append(f"{name}: {hid} is not in the risk file")
     if status in ("approved", "implemented", "rejected") and fields.get("Decision", "").startswith("pending"):
         errors.append(f"{name}: status {status}, but the decision is pending")
+    # [snippet:rules]
     # The two rules of the exercise.
     commits = COMMIT.findall(fields.get("Commits", ""))
     if status in ("proposed", "approved", "rejected") and commits:
@@ -53,4 +54,5 @@ def check(name, text, known):
     for t in TEST_NAME.findall(body.get("Verification", "")):
         if t not in known["tests"]:
             errors.append(f"{name}: test {t} does not exist; name a new test as 'a new test that ...'")
+    # [/snippet:rules]
     return errors

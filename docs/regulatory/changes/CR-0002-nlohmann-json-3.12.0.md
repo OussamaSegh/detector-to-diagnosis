@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-10-25, by the software lead |
 | Source | problem report MDQ-PR-005 and the SOUP review of Chapter 14 |
 | Decision | approved, 2026-10-25, software lead |
-| Commits | none yet |
+| Commits | 84c5f95 |
 
 ## Description
 

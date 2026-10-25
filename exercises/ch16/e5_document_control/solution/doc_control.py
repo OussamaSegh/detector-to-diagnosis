@@ -21,6 +21,7 @@ def history(text):
     return {int(m.group(1)): m.group(0).strip() for m in HISTORY_ROW.finditer(table)}
 
 
+# [snippet:problems]
 def problems(old, new):
     """Compare two releases of the controlled documents: {path: text} before and after."""
     errors = []
@@ -54,3 +55,4 @@ def problems(old, new):
             if rows.get(n) != row:
                 errors.append(f"{path}: history row {n} was changed or removed; history is appended, never rewritten")
     return errors
+# [/snippet:problems]

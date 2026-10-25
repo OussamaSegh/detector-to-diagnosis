@@ -46,9 +46,10 @@ procedure asked whether the cause could act elsewhere.
 ## Correction
 
 The seven tests above wait for the condition they need with `test_support::eventually`, with a
-deadline of 10 s that only a hang reaches, or assert the requirement (no word before it is due,
-and a due word is delivered) instead of a throughput. `AcquisitionService.StatusReportsTheLastIntervalSeparately`
-checks the "no interval yet" condition only when its own thread was not delayed.
+deadline of 10 s that only a hang reaches, or assert the requirement (no word before it is due, and
+a due word is delivered) instead of a throughput.
+`AcquisitionService.StatusReportsTheLastIntervalSeparately` checks the "no interval yet" condition
+only when its own thread was not delayed.
 
 ## Corrective action
 
@@ -66,10 +67,13 @@ book machine before it fails in CI. Tests of a timing property by design (Exerci
 
 ## Verification of the actions
 
-All six CI presets and static analysis pass with the changed tests. The changed tests still
-verify their requirements: SRS-PIPE-012, SRS-CTL-011 and SRS-SIM-002 have the same assertions on
-the outcome, and only the waiting changed. The stress run after the correction is
-`measurements/ch16/stress-after-tsan.txt`.
+All six CI presets and static analysis pass with the changed tests. The changed tests still verify
+their requirements: SRS-PIPE-012, SRS-CTL-011 and SRS-SIM-002 have the same assertions on the
+outcome, and only the waiting changed. The stress run after the correction, at commit `84c5f95`,
+passed all 51 tests (the threaded tests and, new, the protocol tests) in 100 repetitions under the
+same load (`measurements/ch16/stress-after-tsan.txt`); the exercises' run passed 30 repetitions
+(`measurements/ch16/stress-after-ex.txt`), which does not show that
+`FastSink.KeepsUpWithTheSorterAndLosesNothing` cannot fail again: it was not changed.
 
 ## Effectiveness check
 

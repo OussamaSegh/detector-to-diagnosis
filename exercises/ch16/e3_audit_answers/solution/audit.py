@@ -24,6 +24,7 @@ def exists(evidence, files, tests):
     return evidence in files
 
 
+# [snippet:problems]
 def problems(answers, questions, files, tests):
     errors = []
     ids = [q["id"] for q in questions]
@@ -53,3 +54,4 @@ def problems(answers, questions, files, tests):
             if not exists(e, files, tests):
                 errors.append(f"{qid}: evidence {e} does not exist")
     return errors
+# [/snippet:problems]

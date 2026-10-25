@@ -35,8 +35,26 @@ the patch version.
   (SRS-CTL-030 to 032, SRS-OUT-011, SRS-OUT-012, SRS-FMT-013, SRS-SRT-012), ten new or newly
   tagged tests, and a risk-control column in the trace matrix; exercises 15.1 to 15.5 (15.2 in
   C++, the others in Python).
+- Chapter 16: ISO 13485. The design and development file `docs/regulatory/qms/design-file.json`
+  (18 clauses, 13 controlled documents) with `tools/design_file.py` (test `docs.design_file`;
+  `--since` the last release tag in `ci/run_all.sh` and the CI job `document-control`); every
+  controlled document has a version and a history table. Change control in
+  `docs/regulatory/changes/` (procedure, template, CR-0001 to CR-0003) checked by
+  `tools/check_changes.py` (test `docs.changes`); CAPA in `docs/regulatory/capa/` (procedure,
+  template, CAPA-0001 and CAPA-0002) checked by `tools/check_capa.py` (test `docs.capa`); the
+  internal audit report of 2026-10-25 with four nonconformities and two observations;
+  `tools/stress_tests.sh`, `minidaq/tests/unit/eventually.hpp`, coding standard rule 5.5 and the
+  test `tests.waits`; problem reports MDQ-PR-010 to MDQ-PR-012; exercises 16.1 to 16.5 (all in
+  Python).
 
 ### Changed
+- Control API 1.1 (CR-0003, ADR 0013): the status's top-level fields are listed in
+  `status_fields`, and SRS-CTL-033 with `ControlProtocol.StatusFieldsMatchTheApiVersion` keeps the
+  list true; `minidaq_ctl` sends 1.1, and 1.0 clients keep working.
+- nlohmann/json 3.12.0 (CR-0002), with a new known-anomaly review in the SOUP list; MDQ-PR-005
+  closed. Its evaluation rested on a wrong cause, now corrected.
+- SDP version 3 states the review that MiniDAQ actually does (CAPA-0002) and adds the stress run,
+  change requests, CAPA and document control to the verification table.
 - Requirement tags added to `Config.TypesAndRangesAreCheckedAndAllErrorsReported`
   (SRS-CFG-004), `RtProfile.RejectsBadInputWithLineNumbers` (SRS-RT-001) and
   `Realtime.InvalidCpuIsAnError` (SRS-RT-002).
@@ -49,6 +67,9 @@ the patch version.
   window; the integrity verdict counts them as a loss, and SRS-FMT-013 requires the counter.
 - `FastSorter.FastEnough` (Exercise 10.4) measured the two sorters in separate blocks, so a
   slow spell of a shared machine could fail it; it now takes the best of seven interleaved runs.
+- Seven tests asserted after a fixed sleep or on a throughput that depends on the test's own
+  thread (CAPA-0001); under load the ThreadSanitizer build failed two of them. They now wait for
+  their condition, and the stress run passes 100 repetitions.
 
 ## [0.2.0] - 2026-10-25
 
