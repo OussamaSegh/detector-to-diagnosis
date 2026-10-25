@@ -52,13 +52,16 @@ find_package(Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
   add_test(NAME architecture.layers COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_layers.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(architecture.layers PROPERTIES LABELS "unit")
+  # Chapter 14: every source file is in a classified software item, and the classes follow the rules.
+  add_test(NAME architecture.items COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_items.py ${PROJECT_SOURCE_DIR})
+  set_tests_properties(architecture.items PROPERTIES LABELS "unit")
   # Chapter 13: the regulatory file is complete, its links resolve, its map is current.
   add_test(NAME docs.regulatory COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_regulatory.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.regulatory PROPERTIES LABELS "unit")
   # Chapter 14: requirements in testable form, every requirement traced to its verification.
   add_test(NAME docs.srs COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/req_lint.py
                                  ${PROJECT_SOURCE_DIR}/docs/regulatory/srs.md)
-  add_test(NAME docs.trace COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/trace.py ${PROJECT_SOURCE_DIR} --check)
+  add_test(NAME docs.trace COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/trace_matrix.py ${PROJECT_SOURCE_DIR} --check)
   add_test(NAME docs.soup COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_soup.py ${PROJECT_SOURCE_DIR})
   add_test(NAME docs.anomalies COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/anomalies.py ${PROJECT_SOURCE_DIR} --check)
   set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies PROPERTIES LABELS "unit")

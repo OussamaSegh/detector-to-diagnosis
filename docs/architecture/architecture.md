@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 4 (MiniDAQ 0.2.0-dev, Chapter 11; version 3 was Chapter 10, version 2 Chapter 9, version 1 Chapter 6). Status: draft for review.
+Version 5 (MiniDAQ 0.3.0-dev, Chapter 14; version 4 was Chapter 11, version 3 Chapter 10, version 2 Chapter 9, version 1 Chapter 6). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -14,7 +14,7 @@ in [`docs/adr/`](../adr/README.md).
 
 MiniDAQ receives a stream of detector singles, decodes and time-sorts them, pairs them into
 coincidences and hands the coincidences to a sink, while an operator configures, starts, stops
-and monitors the acquisition over a control API. Version 0.2.0-dev covers:
+and monitors the acquisition over a control API. Version 0.3.0-dev covers:
 
 - the acquisition pipeline (Chapters 2 to 5),
 - the control plane: configuration, state machine, service, audit trail and TCP control API
@@ -30,6 +30,11 @@ and monitors the acquisition over a control API. Version 0.2.0-dev covers:
 - list-mode files in the MDQ-L1 format ([specification](../formats/mdq-l1.md)), written by a
   two-thread sink with rotation, an fsync policy, crash-safe renames and a run record, and a
   sinogram histogrammer (Chapter 12, [ADR 0012](../adr/0012-mdq-l1-list-mode-format-and-writer.md)).
+- the regulatory file: intended use and regulatory context (Chapter 13), and the IEC 62304
+  documents of Chapter 14: [development plan](../regulatory/sdp.md),
+  [requirements](../regulatory/srs.md), [trace matrix](../regulatory/trace-matrix.md),
+  software items and safety classes (section 4), [SOUP list](../regulatory/soup-list.md) and
+  [known anomalies](../regulatory/known-anomalies.md).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet), authentication of control clients (Chapter 17).
@@ -79,6 +84,41 @@ The application layer depends on interfaces (ports) that it owns; adapters imple
 This is dependency inversion: the policy does not depend on the details, so the service can be
 tested with scripted detectors and fault-injecting sinks, and a real receiver replaces the
 simulator without changing the service.
+
+### Software items and safety classes
+
+The layers say what may use what. The software items say what is classified, verified and
+changed as a unit. [`software-items.json`](software-items.json) lists every item with the
+files it owns, the process it runs in, its IEC 62304 safety class and the hazards it can
+contribute to; `tools/check_items.py` (test `architecture.items`) checks that every source
+file belongs to exactly one item, that each class is at least what its worst hazard implies,
+that items in one process share the highest class there (section 10), and that every
+requirement of the [SRS](../regulatory/srs.md) names an item. The hazards are preliminary,
+written for this classification; Chapter 15's risk analysis replaces them, and the severities
+assume risk controls outside the software (assumption: confirm with team).
+
+| Item | Owns | Runs in | Class | Why |
+|---|---|---|---|---|
+| core | `core/` | server | B | Types, units, geometry, CRC-32 under every stage |
+| format | `format/` | server | B | Decodes readout data, encodes list-mode files |
+| pipeline | `pipeline/` | server | B | Moves every single between threads |
+| metrics | `metrics/` | server | B | Observes only (A alone); B because nothing segregates it from the pipeline |
+| rt | `rt/` | server | B | Scheduling and memory locking of the stages |
+| processing | energy filter, sinogram, count rates | server | B | Hot-path filter and quality-control views |
+| sorter | `CoincidenceSorter` | server | B | Decides every coincidence |
+| merger | `StreamMerger` | server | B | Orders many boards' singles |
+| sim | `sim/` | server | B | Test sources linked into the server ([MDQ-PR-009](../regulatory/known-anomalies.md)) |
+| config | `config/` | server | B | Validates the acquisition settings |
+| service | service, state machine, ports | server | B | Owns the run and its faults |
+| protocol | control protocol and server | server | B | Accepts commands from the network |
+| readout | UDP detector, default adapters | server | B | Receives the readout link and counts its losses |
+| output | list-mode sink, file operations | server | B | Makes the data durable with its run record |
+| audit | JSON Lines audit log | server | B | Records actions (A alone); B for the same reason as metrics |
+| server | `minidaq_server` | server | B | Wiring and signals |
+| ctl | `minidaq_ctl` | its own process | A | The server validates every request it sends |
+| tools | `minidaq_jitter`, `minidaq_latency`, `minidaq_send`, `minidaq_sim`, `minidaq_listmode` | not shipped | none | Development and verification tools (Chapter 20) |
+
+The software system is class B: its highest item.
 
 ## 5. Interfaces between items
 
@@ -183,9 +223,17 @@ The full SOUP list, with requirements on each item and the anomaly review, is
   `tools/check_layers.py` and the separate library target make this a build-time fact.
 - Control clients run in separate processes and reach the service only through the protocol;
   a client crash cannot corrupt the service's memory.
-- Within the server process there is no memory isolation between the control plane and the
-  pipeline. Any segregation claim used as a risk control must be justified in the risk
-  analysis (Chapter 15); this document does not make one.
+- Within the server process there is no memory isolation between items: a memory error in
+  any of them can corrupt any other. MiniDAQ therefore claims no segregation inside the
+  process, and every item there has the class of the highest one, B (section 4). Items that
+  would be class A alone, such as `metrics` and `audit`, are developed and verified as B.
+- `minidaq_ctl` runs in its own process and reaches the server only through the protocol,
+  whose input the server validates. This is the segregation that lets `ctl` be class A; the
+  argument rests on the operating system's process isolation and on the protocol's input
+  validation (SRS-CTL-020 to SRS-CTL-022), both verified.
+- A class C item, if the risk analysis ever finds one, would need either the whole process
+  at class C or a segregation that holds against its neighbors' failures, such as a separate
+  process with a validated interface. Chapter 15 decides whether any hazard needs it.
 
 ## 11. How this architecture is verified
 
@@ -203,7 +251,8 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0011](../adr/README.md).
+Decisions: [ADR 0001 to 0012](../adr/README.md). Known anomalies, with their evaluation:
+[known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
 

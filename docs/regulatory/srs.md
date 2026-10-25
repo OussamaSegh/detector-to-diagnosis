@@ -19,7 +19,7 @@ a document of the manufacturer's quality management system and does not reproduc
   D (demonstration), M (measurement). A requirement verified other than by test names its
   evidence in [section 3](#3-verification-other-than-test).
 - The [trace matrix](trace-matrix.md) is generated from this file and the tags in the tests by
-  `tools/trace.py`. The test `docs.trace` fails if a T requirement has no test, a test names a
+  `tools/trace_matrix.py`. The test `docs.trace` fails if a T requirement has no test, a test names a
   requirement that does not exist, or the committed matrix is out of date. The test
   `docs.srs` runs `tools/req_lint.py` on this file.
 - Numbers marked as assumptions in the [performance budget](../performance-budget.md) are
