@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 6 (MiniDAQ 0.3.0, release review). Status: draft for review.
+Version 7 (MiniDAQ 0.4.0-dev, Chapter 18). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -105,7 +105,7 @@ a document of the manufacturer's quality management system and does not reproduc
 | SRS-SRT-004 | The coincidence sorter shall reject a pair whose crystals are fewer than the configured minimum of sectors apart, or whose line of response passes outside the configured field-of-view radius in mm. | sorter | T |
 | SRS-SRT-005 | The coincidence sorter shall pass only singles inside the inclusive energy window in keV, and count singles that arrive out of time order and drop them. | sorter | T |
 | SRS-SRT-006 | When a nonzero delay is configured, the coincidence sorter shall form delayed coincidences from a second window opened at the configured delay in ps after each opening single, using the same window width and multiples policy as the prompt window. | sorter | T |
-| SRS-SRT-007 | The coincidence sorter shall reject a configuration with a window outside 1 to 1,000,000 ps, a nonzero delay that does not exceed the window, an energy window that is empty or not finite, a sector difference above 12 sectors, or a field-of-view radius that is not inside the ring. | sorter | T |
+| SRS-SRT-007 | The coincidence sorter shall reject a configuration with a window outside 1 to 1,000,000 ps, a nonzero delay that does not exceed the window or exceeds 1,000,000,000 ps, an energy window that is empty or not finite, a sector difference above 12 sectors, or a field-of-view radius that is not inside the ring. | sorter | T |
 | SRS-SRT-008 | The coincidence sorter shall produce the same coincidences whatever the sizes of the batches it receives. | sorter | T |
 | SRS-SRT-009 | The coincidence sorter's counters shall account for every single it receives: rejected by energy, out of order, alone, or in a window of a counted size. | sorter | T |
 | SRS-SRT-010 | When configured like the simulator's reference counter, the coincidence sorter shall find exactly the prompts that the reference counter finds in the simulator's ground truth. | sorter | T |
@@ -185,6 +185,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CTL-032 | The control server shall record every configure, start, stop and reset command, accepted or rejected, in the audit trail with the client's address and port. | protocol | T |
 | SRS-CTL-033 | The control server's status shall have exactly the top-level fields that its API version defines, each field marked as always present in every status. | protocol | T |
 | SRS-CTL-034 | The control protocol shall answer every request that is one JSON object with one response line, whatever the type of each of its fields, and keep serving other requests. | protocol | T |
+| SRS-CTL-035 | The acquisition service shall close the sink exactly once at the end of a run without a fault, after the sink's last write and with the run's record, and never after a fault. | service | T |
 
 ### 2.11 List-mode format (LMF)
 
@@ -250,3 +251,4 @@ The control API's security requirements (Chapter 17), from the threat model
 | 4 | Chapter 17: security requirements SRS-SEC-001 to SRS-SEC-009, from the threat model (ADR 0014, CR-0004, problem report MDQ-PR-008). |
 | 5 | Part III review: SRS-CTL-034, after an `auth` whose token was a number ended the server (problem report MDQ-PR-013, CAPA-0003). |
 | 6 | Release 0.3.0: the verification of SRS-PERF-020 re-measured with the coincidence sorter; the requirement is unchanged and met (problem report MDQ-PR-014, CAPA-0004). |
+| 7 | Chapter 18: SRS-CTL-035, the order of the service's calls to its sink, which the service did and no requirement or test stated; SRS-SRT-007 states the upper limit of the delay (1 ms), which the sorter enforced and the requirement left out (found by mutation testing). |

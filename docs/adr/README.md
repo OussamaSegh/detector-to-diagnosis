@@ -21,3 +21,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0012](0012-mdq-l1-list-mode-format-and-writer.md) | MDQ-L1, a custom block format for list-mode data, written by a two-thread sink | Accepted |
 | [0013](0013-versioned-status-fields.md) | The status object is part of the versioned control API (API 1.1) | Accepted |
 | [0014](0014-control-api-authentication-and-tls.md) | Control API authentication with bearer tokens and roles, over TLS 1.3 | Accepted |
+| [0015](0015-property-based-tests-with-a-small-harness.md) | Property-based tests with a small in-house harness | Accepted |

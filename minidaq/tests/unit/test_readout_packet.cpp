@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <numeric>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "minidaq/format/readout_packet.hpp"
@@ -101,6 +102,48 @@ TEST(ReadoutPacket, RejectsEveryMalformedField) {
   EXPECT_EQ(encode_packet({}, std::vector<std::uint64_t>{1}, small), 0U) << "output too small";
   EXPECT_EQ(encode_packet({}, std::vector<std::uint64_t>(max_words + 1), small), 0U) << "too many words";
 }
+
+// [snippet:table]
+// Table-driven: one row per malformed header, each run and reported as a test
+// of its own (ReadoutPacketHeaders/MalformedHeader.IsRejected/bad_flags_0x80).
+struct HeaderCase {
+  const char* name;
+  std::size_t offset;  // byte of the header to overwrite
+  std::uint8_t value;
+  PacketError expected;
+};
+
+class MalformedHeader : public ::testing::TestWithParam<HeaderCase> {};
+
+TEST_P(MalformedHeader, IsRejected) {
+  // REQ: SRS-RDO-002
+  const HeaderCase& c = GetParam();
+  auto d = packet(7, {1, 2});
+  d[c.offset] = std::byte{c.value};
+  const auto p = parse_packet(d);
+  ASSERT_FALSE(p);
+  EXPECT_EQ(p.error(), c.expected) << to_string(p.error());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ReadoutPacketHeaders, MalformedHeader,
+    ::testing::Values(HeaderCase{"magic_0", 0, 'X', PacketError::bad_magic},
+                      HeaderCase{"magic_3", 3, 'r', PacketError::bad_magic},
+                      HeaderCase{"version_0", 4, 0, PacketError::bad_version},
+                      HeaderCase{"version_2", 4, 2, PacketError::bad_version},
+                      HeaderCase{"version_255", 4, 255, PacketError::bad_version},
+                      HeaderCase{"flags_0x02", 5, 0x02, PacketError::bad_flags},
+                      HeaderCase{"flags_0x04", 5, 0x04, PacketError::bad_flags},
+                      HeaderCase{"flags_0x08", 5, 0x08, PacketError::bad_flags},
+                      HeaderCase{"flags_0x10", 5, 0x10, PacketError::bad_flags},
+                      HeaderCase{"flags_0x20", 5, 0x20, PacketError::bad_flags},
+                      HeaderCase{"flags_0x40", 5, 0x40, PacketError::bad_flags},
+                      HeaderCase{"flags_0x80", 5, 0x80, PacketError::bad_flags},
+                      HeaderCase{"word_count_high_byte", 13, 0x04, PacketError::bad_word_count},
+                      HeaderCase{"reserved_14", 14, 1, PacketError::bad_reserved},
+                      HeaderCase{"reserved_15", 15, 0x80, PacketError::bad_reserved}),
+    [](const ::testing::TestParamInfo<HeaderCase>& row) { return std::string{row.param.name}; });
+// [/snippet:table]
 
 TEST(ReadoutPacket, SequenceDistanceAcrossTheWrap) {
   // REQ: SRS-RDO-003

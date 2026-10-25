@@ -35,10 +35,14 @@ add_executable(minidaq_unit_tests
   unit/test_control_protocol.cpp
   unit/test_security.cpp
   unit/test_audit_log.cpp
-  unit/test_udp_detector.cpp)
-target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main)
+  unit/test_udp_detector.cpp
+  unit/test_properties.cpp
+  unit/test_service_interactions.cpp)
+target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
+# Test support shared by the unit tests and the exercises (support/property.hpp).
+target_include_directories(minidaq_unit_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 gtest_discover_tests(minidaq_unit_tests PROPERTIES LABELS "unit")
 
 # Separate binary: it replaces global operator new to count allocations.

@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 4 (MiniDAQ 0.3.0, release review). Status: draft for review.
+Version 5 (MiniDAQ 0.4.0-dev, Chapter 18). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -113,6 +113,8 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Unit, integration and documentation tests (`ctest`) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
 | Static analysis | every change | zero findings |
 | Exercise solutions | every change (part of `ctest`) | all pass |
+| Property-based tests, wide search | each release, every property with 100 times its cases (`MINIDAQ_PROP_CASES=100`, `tools/release_checks.sh`) | all pass |
+| Structural coverage | each release, the `coverage` preset and `tools/coverage.py` (`tools/release_checks.sh`) | the report per software item is recorded; no class B item's branch coverage is lower than in the previous release without a reason; every branch of a class B file changed since the previous release that the tests do not take both ways is reached by a new test or accepted with a reason in the release record's coverage review |
 | Exercise starters | each new exercise and each release, `ctest -L starter` on a `Release` build (`tools/release_checks.sh`) | every starter fails at least one test, none hangs |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
 | Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020 and SRS-PERF-021 met; `tools/perf_gate.py` finds no row of the budget slower than the baseline, or the baseline and the budget were updated with a reason (CAPA-0004) |
@@ -162,6 +164,10 @@ release record shows:
    SBOM, kept for the lifetime of the product plus the retention period of the quality system
    (assumption: confirm with team).
 
+The release record is committed with the release, and that commit adds files the checks of
+section 6 have not seen. The tag is set and the release is packaged only after CI on the release
+commit itself is green (MDQ-PR-016).
+
 The release record for each version is part of its release notes in `CHANGELOG.md`
 and the release report. Exercise 14.5 builds a tool that checks such a record.
 
@@ -190,3 +196,4 @@ of Chapter 13.
 | 2 | Risk management (Chapter 15): requirements traced to risk controls, the test `docs.risk`, and the risk file's review before release. |
 | 3 | Chapter 16: change requests, CAPA and document control as verification activities; how changes are reviewed with one developer (internal audit finding A-1, CAPA-0002). |
 | 4 | Release 0.3.0: the release checks are one script, `tools/release_checks.sh`, which fails when a check cannot run; the performance row includes the regression gate and the starters row a `Release` build (MDQ-PR-014, CAPA-0004). |
+| 5 | Chapter 18: the wide search of the property-based tests and the structural coverage review of class B items as verification activities of each release; section 8: tag only after CI on the release commit is green (MDQ-PR-016). |

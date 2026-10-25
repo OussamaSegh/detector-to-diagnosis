@@ -120,7 +120,6 @@ class CoincidenceSorter {
   void flush(std::vector<Coincidence>& out);
 
   [[nodiscard]] const SorterStats& stats() const noexcept { return stats_; }
-  [[nodiscard]] const SorterConfig& config() const noexcept { return cfg_; }
   // Singles held, waiting for their windows to complete.
   [[nodiscard]] std::size_t held() const noexcept { return buf_.size() - first_; }
   // Time of the oldest single held; only meaningful while held() > 0.

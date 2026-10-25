@@ -55,6 +55,26 @@ check "starters fail" $?
 tools/stress_tests.sh build/tsan 100 "$out/stress-tsan.txt"
 check "stress run, tsan, 100 repetitions" $?
 
+# Chapter 18: every property with 100 times its cases, from the clang-release build of run_all.
+{ stamp "property-based tests, MINIDAQ_PROP_CASES=100"
+  MINIDAQ_PROP_CASES=100 build/clang-release/minidaq/tests/minidaq_unit_tests \
+    --gtest_filter='Properties.*'
+} > "$out/properties-wide.txt" 2>&1
+check "property-based tests, wide search" $?
+
+# Chapter 18: structural coverage per software item; the review of the class B items' uncovered
+# branches is written into the release record from coverage/summary.txt and the --uncovered lists.
+{ cmake --preset coverage -DMINIDAQ_BUILD_STARTERS=ON >/dev/null &&
+    cmake --build --preset coverage -j"$(nproc)" >/dev/null &&
+    python3 tools/coverage.py build/coverage "$out/coverage"; } > "$out/coverage.txt" 2>&1
+check "coverage report" $?
+# Exercise 18.3 measures coverage, so it exists only in this build: its solution must pass there
+# and its starter fail.
+{ stamp "Exercise 18.3 in the coverage build"
+  ctest --test-dir build/coverage -R '^ch18/e3_branch_coverage/solution/' --output-on-failure &&
+    ! ctest --test-dir build/coverage -R '^ch18/e3_branch_coverage/starter/'; } > "$out/coverage-exercise.txt" 2>&1
+check "Exercise 18.3, solution passes and starter fails" $?
+
 { stamp "hardened bm_pipeline, 5 repetitions (SRS-PERF-020)"; nproc
   build/hardened/benchmarks/bm_pipeline --benchmark_filter='BM_Pipeline/4096/64/real_time' \
     --benchmark_repetitions=5 2>&1; } > "$out/perf-pipeline.txt"

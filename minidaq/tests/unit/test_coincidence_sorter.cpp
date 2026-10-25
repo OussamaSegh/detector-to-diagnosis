@@ -268,6 +268,86 @@ TEST(CoincidenceSorter, RejectsBadConfigurations) {
   EXPECT_NE(parse_multiples_policy("keep_all").error().find("take_winner_of_goods"), std::string::npos);
 }
 
+// Found by mutation testing (Chapter 18): each limit of the configuration is
+// inclusive, and a test that sits exactly on it is the only one that notices
+// `>` written as `>=`.
+// [snippet:limits]
+TEST(CoincidenceSorter, TheLimitsOfTheConfigurationAreInclusive) {
+  // REQ: SRS-SRT-007
+  const auto ok = [](auto change) {
+    SorterConfig c;
+    change(c);
+    return validate(c).has_value();
+  };
+  EXPECT_TRUE(ok([](SorterConfig& c) { c.window = Picoseconds{1'000'000}; c.delay = Picoseconds{0}; }));
+  EXPECT_TRUE(ok([](SorterConfig& c) { c.delay = Picoseconds{1'000'000'000}; }));
+  EXPECT_FALSE(ok([](SorterConfig& c) { c.delay = Picoseconds{1'000'000'001}; }));
+  EXPECT_TRUE(ok([](SorterConfig& c) { c.energy_low_kev = 0.0; }));
+  EXPECT_TRUE(ok([](SorterConfig& c) { c.energy_low_kev = c.energy_high_kev; }));
+  EXPECT_FALSE(ok([](SorterConfig& c) { c.energy_high_kev = std::numeric_limits<double>::infinity(); }));
+  EXPECT_TRUE(ok([](SorterConfig& c) { c.min_sector_difference = G::blocks_per_ring / 2; }));
+}
+// [/snippet:limits]
+
+TEST(CoincidenceSorter, GeometryCutsDoNotDependOnOrderOrOrientation) {
+  // REQ: SRS-SRT-004
+  auto c = plain();
+  c.min_sector_difference = 3;
+  const CoincidenceSorter sectors{c};
+  EXPECT_FALSE(sectors.good(at(0, 48), at(0, 16))) << "sectors 3 and 1, the higher one first";
+  EXPECT_FALSE(sectors.good(at(0, 16), at(0, 48)));
+  EXPECT_TRUE(sectors.good(at(0, 64), at(0, 16)));
+  // A quarter turn apart, the line passes 106 mm from the axis at every angle
+  // of the ring, not only where one crystal sits on an axis.
+  c.min_sector_difference = 0;
+  c.fov_radius_mm = 100.0;
+  const CoincidenceSorter fov100{c};
+  c.fov_radius_mm = 110.0;
+  const CoincidenceSorter fov110{c};
+  for (std::uint32_t t = 0; t < G::crystals_per_ring; t += 8) {
+    const auto u = (t + G::crystals_per_ring / 4) % G::crystals_per_ring;
+    EXPECT_FALSE(fov100.good(at(0, t), at(0, u))) << t << "-" << u;
+    EXPECT_TRUE(fov110.good(at(0, t), at(0, u))) << t << "-" << u;
+  }
+}
+
+// The delayed window resolves its multiples like the prompt window (SRS-SRT-006
+// says "the same multiples policy"); before Chapter 18 only kill_all and
+// take_all_goods were tested there.
+TEST(CoincidenceSorter, DelayedMultiplesFollowThePolicy) {
+  // REQ: SRS-SRT-006, SRS-SRT-012
+  SorterConfig c = plain();
+  c.delay = Picoseconds{100 * ns};
+  c.min_sector_difference = 1;  // a single in the opener's own sector is not good
+  const auto delayed = [&](MultiplesPolicy p, const std::vector<Single>& in) {
+    c.multiples = p;
+    std::vector<Coincidence> out;
+    for (const auto& k : run(c, in)) {
+      if (k.kind == CoincidenceKind::delayed) {
+        out.push_back(k);
+      }
+    }
+    return out;
+  };
+  // An opener and two good singles in its delayed window, the later one with more energy.
+  const std::vector<Single> two{at(0, a0), at(100 * ns, opposite0, 450.0F), at(101 * ns, 100, 560.0F)};
+  auto w = delayed(MultiplesPolicy::take_winner_of_goods, two);
+  ASSERT_EQ(w.size(), 1U);
+  EXPECT_EQ(w[0].second.energy.count(), 560.0F) << "the highest summed energy wins";
+  EXPECT_TRUE(delayed(MultiplesPolicy::keep_if_only_one_good, two).empty()) << "two goods: keep none";
+  // Equal sums: the earlier second single wins.
+  w = delayed(MultiplesPolicy::take_winner_of_goods,
+              {at(0, a0), at(100 * ns, opposite0, 500.0F), at(101 * ns, 100, 500.0F)});
+  ASSERT_EQ(w.size(), 1U);
+  EXPECT_EQ(w[0].second.crystal, G::make_crystal(0, opposite0));
+  // One good and one in the opener's own sector.
+  const std::vector<Single> one{at(0, a0), at(100 * ns, opposite0), at(101 * ns, a0)};
+  w = delayed(MultiplesPolicy::keep_if_only_one_good, one);
+  ASSERT_EQ(w.size(), 1U);
+  EXPECT_EQ(w[0].second.crystal, G::make_crystal(0, opposite0));
+  EXPECT_EQ(delayed(MultiplesPolicy::take_winner_of_goods, one).size(), 1U);
+}
+
 TEST(CoincidenceSorter, ChunkingDoesNotChangeTheResult) {
   // REQ: SRS-SRT-008
   const auto singles = singles_of(simulate(20e6, 0.002, 7));
