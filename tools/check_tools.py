@@ -10,7 +10,8 @@ tool can report a failure (`shown_to_fail`: a fault of tools/gate_selftest.py, a
 or a problem report). --write regenerates tools.md from the list and --check fails if it is out
 of date. --environment runs each tool's version command and fails if the installed version
 does not match the recorded one: a new compiler on a CI runner is a change to the tools, and
-it is noticed by the next run instead of by the next release.
+it is noticed by the next run instead of by the next release. Every check also fails if a
+shell script in tools/ or ci/ is not executable.
 """
 import json
 import pathlib
@@ -85,6 +86,13 @@ def check_list(root, tools):
 # [/snippet:check]
 
 
+def scripts_not_executable(root):
+    """The shell scripts that CI and the book call directly must be executable (MDQ-PR-021)."""
+    return [f"{s.relative_to(root)}: not executable"
+            for d in ("tools", "ci") for s in sorted((root / d).glob("*.sh"))
+            if not s.stat().st_mode & 0o111]
+
+
 def markdown(tools):
     lines = ["# MiniDAQ tool list", "",
              "Generated from `tools.json` by `tools/check_tools.py --write`; edit the JSON. Classes: "
@@ -122,7 +130,7 @@ def check_environment(tools):
 def main(argv):
     root = pathlib.Path(argv[1]) if len(argv) > 1 and not argv[1].startswith("--") else pathlib.Path(".")
     tools = json.loads((root / LIST).read_text())["tools"]
-    errors = check_list(root, tools)
+    errors = check_list(root, tools) + scripts_not_executable(root)
     table = markdown(tools) if not errors else None
     if "--write" in argv and table:
         (root / TABLE).write_text(table)

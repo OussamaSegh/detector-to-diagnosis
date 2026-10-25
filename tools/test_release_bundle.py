@@ -6,6 +6,8 @@ debug information, so the test needs a C++ compiler and binutils, not a MiniDAQ 
 
     test_release_bundle.py [CXX]
 """
+import contextlib
+import io
 import json
 import os
 import pathlib
@@ -82,6 +84,15 @@ class Bundle(unittest.TestCase):
 
     def test_a_fresh_product_verifies(self):
         self.assertEqual(self.verify(), 0)
+
+    def test_the_programs_are_listed_as_recorded(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(rb.main(["programs", str(self.product)]), 0)
+        lines = out.getvalue().splitlines()
+        self.assertEqual([line.split()[0] for line in lines], ["minidaq_server", "minidaq_ctl"])
+        for line, program in zip(lines, self.programs):
+            self.assertIn(f"build ID {rb.build_id(program)}", line)
 
     def test_packaging_twice_gives_the_same_bytes(self):
         again = rb.package_product(self.programs, INFO, pathlib.Path(tempfile.mkdtemp(dir=self.tmp)), fake_sbom)

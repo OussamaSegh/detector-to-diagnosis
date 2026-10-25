@@ -1,0 +1,9 @@
+# 2026-10-25T21:46:42Z reproducibility of commit f63f5bf1653f27045eab776fee68e19058faf5bd, preset hardened
+first checkout:  /tmp/tmp.VFoSnRJ4vd/a
+second checkout: /tmp/tmp.VFoSnRJ4vd/second-checkout/with-a-longer-path
+d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc33049206aacd0e0  first  minidaq-0.3.0-f63f5bf1653f.tar
+d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc33049206aacd0e0  second minidaq-0.3.0-f63f5bf1653f.tar
+identical: the product archive is reproducible
+programs:
+  minidaq_server   build ID fbac0e5e14d5136e331b90b76f78ce66deed4cdd  sha256 82557e6b6c46a42b2f0453fb37cd32e773ee44d9f647ddfa8a83618b018e7380
+  minidaq_ctl      build ID 614b9137303f8fb7a6d4c00a412c323a69edd51a  sha256 0bed97367fcecadbe21f238b94a7f0fce7379fc4894e75eb6fa84bfdbe5c6755

@@ -41,6 +41,10 @@ the patch version.
   an integration test of batching, and recording and replaying a readout link.
 - Problem report MDQ-PR-020 (closed): the readout system tests needed a 4 MiB receive buffer that
   GitHub's runners do not have; the tests now check it and CI sets `net.core.rmem_max`.
+- Problem report MDQ-PR-021 (closed): on their first GitHub run the `perf-ab` job found
+  `tools/perf_ab.sh` not executable and `tools/repro_check.sh` failed on a program listing that
+  did not parse. The listing is now `tools/release_bundle.py programs`, tested, and
+  `tools/check_tools.py` fails for a shell script without its executable bit.
 - Chapter 20: continuous integration for regulated software. `tools/release_bundle.py` (a
   reproducible product archive with split debug information, SBOM, `BUILDINFO.json` and a
   manifest, an evidence archive bound to it by its SHA-256, and their verification, with

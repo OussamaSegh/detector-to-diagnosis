@@ -4,6 +4,7 @@
 
     release_bundle.py make BUILD OUT [--evidence DIR]
     release_bundle.py verify PRODUCT.tar [--evidence EVIDENCE.tar]
+    release_bundle.py programs PRODUCT.tar
 
 `make` takes the shipped build (preset `hardened`: Release, hardening and reproducible paths)
 of a clean commit and writes two archives to OUT:
@@ -21,7 +22,8 @@ of a clean commit and writes two archives to OUT:
 `verify` checks an archive against itself (manifest, build IDs, debug links, the programs'
 hashes in BUILDINFO.json) and, with --evidence, that the evidence belongs to this product: the
 same commit, a clean tree, passing release checks and a passing system test report.
-Exit status 0 if everything holds, 1 if not.
+Exit status 0 if everything holds, 1 if not. `programs` lists the programs of a product
+archive with their build IDs and SHA-256, as BUILDINFO.json records them.
 """
 import argparse
 import hashlib
@@ -285,6 +287,14 @@ def verify(args):
     return 1 if check.failures else 0
 
 
+def programs(args):
+    with tarfile.open(args.product) as tar:
+        info = next(m for m in tar.getmembers() if m.name.endswith("/BUILDINFO.json"))
+        for p in json.load(tar.extractfile(info))["programs"]:
+            print(f"  {p['name']:16} build ID {p['build_id']}  sha256 {p['sha256']}")
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -295,8 +305,9 @@ def main(argv=None):
     v = sub.add_parser("verify")
     v.add_argument("product", type=pathlib.Path)
     v.add_argument("--evidence", type=pathlib.Path)
+    sub.add_parser("programs").add_argument("product", type=pathlib.Path)
     args = ap.parse_args(argv)
-    return make(args) if args.cmd == "make" else verify(args)
+    return {"make": make, "verify": verify, "programs": programs}[args.cmd](args)
 
 
 if __name__ == "__main__":

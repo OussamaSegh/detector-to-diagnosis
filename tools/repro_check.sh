@@ -56,8 +56,7 @@ pb=$(ls "$b"/out/*.tar)
     status=1
   fi
   echo "programs:"
-  python3 -c 'import json, sys; [print(f"  {p[\"name\"]:16} build ID {p[\"build_id\"]}  sha256 {p[\"sha256\"]}") for p in json.load(sys.stdin)["programs"]]' \
-    < <(tar -xOf "$pa" --wildcards '*/BUILDINFO.json')
+  python3 "$root/tools/release_bundle.py" programs "$pa"
   exit $status
 } | tee "$out/repro.txt"
 status=${PIPESTATUS[0]}

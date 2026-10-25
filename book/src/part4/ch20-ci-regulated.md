@@ -352,7 +352,24 @@ the next section, and compares the two archives byte for byte:
 The dependencies are fetched in each checkout, so their paths differ too. On the reference
 machine:
 
-«REPRO_LOCAL»
+```text
+d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc3304920...  first  minidaq-0.3.0-f63f5bf1653f.tar
+d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc3304920...  second minidaq-0.3.0-f63f5bf1653f.tar
+identical: the product archive is reproducible
+programs:
+  minidaq_server   build ID fbac0e5e14d5136e331b90b76f78ce66deed4cdd  sha256 82557e6b6c46...
+  minidaq_ctl      build ID 614b9137303f8fb7a6d4c00a412c323a69edd51a  sha256 0bed97367fce...
+```
+
+The check takes about a minute on the reference machine (`measurements/ch20/repro-local.txt`).
+Its first run, here and on GitHub, failed after it had printed "identical": the line that lists
+the programs was a Python one-liner inside single quotes whose escaped quotes reached Python
+literally, and the script runs with `set -e`. In the same push the `perf` workflow stopped with
+"Permission denied", because `tools/perf_ab.sh` had been committed without its executable bit.
+Neither path had a test, because the tests called `tools/release_bundle.py` directly and nothing
+ran the two scripts. Both are problem report MDQ-PR-021: the listing became a tested subcommand
+of `release_bundle.py`, and the tool list check now fails for a script that is not executable.
+A check's own output path needs a test too, and a new gate's first run is its first test.
 
 CI runs the same check on every push (job `reproducible-build`) and keeps `repro.txt`. Its
 programs, built on a GitHub runner from the same commit, compare with the reference machine's
@@ -409,7 +426,10 @@ debuggable:
 from the program, keeps the symbol table for readable stack traces, and adds a debug link, the
 debug file's name with its CRC-32. The build ID, a hash the linker writes into every program,
 is the same in the program and its debug file; a debugger finds the right debug file by either.
-For MiniDAQ «PKG_SIZES».
+For MiniDAQ the server is 834 KB without its debug information and its debug file
+18.2 MB; for the client the two are 275 KB and 4.9 MB. The product archive of commit `f63f5bf`
+is 24.2 MB, uncompressed, of which 23.1 MB are the debug files
+(`measurements/ch20/package-contents.txt`).
 
 The archive itself must be deterministic too. Python's `tarfile` records the owner, the file
 times and the order in which you add files, so the tool sets all three:

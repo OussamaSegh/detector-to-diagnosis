@@ -6,7 +6,7 @@
 | Requested | 2026-10-25, by the software lead |
 | Source | development plan section 8, items 6 and 7 (a release must be repeatable and archived); MDQ-PR-014 (a gate that never ran); MDQ-PR-020 (a test environment that was not specified) |
 | Decision | approved, 2026-10-25, software lead |
-| Commits | none yet |
+| Commits | f63f5bf (the change), and the correction of MDQ-PR-021 |
 
 ## Description
 
