@@ -152,10 +152,10 @@
       "title": "The class B items ctl and server have no automated test",
       "found": "2026-10-25, Chapter 18 coverage report per software item (tools/coverage.py)",
       "item": "ctl",
-      "status": "open",
+      "status": "closed",
       "description": "The unit tests run neither program. The server's main() (item server: options, security settings, start-up token, shutdown on a signal) has no profile at all, and an early version of tools/coverage.py left it out of the table. The unit tests reach 6 of the 237 lines of minidaq_ctl and none of its 126 branches: no test starts the client. Its parts are tested where they live (TlsContext, TlsStream, read_secret and the control protocol), but not how the client puts them together: that it verifies the server certificate before it sends the token when --tls-ca is given, refuses an unreadable token file, and reports a server that closes the connection.",
       "evaluation": {"safety_relevant": true, "rationale": "The client's certificate check is part of the control of HZ-4 (Chapter 17, CR-0004): a client that sent its token before the check would hand an operator token to an impostor. The check itself is tested (TlsStream.ClientVerifiesTheServer), and the client code that calls it was changed and reviewed under CR-0004, so the gap is in the evidence for the composition, not a known defect."},
-      "decision": "Release with it until Chapter 19: the system tests run minidaq_ctl against minidaq_server, including a server with a certificate the client must refuse, and close this report. Until then a change to minidaq_ctl.cpp needs a manual test recorded in its change request."
+      "resolution": {"change": "System tests run minidaq_ctl against minidaq_server in their own processes (Chapter 19): exit status, roles, wait, TLS with the right CA and two impostor servers that must receive no byte, shutdown on a signal, refused options and the configuration given at start-up (SRS-CTL-040 to SRS-CTL-044).", "verification": "system.control in all six presets. Coverage with the system tests (measurements/ch19/coverage): ctl 81.9% of lines and 77.0% of branches (from 2.5% and 0%), server 80.4% and 81.1% (from not run); the branches not taken are reviewed in measurements/ch19/README.md."}
     },
     {
       "id": "MDQ-PR-016",
@@ -176,6 +176,26 @@
       "description": "The sort stage orders each batch by time and then crystal (Chapter 3), so a sorted batch is a function of the batch. Two singles with the same time that fall into two batches keep the order in which they arrived, and the batches are cut by time (max_batch_delay_us), so where they fall changes from run to run. The coincidence sorter then took the earlier-arriving single as the first of the pair, so crystal_a and crystal_b (and the energies) of a pair with dt 0 could be swapped: in the first two runs compared, the records were equal up to number 135,698 of 231,650, a pair with dt 0. Counts, rates and spectra were unchanged. Each unit met its own specification; no unit test or property could see the defect, because it is in how the two units are put together.",
       "evaluation": {"safety_relevant": false, "rationale": "Both orders describe the same coincidence: the line of response, the energies and the time are the same, and a time difference of 0 has no sign. An image does not change. What breaks is reproducibility: a regression test against golden data cannot tell this from a real change, and a field problem cannot be replayed exactly."},
       "resolution": {"change": "The coincidence sorter puts singles with equal times in crystal order as they arrive (CoincidenceSorter::insert), so its output is a function of the singles whatever the batches; SRS-SRT-013 (SRS version 8). The reference model of the properties orders ties the same way, the sorter generator makes ties common, and the property TheOrderOfTiesDoesNotMatter permutes them.", "verification": "Properties.TheOrderOfTiesDoesNotMatter and TheSorterFindsWhatTheReferenceFinds fail without the change and pass with it; the system tests GoldenExact (same seed, and small batches with short delays) pass in every preset."}
+    },
+    {
+      "id": "MDQ-PR-018",
+      "title": "The readout system test counted a packet both delayed and duplicated as a late packet",
+      "found": "2026-10-25, Chapter 19, recordings for Exercise 19.1 with 5% of each kind of link damage (minidaq_send seed 8)",
+      "item": "sim",
+      "status": "closed",
+      "description": "LinkFaults (used by minidaq_send) can delay and duplicate the same packet: it sends the copy on time and the original late. The late original is then a duplicate (stale), not a packet that came after its gap was given up. The system test test_every_damaged_packet_is_accounted_for took every delayed packet that was not reordered as too late, so with 5% of each damage packets_lost and packets_stale were 2 lower than it expected (in one run of seed 8, 108 and 105 against 110 and 107: the run had 2 such packets). The test passed only because its own run (1% of each, seed 5) had no such packet, and minidaq_send did not report the overlap, so no test could account for it. The server's counters were right.",
+      "evaluation": {"safety_relevant": false, "rationale": "A defect in a test tool and a test, not in the shipped software: the server's link counters were correct. Its risk was a system test that would have failed on a correct server, or passed on a wrong one, at higher damage rates."},
+      "resolution": {"change": "LinkFaultCounts counts delayed_duplicated, minidaq_send reports it ('both delayed and duplicated N'), and the readout system test subtracts it from the late packets. A second system test runs with 5% of each kind of damage and requires at least one such packet.", "verification": "system.readout: test_every_damaged_packet_is_accounted_for and test_a_packet_both_delayed_and_duplicated_is_a_duplicate pass in every preset; Exercise 19.1's recordings balance with the corrected identity."}
+    },
+    {
+      "id": "MDQ-PR-019",
+      "title": "Under load, the sequence tracker counted a late copy of a held packet as reordered",
+      "found": "2026-10-25, Chapter 19 system test test_a_packet_both_delayed_and_duplicated_is_a_duplicate, which failed in 1 run of the coverage report and in 8 of 8 runs with the CPUs loaded",
+      "item": "readout",
+      "status": "closed",
+      "description": "SequenceTracker::offer counted a packet as reordered whenever it arrived after a higher sequence number, before it checked whether the packet was a copy of one already held. A packet that the link both delayed and duplicated, whose on-time copy was still held behind an earlier gap, was then counted in packets_reordered and in packets_stale. packets_reordered is documented as 'arrived after a higher sequence number, and was still used'. With the server reading in larger batches under load, packets are held longer and the case becomes common: in the failing runs packets_reordered was one or two too high, and the accounting identity of the readout system test failed by the same amount. Delivery, the loss count and the stale count were right.",
+      "evaluation": {"safety_relevant": false, "rationale": "packets_reordered is a diagnostic counter: it does not enter the integrity verdict, and no data was lost, duplicated or delivered out of order. A wrong diagnostic misleads the investigation of a link problem, so it is fixed."},
+      "resolution": {"change": "The tracker counts a packet as reordered only when it is delivered or held, not when it is dropped as stale.", "verification": "SequenceTracker.ALateCopyOfAHeldPacketIsNotReordered fails without the change and passes with it; system.readout passed 8 of 8 runs with the CPUs loaded (it failed 8 of 8 before)."}
     }
   ]
 }

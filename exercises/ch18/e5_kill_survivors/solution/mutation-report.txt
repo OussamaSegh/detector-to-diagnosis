@@ -1,45 +1,45 @@
-# 2026-10-25T17:59:02Z minidaq/include/minidaq/format/readout_packet.hpp, 41 mutants
-# source sha256 84a221b7c72b4f21c2514898930e653413bb4656d8d0f91e2cbeae892d0a83db
+# 2026-10-25T20:09:27Z minidaq/include/minidaq/format/readout_packet.hpp, 41 mutants
+# source sha256 31d18a11c95adfdaac54c004b8769b67bc42fc61406d17e995194f15db109158
 # test: build/release/minidaq/tests/minidaq_unit_tests --gtest_filter='SequenceTracker.*:Properties.TheTrackerRestoresOrderAndCountsEveryPacket' && build/release/exercises/ch18/ch18_e5_kill_survivors_solution
 killed   minidaq/include/minidaq/format/readout_packet.hpp:193:3 neg if (c) -> if (!(c))
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:199:3 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:199:3 neg if (c) -> if (!(c))
 killed   minidaq/include/minidaq/format/readout_packet.hpp:199:13 ror < -> <=
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:199:13 ror < -> >=
+killed   minidaq/include/minidaq/format/readout_packet.hpp:199:13 ror < -> >=
 killed   minidaq/include/minidaq/format/readout_packet.hpp:200:5 neg if (c) -> if (!(c))
 killed   minidaq/include/minidaq/format/readout_packet.hpp:200:22 ror <= -> <
 killed   minidaq/include/minidaq/format/readout_packet.hpp:200:22 ror <= -> >
 killed   minidaq/include/minidaq/format/readout_packet.hpp:211:3 neg if (c) -> if (!(c))
 killed   minidaq/include/minidaq/format/readout_packet.hpp:211:13 ror > -> <=
 killed   minidaq/include/minidaq/format/readout_packet.hpp:211:13 ror > -> >=
-killed   minidaq/include/minidaq/format/readout_packet.hpp:218:3 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:218:40 ror > -> <=
-killed   minidaq/include/minidaq/format/readout_packet.hpp:218:40 ror > -> >=
-killed   minidaq/include/minidaq/format/readout_packet.hpp:223:3 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:223:13 ror == -> !=
-killed   minidaq/include/minidaq/format/readout_packet.hpp:234:40 ror >= -> <
-killed   minidaq/include/minidaq/format/readout_packet.hpp:234:40 ror >= -> >
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:235:5 neg if (c) -> if (!(c))
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:235:15 ror == -> !=
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:236:82 aor - -> +
-killed   minidaq/include/minidaq/format/readout_packet.hpp:236:92 aor - -> +
-killed   minidaq/include/minidaq/format/readout_packet.hpp:243:3 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:243:37 ror == -> !=
-killed   minidaq/include/minidaq/format/readout_packet.hpp:252:3 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:259:3 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:259:13 ror == -> !=
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:270:5 neg if (c) -> if (!(c))
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:270:17 lcr || -> &&
-killed   minidaq/include/minidaq/format/readout_packet.hpp:270:38 ror != -> ==
-killed   minidaq/include/minidaq/format/readout_packet.hpp:279:5 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:279:15 ror > -> <=
-invalid  minidaq/include/minidaq/format/readout_packet.hpp:279:15 ror > -> >=
-killed   minidaq/include/minidaq/format/readout_packet.hpp:283:9 neg if (c) -> if (!(c))
-killed   minidaq/include/minidaq/format/readout_packet.hpp:300:16 ror > -> <=
-invalid  minidaq/include/minidaq/format/readout_packet.hpp:300:16 ror > -> >=
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:300:20 lcr && -> ||
-killed   minidaq/include/minidaq/format/readout_packet.hpp:300:30 aor - -> +
-killed   minidaq/include/minidaq/format/readout_packet.hpp:300:48 ror >= -> <
-killed   minidaq/include/minidaq/format/readout_packet.hpp:300:48 ror >= -> >
-timeout  minidaq/include/minidaq/format/readout_packet.hpp:307:16 ror > -> <=
-invalid  minidaq/include/minidaq/format/readout_packet.hpp:307:16 ror > -> >=
-# killed 29, timeout 9, survived 0, invalid 3; mutation score 100.0%
+killed   minidaq/include/minidaq/format/readout_packet.hpp:220:59 ror > -> <=
+killed   minidaq/include/minidaq/format/readout_packet.hpp:220:59 ror > -> >=
+killed   minidaq/include/minidaq/format/readout_packet.hpp:221:3 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:224:3 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:224:13 ror == -> !=
+killed   minidaq/include/minidaq/format/readout_packet.hpp:236:40 ror >= -> <
+killed   minidaq/include/minidaq/format/readout_packet.hpp:236:40 ror >= -> >
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:237:5 neg if (c) -> if (!(c))
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:237:15 ror == -> !=
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:238:82 aor - -> +
+killed   minidaq/include/minidaq/format/readout_packet.hpp:238:92 aor - -> +
+killed   minidaq/include/minidaq/format/readout_packet.hpp:245:3 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:245:37 ror == -> !=
+killed   minidaq/include/minidaq/format/readout_packet.hpp:255:3 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:263:3 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:263:13 ror == -> !=
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:274:5 neg if (c) -> if (!(c))
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:274:17 lcr || -> &&
+killed   minidaq/include/minidaq/format/readout_packet.hpp:274:38 ror != -> ==
+killed   minidaq/include/minidaq/format/readout_packet.hpp:283:5 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:283:15 ror > -> <=
+invalid  minidaq/include/minidaq/format/readout_packet.hpp:283:15 ror > -> >=
+killed   minidaq/include/minidaq/format/readout_packet.hpp:287:9 neg if (c) -> if (!(c))
+killed   minidaq/include/minidaq/format/readout_packet.hpp:304:16 ror > -> <=
+invalid  minidaq/include/minidaq/format/readout_packet.hpp:304:16 ror > -> >=
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:304:20 lcr && -> ||
+killed   minidaq/include/minidaq/format/readout_packet.hpp:304:30 aor - -> +
+killed   minidaq/include/minidaq/format/readout_packet.hpp:304:48 ror >= -> <
+killed   minidaq/include/minidaq/format/readout_packet.hpp:304:48 ror >= -> >
+timeout  minidaq/include/minidaq/format/readout_packet.hpp:311:16 ror > -> <=
+invalid  minidaq/include/minidaq/format/readout_packet.hpp:311:16 ror > -> >=
+# killed 31, timeout 7, survived 0, invalid 3; mutation score 100.0%

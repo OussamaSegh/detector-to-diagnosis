@@ -68,6 +68,21 @@ class ClientAndServer(SystemTest):
         self.assertEqual(code, 2)
         self.assertIn(f"cannot connect to 127.0.0.1:{port}", err)
 
+    def test_new_token_refuses_an_unknown_role(self):
+        # REQ: SRS-CTL-040
+        p = subprocess.run([app("minidaq_ctl"), "new-token", "alice", "admin"], capture_output=True, text=True,
+                           timeout=30)
+        self.assertEqual(p.returncode, 2)
+        self.assertEqual(p.stdout, "", "no token may be printed for a refused role")
+
+    def test_a_server_without_authentication_needs_no_token(self):
+        # REQ: SRS-CTL-040
+        with Server(self.tmp, "--no-auth") as server:
+            p = subprocess.run([app("minidaq_ctl"), "--port", str(server.port), "status"], capture_output=True,
+                               text=True, timeout=30, env=server.env)
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertEqual(json.loads(p.stdout)["status"]["state"], "idle")
+
     def test_wait_ends_at_its_deadline(self):
         # REQ: SRS-CTL-042
         with Server(self.tmp) as server:
@@ -162,6 +177,7 @@ class Tls(SystemTest):
             code, _, _ = Ctl(server)("hello", seconds=40)
             self.assertEqual(code, 2)
 
+    # [snippet:impostor]
     def check_refused(self, impostor_cert, impostor_key, host="127.0.0.1"):
         token = secret_file(self.tmp / "operator.token", "f" * 64)
         with ImpostorServer(impostor_cert, impostor_key) as impostor:
@@ -171,6 +187,7 @@ class Tls(SystemTest):
         self.assertIn("certificate", err.lower())
         self.assertEqual(impostor.received, b"", "the client sent data to a server it should not trust")
         return err
+    # [/snippet:impostor]
 
     def test_the_client_sends_no_token_to_a_server_another_ca_signed(self):
         # REQ: SRS-CTL-041, SRS-SEC-007
@@ -221,6 +238,26 @@ class Startup(SystemTest):
             p = subprocess.run([app("minidaq_server"), *args], capture_output=True, text=True, timeout=30)
             self.assertNotEqual(p.returncode, 0, args)
             self.assertTrue(p.stderr, args)
+
+    def test_a_configuration_given_at_start_up_is_applied(self):
+        # REQ: SRS-CTL-044
+        cfg = write_json(self.tmp / "run.json", run_config(self.tmp))
+        audit = self.tmp / "audit.jsonl"
+        with Server(self.tmp, "--config", str(cfg), "--audit", str(audit)) as server:
+            self.assertEqual(Ctl(server).status()["state"], "configured")
+            self.assertEqual(server.stop(), 0, server.output)
+        entries = [json.loads(line) for line in audit.read_text().splitlines()]
+        self.assertIn(("configure", "command line"), [(e["action"], e["who"]) for e in entries])
+
+    def test_an_invalid_configuration_at_start_up_is_refused(self):
+        # REQ: SRS-CTL-044
+        bad = write_json(self.tmp / "bad.json", dict(run_config(self.tmp), schema_version="0.1"))
+        for path in (bad, self.tmp / "missing.json"):
+            p = subprocess.run([app("minidaq_server"), "--port", "0", "--config", str(path)],
+                               capture_output=True, text=True, timeout=30, env=dict(os.environ,
+                               MINIDAQ_RUNTIME_DIR=str(self.tmp)))
+            self.assertNotEqual(p.returncode, 0, path)
+            self.assertIn(str(path), p.stderr)
 
 
 if __name__ == "__main__":

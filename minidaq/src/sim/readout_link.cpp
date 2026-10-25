@@ -72,6 +72,7 @@ void LinkFaults::apply(std::vector<Datagram>& packets) {
       ++counts_.delayed;
       if (dup) {
         ++counts_.duplicated;
+        ++counts_.delayed_duplicated;
         out.push_back(p);  // the copy goes on time, the original late
       }
       delayed.push_back({out.size() + shift(rng_) - 1, std::move(p)});

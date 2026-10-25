@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -36,6 +37,10 @@ std::vector<Single> simulated(double activity, double seconds) {
       v.push_back(t.single);
     }
   }
+  // Singles with equal times in crystal order, as MiniDAQ's sorter takes them (SRS-SRT-013).
+  std::stable_sort(v.begin(), v.end(), [](const auto& a, const auto& b) {
+    return a.time != b.time ? a.time < b.time : a.crystal < b.crystal;
+  });
   return v;
 }
 

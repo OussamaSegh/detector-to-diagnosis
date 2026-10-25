@@ -173,8 +173,9 @@ int main(int argc, char** argv) {
   std::printf("singles %zu in %.3g s of detector time (%.3g Bq)\n", singles.size(), o.seconds, o.sim.activity_bq);
   std::printf("packets %zu of up to %zu words, sequence %u .. %u\n", prepared, o.packets.words_per_packet,
               o.packets.first_sequence, packetizer.next_sequence() - 1U);
-  std::printf("injected: lost %llu, delayed %llu, duplicated %llu\n", static_cast<unsigned long long>(f.lost),
-              static_cast<unsigned long long>(f.delayed), static_cast<unsigned long long>(f.duplicated));
+  std::printf("injected: lost %llu, delayed %llu, duplicated %llu, both delayed and duplicated %llu\n",
+              static_cast<unsigned long long>(f.lost), static_cast<unsigned long long>(f.delayed),
+              static_cast<unsigned long long>(f.duplicated), static_cast<unsigned long long>(f.delayed_duplicated));
   std::printf("sent %zu datagrams, %.3g MB in %.3f s: %.0f packets/s, %.1f Mbit/s, %llu send errors\n", sent,
               static_cast<double>(bytes) * 1e-6, elapsed, static_cast<double>(sent) / elapsed,
               static_cast<double>(bytes) * 8e-6 / elapsed, static_cast<unsigned long long>(send_errors));

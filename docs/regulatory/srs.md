@@ -191,6 +191,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CTL-041 | When given a CA file, the control client shall connect with TLS and send nothing, neither token nor command, to a server whose certificate that CA did not sign or that is not certified for the address it connected to. | ctl | T |
 | SRS-CTL-042 | The control client's `wait` shall poll the status until the given state or the given deadline, and exit with the status `1` at the deadline. | ctl | T |
 | SRS-CTL-043 | The server program shall refuse contradicting or invalid options with a message and a nonzero exit status, and on SIGINT or SIGTERM stop and drain a running acquisition, record the shutdown in the audit trail, remove its start-up token and exit with the status `0`. | server | T |
+| SRS-CTL-044 | When started with `--config FILE`, the server program shall configure the acquisition from the file, recorded in the audit trail as configured from the command line, or exit with a nonzero status and the file's errors if it cannot read the file or the file is invalid. | server | T |
 
 ### 2.11 List-mode format (LMF)
 
@@ -271,4 +272,4 @@ Requirements on the programs together, verified by the system tests of Chapter 1
 | 5 | Part III review: SRS-CTL-034, after an `auth` whose token was a number ended the server (problem report MDQ-PR-013, CAPA-0003). |
 | 6 | Release 0.3.0: the verification of SRS-PERF-020 re-measured with the coincidence sorter; the requirement is unchanged and met (problem report MDQ-PR-014, CAPA-0004). |
 | 7 | Chapter 18: SRS-CTL-035, the order of the service's calls to its sink, which the service did and no requirement or test stated; SRS-SRT-007 states the upper limit of the delay (1 ms), which the sorter enforced and the requirement left out (found by mutation testing). |
-| 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-043, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |
+| 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-044, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |

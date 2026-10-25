@@ -56,6 +56,10 @@ struct LinkFaultCounts {
   std::uint64_t lost = 0;
   std::uint64_t delayed = 0;
   std::uint64_t duplicated = 0;
+  // Delayed and duplicated at once: the copy is sent on time and the original
+  // late, so the late one is a duplicate, never a packet that came too late
+  // (counted in both `delayed` and `duplicated`; MDQ-PR-018).
+  std::uint64_t delayed_duplicated = 0;
 };
 
 // Applies the faults to a packet stream, in place. Each packet is first

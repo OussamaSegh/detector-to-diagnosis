@@ -29,6 +29,7 @@ SLOW = float(os.environ.get("MINIDAQ_TEST_TIME_FACTOR", "1"))
 READY = re.compile(r"control API on [\d.]+:(\d+) \(")
 
 
+# [snippet:harness]
 def app(name):
     path = APPS / name
     if not path.is_file():  # a test that skips when a program is missing would pass for no reason
@@ -47,6 +48,7 @@ def eventually(condition, seconds, what):
         if time.monotonic() > end:
             raise AssertionError(f"timed out after {seconds * SLOW:.0f} s waiting for {what}")
         time.sleep(0.05)  # sleep: poll
+# [/snippet:harness]
 
 
 class Server:

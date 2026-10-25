@@ -215,12 +215,14 @@ void SequenceTracker::offer(const PacketView& p, std::int64_t now_ns, Deliver de
     highest_ = seq;
     ahead = 0;
   }
-  if (sequence_distance(seq, highest_) > 0) {
-    ++stats_.reordered;  // overtaken on the way, but not too late
-  } else {
+  // Overtaken on the way. Counted as reordered only once it is used: a copy of
+  // a packet already held is stale, not reordered (MDQ-PR-019).
+  const bool overtaken = sequence_distance(seq, highest_) > 0;
+  if (!overtaken) {
     highest_ = seq;
   }
   if (ahead == 0) {
+    stats_.reordered += overtaken ? 1 : 0;
     deliver(p.header, p.payload);
     ++stats_.delivered;
     stats_.words += p.header.word_count;
@@ -241,6 +243,7 @@ void SequenceTracker::offer(const PacketView& p, std::int64_t now_ns, Deliver de
     skip_gap(deliver);
   }
   if (sequence_distance(next_, seq) == 0) {  // the gap closed while making room
+    stats_.reordered += overtaken ? 1 : 0;
     deliver(p.header, p.payload);
     ++stats_.delivered;
     stats_.words += p.header.word_count;
@@ -253,6 +256,7 @@ void SequenceTracker::offer(const PacketView& p, std::int64_t now_ns, Deliver de
     ++stats_.stale;  // a duplicate of a packet already held
     return;
   }
+  stats_.reordered += overtaken ? 1 : 0;
   const std::size_t n = std::min(p.payload.size(), slot_bytes_);
   std::copy_n(p.payload.begin(), n, storage(index_of(seq)).begin());
   s = Slot{true, p.header, now_ns, n};

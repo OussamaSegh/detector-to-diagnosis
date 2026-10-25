@@ -31,6 +31,14 @@ the patch version.
 - Problem report MDQ-PR-017 (closed): two runs with the same seed could write different records,
   because singles with equal times split across batches kept their arrival order; found by a
   system test.
+- Problem reports MDQ-PR-018 and MDQ-PR-019 (closed): the readout system test counted a packet
+  both delayed and duplicated as a late one (`minidaq_send` now reports such packets), and, under
+  load, the sequence tracker counted a late copy of a held packet as reordered.
+- System test plan (`docs/regulatory/verification/stp.md`), `tools/test_report.py` (the report
+  of a run, made by the run), change request CR-0005, the 30-minute soak and the coverage review
+  of `ctl` and `server` in `measurements/ch19/`; MDQ-PR-015 closed.
+- Exercises 19.1 to 19.5: link accounting, the power of the golden comparison, reading a soak,
+  an integration test of batching, and recording and replaying a readout link.
 
 ### Changed
 - The `coverage` preset uses Clang source-based coverage with MC/DC instead of gcov, and builds
@@ -42,6 +50,11 @@ the patch version.
   checks Exercise 18.3 in the coverage build.
 - SDP section 8: a release is tagged and packaged only after CI on the release commit is green.
 - `CoincidenceSorter::config()` removed: no code called it (found by the coverage report).
+- SRS version 8 adds SRS-CTL-044 (the server's `--config` at start-up), found by the coverage
+  review. SDP version 6: system tests in every change; the system test report and the soak in each
+  release (`tools/release_checks.sh`).
+- `packets_reordered` counts only packets that are used (MDQ-PR-019). The Chapter 10 exercises
+  give their sorters singles with ties in crystal order, as MiniDAQ's sorter now takes them.
 - The coincidence sorter takes singles with equal times in crystal order (SRS-SRT-013), so its
   output no longer depends on where the pipeline cuts its batches.
 - SRS version 8: SRS-CTL-040 to SRS-CTL-043 (the client and the server program), SRS-SYS-001 to

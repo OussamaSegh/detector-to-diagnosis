@@ -111,6 +111,7 @@ class GoldenExact(SystemTest):
 
 
 class GoldenStatistical(SystemTest):
+    # [snippet:statistical]
     def compare(self, s, golden):
         """The p-values of the comparisons of run summary s with the golden summary."""
         return {
@@ -128,6 +129,7 @@ class GoldenStatistical(SystemTest):
         self.assertNotEqual(s["sha256"], golden["sha256"], "another seed must give other records")
         for what, p in self.compare(s, golden).items():
             self.assertGreater(p, SIGNIFICANCE, f"{what} differs from the golden run (p = {p:.2g})")
+    # [/snippet:statistical]
 
     def test_the_comparison_finds_a_narrower_energy_window(self):
         # A negative control: the comparison must fail for a run that is really different. An

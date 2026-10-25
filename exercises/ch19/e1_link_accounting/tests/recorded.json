@@ -1,0 +1,86 @@
+{
+  "clean": {
+    "command": "minidaq_send --activity 1e6 --seconds 0.5 --seed 4 --speed 0",
+    "sent": {
+      "singles": 223865,
+      "packets": 1231,
+      "lost": 0,
+      "delayed": 0,
+      "duplicated": 0,
+      "both": 0
+    },
+    "link": {
+      "datagrams": 1231,
+      "packets_received": 1231,
+      "packets_delivered": 1231,
+      "packets_reordered": 0,
+      "packets_lost": 0,
+      "packets_stale": 0,
+      "sequence_resyncs": 0,
+      "words_delivered": 223865
+    }
+  },
+  "damaged": {
+    "command": "minidaq_send --activity 1e6 --seconds 0.5 --seed 5 --loss 0.01 --reorder 0.01 --duplicate 0.01 --speed 1",
+    "sent": {
+      "singles": 223355,
+      "packets": 1228,
+      "lost": 13,
+      "delayed": 15,
+      "duplicated": 13,
+      "both": 0
+    },
+    "link": {
+      "datagrams": 1228,
+      "packets_received": 1228,
+      "packets_delivered": 1206,
+      "packets_reordered": 6,
+      "packets_lost": 22,
+      "packets_stale": 22,
+      "sequence_resyncs": 0,
+      "words_delivered": 219351
+    }
+  },
+  "damaged_heavy": {
+    "command": "minidaq_send --activity 1e6 --seconds 0.5 --seed 8 --loss 0.05 --reorder 0.05 --duplicate 0.05 --speed 1",
+    "sent": {
+      "singles": 223501,
+      "packets": 1229,
+      "lost": 64,
+      "delayed": 67,
+      "duplicated": 61,
+      "both": 2
+    },
+    "link": {
+      "datagrams": 1226,
+      "packets_received": 1226,
+      "packets_delivered": 1122,
+      "packets_reordered": 22,
+      "packets_lost": 107,
+      "packets_stale": 104,
+      "sequence_resyncs": 0,
+      "words_delivered": 204027
+    }
+  },
+  "wrap": {
+    "command": "minidaq_send --activity 1e6 --seconds 0.2 --seed 6 --speed 0 --first-sequence 4294967196",
+    "sent": {
+      "singles": 89196,
+      "packets": 491,
+      "lost": 0,
+      "delayed": 0,
+      "duplicated": 0,
+      "both": 0
+    },
+    "link": {
+      "datagrams": 491,
+      "packets_received": 491,
+      "packets_delivered": 491,
+      "packets_reordered": 0,
+      "packets_lost": 0,
+      "packets_stale": 0,
+      "sequence_resyncs": 0,
+      "words_delivered": 89196
+    }
+  }
+}

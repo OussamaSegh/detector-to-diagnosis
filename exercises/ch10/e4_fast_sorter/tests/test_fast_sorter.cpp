@@ -37,6 +37,10 @@ const std::vector<Single>& stream() {
     for (const auto& t : d.generate_until(Picoseconds{20'000'000'000})) {  // 20 ms
       s.push_back(t.single);
     }
+    // Singles with equal times in crystal order, as MiniDAQ's sorter takes them (SRS-SRT-013).
+    std::stable_sort(s.begin(), s.end(), [](const Single& a, const Single& b) {
+      return a.time != b.time ? a.time < b.time : a.crystal < b.crystal;
+    });
     return s;
   }();
   return v;

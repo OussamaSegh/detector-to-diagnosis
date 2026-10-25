@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 5 (MiniDAQ 0.4.0-dev, Chapter 18). Status: draft for review.
+Version 6 (MiniDAQ 0.4.0-dev, Chapter 19). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -110,12 +110,14 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Check | When | Pass criterion |
 |---|---|---|
 | Build with warnings as errors | every change, every preset | no warning |
-| Unit, integration and documentation tests (`ctest`) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
+| Unit, integration, system and documentation tests (`ctest`; the system tests as the [system test plan](verification/stp.md) says) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
 | Static analysis | every change | zero findings |
 | Exercise solutions | every change (part of `ctest`) | all pass |
 | Property-based tests, wide search | each release, every property with 100 times its cases (`MINIDAQ_PROP_CASES=100`, `tools/release_checks.sh`) | all pass |
 | Structural coverage | each release, the `coverage` preset and `tools/coverage.py` (`tools/release_checks.sh`) | the report per software item is recorded; no class B item's branch coverage is lower than in the previous release without a reason; every branch of a class B file changed since the previous release that the tests do not take both ways is reached by a new test or accepted with a reason in the release record's coverage review |
 | Exercise starters | each new exercise and each release, `ctest -L starter` on a `Release` build (`tools/release_checks.sh`) | every starter fails at least one test, none hangs |
+| System test report | each release, `tools/test_report.py` on the `release` build (`tools/release_checks.sh`) | every test case of the system test plan passes on the clean release commit; the report is signed by the tester |
+| Soak | each release, `tools/soak.py`, 30 minutes at 1 M singles/s on the reference machine (`tools/release_checks.sh`) | the criteria of SRS-SYS-003 over 30 minutes: no loss, no fault, the run complete, resident memory growing by no more than 1 MiB per hour after a 10-minute warm-up (the 8-hour run belongs to the system test on the acquisition PC, SRS section 3) |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
 | Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020 and SRS-PERF-021 met; `tools/perf_gate.py` finds no row of the budget slower than the baseline, or the baseline and the budget were updated with a reason (CAPA-0004) |
 | Stress run of the threaded tests | each release, `tools/stress_tests.sh` on the `tsan` build, 100 repetitions | no failure, result in `measurements/` (CAPA-0001) |
@@ -197,3 +199,4 @@ of Chapter 13.
 | 3 | Chapter 16: change requests, CAPA and document control as verification activities; how changes are reviewed with one developer (internal audit finding A-1, CAPA-0002). |
 | 4 | Release 0.3.0: the release checks are one script, `tools/release_checks.sh`, which fails when a check cannot run; the performance row includes the regression gate and the starters row a `Release` build (MDQ-PR-014, CAPA-0004). |
 | 5 | Chapter 18: the wide search of the property-based tests and the structural coverage review of class B items as verification activities of each release; section 8: tag only after CI on the release commit is green (MDQ-PR-016). |
+| 6 | Chapter 19: system tests of the shipped programs in every change's `ctest`, under the new system test plan; the system test report and the soak as checks of each release. |

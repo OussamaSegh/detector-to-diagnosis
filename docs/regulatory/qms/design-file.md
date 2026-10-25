@@ -14,7 +14,7 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 | 7.3.3 | Design and development inputs | `docs/regulatory/intended-use.md`<br>`docs/regulatory/regulatory-context.md`<br>`docs/regulatory/srs.md`<br>`docs/performance-budget.md`<br>`docs/regulatory/standards-map.dot`<br>`docs/regulatory/standards-map.svg` | Requirements from the intended use, the regulations, the risk controls and the performance budget. |
 | 7.3.4 | Design and development outputs | `docs/architecture/`<br>`docs/formats/`<br>`docs/coding-standard.md`<br>`minidaq/`<br>`CHANGELOG.md` | Architecture with classified items, data formats, the code and its coding standard. |
 | 7.3.5 | Design and development review | `docs/adr/`<br>`CHANGELOG.md` | Decisions with their alternatives (ADRs), and the review at the end of each Part, recorded in the release notes. The review of each change that SDP section 5 asks for is the subject of internal audit finding A-1 (Chapter 16). |
-| 7.3.6 | Design and development verification | `docs/regulatory/trace-matrix.md`<br>`minidaq/tests/`<br>`fuzz/`<br>`ci/run_all.sh`<br>`.github/workflows/` | Every requirement traced to its tests or its measurement; six presets and static analysis on every change. |
+| 7.3.6 | Design and development verification | `docs/regulatory/verification/`<br>`docs/regulatory/trace-matrix.md`<br>`minidaq/tests/`<br>`fuzz/`<br>`ci/run_all.sh`<br>`.github/workflows/`<br>`tools/soak.py`<br>`tools/test_report.py` | The system test plan and its reports (Chapter 19); every requirement traced to its tests or its measurement; six presets and static analysis on every change; the soak of each release. |
 | 7.3.7 | Design and development validation | none yet | Validation is of the scanner in its use environment: system tests (Part IV) and phantom measurements of image quality (Chapter 30). MiniDAQ alone cannot be validated. |
 | 7.3.8 | Design and development transfer | `docs/regulatory/sdp.md`<br>`tools/make_sbom.py`<br>`docs/regulatory/releases/` | Release process and record (SDP section 8): tagged source, book files, SBOM and the release record of each version. |
 | 7.3.9 | Control of design and development changes | `docs/regulatory/changes/`<br>`tools/check_changes.py` | Change requests with impact analysis and approval (Chapter 16). |
@@ -45,3 +45,4 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/regulatory/capa/README.md`
 - `docs/regulatory/qms/internal-audit-2026-10-25.md`
 - `docs/regulatory/security/threat-model.md`
+- `docs/regulatory/verification/stp.md`

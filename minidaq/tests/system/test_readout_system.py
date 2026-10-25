@@ -35,10 +35,11 @@ def send(port, *args):
     out = p.stdout
     report = {"singles": int(re.search(r"singles (\d+)", out).group(1)),
               "packets": int(re.search(r"packets (\d+) of", out).group(1)),
-              "lost": 0, "delayed": 0, "duplicated": 0}
-    m = re.search(r"injected: lost (\d+), delayed (\d+), duplicated (\d+)", out)
+              "lost": 0, "delayed": 0, "duplicated": 0, "both": 0}
+    m = re.search(r"injected: lost (\d+), delayed (\d+), duplicated (\d+), both delayed and duplicated (\d+)", out)
     if m:
-        report.update(lost=int(m.group(1)), delayed=int(m.group(2)), duplicated=int(m.group(3)))
+        report.update(lost=int(m.group(1)), delayed=int(m.group(2)), duplicated=int(m.group(3)),
+                      both=int(m.group(4)))
     return report
 
 
@@ -72,23 +73,37 @@ class Readout(SystemTest):
         self.assertTrue(status["integrity"]["complete"], status["integrity"])
 
     # [snippet:damaged]
+    def check_accounting(self, sent, status):
+        link = status["detector_counters"]
+        self.maxDiff = None
+        context = f"sent {sent}, link {link}"
+        # A delayed packet is either put back in order (reordered) or arrives after its gap was
+        # given up: then it was counted lost, and is dropped as stale when it comes. One that was
+        # also duplicated had its copy sent on time, so it is a duplicate, not late (MDQ-PR-018).
+        too_late = sent["delayed"] - sent["both"] - link["packets_reordered"]
+        self.assertGreaterEqual(too_late, 0, context)
+        self.assertEqual(link["packets_lost"], sent["lost"] + too_late, context)
+        self.assertEqual(link["packets_stale"], sent["duplicated"] + too_late, context)
+        self.assertEqual(link["packets_delivered"] + link["packets_lost"], sent["packets"], context)
+        self.assertEqual(link["packets_received"], link["packets_delivered"] + link["packets_stale"], context)
+        # The run is marked incomplete, with the loss counter named.
+        self.assertFalse(status["integrity"]["complete"])
+        self.assertIn("/detector_counters/packets_lost", [x["counter"] for x in status["integrity"]["losses"]])
+
     def test_every_damaged_packet_is_accounted_for(self):
         # REQ: SRS-SYS-002, SRS-RDO-007, SRS-CTL-030
         sent, status = self.acquire("damaged", "--activity", "1e6", "--seconds", "0.5", "--seed", "5",
                                     "--loss", "0.01", "--reorder", "0.01", "--duplicate", "0.01", "--speed", "1")
-        link = status["detector_counters"]
         self.assertGreater(sent["lost"] * sent["delayed"] * sent["duplicated"], 0, sent)
-        # A delayed packet is either put back in order (reordered) or arrives after its gap was
-        # given up: then it was counted lost, and is dropped as stale when it comes.
-        too_late = sent["delayed"] - link["packets_reordered"]
-        self.assertGreaterEqual(too_late, 0)
-        self.assertEqual(link["packets_lost"], sent["lost"] + too_late)
-        self.assertEqual(link["packets_stale"], sent["duplicated"] + too_late)
-        self.assertEqual(link["packets_delivered"] + link["packets_lost"], sent["packets"])
-        self.assertEqual(link["packets_received"], link["packets_delivered"] + link["packets_stale"])
-        # The run is marked incomplete, with the loss counter named.
-        self.assertFalse(status["integrity"]["complete"])
-        self.assertIn("/detector_counters/packets_lost", [x["counter"] for x in status["integrity"]["losses"]])
+        self.check_accounting(sent, status)
+
+    def test_a_packet_both_delayed_and_duplicated_is_a_duplicate(self):
+        # REQ: SRS-SYS-002, SRS-RDO-007
+        # 5% of each kind of damage: some packets are delayed and duplicated at once.
+        sent, status = self.acquire("heavy", "--activity", "1e6", "--seconds", "0.5", "--seed", "8",
+                                    "--loss", "0.05", "--reorder", "0.05", "--duplicate", "0.05", "--speed", "1")
+        self.assertGreater(sent["both"], 0, sent)
+        self.check_accounting(sent, status)
     # [/snippet:damaged]
 
     def test_the_sequence_number_wraps_without_loss(self):

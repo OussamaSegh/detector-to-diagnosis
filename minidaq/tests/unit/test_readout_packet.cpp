@@ -231,6 +231,22 @@ TEST(SequenceTracker, DuplicatesAreStale) {
   EXPECT_EQ(h.tracker.stats().stale, 2U);
 }
 
+// A copy of a held packet that arrives after a higher sequence number is stale,
+// not reordered: only a packet that is used counts as reordered (MDQ-PR-019).
+TEST(SequenceTracker, ALateCopyOfAHeldPacketIsNotReordered) {
+  // REQ: SRS-RDO-005, SRS-RDO-007
+  Harness h;
+  h.offer(packet(0, {0}));
+  h.offer(packet(2, {2}));  // early: held
+  h.offer(packet(3, {3}));  // early: held
+  h.offer(packet(2, {2}));  // a copy of 2, after 3: stale
+  EXPECT_EQ(h.tracker.stats().reordered, 0U);
+  h.offer(packet(1, {1}));  // overtaken by 2 and 3, and used
+  EXPECT_EQ(h.delivered, (std::vector<std::uint64_t>{0, 1, 2, 3}));
+  EXPECT_EQ(h.tracker.stats().reordered, 1U);
+  EXPECT_EQ(h.tracker.stats().stale, 1U);
+}
+
 TEST(SequenceTracker, WorksAcrossTheSequenceWrap) {
   // REQ: SRS-RDO-003
   Harness h;

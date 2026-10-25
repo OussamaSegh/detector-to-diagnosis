@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "minidaq/processing/coincidence_sorter.hpp"
@@ -22,7 +23,12 @@ std::vector<sim::TruthSingle> simulate(double activity, double seconds) {
   c.phantom = {90.0, 180.0};
   c.seed = 12;
   sim::DetectorSimulator d{c};
-  return d.generate_until(Picoseconds{static_cast<std::int64_t>(seconds * 1e12)});
+  auto v = d.generate_until(Picoseconds{static_cast<std::int64_t>(seconds * 1e12)});
+  // Singles with equal times in crystal order, as MiniDAQ's sorter takes them (SRS-SRT-013).
+  std::stable_sort(v.begin(), v.end(), [](const sim::TruthSingle& a, const sim::TruthSingle& b) {
+    return a.single.time != b.single.time ? a.single.time < b.single.time : a.single.crystal < b.single.crystal;
+  });
+  return v;
 }
 
 }  // namespace

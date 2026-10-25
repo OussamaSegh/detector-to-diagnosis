@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # The release checks of SDP section 6 that are not run on every change, in order, on one commit:
 # all presets, static analysis, starters, the stress run, the performance requirements and the
-# regression gate, and 10 minutes of fuzzing per target. Run it on the reference machine, quiet,
-# from a clean checkout. Each check writes its output to OUT; the release record cites the files.
+# regression gate, the system test report and the soak, and 10 minutes of fuzzing per target.
+# Run it on the reference machine, quiet, from a clean checkout. Each check writes its output to
+# OUT; the release record cites the files.
 #
 #   tools/release_checks.sh OUT [FUZZ_SECONDS]
 #
@@ -98,6 +99,13 @@ check "writer benchmark ran" $?
   python3 tools/perf_gate.py benchmarks/baseline/book-vm.json "$out/perf-current.json" --strict \
     > "$out/perf-gate.txt" 2>&1
 check "performance regression gate" $?
+
+# Chapter 19: the system test report of the release build (system test plan, section 8), and the
+# soak of SRS-SYS-003 on the same programs.
+python3 tools/test_report.py build/release "$out/system-test-report.md" > "$out/system-tests.txt" 2>&1
+check "system test report" $?
+python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes 30 > "$out/soak.txt" 2>&1
+check "soak, 30 minutes at 1 M singles/s" $?
 
 cmake --preset fuzz >/dev/null &&
   cmake --build --preset fuzz -j"$(nproc)" > "$out/fuzz/build.txt" 2>&1
