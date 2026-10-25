@@ -10,3 +10,4 @@ solutions/ch07.md
 solutions/ch08.md
 solutions/ch09.md
 solutions/ch10.md
+solutions/ch11.md

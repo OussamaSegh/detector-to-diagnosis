@@ -1,9 +1,9 @@
-# Exercise 11.5 (E): An end-to-end throughput budget
+# Exercise 11.5 (E, extra): An end-to-end throughput budget
 
 **Goal.** Put the chain's capacities side by side (readout link, sorter, writer, disk), each with a
 load that grows with the activity in its own unit, and find which stage saturates first and
-at which activity, with and without a safety margin. This is the plan's "write the
-throughput budget from detector to disk".
+at which activity, with and without a safety margin: the chapter's end-to-end
+throughput budget, as code that the next measurement can update.
 
 **Time.** 1 hour.
 

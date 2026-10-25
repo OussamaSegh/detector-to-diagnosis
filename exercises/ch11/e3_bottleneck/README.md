@@ -2,7 +2,7 @@
 
 **Goal.** Raise the rate through MiniDAQ's pipeline until something gives, and say which
 stage gave first, at which rate, and how you know. This is the plan's "find the first
-software bottleneck and write it up as a measurement report". You write the analysis as
+bottleneck in MiniDAQ as activity rises and document it". You write the analysis as
 code, so the next measurement (on the next machine, or after the next optimization) is
 analyzed the same way.
 

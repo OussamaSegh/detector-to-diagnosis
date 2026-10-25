@@ -32,7 +32,7 @@ std::vector<std::uint64_t> recording() {
 }  // namespace
 
 TEST(ReplaySource, LoopsWithShiftedTimesInOrder) {
-  // REQ: SRS-SIM-010
+  // REQ: SRS-SIM-020
   sim::ReplaySource src{recording(), 1e9};  // far faster than the test can ask
   std::vector<std::uint64_t> out(4 * 50);
   std::size_t n = src(out);  // starts the clock (and delivers nothing yet)
@@ -53,7 +53,7 @@ TEST(ReplaySource, LoopsWithShiftedTimesInOrder) {
 }
 
 TEST(ReplaySource, RealTimeRateAndPacing) {
-  // REQ: SRS-SIM-011
+  // REQ: SRS-SIM-021
   sim::ReplaySource real{recording(), 0.0};
   EXPECT_DOUBLE_EQ(real.real_time_rate(), 4.0 / 4e-6) << "4 words per 4 us loop";
   EXPECT_DOUBLE_EQ(real.rate(), real.real_time_rate());

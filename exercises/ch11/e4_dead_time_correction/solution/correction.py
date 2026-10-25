@@ -24,6 +24,7 @@ def recorded_rate(model, n, tau):
     raise ValueError(model)
 
 
+# [snippet:invert]
 def true_rate(model, m, tau, branch="low"):
     """The true rate n that records m. A paralyzable unit records at most
     1 / (e tau), at n = 1 / tau, and every lower m has two true rates: branch
@@ -54,6 +55,7 @@ def true_rate(model, m, tau, branch="low"):
         else:
             hi = mid
     return 0.5 * (lo + hi)
+# [/snippet:invert]
 
 
 def error_amplification(model, n, tau):

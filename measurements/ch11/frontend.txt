@@ -1,0 +1,21 @@
+# python3 measurements/ch11/frontend.py build/release/minidaq/apps
+# Intel(R) Xeon(R) Processor @ 2.30GHz, seed 11
+Chapter 11: what each part of the front-end model costs in NECR.
+1 us non-paralyzable dead time; rates per second by truth; NECR = T^2 / (T + S + kR).
+
+== 30 MBq
+front end              lost %   trues/s    scat/s    rand/s     SF  NECR k=1
+no dead time              0.0     28202     13986      5946  0.332     16524
+per crystal               0.0     28188     13984      5938  0.332     16516
+per crystal, pile-up      0.0     28170     13982      5938  0.332     16501
+per block                 7.5     24412     12126      5114  0.332     14308
+per block, pile-up        7.5     21352     11770      4658  0.355     12067
+
+== 100 MBq
+front end              lost %   trues/s    scat/s    rand/s     SF  NECR k=1
+no dead time              0.0     90733     45080     66233  0.332     40746
+per crystal               0.1     90613     44993     66133  0.332     40700
+per crystal, pile-up      0.1     90473     45000     66073  0.332     40613
+per block                20.9     59267     28793     43293  0.327     26741
+per block, pile-up       20.9     38433     25087     33207  0.395     15271
+

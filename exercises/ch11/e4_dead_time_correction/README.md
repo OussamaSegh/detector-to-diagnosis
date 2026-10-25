@@ -1,4 +1,4 @@
-# Exercise 11.4 (E): Correcting a measured rate for dead time
+# Exercise 11.4 (E, extra): Correcting a measured rate for dead time
 
 **Goal.** Invert the two dead-time models: from the rate a unit recorded back to the rate
 that arrived. Handle the paralyzable model's two branches and its maximum, and work out how

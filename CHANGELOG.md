@@ -38,6 +38,16 @@ the patch version.
   (`measurements/ch10/validation.txt`); benchmark `bm_sorter`; fuzz target `fuzz_sorter`;
   ADR 0010; figure scripts `ch10_windows.py` and `ch10_policies.py`; exercises 10.1 to 10.6
   (10.6 in Python).
+- Chapter 11: `sim::DeadTime` (non-paralyzable or paralyzable dead time per block or per
+  crystal, optional pile-up, events released in time order, the same output for any
+  chunking) with the analytical `recorded_rate` and `true_rate`; `CountRates` (prompts,
+  scatter fraction, NECR for a given k); `sim::ReplaySource` (a recorded stream looped in
+  time order at a chosen rate); `minidaq_sim` options `--deadtime`, `--tau`, `--pileup`,
+  `--deadtime-unit`, `--nema` and a `countrate` line; `minidaq_latency` options `--words` and
+  `--speed` and a per-stage utilization table; measurements `countrate`, `windows`,
+  `frontend` and `bottleneck` (`measurements/ch11/`); ADR 0011; figure scripts
+  `ch11_deadtime.py`, `ch11_countrate.py` and `ch11_windows.py`; exercises 11.1 to 11.5
+  (11.3 to 11.5 in Python).
 
 ### Changed
 - The pipeline's pair stage is the coincidence sorter instead of a placeholder that paired
@@ -54,6 +64,11 @@ the patch version.
   diagram in `docs/architecture/` now shows the UDP readout.
 
 ### Fixed
+- `minidaq_latency` let an exception escape `main` and failed `clang-tidy`
+  (`bugprone-exception-escape`, `modernize-use-auto`); exceptions are now caught and
+  reported.
+- `test_replay_source.cpp` reused the requirement IDs SRS-SIM-010 and 011 of the physics
+  tests; the replay source's requirements are SRS-SIM-020 and 021.
 - `clang-tidy` in CI failed on every file: newer CMake versions scan C++20 sources for
   modules and write `@modmap` arguments into `compile_commands.json`.
   `CMAKE_CXX_SCAN_FOR_MODULES` is off (MiniDAQ uses no modules).

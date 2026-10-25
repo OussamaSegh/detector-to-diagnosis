@@ -17,3 +17,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0008](0008-hardened-release-builds.md) | Hardened release builds | Accepted |
 | [0009](0009-udp-readout-link.md) | UDP readout link with sequence numbers and a bounded reorder buffer | Accepted |
 | [0010](0010-coincidence-sorter-and-merger.md) | A streaming coincidence sorter with configurable policies, and a watermark merger | Accepted |
+| [0011](0011-front-end-model-and-capacity-measurement.md) | Front-end dead time in the simulator, and capacity measured with a replayed stream | Accepted |

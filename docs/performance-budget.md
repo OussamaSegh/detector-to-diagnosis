@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Status: measured on the book's machine at tag `ch05`. Every number must be re-measured on the
+Status: measured on the book's machine at tag `ch05`, with a realistic-stream section from tag `ch11`. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -52,6 +52,25 @@ the table above are from the `release` preset at tag `ch05`.
   pipeline row. Open item: add `bm_pair`.
 - The receive stage is the one most likely to be the real bottleneck (system calls, packet
   handling, NIC interrupts) and the one not yet measured.
+
+## The pipeline with a realistic stream (Chapter 11)
+
+The table above uses synthetic words. Chapter 11 replays the simulator's NEMA-style stream
+(no dead time; about 63% of the singles outside the 435 to 585 keV window) through the whole
+pipeline in real time with `minidaq_latency --words` and reads each stage's busy share of the
+wall time (`measurements/ch11/bottleneck.txt`, same machine, `release` preset, two runs of
+3 s per rate):
+
+| Stage | Busy at 16.7 M singles/s | Busy at 66.8 M singles/s | Fitted capacity |
+|---|---|---|---|
+| Decode | 6.7 to 6.8% | 19.0 to 19.8% | about 330 M singles/s |
+| Sort | 19.1 to 19.6% | 68.1 to 69.0% | about 96 M singles/s |
+| Pair (coincidence sorter) | 22.9 to 23.0% | 97.3 to 97.5% | about 70 M singles/s |
+
+The pair stage is the binding stage with realistic data: at 66.8 M singles/s it is 97% busy
+and the source drops 0.06 to 0.17% of the words. Its margin is about 7x at the 10 M singles/s
+working rate and 2.3x at 30 M singles/s. The replay source's own busy time (about 65% at
+high rates) is clock reads and copies, not a limit of the pipeline.
 
 ## Regression gate
 
