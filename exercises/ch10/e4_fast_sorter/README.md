@@ -18,7 +18,7 @@ for every pair, `std::hypot` and a division for the field-of-view distance.
   `CoincidenceSorter`, in the same order (the baseline passes this too).
 - `FastSorter.FastEnough` (release builds without sanitizers): at least twice the
   baseline's singles per second on 20 ms of simulated 20 MBq data, and more than 30 M
-  singles/s inside the energy window (best of five runs). `EX_MIN_SPEEDUP` and
+  singles/s inside the energy window (best of seven runs, the two sorters interleaved). `EX_MIN_SPEEDUP` and
   `EX_MIN_SINGLES_PER_S` override the two limits on a machine where you have measured a
   reason to.
 

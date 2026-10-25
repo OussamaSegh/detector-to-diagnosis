@@ -737,7 +737,7 @@ instructive: 53% of the time is spent indexing a `std::deque` while scanning win
 crystal positions of every pair. The `std::function` called for every coincidence, which
 many people would suspect first, costs 0.5%. The solution reaches 41 M singles per second
 inside the energy window, 2.5 times the baseline. (The exercise measures differently, best
-of five runs and only the singles inside the energy window, and its sorter keeps no
+of seven interleaved runs and only the singles inside the energy window, and its sorter keeps no
 counters; do not compare its numbers with the table above.) Profile first.
 
 ### Parallel sorting by time slices
@@ -883,7 +883,7 @@ the field of view). *Acceptance:* `tests/test_fast_sorter.cpp` passes: for all f
 policies, with and without the delayed window, with a 120 mm field of view and random
 chunks, exactly the coincidences of `CoincidenceSorter`; `FastSorter.FastEnough` (release
 builds without sanitizers) measures at least twice the baseline and more than 30 M singles
-per second inside the energy window, best of five runs (`EX_MIN_SPEEDUP` and
+per second inside the energy window, best of seven interleaved runs (`EX_MIN_SPEEDUP` and
 `EX_MIN_SINGLES_PER_S` override the limits when you have measured a reason). The report:
 machine, compiler and flags, the profile before with numbers, each change and what it
 bought, the result with its spread, what you would try next. *Time:* 4 hours plus the

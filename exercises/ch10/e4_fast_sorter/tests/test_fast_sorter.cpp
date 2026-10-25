@@ -99,21 +99,17 @@ TEST(FastSorter, FastEnough) {
   SorterConfig c;
   c.multiples = MultiplesPolicy::take_winner_of_goods;
   c.fov_radius_mm = 120.0;
-  const auto best_rate = [&](auto make) {
-    double best = 0.0;
-    for (int rep = 0; rep < 5; ++rep) {
-      auto s = make();
-      std::vector<Coincidence> out;
-      out.reserve(stream().size() / 4);
-      const auto t0 = std::chrono::steady_clock::now();
-      for (std::size_t i = 0; i < stream().size(); i += 4096) {
-        s->push(std::span{stream()}.subspan(i, std::min<std::size_t>(4096, stream().size() - i)), out);
-      }
-      s->flush(out);
-      const double sec = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
-      best = std::max(best, static_cast<double>(stream().size()) / sec);
+  const auto rate = [&](auto make) {
+    auto s = make();
+    std::vector<Coincidence> out;
+    out.reserve(stream().size() / 4);
+    const auto t0 = std::chrono::steady_clock::now();
+    for (std::size_t i = 0; i < stream().size(); i += 4096) {
+      s->push(std::span{stream()}.subspan(i, std::min<std::size_t>(4096, stream().size() - i)), out);
     }
-    return best;
+    s->flush(out);
+    const double sec = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
+    return static_cast<double>(stream().size()) / sec;
   };
   // The work is in the singles that pass the energy gate: rejecting the
   // others costs a comparison. Rates below count only those.
@@ -122,8 +118,14 @@ TEST(FastSorter, FastEnough) {
                         return e >= c.energy_low_kev && e <= c.energy_high_kev;
                       })) /
                       static_cast<double>(stream().size());
-  const double fast = passed * best_rate([&] { return std::make_unique<ex104::FastSorter>(c); });
-  const double slow = passed * best_rate([&] { return std::make_unique<ex104::BaselineSorter>(c); });
+  // Best of seven, with the two sorters interleaved: a slow spell of a shared
+  // machine then hits both, and the ratio stays meaningful.
+  double fast = 0.0;
+  double slow = 0.0;
+  for (int rep = 0; rep < 7; ++rep) {
+    fast = std::max(fast, passed * rate([&] { return std::make_unique<ex104::FastSorter>(c); }));
+    slow = std::max(slow, passed * rate([&] { return std::make_unique<ex104::BaselineSorter>(c); }));
+  }
   RecordProperty("fast_singles_per_s", std::to_string(fast));
   RecordProperty("baseline_singles_per_s", std::to_string(slow));
   const char* env = std::getenv("EX_MIN_SPEEDUP");
