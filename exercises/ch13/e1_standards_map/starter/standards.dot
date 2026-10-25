@@ -1,0 +1,23 @@
+// The standards map of Chapter 13. A colleague started it from memory.
+// TODO: check every node and every edge against the chapter, fix what is
+// wrong, and add what is missing. Edge labels: requires, references,
+// presumption, guidance (see the README).
+digraph standards {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  MDR [label="EU MDR", shape=note];
+  ISO13485 [label="ISO 13485\nQMS"];
+  ISO14971 [label="ISO 14971\nrisk management"];
+  IEC62304 [label="IEC 62304\nsoftware life cycle"];
+  IEC60601 [label="IEC 60601-1\nelectrical safety"];
+  IEC81001 [label="IEC 81001-5-1\nsecurity"];
+
+  MDR -> ISO13485 [label="presumption"];
+  MDR -> IEC62304 [label="requires"];
+  ISO13485 -> IEC62304 [label="requires"];
+  IEC62304 -> ISO14971 [label="references"];
+  ISO14971 -> IEC62304 [label="requires"];
+  IEC81001 -> IEC62304 [label="references"];
+}

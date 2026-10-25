@@ -1,0 +1,36 @@
+// The standards map of Chapter 13: which document requires or refers to which.
+// Edge labels: requires (a normative reference: you cannot conform without it),
+// references (informative: a note, an annex or the bibliography), presumption
+// (a harmonised standard gives presumption of conformity with the regulation),
+// guidance (a technical report that explains how to apply the standard).
+digraph standards {
+  rankdir=LR;
+  node [shape=box, fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  MDR [label="EU MDR 2017/745", shape=note];
+  QMSR [label="FDA 21 CFR 820 (QMSR, 2026)", shape=note];
+  ISO13485 [label="ISO 13485:2016\nQMS"];
+  ISO14971 [label="ISO 14971:2019\nrisk management"];
+  TR24971 [label="ISO/TR 24971:2020\nguidance on 14971"];
+  IEC62304 [label="IEC 62304:2006+A1:2015\nsoftware life cycle"];
+  IEC62366 [label="IEC 62366-1:2015+A1:2020\nusability"];
+  IEC60601 [label="IEC 60601-1:2005+A2:2020\nelectrical safety"];
+  IEC81001 [label="IEC 81001-5-1:2021\nsecurity life cycle"];
+  IEC62443 [label="IEC 62443-4-1:2018\nsecure development"];
+
+  MDR -> ISO13485 [label="presumption"];
+  MDR -> ISO14971 [label="presumption"];
+  MDR -> IEC60601 [label="presumption"];
+  QMSR -> ISO13485 [label="requires"];
+  ISO13485 -> ISO14971 [label="references"];
+  TR24971 -> ISO14971 [label="guidance"];
+  IEC62304 -> ISO14971 [label="requires"];
+  IEC62304 -> ISO13485 [label="references"];
+  IEC62366 -> ISO14971 [label="requires"];
+  IEC60601 -> ISO14971 [label="requires"];
+  IEC60601 -> IEC62304 [label="requires"];
+  IEC81001 -> IEC62304 [label="references"];
+  IEC81001 -> IEC62443 [label="references"];
+  IEC81001 -> ISO14971 [label="references"];
+}

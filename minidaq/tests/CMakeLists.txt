@@ -52,6 +52,9 @@ find_package(Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
   add_test(NAME architecture.layers COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_layers.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(architecture.layers PROPERTIES LABELS "unit")
+  # Chapter 13: the regulatory file is complete, its links resolve, its map is current.
+  add_test(NAME docs.regulatory COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_regulatory.py ${PROJECT_SOURCE_DIR})
+  set_tests_properties(docs.regulatory PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

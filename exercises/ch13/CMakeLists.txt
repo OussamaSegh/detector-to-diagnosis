@@ -1,0 +1,4 @@
+minidaq_python_exercise(e1_standards_map)
+minidaq_python_exercise(e2_change_brief)
+minidaq_python_exercise(e3_classification)
+minidaq_python_exercise(e4_vigilance_clock)
