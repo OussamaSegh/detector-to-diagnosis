@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Status: measured on the book's machine at tag `ch05`, with a realistic-stream section from tag `ch11`. Every number must be re-measured on the
+Status: measured on the book's machine at tag `ch05`, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -71,6 +71,28 @@ The pair stage is the binding stage with realistic data: at 66.8 M singles/s it 
 and the source drops 0.06 to 0.17% of the words. Its margin is about 7x at the 10 M singles/s
 working rate and 2.3x at 30 M singles/s. The replay source's own busy time (about 65% at
 high rates) is clock reads and copies, not a limit of the pipeline.
+
+## The list-mode writer and the disk (Chapter 12)
+
+The writer's load is coincidences, not singles: at the pair stage's limit of 70 M singles/s
+the sorter produces about 2.7 M coincidences/s (0.039 per single, `bm_sorter`), 43 MB/s of
+16-byte records. Same machine, `release` preset; raw results in `measurements/ch12/`.
+
+| Item | Measured | Margin against 2.7 M coincidences/s | Source |
+|---|---|---|---|
+| Encode one record, both CRCs | 20 ns (49.3 M records/s) | 18x | `bm_listmode` `BM_EncodeBlocks` |
+| CRC-32, slicing-by-8 | 2.07 GiB/s (7 ns per record) | | `bm_listmode` `BM_Crc32Slicing8` |
+| Read, check and decode | 80.9 M records/s | 30x | `bm_listmode` `BM_ReadBlocks` |
+| Histogram into SSRB sinograms | 37.0 M coincidences/s | 14x | `bm_listmode` `BM_Histogram` |
+| Sink on the disk, fsync `close`, 3.2 GB | 19.0 M coincidences/s (about 300 MB/s) | 7.0x | `writer_throughput`, `writer.txt` |
+| Sink on the disk, fsync every 256 blocks, 3.2 GB | 18.6 M coincidences/s | 6.9x | `writer_throughput`, `writer.txt` |
+| Sink on the disk, fsync every 16 blocks, 3.2 GB | 20.5 M coincidences/s | 7.6x | `writer_throughput`, `writer.txt` |
+
+Short runs (320 MB) reach 23 to 38 M coincidences/s because the page cache absorbs them; only
+runs longer than the kernel's dirty limit (20% of 15 GiB here) measure the disk. The VM's disk
+is a virtual disk that the host may cache (a repeated 3 GB `dd` ran at 1.4 GB/s against
+278 MB/s the first time): re-measure on the acquisition PC's disk before relying on the margin
+(verify on the acquisition PC).
 
 ## Regression gate
 

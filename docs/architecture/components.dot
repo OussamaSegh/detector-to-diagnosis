@@ -1,4 +1,4 @@
-// MiniDAQ components and their dependencies (Chapter 6, updated in Chapters 9 and 10). An edge A -> B means
+// MiniDAQ components and their dependencies (Chapter 6, updated in Chapters 9, 10 and 12). An edge A -> B means
 // "A uses B" (A includes B's header). Each node's class is its layer from
 // layers.json; the arrows must only point to layers a node may depend on.
 digraph components {
@@ -13,6 +13,7 @@ digraph components {
     minidaq_server [class="app", fillcolor="#f3e5f5", label="minidaq_server"];
     minidaq_ctl [class="app", fillcolor="#f3e5f5", label="minidaq_ctl"];
     minidaq_send [class="app", fillcolor="#f3e5f5", label="minidaq_send\n(plays a readout board)"];
+    minidaq_listmode [class="app", fillcolor="#f3e5f5", label="minidaq_listmode\n(info, verify, sino)"];
   }
   subgraph cluster_adapters {
     label="adapters"; style=dashed; color="#888888";
@@ -21,6 +22,8 @@ digraph components {
     simulated_detector [class="adapters", fillcolor="#fff3e0", label="SimulatedDetector"];
     udp_detector [class="adapters", fillcolor="#fff3e0", label="UdpDetector\n(socket, recvmmsg)"];
     counting_sink [class="adapters", fillcolor="#fff3e0", label="CountingSink"];
+    listmode_sink [class="adapters", fillcolor="#fff3e0", label="ListModeSink\n(MDQ-L1 files, I/O thread)"];
+    file_ops [class="adapters", fillcolor="#fff3e0", label="FileOps\n(POSIX: fsync, rename)"];
     audit_log [class="adapters", fillcolor="#fff3e0", label="JsonLinesAuditLog"];
   }
   subgraph cluster_application {
@@ -33,12 +36,12 @@ digraph components {
   subgraph cluster_core {
     label="core (minidaq_core)"; style=dashed; color="#888888";
     pipeline [class="core", fillcolor="#e3f2fd", label="AcquisitionPipeline\n(stages, Channels)"];
-    format [class="core", fillcolor="#e3f2fd", label="format\n(packed words, decoder,\nMDQ-R1, SequenceTracker)"];
-    processing [class="core", fillcolor="#e3f2fd", label="processing\n(CoincidenceSorter,\nStreamMerger)"];
+    format [class="core", fillcolor="#e3f2fd", label="format\n(packed words, decoder,\nMDQ-R1, SequenceTracker,\nMDQ-L1 list mode)"];
+    processing [class="core", fillcolor="#e3f2fd", label="processing\n(CoincidenceSorter,\nStreamMerger, Histogrammer)"];
     metrics [class="core", fillcolor="#e3f2fd", label="metrics\n(latency histograms)"];
     rt [class="core", fillcolor="#e3f2fd", label="rt\n(pinning, memory locking)"];
     sim [class="core", fillcolor="#e3f2fd", label="sim\n(synthetic source, detector\nsimulator, readout link)"];
-    types [class="core", fillcolor="#e3f2fd", label="core types\n(Single, units, Expected)"];
+    types [class="core", fillcolor="#e3f2fd", label="core types\n(Single, units, Expected,\nCRC-32)"];
   }
 
   minidaq_server -> control_server;
@@ -60,6 +63,12 @@ digraph components {
   udp_detector -> ports;
   udp_detector -> format;
   counting_sink -> ports;
+  minidaq_server -> listmode_sink;
+  listmode_sink -> ports;
+  listmode_sink -> file_ops;
+  listmode_sink -> format;
+  minidaq_listmode -> format;
+  minidaq_listmode -> processing;
   audit_log -> ports;
 
   acquisition_service -> state_machine;

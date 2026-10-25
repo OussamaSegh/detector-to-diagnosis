@@ -26,20 +26,22 @@ and monitors the acquisition over a control API. Version 0.2.0-dev covers:
   (Chapter 10, [ADR 0010](../adr/0010-coincidence-sorter-and-merger.md)),
 - a front-end dead-time and pile-up model in the simulator, and a replay source that drives
   the pipeline with a recorded stream to measure each stage's capacity
-  (Chapter 11, [ADR 0011](../adr/0011-front-end-model-and-capacity-measurement.md)).
+  (Chapter 11, [ADR 0011](../adr/0011-front-end-model-and-capacity-measurement.md)),
+- list-mode files in the MDQ-L1 format ([specification](../formats/mdq-l1.md)), written by a
+  two-thread sink with rotation, an fsync policy, crash-safe renames and a run record, and a
+  sinogram histogrammer (Chapter 12, [ADR 0012](../adr/0012-mdq-l1-list-mode-format-and-writer.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
-pipeline does not use it yet), list-mode files (Chapter 12, [ADR 0007](../adr/0007-list-mode-file-format.md)),
-authentication of control clients (Chapter 17).
+pipeline does not use it yet), authentication of control clients (Chapter 17).
 
 ## 2. Context and external interfaces
 
 | External entity | Interface | Direction | Notes |
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
-| Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort` | out | Counting sink today; file writer in Chapter 12 |
+| Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
 | Operator, scripts, test harness | Control protocol 1.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)) | in/out | `minidaq_ctl` is the reference client |
-| Configuration files | JSON, schema version 1.2 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
+| Configuration files | JSON, schema version 1.3 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets | both | Real-time settings from an `rt_profile` (Chapter 4) |
 
@@ -48,7 +50,8 @@ authentication of control clients (Chapter 17).
 | Concern | Requirement (book level, not a product requirement) | Where it is met |
 |---|---|---|
 | Throughput | Sustain 10 M singles/s with margin, 30 M/s at high activity (assumption: confirm with team) | Batched SPSC pipeline, [performance budget](../performance-budget.md); capacity with a realistic stream measured per stage ([ADR 0011](../adr/0011-front-end-model-and-capacity-measurement.md)) |
-| Data integrity | No silent loss inside the PC; every drop and every filtered item is counted | Stage counters; only the source may drop, by policy |
+| Data integrity | No silent loss inside the PC; every drop and every filtered item is counted; no stored record is returned unless its checksum is right | Stage counters; only the source may drop, by policy; the list-mode sink pushes back instead of dropping; CRC-32 per block header and payload ([ADR 0012](../adr/0012-mdq-l1-list-mode-format-and-writer.md)) |
+| Durability | A file with a final name is complete; a crash loses at most the unsynced tail of one file | `.part` files, fsync, rename without replace, directory fsync; configurable fsync policy; crash test (`measurements/ch12/crash.txt`) |
 | Ordering | Coincidences are never formed from out-of-order singles | Sort stage counts late singles; the service faults the run; the sorter and the merger count and drop singles they cannot place |
 | Coincidence rules | Every sorting rule is explicit, configured and tested against ground truth | `CoincidenceSorter` and `SorterConfig` ([ADR 0010](../adr/0010-coincidence-sorter-and-merger.md)), `test_coincidence_sorter.cpp` |
 | Latency | Bounded end-to-end latency, measured from when data was due | Per-stage and end-to-end histograms; `max_batch_delay_us` |
@@ -69,8 +72,8 @@ enforces it on every `#include` as part of the unit tests (`architecture.layers`
 |---|---|---|---|
 | core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
 | application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
-| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `CountingSink`, `JsonLinesAuditLog`, control protocol, `ControlServer` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
-| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send` | Wiring: choose adapters, parse command lines, handle signals | everything |
+| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
+| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send`, `minidaq_listmode` | Wiring: choose adapters, parse command lines, handle signals | everything |
 
 The application layer depends on interfaces (ports) that it owns; adapters implement them.
 This is dependency inversion: the policy does not depend on the details, so the service can be
@@ -82,7 +85,7 @@ simulator without changing the service.
 | Interface | Provider | Users | Contract |
 |---|---|---|---|
 | `DetectorPort` | adapters | pipeline source stage (via service) | `read()` fills a span and returns at once (0: no data); `fault()` and `counters()` are thread-safe and read from control threads; `due_times()` optional |
-| `CoincidenceSinkPort` | adapters | pipeline write stage | `write()` on the writer thread, must not throw; `fault()` as above |
+| `CoincidenceSinkPort` | adapters | pipeline write stage, service | `write()` on the writer thread, must not throw; `close(run_record)` once, by the service after the stages have drained, makes the run durable and stores the record (an error is a fault); `fault()` and `counters()` as above |
 | `AuditSink` | adapters (file), tests | service, server | Called synchronously on control threads only, never on stage threads |
 | `AcquisitionPipeline` | core | service | `start()`, `request_stop()`, `wait()`, `finished()`, counters and histograms readable from any thread |
 | `AcquisitionService` | application | protocol, server, tests | `configure`, `start`, `stop`, `reset` return a `CommandResult`; `status()` returns a JSON snapshot; thread-safe |
@@ -97,6 +100,7 @@ simulator without changing the service.
 |---|---|---|---|---|
 | Pipeline stages | 5 | `AcquisitionPipeline::start` | Optional, from `rt_profile` | Source, decode, sort, pair, write |
 | Service monitor | 1 | `AcquisitionService` | No | Every 20 ms: port faults, late singles, end of run, latency snapshots |
+| List-mode I/O | 1 per run | `ListModeSink` | No | Writes blocks, calls fsync by policy, rotates and renames files, returns buffers to the writer |
 | Control server | 1 | `ControlServer::start` | No | `poll()` over up to 8 clients |
 | Main | 1 | process | No | Waits for SIGINT/SIGTERM, then shuts down in order |
 
@@ -119,8 +123,10 @@ which a unit test compares with the transition table in the code.
    pipeline and starts it. A factory failure is a `device_error` and leaves the state at
    configured.
 3. The run ends when the source has delivered `stop_after_s` worth of data, or on `stop`
-   (state stopping while the stages drain). The monitor sees all stages finished and applies
-   `drained`: back to configured, ready for another run with the same configuration.
+   (state stopping while the stages drain). The monitor sees all stages finished, closes the
+   sink with the run record (the final status) and applies `drained`: back to configured,
+   ready for another run with the same configuration. A sink that cannot make the run durable
+   ends it in a fault instead.
 4. A port fault or out-of-order singles: the monitor stops the source and applies `error`. The
    fault stays visible in `status` until a client sends `reset`, which waits for the stages to
    drain.
@@ -137,7 +143,9 @@ effective configuration, defaults included, and the audit trail records it at ev
 `sorter` section: delayed window, window mode, multiples policy, energy window, minimum
 sector difference and field of view. Files of 1.0 and 1.1 remain valid and get the sorter's
 defaults, which include an energy gate and a delayed window that the earlier placeholder
-pair stage did not have.
+pair stage did not have. Schema 1.3 (Chapter 12) adds the `output` section: the sink type
+(`none` or `listmode`), directory, file prefix and size, fsync policy, block size, buffers and
+the maximum block delay.
 
 ## 8. Observability
 
@@ -149,7 +157,11 @@ pair stage did not have.
   latencies, late singles and the detector's own counters (`detector_counters`: for the UDP
   link, datagrams, packets delivered, lost, reordered and stale, rejections by reason,
   resyncs and the granted receive buffer), and the sorter's eleven counters (`sorter`: singles
-  in, rejected by energy and order, windows by size, geometry rejections, prompts, delayed).
+  in, rejected by energy and order, windows by size, geometry rejections, prompts, delayed),
+  and the sink's counters (`sink_counters`: for list mode, coincidences, blocks, bytes, files,
+  buffer waits, fsyncs and their longest duration, dropped blocks after a fault).
+- **Run record**: at the end of a run the list-mode sink stores the final status next to the
+  data (`<prefix>-<run>.run.json`), so the files say how they were acquired without the logs.
 - **Audit trail**: control actions, transitions, faults, client connections. The hot path does
   not log; the monitor thread turns counters and faults into records.
 

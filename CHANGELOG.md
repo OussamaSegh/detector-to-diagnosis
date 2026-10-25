@@ -48,8 +48,30 @@ the patch version.
   `frontend` and `bottleneck` (`measurements/ch11/`); ADR 0011; figure scripts
   `ch11_deadtime.py`, `ch11_countrate.py` and `ch11_windows.py`; exercises 11.1 to 11.5
   (11.3 to 11.5 in Python).
+- Chapter 12: CRC-32 (`minidaq/core/crc32.hpp`, slicing-by-8 with a bytewise reference) and
+  shared little-endian loads and stores (`minidaq/core/byte_io.hpp`); the list-mode format
+  MDQ-L1 (`minidaq/format/list_mode.hpp`: versioned header with JSON metadata, blocks of
+  16-byte records with header and payload CRCs, tags, `BlockWriter`, a resynchronizing
+  `Reader`) and its specification `docs/formats/mdq-l1.md`; `processing::Histogrammer`
+  (`lor_bin`, uneven radial positions, SSRB, TOF bins, delayeds apart, Michelogram,
+  Interfile-style header); `control::FileOps` and `control::ListModeSink` (encoding on the
+  writer thread, an I/O thread, a buffer pool with backpressure, rotation, fsync policies
+  `none`, `close` and `interval`, `.part` files renamed without replace, faults, a run
+  record `<prefix>-<run>.run.json` with the service's final status); configuration schema
+  1.3 with an `output` section; `sink_counters` in the status report; the tool
+  `minidaq_listmode` (`info`, `verify`, `sino`); `minidaq_sim` options `--centre`,
+  `--listmode`, `--max-file-mb` and `--fsync`; benchmarks `bm_listmode` and
+  `writer_throughput`; fuzz target `fuzz_listmode` and a corpus written by an independent
+  Python implementation; measurements `writer`, `crash`, `sinogram` and `bm_listmode`
+  (`measurements/ch12/`); ADR 0012; figure scripts `ch12_sinogram.py` and `ch12_writer.py`;
+  exercises 12.1 to 12.5 (12.2, 12.4 and 12.5 in Python).
 
 ### Changed
+- `CoincidenceSinkPort` gains `close(run_record)` and `counters()`; the service closes the sink
+  when the stages have drained, and a sink that cannot make the run durable ends it in a fault.
+- ADR 0007 (list-mode file format, proposed) is superseded by ADR 0012.
+- The architecture description, the component diagram and the performance budget describe
+  the list-mode writer.
 - The pipeline's pair stage is the coincidence sorter instead of a placeholder that paired
   consecutive singles. Configuration files of schema 1.0 and 1.1 remain valid but now get the
   sorter's defaults: a 435 to 585 keV energy gate, a delayed window at 100 ns, kill all and a
