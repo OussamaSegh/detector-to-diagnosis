@@ -21,3 +21,5 @@ src/part3/ch14-iec62304.md
 src/part3/ch15-iso14971.md
 src/part3/ch16-iso13485.md
 src/part3/ch17-cybersecurity.md
+src/part4/part4.md
+src/part4/ch18-unit-testing.md

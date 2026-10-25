@@ -1,0 +1,326 @@
+{
+ "access": {
+  "branches": [
+   145,
+   214
+  ],
+  "functions": [
+   35,
+   36
+  ],
+  "lines": [
+   330,
+   407
+  ],
+  "mcdc": [
+   7,
+   39
+  ]
+ },
+ "audit": {
+  "branches": [
+   7,
+   14
+  ],
+  "functions": [
+   8,
+   8
+  ],
+  "lines": [
+   29,
+   33
+  ],
+  "mcdc": [
+   1,
+   4
+  ]
+ },
+ "config": {
+  "branches": [
+   152,
+   204
+  ],
+  "functions": [
+   22,
+   22
+  ],
+  "lines": [
+   313,
+   315
+  ],
+  "mcdc": [
+   11,
+   12
+  ]
+ },
+ "core": {
+  "branches": [
+   57,
+   80
+  ],
+  "functions": [
+   74,
+   75
+  ],
+  "lines": [
+   252,
+   266
+  ],
+  "mcdc": [
+   5,
+   5
+  ]
+ },
+ "ctl": {
+  "branches": [
+   0,
+   126
+  ],
+  "functions": [
+   1,
+   11
+  ],
+  "lines": [
+   6,
+   237
+  ],
+  "mcdc": [
+   0,
+   14
+  ]
+ },
+ "format": {
+  "branches": [
+   234,
+   268
+  ],
+  "functions": [
+   68,
+   72
+  ],
+  "lines": [
+   584,
+   603
+  ],
+  "mcdc": [
+   23,
+   38
+  ]
+ },
+ "merger": {
+  "branches": [
+   52,
+   56
+  ],
+  "functions": [
+   13,
+   13
+  ],
+  "lines": [
+   124,
+   124
+  ],
+  "mcdc": [
+   11,
+   16
+  ]
+ },
+ "metrics": {
+  "branches": [
+   49,
+   54
+  ],
+  "functions": [
+   18,
+   18
+  ],
+  "lines": [
+   179,
+   181
+  ],
+  "mcdc": [
+   2,
+   4
+  ]
+ },
+ "output": {
+  "branches": [
+   139,
+   206
+  ],
+  "functions": [
+   37,
+   37
+  ],
+  "lines": [
+   380,
+   455
+  ],
+  "mcdc": [
+   13,
+   32
+  ]
+ },
+ "pipeline": {
+  "branches": [
+   157,
+   172
+  ],
+  "functions": [
+   70,
+   72
+  ],
+  "lines": [
+   580,
+   590
+  ],
+  "mcdc": [
+   22,
+   22
+  ]
+ },
+ "processing": {
+  "branches": [
+   114,
+   146
+  ],
+  "functions": [
+   32,
+   32
+  ],
+  "lines": [
+   283,
+   319
+  ],
+  "mcdc": [
+   5,
+   19
+  ]
+ },
+ "protocol": {
+  "branches": [
+   204,
+   244
+  ],
+  "functions": [
+   26,
+   27
+  ],
+  "lines": [
+   437,
+   464
+  ],
+  "mcdc": [
+   32,
+   55
+  ]
+ },
+ "readout": {
+  "branches": [
+   43,
+   60
+  ],
+  "functions": [
+   24,
+   26
+  ],
+  "lines": [
+   196,
+   210
+  ],
+  "mcdc": [
+   0,
+   5
+  ]
+ },
+ "rt": {
+  "branches": [
+   94,
+   126
+  ],
+  "functions": [
+   15,
+   16
+  ],
+  "lines": [
+   176,
+   203
+  ],
+  "mcdc": [
+   14,
+   30
+  ]
+ },
+ "service": {
+  "branches": [
+   200,
+   232
+  ],
+  "functions": [
+   49,
+   49
+  ],
+  "lines": [
+   471,
+   492
+  ],
+  "mcdc": [
+   23,
+   41
+  ]
+ },
+ "sim": {
+  "branches": [
+   247,
+   284
+  ],
+  "functions": [
+   63,
+   68
+  ],
+  "lines": [
+   605,
+   638
+  ],
+  "mcdc": [
+   36,
+   53
+  ]
+ },
+ "sorter": {
+  "branches": [
+   147,
+   160
+  ],
+  "functions": [
+   20,
+   20
+  ],
+  "lines": [
+   220,
+   220
+  ],
+  "mcdc": [
+   37,
+   39
+  ]
+ },
+ "tools": {
+  "branches": [
+   177,
+   448
+  ],
+  "functions": [
+   22,
+   31
+  ],
+  "lines": [
+   421,
+   801
+  ],
+  "mcdc": [
+   8,
+   75
+  ]
+ }
+}

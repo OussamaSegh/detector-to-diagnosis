@@ -8,6 +8,35 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+- Chapter 18: unit and component testing. A property-based testing harness in
+  `minidaq/tests/support/property.hpp` (choice-sequence shrinking, a fixed seed per test,
+  `MINIDAQ_PROP_CASES` for a wider search; ADR 0015) with ten properties of the decoder, the
+  unwrapper, the sorter, the tracker and the merger in `test_properties.cpp`; interaction tests of
+  the service and its sink with GoogleMock (SRS-CTL-035); a table-driven test of the readout
+  header; `tools/coverage.py` (Clang source-based coverage with MC/DC per software item, and the
+  uncovered branches of a file); `tools/mutation_test.py` (relational, logical, arithmetic and
+  negation mutants of one file); tests for the sorter's surviving mutants; Part IV introduction;
+  exercises 18.1 to 18.5 (in C++; 18.1 and 18.2 checked against seeded mutants with the new
+  `minidaq_mutation_exercise`, 18.3 only in the coverage build).
+- Problem report MDQ-PR-015: the class B item `ctl` has no automated test, found by the coverage
+  report; Chapter 19's system tests close it.
+- Problem report MDQ-PR-016 (closed): the 0.3.0 release commit failed CI because the release
+  record was in no clause of the design file (fixed in 897a31e).
+
+### Changed
+- The `coverage` preset uses Clang source-based coverage with MC/DC instead of gcov, and builds
+  the exercises.
+- SRS version 7: SRS-CTL-035, and SRS-SRT-007 states the delay's upper limit of 1 ms, which the
+  sorter enforced and no requirement stated (found by mutation testing).
+- SDP version 5: the wide property search and the structural coverage review of changed class B
+  files are verification activities of each release; `tools/release_checks.sh` runs both and
+  checks Exercise 18.3 in the coverage build.
+- SDP section 8: a release is tagged and packaged only after CI on the release commit is green.
+- `CoincidenceSorter::config()` removed: no code called it (found by the coverage report).
+- `tools/coverage.py` keeps the raw and merged profiles in the build directory, not with the
+  report.
+
 ## [0.3.0] - 2026-10-25
 
 Part III, medical device software standards (Chapters 13 to 17), complete and reviewed. The

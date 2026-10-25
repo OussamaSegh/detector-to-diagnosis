@@ -1,0 +1,175 @@
+# 2026-10-25T17:43:00Z minidaq/src/processing/coincidence_sorter.cpp, 171 mutants
+# source sha256 19c69271e96f01ef052bb50e52a045a22f3d66c8adb9c3779d9e23a98fa188fd
+# test: build/release/minidaq/tests/minidaq_unit_tests --gtest_filter=CoincidenceSorter.*:Properties.*
+killed   minidaq/src/processing/coincidence_sorter.cpp:26:5 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:26:16 ror == -> !=
+invalid  minidaq/src/processing/coincidence_sorter.cpp:32:52 aor + -> -
+invalid  minidaq/src/processing/coincidence_sorter.cpp:32:73 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:50:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:50:16 ror <= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:50:16 ror <= -> >
+killed   minidaq/src/processing/coincidence_sorter.cpp:50:34 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:50:46 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:50:46 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:15 ror != -> ==
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:33 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:45 ror <= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:45 ror <= -> >
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:57 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:68 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:53:68 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:57:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:57:26 ror >= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:57:26 ror >= -> >
+invalid  minidaq/src/processing/coincidence_sorter.cpp:57:34 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:57:56 ror <= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:57:56 ror <= -> >
+invalid  minidaq/src/processing/coincidence_sorter.cpp:57:78 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:60:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:60:31 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:60:31 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:63:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:63:25 ror >= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:63:25 ror >= -> >
+killed   minidaq/src/processing/coincidence_sorter.cpp:63:33 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:63:54 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:63:54 ror < -> >=
+invalid  minidaq/src/processing/coincidence_sorter.cpp:72:50 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:80:26 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:80:69 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:92:30 ror > -> <=
+survived minidaq/src/processing/coincidence_sorter.cpp:92:30 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:92:40 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:92:50 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:93:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:93:38 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:93:43 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:93:43 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:96:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:96:15 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:96:15 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:101:36 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:102:27 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:103:27 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:104:33 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:105:5 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:105:14 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:105:21 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:105:38 ror > -> <=
+survived minidaq/src/processing/coincidence_sorter.cpp:105:38 ror > -> >=
+timeout  minidaq/src/processing/coincidence_sorter.cpp:120:5 neg if (c) -> if (!(c))
+timeout  minidaq/src/processing/coincidence_sorter.cpp:120:13 ror >= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:120:13 ror >= -> >
+timeout  minidaq/src/processing/coincidence_sorter.cpp:120:36 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:120:41 ror <= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:120:41 ror <= -> >
+killed   minidaq/src/processing/coincidence_sorter.cpp:124:5 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:124:20 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:124:30 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:124:30 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:138:18 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:138:18 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:150:18 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:150:18 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:150:32 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:150:39 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:150:60 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:150:60 ror > -> >=
+survived minidaq/src/processing/coincidence_sorter.cpp:153:3 neg if (c) -> if (!(c))
+survived minidaq/src/processing/coincidence_sorter.cpp:153:14 ror > -> <=
+survived minidaq/src/processing/coincidence_sorter.cpp:153:14 ror > -> >=
+survived minidaq/src/processing/coincidence_sorter.cpp:153:21 lcr && -> ||
+survived minidaq/src/processing/coincidence_sorter.cpp:153:35 ror > -> <=
+survived minidaq/src/processing/coincidence_sorter.cpp:153:35 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:161:23 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:162:14 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:162:14 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:162:28 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:162:46 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:162:50 ror <= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:162:50 ror <= -> >
+killed   minidaq/src/processing/coincidence_sorter.cpp:166:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:166:18 ror != -> ==
+killed   minidaq/src/processing/coincidence_sorter.cpp:169:48 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:170:14 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:170:14 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:170:28 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:170:44 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:170:48 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:170:48 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:14 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:14 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:28 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:44 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:48 ror <= -> <
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:48 ror <= -> >
+killed   minidaq/src/processing/coincidence_sorter.cpp:174:62 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:180:23 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:180:54 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:187:27 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:188:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:188:9 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:192:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:192:9 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:194:5 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:194:30 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:195:49 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:204:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:204:22 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:214:44 ror == -> !=
+timeout  minidaq/src/processing/coincidence_sorter.cpp:214:73 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:215:29 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:215:29 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:216:28 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:216:35 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:216:35 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:217:7 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:222:7 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:222:26 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:226:59 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:226:89 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:226:89 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:233:37 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:233:78 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:233:87 ror > -> <=
+invalid  minidaq/src/processing/coincidence_sorter.cpp:233:87 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:233:92 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:234:37 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:234:79 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:234:88 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:235:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:246:27 aor - -> +
+killed   minidaq/src/processing/coincidence_sorter.cpp:247:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:247:9 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:250:3 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:250:9 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:250:14 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:250:32 ror != -> ==
+killed   minidaq/src/processing/coincidence_sorter.cpp:254:31 ror < -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:254:31 ror < -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:255:7 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:259:7 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:259:13 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:259:18 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:259:36 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:262:59 aor + -> -
+killed   minidaq/src/processing/coincidence_sorter.cpp:262:89 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:262:89 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:25 ror > -> <=
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:25 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:29 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:49 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:90 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:99 ror > -> <=
+invalid  minidaq/src/processing/coincidence_sorter.cpp:267:99 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:267:104 lcr || -> &&
+killed   minidaq/src/processing/coincidence_sorter.cpp:268:49 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:268:91 lcr && -> ||
+killed   minidaq/src/processing/coincidence_sorter.cpp:268:100 ror == -> !=
+killed   minidaq/src/processing/coincidence_sorter.cpp:269:5 neg if (c) -> if (!(c))
+killed   minidaq/src/processing/coincidence_sorter.cpp:277:41 aor + -> -
+survived minidaq/src/processing/coincidence_sorter.cpp:279:35 ror > -> <=
+survived minidaq/src/processing/coincidence_sorter.cpp:279:35 ror > -> >=
+killed   minidaq/src/processing/coincidence_sorter.cpp:279:61 aor - -> +
+# killed 150, timeout 4, survived 10, invalid 7; mutation score 93.9%
