@@ -1,7 +1,7 @@
 # 0007. List-mode file format
 
 Date: 2026-10-24
-Status: Proposed
+Status: Superseded by 0012
 
 ## Context
 
