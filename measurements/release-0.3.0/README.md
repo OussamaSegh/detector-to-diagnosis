@@ -12,4 +12,8 @@ From the release candidate `4c3ac87`, before the release checks were a script:
 - `pipeline-attribution.txt`: interleaved runs of three commits that put the drop on `1b6bcd3`.
 - `starters-release.txt`: the starters one by one in a `Release` build (CAPA-0004).
 
-From the released commit, by `tools/release_checks.sh`: every other file.
+From the released commit `8821c48`, by `tools/release_checks.sh`: every other file, and
+`release-checks.txt`, the script's list of passed checks. The run stopped once after the writer
+benchmark, when the session that ran it was restarted; the rest of the script (the gate and
+fuzzing) was resumed on the same clean commit, and `release-checks.txt` shows where.
+`ci-run.txt` records the GitHub Actions run of the same commit.

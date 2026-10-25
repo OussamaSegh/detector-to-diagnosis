@@ -1,0 +1,16 @@
+# 2026-10-25T16:51:01Z commit 8821c48 fuzz_raw16 600 s on CPU 2 from fuzz/corpus/raw16
+INFO: Seed: 1566365195
+#3	INITED cov: 6 ft: 7 corp: 1/16b exec/s: 0 rss: 32Mb
+#4	NEW    cov: 8 ft: 10 corp: 2/24b lim: 16 exec/s: 0 rss: 32Mb L: 8/16 MS: 1 EraseBytes-
+#5	NEW    cov: 9 ft: 11 corp: 3/40b lim: 16 exec/s: 0 rss: 32Mb L: 16/16 MS: 1 ChangeBinInt-
+#11	NEW    cov: 10 ft: 12 corp: 4/54b lim: 16 exec/s: 0 rss: 32Mb L: 16/16 MS: 4 ShuffleBytes-ShuffleBytes-ChangeBinInt-ChangeByte-
+#45	NEW    cov: 12 ft: 14 corp: 5/67b lim: 16 exec/s: 0 rss: 33Mb L: 16/16 MS: 1 CopyPart-
+#63	NEW    cov: 13 ft: 15 corp: 6/83b lim: 16 exec/s: 0 rss: 33Mb L: 16/16 MS: 3 CrossOver-CopyPart-CopyPart-
+#1047	NEW    cov: 14 ft: 16 corp: 7/98b lim: 20 exec/s: 0 rss: 33Mb L: 17/17 MS: 2 CMP-InsertByte- DE: "\017\000\000\000\000\000\000\000"-
+#658247844	DONE   cov: 14 ft: 16 corp: 7/97b lim: 4096 exec/s: 1095254 rss: 519Mb
+stat::number_of_executed_units: 658247844
+stat::average_exec_per_sec:     1095254
+stat::new_units_added:          12
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              519
+crash files: 0

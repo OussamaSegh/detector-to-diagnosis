@@ -8,6 +8,12 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-25
+
+Part III, medical device software standards (Chapters 13 to 17), complete and reviewed. The
+release record is `docs/regulatory/releases/0.3.0.md`, with the evidence of `tools/release_checks.sh`
+on the released commit in `measurements/release-0.3.0/`.
+
 ### Added
 - Chapter 13: the regulatory file in `docs/regulatory/` starts with the intended-use
   statement (`intended-use.md`), the regulatory context for the EU, the US and Switzerland

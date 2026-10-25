@@ -1,0 +1,18 @@
+pass  build and tests, six presets
+pass  static analysis
+pass  starters fail
+pass  stress run, tsan, 100 repetitions
+pass  pipeline benchmark ran
+# resumed 2026-10-25T16:35:51Z after the run stopped following the writer benchmark
+pass  writer benchmark ran
+pass  performance regression gate
+pass  fuzz build
+pass  fuzz_config, 600 s
+pass  fuzz_decoder, 600 s
+pass  fuzz_raw16, 600 s
+pass  fuzz_protocol, 600 s
+pass  fuzz_packet, 600 s
+pass  fuzz_sorter, 600 s
+pass  fuzz_listmode, 600 s
+The pipeline and writer results are read against SRS-PERF-020 and SRS-PERF-021 by hand.
+all release checks passed
