@@ -1,0 +1,10 @@
+{
+  "accepted": [
+    {
+      "line": 110,
+      "column": 11,
+      "code": "switch (p.outcome) {",
+      "reason": "Clang counts a branch for a switch value that matches no case. Every enumerator of Outcome has a case, and locate() only ever returns one of them, so only an out-of-range value made by undefined behavior could take it. A default label would hide the -Wswitch warning that catches a new enumerator, so none is added."
+    }
+  ]
+}
