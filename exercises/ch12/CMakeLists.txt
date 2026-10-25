@@ -1,1 +1,2 @@
 minidaq_exercise(e1_listmode_writer)
+minidaq_python_exercise(e2_sinogram)
