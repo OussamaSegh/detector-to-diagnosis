@@ -307,7 +307,7 @@ d1073fb (repro report lists manifest and toolchain), 7654434 (perf_ab fails if s
 Chapters 20 and 21 are complete and tagged locally: ch20 on eb77c71, ch21 on 6150f42, where ci,
 gates and codeql were green on GitHub (the user pushes tags). MDQ-PR-025 (listings not expanded)
 and MDQ-PR-026 (Exercise 21.5 and the bisect log of git 2.55, which quotes the term) are closed.
-Part IV is written; next is its review and release 0.4.0.
+Part IV is written and released as 0.4.0.
 
 Privacy (2026-10-26): the book is generic (e50a79e). The user chose a fresh repository: the
 history was rewritten locally with git filter-repo (noreply author, committer and tagger on every
@@ -318,18 +318,17 @@ in old notes or logs outside the repository refer to the old history. A private 
 old history is in the project files (`backup/old-history-before-privacy-rewrite.bundle`); never
 push it.
 
-Release 0.4.0 (in progress): the first run of the release checks found MDQ-PR-027 to MDQ-PR-031
-(fixed in 068e926, then the old bf3da67); CAPA-0001 and CAPA-0004 were not effective. The second
-run is on the old bf3da67, whose tree equals 068e926 except HANDOFF and the box titles filter;
-the release record cites the rewritten hashes.
+Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
+(the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,
+benchmarks and fuzz targets of both commits are byte-identical (`identical-binaries.txt`). The
+coverage review is `measurements/release-0.4.0/coverage-review.md`. CAPA-0003 closed as
+effective; CAPA-0001 and CAPA-0004 are re-checked at 0.5.0. Disk: a full part 1 run with the
+writer benchmark needs about 10 GB free; delete old build directories first.
 
 ### Left to do, in order
 
-1. **Part IV review and release 0.4.0.** It includes:
-   - the CAPA-0003 and CAPA-0004 effectiveness checks;
-   - the writer re-measurement;
-   - weeks 6 and 7 hours in the schedule table;
-   - Part IV marked complete in `edition.md`.
+1. **Release 0.4.0 packaging and the Part IV review**: tag book-v0.4.0 (manifest), books, code
+   zip, SBOM, release report; then the coordinator starts the Fable review of Part IV.
 2. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
    must give hardware control real depth (review gap). Release 0.5.0.
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and

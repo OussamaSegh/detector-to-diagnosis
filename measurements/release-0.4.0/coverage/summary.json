@@ -1,0 +1,344 @@
+{
+ "access": {
+  "branches": [
+   149,
+   216
+  ],
+  "functions": [
+   36,
+   36
+  ],
+  "lines": [
+   339,
+   407
+  ],
+  "mcdc": [
+   9,
+   41
+  ]
+ },
+ "audit": {
+  "branches": [
+   7,
+   14
+  ],
+  "functions": [
+   8,
+   8
+  ],
+  "lines": [
+   29,
+   33
+  ],
+  "mcdc": [
+   1,
+   4
+  ]
+ },
+ "config": {
+  "branches": [
+   152,
+   204
+  ],
+  "functions": [
+   22,
+   22
+  ],
+  "lines": [
+   313,
+   315
+  ],
+  "mcdc": [
+   11,
+   12
+  ]
+ },
+ "core": {
+  "branches": [
+   128,
+   152
+  ],
+  "functions": [
+   88,
+   89
+  ],
+  "lines": [
+   422,
+   436
+  ],
+  "mcdc": [
+   10,
+   10
+  ]
+ },
+ "ctl": {
+  "branches": [
+   102,
+   132
+  ],
+  "functions": [
+   11,
+   11
+  ],
+  "lines": [
+   206,
+   249
+  ],
+  "mcdc": [
+   7,
+   14
+  ]
+ },
+ "format": {
+  "branches": [
+   238,
+   274
+  ],
+  "functions": [
+   68,
+   72
+  ],
+  "lines": [
+   586,
+   605
+  ],
+  "mcdc": [
+   23,
+   38
+  ]
+ },
+ "merger": {
+  "branches": [
+   52,
+   56
+  ],
+  "functions": [
+   13,
+   13
+  ],
+  "lines": [
+   124,
+   124
+  ],
+  "mcdc": [
+   11,
+   16
+  ]
+ },
+ "metrics": {
+  "branches": [
+   49,
+   54
+  ],
+  "functions": [
+   18,
+   18
+  ],
+  "lines": [
+   179,
+   181
+  ],
+  "mcdc": [
+   2,
+   4
+  ]
+ },
+ "output": {
+  "branches": [
+   139,
+   206
+  ],
+  "functions": [
+   37,
+   37
+  ],
+  "lines": [
+   380,
+   455
+  ],
+  "mcdc": [
+   13,
+   32
+  ]
+ },
+ "pipeline": {
+  "branches": [
+   155,
+   172
+  ],
+  "functions": [
+   70,
+   72
+  ],
+  "lines": [
+   578,
+   590
+  ],
+  "mcdc": [
+   21,
+   22
+  ]
+ },
+ "processing": {
+  "branches": [
+   114,
+   146
+  ],
+  "functions": [
+   32,
+   32
+  ],
+  "lines": [
+   283,
+   319
+  ],
+  "mcdc": [
+   5,
+   19
+  ]
+ },
+ "protocol": {
+  "branches": [
+   224,
+   264
+  ],
+  "functions": [
+   29,
+   30
+  ],
+  "lines": [
+   491,
+   514
+  ],
+  "mcdc": [
+   35,
+   60
+  ]
+ },
+ "readout": {
+  "branches": [
+   47,
+   64
+  ],
+  "functions": [
+   24,
+   26
+  ],
+  "lines": [
+   204,
+   218
+  ],
+  "mcdc": [
+   0,
+   5
+  ]
+ },
+ "rt": {
+  "branches": [
+   147,
+   198
+  ],
+  "functions": [
+   28,
+   30
+  ],
+  "lines": [
+   323,
+   371
+  ],
+  "mcdc": [
+   18,
+   42
+  ]
+ },
+ "server": {
+  "branches": [
+   75,
+   100
+  ],
+  "functions": [
+   1,
+   1
+  ],
+  "lines": [
+   127,
+   169
+  ],
+  "mcdc": [
+   10,
+   22
+  ]
+ },
+ "service": {
+  "branches": [
+   207,
+   240
+  ],
+  "functions": [
+   49,
+   49
+  ],
+  "lines": [
+   480,
+   501
+  ],
+  "mcdc": [
+   23,
+   41
+  ]
+ },
+ "sim": {
+  "branches": [
+   247,
+   284
+  ],
+  "functions": [
+   64,
+   68
+  ],
+  "lines": [
+   607,
+   639
+  ],
+  "mcdc": [
+   36,
+   53
+  ]
+ },
+ "sorter": {
+  "branches": [
+   155,
+   168
+  ],
+  "functions": [
+   22,
+   22
+  ],
+  "lines": [
+   232,
+   232
+  ],
+  "mcdc": [
+   40,
+   42
+  ]
+ },
+ "tools": {
+  "branches": [
+   217,
+   470
+  ],
+  "functions": [
+   25,
+   32
+  ],
+  "lines": [
+   521,
+   874
+  ],
+  "mcdc": [
+   8,
+   75
+  ]
+ }
+}

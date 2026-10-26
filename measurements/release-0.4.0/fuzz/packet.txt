@@ -1,0 +1,26 @@
+# 2026-10-26T11:17:49Z commit 6766495 fuzz_packet 600 s on CPU 2 from fuzz/corpus/packet
+INFO: Seed: 793081629
+#7	INITED cov: 100 ft: 213 corp: 6/1607b exec/s: 0 rss: 33Mb
+#9	NEW    cov: 102 ft: 218 corp: 7/2244b lim: 637 exec/s: 0 rss: 34Mb L: 637/637 MS: 2 ChangeByte-CrossOver-
+#11	NEW    cov: 103 ft: 270 corp: 9/3018b lim: 637 exec/s: 0 rss: 34Mb L: 637/637 MS: 1 CrossOver-
+#12	NEW    cov: 104 ft: 313 corp: 10/3475b lim: 637 exec/s: 0 rss: 34Mb L: 457/637 MS: 1 CopyPart-
+#16	NEW    cov: 105 ft: 342 corp: 13/4504b lim: 637 exec/s: 0 rss: 34Mb L: 480/637 MS: 2 ChangeBit-EraseBytes-
+#34	NEW    cov: 106 ft: 374 corp: 21/7119b lim: 637 exec/s: 0 rss: 36Mb L: 484/637 MS: 4 ChangeBinInt-InsertRepeatedBytes-ChangeBinInt-ChangeBit-
+#51	NEW    cov: 107 ft: 385 corp: 26/8397b lim: 637 exec/s: 0 rss: 38Mb L: 432/637 MS: 1 ChangeBinInt-
+#153	NEW    cov: 108 ft: 408 corp: 34/11262b lim: 637 exec/s: 0 rss: 46Mb L: 210/637 MS: 3 ChangeBit-CMP-ChangeBinInt- DE: "\000\000P@\000\000b\370"-
+#158	NEW    cov: 111 ft: 412 corp: 35/11851b lim: 637 exec/s: 0 rss: 46Mb L: 589/637 MS: 5 ShuffleBytes-ChangeByte-InsertRepeatedBytes-ChangeASCIIInt-CrossOver-
+#172	NEW    cov: 112 ft: 420 corp: 38/12137b lim: 637 exec/s: 0 rss: 48Mb L: 164/637 MS: 1 CMP- DE: "\001\000\000\000\000\000\000\000"-
+#184	NEW    cov: 114 ft: 425 corp: 40/12694b lim: 637 exec/s: 0 rss: 48Mb L: 364/637 MS: 1 ChangeByte-
+#449	NEW    cov: 116 ft: 447 corp: 50/16242b lim: 637 exec/s: 0 rss: 70Mb L: 170/637 MS: 4 ShuffleBytes-ShuffleBytes-ChangeBit-EraseBytes-
+#742	NEW    cov: 117 ft: 451 corp: 54/17Kb lim: 637 exec/s: 0 rss: 93Mb L: 446/637 MS: 3 ShuffleBytes-ShuffleBytes-CrossOver-
+#13545	NEW    cov: 118 ft: 521 corp: 101/33Kb lim: 637 exec/s: 0 rss: 353Mb L: 509/637 MS: 2 CrossOver-CMP- DE: "\026\374\377\377"-
+#14636	NEW    cov: 120 ft: 525 corp: 104/34Kb lim: 637 exec/s: 0 rss: 353Mb L: 364/637 MS: 1 ChangeBit-
+#63725	NEW    cov: 121 ft: 548 corp: 121/32Kb lim: 673 exec/s: 31862 rss: 357Mb L: 601/637 MS: 1 ChangeByte-
+#3814223	NEW    cov: 122 ft: 763 corp: 235/173Kb lim: 4096 exec/s: 17416 rss: 375Mb L: 2927/4082 MS: 2 CopyPart-CopyPart-
+#10635611	DONE   cov: 122 ft: 777 corp: 246/182Kb lim: 4096 exec/s: 17696 rss: 376Mb
+stat::number_of_executed_units: 10635611
+stat::average_exec_per_sec:     17696
+stat::new_units_added:          3252
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              376
+crash files: 0

@@ -1,0 +1,7 @@
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           1.482   1.0000  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.819   0.0000  REGRESSION 
+BM_EnergyFilter/3/50/0/4096                                     0.775   0.0000  REGRESSION 
+BM_HistogramRecord                                              0.925   0.1575  ok 
+BM_Pipeline/4096/64/real_time                                   0.919   0.0116  ok 
+BM_SortFunctor/4096/0                                           0.963   0.4853  ok 

@@ -1,0 +1,29 @@
+# 2026-10-26T13:40:01Z commit 61c2e1a Exercise 18.3 in the coverage build
+Internal ctest changing into directory: /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-final/build/coverage
+Test project /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-final/build/coverage
+    Start 919: ch18/e3_branch_coverage/solution/coverage
+1/1 Test #919: ch18/e3_branch_coverage/solution/coverage ...   Passed    0.65 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+solution    =   0.65 sec*proc (1 test)
+
+Total Test time (real) =   0.68 sec
+Internal ctest changing into directory: /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-final/build/coverage
+Test project /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-final/build/coverage
+    Start 920: ch18/e3_branch_coverage/starter/coverage
+1/1 Test #920: ch18/e3_branch_coverage/starter/coverage ...***Failed    0.18 sec
+
+0% tests passed, 1 tests failed out of 1
+
+Label Time Summary:
+starter    =   0.18 sec*proc (1 test)
+
+Total Test time (real) =   0.21 sec
+
+The following tests FAILED:
+	920 - ch18/e3_branch_coverage/starter/coverage (Failed)
+Errors while running CTest
+Output from these tests are in: /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-final/build/coverage/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.

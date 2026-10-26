@@ -1,0 +1,24 @@
+pass  build and tests, six presets
+pass  static analysis
+pass  starters fail
+pass  stress run, tsan, 100 repetitions
+pass  property-based tests, wide search
+pass  coverage report
+pass  Exercise 18.3, solution passes and starter fails
+pass  pipeline benchmark ran
+pass  writer benchmark ran
+all release checks passed (part 1)
+# part 2, same commit
+FAIL  performance regression gate
+pass  system test report
+pass  soak, 30 minutes at 1 M singles/s
+pass  fuzz build
+pass  fuzz_config, 600 s
+pass  fuzz_decoder, 600 s
+pass  fuzz_raw16, 600 s
+pass  fuzz_protocol, 600 s
+pass  fuzz_packet, 600 s
+pass  fuzz_sorter, 600 s
+pass  fuzz_listmode, 600 s
+The pipeline and writer results are read against SRS-PERF-020 and SRS-PERF-021 by hand.
+1 release checks failed (part 2)

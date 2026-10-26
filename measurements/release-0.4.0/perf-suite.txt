@@ -1,0 +1,1 @@
+wrote /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rc-0.4.0b/perf-current.json

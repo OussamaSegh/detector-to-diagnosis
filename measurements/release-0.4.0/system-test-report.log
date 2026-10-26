@@ -1,0 +1,39 @@
+test_a_server_without_authentication_needs_no_token (test_control_system.ClientAndServer.test_a_server_without_authentication_needs_no_token) ... ok
+test_a_wrong_token_is_refused_and_the_connection_closed (test_control_system.ClientAndServer.test_a_wrong_token_is_refused_and_the_connection_closed) ... ok
+test_an_operator_runs_an_acquisition_with_the_client (test_control_system.ClientAndServer.test_an_operator_runs_an_acquisition_with_the_client) ... ok
+test_new_token_refuses_an_unknown_role (test_control_system.ClientAndServer.test_new_token_refuses_an_unknown_role) ... ok
+test_the_exit_status_says_who_refused (test_control_system.ClientAndServer.test_the_exit_status_says_who_refused) ... ok
+test_wait_ends_at_its_deadline (test_control_system.ClientAndServer.test_wait_ends_at_its_deadline) ... ok
+test_an_observer_reads_the_status_and_cannot_start (test_control_system.Roles.test_an_observer_reads_the_status_and_cannot_start) ... ok
+test_a_signal_during_a_run_stops_and_drains_it (test_control_system.Shutdown.test_a_signal_during_a_run_stops_and_drains_it) ... ok
+test_a_configuration_given_at_start_up_is_applied (test_control_system.Startup.test_a_configuration_given_at_start_up_is_applied) ... ok
+test_an_invalid_configuration_at_start_up_is_refused (test_control_system.Startup.test_an_invalid_configuration_at_start_up_is_refused) ... ok
+test_the_server_refuses_a_public_address_without_tls_and_tokens (test_control_system.Startup.test_the_server_refuses_a_public_address_without_tls_and_tokens) ... ok
+test_the_server_refuses_contradicting_options (test_control_system.Startup.test_the_server_refuses_contradicting_options) ... ok
+test_the_client_sends_no_token_to_a_server_another_ca_signed (test_control_system.Tls.test_the_client_sends_no_token_to_a_server_another_ca_signed) ... ok
+test_the_client_sends_no_token_to_a_server_certified_for_another_address (test_control_system.Tls.test_the_client_sends_no_token_to_a_server_certified_for_another_address) ... ok
+test_the_client_talks_to_a_server_its_ca_signed (test_control_system.Tls.test_the_client_talks_to_a_server_its_ca_signed) ... ok
+test_every_coincidence_counted_is_in_the_files (test_acquisition_system.Accounting.test_every_coincidence_counted_is_in_the_files) ... ok
+test_a_seeded_run_writes_the_golden_records (test_acquisition_system.GoldenExact.test_a_seeded_run_writes_the_golden_records) ... ok
+test_batch_sizes_and_delays_do_not_change_the_records (test_acquisition_system.GoldenExact.test_batch_sizes_and_delays_do_not_change_the_records) ... ok
+test_another_seed_agrees_with_the_golden_run_within_chance (test_acquisition_system.GoldenStatistical.test_another_seed_agrees_with_the_golden_run_within_chance) ... ok
+test_the_comparison_finds_a_narrower_energy_window (test_acquisition_system.GoldenStatistical.test_the_comparison_finds_a_narrower_energy_window) ... ok
+test_a_clean_stream_arrives_complete (test_readout_system.Readout.test_a_clean_stream_arrives_complete) ... ok
+test_a_packet_both_delayed_and_duplicated_is_a_duplicate (test_readout_system.Readout.test_a_packet_both_delayed_and_duplicated_is_a_duplicate) ... ok
+test_every_damaged_packet_is_accounted_for (test_readout_system.Readout.test_every_damaged_packet_is_accounted_for) ... ok
+test_the_sequence_number_wraps_without_loss (test_readout_system.Readout.test_the_sequence_number_wraps_without_loss) ... ok
+test_equal_rates_in_different_times (test_stats.Binomial.test_equal_rates_in_different_times) ... ok
+test_the_exact_test_matches_hand_computed_values (test_stats.Binomial.test_the_exact_test_matches_hand_computed_values) ... ok
+test_p_values_are_uniform_when_the_samples_agree (test_stats.Calibration.test_p_values_are_uniform_when_the_samples_agree) ... ok
+test_rate_test_p_values_are_uniform_when_the_rates_agree (test_stats.Calibration.test_rate_test_p_values_are_uniform_when_the_rates_agree) ... ok
+test_the_normal_tail_matches_tabulated_values (test_stats.ChiSquareDistribution.test_the_normal_tail_matches_tabulated_values) ... ok
+test_the_survival_function_matches_tabulated_quantiles (test_stats.ChiSquareDistribution.test_the_survival_function_matches_tabulated_quantiles) ... ok
+test_histogram_bins (test_stats.Histograms.test_histogram_bins) ... ok
+test_sparse_bins_are_merged_and_counts_kept (test_stats.Histograms.test_sparse_bins_are_merged_and_counts_kept) ... ok
+test_a_shifted_peak_is_found (test_stats.Power.test_a_shifted_peak_is_found) ... ok
+test_a_two_percent_rate_difference_is_found_at_a_million_counts (test_stats.Power.test_a_two_percent_rate_difference_is_found_at_a_million_counts) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 21.289s
+
+OK

@@ -8,6 +8,12 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-26
+
+Part IV, testing, verification and quality (Chapters 18 to 21), complete. The release record is
+`docs/regulatory/releases/0.4.0.md`, with the evidence of `tools/release_checks.sh` in
+`measurements/release-0.4.0/`.
+
 ### Added
 - Colored front covers for the book and the solutions manual (`book/assets/cover.tex`, TikZ): a
   PET detector ring with lines of response and a glowing hot spot. `book/build.sh` builds them and

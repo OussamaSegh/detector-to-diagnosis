@@ -1,0 +1,8 @@
+# 2026-10-26T07:21:27Z commit 643cec8 build build/tsan
+# 4 CPUs, 8 busy loops, ctest -j 16 --repeat until-fail:100 -R '(^|/)(Pipeline|AcquisitionService|ControlServer|ControlProtocol|ListModeSink|UdpDetector|PacedSource|ReplaySource)\.'
+    Test #217: AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate ..............***Failed    5.75 sec
+Value of: svc.wait_for(AcqState::configured, 5s)
+  Actual: false
+Expected: true
+98% tests passed, 1 tests failed out of 62
+	217 - AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate (Failed)

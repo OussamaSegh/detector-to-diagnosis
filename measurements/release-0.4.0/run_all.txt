@@ -1,0 +1,41 @@
+# 2026-10-26T12:59:30Z commit 61c2e1a ci/run_all.sh (all six presets)
+=== preset: debug ===
+420/649 Test #420: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................................................................................................***Skipped   0.00 sec
+        Start 455: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+455/649 Test #455: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+519/649 Test #519: ch10/e4_fast_sorter/solution/FastSorter.FastEnough ..............................................................................................................................***Skipped   0.00 sec
+100% tests passed, 0 tests failed out of 649
+=== preset: clang-release ===
+        Start 455: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+455/649 Test #455: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 649
+=== preset: gcc-cxx23 ===
+        Start 455: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+455/649 Test #455: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 649
+=== preset: hardened ===
+        Start 456: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+456/650 Test #456: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 650
+=== preset: asan-ubsan ===
+  1/648 Test   #1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt ............................................................................................................***Skipped   0.03 sec
+  2/648 Test   #2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt ...........................................................................................................***Skipped   0.03 sec
+350/648 Test #350: ch02/e3_pmr_arena/solution/Stage.SteadyStateDoesNotAllocate .....................................................................................................................***Skipped   0.02 sec
+404/648 Test #404: ch04/e4_prefault_arena/solution/PrefaultedArena.WritingAfterConstructionDoesNotFault ............................................................................................***Skipped   0.02 sec
+419/648 Test #419: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................................................................................................***Skipped   0.02 sec
+        Start 454: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+454/648 Test #454: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.01 sec
+518/648 Test #518: ch10/e4_fast_sorter/solution/FastSorter.FastEnough ..............................................................................................................................***Skipped   0.02 sec
+100% tests passed, 0 tests failed out of 648
+=== preset: tsan ===
+  1/648 Test   #1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt ............................................................................................................***Skipped   0.04 sec
+  2/648 Test   #2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt ...........................................................................................................***Skipped   0.03 sec
+350/648 Test #350: ch02/e3_pmr_arena/solution/Stage.SteadyStateDoesNotAllocate .....................................................................................................................***Skipped   0.02 sec
+404/648 Test #404: ch04/e4_prefault_arena/solution/PrefaultedArena.WritingAfterConstructionDoesNotFault ............................................................................................***Skipped   0.02 sec
+419/648 Test #419: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................................................................................................***Skipped   0.02 sec
+        Start 454: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+454/648 Test #454: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.02 sec
+518/648 Test #518: ch10/e4_fast_sorter/solution/FastSorter.FastEnough ..............................................................................................................................***Skipped   0.02 sec
+100% tests passed, 0 tests failed out of 648
+design file: 19 clauses, 16 controlled documents, ok
+=== all gates passed: debug clang-release gcc-cxx23 hardened asan-ubsan tsan ===

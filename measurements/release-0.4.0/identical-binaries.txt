@@ -1,0 +1,64 @@
+# 2026-10-26T13:54Z programs that part 2 tested (commit 6766495) against those of commit 61c2e1a
+# Release preset: build/release of 6766495, the build that part 2's gate, system tests and soak used,
+# against a build/release of 61c2e1a made in another worktree. SHA-256 of each file:
+DIFF  lib/libgmock.a  6766495 56c5c722cf50a391339af402b7b16c41bf153f60f20135508863498edbd27dea  61c2e1a 9d24827584bccc2c04604771d0f17427efed3ccf927ad6af87d33e00e6db929e
+same  499787089c5f0df5b55ca5d3d577d68e3dcce18e5d22825c17be9e8748ced05f  lib/libgmock_main.a
+DIFF  lib/libgtest.a  6766495 f10b47734637f13eb5e6ffdf0ca6cf44771c17baf0331796d6c150098a1fda40  61c2e1a 60daf853f2f05198cfcd3e60ebc93b1e557b675469fb14be813b73044533e859
+DIFF  lib/libgtest_main.a  6766495 5d872396eacbb59200c1f0d30e4726f4c7ab2d9363db10ca89ae46d26dbe2dd8  61c2e1a 4465fe64a10f562895155059bd8cf6e95218ba79254d413643923cab6d827fe9
+same  b5f08c1d130629fc0cb73d7d7ea93df6fcf28b698213e1cd21e5367304a961d6  minidaq/apps/minidaq_ctl
+same  1ae22bec251fa20cecb0e4db9a739e63ebc82e044124588a6d7a7e91d460782f  minidaq/apps/minidaq_jitter
+same  48426e6ef6759987d66b55c4f729c5e9a4b0bf21ccd93c85d13cc9b495ce607e  minidaq/apps/minidaq_latency
+same  fdf2a6c69a9298bbabcc457f333845159a67ee175d316eee1b0369d6fdd3e4e3  minidaq/apps/minidaq_listmode
+same  dcd86369e3294aa88146d781955d5a9a1d4c8e37cf0b266af9d08b615ffd7814  minidaq/apps/minidaq_send
+same  d3f7773fa1e459f1aae0b19e8b24bc1c926f1276e059eab23ce58b09569c6cd1  minidaq/apps/minidaq_server
+same  c94bd927b8ad99e75de205431c79cb00a3386aa24c2dc7cc753da92bd312d0bb  minidaq/apps/minidaq_sim
+same  bb50fc48b4e80334ab56d2ab629e9f542aca7121fb6eb99edc11dc2a3480975f  minidaq/libminidaq_control.a
+same  eb4838916aa346a3b27750568a66b9458203696887cf4b3807e2a114bf8347ef  minidaq/libminidaq_core.a
+same  9552e5353467318e5a9933f9090cfa0791d42885b1c5abd23dcaece48c075b97  benchmarks/bm_alloc
+same  d0fecf83f375afc7291a3171c7574058787e7c64be1e5b79a9f4e0a0f5eb008b  benchmarks/bm_decode
+same  0ea08a35079c845b25dc6b97c579cdadcdb2c5f903f7300ddd7256cbbf6e64d1  benchmarks/bm_energy_filter
+same  6e12e3d58b56f8b04a7d6591a9d8d75f4199204874cebcce36e9241557c8b11b  benchmarks/bm_false_sharing
+same  d8f33a7c65e480df7218f282076a411255d9c76fe65efb5f949ba41f3e756c32  benchmarks/bm_flight_recorder
+same  644556a6b00edaf4968806d3223782e69164be0cbb43f6fbfe476661908a0bb3  benchmarks/bm_histogram
+same  53fe6b7cc82a8ea500033dfb01ae5b578ac79e5a294f41d498bf32d0ac47ca5b  benchmarks/bm_latency
+same  36fdbed0a20335641b18b861fa1461a91e634fab1ad8634f2e3526fcf03b5196  benchmarks/bm_layout
+same  106846bf931d62e8aa4213f6286c68c15b32222df3d4e0e967817b93b090a77a  benchmarks/bm_listmode
+same  5e89971abc35a0146f6c82a509361832f3c2e83bd15c5770ef1a55862ef586f6  benchmarks/bm_pipeline
+same  26c78e00948af306cf8d25efb9c84396db5386287eff07dca35e52e6753754ee  benchmarks/bm_sort
+same  537902c816f17d971b1b7141d2d1c6bd61bccdf9328ff4dcef2136845ca64edd  benchmarks/bm_sorter
+same  6d76745952f87ad0712b4c82b0022e7e4cb4156ee3d5bfb264c77903e9f5814c  benchmarks/bm_spsc
+same  e14bc4fb450c36c3a7cb1f2036fe0f75fad5eafad70b3f73799b8e0aaf7bf0cf  benchmarks/writer_throughput
+# Three GoogleTest libraries differ because they hold the source path of their worktree; they are
+# linked only into unit tests, not into any program above or tested by part 2.
+# Fuzz preset: part 2's fuzz build was deleted afterwards to free disk. Rebuilt today at 6766495 and then
+# at 61c2e1a in the same worktree (the fuzz targets hold their source paths, so a second worktree
+# cannot give equal files):
+same  f4ba54996867a8a6ee007f577c963a55e25ad88f2b436d2a85a66d8a813371c6  fuzz/fuzz_config
+same  f31b561bf4a9fc228e2def452a8688730ae51973d1987e6db96b97211d2346f0  fuzz/fuzz_decoder
+same  cc8e5b139a232e427086c941468354baa146b7d23cf179a478ffbeff37aff517  fuzz/fuzz_listmode
+same  a8ee148cbb88a8af2f3accc8f749867f6068676d15f89869c6eeac38cd212e8f  fuzz/fuzz_packet
+same  7c5940d7c09818e7e23544922d8d58a00b226f85e41776f4c89b99f03949c7b4  fuzz/fuzz_protocol
+same  5126a066eaa4608b97a592212e908d8556982cbbdf91a04e7d38937724b765d8  fuzz/fuzz_raw16
+same  f3ea58900127a5080e4678ff83b5256d045771cb1f0848165368b245ea1904df  fuzz/fuzz_sorter
+# Changes between the two commits outside the documents:
+   CMakeLists.txt                                     |  2 +-
+   exercises/ch04/e1_cyclictest/solution/NOTES.md     |  2 +-
+   exercises/ch04/e5_tsc_clock/solution/NOTES.md      |  2 +-
+   exercises/ch05/e2_hotspot/README.md                |  5 +--
+   .../ch05/e2_hotspot/tests/test_event_source.cpp    |  8 +++--
+   exercises/ch09/e3_clock_drift/solution/NOTES.md    |  2 +-
+   exercises/ch09/e4_time_walk/solution/NOTES.md      |  2 +-
+   exercises/ch09/e5_link_budget/solution/NOTES.md    |  2 +-
+   exercises/ch11/e1_count_rate/solution/NOTES.md     |  2 +-
+   exercises/ch12/e2_sinogram/solution/NOTES.md       |  2 +-
+   exercises/ch13/e2_change_brief/README.md           |  6 ++--
+   exercises/ch13/e3_classification/README.md         |  4 +--
+   exercises/ch13/e3_classification/solution/NOTES.md |  2 +-
+   exercises/ch13/e4_vigilance_clock/README.md        |  2 +-
+   .../solution/CR-0010-coincidence-window-3ns.md     |  2 +-
+   minidaq/include/minidaq/core/geometry.hpp          |  2 +-
+   minidaq/include/minidaq/sim/dead_time.hpp          |  2 +-
+   minidaq/include/minidaq/sim/detector_simulator.hpp |  2 +-
+   minidaq/src/control/listmode_sink.cpp              |  2 +-
+   minidaq/tests/unit/test_udp_detector.cpp           | 36 ++++++++++++++++++++++
+   20 files changed, 65 insertions(+), 24 deletions(-)
