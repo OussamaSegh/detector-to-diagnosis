@@ -1,0 +1,137 @@
+# The register map of MiniDAQ's front-end board (FEB), the board that biases one detector block's
+# SiPMs, measures its temperature and digitizes its signals (Chapter 22). This file is the single
+# source: tools/regmap_gen.py generates the C++ header minidaq/include/minidaq/hw/feb_regs.hpp
+# and the table docs/hw/feb-register-map.md from it, and the test docs.regmap fails when either is
+# out of date. The board is simulated (minidaq/src/hw/fake_board.cpp); a real board's map comes
+# from its firmware team, in the same form (assumption: confirm with team which format the
+# firmware uses: SystemRDL, IP-XACT or a table).
+#
+# Registers are 32 bits wide at byte addresses that are multiples of 4. Access: ro (read only),
+# rw (read and write), wo (write only, reads as 0), rw1c (read; writing 1 to a bit clears it).
+
+[map]
+name = "feb"
+title = "MiniDAQ front-end board"
+version = "1.0"
+width = 32
+
+[[register]]
+name = "board_id"
+address = 0x000
+access = "ro"
+reset = 0x4D510100
+description = "Identifies the board; software checks MAGIC before it trusts any other register."
+fields = [
+  { name = "magic", lsb = 16, width = 16, description = "0x4D51 (\"MQ\") on every FEB" },
+  { name = "board_type", lsb = 8, width = 8, description = "1: one bias channel and one temperature sensor" },
+  { name = "slot", lsb = 0, width = 8, description = "Position of the board in the crate" },
+]
+
+[[register]]
+name = "fw_version"
+address = 0x004
+access = "ro"
+reset = 0x01020000
+description = "Firmware version; Chapter 24 checks it against the versions the software supports."
+fields = [
+  { name = "major", lsb = 24, width = 8, description = "Incompatible changes of the register map or the data format" },
+  { name = "minor", lsb = 16, width = 8, description = "Compatible additions" },
+  { name = "patch", lsb = 0, width = 16, description = "Fixes" },
+]
+
+[[register]]
+name = "control"
+address = 0x008
+access = "rw"
+reset = 0x00000000
+description = "Switches the bias and the trigger; a write of 1 to SOFT_RESET resets the board's logic."
+fields = [
+  { name = "bias_enable", lsb = 0, width = 1, description = "1: the bias supply drives BIAS_SETPOINT" },
+  { name = "trigger_enable", lsb = 1, width = 1, description = "1: the board sends data" },
+  { name = "soft_reset", lsb = 31, width = 1, description = "Write 1 to reset; reads as 0" },
+]
+
+[[register]]
+name = "status"
+address = 0x00C
+access = "ro"
+reset = 0x00000000
+description = "The board's present state; changes on its own."
+fields = [
+  { name = "bias_ready", lsb = 0, width = 1, description = "The bias is enabled and within 50 mV of the setpoint" },
+  { name = "bias_ramping", lsb = 1, width = 1, description = "The bias is moving towards the setpoint" },
+  { name = "overtemp", lsb = 2, width = 1, description = "The board's own limit (60 C) is exceeded and it switched the bias off" },
+  { name = "bias_fault", lsb = 3, width = 1, description = "The supply cannot reach or hold the setpoint" },
+]
+
+[[register]]
+name = "error_flags"
+address = 0x010
+access = "rw1c"
+reset = 0x00000000
+description = "Sticky errors: a bit stays set until software writes 1 to it."
+fields = [
+  { name = "overcurrent", lsb = 0, width = 1, description = "The bias current exceeded the board's limit" },
+  { name = "overtemp_trip", lsb = 1, width = 1, description = "The board switched the bias off for temperature" },
+  { name = "link_crc", lsb = 2, width = 1, description = "A data packet failed its CRC on the board" },
+]
+
+[[register]]
+name = "bias_setpoint"
+address = 0x020
+access = "rw"
+reset = 0x00000000
+description = "The bias voltage the supply drives when BIAS_ENABLE is set."
+fields = [
+  { name = "millivolts", lsb = 0, width = 16, unit = "mV", description = "0 to 65,535 mV" },
+]
+
+[[register]]
+name = "bias_monitor"
+address = 0x024
+access = "ro"
+reset = 0x00000000
+description = "The bias voltage the board measures at the SiPMs."
+fields = [
+  { name = "millivolts", lsb = 0, width = 16, unit = "mV", description = "Measured voltage" },
+]
+
+[[register]]
+name = "bias_current"
+address = 0x028
+access = "ro"
+reset = 0x00000000
+description = "The current the bias supply delivers."
+fields = [
+  { name = "microamps", lsb = 0, width = 16, unit = "uA", description = "Measured current" },
+]
+
+[[register]]
+name = "bias_ramp_rate"
+address = 0x02C
+access = "rw"
+reset = 0x000003E8
+description = "The fastest the supply moves the bias, so that a step cannot damage the SiPMs."
+fields = [
+  { name = "millivolts_per_s", lsb = 0, width = 16, unit = "mV/s", description = "Default 1,000 mV/s" },
+]
+
+[[register]]
+name = "temperature"
+address = 0x030
+access = "ro"
+reset = 0x00000000
+description = "The temperature of the SiPM array, from the sensor on the board."
+fields = [
+  { name = "celsius_q7", lsb = 0, width = 16, signed = true, unit = "1/128 C", description = "Two's complement, 1/128 C per count (7.8125 mC)" },
+]
+
+[[register]]
+name = "threshold"
+address = 0x040
+access = "rw"
+reset = 0x00000100
+description = "The trigger threshold of the board's discriminator."
+fields = [
+  { name = "code", lsb = 0, width = 12, description = "DAC code, 0 to 4095" },
+]

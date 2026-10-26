@@ -178,6 +178,24 @@
       "probability_after": "P1",
       "residual": "A run whose name is taken does not start, and the operator repeats it; MiniDAQ holds no patient identity, so attributing a run to the right patient is the workflow software's control (intended-use.md, Data).",
       "status": "closed"
+    },
+    {
+      "id": "H-10",
+      "preliminary": "HZ-1",
+      "hazard": "Detector gain drifts with temperature",
+      "sequence": "The detectors warm up or cool down (room, electronics, a failed fan) while their bias stays fixed; the breakdown voltage moves by 34 mV/C, the overvoltage and the gain by about 1.3% per degree, and the 511 keV photopeak moves relative to the energy window. Or a board's supply cannot hold its setpoint, or a board stops answering and its bias is no longer controlled.",
+      "hazardous_situation": "The energy window cuts a different and uneven share of each detector's events: counts, scatter fraction and uniformity are wrong without any error being reported.",
+      "harm": "Quantitative values or artifacts in the image contribute to an incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-26", "type": "inherent", "description": "The slow control sets each board's bias from its measured temperature every cycle, so that the overvoltage stays constant, inside fixed limits.", "requirements": ["SRS-HW-001", "SRS-HW-002"], "effectiveness": {"method": "test", "evidence": "SlowControl.KeepsTheOvervoltageConstantAsTheTemperatureMoves"}},
+        {"id": "RC-27", "type": "protective", "description": "A temperature outside the alarm limits, a board that does not answer or has the wrong identity, a supply that cannot hold or reach its setpoint and an excessive bias current latch a fault and switch that board's bias off until acknowledged.", "requirements": ["SRS-HW-003", "SRS-HW-004", "SRS-HW-005"], "effectiveness": {"method": "test", "evidence": "SlowControl.LatchesAFaultForEachWayABoardFails"}},
+        {"id": "RC-28", "type": "protective", "description": "The acquisition service does not start a run while a board is not ready, and stops a run, or enters its fault state outside a run, when a board's fault latches; the status and the run record show each board's bias and temperature.", "requirements": ["SRS-HW-006", "SRS-HW-007"], "effectiveness": {"method": "test", "evidence": "HardwareService.AHardwareFaultStopsTheRunAndAResetAcknowledgesIt"}}
+      ],
+      "probability_after": "P2",
+      "residual": "A drift within one cycle (100 ms) and within the update step (5 mV, 0.15 C) is not compensated; a sensor that reads a plausible but wrong temperature sets a wrong bias, which the daily quality control with a phantom finds (assumption: confirm with team).",
+      "status": "closed"
     }
   ]
 }

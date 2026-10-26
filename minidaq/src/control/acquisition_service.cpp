@@ -28,6 +28,27 @@ json interval_json(const LatencyHistogram& h, const HistogramCounts& before, con
   return json{{"count", s.count}, {"p50", s.p50}, {"p99", s.p99}, {"p999", s.p999}, {"max", s.max}};
 }
 
+json hardware_json(const HardwarePort& hw) {
+  json boards = json::array();
+  for (const HardwareBoard& b : hw.boards()) {
+    boards.push_back({{"slot", b.slot},
+                      {"state", b.state},
+                      {"temperature_c", b.temperature_c},
+                      {"temperature", b.temp_level},
+                      {"target_v", b.target_v},
+                      {"setpoint_v", b.setpoint_v},
+                      {"monitor_v", b.monitor_v},
+                      {"current_ua", b.current_ua},
+                      {"at_limit", b.at_limit},
+                      {"fault", b.fault.empty() ? json(nullptr) : json(b.fault)}});
+  }
+  const auto not_ready = hw.not_ready();
+  return json{{"describe", hw.describe()},
+              {"ready", !not_ready.has_value()},
+              {"not_ready", not_ready ? json(*not_ready) : json(nullptr)},
+              {"boards", std::move(boards)}};
+}
+
 // [snippet:read_small_file]
 // The path comes from a control client, so it is untrusted input (Chapter 7):
 // only regular files, and only small ones. Without these checks "/dev/zero"
@@ -153,6 +174,10 @@ CommandResult AcquisitionService::start(std::string_view who) {
     note(who, "start", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::start}.message(), false);
     return illegal(AcqEvent::start);
   }
+  if (auto why = opt_.hardware ? opt_.hardware->not_ready() : std::nullopt) {
+    note(who, "start", "hardware not ready: " + *why, false);
+    return result(false, "device_error", "hardware not ready: " + *why);
+  }
   const config::AcquisitionConfig& cfg = *config_;
   // Fresh ports for every run: a detector's clock and counters start at zero.
   // The previous run's adapters are released first, because a device that
@@ -228,6 +253,9 @@ CommandResult AcquisitionService::reset(std::string_view who) {
     pipeline_->request_stop();
     pipeline_->wait();
   }
+  if (opt_.hardware && machine_.state() == AcqState::fault) {
+    opt_.hardware->acknowledge();  // the operator has seen the fault (SRS-HW-005)
+  }
   pipeline_.reset();
   detector_.reset();
   sink_.reset();
@@ -242,15 +270,17 @@ CommandResult AcquisitionService::reset(std::string_view who) {
 }
 
 void AcquisitionService::enter_fault_locked(std::string reason, std::string_view who) {
-  if (pipeline_) {
+  const AcqState s = machine_.state();
+  if (pipeline_ && (s == AcqState::running || s == AcqState::stopping)) {
     pipeline_->request_stop();  // stop taking data; reset() waits for the drain
+    run_ended_ = std::chrono::steady_clock::now();
+    run_ended_set_ = true;
   }
   fault_ = std::move(reason);
-  run_ended_ = std::chrono::steady_clock::now();
-  run_ended_set_ = true;
   const auto source = fault_.starts_with("detector:") ? FaultSource::detector
                       : fault_.starts_with("sink:")   ? FaultSource::sink
                       : fault_.starts_with("sort:")   ? FaultSource::sorter
+                      : fault_.starts_with("hw:")     ? FaultSource::hardware
                                                       : FaultSource::other;
   trace(TraceCode::fault, run_id_, static_cast<std::uint64_t>(source));
   note(who, "fault", fault_, false);
@@ -271,6 +301,11 @@ void AcquisitionService::take_latency_snapshot_locked() {
 // [snippet:monitor]
 void AcquisitionService::check_run_locked() {
   const AcqState s = machine_.state();
+  // The boards are watched in every state: a fault while idle is reported at once, not when
+  // the next run starts.
+  if (auto f = opt_.hardware && s != AcqState::fault ? opt_.hardware->fault() : std::nullopt) {
+    return enter_fault_locked("hw: " + *f, "service");
+  }
   if (s != AcqState::running && s != AcqState::stopping) {
     return;
   }
@@ -406,6 +441,7 @@ json AcquisitionService::status_locked() const {
       j["recent_latency_ns"] = std::move(recent);
     }
   }
+  j["hardware"] = opt_.hardware ? hardware_json(*opt_.hardware) : json(nullptr);  // 2.2: Chapter 22
   j["integrity"] = assess_integrity(j);  // risk control RC-01
   return j;
 }

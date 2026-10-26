@@ -23,3 +23,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0014](0014-control-api-authentication-and-tls.md) | Control API authentication with bearer tokens and roles, over TLS 1.3 | Accepted |
 | [0015](0015-property-based-tests-with-a-small-harness.md) | Property-based tests with a small in-house harness | Accepted |
 | [0016](0016-flight-recorder-and-crash-report.md) | A flight recorder in memory and a crash report written by the dying process | Accepted |
+| [0017](0017-register-map-and-slow-control.md) | Registers generated from one specification, a bus interface, and a slow-control loop that owns the bias | Accepted |

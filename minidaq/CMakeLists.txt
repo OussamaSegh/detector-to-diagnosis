@@ -17,7 +17,11 @@ add_library(minidaq_core
   src/processing/sinogram.cpp
   src/processing/stream_merger.cpp
   src/rt/realtime.cpp
-  src/rt/crash_report.cpp)
+  src/rt/crash_report.cpp
+  src/hw/register.cpp
+  src/hw/mmio_bus.cpp
+  src/hw/fake_board.cpp
+  src/hw/slow_control.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
 target_include_directories(minidaq_core PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
@@ -29,9 +33,11 @@ target_link_libraries(minidaq_core PUBLIC Threads::Threads PRIVATE minidaq::warn
 # API. A separate library so that the hot-path core does not depend on JSON.
 add_library(minidaq_control
   src/config/acquisition_config.cpp
+  src/config/hardware_config.cpp
   src/control/access.cpp
   src/control/acquisition_state.cpp
   src/control/adapters.cpp
+  src/control/hardware.cpp
   src/control/audit.cpp
   src/control/audit_log.cpp
   src/control/acquisition_service.cpp

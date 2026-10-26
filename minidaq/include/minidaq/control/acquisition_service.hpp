@@ -44,6 +44,10 @@ struct ServiceOptions {
   DetectorFactory detector;
   SinkFactory sink;
   AuditSink audit;  // empty: no audit trail
+  // The front-end boards (Chapter 22). Empty: no hardware to watch. Otherwise start() refuses
+  // while a board is not ready, a hardware fault stops the run (fault source "hw"), and reset()
+  // after a fault acknowledges it.
+  std::shared_ptr<HardwarePort> hardware;
   std::chrono::milliseconds monitor_period{20};
   // status() reports latency percentiles over the last completed interval of
   // this length, as well as since the start of the run.

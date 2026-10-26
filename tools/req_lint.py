@@ -42,6 +42,7 @@ NAMED_BY = {"ieee", "iso", "iec", "rfc", "version", "versions", "schema", "api"}
 UNITS = {
     "ps", "ns", "us", "µs", "ms", "s", "min", "h", "hz", "khz", "mhz", "kev", "mev", "mm", "cm",
     "m", "b", "bytes", "byte", "kib", "mib", "gib", "kb", "mb", "gb", "bit", "bits", "%",
+    "v", "mv", "c", "ua", "µa", "mv/c",
     "words/s", "singles/s", "coincidences/s", "m/s", "k/s", "mbq", "bq", "degrees", "°",
 }
 COUNT_NOUNS = re.compile(r"^(?:[a-z][a-z-]*s|times|percent|of|to|and|or|per|in|out|bytes?|bit|"

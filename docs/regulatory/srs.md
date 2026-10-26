@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 10 (MiniDAQ 0.4.0, release 0.4.0). Status: draft for review.
+Version 11 (MiniDAQ 0.5.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -266,6 +266,26 @@ ADR 0016).
 | SRS-DIAG-004 | The server shall record in the flight recorder every change of the acquisition state, every control command but `hello` with its outcome, the begin and the end of each run with its completeness, each fault with its source, and each loss and resynchronization of the readout link. | service | T |
 | SRS-DIAG-005 | The flight recorder shall record one event in at most 100 ns on the reference machine, without a lock, also with four threads recording at once. | core | M |
 
+### 2.16 Front-end hardware (HW)
+
+How the server talks to the front-end boards and keeps their bias right (Chapter 22, ADR 0017,
+CR-0008). The numbers of the bias law are those of the SiPM this book models (Hamamatsu
+S14160-3050HS: breakdown voltage 38 V at 25 C, 34 mV/C, recommended overvoltage 2.7 V); the
+limits and alarm levels are book-level numbers (assumption: confirm with team).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-HW-001 | The slow-control loop shall, every cycle (100 ms by default), set each board's bias to V_bd(25 C) + k (T - 25 C) + V_ov for the board's measured temperature T, clamped to the configured limits (36 V to 43 V by default), and write a new setpoint only when it moved by at least the update step (5 mV). | hw | T |
+| SRS-HW-002 | Before it enables a board's bias supply, the slow-control loop shall write the ramp rate and then the setpoint, so that the supply never drives a setpoint left from before. | hw | T |
+| SRS-HW-003 | The slow-control loop shall report a temperature warning at or above 35 C that clears below 34 C, and latch a fault at or above 40 C or below 5 C, the latter as a sensor that is not believed. | hw | T |
+| SRS-HW-004 | The slow-control loop shall latch a fault on a board, switch that board's bias off and record the cause in the flight recorder when the board does not answer in 3 cycles in a row, its identity is wrong, it reports overtemperature, its bias current exceeds the limit (500 uA), its supply cannot hold the setpoint, or its bias has not reached the setpoint within the ramp time plus 2 s. | hw | T |
+| SRS-HW-005 | The slow-control loop shall keep a fault latched until an operator acknowledges it, and then clear the board's sticky error flags and power the board up again; a fault whose cause remains latches again in the next cycle. | hw | T |
+| SRS-HW-006 | When a hardware port is given, the acquisition service shall refuse `start` with `device_error` while a board is not ready, and enter the fault state with a fault starting with "hw:" and the fault source `hardware` when a board's fault latches, in any state but fault. | service | T |
+| SRS-HW-007 | The status and the run record shall contain the field `hardware`: null without a hardware port, otherwise whether every board is ready and, for each board, its slot, state, temperature, temperature level, target, setpoint and measured bias, bias current and fault (control API 2.2). | service | T |
+| SRS-HW-008 | The register definitions shall be generated from the register map specification and make code that writes a read-only register, reads a write-only one or does a read-modify-write of a write-1-to-clear register fail to compile. | hw | T |
+| SRS-HW-009 | The memory-mapped bus shall refuse an access that is not 4-byte aligned or lies outside the mapped region, and perform each register access as exactly one 32-bit load or store. | hw | T |
+| SRS-HW-010 | The server shall read the hardware description given with `--hardware` as strictly as an acquisition configuration: schema version 1.0, every key known, every value in its range, 1 to 64 boards, each problem reported with its JSON Pointer. | config | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -289,3 +309,4 @@ ADR 0016).
 | 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-044, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |
 | 9 | Chapter 21: the diagnostics requirements SRS-DIAG-001 to SRS-DIAG-005 (ADR 0016, CR-0007); SRS-SEC-003 lets an observer use `diagnostics`, which only reads. SRS-SRT-013 also orders two singles of one crystal with equal times by energy (problem report MDQ-PR-027). |
 | 10 | Release 0.4.0: the verification of SRS-PERF-020 and SRS-PERF-021 re-measured; both requirements unchanged and met. |
+| 11 | Chapter 22: the front-end hardware requirements SRS-HW-001 to SRS-HW-010 (ADR 0017, CR-0008); control API 2.2. |

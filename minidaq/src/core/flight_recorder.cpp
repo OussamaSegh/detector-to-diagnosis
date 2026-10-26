@@ -24,6 +24,8 @@ std::string_view to_string(TraceCode c) noexcept {
       return "link_resync";
     case TraceCode::note:
       return "note";
+    case TraceCode::hw_fault:
+      return "hw_fault";
     case TraceCode::none:
       break;
   }

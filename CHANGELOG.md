@@ -8,6 +8,23 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+- Chapter 22 code: the front-end boards. A register map specification (`hw/feb.toml`) and its
+  generator (`tools/regmap_gen.py`, tool TL-25) writing typed registers
+  (`minidaq/hw/feb_regs.hpp`, checked by `docs.regmap`) and `docs/hw/feb-register-map.md`; typed
+  register access with compile-time access rules (`minidaq/hw/register.hpp`); a memory-mapped bus
+  for UIO and PCI resource files (`MmioBus`); a simulated board (`FakeBoard`); the slow control,
+  which keeps the SiPM overvoltage constant and latches board faults with the bias off
+  (`SlowControl`); the hardware description and `minidaq_server --hardware`; the service refuses
+  to start on boards that are not ready and stops a run on a hardware fault; status field
+  `hardware` (control API 2.2). SRS-HW-001 to SRS-HW-010 (SRS version 11), hazard H-10 with
+  RC-26 to RC-28, software item `hw`, ADR 0017, CR-0008; unit tests and the system test
+  `system.hardware`.
+
+### Changed
+- The strict JSON reader of the configuration moved to `minidaq/src/config/object_reader.hpp`, to
+  be shared with the hardware description; Chapter 6 includes its snippet from there.
+
 ### Fixed
 - Part IV review (PR #1): Chapter 18 counted eleven properties and 272 unit tests at its tag (ten
   and 273) and gave unit test timings with no record behind them; Chapter 20 dates its count of

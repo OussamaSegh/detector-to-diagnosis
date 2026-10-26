@@ -41,6 +41,7 @@ enum class TraceCode : std::uint8_t {
   fault = 6,        // the run failed: a = run number, b = FaultSource
   link_resync = 7,  // the readout link's numbering jumped: a = resynchronizations in total
   note = 8,         // anything else: a and b free
+  hw_fault = 9,     // the slow control latched a fault on a board: a = board index, b = HwFaultCause
 };
 
 [[nodiscard]] std::string_view to_string(TraceCode c) noexcept;
@@ -49,7 +50,7 @@ enum class TraceCode : std::uint8_t {
 enum class CommandId : std::uint8_t { other = 0, configure, start, stop, reset, status, diagnostics, auth };
 
 // Where the fault of TraceCode::fault came from.
-enum class FaultSource : std::uint8_t { other = 0, detector, sink, sorter };
+enum class FaultSource : std::uint8_t { other = 0, detector, sink, sorter, hardware };
 
 struct TraceEvent {
   std::uint64_t seq = 0;    // the event's number in its ring, from 1

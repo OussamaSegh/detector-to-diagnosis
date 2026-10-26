@@ -24,6 +24,7 @@
 // command but hello; status needs an observer, the other commands an operator.
 // 2.1: Chapter 21 (ADR 0016): diagnostics, for an observer: the build ID and the newest
 // events of the flight recorder.
+// 2.2: Chapter 22 (ADR 0017): status field "hardware", the front-end boards' slow control.
 #pragma once
 
 #include <array>
@@ -37,7 +38,7 @@
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "2.1";
+inline constexpr std::string_view api_version = "2.2";
 
 // diagnostics: how many flight-recorder events it returns without "events", and at most.
 inline constexpr std::size_t diagnostics_default_events = 64;
@@ -57,6 +58,7 @@ inline constexpr std::array status_fields{
     StatusField{"fault", true},           StatusField{"config", true},
     StatusField{"detector", true},        StatusField{"sink", true},
     StatusField{"integrity", true},       // 1.1: Chapter 15, risk control RC-01
+    StatusField{"hardware", true},        // 2.2: Chapter 22, null without hardware
     StatusField{"detector_counters", false},  // 1.1: Chapter 9
     StatusField{"sink_counters", false},  // 1.1: Chapter 12
     StatusField{"run", false},            StatusField{"stages", false},

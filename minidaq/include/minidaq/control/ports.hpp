@@ -66,6 +66,35 @@ class CoincidenceSinkPort {
   [[nodiscard]] virtual std::vector<DetectorCounter> counters() const { return {}; }
 };
 
+// The front-end boards' slow control (Chapter 22): unlike a detector and a sink it lives as
+// long as the program, because the bias must be controlled whether or not a run is going on.
+// Every member is thread-safe; the service polls it from its monitor thread.
+struct HardwareBoard {
+  std::uint32_t slot = 0;
+  std::string state;       // "off", "ramping", "ready", "fault"
+  std::string temp_level;  // "normal", "warning", "alarm"
+  double temperature_c = 0;
+  double target_v = 0;    // the bias the temperature asks for
+  double setpoint_v = 0;  // the bias set, inside the limits
+  double monitor_v = 0;   // the bias measured
+  double current_ua = 0;
+  bool at_limit = false;
+  std::string fault;      // empty unless state is "fault"
+};
+
+class HardwarePort {
+ public:
+  virtual ~HardwarePort() = default;
+  // Why an acquisition may not start now, or empty when every board is ready.
+  [[nodiscard]] virtual std::optional<std::string> not_ready() const = 0;
+  // A latched fault, or empty.
+  [[nodiscard]] virtual std::optional<std::string> fault() const = 0;
+  // An operator has seen the faults: clear them, and latch again those whose cause remains.
+  virtual void acknowledge() = 0;
+  [[nodiscard]] virtual std::vector<HardwareBoard> boards() const = 0;
+  [[nodiscard]] virtual std::string describe() const = 0;
+};
+
 // The service creates a fresh detector and sink for every configuration.
 using DetectorFactory =
     std::function<std::unique_ptr<DetectorPort>(const config::AcquisitionConfig&, std::string& error)>;

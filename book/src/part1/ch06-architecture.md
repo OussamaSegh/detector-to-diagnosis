@@ -296,7 +296,7 @@ document with a small helper that checks presence, type and range of each value 
 error, with the value's location as a JSON Pointer (RFC 6901), instead of stopping at the first
 problem. This is the part of the helper that reads a number:
 
-```{.cpp include="minidaq/src/config/acquisition_config.cpp" snippet="reader_number"}
+```{.cpp include="minidaq/src/config/object_reader.hpp" snippet="reader_number"}
 ```
 
 The helper also remembers every key it was asked for, so `finish()` can report each key nobody

@@ -137,6 +137,15 @@
      "confidence": ["tools/test_postmortem.py reads the build ID from a real core and refuses a program and a debug file of another build and a file that is not a core.",
                     "The system test of a crash runs the tool on the core of a crashed server where the machine keeps core files."],
      "evidence": ["tools/test_postmortem.py", "minidaq/tests/system/test_diagnostics_system.py"],
-     "shown_to_fail": "Postmortem.test_another_build_of_the_same_name_is_refused"}
+     "shown_to_fail": "Postmortem.test_another_build_of_the_same_name_is_refused"},
+    {"id": "TL-25", "name": "Register map generator (tools/regmap_gen.py)", "kind": "in-house", "class": "T3",
+     "version": "the commit; Python 3.11 or later (tomllib)",
+     "use": "Generates the C++ register definitions of the front-end board, compiled into the server, and their document from hw/feb.toml (Chapter 22).",
+     "failure": "A register at the wrong address or a field at the wrong bits in the shipped program, or a header that no longer matches its specification.",
+     "confidence": ["tools/test_regmap_gen.py: it refuses unaligned, duplicate and overlapping definitions and reset values outside the fields, and --check fails while an output is out of date.",
+                    "The test docs.regmap fails while the committed header differs from what the specification generates.",
+                    "Registers.TheGeneratedMapMatchesItsSpecification and the slow control's tests check the generated types against the specification and the simulated board."],
+     "evidence": ["tools/test_regmap_gen.py", "minidaq/tests/unit/test_hw_registers.cpp"],
+     "shown_to_fail": "Output.test_check_fails_while_an_output_is_out_of_date"}
   ]
 }

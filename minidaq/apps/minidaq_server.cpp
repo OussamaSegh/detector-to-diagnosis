@@ -3,7 +3,7 @@
 //
 //   minidaq_server [--port 7700] [--bind 127.0.0.1] [--audit audit.jsonl] [--config acq.json]
 //                  [--tokens tokens.json] [--tls-cert cert.pem --tls-key key.pem] [--no-auth]
-//                  [--crash-report FILE]
+//                  [--crash-report FILE] [--hardware FILE]
 //
 // Clients authenticate with a token (Chapter 17). With --tokens, the server
 // accepts the tokens whose hashes that file lists; without it, the server makes
@@ -15,6 +15,11 @@
 // If the server dies of a fatal signal, it first writes a crash report (Chapter 21): to FILE,
 // appended, with --crash-report, otherwise to standard error. It then dies of the same signal,
 // with a core dump where the system keeps them (tools/postmortem.sh reads it).
+//
+// With --hardware, the server runs the slow control of the front-end boards that FILE describes
+// (Chapter 22, minidaq/config/hardware_config.hpp) from start-up to shutdown: a run starts only
+// when every board is ready, a hardware fault stops it, and at shutdown every bias is switched
+// off.
 //
 // Runs until SIGINT or SIGTERM; a running acquisition is stopped and drained
 // first. Control it with minidaq_ctl, or with any client that writes one JSON
@@ -32,11 +37,13 @@
 #include <string_view>
 
 #include "minidaq/config/acquisition_config.hpp"
+#include "minidaq/config/hardware_config.hpp"
 #include "minidaq/control/access.hpp"
 #include "minidaq/control/acquisition_service.hpp"
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/audit_log.hpp"
 #include "minidaq/control/control_server.hpp"
+#include "minidaq/control/hardware.hpp"
 #include "minidaq/control/tls.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/rt/crash_report.hpp"
@@ -55,6 +62,7 @@ int main(int argc, char** argv) {
   std::string cert_path;
   std::string key_path;
   std::string crash_path;
+  std::string hardware_path;
   bool no_auth = false;
   for (int i = 1; i < argc; ++i) {
     const std::string_view a{argv[i]};
@@ -82,11 +90,13 @@ int main(int argc, char** argv) {
       key_path = v;
     } else if (a == "--crash-report" && v) {
       crash_path = v;
+    } else if (a == "--hardware" && v) {
+      hardware_path = v;
     } else {
       std::fprintf(stderr,
                    "usage: %s [--port N] [--bind ADDR] [--audit FILE] [--config FILE]\n"
                    "          [--tokens FILE] [--tls-cert FILE --tls-key FILE] [--no-auth]\n"
-                   "          [--crash-report FILE]\n",
+                   "          [--crash-report FILE] [--hardware FILE]\n",
                    argv[0]);
       return 2;
     }
@@ -165,6 +175,23 @@ int main(int argc, char** argv) {
       return 1;
     }
     opt.audit = audit->sink();
+  }
+  if (!hardware_path.empty()) {
+    const std::ifstream in{hardware_path};
+    std::stringstream text;
+    text << in.rdbuf();
+    auto hw = config::parse_hardware_config(text.str());
+    if (!in || !hw) {
+      std::fprintf(stderr, "%s:\n%s", hardware_path.c_str(),
+                   in ? config::format_errors(hw.error()).c_str() : "cannot read\n");
+      return 1;
+    }
+    auto opened = control::SlowControlHardware::open(*hw);
+    if (!opened) {
+      std::fprintf(stderr, "hardware: %s\n", opened.error().c_str());
+      return 1;
+    }
+    opt.hardware = std::shared_ptr<control::HardwarePort>(std::move(*opened));
   }
   control::AcquisitionService service{opt};
   if (!config_path.empty()) {

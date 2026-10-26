@@ -189,5 +189,6 @@ TEST(FlightRecorder, NamesEveryCode) {
   EXPECT_EQ(to_string(TraceCode::fault), "fault");
   EXPECT_EQ(to_string(TraceCode::link_resync), "link_resync");
   EXPECT_EQ(to_string(TraceCode::note), "note");
+  EXPECT_EQ(to_string(TraceCode::hw_fault), "hw_fault");
   EXPECT_EQ(to_string(TraceCode::none), "none");
 }

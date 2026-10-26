@@ -39,7 +39,10 @@ add_executable(minidaq_unit_tests
   unit/test_audit_log.cpp
   unit/test_udp_detector.cpp
   unit/test_properties.cpp
-  unit/test_service_interactions.cpp)
+  unit/test_service_interactions.cpp
+  unit/test_hw_registers.cpp
+  unit/test_slow_control.cpp
+  unit/test_hardware_service.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
@@ -83,6 +86,13 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.threats COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_threats.py ${PROJECT_SOURCE_DIR})
   # Chapter 20: the tool list is complete and its table current.
   add_test(NAME docs.tools COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_tools.py ${PROJECT_SOURCE_DIR} --check)
+  # Chapter 22: the register map header and its document are generated from hw/feb.toml.
+  add_test(NAME docs.regmap COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/regmap_gen.py
+                                    ${PROJECT_SOURCE_DIR}/hw/feb.toml --source-name hw/feb.toml --check
+                                    --header ${PROJECT_SOURCE_DIR}/minidaq/include/minidaq/hw/feb_regs.hpp
+                                    --doc ${PROJECT_SOURCE_DIR}/docs/hw/feb-register-map.md)
+  add_test(NAME tools.regmap_gen COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_regmap_gen.py)
+  set_tests_properties(docs.regmap tools.regmap_gen PROPERTIES LABELS "unit")
   # CAPA-0001: every sleep in a test states why (coding standard rule 5.5).
   add_test(NAME tests.waits COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_waits.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk docs.design_file docs.changes docs.capa
@@ -140,7 +150,7 @@ if(Python3_Interpreter_FOUND)
     set(_time_factor 10)  # sanitized programs run several times slower; the deadlines stretch
     set(_sanitized 1)
   endif()
-  foreach(name control acquisition readout diagnostics)
+  foreach(name control acquisition readout diagnostics hardware)
     add_test(NAME system.${name}
              COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_${name}_system.py)
     set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900
