@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-10-26, by the software lead |
 | Source | measurement: Chapter 9's burst runs left 164 packets unaccounted for, and Chapter 23's runs showed the sequence gaps undercounting the socket's drops by up to 2,071 packets (fault tree of H-01, event E6) |
 | Decision | approved, 2026-10-26, software lead and risk manager |
-| Commits | pending |
+| Commits | 2389c6c |
 
 ## Description
 

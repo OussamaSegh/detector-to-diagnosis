@@ -28,3 +28,4 @@ src/part4/ch20-ci-regulated.md
 src/part4/ch21-review-debugging.md
 src/part5/part5.md
 src/part5/ch22-hardware-linux.md
+src/part5/ch23-networking.md

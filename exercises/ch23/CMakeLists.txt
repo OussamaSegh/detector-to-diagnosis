@@ -1,0 +1,4 @@
+minidaq_python_exercise(e1_where_dropped)
+minidaq_exercise(e2_rxq_ovfl)
+minidaq_exercise(e3_buffer_sizing)
+minidaq_exercise(e4_batch_receiver)

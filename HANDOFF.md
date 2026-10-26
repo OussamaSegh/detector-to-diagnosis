@@ -334,7 +334,14 @@ hardware port of the acquisition service (API 2.2), `minidaq_server --hardware F
 SRS-HW-001 to 010, H-10, ADR 0017, CR-0008 (b27d6ad), exercises 22.1 to 22.4. New C++ under
 minidaq/*/hw, config/hardware_config and control/hardware is formatted with clang-format
 (Google style, 100 columns). New Markdown documents must be added to a clause of
-docs/regulatory/qms/design-file.json (docs.design_file). Next: Chapters 23 to 25.
+docs/regulatory/qms/design-file.json (docs.design_file).
+Chapter 23 (high-throughput networking) is written: minidaq/net/host_counters (core layer, item
+readout), UdpDetector reports socket_drops (SO_RXQ_OVFL and /proc/net/udp, the tail of a run
+included; counted by the integrity verdict, RC-29) and host_*/nic_* deltas; bm_udp_receive;
+measurements/ch23 (drop accounting 18/18 runs, buffer footprint, receive cost); SRS-RDO-013 to
+015 (SRS v12), ADR 0018 (no kernel bypass), CR-0009 (2389c6c), architecture v9, exercises 23.1
+to 23.4. ch19/e5_udp_replay can fail under a parallel ctest run and passes alone. Next:
+Chapters 24 (FPGA, ICD, the sender's own packet count for tail loss on the network) and 25.
 
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,
