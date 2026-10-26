@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-10-26, by the software lead |
 | Source | new function: hazard H-10 (detector gain drifts with temperature), from the system requirements of the scanner, which ask for a gain that stays within its calibration while the room and the electronics warm up (assumption: confirm with team) |
 | Decision | approved, 2026-10-26, software lead and risk manager |
-| Commits | pending |
+| Commits | b27d6ad |
 
 ## Description
 
