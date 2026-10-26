@@ -91,13 +91,14 @@ std::optional<UdpCounters> parse_snmp_udp(std::string_view snmp) {
       if (!v) {
         return std::nullopt;
       }
+      const std::uint64_t value = *v;
       for (const auto& [name, field] : {std::pair{"InDatagrams", &c.in_datagrams},
                                         {"NoPorts", &c.no_ports},
                                         {"InErrors", &c.in_errors},
                                         {"RcvbufErrors", &c.rcvbuf_errors},
                                         {"InCsumErrors", &c.in_csum_errors}}) {
         if (names[i] == name) {
-          *field = *v;
+          *field = value;
           ++found;
         }
       }
