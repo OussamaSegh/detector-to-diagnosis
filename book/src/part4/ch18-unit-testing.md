@@ -10,7 +10,7 @@ thought of? That is property-based testing. You will learn to write tests that a
 (one behavior, a clear name, no sleeps, no hidden randomness), to design code so it can be tested
 without hardware, to use fakes, decorators and mocks for the ports of Chapter 6, and to measure
 and read statement, branch and MC/DC coverage. MiniDAQ gets a property-based testing harness with
-eleven properties, interaction tests with GoogleMock, a coverage report per software item, and a
+ten properties, interaction tests with GoogleMock, a coverage report per software item, and a
 mutation testing tool that finds the tests' blind spots in the coincidence sorter.
 :::
 
@@ -75,7 +75,7 @@ criterion.
 
 ### Anatomy of a good test
 
-MiniDAQ's 272 unit tests follow a few rules, and most problems with tests come from breaking one
+MiniDAQ's 273 unit tests follow a few rules, and most problems with tests come from breaking one
 of them.
 
 - **One behavior per test.** `TheWindowIsInclusive` checks one sentence of the specification. A
@@ -93,10 +93,10 @@ of them.
   Chapter 16 was about the last one: every wait in a test now waits for a condition, with a long
   deadline (`eventually()`), and the test `tests.waits` checks that every `sleep_for` in a test
   says why.
-- **Fast.** All of MiniDAQ's unit tests run in under a minute in the `debug` build (47 s on the
-  book's machine, one process; 13 s with `ctest -j4`), most of that in the few tests that run the
-  service or a long simulation, so they run on every build. A test
-  that needs minutes belongs to a slower label.
+- **Fast.** All of MiniDAQ's unit tests run in about a minute in the `debug` build in one
+  process, and in a fraction of that with `ctest -j4`; most of the time goes to the few tests that
+  run the service or a long simulation. So they run on every build. A test that needs minutes
+  belongs to a slower label.
 
 The assertion matters as much as the call. `EXPECT_EQ(round_trip(t), t)` compares whole
 sequences, so a failure prints every value that came back wrong; a loop with `EXPECT_TRUE(ok)`
@@ -308,7 +308,7 @@ specified differently, and needs its own properties.
 
 ### What the properties found
 
-All eleven properties pass, at 200 cases each on every run and at 20,000 cases each in a longer
+All ten properties pass, at 200 cases each on every run and at 20,000 cases each in a longer
 search, so they found no defect in MiniDAQ's code. That is a typical result for code that already
 has careful example-based tests: the properties are a net under them, and their main value comes
 with the next change, when the reference model and the metamorphic relations check the new code on
