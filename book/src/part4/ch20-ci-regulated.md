@@ -507,9 +507,10 @@ failure when there is one.
 `docs/regulatory/verification/tools.json` lists 23 tools at the end of this chapter (Chapter 21
 adds a 24th, the postmortem tools): three of class T3 (GCC, binutils, CMake with Ninja), eighteen
 of class T2 and two of class T1 (git, and the AI assistant whose output enters the product only
-through the same review and gates as any change; Part IX returns to it). For each it records the use, what a defect would do, the reasons for confidence, the
-evidence in the repository, and `shown_to_fail`: the self-test fault, test, path or problem
-report that shows the tool reporting a failure. One entry:
+through the same review and gates as any change; Part IX returns to it). For each it records the
+use, what a defect would do, the reasons for confidence, the evidence in the repository, and
+`shown_to_fail`: the self-test fault, test, path or problem report that shows the tool reporting
+a failure. One entry:
 
 ```json
 {"id": "TL-14",
