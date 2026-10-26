@@ -7,6 +7,7 @@ on:
   push:
     branches: [main]
     tags: ["ch*", "book-v*"]
+  workflow_dispatch:  # tags.yml starts it for the release tags it creates
   pull_request:
 
 permissions:
@@ -164,8 +165,8 @@ jobs:
           fetch-depth: 0
       - name: Check document versions against the last release
         run: |
-          # The last release tag, or else the commit its release record names: the tags are
-          # pushed by hand, and without one this check was skipped on every run (MDQ-PR-030).
+          # The last release tag, or else the commit its release record names: a clone can lack
+          # the tags, and without one this check was skipped on every run (MDQ-PR-030).
           last="$(git describe --tags --abbrev=0 --match 'book-v*' HEAD 2>/dev/null || true)"
           if [ -z "$last" ]; then
             record="$(ls docs/regulatory/releases/*.md | sort -V | tail -n 1)"

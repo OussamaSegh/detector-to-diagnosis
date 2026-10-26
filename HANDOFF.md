@@ -109,8 +109,13 @@ Commits and pushing:
 - Tag pushes are refused from cloud sessions (HTTP 403). The GitHub API is no way around it:
   on 2026-10-26 POST git/refs and POST git/tags both returned 403 ("Write access to this GitHub
   API path is not permitted through this proxy"), and the GitHub MCP tools cannot create tags.
-  Create tags locally. They travel in the release zip and the git bundle, and the user pushes
-  them (`git fetch BUNDLE 'refs/tags/*:refs/tags/*' && git push origin --tags`).
+  The way around it (2026-10-26, asked by the user): add a line `NAME FULLSHA MESSAGE` to
+  `.github/tags.txt`, commit and push to main. The workflow `.github/workflows/tags.yml` then
+  creates the annotated tag with the repository's GITHUB_TOKEN (contents: write), as
+  github-actions[bot]. It never moves a tag: one at another commit fails the job. Since a tag
+  pushed with GITHUB_TOKEN starts no workflow, tags.yml dispatches ci.yml on each new
+  `book-v*` tag (ci.yml has `workflow_dispatch` from 0.4.0 on). Still create the tag locally
+  too, so the release zip and the git bundle carry it. Check with `git ls-remote --tags origin`.
 - Nothing goes to an external service without the user's approval. Pushing to the user's
   GitHub repository `OussamaSegh/detector-to-diagnosis` (public since 2026-10-26; named neurolf-engineer until the retitling) is approved.
 
@@ -183,7 +188,8 @@ first runs failed on a missing `lmodern` package and on a slow apt mirror; the w
 installs lmodern and retries stalled downloads. Pages itself (Settings, Pages, Source: GitHub
 Actions) was set by the user.
 
-At the end of a chapter, after GitHub CI is green: tag `chNN` locally, refresh the bundle, and
+At the end of a chapter, after GitHub CI is green: tag `chNN` locally and in
+`.github/tags.txt`, refresh the bundle, and
 update this file and the memory notes.
 
 A release:
@@ -198,7 +204,8 @@ A release:
    schedule table.
 5. Commit and push. **Wait for green GitHub CI on that release commit** (SDP section 8,
    MDQ-PR-016).
-6. Tag `book-vX.Y.Z`, build the book and the solutions, zip the clone, and copy everything to
+6. Tag `book-vX.Y.Z` (locally, and a line in `.github/tags.txt` pushed to main), build the
+   book and the solutions, zip the clone, and copy everything to
    `the project files folder: neurolf-book/vX.Y.Z/`.
 7. Write the release report as a Claude Doc.
 
@@ -342,8 +349,6 @@ first Part this applies to.
 
 ### Waiting on the user
 
-- Push all 24 tags (ch00 to ch20, book-v0.1.0 to book-v0.3.0): GitHub has none of them yet
-  (checked 2026-10-26). They are in the bundle. Cloud sessions cannot push tags.
 - Enable private vulnerability reporting on the GitHub repository (Chapter 17, SECURITY.md).
 - Answer whether to enable CodeQL code scanning (asked, no answer yet).
 

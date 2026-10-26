@@ -1,0 +1,28 @@
+# Release and chapter tags that .github/workflows/tags.yml creates on GitHub (a session cannot push
+# tags). One tag per line: NAME COMMIT MESSAGE. A tag that exists at the same commit is left alone;
+# one that exists at another commit fails the job. Every tag is annotated, by github-actions.
+ch00 4b8d30db53bc17495dbddabeea09dda7e2033e7d ch00: empty starting point
+ch01 2357a25c0754f154b3667d01491f5f0e52eef839 ch01: repository skeleton, core types, sanitizers in CI
+ch02 6bbfbab01e8eaa82f924b229080ea1533b27c131 ch02: packed MDQ-P1 format, zero-allocation decoder, memory benchmarks
+ch03 64091eff0343e0d0fbd040187f7203d715818031 ch03: lock-free channels and a five-stage acquisition pipeline
+ch04 3b5879bcbf726cd2d3fcc25f5b66c99628144dda Chapter 4: real-time Linux, latency histograms and measurement
+ch05 577de9c9140452852e7e786e5505e76c605aacb5 Chapter 5: profiling and performance engineering
+ch06 cc03cbf82ff3e9e49828e238bd7bf3e0b2478a0e Chapter 6: architecture, control API and state machine
+ch07 22b66ed78a22cbe46a2306f76439c56e1b5cfc59 Chapter 7: safe and secure C++
+ch08 4b66bb1e8ce2787485a5b5c5077aa3f1ffc9bf1b Chapter 8: PET physics and the detector simulator
+ch09 7920e84d76bfbdce50708f1956355ec664980fd5 Chapter 9: readout electronics and the UDP event stream
+ch10 1fdd2955f158ae4555261929d12d35803a3af04b Chapter 10 review: NaN-safe energy gate kept for clang-tidy, solution titles, table widths
+ch11 a577aff4783c9308470c09c82b3fa933193eb36e Chapter 11: count-rate performance and dead time
+ch12 e09d5d7ecfe13a8ee4814d3d875328cc7da60db8 tests: include <algorithm> where std::find, min, equal and fill are used
+ch13 3ea28f58a84fb70d5c1016f854e93c3fb87112de Make FastSorter.FastEnough robust to VM timing noise
+ch14 ded15d19ba7b046b5086865fc70f68ed41d089c8 Chapter 14 text, solutions and classification diagram
+ch15 2470b4bb813985e5c558a5fc6e8c6a684d188cb9 Chapter 15 text and solutions; RC-20 from the fault tree; SDP version 2
+ch16 b4666ac5f5842da58f8bbd8c14d01816105f2c09 Chapter 16 text and solutions; Exercise 16.4; CR-0002 and CR-0003 implemented
+ch17 cbad9b442fe5a55705cc27a7cdc18d88e88ee6e2 Chapter 17: cybersecurity (end of the chapter's milestone)
+ch18 bd8742e346fdbe657de4da2eee76a9b9ddc2c952 Coverage table: show shipped items that no test runs (the server was missing)
+ch19 e12c5f0df1d917910abde735a34f86804d4591f0 Chapter 19: integration, system and HIL testing.
+ch20 eb77c71a7cb15587e88befdc8b3aa01c709fb5f2 Chapter 20: CI for regulated software. Last commit eb77c71 (MDQ-PR-023); ci, gates and perf green on GitHub.
+ch21 6150f42154e5e47289f4bdc0d3c3ef3167741061 Chapter 21: code review, debugging and incident analysis. Last commit 6150f42 (MDQ-PR-026); ci, gates and codeql green on GitHub.
+book-v0.1.0 b10652ae685c708b2d0d4eb780a2df690f2d91b7 Release 0.1.0: Part I complete
+book-v0.2.0 87034d56329afb8eb6a2b88e8cefed350a5c80b1 Release 0.2.0: Part II complete
+book-v0.3.0 37af8f479ad6a76ee22783b7ea284cd70b8891a6 Detector to Diagnosis 0.3.0: Part III complete
