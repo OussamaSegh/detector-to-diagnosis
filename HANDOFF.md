@@ -5,7 +5,7 @@ Engineer* and MiniDAQ if the current session is lost. Read it fully before you c
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-10-26 02:05 UTC, with the Chapter 21 text (CI pending).
+Last updated: 2026-10-26 03:15 UTC: Chapter 21 complete and tagged ch21 locally.
 
 ## 1. The goal
 
@@ -278,11 +278,10 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
 
 ### In progress (as of the last update)
 
-Chapter 20 is complete and tagged ch20 locally on 069e5a0, where ci, gates and perf were green on
-GitHub. Chapter 21 is written (code 0e03f6c, exercises 3231443 and aeb0b42, text and solutions
-after them); local CI was green on all six presets for the code. Left for Chapter 21: GitHub CI
-green on the last commit, then tag ch21 locally (the user pushes tags). MDQ-PR-025 (Chapter 20's
-listings were not expanded) is fixed in the same commit as the text.
+Chapters 20 and 21 are complete and tagged locally: ch20 on 069e5a0, ch21 on 68b4d86, where ci,
+gates and codeql were green on GitHub (the user pushes tags). MDQ-PR-025 (listings not expanded)
+and MDQ-PR-026 (Exercise 21.5 and the bisect log of git 2.55, which quotes the term) are closed.
+Part IV is written; next is its review and release 0.4.0.
 
 Privacy (2026-10-26): the book is generic (e670ec4). The history rewrite that removes the old
 e-mail address from 100 commits and scrubs old file versions is prepared but not run: the
@@ -293,30 +292,28 @@ CHANGELOG, problem reports, measurements, HANDOFF) from filter-repo's commit map
 
 ### Left to do, in order
 
-1. Finish Chapter 20 (above).
-2. **Chapter 21**: GitHub CI and the tag (see above).
-3. **Part IV review and release 0.4.0.** It includes:
+1. **Part IV review and release 0.4.0.** It includes:
    - the CAPA-0003 and CAPA-0004 effectiveness checks;
    - the writer re-measurement;
    - weeks 6 and 7 hours in the schedule table;
    - Part IV marked complete in `edition.md`.
-4. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
+2. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
    must give hardware control real depth (review gap). Release 0.5.0.
-5. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
+3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
    image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
-6. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
+4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
    dependency management) to full depth. Release 0.7.0.
-7. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
+5. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
    (the first 90 days: questions to ask, a ramp-up plan) to full depth. Release 0.8.0.
-8. **Part IX** (new, numbered after 34), three full chapters:
+6. **Part IX** (new, numbered after 34), three full chapters:
    - DICOM and PACS integration;
    - Git and team workflow in a regulated team;
    - AI-assisted coding (Claude Code) for medical-device software. Draw on how this book was
      built and checked: context files, small reviewed steps, tests first, tool validation, and
      traceability of AI-written changes.
-9. **Architecture appendix**, deeper than Chapter 6: patterns, interfaces and tradeoffs on
+7. **Architecture appendix**, deeper than Chapter 6: patterns, interfaces and tradeoffs on
    MiniDAQ and its ADRs, and IEC 62304 architecture, software items and SOUP boundaries.
-10. **Release 1.0.0**: the complete packaged book, solutions and code.
+8. **Release 1.0.0**: the complete packaged book, solutions and code.
 
 ### Review process for each Part (user rule, 2026-10-25)
 
