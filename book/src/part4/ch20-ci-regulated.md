@@ -375,7 +375,23 @@ CI runs the same check on every push (job `reproducible-build`) and keeps `repro
 programs, built on a GitHub runner from the same commit, compare with the reference machine's
 like this:
 
-«REPRO_GITHUB»
+| File | Reference machine | GitHub runner |
+|---|---|---|
+| `bin/minidaq_server` | `82557e6b6c46...` | `82557e6b6c46...` |
+| `bin/minidaq_ctl` | `0bed97367fce...` | `0bed97367fce...` |
+| `debug/minidaq_server.debug` | `5acb0afe71a1...` | `5acb0afe71a1...` |
+| `debug/minidaq_ctl.debug` | `f3c7038ece42...` | `f3c7038ece42...` |
+| `sbom/minidaq.cdx.json` | `43e10818551a...` | `43e10818551a...` |
+| `BUILDINFO.json` | `8bcd75c63b96...` | `e0267aa94655...` |
+
+That is commit `2d123f5` on both (`measurements/ch20/repro-local-2d123f5.txt` and
+`repro-github-2d123f5.txt`). The programs and their debug files are the same bytes, built by
+the same GCC 13.3.0, binutils 2.42 and glibc 2.39 on a different CPU. The archives differ in one
+file, the one that says so: `BUILDINFO.json` records CMake 3.28.3, Ninja 1.11.1 and Python
+3.13.17 on the reference machine, and CMake 3.31.6, Ninja 1.13.2 and Python 3.12.3 on the runner.
+None of them is in the programs. That is the useful definition of reproducible for a release:
+the same source and the same compiler give the same programs, and the record of the build says
+which tools differed. A package that hid the difference would be identical and less honest.
 
 ::: box-mistakes
 - **Removing debug information to make builds equal.** It works and costs you the core dumps of
@@ -582,7 +598,22 @@ its median speed dropped by more than 5% and a one-sided Mann-Whitney test gives
 
 A gate on noisy machines must be judged by its false alarm rate: how often does it fail when
 nothing changed? The answer is a measurement, an A/A comparison of a build with itself. On the
-reference machine, «AA_LOCAL». On GitHub's runners, «AA_GITHUB».
+reference machine, 15 A/A jobs of the release build of `de1b7cf` against itself, five rounds
+each, raised one false alarm: `BM_HistogramRecord` 5.4% slower with `p = 0.0045`. In another job
+the same benchmark came out 13.5% slower, with `p = 0.026`, which the gate let pass because the
+evidence was too weak (`measurements/ch20/aa-local.txt`). One alarm in 15 jobs is a rate between
+0.2% and 32%, the exact interval of Exercise 20.5: too few jobs to say more than "not rare
+enough to ignore". The reference machine is itself a virtual machine, with the caveats of
+Chapter 5.
+
+On GitHub's runners (2 vCPUs of an AMD EPYC 7763), three A/A jobs started by hand with the head
+as base, and one A/B job of a push that changed no benchmarked code, raised no alarm. Their 23
+median ratios all stayed within 3.2% of 1, and 19 of them within 1.0%: inside one job a runner
+was steadier than the reference machine. Four clean jobs bound the false alarm rate only below 60%,
+so the record grows with every push, and the rate is measured, not assumed. One of the four
+jobs also showed a defect of the comparison: the base side was missing
+`BM_EnergyFilter/3/50/0/4096`, and the gate, which judges the base's benchmarks, left it out
+without a word. `tools/perf_ab.sh` now lists the runs of each side and fails if they differ.
 
 Interleaving removes the bias a drifting machine adds, but not the spread: a machine that drifts
 by 20% during the job widens each side's samples, and a rank test of two wide samples sees only
@@ -691,7 +722,8 @@ runners; the environment problem the system tests met in CI is corrected and rec
 **Definition of done.** `ci/run_all.sh` is green on all six presets and static analysis reports
 nothing; every GitHub job, including `reproducible-build` and the version check, is green on the
 tagged commit; the gate self-test catches every fault; the two builds of `repro_check.sh` are
-identical; MDQ-PR-020 is closed; every starter of the chapter fails. Tag `ch20`.
+identical; MDQ-PR-020 to MDQ-PR-022 are closed; every starter of the chapter fails. Tag
+`ch20`.
 
 ## Check yourself {.unnumbered}
 
@@ -730,7 +762,9 @@ identical; MDQ-PR-020 is closed; every starter of the chapter fails. Tag `ch20`.
   reason, and that it passes on correct code; `tools/gate_selftest.py` does it for fifteen faults.
 - A reproducible build gives the same bytes from the same sources and tools. For MiniDAQ the
   shipped programs differed only through paths in the debug information, and two prefix maps
-  removed the difference.
+  removed the difference; a GitHub runner then built the same programs, byte for byte.
+- A new check is software too: on their first run the new jobs found two defects in themselves
+  and one flaky exercise test (MDQ-PR-021 and MDQ-PR-022).
 - A release is a product archive that contains only what the commit and the tools determine,
   identified by its SHA-256, and an evidence archive bound to it by that hash; both are verified.
 - Every tool whose output is in the product or is evidence is listed with its class, the reasons

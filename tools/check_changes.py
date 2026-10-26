@@ -27,7 +27,7 @@ SECTIONS = ("Description", "Reason", "Impact analysis", "Requirements", "Softwar
             "Risk", "SOUP", "Interfaces and data formats", "Documents", "Regulatory", "Verification", "Decision")
 FIELD_ROW = re.compile(r"^\|\s*([A-Za-z]+)\s*\|\s*(.*?)\s*\|\s*$", re.M)
 HEADING = re.compile(r"^#{2,3} (.+?)\s*$", re.M)
-TEST_NAME = re.compile(r"\b([A-Z]\w+\.[A-Z]\w+)\b")
+TEST_NAME = re.compile(r"\b([A-Z]\w+\.(?:[A-Z]\w+|test_\w+))\b")
 GTEST = re.compile(r"^TEST(?:_F)?\((\w+),\s*(\w+)\)", re.M)
 
 
@@ -79,8 +79,17 @@ def check(name, text, known):
 
 
 def tests(root):
-    """Every GoogleTest name in minidaq/tests, as Suite.Name."""
-    return {f"{s}.{n}" for f in (root / "minidaq/tests").rglob("*.cpp") for s, n in GTEST.findall(f.read_text())}
+    """Every GoogleTest name in minidaq/tests, as Suite.Name, and every unittest of the tools'
+    tests (tools/test_*.py), as Class.test_name."""
+    names = {f"{s}.{n}" for f in (root / "minidaq/tests").rglob("*.cpp") for s, n in GTEST.findall(f.read_text())}
+    for f in (root / "tools").glob("test_*.py"):
+        cls = None
+        for line in f.read_text().splitlines():
+            if m := re.match(r"class (\w+)\(", line):
+                cls = m[1]
+            elif (m := re.match(r"    def (test_\w+)\(", line)) and cls:
+                names.add(f"{cls}.{m[1]}")
+    return names
 
 
 def main(root):

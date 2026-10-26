@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-10-25, by the software lead |
 | Source | development plan section 8, items 6 and 7 (a release must be repeatable and archived); MDQ-PR-014 (a gate that never ran); MDQ-PR-020 (a test environment that was not specified) |
 | Decision | approved, 2026-10-25, software lead |
-| Commits | f63f5bf (the change), and the correction of MDQ-PR-021 |
+| Commits | f63f5bf, 1e069f5, 2d123f5, 2893d09 |
 
 ## Description
 
@@ -68,7 +68,9 @@ No change to the intended use or a safety-relevant function.
 
 ## Verification
 
-tools.release_bundle (the package is deterministic and each of six kinds of damage is refused),
+tools.release_bundle (the package is deterministic, Bundle.test_packaging_twice_gives_the_same_bytes
+and Bundle.test_the_archive_holds_no_time_and_no_owner; each of six kinds of damage is refused,
+for example Bundle.test_swapped_debug_files_are_found_even_with_a_matching_manifest),
 tools.perf_gate (Exercise 5.3's acceptance tests against `tools/perf_gate.py`), docs.tools (the
 tool list), `tools/repro_check.sh` on the reference machine and in CI, the gate self-test
 (`measurements/ch20/`), all six presets of `ci/run_all.sh`, static analysis.

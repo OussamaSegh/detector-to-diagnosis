@@ -245,7 +245,8 @@ Chapter 19 (system testing): commits 8284e0e, 6919df2, c3152c7, bddbd57.
   says so.
 
 Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (CR-0006),
-1e069f5 (MDQ-PR-021).
+1e069f5 (MDQ-PR-021), de1b7cf (MDQ-PR-022, Exercise 5.2 speed test now relative to the starter),
+2d123f5 (repro report lists manifest and toolchain), 2893d09 (perf_ab fails if sides differ).
 
 - `hardened` preset now has `-g` and `MINIDAQ_REPRODUCIBLE` (cmake/Reproducible.cmake, the two
   `-ffile-prefix-map` maps; source map first, so GCC (last wins) and Clang (longest) agree).
@@ -254,17 +255,17 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
   `docs/regulatory/verification/tools.json` (23 tools; also fails for non-executable scripts),
   `tools/gate_selftest.py` (15 faults; workflow `gates.yml`), `tools/perf_ab.sh` (workflow
   `perf.yml`, A/B on one runner). SDP v7, SOUP list v5, design file clause 4.1.6.
-- `measurements/ch20/`: gate self-test 15/15 on 27a2b53 (12 min), local reproducibility
-  (identical; server build ID fbac0e5e...), package contents (24.2 MB, 23.1 MB of it debug).
+- `measurements/ch20/` (README): gate self-test 15/15 on 27a2b53 (12 min); reproducible locally
+  and across machines (GitHub runner builds the same programs; only BUILDINFO.json differs,
+  by CMake/Ninja/Python versions); package 24.2 MB; A/A 1/15 false alarms locally, 0/4 on GitHub.
+- GitHub artifacts cannot be downloaded here (blob host blocked): read results from job logs.
 - Trap: never write a literal requirement tag (REQ + colon) in tools/*.py; the trace matrix
   scans tools/ too.
 
 ### In progress (as of the last update)
 
-Chapter 20, still to do: `ci/run_all.sh` on f63f5bf (running in the worktree), GitHub CI green
-on 1e069f5 incl. reproducible-build and perf-ab; fill «REPRO_GITHUB», «AA_LOCAL», «AA_GITHUB»
-in ch20 (A/A: `tools/perf_ab.sh B B OUT 5 1` on a quiet machine, and workflow_dispatch of
-`perf` with base = head); write `measurements/ch20/README.md`; tag `ch20`; refresh the bundle.
+Chapter 20 is complete except the tag: `ch20` goes on the commit that fills its measurements
+once GitHub CI is green there. Then refresh the bundle and start Chapter 21.
 
 ### Left to do, in order
 
