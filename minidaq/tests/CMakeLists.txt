@@ -38,6 +38,7 @@ add_executable(minidaq_unit_tests
   unit/test_security.cpp
   unit/test_audit_log.cpp
   unit/test_udp_detector.cpp
+  unit/test_host_counters.cpp
   unit/test_properties.cpp
   unit/test_service_interactions.cpp
   unit/test_hw_registers.cpp

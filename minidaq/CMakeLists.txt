@@ -21,7 +21,8 @@ add_library(minidaq_core
   src/hw/register.cpp
   src/hw/mmio_bus.cpp
   src/hw/fake_board.cpp
-  src/hw/slow_control.cpp)
+  src/hw/slow_control.cpp
+  src/net/host_counters.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
 target_include_directories(minidaq_core PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)

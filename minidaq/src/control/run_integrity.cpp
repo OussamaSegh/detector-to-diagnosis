@@ -28,7 +28,8 @@ json assess_integrity(const json& status) {
   json losses = json::array();
   if (const auto it = status.find("detector_counters"); it != status.end() && it->is_object()) {
     for (const auto& [name, value] : it->items()) {
-      if (name == "packets_lost" || name == "sequence_resyncs" || std::string_view{name}.starts_with("rejected_")) {
+      if (name == "packets_lost" || name == "sequence_resyncs" || name == "socket_drops" ||
+          std::string_view{name}.starts_with("rejected_")) {
         add(losses, "/detector_counters/" + name, value);
       }
     }

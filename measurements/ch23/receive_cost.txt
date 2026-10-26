@@ -1,0 +1,11 @@
+# 4 CPUs at 2100 MHz, release library build, 128 datagrams per fill, loopback
+| Call | Datagram | ns per datagram (min / median / max) | Payload at the median |
+|---|---:|---|---:|
+| recv | 1,472 B | 291 / 318 / 356 | 37.0 Gbit/s |
+| recvmmsg, 8 | 1,472 B | 272 / 302 / 403 | 39.1 Gbit/s |
+| recvmmsg, 32 | 1,472 B | 276 / 301 / 332 | 39.1 Gbit/s |
+| recvmmsg, 64 | 1,472 B | 266 / 320 / 365 | 36.8 Gbit/s |
+| recv | 8,208 B | 535 / 622 / 664 | 105.5 Gbit/s |
+| recvmmsg, 8 | 8,208 B | 504 / 638 / 770 | 103.1 Gbit/s |
+| recvmmsg, 32 | 8,208 B | 581 / 742 / 943 | 88.6 Gbit/s |
+| recvmmsg, 64 | 8,208 B | 611 / 741 / 844 | 88.6 Gbit/s |

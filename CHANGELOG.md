@@ -20,6 +20,12 @@ the patch version.
   `hardware` (control API 2.2). SRS-HW-001 to SRS-HW-010 (SRS version 11), hazard H-10 with
   RC-26 to RC-28, software item `hw`, ADR 0017, CR-0008; unit tests and the system test
   `system.hardware`.
+- Chapter 23 code: the receive path's drop counters. The UDP adapter reports `socket_drops`, the
+  datagrams the kernel dropped at its socket (`SO_RXQ_OVFL` and `/proc/net/udp`), including those
+  after the last datagram of a run, and the integrity verdict counts them as a loss; it also
+  reports the host's UDP, softnet and network card counters as changes since the run began
+  (`minidaq/net/host_counters.hpp`). Benchmark `bm_udp_receive`; measurements in
+  `measurements/ch23/`. SRS-RDO-013 to SRS-RDO-015 (SRS version 12), RC-29, ADR 0018, CR-0009.
 
 ### Changed
 - The strict JSON reader of the configuration moved to `minidaq/src/config/object_reader.hpp`, to

@@ -11,6 +11,12 @@
 //  - Lost packets are lost: UDP does not retransmit. The DAQ counts the loss
 //    and the run carries on; whether a run with loss is usable is a decision
 //    for the operator and the analysis, made with the counters.
+//  - Datagrams the kernel dropped because the socket's receive buffer was
+//    full are counted too (socket_drops, Chapter 23), including the last ones
+//    of a run, which no later sequence number reveals. The host's and the
+//    network card's own drop counters are reported as changes since the
+//    detector was opened (host_*, nic_*); they are host-wide, so they explain
+//    a loss but do not decide whether a run is complete.
 //  - One link, one source id. Merging several links into one time-ordered
 //    stream is the coincidence sorter's job (Chapter 10).
 #pragma once
@@ -18,6 +24,7 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <string>
@@ -27,6 +34,7 @@
 #include "minidaq/control/ports.hpp"
 #include "minidaq/core/expected.hpp"
 #include "minidaq/format/readout_packet.hpp"
+#include "minidaq/net/host_counters.hpp"
 
 namespace minidaq::control {
 
@@ -34,7 +42,9 @@ class UdpDetector final : public DetectorPort {
  public:
   // Opens and binds the socket. Errors (bad address, port in use) are
   // returned, not thrown: they are configuration problems for the operator.
-  [[nodiscard]] static Expected<std::unique_ptr<UdpDetector>, std::string> open(const config::UdpSettings& s);
+  // `host` reads the kernel's counters; tests give it a fake root directory.
+  [[nodiscard]] static Expected<std::unique_ptr<UdpDetector>, std::string> open(
+      const config::UdpSettings& s, std::filesystem::path host_root = "/");
   ~UdpDetector() override;
   UdpDetector(const UdpDetector&) = delete;
   UdpDetector& operator=(const UdpDetector&) = delete;
@@ -50,7 +60,7 @@ class UdpDetector final : public DetectorPort {
   [[nodiscard]] bool end_of_stream() const noexcept { return end_of_stream_.load(std::memory_order_acquire); }
 
  private:
-  UdpDetector(int fd, const config::UdpSettings& s);
+  UdpDetector(int fd, const config::UdpSettings& s, net::HostCounterReader host);
   void receive_batch();                      // one recvmmsg, through the tracker into pending_
   void accept(std::span<const std::byte> d);  // one datagram
   void publish_counters() noexcept;
@@ -60,8 +70,15 @@ class UdpDetector final : public DetectorPort {
   int fd_;
   std::uint16_t port_ = 0;
   std::size_t receive_buffer_bytes_ = 0;  // what the kernel granted for data
+  std::uint64_t inode_ = 0;               // the socket's, to find it in /proc/net/udp
+  net::HostCounterReader host_;
+  net::HostCounters host_at_open_;
   std::string description_;
   readout::SequenceTracker tracker_;
+  // Ancillary data of each datagram of a batch: the socket's drop count
+  // (SO_RXQ_OVFL), a 32-bit counter that the kernel attaches to every datagram.
+  static constexpr std::size_t control_bytes = 64;
+  std::vector<std::byte> control_;
   // One receive buffer per datagram of a batch, one byte larger than the
   // largest valid packet, so that an oversized datagram is seen as such.
   std::vector<std::byte> buffers_;
@@ -85,12 +102,14 @@ class UdpDetector final : public DetectorPort {
     std::atomic<std::uint64_t> resyncs{0};
     std::atomic<std::uint64_t> words{0};
     std::atomic<std::uint64_t> receive_batches{0};
+    std::atomic<std::uint64_t> socket_drops{0};  // the latest SO_RXQ_OVFL value
     std::atomic<int> socket_errno{0};
   };
   std::uint64_t datagrams_ = 0;  // reader-thread copies of the counters it owns
   std::array<std::uint64_t, readout::num_packet_errors> rejected_{};
   std::uint64_t other_source_ = 0;
   std::uint64_t receive_batches_ = 0;
+  std::uint64_t socket_drops_ = 0;
   std::uint64_t traced_lost_ = 0;     // the loss and resynchronization counts last recorded
   std::uint64_t traced_resyncs_ = 0;  // in the flight recorder (Chapter 21)
   Counters counters_;

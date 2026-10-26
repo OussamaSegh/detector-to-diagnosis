@@ -24,3 +24,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0015](0015-property-based-tests-with-a-small-harness.md) | Property-based tests with a small in-house harness | Accepted |
 | [0016](0016-flight-recorder-and-crash-report.md) | A flight recorder in memory and a crash report written by the dying process | Accepted |
 | [0017](0017-register-map-and-slow-control.md) | Registers generated from one specification, a bus interface, and a slow-control loop that owns the bias | Accepted |
+| [0018](0018-kernel-udp-receive-with-drop-accounting.md) | Kernel UDP sockets with full drop accounting, and no kernel bypass until a measurement asks for it | Accepted |

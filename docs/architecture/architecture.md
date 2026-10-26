@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 8 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
+Version 9 (MiniDAQ 0.5.0-dev, Chapter 23). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -14,7 +14,7 @@ in [`docs/adr/`](../adr/README.md).
 
 MiniDAQ receives a stream of detector singles, decodes and time-sorts them, pairs them into
 coincidences and hands the coincidences to a sink, while an operator configures, starts, stops
-and monitors the acquisition over a control API. Version 0.4.0-dev covers:
+and monitors the acquisition over a control API. Version 0.5.0-dev covers:
 
 - the acquisition pipeline (Chapters 2 to 5),
 - the control plane: configuration, state machine, service, audit trail and TCP control API
@@ -43,6 +43,13 @@ and monitors the acquisition over a control API. Version 0.4.0-dev covers:
 - diagnostics: a flight recorder of recent events in memory (item core), a crash report
   written by the dying server (item rt) and the control command `diagnostics`, API 2.1
   (Chapter 21, [ADR 0016](../adr/0016-flight-recorder-and-crash-report.md)).
+- the front-end boards: registers generated from one specification, a memory-mapped bus and a
+  simulated board, and a slow control that keeps the SiPM bias right for the temperature and
+  switches a faulty board off (item hw, control API 2.2, Chapter 22,
+  [ADR 0017](../adr/0017-register-map-and-slow-control.md)).
+- the receive path's drop counters: the datagrams dropped at MiniDAQ's socket, including the
+  last ones of a run, and the host's and the network card's counters (Chapter 23,
+  [ADR 0018](../adr/0018-kernel-udp-receive-with-drop-accounting.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -54,10 +61,11 @@ pipeline does not use it yet). The control API's security is described in the
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
-| Operator, scripts, test harness | Control protocol 2.1: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.0 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
+| Operator, scripts, test harness | Control protocol 2.2: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
 | Configuration files | JSON, schema version 1.3 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
-| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets | both | Real-time settings from an `rt_profile` (Chapter 4) |
+| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile` (Chapter 4) |
 
 ## 3. Requirements that shape the architecture
 
@@ -84,9 +92,9 @@ enforces it on every `#include` as part of the unit tests (`architecture.layers`
 
 | Layer | Items | Responsibility | May use |
 |---|---|---|---|
-| core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
+| core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim, hw, the host counters (`net/`) | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
 | application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
-| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer`, `TokenStore`, `TlsStream` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
+| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `SlowControlHardware`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer`, `TokenStore`, `TlsStream` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
 | apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send`, `minidaq_listmode` | Wiring: choose adapters, parse command lines, handle signals | everything |
 
 The application layer depends on interfaces (ports) that it owns; adapters implement them.
@@ -121,7 +129,8 @@ assume risk controls outside the software (assumption: confirm with team).
 | service | service, state machine, ports | server | B | Owns the run and its faults |
 | protocol | control protocol and server | server | B | Accepts commands from the network |
 | access | tokens, roles, start-up token, TLS (`control/access`, `control/tls`) | server, ctl | B | Decides who may control the acquisition |
-| readout | UDP detector, default adapters | server | B | Receives the readout link and counts its losses |
+| readout | UDP detector, default adapters, host counters (`net/`) | server | B | Receives the readout link and counts its losses, the kernel's drops included |
+| hw | registers, buses, simulated board, slow control, hardware description and its adapter | server | B | Sets the detectors' bias and switches it off on a fault (H-10) |
 | output | list-mode sink, file operations | server | B | Makes the data durable with its run record |
 | audit | JSON Lines audit log | server | B | Records actions (A alone); B for the same reason as metrics |
 | server | `minidaq_server` | server | B | Wiring and signals |
@@ -206,7 +215,9 @@ the maximum block delay.
 - **Status**: one JSON snapshot with state, run, fault, effective configuration, counters,
   latencies, late singles and the detector's own counters (`detector_counters`: for the UDP
   link, datagrams, packets delivered, lost, reordered and stale, rejections by reason,
-  resyncs and the granted receive buffer), and the sorter's eleven counters (`sorter`: singles
+  resyncs, the granted receive buffer, the datagrams dropped at the socket, and the host's and
+  the network card's drop counters since the run began), the front-end boards (`hardware`:
+  state, temperature, bias and fault of each board), and the sorter's eleven counters (`sorter`: singles
   in, rejected by energy and order, windows by size, geometry rejections, prompts, delayed),
   and the sink's counters (`sink_counters`: for list mode, coincidences, blocks, bytes, files,
   buffer waits, fsyncs and their longest duration, dropped blocks after a fault).
@@ -260,12 +271,14 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 | Configuration | Reader rules; schema document agrees with the reader | `test_config.cpp` |
 | Coincidence sorter and merger | Exact agreement with the simulator's truth counter, chunking independence, accounting, policies, randoms bias; merger order, waiting, late boards, ties; fuzzing | `test_coincidence_sorter.cpp`, `test_stream_merger.cpp`, `fuzz/fuzz_sorter.cpp` |
 | Front-end model and capacity | Dead-time stage against both formulas and by hand, chunking, accounting; replay order and rate; count-rate and bottleneck measurements regenerated by one command each | `test_dead_time.cpp`, `test_count_rates.cpp`, `test_replay_source.cpp`, `measurements/ch11/` |
+| Front-end hardware | Register access rules at compile time, the bus, the simulated board's failures, the slow control at simulated time, the service with simulated boards, a board that overheats in a run | `test_hw_registers.cpp`, `test_slow_control.cpp`, `test_hardware_service.cpp`, `system.hardware` |
+| Receive path | Every datagram delivered or counted, the tail of a burst included; the kernel's counter formats from captured text | `test_udp_detector.cpp`, `test_host_counters.cpp`, `measurements/ch23/` |
 | Concurrency | All of the above under ThreadSanitizer | `tsan` preset |
 | Review | This document and each ADR are reviewed with the code that implements them | pull requests |
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0016](../adr/README.md). Known anomalies, with their evaluation:
+Decisions: [ADR 0001 to 0018](../adr/README.md). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
@@ -294,3 +307,4 @@ Open issues:
 | 6 | This history (Chapter 16), reconstructed from git for versions 1 to 5. Version 1 was also edited in Chapter 7 (the SOUP list, ADR 0008) and version 4 in Chapter 12 (the list-mode sink, the run record, configuration schema 1.3), each before its release and without a record of the change, which is what this history now provides. |
 | 7 | Chapter 17: the control API's security (API 2.0, item `access`, `ctl` class B, OpenSSL as SOUP, CR-0004). Also corrects what version 6 left stale: the API version (1.1 since CR-0003), the nlohmann/json version (3.12.0 since CR-0002) and the range of ADRs. |
 | 8 | Part IV, recorded at the release checks of 0.4.0 (MDQ-PR-031): the test harness, system tests and release package (Chapters 18 to 20), the diagnostics of Chapter 21 (ADR 0016, CR-0007) and control API 2.1. Also editorial: the text names no manufacturer. |
+| 9 | Part V: the front-end boards and item `hw` (Chapter 22, ADR 0017, CR-0008, control API 2.2) and the receive path's drop counters (Chapter 23, ADR 0018, CR-0009). |

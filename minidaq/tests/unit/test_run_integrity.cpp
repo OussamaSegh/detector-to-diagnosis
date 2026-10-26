@@ -15,7 +15,7 @@ json clean_status() {
   return json::parse(R"({
     "state": "configured", "fault": null,
     "detector_counters": {"packets_received": 10, "packets_lost": 0, "packets_stale": 3,
-                          "sequence_resyncs": 0, "rejected_bad_magic": 0, "rejected_too_short": 0},
+                          "sequence_resyncs": 0, "socket_drops": 0, "rejected_bad_magic": 0, "rejected_too_short": 0},
     "sink_counters": {"coincidences": 5, "invalid": 0, "time_resets": 0, "energies_clamped": 0,
                       "blocks_dropped": 0},
     "stages": [{"name": "source", "dropped": 0, "filtered": 0}, {"name": "decode", "dropped": 0, "filtered": 0},
@@ -35,8 +35,9 @@ TEST(RunIntegrity, ACleanRunIsComplete) {
 }
 
 TEST(RunIntegrity, EveryLossCounterMakesTheRunIncomplete) {
-  // REQ: SRS-CTL-030
+  // REQ: SRS-CTL-030, SRS-RDO-015
   for (const char* ptr : {"/detector_counters/packets_lost", "/detector_counters/sequence_resyncs",
+                          "/detector_counters/socket_drops",
                           "/detector_counters/rejected_bad_magic", "/stages/0/dropped", "/stages/1/dropped",
                           "/stages/1/filtered", "/stages/2/dropped",
                           "/late_singles", "/sorter/out_of_order", "/sink_counters/invalid",

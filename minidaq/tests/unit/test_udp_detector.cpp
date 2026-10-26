@@ -9,6 +9,8 @@
 #include <unistd.h>
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <map>
 #include <numeric>
 #include <span>
@@ -78,6 +80,33 @@ std::vector<std::uint64_t> read_words(DetectorPort& d, std::size_t n) {
     }
   }
   return out;
+}
+
+// Reads until nothing has arrived for 50 ms, or two seconds passed.
+std::vector<std::uint64_t> read_until_quiet(DetectorPort& d) {
+  std::vector<std::uint64_t> out;
+  std::vector<std::uint64_t> buf(4096);
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+  auto last = std::chrono::steady_clock::now();
+  while (std::chrono::steady_clock::now() - last < std::chrono::milliseconds(50) &&
+         std::chrono::steady_clock::now() < deadline) {
+    const std::size_t got = d.read(buf);
+    out.insert(out.end(), buf.begin(), buf.begin() + static_cast<std::ptrdiff_t>(got));
+    if (got == 0) {
+      std::this_thread::sleep_for(std::chrono::microseconds(100));  // sleep: poll
+    } else {
+      last = std::chrono::steady_clock::now();
+    }
+  }
+  return out;
+}
+
+// 21 packets of a standard-MTU link; the receiver gets the first 20 in one burst.
+std::vector<sim::Datagram> burst() {
+  std::vector<std::uint64_t> words(21 * readout::words_per_standard_mtu);
+  std::iota(words.begin(), words.end(), std::uint64_t{1});
+  sim::Packetizer pk{{.source = 1}};
+  return pk.packetize(words, false);
 }
 
 }  // namespace
@@ -230,6 +259,93 @@ TEST(UdpDetector, RunsAnAcquisitionThroughTheService) {
   EXPECT_EQ(st["detector_counters"]["packets_delivered"].get<std::uint64_t>(), (words.size() + 181) / 182);
   EXPECT_EQ(st["detector_counters"]["packets_lost"].get<std::uint64_t>(), 0U);
   EXPECT_EQ(st["late_singles"].get<std::uint64_t>(), 0U);
+}
+
+TEST(UdpDetector, CountsTheDatagramsItsSocketDroppedEvenAtTheEnd) {
+  // REQ: SRS-RDO-013, SRS-RDO-014
+  // The smallest receive buffer the kernel allows holds a packet or two: a burst of 20 that
+  // nobody reads overflows it, and the packets that arrive last are the ones dropped.
+  auto s = loopback();
+  s.receive_buffer_bytes = 1;
+  auto opened = UdpDetector::open(s);
+  ASSERT_TRUE(opened) << opened.error();
+  UdpDetector& d = **opened;
+  Sender tx{d.port()};
+  const auto packets = burst();
+  for (std::size_t i = 0; i < 20; ++i) {
+    tx.send(packets[i].bytes);
+  }
+  (void)read_until_quiet(d);
+  auto c = counters_of(d);
+  const std::uint64_t delivered = c["packets_delivered"];
+  EXPECT_LT(delivered, 20U);
+  EXPECT_EQ(c["socket_drops"], 20U - delivered) << "every packet is delivered or dropped";
+  EXPECT_EQ(c["packets_lost"], 0U) << "a loss at the end leaves no gap in the sequence";
+  if (c.contains("host_udp_rcvbuf_errors")) {  // the host's counter includes other sockets'
+    EXPECT_GE(c["host_udp_rcvbuf_errors"], c["socket_drops"]);
+  }
+  if (c.contains("nic_rx_packets")) {  // 127.0.0.1 is on the loopback interface
+    EXPECT_GE(c["nic_rx_packets"], 20U);
+  }
+
+  // The next packet reveals the gap: the sequence tracker counts exactly the dropped packets.
+  tx.send(packets[20].bytes);
+  (void)read_until_quiet(d);
+  c = counters_of(d);
+  EXPECT_EQ(c["packets_lost"], 20U - delivered);
+  EXPECT_EQ(c["socket_drops"], 20U - delivered);
+}
+
+TEST(UdpDetector, TheKernelsDropCountArrivesWithTheNextDatagram) {
+  // REQ: SRS-RDO-013
+  // Without /proc (an empty root), only SO_RXQ_OVFL tells the adapter about drops, and it
+  // comes with the next datagram that the socket queues.
+  auto s = loopback();
+  s.receive_buffer_bytes = 1;
+  auto opened = UdpDetector::open(s, ::testing::TempDir() + "no-such-root");
+  ASSERT_TRUE(opened) << opened.error();
+  UdpDetector& d = **opened;
+  Sender tx{d.port()};
+  const auto packets = burst();
+  for (std::size_t i = 0; i < 20; ++i) {
+    tx.send(packets[i].bytes);
+  }
+  (void)read_until_quiet(d);
+  auto c = counters_of(d);
+  const std::uint64_t delivered = c["packets_delivered"];
+  ASSERT_LT(delivered, 20U);
+  EXPECT_EQ(c["socket_drops"], 0U) << "no datagram has carried the count yet";
+  EXPECT_FALSE(c.contains("socket_queue_bytes"));
+  EXPECT_FALSE(c.contains("host_udp_rcvbuf_errors")) << "unknown, so not reported as zero";
+  tx.send(packets[20].bytes);
+  (void)read_until_quiet(d);
+  c = counters_of(d);
+  EXPECT_EQ(c["socket_drops"], 20U - delivered);
+  EXPECT_EQ(c["packets_lost"], c["socket_drops"]);
+}
+
+TEST(UdpDetector, ReportsTheHostsCountersAsChangesSinceItOpened) {
+  // REQ: SRS-RDO-014
+  const std::filesystem::path root = ::testing::TempDir() + "udp-root-" + std::to_string(::getpid());
+  std::filesystem::create_directories(root / "proc/net");
+  const auto snmp = [&](int rcvbuf_errors) {
+    std::ofstream{root / "proc/net/snmp"}
+        << "Udp: InDatagrams NoPorts InErrors OutDatagrams RcvbufErrors SndbufErrors InCsumErrors\n"
+        << "Udp: 1000 0 " << rcvbuf_errors << " 0 " << rcvbuf_errors << " 0 0\n";
+  };
+  snmp(117);
+  {
+    auto opened = UdpDetector::open(loopback(), root);
+    ASSERT_TRUE(opened) << opened.error();
+    snmp(120);
+    auto c = counters_of(**opened);
+    EXPECT_EQ(c["host_udp_rcvbuf_errors"], 3U);
+    EXPECT_EQ(c["host_udp_in_errors"], 3U);
+    EXPECT_EQ(c["host_udp_in_datagrams"], 0U);
+    EXPECT_FALSE(c.contains("host_softnet_dropped")) << "the root has no softnet_stat";
+    EXPECT_FALSE(c.contains("nic_rx_dropped")) << "the root has no interface statistics";
+  }
+  std::filesystem::remove_all(root);
 }
 
 TEST(UdpDetector, ASecondRunOnTheSamePortStarts) {

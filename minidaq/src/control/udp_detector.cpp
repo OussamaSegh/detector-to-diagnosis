@@ -2,8 +2,10 @@
 #include "minidaq/control/udp_detector.hpp"
 
 #include <arpa/inet.h>
+#include <ifaddrs.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -22,9 +24,52 @@ std::string errno_text(int e) {
   return std::string{std::strerror(e)};  // NOLINT(concurrency-mt-unsafe): control-thread setup and fault text only
 }
 
+// The interface that carries `addr`, from the kernel's list; empty for 0.0.0.0 or when no
+// interface has the address.
+std::string interface_of(const in_addr& addr) {
+  if (addr.s_addr == htonl(INADDR_ANY)) {
+    return {};
+  }
+  ifaddrs* list = nullptr;
+  if (::getifaddrs(&list) != 0) {
+    return {};
+  }
+  std::string name;
+  for (const ifaddrs* i = list; i != nullptr; i = i->ifa_next) {
+    if (i->ifa_addr != nullptr && i->ifa_addr->sa_family == AF_INET &&
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): the sockets API's sockaddr
+        reinterpret_cast<const sockaddr_in*>(i->ifa_addr)->sin_addr.s_addr == addr.s_addr) {
+      name = i->ifa_name;
+      break;
+    }
+  }
+  ::freeifaddrs(list);
+  return name;
+}
+
+// [snippet:dropped-so-far]
+// The SO_RXQ_OVFL value attached to a datagram: how many datagrams the socket had dropped
+// when this one was queued. 0 when the kernel attached none.
+std::uint64_t dropped_so_far(const msghdr& h) noexcept {
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-type-const-cast):
+  // the CMSG macros of the sockets API
+  for (cmsghdr* c = CMSG_FIRSTHDR(&h); c != nullptr; c = CMSG_NXTHDR(const_cast<msghdr*>(&h), c)) {
+    if (c->cmsg_level == SOL_SOCKET && c->cmsg_type == SO_RXQ_OVFL &&
+        c->cmsg_len >= CMSG_LEN(sizeof(std::uint32_t))) {
+      std::uint32_t v = 0;
+      std::memcpy(&v, CMSG_DATA(c), sizeof v);
+      return v;
+    }
+  }
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast,cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-type-const-cast)
+  return 0;
+}
+// [/snippet:dropped-so-far]
+
 }  // namespace
 
-Expected<std::unique_ptr<UdpDetector>, std::string> UdpDetector::open(const config::UdpSettings& s) {
+Expected<std::unique_ptr<UdpDetector>, std::string> UdpDetector::open(const config::UdpSettings& s,
+                                                                      std::filesystem::path host_root) {
   sockaddr_in addr{};
   addr.sin_family = AF_INET;
   addr.sin_port = htons(s.port);
@@ -45,13 +90,23 @@ Expected<std::unique_ptr<UdpDetector>, std::string> UdpDetector::open(const conf
   socklen_t len = sizeof granted;
   (void)::getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &granted, &len);
   // [/snippet:rcvbuf]
+  // [snippet:rxq-ovfl]
+  // Every datagram then carries the number of datagrams this socket has dropped so far.
+  const int on = 1;
+  (void)::setsockopt(fd, SOL_SOCKET, SO_RXQ_OVFL, &on, sizeof on);
+  // [/snippet:rxq-ovfl]
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): the sockets API takes a sockaddr*
   if (::bind(fd, reinterpret_cast<const sockaddr*>(&addr), sizeof addr) != 0) {
     const int e = errno;
     ::close(fd);
     return Unexpected{"udp: bind " + s.address + ":" + std::to_string(s.port) + ": " + errno_text(e)};
   }
-  std::unique_ptr<UdpDetector> d{new UdpDetector(fd, s)};
+  std::unique_ptr<UdpDetector> d{
+      new UdpDetector(fd, s, net::HostCounterReader{std::move(host_root), interface_of(addr.sin_addr)})};
+  if (struct stat st{}; ::fstat(fd, &st) == 0) {
+    d->inode_ = st.st_ino;
+  }
+  d->host_at_open_ = d->host_.read();
   sockaddr_in bound{};
   socklen_t blen = sizeof bound;
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): as above
@@ -70,9 +125,11 @@ Expected<std::unique_ptr<UdpDetector>, std::string> UdpDetector::open(const conf
   return d;
 }
 
-UdpDetector::UdpDetector(int fd, const config::UdpSettings& s)
+UdpDetector::UdpDetector(int fd, const config::UdpSettings& s, net::HostCounterReader host)
     : fd_{fd},
+      host_{std::move(host)},
       tracker_{readout::TrackerConfig{s.reorder_window_packets, s.max_hold_us * 1000}},
+      control_(batch_datagrams * control_bytes),
       buffers_(batch_datagrams * (readout::max_packet_bytes + 1)),
       pending_((batch_datagrams + s.reorder_window_packets) * readout::max_words) {}
 
@@ -103,6 +160,8 @@ void UdpDetector::receive_batch() {
     iov[i].iov_len = slot;
     msgs[i].msg_hdr.msg_iov = &iov[i];
     msgs[i].msg_hdr.msg_iovlen = 1;
+    msgs[i].msg_hdr.msg_control = control_.data() + i * control_bytes;
+    msgs[i].msg_hdr.msg_controllen = control_bytes;
   }
   const int got = ::recvmmsg(fd_, msgs.data(), batch_datagrams, MSG_DONTWAIT, nullptr);
   const std::int64_t now = monotonic_ns();
@@ -125,6 +184,7 @@ void UdpDetector::receive_batch() {
       const auto& m = msgs[static_cast<std::size_t>(i)];
       const std::size_t size = (m.msg_hdr.msg_flags & MSG_TRUNC) != 0 ? slot : m.msg_len;
       ++datagrams_;
+      socket_drops_ = std::max(socket_drops_, dropped_so_far(m.msg_hdr));
       const auto bytes = std::span<const std::byte>(buffers_).subspan(static_cast<std::size_t>(i) * slot, size);
       if (auto p = readout::parse_packet(bytes); !p) {
         ++rejected_[static_cast<std::size_t>(p.error())];
@@ -144,6 +204,7 @@ void UdpDetector::receive_batch() {
   publish_counters();
 }
 
+
 void UdpDetector::publish_counters() noexcept {
   const auto& t = tracker_.stats();
   constexpr auto r = std::memory_order_relaxed;
@@ -160,6 +221,7 @@ void UdpDetector::publish_counters() noexcept {
   counters_.resyncs.store(t.resyncs, r);
   counters_.words.store(t.words, r);
   counters_.receive_batches.store(receive_batches_, r);
+  counters_.socket_drops.store(socket_drops_, r);
   // Only changes reach the flight recorder: a lossy link adds an event per batch, not per call.
   if (t.lost > traced_lost_) {
     trace(TraceCode::link_gap, t.lost - traced_lost_, t.lost);
@@ -191,6 +253,21 @@ std::vector<DetectorCounter> UdpDetector::counters() const {
   for (std::size_t i = 0; i < readout::num_packet_errors; ++i) {
     c.push_back({"rejected_" + std::string{readout::to_string(static_cast<readout::PacketError>(i))},
                  counters_.rejected[i].load(r)});
+  }
+  // [snippet:socket-drops]
+  // The drop count travels with the next datagram, so the last drops of a run arrive with no
+  // datagram at all. /proc/net/udp has the count at any time; the larger of the two is the
+  // count (both only grow, and the drops column wraps only after 2^32 drops).
+  std::uint64_t drops = counters_.socket_drops.load(r);
+  const auto socket = host_.socket(inode_);
+  if (socket) {
+    drops = std::max(drops, socket->drops);
+    c.push_back({"socket_queue_bytes", socket->rx_queue_bytes});
+  }
+  c.push_back({"socket_drops", drops});
+  // [/snippet:socket-drops]
+  for (auto& [name, value] : net::difference(host_.read(), host_at_open_)) {
+    c.push_back({std::move(name), value});
   }
   return c;
 }

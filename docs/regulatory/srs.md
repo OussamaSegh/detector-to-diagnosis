@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 11 (MiniDAQ 0.5.0-dev). Status: draft for review.
+Version 12 (MiniDAQ 0.5.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -61,6 +61,9 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-RDO-010 | The UDP detector adapter shall refuse an address that is not a numeric IPv4 address and report the port it bound. | readout | T |
 | SRS-RDO-011 | The UDP detector adapter shall deliver the words of the packets in sequence order and count every rejected datagram by reason and every lost packet. | readout | T |
 | SRS-RDO-012 | When the configuration selects the UDP source, the acquisition service shall acquire from the network, report the link counters in its status, and release the previous run's port before it opens the next run's. | service | T |
+| SRS-RDO-013 | The UDP detector adapter shall report the number of datagrams that the kernel dropped at its socket, including datagrams dropped after the last datagram it received. | readout | T |
+| SRS-RDO-015 | The acquisition service's run integrity verdict shall count a nonzero socket drop count of the UDP detector adapter as a loss. | service | T |
+| SRS-RDO-014 | The UDP detector adapter shall report the host's UDP, receive backlog and network interface drop counters as their changes since the adapter was opened, for the counters it can read and for no others. | readout | T |
 
 ### 2.4 Pipeline (PIPE)
 
@@ -310,3 +313,4 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | 9 | Chapter 21: the diagnostics requirements SRS-DIAG-001 to SRS-DIAG-005 (ADR 0016, CR-0007); SRS-SEC-003 lets an observer use `diagnostics`, which only reads. SRS-SRT-013 also orders two singles of one crystal with equal times by energy (problem report MDQ-PR-027). |
 | 10 | Release 0.4.0: the verification of SRS-PERF-020 and SRS-PERF-021 re-measured; both requirements unchanged and met. |
 | 11 | Chapter 22: the front-end hardware requirements SRS-HW-001 to SRS-HW-010 (ADR 0017, CR-0008); control API 2.2. |
+| 12 | Chapter 23: the receive path's drop counters, SRS-RDO-013 to SRS-RDO-015 (ADR 0018, CR-0009). |
