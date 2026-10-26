@@ -79,15 +79,21 @@ blocks removed.
 
 Commits and pushing:
 
-- Commit author: `OussamaSegh <23560339+OussamaSegh@users.noreply.github.com>`. Use
+- Commit author: `OussamaSegh <23560339+OussamaSegh@users.noreply.github.com>` (GitHub's
+  no-reply address, since 2026-10-26). Use
   `git -c user.name=OussamaSegh -c user.email=23560339+OussamaSegh@users.noreply.github.com commit`.
+- **No personal information in any commit** (user rule, 2026-10-26, when the repository became
+  public): no e-mail address, full name, phone, address, employer or job details, role
+  description text, salary or offer details, private situation, tokens or credentials, and no
+  private links (claude.ai sessions or projects, the project files folder). Check every diff
+  for them before committing; `git grep -i -E "gmail|@[a-z]+\.(com|ch)"` finds the common case.
 - Every commit message ends with these lines:
 
   ```
   Review: change control checklist, items 1 to 6.
 
   Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
-  Claude-Session: https://claude.ai/code/session_0173h525zM4emrVTSNy7R2ut
+  Claude-Session: <the session's link, as the session's attribution instructions give it>
   ```
 
   A new session uses its own Claude-Session line.
@@ -99,7 +105,7 @@ Commits and pushing:
   Create tags locally. They travel in the release zip and the git bundle, and the user pushes
   them (`git fetch BUNDLE 'refs/tags/*:refs/tags/*' && git push origin --tags`).
 - Nothing goes to an external service without the user's approval. Pushing to the user's
-  GitHub repository `OussamaSegh/neurolf-engineer` (private) is approved.
+  GitHub repository `OussamaSegh/neurolf-engineer` (public since 2026-10-26) is approved.
 
 Dependencies and process:
 
@@ -139,10 +145,10 @@ which builds the exercises).
 
 Durable copies outside the container:
 
-- `/mnt/project-files/neurolf-book/vX.Y.Z/` holds each release: the book and solutions as PDF
+- `the project files folder: neurolf-book/vX.Y.Z/` holds each release: the book and solutions as PDF
   and EPUB, `minidaq-vX.Y.Z.zip` (a full git clone with tags), the SBOM, the release record and
   the CHANGELOG.
-- `/mnt/project-files/neurolf-book/backup/neurolf-wip.bundle` is a git bundle of every branch
+- `the project files folder: neurolf-book/backup/neurolf-wip.bundle` is a git bundle of every branch
   and tag. Refresh it after each chapter with `git bundle create ... --all`.
 - If the container is lost, run `git clone` from GitHub, then fetch the tags from the bundle.
 
@@ -178,7 +184,7 @@ A release:
 5. Commit and push. **Wait for green GitHub CI on that release commit** (SDP section 8,
    MDQ-PR-016).
 6. Tag `book-vX.Y.Z`, build the book and the solutions, zip the clone, and copy everything to
-   `/mnt/project-files/neurolf-book/vX.Y.Z/`.
+   `the project files folder: neurolf-book/vX.Y.Z/`.
 7. Write the release report as a Claude Doc.
 
 Known gotchas are kept in the project memory notes: neurolf-build-gotchas,
@@ -267,8 +273,8 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
 
 ### In progress (as of the last update)
 
-Chapter 20 is complete and tagged ch20 locally (069e5a0, ci, gates and perf green): `ch20` goes on the commit that fills its measurements
-once GitHub CI is green there. Then refresh the bundle and start Chapter 21.
+Chapter 20 is complete and tagged ch20 locally on 069e5a0, where ci, gates and perf were green on
+GitHub. Chapter 21 is in progress.
 
 ### Left to do, in order
 
