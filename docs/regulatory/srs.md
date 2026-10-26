@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 12 (MiniDAQ 0.5.0-dev). Status: draft for review.
+Version 13 (MiniDAQ 0.5.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -281,13 +281,18 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | SRS-HW-001 | The slow-control loop shall, every cycle (100 ms by default), set each board's bias to V_bd(25 C) + k (T - 25 C) + V_ov for the board's measured temperature T, clamped to the configured limits (36 V to 43 V by default), and write a new setpoint only when it moved by at least the update step (5 mV). | hw | T |
 | SRS-HW-002 | Before it enables a board's bias supply, the slow-control loop shall write the ramp rate and then the setpoint, so that the supply never drives a setpoint left from before. | hw | T |
 | SRS-HW-003 | The slow-control loop shall report a temperature warning at or above 35 C that clears below 34 C, and latch a fault at or above 40 C or below 5 C, the latter as a sensor that is not believed. | hw | T |
-| SRS-HW-004 | The slow-control loop shall latch a fault on a board, switch that board's bias off and record the cause in the flight recorder when the board does not answer in 3 cycles in a row, its identity is wrong, it reports overtemperature, its bias current exceeds the limit (500 uA), its supply cannot hold the setpoint, or its bias has not reached the setpoint within the ramp time plus 2 s. | hw | T |
+| SRS-HW-004 | The slow-control loop shall latch a fault on a board, switch that board's bias and triggers off and record the cause in the flight recorder when the board does not answer in 3 cycles in a row, its identity is wrong, it reports overtemperature, its bias current exceeds the limit (500 uA), its supply cannot hold the setpoint, or its bias has not reached the setpoint within the ramp time plus 2 s. | hw | T |
 | SRS-HW-005 | The slow-control loop shall keep a fault latched until an operator acknowledges it, and then clear the board's sticky error flags and power the board up again; a fault whose cause remains latches again in the next cycle. | hw | T |
 | SRS-HW-006 | When a hardware port is given, the acquisition service shall refuse `start` with `device_error` while a board is not ready, and enter the fault state with a fault starting with "hw:" and the fault source `hardware` when a board's fault latches, in any state but fault. | service | T |
-| SRS-HW-007 | The status and the run record shall contain the field `hardware`: null without a hardware port, otherwise whether every board is ready and, for each board, its slot, state, temperature, temperature level, target, setpoint and measured bias, bias current and fault (control API 2.2). | service | T |
+| SRS-HW-007 | The status and the run record shall contain the field `hardware`: null without a hardware port, otherwise whether every board is ready and, for each board, its slot, state, temperature, temperature level, target, setpoint and measured bias, bias current and fault, and since control API 2.3 its firmware version, triggers, FIFO level, whether its FIFO is empty and its FIFO overflows, with the run's drain timeouts. | service | T |
 | SRS-HW-008 | The register definitions shall be generated from the register map specification and make code that writes a read-only register, reads a write-only one or does a read-modify-write of a write-1-to-clear register fail to compile. | hw | T |
 | SRS-HW-009 | The memory-mapped bus shall refuse an access that is not 4-byte aligned or lies outside the mapped region, and perform each register access as exactly one 32-bit load or store. | hw | T |
-| SRS-HW-010 | The server shall read the hardware description given with `--hardware` as strictly as an acquisition configuration: schema version 1.0, every key known, every value in its range, 1 to 64 boards, each problem reported with its JSON Pointer. | config | T |
+| SRS-HW-010 | The server shall read the hardware description given with `--hardware` as strictly as an acquisition configuration: schema version 1.0 or version 1.1, every key known, every value in its range, 1 to 64 boards, each problem reported with its JSON Pointer. | config | T |
+| SRS-HW-011 | The slow-control loop shall, every cycle, latch a fault on a board whose firmware is older than version 1.2 or has a major version other than version 1, the versions that the interface control document `docs/hw/icd-feb.md` lists as supported. | hw | T |
+| SRS-HW-012 | When a hardware port is given, the acquisition service shall switch the boards' triggers on only after the run's pipeline has started, and enter the fault state with a fault starting with "hw:" when the boards have not switched them on within the trigger timeout (2 s by default). | service | T |
+| SRS-HW-013 | When a hardware port is given and a run is stopped, the acquisition service shall switch the boards' triggers off and stop the pipeline only once every board, in a slow-control cycle after the switch, reports its triggers off and its output FIFO empty, or once the drain timeout (2 s by default) has passed. | service | T |
+| SRS-HW-014 | The acquisition service shall switch the boards' triggers off when a run ends on its own, enters the fault state or is reset. | service | T |
+| SRS-HW-015 | The run's integrity verdict shall count as losses each board's FIFO overflows since its triggers were switched on, which the slow-control loop counts and clears every cycle, and a drain that ran out of time (risk control RC-30). | service | T |
 
 ## 3. Verification other than test
 
@@ -314,3 +319,4 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | 10 | Release 0.4.0: the verification of SRS-PERF-020 and SRS-PERF-021 re-measured; both requirements unchanged and met. |
 | 11 | Chapter 22: the front-end hardware requirements SRS-HW-001 to SRS-HW-010 (ADR 0017, CR-0008); control API 2.2. |
 | 12 | Chapter 23: the receive path's drop counters, SRS-RDO-013 to SRS-RDO-015 (ADR 0018, CR-0009). |
+| 13 | Chapter 24: the firmware check and the run's sequencing with the boards, SRS-HW-011 to SRS-HW-015; SRS-HW-004, SRS-HW-007 and SRS-HW-010 extended (ADR 0019, CR-0010); control API 2.3. |

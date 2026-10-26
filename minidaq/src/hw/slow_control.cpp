@@ -84,10 +84,13 @@ void SlowControl::latch(Board& b, HwFaultCause cause, std::string why) {
   b.s.fault = std::move(why);
   b.configured = false;
   b.ready_deadline_ns.reset();
+  b.s.triggers = false;
+  b.s.fifo_empty = false;
   trace(TraceCode::hw_fault, b.s.index, static_cast<std::uint64_t>(cause));
-  // The fail-safe state of a SiPM is unbiased. Best effort: a board that does not answer
-  // cannot be told, and its own protection is all that is left.
-  (void)write_field<feb::Control::BiasEnable>(*b.bus, 0);
+  // The fail-safe state of a SiPM is unbiased, and a board in fault sends no data: bias and
+  // triggers off in one write. Best effort: a board that does not answer cannot be told, and
+  // its own protection is all that is left.
+  (void)write<feb::Control>(*b.bus, 0);
 }
 
 // [snippet:step-board]
@@ -114,9 +117,11 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     return *v;
   };
   const std::uint32_t id = rd(feb::BoardId::address);
+  const std::uint32_t fw = rd(feb::FwVersion::address);
   const std::uint32_t temp = rd(feb::Temperature::address);
   const std::uint32_t status = rd(feb::Status::address);
   const std::uint32_t errors = rd(feb::ErrorFlags::address);
+  const std::uint32_t fifo = rd(feb::FifoLevel::address);
   const std::uint32_t monitor = rd(feb::BiasMonitor::address);
   const std::uint32_t current = rd(feb::BiasCurrent::address);
   if (failed) {
@@ -137,6 +142,23 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     return;
   }
   s.slot = feb::BoardId::Slot::get(id);
+  // [snippet:firmware-check]
+  // Every cycle, not once: a board can be swapped or reflashed while the software runs. A
+  // register map from another major version may put other meanings at the same addresses, so
+  // nothing else of this board is believed.
+  const std::uint32_t major = feb::FwVersion::Major::get(fw);
+  const std::uint32_t minor = feb::FwVersion::Minor::get(fw);
+  s.firmware = std::to_string(major) + "." + std::to_string(minor) + "." +
+               std::to_string(feb::FwVersion::Patch::get(fw));
+  if (major != settings_.firmware_major || minor < settings_.firmware_min_minor) {
+    latch(b, HwFaultCause::firmware,
+          "firmware " + s.firmware + " is not supported: this software needs " +
+              std::to_string(settings_.firmware_major) + "." +
+              std::to_string(settings_.firmware_min_minor) + " or a later " +
+              std::to_string(settings_.firmware_major) + ".x");
+    return;
+  }
+  // [/snippet:firmware-check]
   s.temperature_c = feb::Temperature::CelsiusQ7::get_signed(temp) / 128.0;
   s.monitor_mv = feb::BiasMonitor::Millivolts::get(monitor);
   s.current_ua = feb::BiasCurrent::Microamps::get(current);
@@ -178,6 +200,36 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
               " V measured, " + fixed(s.setpoint_mv / 1000.0, 3) + " V set");
     return;
   }
+
+  // [snippet:triggers]
+  // The output FIFO, and the triggers the service asked for. An overflow is a loss of data, not
+  // a fault of the board: it is counted for the run's integrity and cleared. An overflow from
+  // before the triggers go on belongs to no run.
+  s.fifo_words = feb::FifoLevel::Words::get(fifo);
+  s.fifo_empty = feb::Status::FifoEmpty::get(status) != 0;
+  const bool triggers = triggers_wanted_.load();
+  if (feb::ErrorFlags::FifoOverflow::get(errors) != 0) {
+    if (s.triggers || !triggers) {
+      ++s.fifo_overflows;
+    }
+    (void)clear<feb::ErrorFlags>(*b.bus, feb::ErrorFlags::FifoOverflow::mask);
+  }
+  if (triggers != s.triggers) {
+    if (!write_field<feb::Control::TriggerEnable>(*b.bus, triggers ? 1U : 0U)) {
+      ++s.failed_accesses;
+      ++b.consecutive_failures;
+      return;
+    }
+    s.triggers = triggers;
+    if (triggers) {
+      s.fifo_overflows = 0;
+    } else {
+      // The status was read before this write: what the FIFO holds after it is not known
+      // until the next cycle reads it again.
+      s.fifo_empty = false;
+    }
+  }
+  // [/snippet:triggers]
 
   // The bias for this temperature, inside the limits; the setpoint is written before the
   // supply is enabled, so that it never drives an old value.
@@ -259,8 +311,6 @@ void SlowControl::start(Clock clock, std::function<void()> before_each) {
   stop();
   thread_ = std::jthread{[this, clock = std::move(clock),
                           before_each = std::move(before_each)](const std::stop_token& st) {
-    std::mutex m;
-    std::condition_variable_any cv;
     auto next = std::chrono::steady_clock::now();
     while (!st.stop_requested()) {
       if (before_each) {
@@ -268,10 +318,39 @@ void SlowControl::start(Clock clock, std::function<void()> before_each) {
       }
       step(clock());
       next += settings_.period;
-      std::unique_lock lock{m};
-      (void)cv.wait_until(lock, st, next, [] { return false; });  // wakes early only on stop
+      std::unique_lock lock{wake_mu_};
+      // Wakes early on stop, and for set_triggers(): a run should not wait a whole period.
+      if (wake_cv_.wait_until(lock, st, next, [this] { return wake_; })) {
+        next = std::chrono::steady_clock::now();
+      }
+      wake_ = false;
     }
   }};
+}
+
+void SlowControl::set_triggers(bool on) {
+  triggers_wanted_.store(on);
+  {
+    const std::lock_guard lock{wake_mu_};
+    wake_ = true;
+  }
+  wake_cv_.notify_all();
+}
+
+bool SlowControl::triggers_are(bool on) const {
+  const std::lock_guard lock{mu_};
+  return cycles_.load(std::memory_order_relaxed) > 0 &&
+         std::ranges::all_of(published_, [on](const BoardSnapshot& s) {
+           return s.state != BoardState::fault && s.triggers == on;
+         });
+}
+
+bool SlowControl::drained() const {
+  const std::lock_guard lock{mu_};
+  return cycles_.load(std::memory_order_relaxed) > 0 &&
+         std::ranges::all_of(published_, [](const BoardSnapshot& s) {
+           return s.state != BoardState::fault && !s.triggers && s.fifo_empty;
+         });
 }
 
 void SlowControl::stop() {
@@ -283,7 +362,7 @@ void SlowControl::stop() {
 
 void SlowControl::power_down() {
   for (auto& b : boards_) {
-    (void)write_field<feb::Control::BiasEnable>(*b.bus, 0);
+    (void)write<feb::Control>(*b.bus, 0);  // bias and triggers off
     b.configured = false;
   }
 }

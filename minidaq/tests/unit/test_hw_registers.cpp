@@ -104,7 +104,9 @@ TEST(Registers, ATemperatureIsTwosComplementIn128thsOfADegree) {
 
 TEST(Registers, TheGeneratedMapMatchesItsSpecification) {
   // REQ: SRS-HW-008
-  EXPECT_EQ(feb::registers.size(), 11U);
+  EXPECT_EQ(feb::registers.size(), 12U);
+  EXPECT_EQ(feb::FifoLevel::address, 0x014U) << "map 1.1";
+  EXPECT_EQ(feb::ErrorFlags::FifoOverflow::mask, 0x8U);
   EXPECT_EQ(feb::BoardId::Magic::get(feb::BoardId::reset), 0x4D51U);
   EXPECT_EQ(feb::Control::address, 0x008U);
   EXPECT_EQ(feb::Control::SoftReset::mask, 0x8000'0000U);

@@ -87,3 +87,23 @@ TEST(RunIntegrity, MissingPortsCountAsNoLoss) {
   // REQ: SRS-CTL-030
   EXPECT_EQ(assess_integrity(json::parse(R"({"state": "idle", "fault": null})"))["complete"], true);
 }
+
+TEST(RunIntegrity, TheBoardsLossesCount) {
+  // REQ: SRS-HW-015
+  json s = clean_status();
+  s["hardware"] = {{"drain_timeouts", 0U},
+                   {"boards", json::array({{{"fifo_overflows", 0U}}, {{"fifo_overflows", 0U}}})}};
+  EXPECT_EQ(assess_integrity(s)["complete"], true) << "boards without losses";
+  s["hardware"]["boards"][1]["fifo_overflows"] = 3U;
+  json v = assess_integrity(s);
+  EXPECT_EQ(v["complete"], false);
+  ASSERT_EQ(v["losses"].size(), 1U);
+  EXPECT_EQ(v["losses"][0]["counter"], "/hardware/boards/1/fifo_overflows");
+  s["hardware"]["boards"][1]["fifo_overflows"] = 0U;
+  s["hardware"]["drain_timeouts"] = 1U;
+  v = assess_integrity(s);
+  ASSERT_EQ(v["losses"].size(), 1U);
+  EXPECT_EQ(v["losses"][0]["counter"], "/hardware/drain_timeouts");
+  s["hardware"] = nullptr;
+  EXPECT_EQ(assess_integrity(s)["complete"], true) << "no hardware port";
+}

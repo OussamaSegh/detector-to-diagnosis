@@ -80,6 +80,12 @@ struct HardwareBoard {
   double current_ua = 0;
   bool at_limit = false;
   std::string fault;      // empty unless state is "fault"
+  // Chapter 24: the firmware, the triggers and the output FIFO.
+  std::string firmware;   // "1.2.0"
+  bool triggers = false;
+  bool fifo_empty = false;
+  std::uint32_t fifo_words = 0;
+  std::uint64_t fifo_overflows = 0;  // since the triggers were last switched on: lost data
 };
 
 class HardwarePort {
@@ -93,6 +99,12 @@ class HardwarePort {
   virtual void acknowledge() = 0;
   [[nodiscard]] virtual std::vector<HardwareBoard> boards() const = 0;
   [[nodiscard]] virtual std::string describe() const = 0;
+  // Chapter 24: switches every board's triggers on or off, at once rather than at the next
+  // period; triggers_are() and drained() say when the boards have done it.
+  virtual void set_triggers(bool on) = 0;
+  [[nodiscard]] virtual bool triggers_are(bool on) const = 0;
+  // Every board has its triggers off and nothing left in its output FIFO.
+  [[nodiscard]] virtual bool drained() const = 0;
 };
 
 // The service creates a fresh detector and sink for every configuration.

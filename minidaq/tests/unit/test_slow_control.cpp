@@ -296,3 +296,129 @@ TEST(SlowControl, PowersEveryBoardDownAtShutdown) {
   rig.now += 41 * s;
   EXPECT_DOUBLE_EQ(rig.board.bias_volts(), 0.0);
 }
+
+// Chapter 24: the firmware, the triggers and the output FIFO.
+
+TEST(SlowControl, RefusesFirmwareItWasNotWrittenFor) {
+  // REQ: SRS-HW-011
+  for (const std::uint32_t ok : {0x0102'0000U, 0x0102'0011U, 0x0109'0001U}) {
+    Rig rig;
+    rig.board.set_firmware(ok);
+    rig.run_for(45 * s);
+    EXPECT_EQ(rig.state().state, BoardState::ready) << std::hex << ok;
+  }
+  const std::uint64_t began = test_support::trace_clock_ns();
+  for (const std::uint32_t bad : {0x0101'0003U, 0x0200'0000U, 0x0002'0000U}) {
+    Rig rig;
+    rig.board.set_firmware(bad);
+    rig.sc.step(0);
+    EXPECT_EQ(rig.state().state, BoardState::fault) << std::hex << bad;
+    EXPECT_EQ(*read_field<feb::Control::BiasEnable>(rig.board), 0U);
+  }
+  const auto events = test_support::traced_since(began, TraceCode::hw_fault);
+  ASSERT_EQ(events.size(), 3U);
+  EXPECT_EQ(events[0].b, static_cast<std::uint64_t>(HwFaultCause::firmware));
+
+  // Checked every cycle: a board reflashed under a running system is caught at once, and an
+  // acknowledgment does not clear it while the firmware stays.
+  Rig rig;
+  rig.run_for(45 * s);
+  ASSERT_EQ(rig.state().state, BoardState::ready);
+  EXPECT_EQ(rig.state().firmware, "1.2.0");
+  rig.board.set_firmware(0x0101'0003U);
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().fault,
+            "firmware 1.1.3 is not supported: this software needs 1.2 or a later 1.x");
+  rig.sc.acknowledge();
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().state, BoardState::fault);
+}
+
+TEST(SlowControl, SwitchesTheTriggersWhenAskedAndSaysWhenItHasDone) {
+  // REQ: SRS-HW-012, SRS-HW-013
+  Rig rig;
+  rig.run_for(45 * s);
+  EXPECT_TRUE(rig.sc.triggers_are(false));
+  EXPECT_EQ(*read_field<feb::Control::TriggerEnable>(rig.board), 0U);
+  rig.sc.set_triggers(true);
+  EXPECT_FALSE(rig.sc.triggers_are(true)) << "not before a cycle has done it";
+  rig.sc.step(rig.now);
+  EXPECT_TRUE(rig.sc.triggers_are(true));
+  EXPECT_EQ(*read_field<feb::Control::TriggerEnable>(rig.board), 1U);
+  EXPECT_EQ(*read_field<feb::Control::BiasEnable>(rig.board), 1U) << "the bias is left alone";
+  EXPECT_FALSE(rig.sc.drained());
+
+  rig.sc.set_triggers(false);
+  rig.sc.step(rig.now);
+  EXPECT_EQ(*read_field<feb::Control::TriggerEnable>(rig.board), 0U);
+  EXPECT_FALSE(rig.sc.drained())
+      << "the FIFO was read before the triggers went off: what it holds now is not known";
+  rig.sc.step(rig.now);
+  EXPECT_TRUE(rig.sc.drained());
+}
+
+TEST(SlowControl, SaysDrainedOnlyOnceTheFifoIsEmpty) {
+  // REQ: SRS-HW-013
+  Rig rig;
+  rig.run_for(45 * s);
+  rig.board.set_data_rates(20'000.0, 10'000.0);  // the FIFO fills at 10,000 words/s
+  rig.sc.set_triggers(true);
+  rig.sc.step(rig.now);
+  rig.now += 100 * ms;
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().fifo_words, 1'000U);
+  EXPECT_FALSE(rig.state().fifo_empty);
+
+  rig.sc.set_triggers(false);
+  rig.sc.step(rig.now);
+  rig.now += 50 * ms;  // half of it sent
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().fifo_words, 500U);
+  EXPECT_FALSE(rig.sc.drained());
+  rig.now += 60 * ms;
+  rig.sc.step(rig.now);
+  EXPECT_TRUE(rig.sc.drained());
+  EXPECT_EQ(rig.state().fifo_overflows, 0U);
+}
+
+TEST(SlowControl, CountsFifoOverflowsAsLostDataNotAsAFault) {
+  // REQ: SRS-HW-015
+  Rig rig;
+  rig.run_for(45 * s);
+  rig.board.set_data_rates(100'000.0, 50'000.0);  // full after 82 ms
+  rig.sc.set_triggers(true);
+  rig.run_for(1 * s);
+  EXPECT_EQ(rig.state().state, BoardState::ready);
+  EXPECT_EQ(rig.state().fifo_words, 4'096U);
+  const auto overflows = rig.state().fifo_overflows;
+  EXPECT_GE(overflows, 9U) << "every cycle from the first full one finds the flag set again";
+  EXPECT_EQ(*read_field<feb::ErrorFlags::FifoOverflow>(rig.board), 0U) << "the cycle cleared it";
+  rig.now += 1 * ms;
+  EXPECT_EQ(*read_field<feb::ErrorFlags::FifoOverflow>(rig.board), 1U)
+      << "and the board sets it again when the next event finds the FIFO full";
+
+  // The next run starts at zero: what overflowed before its triggers went on is not its loss.
+  rig.sc.set_triggers(false);
+  rig.run_for(1 * s);
+  EXPECT_TRUE(rig.sc.drained());
+  rig.board.set_data_rates(20'000.0, 1'000'000.0);
+  rig.sc.set_triggers(true);
+  rig.run_for(1 * s);
+  EXPECT_EQ(rig.state().fifo_overflows, 0U);
+}
+
+TEST(SlowControl, ALatchedFaultSwitchesTheBiasAndTheTriggersOff) {
+  // REQ: SRS-HW-004
+  Rig rig;
+  rig.run_for(45 * s);
+  rig.sc.set_triggers(true);
+  rig.sc.step(rig.now);
+  ASSERT_EQ(*read_field<feb::Control::TriggerEnable>(rig.board), 1U);
+  rig.board.set_temperature(41.0);
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().state, BoardState::fault);
+  EXPECT_EQ(*read<feb::Control>(rig.board), 0U);
+  EXPECT_FALSE(rig.state().triggers);
+  EXPECT_FALSE(rig.sc.triggers_are(true));
+  EXPECT_FALSE(rig.sc.drained()) << "a board in fault cannot say what it still holds";
+}

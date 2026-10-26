@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 9 (MiniDAQ 0.5.0-dev, Chapter 23). Status: draft for review.
+Version 10 (MiniDAQ 0.5.0-dev, Chapter 24). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -50,6 +50,11 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
 - the receive path's drop counters: the datagrams dropped at MiniDAQ's socket, including the
   last ones of a run, and the host's and the network card's counters (Chapter 23,
   [ADR 0018](../adr/0018-kernel-udp-receive-with-drop-accounting.md)).
+- the contract with the boards' firmware: an interface control document
+  ([ICD-FEB](../hw/icd-feb.md)), a firmware check in every slow-control cycle, and a run whose
+  triggers go on after its pipeline starts and whose stop waits until every board has sent what
+  its output FIFO holds (items hw and service, control API 2.3, Chapter 24,
+  [ADR 0019](../adr/0019-firmware-contract-and-run-sequencing.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -148,6 +153,7 @@ The software system is class B: its highest item.
 | `AuditSink` | adapters (file), tests | service, server | Called synchronously on control threads only, never on stage threads |
 | `AcquisitionPipeline` | core | service | `start()`, `request_stop()`, `wait()`, `finished()`, counters and histograms readable from any thread |
 | `AcquisitionService` | application | protocol, server, tests | `configure`, `start`, `stop`, `reset` return a `CommandResult`; `status()` returns a JSON snapshot; thread-safe |
+| `HardwarePort` | hw (`SlowControlHardware`) | service | `not_ready()`, `fault()` and `boards()` read the last cycle's copy; `acknowledge()` and `set_triggers()` ask the next cycle, which `set_triggers()` starts at once; `triggers_are()` and `drained()` answer from that copy, and a board in fault is neither (Chapter 24) |
 | `handle_request` | adapters | server | One request line in, one response line out; never throws |
 | Configuration | application | apps, protocol | `parse_config` returns a validated `AcquisitionConfig` or all errors with JSON Pointer paths |
 
@@ -308,3 +314,4 @@ Open issues:
 | 7 | Chapter 17: the control API's security (API 2.0, item `access`, `ctl` class B, OpenSSL as SOUP, CR-0004). Also corrects what version 6 left stale: the API version (1.1 since CR-0003), the nlohmann/json version (3.12.0 since CR-0002) and the range of ADRs. |
 | 8 | Part IV, recorded at the release checks of 0.4.0 (MDQ-PR-031): the test harness, system tests and release package (Chapters 18 to 20), the diagnostics of Chapter 21 (ADR 0016, CR-0007) and control API 2.1. Also editorial: the text names no manufacturer. |
 | 9 | Part V: the front-end boards and item `hw` (Chapter 22, ADR 0017, CR-0008, control API 2.2) and the receive path's drop counters (Chapter 23, ADR 0018, CR-0009). |
+| 10 | Chapter 24: the firmware contract (ICD-FEB, version 1), the firmware check and the run's sequencing with the boards' triggers and FIFOs (ADR 0019, CR-0010, control API 2.3). |

@@ -1,0 +1,14 @@
+Each scenario: 5 runs of 1 s; the slow control's period is 100 ms.
+
+| Scenario | Stop to configured, ms (min / median / max) | Board 1 FIFO at stop, words | FIFO overflows | Drain timeouts | Complete |
+|---|---:|---:|---:|---:|---|
+| no hardware | 3 / 15 / 21 | n/a | n/a | n/a | 5 of 5 |
+<!-- no hardware: losses [] -->
+| link 50 times faster than the events | 123 / 137 / 140 | 0 | 0 | 0 | 5 of 5 |
+<!-- link 50 times faster than the events: losses [] -->
+| backlog of 2,000 words | 123 / 132 / 138 | 2,000 | 0 | 0 | 5 of 5 |
+<!-- backlog of 2,000 words: losses [] -->
+| FIFO overflows | 221 / 224 / 236 | 4,096 | 11 | 0 | 0 of 5 |
+<!-- FIFO overflows: losses ["/hardware/boards/1/fifo_overflows"] -->
+| link stalled | 523 / 538 / 539 | 4,096 | 10 to 12 | 5 | 0 of 5 |
+<!-- link stalled: losses ["/hardware/boards/1/fifo_overflows", "/hardware/drain_timeouts"] -->

@@ -5,11 +5,13 @@
 #include <gtest/gtest.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <vector>
 
 #include "eventually.hpp"
 #include "minidaq/config/hardware_config.hpp"
@@ -128,10 +130,38 @@ TEST(HardwareConfig, ReadsTheSettingsInTheirUnitsAndKeepsTheDefaults) {
   EXPECT_EQ(c->settings.period, 100ms);
 }
 
+TEST(HardwareConfig, Schema11AddsTheFirmwareTheFifoAndTheRunTimeouts) {
+  // REQ: SRS-HW-010
+  auto c = config::parse_hardware_config(R"({
+    "schema_version": "1.1",
+    "boards": [{"slot": 0, "firmware": "1.3.7", "fill_words_per_s": 5000,
+                "drain_words_per_s": 2500, "fault": "stalled_link"}],
+    "run": {"trigger_timeout_ms": 500, "drain_timeout_ms": 1500}
+  })");
+  ASSERT_TRUE(c) << config::format_errors(c.error());
+  EXPECT_EQ(c->boards[0].firmware, 0x0103'0007U);
+  EXPECT_DOUBLE_EQ(c->boards[0].drain_words_per_s, 2'500.0);
+  EXPECT_EQ(c->boards[0].fault, "stalled_link");
+  EXPECT_EQ(c->trigger_timeout, 500ms);
+  EXPECT_EQ(c->drain_timeout, 1'500ms);
+  for (const char* bad : {"1.2", "1.2.0.1", "256.0.0", "1.2.x", "v1.2.0", "1.2.0 "}) {
+    const std::string doc =
+        std::string{R"({"schema_version": "1.1", "boards": [{"firmware": ")"} + bad + R"("}]})";
+    auto e = config::parse_hardware_config(doc);
+    ASSERT_FALSE(e) << bad;
+    EXPECT_NE(config::format_errors(e.error()).find("/boards/0/firmware"), std::string::npos);
+  }
+  EXPECT_FALSE(config::parse_hardware_config(
+      R"({"schema_version": "1.1", "boards": [{}], "run": {"drain_timeout_ms": 0}})"));
+  EXPECT_FALSE(config::parse_hardware_config(
+      R"({"schema_version": "1.1", "boards": [{}], "firmware": {"major": 2}})"))
+      << "the supported firmware is not the description's to choose";
+}
+
 TEST(HardwareConfig, ReportsEveryProblemWithItsLocation) {
   // REQ: SRS-HW-010
   auto c = config::parse_hardware_config(R"({
-    "schema_version": "1.1", "backend": "mmio", "period_ms": 1,
+    "schema_version": "1.2", "backend": "mmio", "period_ms": 1,
     "boards": [{"device": "/dev/uio0", "slot": 1}, {"offset": 0}],
     "bias": {"min_v": 44.0},
     "temperature": {"warning_c": 41.0},
@@ -241,4 +271,126 @@ TEST(HardwareService, StatusAndRunRecordShowEachBoard) {
   EXPECT_NEAR(b["monitor_v"].get<double>(), 40.87, 0.05);
   EXPECT_TRUE(b["fault"].is_null());
   EXPECT_DOUBLE_EQ(hw["boards"][1]["setpoint_v"].get<double>(), 40.7) << "board 4 is at 25 C";
+}
+
+// Chapter 24: the boards' triggers follow the run.
+
+namespace {
+
+// A hardware port whose boards never switch their triggers on: a link that lost its control
+// channel, or firmware that ignores the bit.
+class DeafToTriggers final : public HardwarePort {
+ public:
+  explicit DeafToTriggers(std::shared_ptr<HardwarePort> inner) : inner_{std::move(inner)} {}
+  [[nodiscard]] std::optional<std::string> not_ready() const override {
+    return inner_->not_ready();
+  }
+  [[nodiscard]] std::optional<std::string> fault() const override { return inner_->fault(); }
+  void acknowledge() override { inner_->acknowledge(); }
+  [[nodiscard]] std::vector<HardwareBoard> boards() const override { return inner_->boards(); }
+  [[nodiscard]] std::string describe() const override { return inner_->describe(); }
+  void set_triggers(bool) override {}
+  [[nodiscard]] bool triggers_are(bool on) const override { return inner_->triggers_are(on); }
+  [[nodiscard]] bool drained() const override { return inner_->drained(); }
+
+ private:
+  std::shared_ptr<HardwarePort> inner_;
+};
+
+// Two boards that ramp in half a second; the second one with the given changes.
+config::HardwareConfig two_boards_with(const json& second) {
+  json board{{"slot", 4}};
+  board.update(second);
+  json doc{{"schema_version", "1.1"},
+           {"backend", "simulated"},
+           {"period_ms", 10},
+           {"bias", {{"ramp_v_per_s", 100.0}}},
+           {"boards", {{{"slot", 3}}, board}}};
+  auto cfg = config::parse_hardware_config(doc.dump());
+  EXPECT_TRUE(cfg) << config::format_errors(cfg.error());
+  return *cfg;
+}
+
+}  // namespace
+
+TEST(HardwareService, TheTriggersAreOnOnlyWhileARunTakesData) {
+  // REQ: SRS-HW-012, SRS-HW-014
+  Records records;
+  AcquisitionService svc{options(open(two_boards_with(json::object())), &records)};
+  ASSERT_TRUE(svc.configure(small(), "test").ok);
+  ASSERT_TRUE(test_support::eventually([&] { return svc.start("test").ok; }));
+  ASSERT_TRUE(test_support::eventually([&] {
+    const json b = svc.status()["hardware"]["boards"];
+    return b[0]["triggers"].get<bool>() && b[1]["triggers"].get<bool>();
+  }));
+  ASSERT_TRUE(svc.stop("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
+  {
+    const std::lock_guard lock{records.mu};
+    const json record = json::parse(records.last);
+    for (const json& b : record["hardware"]["boards"]) {
+      EXPECT_FALSE(b["triggers"].get<bool>()) << "the record is written after the drain";
+      EXPECT_TRUE(b["fifo_empty"].get<bool>());
+      EXPECT_EQ(b["firmware"], "1.2.0");
+    }
+    EXPECT_EQ(record["hardware"]["drain_timeouts"], 0);
+    EXPECT_TRUE(record["integrity"]["complete"].get<bool>()) << record["integrity"].dump();
+  }
+
+  // A run that ends on its own switches them off too, and so does a fault.
+  auto finite = small();
+  finite.stop_after_s = 0.01;
+  ASSERT_TRUE(svc.configure(finite, "test").ok);
+  ASSERT_TRUE(svc.start("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
+  ASSERT_TRUE(test_support::eventually(
+      [&] { return !svc.status()["hardware"]["boards"][1]["triggers"].get<bool>(); }));
+}
+
+TEST(HardwareService, ARunWhoseBoardsDoNotSwitchTheirTriggersOnEndsInAFault) {
+  // REQ: SRS-HW-012
+  ServiceOptions o =
+      options(std::make_shared<DeafToTriggers>(open(two_boards_with(json::object()))));
+  o.trigger_timeout = 100ms;
+  AcquisitionService svc{o};
+  ASSERT_TRUE(svc.configure(small(), "test").ok);
+  ASSERT_TRUE(test_support::eventually([&] { return svc.start("test").ok; }));
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience));
+  EXPECT_EQ(svc.status()["fault"], "hw: the boards did not switch their triggers on within 100 ms");
+}
+
+TEST(HardwareService, AStopWaitsForTheBoardsAndADrainThatRunsOutOfTimeIsALoss) {
+  // REQ: SRS-HW-013, SRS-HW-015
+  Records records;
+  std::vector<AuditRecord> audit;
+  std::mutex audit_mu;
+  ServiceOptions o = options(open(two_boards_with({{"fault", "stalled_link"}})), &records);
+  o.drain_timeout = 200ms;
+  o.audit = [&](const AuditRecord& r) {
+    const std::lock_guard lock{audit_mu};
+    audit.push_back(r);
+  };
+  AcquisitionService svc{o};
+  ASSERT_TRUE(svc.configure(small(), "test").ok);
+  ASSERT_TRUE(test_support::eventually([&] { return svc.start("test").ok; }));
+  ASSERT_TRUE(test_support::eventually([&] {
+    return svc.status()["hardware"]["boards"][1]["fifo_words"].get<int>() > 0;
+  })) << "the second board has taken data its link cannot send";
+  ASSERT_TRUE(svc.stop("test").ok);
+  const auto stopped = std::chrono::steady_clock::now();
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
+  EXPECT_GE(std::chrono::steady_clock::now() - stopped, 200ms)
+      << "the pipeline ran until the drain timed out";
+  const std::lock_guard lock{records.mu};
+  const json record = json::parse(records.last);
+  EXPECT_EQ(record["hardware"]["drain_timeouts"], 1);
+  EXPECT_FALSE(record["integrity"]["complete"].get<bool>());
+  bool counted = false;
+  for (const json& l : record["integrity"]["losses"]) {
+    counted = counted || l["counter"] == "/hardware/drain_timeouts";
+  }
+  EXPECT_TRUE(counted) << record["integrity"].dump();
+  const std::lock_guard lock_audit{audit_mu};
+  EXPECT_TRUE(std::ranges::any_of(
+      audit, [](const AuditRecord& r) { return r.action == "drain_timeout" && !r.ok; }));
 }

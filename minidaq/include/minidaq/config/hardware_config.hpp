@@ -11,8 +11,16 @@
 // resource file: {"device": "/dev/uio0", "offset": 0, "size": 4096}. backend "simulated": each
 // board is a hw::FakeBoard, whose temperature, dark current and fault the file sets, and whose
 // temperature can follow a file (temperature_file) that a test or a demonstration rewrites.
+//
+// Schema 1.1 (Chapter 24) adds, for simulated boards, the firmware version the board reports,
+// the rates of its output FIFO and the fault "stalled_link"; and for every backend the time the
+// boards may take to switch their triggers on and to send what they hold at the end of a run:
+//   "run": {"trigger_timeout_ms": 2000, "drain_timeout_ms": 2000}
+// The firmware versions the software supports are not in the file: they are a property of the
+// software, recorded in the interface control document, and no description can widen them.
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -25,7 +33,7 @@
 namespace minidaq::config {
 
 inline constexpr int hardware_supported_major = 1;
-inline constexpr int hardware_supported_minor = 0;
+inline constexpr int hardware_supported_minor = 1;
 inline constexpr std::size_t max_boards = 64;
 
 struct BoardConfig {
@@ -38,13 +46,18 @@ struct BoardConfig {
   double temperature_c = 25.0;
   std::string temperature_file;  // empty: the temperature stays temperature_c
   double dark_current_ua = 2.0;
-  std::string fault = "none";  // "none", "unresponsive", "vanished", "weak_supply"
+  std::string fault = "none";  // "none", "unresponsive", "vanished", "weak_supply", "stalled_link"
+  std::uint32_t firmware = 0x0102'0000;  // FW_VERSION, from "1.2.0"
+  double fill_words_per_s = 20'000.0;
+  double drain_words_per_s = 1'000'000.0;
 };
 
 struct HardwareConfig {
   std::string backend = "simulated";  // "simulated" or "mmio"
   std::vector<BoardConfig> boards;
   hw::SlowControlSettings settings;
+  std::chrono::milliseconds trigger_timeout{2'000};
+  std::chrono::milliseconds drain_timeout{2'000};
 };
 
 [[nodiscard]] Expected<HardwareConfig, ConfigErrors> parse_hardware_config(

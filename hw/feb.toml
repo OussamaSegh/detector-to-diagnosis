@@ -8,11 +8,15 @@
 #
 # Registers are 32 bits wide at byte addresses that are multiples of 4. Access: ro (read only),
 # rw (read and write), wo (write only, reads as 0), rw1c (read; writing 1 to a bit clears it).
+#
+# The map has its own version, separate from the firmware's: 1.1 added FIFO_EMPTY, FIFO_OVERFLOW
+# and FIFO_LEVEL (Chapter 24), and firmware 1.2 is the first that implements it. The interface
+# control document docs/hw/icd-feb.md records which firmware implements which map.
 
 [map]
 name = "feb"
 title = "MiniDAQ front-end board"
-version = "1.0"
+version = "1.1"
 width = 32
 
 [[register]]
@@ -62,6 +66,7 @@ fields = [
   { name = "bias_ramping", lsb = 1, width = 1, description = "The bias is moving towards the setpoint" },
   { name = "overtemp", lsb = 2, width = 1, description = "The board's own limit (60 C) is exceeded and it switched the bias off" },
   { name = "bias_fault", lsb = 3, width = 1, description = "The supply cannot reach or hold the setpoint" },
+  { name = "fifo_empty", lsb = 4, width = 1, description = "The output FIFO holds no data: everything the board took has been sent (map 1.1)" },
 ]
 
 [[register]]
@@ -74,6 +79,17 @@ fields = [
   { name = "overcurrent", lsb = 0, width = 1, description = "The bias current exceeded the board's limit" },
   { name = "overtemp_trip", lsb = 1, width = 1, description = "The board switched the bias off for temperature" },
   { name = "link_crc", lsb = 2, width = 1, description = "A data packet failed its CRC on the board" },
+  { name = "fifo_overflow", lsb = 3, width = 1, description = "The output FIFO was full when an event came: the board lost data (map 1.1)" },
+]
+
+[[register]]
+name = "fifo_level"
+address = 0x014
+access = "ro"
+reset = 0x00000000
+description = "How full the board's output FIFO is (map 1.1, Chapter 24)."
+fields = [
+  { name = "words", lsb = 0, width = 16, description = "Words waiting to be sent; the FIFO holds 4,096" },
 ]
 
 [[register]]

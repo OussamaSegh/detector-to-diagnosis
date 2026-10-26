@@ -48,3 +48,4 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/regulatory/security/threat-model.md`
 - `docs/regulatory/verification/stp.md`
 - `docs/code-review-checklist.md`
+- `docs/hw/icd-feb.md`

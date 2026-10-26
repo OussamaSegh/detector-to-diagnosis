@@ -346,8 +346,19 @@ readout), UdpDetector reports socket_drops (SO_RXQ_OVFL and /proc/net/udp, the t
 included; counted by the integrity verdict, RC-29) and host_*/nic_* deltas; bm_udp_receive;
 measurements/ch23 (drop accounting 18/18 runs, buffer footprint, receive cost); SRS-RDO-013 to
 015 (SRS v12), ADR 0018 (no kernel bypass), CR-0009 (2389c6c), architecture v9, exercises 23.1
-to 23.4. ch19/e5_udp_replay can fail under a parallel ctest run and passes alone. Next:
-Chapters 24 (FPGA, ICD, the sender's own packet count for tail loss on the network) and 25.
+to 23.4. The host_*/nic_* counters are host-wide and vary between runs: a test that compares
+detector_counters across runs must leave them out (ch19/e5 did not, and failed intermittently;
+fixed in Chapter 24's commit). Static analysis must be re-run after every last edit: a tidy
+finding in host_counters.cpp reached main and the CI gate self-test caught it (418a3bb).
+Chapter 24 code (firmware contract) is in: docs/hw/icd-feb.md (ICD-FEB, controlled document),
+register map 1.1 (fifo_empty, fifo_overflow, fifo_level), SlowControl firmware check every cycle
+and trigger control (set_triggers wakes the cycle; drained() needs a status read made after the
+triggers-off write), service start/stop sequencing (trigger_timeout, drain_timeout, ServiceOptions
+and hardware description 1.1 "run"), integrity counts /hardware/boards/i/fifo_overflows and
+/hardware/drain_timeouts, API 2.3, SRS-HW-011 to 015 (SRS v13), RC-30, RC-31, ADR 0019, CR-0010,
+architecture v10, measurements/ch24/run_sequence (stop 123 to 140 ms with boards vs 3 to 21 ms
+without). The sender's packet count (tail loss on the network) is an ICD open item for map 1.2.
+Next: the Chapter 24 text and exercises, then Chapter 25.
 
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,

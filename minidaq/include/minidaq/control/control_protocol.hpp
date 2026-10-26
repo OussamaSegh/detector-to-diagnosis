@@ -38,7 +38,7 @@
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "2.2";
+inline constexpr std::string_view api_version = "2.3";
 
 // diagnostics: how many flight-recorder events it returns without "events", and at most.
 inline constexpr std::size_t diagnostics_default_events = 64;

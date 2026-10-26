@@ -38,6 +38,7 @@
     "docs/regulatory/qms/internal-audit-2026-10-25.md",
     "docs/regulatory/security/threat-model.md",
     "docs/regulatory/verification/stp.md",
-    "docs/code-review-checklist.md"
+    "docs/code-review-checklist.md",
+    "docs/hw/icd-feb.md"
   ]
 }

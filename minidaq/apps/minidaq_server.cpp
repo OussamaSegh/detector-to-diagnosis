@@ -18,8 +18,8 @@
 //
 // With --hardware, the server runs the slow control of the front-end boards that FILE describes
 // (Chapter 22, minidaq/config/hardware_config.hpp) from start-up to shutdown: a run starts only
-// when every board is ready, a hardware fault stops it, and at shutdown every bias is switched
-// off.
+// when every board is ready, the boards' triggers follow the run (Chapter 24), a hardware fault
+// stops it, and at shutdown every bias is switched off.
 //
 // Runs until SIGINT or SIGTERM; a running acquisition is stopped and drained
 // first. Control it with minidaq_ctl, or with any client that writes one JSON
@@ -192,6 +192,8 @@ int main(int argc, char** argv) {
       return 1;
     }
     opt.hardware = std::shared_ptr<control::HardwarePort>(std::move(*opened));
+    opt.trigger_timeout = hw->trigger_timeout;  // Chapter 24
+    opt.drain_timeout = hw->drain_timeout;
   }
   control::AcquisitionService service{opt};
   if (!config_path.empty()) {

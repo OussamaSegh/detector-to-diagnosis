@@ -16,11 +16,17 @@
 // unbiased), and stays latched until an operator acknowledges it and the cause has gone. The
 // acquisition service reads the faults and stops a run (fault source "hw").
 //
+// Since Chapter 24 it also checks that each board runs firmware this software was written for
+// (the interface control document, docs/hw/icd-feb.md), switches the boards' triggers on and
+// off when the service asks, and reports what each board's output FIFO holds and how often it
+// overflowed, so that the service can end a run only once the boards have sent everything.
+//
 // One thread writes the boards' state (the cycle, step()); any thread reads a copy of it.
 #pragma once
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <functional>
 #include <mutex>
@@ -59,6 +65,10 @@ struct SlowControlSettings {
   double max_current_ua = 500.0;
   int max_failed_cycles = 3;  // consecutive cycles with a failed access: fault
   std::chrono::milliseconds period{100};
+  // The firmware this software supports (docs/hw/icd-feb.md): the same major version, and at
+  // least this minor version.
+  std::uint32_t firmware_major = 1;
+  std::uint32_t firmware_min_minor = 2;
 };
 // [/snippet:settings]
 
@@ -72,6 +82,7 @@ enum class HwFaultCause : std::uint8_t {
   overcurrent,
   supply,
   not_reached,
+  firmware,
 };
 enum class TempLevel : std::uint8_t { normal, warning, alarm };
 [[nodiscard]] const char* to_string(BoardState s) noexcept;
@@ -90,6 +101,11 @@ struct BoardSnapshot {
   bool at_limit = false;  // the target was outside the limits
   std::string fault;      // empty unless state == fault
   std::uint64_t failed_accesses = 0;
+  std::string firmware;     // "1.2.0", as the board reports it
+  bool triggers = false;    // TRIGGER_ENABLE, as this software last set it
+  bool fifo_empty = false;  // false also when not known
+  std::uint32_t fifo_words = 0;
+  std::uint64_t fifo_overflows = 0;  // overflows seen since the triggers were last switched on
 };
 
 class SlowControl {
@@ -122,6 +138,14 @@ class SlowControl {
   // Asks the next cycle to clear every latched fault and power the board up again; a fault whose
   // cause remains latches again in that cycle.
   void acknowledge();
+  // [snippet:trigger-api]
+  // Asks the next cycle, which starts at once, to switch every board's triggers on or off.
+  void set_triggers(bool on);
+  // Whether the last cycle left every board's triggers as `on`.
+  [[nodiscard]] bool triggers_are(bool on) const;
+  // Whether the last cycle found every board with its triggers off and its output FIFO empty.
+  [[nodiscard]] bool drained() const;
+  // [/snippet:trigger-api]
   [[nodiscard]] std::uint64_t cycles() const noexcept {
     return cycles_.load(std::memory_order_relaxed);
   }
@@ -146,6 +170,11 @@ class SlowControl {
   std::atomic<std::uint64_t> ack_requested_{0};
   std::uint64_t ack_done_ = 0;  // the cycle's own
   std::atomic<std::uint64_t> cycles_{0};
+  std::atomic<bool> triggers_wanted_{false};
+  // Wakes the cycle's thread before its period is over (set_triggers).
+  std::mutex wake_mu_;
+  std::condition_variable_any wake_cv_;
+  bool wake_ = false;  // under wake_mu_
   std::jthread thread_;
 };
 

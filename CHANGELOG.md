@@ -26,6 +26,15 @@ the patch version.
   reports the host's UDP, softnet and network card counters as changes since the run began
   (`minidaq/net/host_counters.hpp`). Benchmark `bm_udp_receive`; measurements in
   `measurements/ch23/`. SRS-RDO-013 to SRS-RDO-015 (SRS version 12), RC-29, ADR 0018, CR-0009.
+- Chapter 24 code: the contract with the boards' firmware. The interface control document
+  `docs/hw/icd-feb.md` (ICD-FEB, version 1); register map 1.1 (`status.fifo_empty`,
+  `error_flags.fifo_overflow`, `fifo_level`); the slow control checks every board's firmware in
+  every cycle (1.2 or a later 1.x), switches the triggers when asked and counts FIFO overflows; the
+  service switches the triggers on after the pipeline starts and, at a stop, stops the pipeline only
+  once every board has drained or the drain timeout has passed; overflows and drain timeouts are
+  losses in the integrity verdict; hardware description 1.1 (`run` timeouts, simulated firmware,
+  FIFO rates, fault `stalled_link`); control API 2.3. Measurement `measurements/ch24/`.
+  SRS-HW-011 to SRS-HW-015 (SRS version 13), RC-30, RC-31, ADR 0019, CR-0010.
 
 ### Changed
 - The book is a standalone technical book, publishable on Amazon KDP (PR #2): the 10-week

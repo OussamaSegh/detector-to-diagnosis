@@ -53,6 +53,17 @@ json assess_integrity(const json& status) {
       add(losses, std::string{"/sink_counters/"} + name, it->value(name, json(0U)));
     }
   }
+  // The boards' side (Chapter 24): events their output FIFO could not hold, and data a board
+  // still held when the run stopped.
+  if (const auto it = status.find("hardware"); it != status.end() && it->is_object()) {
+    if (const auto boards = it->find("boards"); boards != it->end() && boards->is_array()) {
+      for (std::size_t i = 0; i < boards->size(); ++i) {
+        add(losses, "/hardware/boards/" + std::to_string(i) + "/fifo_overflows",
+            (*boards)[i].value("fifo_overflows", json(0U)));
+      }
+    }
+    add(losses, "/hardware/drain_timeouts", it->value("drain_timeouts", json(0U)));
+  }
   const bool fault = status.contains("fault") && !status["fault"].is_null();
   return {{"complete", !fault && losses.empty()}, {"losses", std::move(losses)}};
 }

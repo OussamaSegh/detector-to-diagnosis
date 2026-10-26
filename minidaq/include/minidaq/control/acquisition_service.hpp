@@ -48,6 +48,12 @@ struct ServiceOptions {
   // while a board is not ready, a hardware fault stops the run (fault source "hw"), and reset()
   // after a fault acknowledges it.
   std::shared_ptr<HardwarePort> hardware;
+  // Chapter 24: a run switches the boards' triggers on after its pipeline has started; a run
+  // whose boards have not done so within trigger_timeout ends in a hardware fault. A stop
+  // switches them off and stops the pipeline once the boards have sent everything they hold,
+  // or after drain_timeout, which leaves the run incomplete.
+  std::chrono::milliseconds trigger_timeout{2'000};
+  std::chrono::milliseconds drain_timeout{2'000};
   std::chrono::milliseconds monitor_period{20};
   // status() reports latency percentiles over the last completed interval of
   // this length, as well as since the start of the run.
@@ -92,6 +98,7 @@ class AcquisitionService {
   [[nodiscard]] nlohmann::json status_locked() const;
   void enter_fault_locked(std::string reason, std::string_view who);
   void take_latency_snapshot_locked();
+  void triggers_off_locked();
   CommandResult result(bool ok, std::string code = {}, std::string message = {}) const;
   CommandResult illegal(AcqEvent e) const;
 
@@ -109,6 +116,11 @@ class AcquisitionService {
   std::chrono::steady_clock::time_point run_ended_{};
   bool run_ended_set_ = false;
   std::string fault_;
+  // The boards' side of a run (Chapter 24): when their triggers must be on by, when the drain
+  // after a stop must be over by, and whether this run's drain ran out of time.
+  std::optional<std::chrono::steady_clock::time_point> triggers_on_by_;
+  std::optional<std::chrono::steady_clock::time_point> drain_by_;
+  std::uint64_t drain_timeouts_ = 0;
   // Latency histogram counts (one per stage, then end to end) at the start of
   // the last two intervals, for "recent" percentiles. Monitor thread writes.
   struct LatencySnapshot {

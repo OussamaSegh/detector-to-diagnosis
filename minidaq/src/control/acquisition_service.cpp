@@ -40,7 +40,12 @@ json hardware_json(const HardwarePort& hw) {
                       {"monitor_v", b.monitor_v},
                       {"current_ua", b.current_ua},
                       {"at_limit", b.at_limit},
-                      {"fault", b.fault.empty() ? json(nullptr) : json(b.fault)}});
+                      {"fault", b.fault.empty() ? json(nullptr) : json(b.fault)},
+                      {"firmware", b.firmware},  // 2.3: Chapter 24
+                      {"triggers", b.triggers},
+                      {"fifo_empty", b.fifo_empty},
+                      {"fifo_words", b.fifo_words},
+                      {"fifo_overflows", b.fifo_overflows}});
   }
   const auto not_ready = hw.not_ready();
   return json{{"describe", hw.describe()},
@@ -117,6 +122,7 @@ AcquisitionService::~AcquisitionService() {
     monitor_.join();
   }
   const std::lock_guard lock{mu_};
+  triggers_off_locked();
   if (pipeline_) {
     pipeline_->request_stop();
     pipeline_->wait();
@@ -221,7 +227,17 @@ CommandResult AcquisitionService::start(std::string_view who) {
   run_ended_set_ = false;
   snapshot_previous_.reset();
   snapshot_latest_.reset();
+  // [snippet:start-sequence]
+  // The pipeline first, the boards' triggers after it: data that arrives before anything reads
+  // it is lost in a socket buffer. The monitor checks that the boards did it.
   pipeline_->start();
+  drain_timeouts_ = 0;
+  drain_by_.reset();
+  if (opt_.hardware) {
+    opt_.hardware->set_triggers(true);
+    triggers_on_by_ = std::chrono::steady_clock::now() + opt_.trigger_timeout;
+  }
+  // [/snippet:start-sequence]
   take_latency_snapshot_locked();
   trace(TraceCode::run_begin, run_id_);
   note(who, "start", "run " + std::to_string(run_id_) + ", " + detector_->describe());
@@ -235,7 +251,17 @@ CommandResult AcquisitionService::stop(std::string_view who) {
     note(who, "stop", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::stop}.message(), false);
     return illegal(AcqEvent::stop);
   }
-  pipeline_->request_stop();  // the stages drain; the monitor sees them finish
+  // [snippet:stop-sequence]
+  // With boards: triggers off now, the pipeline later, once the boards have sent what their
+  // FIFOs hold (the monitor watches for it). Stopping the pipeline first would drop the run's
+  // last events in the socket and call the run complete.
+  if (opt_.hardware) {
+    triggers_off_locked();
+    drain_by_ = std::chrono::steady_clock::now() + opt_.drain_timeout;
+  } else {
+    pipeline_->request_stop();  // the stages drain; the monitor sees them finish
+  }
+  // [/snippet:stop-sequence]
   note(who, "stop", "run " + std::to_string(run_id_));
   (void)machine_.apply(AcqEvent::stop);
   return result(true);
@@ -253,6 +279,7 @@ CommandResult AcquisitionService::reset(std::string_view who) {
     pipeline_->request_stop();
     pipeline_->wait();
   }
+  triggers_off_locked();
   if (opt_.hardware && machine_.state() == AcqState::fault) {
     opt_.hardware->acknowledge();  // the operator has seen the fault (SRS-HW-005)
   }
@@ -269,8 +296,17 @@ CommandResult AcquisitionService::reset(std::string_view who) {
   return result(true);
 }
 
+void AcquisitionService::triggers_off_locked() {
+  triggers_on_by_.reset();
+  drain_by_.reset();
+  if (opt_.hardware) {
+    opt_.hardware->set_triggers(false);
+  }
+}
+
 void AcquisitionService::enter_fault_locked(std::string reason, std::string_view who) {
   const AcqState s = machine_.state();
+  triggers_off_locked();  // a run in fault takes no more data (SRS-HW-014)
   if (pipeline_ && (s == AcqState::running || s == AcqState::stopping)) {
     pipeline_->request_stop();  // stop taking data; reset() waits for the drain
     run_ended_ = std::chrono::steady_clock::now();
@@ -322,11 +358,38 @@ void AcquisitionService::check_run_locked() {
                                   " singles arrived out of time order",
                               "service");
   }
-  if (snapshot_latest_ && std::chrono::steady_clock::now() - snapshot_latest_->taken >= opt_.interval_period) {
+  // [snippet:board-sequence]
+  const auto now = std::chrono::steady_clock::now();
+  if (triggers_on_by_ && opt_.hardware) {
+    if (opt_.hardware->triggers_are(true)) {
+      triggers_on_by_.reset();
+    } else if (now >= *triggers_on_by_) {
+      return enter_fault_locked("hw: the boards did not switch their triggers on within " +
+                                    std::to_string(opt_.trigger_timeout.count()) + " ms",
+                                "service");
+    }
+  }
+  if (drain_by_ && opt_.hardware) {
+    const bool drained = opt_.hardware->drained();
+    if (drained || now >= *drain_by_) {
+      if (!drained) {
+        ++drain_timeouts_;  // the run is incomplete: data was left on a board
+        note("service", "drain_timeout",
+             "run " + std::to_string(run_id_) + ": the boards still held data after " +
+                 std::to_string(opt_.drain_timeout.count()) + " ms",
+             false);
+      }
+      drain_by_.reset();
+      pipeline_->request_stop();
+    }
+  }
+  // [/snippet:board-sequence]
+  if (snapshot_latest_ && now - snapshot_latest_->taken >= opt_.interval_period) {
     take_latency_snapshot_locked();
   }
   if (pipeline_ && pipeline_->finished()) {
     pipeline_->wait();  // all stages are done: this only joins the threads
+    triggers_off_locked();  // a run that ended on its own (a finite source)
     // The last write() has returned: the sink can make the run durable, with
     // the run's record (counters included) next to the data. A run whose data
     // did not reach stable storage ends in a fault.
@@ -442,6 +505,9 @@ json AcquisitionService::status_locked() const {
     }
   }
   j["hardware"] = opt_.hardware ? hardware_json(*opt_.hardware) : json(nullptr);  // 2.2: Chapter 22
+  if (opt_.hardware) {
+    j["hardware"]["drain_timeouts"] = drain_timeouts_;  // 2.3: Chapter 24
+  }
   j["integrity"] = assess_integrity(j);  // risk control RC-01
   return j;
 }

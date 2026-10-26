@@ -27,6 +27,9 @@ hw::BoardFault parse_fault(const std::string& f) {
   if (f == "weak_supply") {
     return hw::BoardFault::weak_supply;
   }
+  if (f == "stalled_link") {
+    return hw::BoardFault::stalled_link;
+  }
   return hw::BoardFault::none;
 }
 
@@ -48,6 +51,8 @@ Expected<std::unique_ptr<SlowControlHardware>, std::string> SlowControlHardware:
       board->set_temperature(b.temperature_c);
       board->set_dark_current_ua(b.dark_current_ua);
       board->set_fault(parse_fault(b.fault));
+      board->set_firmware(b.firmware);
+      board->set_data_rates(b.fill_words_per_s, b.drain_words_per_s);
       h->simulated_.push_back({board.get(), b.temperature_file});
       h->buses_.push_back(std::move(board));
     }
@@ -86,9 +91,10 @@ void SlowControlHardware::update_simulation() {
 std::vector<HardwareBoard> SlowControlHardware::boards() const {
   std::vector<HardwareBoard> out;
   for (const hw::BoardSnapshot& b : sc_->snapshot()) {
-    out.push_back(HardwareBoard{b.slot, hw::to_string(b.state), hw::to_string(b.temp_level),
-                                b.temperature_c, b.target_mv / 1000.0, b.setpoint_mv / 1000.0,
-                                b.monitor_mv / 1000.0, b.current_ua, b.at_limit, b.fault});
+    out.push_back(HardwareBoard{
+        b.slot, hw::to_string(b.state), hw::to_string(b.temp_level), b.temperature_c,
+        b.target_mv / 1000.0, b.setpoint_mv / 1000.0, b.monitor_mv / 1000.0, b.current_ua,
+        b.at_limit, b.fault, b.firmware, b.triggers, b.fifo_empty, b.fifo_words, b.fifo_overflows});
   }
   return out;
 }

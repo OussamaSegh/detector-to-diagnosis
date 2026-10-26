@@ -20,7 +20,10 @@ constexpr double vbd_mv_per_c = 34.0;
 }  // namespace
 
 FakeBoard::FakeBoard(std::uint8_t slot, Clock clock)
-    : clock_{std::move(clock)}, last_ns_{clock_()}, slot_{slot} {
+    : clock_{std::move(clock)},
+      last_ns_{clock_()},
+      slot_{slot},
+      fw_version_{feb::FwVersion::reset} {
   soft_reset_locked();
 }
 
@@ -31,6 +34,7 @@ void FakeBoard::soft_reset_locked() {
   threshold_ = feb::Threshold::reset;
   errors_ = feb::ErrorFlags::reset;
   overtemp_ = false;
+  fifo_words_ = 0;
 }
 
 // [snippet:fake-physics]
@@ -56,6 +60,16 @@ void FakeBoard::update_locked(std::int64_t now_ns) {
   } else {
     bias_mv_ += target > bias_mv_ ? step : -step;
   }
+  // The output FIFO: events in while the triggers are on, the link out; what does not fit is
+  // lost, and the board says so in a sticky flag.
+  const double in = feb::Control::TriggerEnable::get(control_) != 0 ? fill_words_per_s_ : 0.0;
+  const double out = fault_ == BoardFault::stalled_link ? 0.0 : drain_words_per_s_;
+  fifo_words_ += (in - out) * dt_s;
+  if (fifo_words_ > fifo_depth_words) {
+    fifo_words_ = fifo_depth_words;
+    errors_ |= feb::ErrorFlags::FifoOverflow::mask;
+  }
+  fifo_words_ = std::max(0.0, fifo_words_);
 }
 // [/snippet:fake-physics]
 
@@ -72,6 +86,7 @@ std::uint32_t FakeBoard::status_locked() const {
   s = feb::Status::BiasRamping::set(s, enabled && !at_setpoint && !stalled ? 1 : 0);
   s = feb::Status::Overtemp::set(s, overtemp_ ? 1 : 0);
   s = feb::Status::BiasFault::set(s, stalled ? 1 : 0);
+  s = feb::Status::FifoEmpty::set(s, fifo_words_ < 1.0 ? 1 : 0);
   return s;
 }
 
@@ -80,13 +95,15 @@ std::uint32_t FakeBoard::read_locked(std::uint32_t address) const {
     case feb::BoardId::address:
       return feb::BoardId::Slot::set(feb::BoardId::reset, slot_);
     case feb::FwVersion::address:
-      return feb::FwVersion::reset;
+      return fw_version_;
     case feb::Control::address:
       return control_;  // SOFT_RESET reads as 0: it is never stored
     case feb::Status::address:
       return status_locked();
     case feb::ErrorFlags::address:
       return errors_;
+    case feb::FifoLevel::address:
+      return static_cast<std::uint32_t>(std::lround(std::min(fifo_words_, 65'535.0)));
     case feb::BiasSetpoint::address:
       return setpoint_mv_;
     case feb::BiasMonitor::address:
@@ -186,6 +203,18 @@ void FakeBoard::set_fault(BoardFault f) {
   const std::lock_guard lock{mu_};
   update_locked(clock_());
   fault_ = f;
+}
+
+void FakeBoard::set_firmware(std::uint32_t fw_version) {
+  const std::lock_guard lock{mu_};
+  fw_version_ = fw_version;
+}
+
+void FakeBoard::set_data_rates(double fill_words_per_s, double drain_words_per_s) {
+  const std::lock_guard lock{mu_};
+  update_locked(clock_());
+  fill_words_per_s_ = fill_words_per_s;
+  drain_words_per_s_ = drain_words_per_s;
 }
 
 void FakeBoard::set_dark_current_ua(double ua) {

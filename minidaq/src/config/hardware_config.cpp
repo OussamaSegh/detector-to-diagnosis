@@ -2,6 +2,7 @@
 #include "minidaq/config/hardware_config.hpp"
 
 #include <cmath>
+#include <cstdio>
 #include <nlohmann/json.hpp>
 #include <set>
 
@@ -12,6 +13,21 @@ namespace {
 
 using detail::json;
 using detail::ObjectReader;
+
+// "1.2.0" as FW_VERSION: major in bits 31-24, minor in 23-16, patch in 15-0.
+bool parse_firmware(const std::string& text, std::uint32_t& out) {
+  unsigned major = 0;
+  unsigned minor = 0;
+  unsigned patch = 0;
+  char end = 0;
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,cert-err34-c): each value is range-checked
+  if (std::sscanf(text.c_str(), "%3u.%3u.%5u%c", &major, &minor, &patch, &end) != 3 ||
+      major > 255 || minor > 255 || patch > 65'535) {
+    return false;
+  }
+  out = (major << 24U) | (minor << 16U) | patch;
+  return true;
+}
 
 void read_board(const json& j, const std::string& at, const std::string& backend, BoardConfig& b,
                 ConfigErrors& errors) {
@@ -28,7 +44,15 @@ void read_board(const json& j, const std::string& at, const std::string& backend
     r.get<double>("temperature_c", b.temperature_c, -40.0, 125.0);
     r.get("temperature_file", b.temperature_file);
     r.get<double>("dark_current_ua", b.dark_current_ua, 0.0, 10'000.0);
-    r.get("fault", b.fault, {"none", "unresponsive", "vanished", "weak_supply"});
+    r.get("fault", b.fault, {"none", "unresponsive", "vanished", "weak_supply", "stalled_link"});
+    std::string firmware;
+    r.get("firmware", firmware);
+    if (!firmware.empty() && !parse_firmware(firmware, b.firmware)) {
+      errors.push_back(
+          {at + "/firmware", "must be a version MAJOR.MINOR.PATCH, such as \"1.2.0\""});
+    }
+    r.get<double>("fill_words_per_s", b.fill_words_per_s, 0.0, 1e9);
+    r.get<double>("drain_words_per_s", b.drain_words_per_s, 0.0, 1e9);
   }
   r.finish();
 }
@@ -54,8 +78,9 @@ Expected<HardwareConfig, ConfigErrors> parse_hardware_config(std::string_view js
   } else if (!version.empty() &&
              (!detail::parse_version(version, major, minor) || major != hardware_supported_major ||
               minor > hardware_supported_minor)) {
-    errors.push_back(
-        {"/schema_version", "must be \"1.0\" (this program reads hardware descriptions 1.0)"});
+    errors.push_back({"/schema_version",
+                      "must be \"1.0\" or \"1.1\" (this program reads hardware descriptions "
+                      "1.0 and 1.1)"});
   }
   top.get("backend", c.backend, {"simulated", "mmio"});
   int period_ms = static_cast<int>(s.period.count());
@@ -105,6 +130,17 @@ Expected<HardwareConfig, ConfigErrors> parse_hardware_config(std::string_view js
         s.temp_warning_c >= s.temp_alarm_c) {  // values are range-checked, never NaN
       errors.push_back({"/temperature", "must have min_c < warning_c < alarm_c"});
     }
+  }
+
+  if (const json* run = top.object("run")) {
+    ObjectReader r{*run, "/run", errors};
+    int trigger_ms = static_cast<int>(c.trigger_timeout.count());
+    int drain_ms = static_cast<int>(c.drain_timeout.count());
+    r.get<int>("trigger_timeout_ms", trigger_ms, 10, 60'000);
+    r.get<int>("drain_timeout_ms", drain_ms, 10, 600'000);
+    r.finish();
+    c.trigger_timeout = std::chrono::milliseconds{trigger_ms};
+    c.drain_timeout = std::chrono::milliseconds{drain_ms};
   }
 
   const json* boards = top.object("boards");

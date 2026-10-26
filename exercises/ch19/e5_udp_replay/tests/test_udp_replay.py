@@ -154,9 +154,11 @@ class AgainstTheServer(systest.SystemTest):
             status = ctl.status()
             self.assertEqual(server.stop(), 0, server.output)
         records = list(systest.read_listmode(systest.run_files(self.tmp, prefix)[0]))
-        # receive_batches counts the server's reads of its socket, which depend on timing: it
-        # describes the server, not the data.
-        link = {k: v for k, v in status["detector_counters"].items() if k != "receive_batches"}
+        # receive_batches counts the server's reads of its socket and socket_queue_bytes what waits
+        # in it, which depend on timing; the host_ and nic_ counters (Chapter 23) count every
+        # socket of the host. They describe the server and the host, not the data.
+        link = {k: v for k, v in status["detector_counters"].items()
+                if k not in ("receive_batches", "socket_queue_bytes") and not k.startswith(("host_", "nic_"))}
         return link, status["sorter"], records
 
     def test_a_replay_gives_the_same_run_every_time(self):

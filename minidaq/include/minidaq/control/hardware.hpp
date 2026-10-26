@@ -34,6 +34,9 @@ class SlowControlHardware final : public HardwarePort {
   void acknowledge() override { sc_->acknowledge(); }
   [[nodiscard]] std::vector<HardwareBoard> boards() const override;
   [[nodiscard]] std::string describe() const override { return describe_; }
+  void set_triggers(bool on) override { sc_->set_triggers(on); }
+  [[nodiscard]] bool triggers_are(bool on) const override { return sc_->triggers_are(on); }
+  [[nodiscard]] bool drained() const override { return sc_->drained(); }
 
  private:
   SlowControlHardware() = default;
