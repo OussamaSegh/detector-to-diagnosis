@@ -259,13 +259,15 @@ int main(int argc, char** argv) {
   if (opt.hardware && opt.hardware->heartbeat()) {
     health.watch("slow control", opt.hardware->heartbeat(), std::chrono::seconds{3});
   }
-  const control::Watchdog watchdog{*manager, health, [&service](bool healthy, const std::string& why) {
-                                     service.note("watchdog", healthy ? "healthy" : "unhealthy", why, healthy);
-                                   }};
+  // READY first: the watchdog thread pings at once, and systemd should hear that the server is
+  // up before it hears that the server is alive.
   if (const int err = manager->ready("state " + std::string{to_string(service.state())}); err != 0) {
     std::fprintf(stderr, "minidaq_server: READY not sent to %s: %s\n", manager->socket().c_str(),
                  control::errno_message(err).c_str());
   }
+  const control::Watchdog watchdog{*manager, health, [&service](bool healthy, const std::string& why) {
+                                     service.note("watchdog", healthy ? "healthy" : "unhealthy", why, healthy);
+                                   }};
   // [/snippet:watchdog]
 
   int sig = 0;

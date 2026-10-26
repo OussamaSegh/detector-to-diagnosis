@@ -243,7 +243,9 @@ the reason is on file before anything kills the process:
 ```{.cpp include="minidaq/src/control/service_manager.cpp" snippet="run"}
 ```
 
-The server wires it up after its control API listens, and only then sends `READY=1`:
+The server wires it up after its control API listens: it sends `READY=1` first, then starts the
+watchdog thread, whose first ping would otherwise reach systemd before the readiness it vouches
+for (the TSan build, which runs threads in other orders, found that):
 
 ```{.cpp include="minidaq/apps/minidaq_server.cpp" snippet="watchdog"}
 ```
