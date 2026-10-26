@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-10-26, by the software lead with the firmware lead |
 | Source | design review of Chapter 22's hardware port: the software never set the boards' triggers, read every board as the firmware it was written for, and stopped a run without waiting for the boards (fault tree of H-01, events E5 and E6; residual of CR-0009) |
 | Decision | approved, 2026-10-26, software lead, firmware lead and risk manager |
-| Commits | pending |
+| Commits | 904a6c3 |
 
 ## Description
 
