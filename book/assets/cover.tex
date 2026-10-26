@@ -1,12 +1,31 @@
-% Front cover of Detector to Diagnosis and of its solutions manual, 7 x 10 in.
-% book/build.sh compiles it with XeLaTeX into build/cover/cover-<volume>.pdf (page 1 of the
-% print PDF) and renders that to PNG for the EPUB:
-%   xelatex -jobname=cover-book "\def\nlfvolume{book}\input{cover.tex}"
-%   xelatex -jobname=cover-solutions "\def\nlfvolume{solutions}\input{cover.tex}"
+% Covers of Detector to Diagnosis and of its solutions manual. book/build.sh compiles this file
+% with XeLaTeX in two forms:
+% - the front cover alone, 7 x 10 in: page 1 of the screen PDF, and the EPUB cover as a PNG;
+%     xelatex -jobname=cover-book "\def\nlfvolume{book}\input{cover.tex}"
+% - the full-wrap paperback cover for KDP: bleed, back cover, spine and front cover, with the
+%   spine width computed from the interior's page count;
+%     xelatex "\def\nlfvolume{book}\def\nlfwrap{1}\def\nlfspine{1.108}\def\nlfpages{492}
+%              \def\nlfauthor{Name}\input{cover.tex}"
+% \nlfvolume is book (violet ring) or solutions (teal ring, "Solutions Manual"). \nlfauthor, when
+% given, goes on the front cover and the spine.
 % The picture is a PET detector ring: 36 detector blocks, lines of response between coincident
 % blocks, and the reconstructed activity glowing where the lines cross.
+\providecommand{\nlfwrap}{0}
+\providecommand{\nlfspine}{0}
+\providecommand{\nlfpages}{0}
+\providecommand{\nlfauthor}{}
+% Bleed (0.125 in on every outer edge) only on the full-wrap cover.
+\ifnum\nlfwrap=1
+  \def\nlfbleed{0.125}
+  \edef\nlfpaperw{\fpeval{2*0.125 + 7 + \nlfspine + 7}}
+\else
+  \def\nlfbleed{0}
+  \def\nlfspine{0}
+  \def\nlfpaperw{7}
+\fi
+\edef\nlfpaperh{\fpeval{10 + 2*\nlfbleed}}
 \documentclass{article}
-\usepackage[paperwidth=7in,paperheight=10in,margin=0pt]{geometry}
+\usepackage[paperwidth=\nlfpaperw in,paperheight=\nlfpaperh in,margin=0pt]{geometry}
 \usepackage{fontspec}
 \usepackage{tikz}
 \usetikzlibrary{fadings,calc}
@@ -16,6 +35,7 @@
 \newfontfamily\codefont{Inconsolata}
 \pagestyle{empty}
 \providecommand{\nlfvolume}{book}
+\def\nlfempty{}
 
 % Palette. The ring's colors run through s0..s4 and back to s0.
 \def\nlfsolutions{solutions}
@@ -55,13 +75,77 @@
   \colorlet{blk}{s\k!\p!s\kn}%
 }
 
+% Back cover and spine of the full-wrap cover. The back cover's lower right corner, next to the
+% spine, stays empty: KDP prints the barcode there (2 x 1.2 in).
+\newcommand{\backandspine}{%
+  \begin{scope}[shift={(\nlfbleed,\nlfbleed)}]
+    \fill[glow, opacity=0.25, path fading=glowfade] (3.5,6.2) circle (3.2);
+    \node[anchor=north west, text=white, font=\titlefont\bfseries\fontsize{24}{28}\selectfont]
+      at (0.75,9.25) {Detector to Diagnosis};
+    \fill[left color=s0, right color=s3] (0.75,8.62) rectangle (3.15,8.67);
+    \node[anchor=north west, text width=5.5in, text=white, align=left,
+          font={\fontsize{11}{15.5}\selectfont\hyphenpenalty=10000\exhyphenpenalty=10000}]
+      at (0.75,8.35) {\nlfblurb};
+  \end{scope}
+  \pgfmathparse{\nlfpages >= 80 ? 1 : 0}%
+  \ifnum\pgfmathresult=1
+    \pgfmathsetmacro{\nlfspinefs}{min(15, 0.42*72*\nlfspine)}%
+    \begin{scope}[shift={(\nlfbleed+7+\nlfspine/2,\nlfbleed)}]
+      \fill[left color=s0, right color=s3, opacity=0.9] (-\nlfspine/2,9.05) rectangle (\nlfspine/2,9.12);
+      \node[rotate=-90, anchor=west, text=white,
+            font=\titlefont\bfseries\fontsize{\nlfspinefs}{\nlfspinefs}\selectfont]
+        at (0,8.6) {Detector to Diagnosis\ifx\nlfvolume\nlfsolutions{} \textperiodcentered{} Solutions\fi};
+      \ifx\nlfauthor\nlfempty\else
+        \node[rotate=-90, anchor=east, text=subtle,
+              font=\fontsize{\fpeval{0.8*\nlfspinefs}}{\nlfspinefs}\selectfont]
+          at (0,0.6) {\nlfauthor};
+      \fi
+    \end{scope}
+  \fi
+}
+\newcommand{\nlfitem}{\par\hangindent=1em\hangafter=1\textbullet\enspace}
+\ifx\nlfvolume\nlfsolutions
+  \newcommand{\nlfblurb}{%
+    \textbf{\fontsize{14}{18}\selectfont Solutions Manual}\par\medskip
+    This manual holds a worked solution to every exercise in \emph{Detector to Diagnosis} and a
+    model answer to every Check yourself question.\par\medskip
+    Each solution walks through the reasoning, shows the key code and names the mistakes the
+    acceptance tests are built to catch. The code is included from the companion repository,
+    where every solution is compiled and passes its tests.\par\medskip
+    Try each exercise against its acceptance tests first. Then read the solution here, and
+    compare your design with the one in the repository.}
+\else
+  \newcommand{\nlfblurb}{%
+    \textbf{\fontsize{14}{18}\selectfont Building regulated medical imaging software\newline in modern C++}
+    \par\medskip
+    A PET scanner turns tens of millions of detected photons per second into an image that a
+    physician trusts. The software in between must keep up, lose nothing without saying so, and
+    show an auditor why it is safe to ship.\par\medskip
+    This book teaches you to build that software. Across its chapters you grow MiniDAQ, a
+    simulated PET data acquisition system, from strong types and lock-free queues to a
+    coincidence sorter, a crash-safe list-mode writer and a continuous integration pipeline
+    whose results are verification records.\par\medskip
+    You learn:\smallskip
+    \nlfitem low-latency, real-time C++ on Linux, measured rather than guessed;
+    \nlfitem the PET physics and readout a data acquisition engineer needs;
+    \nlfitem IEC 62304, ISO 14971, ISO 13485 and medical device cybersecurity, applied to
+    real code;
+    \nlfitem testing, CI and debugging that produce evidence.\par\medskip
+    Every chapter has graded exercises with acceptance tests and a milestone. Every listing is
+    compiled and tested from the companion repository.}
+\fi
+
 \begin{document}
 \noindent
 \begin{tikzpicture}[x=1in,y=1in]
-  % Background and the glow behind the ring.
-  \shade[top color=bgtop, bottom color=bgbottom] (0,0) rectangle (7,10);
+  % Background of the whole sheet, bleed included.
+  \shade[top color=bgtop, bottom color=bgbottom] (0,0) rectangle (\nlfpaperw,\nlfpaperh);
+  \ifnum\nlfwrap=1 \backandspine \fi
+  % The front cover, in its own coordinates: (0,0) to (7,10) is the trimmed front.
+  \begin{scope}[shift={(\nlfbleed+7*\nlfwrap+\nlfspine,\nlfbleed)}]
   \fill[glow, opacity=0.55, path fading=glowfade] (3.5,3.78) circle (3.0);
-  \clip (0,0) rectangle (7,10);
+  \begin{scope}
+  \clip (0,-\nlfbleed) rectangle (7+\nlfbleed,10+\nlfbleed);
 
   % A faint grid of sinogram-like stripes in the background.
   \foreach \i in {0,...,27} {
@@ -122,11 +206,21 @@
       {Building regulated medical imaging\\software in modern C++};
   \fi
 
+  \end{scope}
+
+  % Author.
+  \ifx\nlfauthor\nlfempty\else
+    \node[anchor=south, text=white, font=\fontsize{17}{20}\selectfont] at (3.5,1.0)
+      {\addfontfeatures{LetterSpace=6}\nlfauthor};
+  \fi
+
   % Footer.
-  \node[anchor=south, text=subtle, font=\fontsize{12.5}{15}\selectfont, align=center] at (3.5,0.82)
+  \ifx\nlfauthor\nlfempty\def\nlffooty{0.82}\else\def\nlffooty{0.68}\fi
+  \node[anchor=south, text=subtle, font=\fontsize{12.5}{15}\selectfont, align=center] at (3.5,\nlffooty)
     {\ifx\nlfvolume\nlfsolutions Worked solutions and model answers for every exercise\else
      A practice book built around MiniDAQ\fi};
-  \node[anchor=south, text=accent, opacity=0.85, font=\codefont\fontsize{10.5}{12}\selectfont] at (3.5,0.42)
+  \node[anchor=south, text=accent, opacity=0.85, font=\codefont\fontsize{10.5}{12}\selectfont] at (3.5,\nlffooty-0.36)
     {singles $\rightarrow$ coincidences $\rightarrow$ sinograms $\rightarrow$ images};
+  \end{scope}
 \end{tikzpicture}
 \end{document}

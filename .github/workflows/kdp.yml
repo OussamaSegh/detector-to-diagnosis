@@ -1,0 +1,49 @@
+# Checks that the book and the solutions manual can be published on Amazon KDP: book/build.sh kdp
+# builds the paperback interiors (7 x 10 in, no bleed, every font embedded, a page count KDP
+# prints, an inside margin for that count), the full-wrap covers sized from the page count, and
+# the EPUBs, which must pass EPUBCheck. The files are kept as an artifact for a week. The
+# covers carry no author name here; a KDP upload is built locally with BOOK_AUTHOR set.
+name: kdp
+on:
+  push:
+    branches: [main]
+    paths: ["book/**", "minidaq/**", "exercises/**", ".github/workflows/kdp.yml"]
+  pull_request:
+    paths: ["book/**", "minidaq/**", "exercises/**", ".github/workflows/kdp.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kdp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      EPUBCHECK_VERSION: 5.1.0
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Pandoc, XeLaTeX and the fonts
+        timeout-minutes: 30
+        run: |
+          printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\n' | sudo tee /etc/apt/apt.conf.d/80retries
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pandoc texlive-xetex texlive-latex-extra \
+            texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
+            texlive-plain-generic lmodern tex-gyre fonts-texgyre fonts-texgyre-math fonts-inconsolata \
+            graphviz librsvg2-bin poppler-utils
+      - name: Install EPUBCheck
+        run: |
+          curl -sSfL --retry 5 -o "$RUNNER_TEMP/epubcheck.zip" \
+            "https://github.com/w3c/epubcheck/releases/download/v$EPUBCHECK_VERSION/epubcheck-$EPUBCHECK_VERSION.zip"
+          unzip -q "$RUNNER_TEMP/epubcheck.zip" -d "$RUNNER_TEMP"
+          echo "EPUBCHECK_JAR=$RUNNER_TEMP/epubcheck-$EPUBCHECK_VERSION/epubcheck.jar" >> "$GITHUB_ENV"
+      - name: Build and check the KDP files
+        run: |
+          export BOOK_DATE="$(git log -1 --format=%cs)"
+          book/build.sh kdp both
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kdp
+          path: book/build/kdp/*-v*
+          retention-days: 7
