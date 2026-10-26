@@ -251,6 +251,7 @@ important ones:
 | 0.1.0 | Part I, Chapters 1 to 7 | | |
 | 0.2.0 | Part II, Chapters 8 to 12 | | |
 | 0.3.0 | Part III, Chapters 13 to 17 | e32e702 (release checks ran on 57ef123) | book-v0.3.0 = 37af8f4 |
+| 0.4.0 | Part IV, Chapters 18 to 21 | 6912009 (checks on 61c2e1a and 6766495) | book-v0.4.0 = 6912009 |
 
 Release report Claude Docs:
 

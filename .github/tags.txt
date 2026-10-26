@@ -26,3 +26,4 @@ ch21 6150f42154e5e47289f4bdc0d3c3ef3167741061 Chapter 21: code review, debugging
 book-v0.1.0 b10652ae685c708b2d0d4eb780a2df690f2d91b7 Release 0.1.0: Part I complete
 book-v0.2.0 87034d56329afb8eb6a2b88e8cefed350a5c80b1 Release 0.2.0: Part II complete
 book-v0.3.0 37af8f479ad6a76ee22783b7ea284cd70b8891a6 Detector to Diagnosis 0.3.0: Part III complete
+book-v0.4.0 69120098fb4904b2889c92a19e4e65f95b56a4b8 Detector to Diagnosis 0.4.0: Part IV complete
