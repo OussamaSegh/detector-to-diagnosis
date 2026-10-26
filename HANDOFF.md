@@ -258,6 +258,7 @@ Release report Claude Docs:
 - 0.1.0: https://claude.ai/artifact/CzEKc4tPTdN8JW7XnCVW5A
 - 0.2.0: https://claude.ai/artifact/FHtXBkNSkxvrqmio2LmMPp
 - 0.3.0: https://claude.ai/artifact/7CsiwjyrUfGem6d5SPA2tp
+- 0.4.0: https://claude.ai/artifact/8iBrgKkciRovqngjwEHpSX
 
 For 0.3.0:
 
@@ -328,8 +329,8 @@ writer benchmark needs about 10 GB free; delete old build directories first.
 
 ### Left to do, in order
 
-1. **Release 0.4.0 packaging and the Part IV review**: tag book-v0.4.0 (manifest), books, code
-   zip, SBOM, release report; then the coordinator starts the Fable review of Part IV.
+1. **Part IV review**: 0.4.0 is released and packaged (2026-10-26); the coordinator was asked
+   to start the Fable review thread. Review and merge its PR here.
 2. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
    must give hardware control real depth (review gap). Release 0.5.0.
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
