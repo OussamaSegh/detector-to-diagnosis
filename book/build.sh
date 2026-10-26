@@ -10,6 +10,7 @@
 #        width computed from that page count. EPUBCheck must pass.
 # Environment:
 #   BOOK_AUTHOR    the author's name, on the title page, the copyright page and the covers
+#                  (default: Oussama Seghaier)
 #   BOOK_DATE      the edition date (default: today)
 #   BOOK_PAPER     white (default) or cream: the KDP paper, which sets the spine width
 #   EPUBCHECK_JAR  path of epubcheck.jar (default /usr/share/java/epubcheck.jar)
@@ -20,7 +21,7 @@ what="${1:-all}"
 which="${2:-both}"
 version="$(tr -d '[:space:]' < "$repo/VERSION")"
 date_str="${BOOK_DATE:-$(date +%Y-%m-%d)}"
-author="${BOOK_AUTHOR:-Detector to Diagnosis authors}"
+author="${BOOK_AUTHOR:-Oussama Seghaier}"
 paper="${BOOK_PAPER:-white}"
 epubcheck_jar="${EPUBCHECK_JAR:-/usr/share/java/epubcheck.jar}"
 build="$here/build"
@@ -64,11 +65,8 @@ build_cover() {
   fi
 }
 
-# The name on the covers: none for the default author, which is a placeholder.
-cover_author() {
-  [[ -n "${BOOK_AUTHOR:-}" ]] && printf '%s' "$BOOK_AUTHOR"
-  return 0
-}
+# The name on the covers.
+cover_author() { printf '%s' "$author"; }
 
 # The copyright page (src/front/copyright.md) as LaTeX, set small at the foot of the page that
 # follows the title page. $1 = metadata file, $2 = output .tex.
@@ -138,9 +136,6 @@ build_wrap_cover() {
   echo "built $pdf (full wrap for $pages pages on $paper paper: spine $spine in, $(pdfinfo "$pdf" | awk '/^Page size/{printf "%.3f x %.3f in", $3/72, $5/72}'))"
   if pdffonts "$pdf" | awk 'NR > 2 && $(NF-4) != "yes" {bad=1} END {exit !bad}'; then
     echo "KDP: $pdf has fonts that are not embedded"; exit 1
-  fi
-  if [[ -z "${BOOK_AUTHOR:-}" ]]; then
-    echo "KDP warning: BOOK_AUTHOR is not set, so the covers carry no author name"
   fi
 }
 
