@@ -334,6 +334,30 @@
       "evaluation": {"safety_relevant": false, "rationale": "The software is unchanged; the analysis of the new store finds no new threat that needs a requirement (T-35 to T-38: environment, not applicable or accepted)."},
       "resolution": {"change": "Architecture version 8 (Part IV and the diagnostics, API 2.1, ADR 0016) and threat model version 2 (the crash report store T-35 to T-38, the diagnostics response in T-09, the asset, the data flow diagram).", "verification": "docs.threats and docs.design_file pass; the release record of 0.4.0 lists both documents."},
       "root_cause": {"whys": ["The architecture and the threat model lagged the code of Chapter 21.", "CR-0007 listed the documents it changed and left out these two.", "The change request's Documents section was written from memory of what changed, not checked against the documents that describe the changed elements.", "No check ties a new store, flow or command to the threat model or the architecture."], "cause": "A change request whose impact on documents was not checked against the document index.", "category": "process", "escape": "The review of CR-0007 read its list of documents and did not ask which documents describe a server option, a command or a file the change adds."}
+    },
+    {
+      "id": "MDQ-PR-032",
+      "title": "The stress run passed although a test failed in it",
+      "found": "2026-10-26, release checks for 0.4.0, part 1 on commit 643cec8: stress-tsan.txt lists a failed test, and the check said pass",
+      "item": "tools",
+      "status": "closed",
+      "capa": "CAPA-0004",
+      "description": "tools/stress_tests.sh piped ctest's output through grep to keep the lines worth reading, and ended with '|| true' so that a run without such lines would not fail. The script's status was the filter's, never ctest's: a failed test was written to the output file and the stress run passed. The release checks of 0.4.0 reported 'pass  stress run' with AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate failed in it (MDQ-PR-033).",
+      "evaluation": {"safety_relevant": false, "rationale": "The stress run is release evidence, not a control; the earlier stress outputs (Chapter 16, release 0.3.0) were read and show no failure, so no release relied on a failed run."},
+      "resolution": {"change": "The script keeps ctest's status, writes it to the output ('# ctest exit status N') and exits with it. Two tests in tools.release_checks run the script on a build with a failing and with a passing test.", "verification": "The old script exits 0 with a failing test, the new one 8; the release checks of 0.4.0 run the corrected script."},
+      "root_cause": {"whys": ["The check passed with a failure in its own output.", "Its status was the status of the output filter.", "A pipeline's status is the status of its last command, and '|| true' was added to keep an empty filter from failing the run.", "Nothing tested the script, and its output was read for failures only when the check said FAIL."], "cause": "A verification script whose status did not come from the verification, the third such check found at this release.", "category": "tool", "escape": "Chapter 16 wrote the script and read its outputs by eye; the release checks trusted its status."}
+    },
+    {
+      "id": "MDQ-PR-033",
+      "title": "Tests waited 5 or 10 seconds for an acquisition, too short under ThreadSanitizer and load",
+      "found": "2026-10-26, release checks for 0.4.0, the stress run (ThreadSanitizer, 8 busy loops on 4 CPUs): AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate",
+      "item": "tests",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "The test paces 200,000 singles at 2 M/s and waits up to 5 s for the run to end. Under the stress run the run took longer and the wait failed. Eighteen waits in five test files had fixed deadlines of 5 or 10 s, and test_support::patience, the deadline that only a hang should reach, was 10 s. Rule 5.5 asks for a deadline long enough that only a hang reaches it; 5 s is not that under ThreadSanitizer on a loaded machine.",
+      "evaluation": {"safety_relevant": false, "rationale": "A defect of tests: the code under test was slow because of the sanitizer and the load, not wrong."},
+      "resolution": {"change": "Every wait uses test_support::patience, now 60 s. A passing test does not wait longer; only a hang does.", "verification": "The stress run of the release checks of 0.4.0 passes 100 repetitions of the threaded tests."},
+      "root_cause": {"whys": ["The wait ended before the run did.", "Its deadline was 5 s, chosen as 'long' on an idle machine.", "The tests chose their own deadlines instead of the shared one.", "The shared one, 10 s, was itself chosen without measuring the slowest build under load."], "cause": "Deadlines picked by feel instead of from the slowest configuration that runs them.", "category": "test", "escape": "Rule 5.5's check (tests.waits) finds sleeps, not short deadlines; the stress run found it, and MDQ-PR-032 hid it."}
     }
   ]
 }

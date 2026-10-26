@@ -180,7 +180,7 @@ TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
   }));
   check(running, "running");
   ASSERT_EQ(call(svc, R"({"cmd":"stop"})")["ok"], true);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   check(call(svc, R"({"cmd":"status"})")["status"], "after the run");
   for (const auto& f : status_fields) {
     EXPECT_TRUE(seen.contains(std::string{f.name})) << "status_fields lists '" << f.name << "', which never appeared";
@@ -194,7 +194,7 @@ TEST(ControlProtocol, DiagnosticsReturnTheNewestEventsOfTheFlightRecorder) {
   AcquisitionService svc{with_default_adapters()};
   ASSERT_EQ(call(svc, R"({"cmd":"configure","config":{"schema_version":"1.0","stop_after_s":0.01}})")["ok"], true);
   ASSERT_EQ(call(svc, R"({"cmd":"start"})")["ok"], true);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   const json r = call(svc, R"({"cmd":"diagnostics","events":1024})");
   ASSERT_EQ(r["ok"], true) << r.dump();
   const json& d = r["diagnostics"];
@@ -283,7 +283,7 @@ TEST(ControlServer, AClientThatDisconnectsDoesNotStopTheAcquisition) {
   EXPECT_EQ(st["status"]["state"], "running");
   EXPECT_EQ(st["status"]["run_id"], 1) << "a new client sees the same run";
   EXPECT_EQ(again.call({{"cmd", "stop"}})["ok"], true);
-  EXPECT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  EXPECT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
 }
 
 TEST(ControlServer, RecordsEveryCommandWithTheClientsAddress) {

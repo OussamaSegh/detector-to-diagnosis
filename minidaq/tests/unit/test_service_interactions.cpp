@@ -17,6 +17,7 @@
 
 #include "minidaq/control/acquisition_service.hpp"
 #include "minidaq/control/adapters.hpp"
+#include "eventually.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -67,7 +68,7 @@ TEST(ServiceInteractions, ARunClosesTheSinkOnceAfterTheLastWrite) {
   AcquisitionService svc{with_sink(next)};
   ASSERT_TRUE(svc.configure(short_run(), "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 10s)) << to_string(svc.state());
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience)) << to_string(svc.state());
 }
 // [/snippet:sequence]
 
@@ -79,7 +80,7 @@ TEST(ServiceInteractions, ASinkThatCannotCloseFaultsTheRun) {
   AcquisitionService svc{with_sink(next)};
   ASSERT_TRUE(svc.configure(short_run(), "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::fault, 10s)) << to_string(svc.state());
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience)) << to_string(svc.state());
   EXPECT_EQ(svc.status()["fault"], "sink: disk full");
 }
 
@@ -102,7 +103,7 @@ TEST(ServiceInteractions, AFaultedRunDoesNotCloseTheSink) {
   AcquisitionService svc{o};
   ASSERT_TRUE(svc.configure(short_run(), "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::fault, 10s)) << to_string(svc.state());
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience)) << to_string(svc.state());
   ASSERT_TRUE(svc.reset("test").ok);  // destroys the sink, and the mock checks its expectations
 }
 

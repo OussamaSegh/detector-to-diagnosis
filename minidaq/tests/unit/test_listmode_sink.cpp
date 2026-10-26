@@ -24,6 +24,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/format/list_mode.hpp"
+#include "eventually.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -371,7 +372,7 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
   c.output.max_file_mb = 1;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 10s)) << svc.status().dump();
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience)) << svc.status().dump();
   const auto st = svc.status();
   EXPECT_TRUE(st["fault"].is_null()) << st["fault"];
   const auto written = st["sink_counters"]["coincidences"].get<std::uint64_t>();

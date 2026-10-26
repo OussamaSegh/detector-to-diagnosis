@@ -7,10 +7,13 @@ The script stopped after the writer benchmark of releases 0.3.0 and 0.4.0 with s
 and run its end-of-run guard on its own."""
 import pathlib
 import re
+import shutil
 import subprocess
+import tempfile
 import unittest
 
 SCRIPT = pathlib.Path(__file__).resolve().parent / "release_checks.sh"
+STRESS = pathlib.Path(__file__).resolve().parent / "stress_tests.sh"
 
 
 def groups_with_exit(text):
@@ -71,6 +74,32 @@ class ReleaseChecks(unittest.TestCase):
 
     def test_a_dirty_tree_keeps_its_own_status(self):
         self.assertEqual(run_bash("exit 2\n").returncode, 2)
+
+
+
+@unittest.skipUnless(shutil.which("ctest"), "ctest not installed")
+class StressRun(unittest.TestCase):
+    """tools/stress_tests.sh, which the release checks run (MDQ-PR-032)."""
+
+    def run_stress(self, tests):
+        with tempfile.TemporaryDirectory() as d:
+            build = pathlib.Path(d)
+            (build / "CTestTestfile.cmake").write_text(
+                "".join(f'add_test({name} "{cmd}")\n' for name, cmd in tests))
+            out = build / "stress.txt"
+            p = subprocess.run(["sh", str(STRESS), str(build), "2", str(out), "^t_"],
+                               capture_output=True, text=True)
+            return p.returncode, out.read_text()
+
+    def test_a_failed_test_fails_the_stress_run(self):
+        status, text = self.run_stress([("t_fail", "false"), ("t_ok", "true")])
+        self.assertNotEqual(status, 0)
+        self.assertIn("t_fail (Failed)", text)
+
+    def test_passing_tests_pass(self):
+        status, text = self.run_stress([("t_ok", "true")])
+        self.assertEqual(status, 0, text)
+        self.assertIn("100% tests passed", text)
 
 
 if __name__ == "__main__":

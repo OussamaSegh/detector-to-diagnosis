@@ -100,6 +100,10 @@ the patch version.
     skipped its check without a release tag; it now falls back to the last release record's commit.
   - MDQ-PR-031: the architecture (version 8) and the threat model (version 2, the crash report
     store T-35 to T-38) now describe the diagnostics of Chapter 21.
+  - MDQ-PR-032: the stress run passed with a failed test in its output (its status was the
+    output filter's); it exits with ctest's status, tested in `tools.release_checks`.
+  - MDQ-PR-033: eighteen test waits of 5 or 10 s were too short under ThreadSanitizer and load;
+    every wait uses `test_support::patience`, now 60 s.
 - `tools/release_checks.sh OUT FUZZ_SECONDS PART` runs part 1 (builds and tests, about 50
   minutes) or part 2 (gate, system tests, soak, fuzzing, about 90 minutes) on the same commit,
   for a session that cannot hold the whole run; part 2 refuses another commit than part 1's.

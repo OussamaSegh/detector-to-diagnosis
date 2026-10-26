@@ -11,7 +11,7 @@
 namespace minidaq::test_support {
 
 // [snippet:eventually]
-inline constexpr std::chrono::seconds patience{10};
+inline constexpr std::chrono::seconds patience{60};
 
 // True as soon as done() is true; false if it is still false after the deadline.
 template <class Done>

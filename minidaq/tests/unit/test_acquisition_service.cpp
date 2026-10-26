@@ -108,7 +108,7 @@ TEST(AcquisitionService, FullLifecycleWithConservation) {
   const auto r = svc.stop("test");
   ASSERT_TRUE(r.ok);
   EXPECT_TRUE(r.state == AcqState::stopping || r.state == AcqState::configured);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s)) << to_string(svc.state());
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience)) << to_string(svc.state());
 
   const auto st = svc.status();
   EXPECT_EQ(st["state"], "configured");
@@ -131,11 +131,11 @@ TEST(AcquisitionService, AFiniteRunEndsByItself) {
   c.stop_after_s = 0.05;  // 50,000 words
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   EXPECT_EQ(svc.status()["stages"][0]["out"], 50'000);
   // A second run gets fresh ports.
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   EXPECT_EQ(script.created.load(), 2);
   EXPECT_EQ(svc.status()["run_id"], 2);
 }
@@ -157,7 +157,7 @@ TEST(AcquisitionService, IllegalCommandsChangeNothing) {
   EXPECT_EQ(svc.state(), AcqState::running);
   EXPECT_TRUE(audit.contains("configure", "rejected: cannot configure in state running"));
   ASSERT_TRUE(svc.stop("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   ASSERT_TRUE(svc.reset("test").ok);
   EXPECT_EQ(svc.state(), AcqState::idle);
   EXPECT_TRUE(svc.status()["config"].is_null());
@@ -172,7 +172,7 @@ TEST(AcquisitionService, DetectorFaultStopsTheRunAndNeedsAReset) {
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(test_support::eventually([&] { return script.words.load() > 0; })) << "the run is under way";
   script.fail = true;
-  ASSERT_TRUE(svc.wait_for(AcqState::fault, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience));
   const auto st = svc.status();
   EXPECT_EQ(st["fault"], "detector: link down");
   const auto faults = test_support::traced_since(began, TraceCode::fault);
@@ -235,7 +235,7 @@ TEST(AcquisitionService, DefaultAdaptersRunAtTheConfiguredRate) {
   c.stop_after_s = 0.1;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   const auto st = svc.status();
   EXPECT_EQ(st["stages"][0]["out"], 200'000);
   EXPECT_GE(st["run"]["elapsed_s"].get<double>(), 0.09) << "paced at 2 M/s";
@@ -275,7 +275,7 @@ TEST(AcquisitionService, OutOfOrderSinglesAreAFault) {
   AcquisitionService svc{o};
   ASSERT_TRUE(svc.configure(small(), "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::fault, 5s)) << to_string(svc.state());
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience)) << to_string(svc.state());
   const auto st = svc.status();
   EXPECT_EQ(st["fault"], "sort: 512 singles arrived out of time order");
   EXPECT_EQ(st["late_singles"], 512);
@@ -294,13 +294,13 @@ TEST(AcquisitionService, ALossMakesTheRunIncomplete) {
   c.stop_after_s = 0.02;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   EXPECT_EQ(svc.status()["integrity"]["complete"], true) << "a clean run is complete";
   EXPECT_FALSE(audit.contains("data_incomplete", ""));
 
   script.lost = 3;  // the link loses three packets in the second run; the run ends normally
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   const auto st = svc.status();
   EXPECT_TRUE(st["fault"].is_null()) << "a loss is not a fault: the run ends normally";
   EXPECT_EQ(st["integrity"]["complete"], false);
@@ -357,7 +357,7 @@ TEST(AcquisitionService, ASinkThatCannotCloseEndsTheRunInAFault) {
   c.stop_after_s = 0.01;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
-  ASSERT_TRUE(svc.wait_for(AcqState::fault, 5s)) << to_string(svc.state());
+  ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience)) << to_string(svc.state());
   EXPECT_EQ(svc.status()["fault"], "sink: fsync /data: Input/output error");
 }
 

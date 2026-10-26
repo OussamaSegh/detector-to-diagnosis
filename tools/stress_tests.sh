@@ -14,10 +14,18 @@ for _ in $(seq $((2 * $(nproc)))); do
   sh -c 'while :; do :; done' &
   hogs="$hogs $!"
 done
-trap 'kill $hogs 2>/dev/null' EXIT
+log=$(mktemp)
+trap 'kill $hogs 2>/dev/null; rm -f "$log"' EXIT
+# The exit status is ctest's: a failed test fails the stress run. It used to be the status of the
+# grep that filtered ctest's output, so a failure was written to OUT and the run still passed
+# (MDQ-PR-032).
+status=0
+ctest --test-dir "$build" -R "$tests" -j 16 --repeat until-fail:"$n" --timeout 120 --output-on-failure \
+  >"$log" 2>&1 || status=$?
 {
   echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) build $build"
   echo "# $(nproc) CPUs, $((2 * $(nproc))) busy loops, ctest -j 16 --repeat until-fail:$n -R '$tests'"
-  ctest --test-dir "$build" -R "$tests" -j 16 --repeat until-fail:"$n" --timeout 120 --output-on-failure 2>&1 |
-    grep -E "tests passed|Failed|Expected|Which is|Value of|Actual" || true
+  grep -E "tests passed|Failed|Expected|Which is|Value of|Actual" "$log" || true
+  echo "# ctest exit status $status"
 } >"$out"
+exit "$status"

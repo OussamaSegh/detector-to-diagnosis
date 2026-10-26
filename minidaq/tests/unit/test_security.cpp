@@ -458,7 +458,7 @@ TEST(ControlServer, AnIntruderCannotStopARunningScan) {
   EXPECT_EQ(observer.call(configure)["error"]["code"], "forbidden");
   EXPECT_EQ(svc.state(), AcqState::running) << "the scan goes on";
   EXPECT_EQ(console.call({{"cmd", "stop"}})["ok"], true) << "the operator still can";
-  EXPECT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  EXPECT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
 }
 // [/snippet:effectiveness]
 

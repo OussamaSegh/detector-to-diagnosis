@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022 and MDQ-PR-028 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028 and MDQ-PR-033 |
 | Owner | software lead |
 | Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
 
@@ -87,11 +87,14 @@ CAPA's commit (`measurements/ch16/stress-after-tsan.txt`), but two tests failed 
 reason after it. Exercise 5.2's speed test had a budget that held only on the reference machine
 and failed on a GitHub runner (MDQ-PR-022, corrected in Chapter 20); and the flight recorder's
 concurrent snapshot test, written in Chapter 21, took its snapshots before its writer threads
-had started in the coverage build (MDQ-PR-028). Rule 5.5 covers waiting and sleeping; neither
+had started in the coverage build (MDQ-PR-028). The stress run of the release checks then failed
+`AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate`, whose 5-second wait was too short
+under ThreadSanitizer and load (MDQ-PR-033); eighteen waits had deadlines of 5 or 10 s. Rule 5.5 covers waiting and sleeping; neither
 failure had a wait to find, so `tests.waits` could not see them. The cause of the CAPA is
 broader than its first action: a test that assumes how fast the machine or a thread is.
 
-Further action: rule 5.6 of the coding standard (version 4) and item 4.6 of the code review
+Further action: every wait in the tests uses `test_support::patience`, now 60 s, so that only a
+hang reaches it (MDQ-PR-033); rule 5.6 of the coding standard (version 4) and item 4.6 of the code review
 checklist (version 2): a test that starts threads waits until each has started before it checks
 what they did; a speed test compares with a budget that the slowest machine that runs it can
 meet, or runs only where its budget holds (MDQ-PR-022's resolution). The coverage build stays in

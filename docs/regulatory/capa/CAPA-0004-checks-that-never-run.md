@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (release checks for 0.3.0) |
-| Source | MDQ-PR-014; at the effectiveness check, MDQ-PR-023, MDQ-PR-029 and MDQ-PR-030 |
+| Source | MDQ-PR-014; at the effectiveness check, MDQ-PR-023, MDQ-PR-029, MDQ-PR-030 and MDQ-PR-032 |
 | Owner | software lead |
 | Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
 
@@ -104,13 +104,15 @@ the gate, the system test report, the soak and the fuzzing did not run, and noth
 (MDQ-PR-029). The same defect had stopped the 0.3.0 run, where it was taken for a restart of
 the session. In CI, the document-control job skipped its version check on every run because no
 release tag was on GitHub, and passed (MDQ-PR-030); and the performance gate had passed over
-benchmarks that did not run (MDQ-PR-023, corrected in Chapter 20). Three more checks that could
-not run and reported success: the action made the release checks one script but did not make
+benchmarks that did not run (MDQ-PR-023, corrected in Chapter 20). In the second run, the stress
+run reported pass with a failed test in its own output, because its status was that of a filter
+(MDQ-PR-032). Four more checks that could not run, or failed, and reported success: the action made the release checks one script but did not make
 that script, or the jobs, fail when they cannot run.
 
 Further action: the release checks fail with status 3 when they stop before the last check, and
 the test `tools.release_checks` checks the script (MDQ-PR-029); the document-control job falls
-back to the commit of the newest release record and fails if it has neither (MDQ-PR-030); item
+back to the commit of the newest release record and fails if it has neither (MDQ-PR-030); the
+stress run exits with ctest's status, tested in `tools.release_checks` (MDQ-PR-032); item
 5.3 of the code review checklist (version 2) asks of every check that it fails when it cannot
 run. The tests that CI skips were reviewed: `tools.postmortem` (no gdb on the runners) and the
 speed tests of Exercises 5.2 and 10.4 (unoptimized builds) are skipped by design and run in
