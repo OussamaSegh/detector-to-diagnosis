@@ -94,6 +94,13 @@ Commits and pushing:
   Since the retitling (2026-10-26) it names no particular scanner or manufacturer either: write
   "your scanner" and cite only public standards, guidance and textbooks. Future chapters follow
   the same rule.
+- **The book is publishable on Amazon KDP** (user rule, 2026-10-26 14:56 UTC): a standalone
+  technical book for any engineer. No study schedule, no week numbers, no "first weeks or 90 days
+  at your new job" plan, no reader-specific onboarding (a chapter may still give reading and
+  exercise hours). KDP specifications: a supported trim size (7x10 in), margins and gutter for the
+  page count, embedded fonts, no bleed problems, a copyright page, a full-wrap paperback cover
+  sized for the spine width, and an EPUB that passes EPUBCheck. Part V onward follows it as it is
+  written; Parts I to IV, Chapter 34's plan and the build are retrofitted.
 - Every commit message ends with these lines:
 
   ```
