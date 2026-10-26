@@ -3,6 +3,7 @@
 
 namespace ex21 {
 
+// [snippet:record]
 void TinyRecorder::record(std::uint64_t a, std::uint64_t b) noexcept {
   const std::uint64_t n = next_.load(std::memory_order_relaxed) + 1;  // only this thread writes it
   Slot& s = slots_[(n - 1) % kEvents];
@@ -13,7 +14,9 @@ void TinyRecorder::record(std::uint64_t a, std::uint64_t b) noexcept {
   s.seq.store(2 * n, std::memory_order_release);  // even: complete, the fields with it
   next_.store(n, std::memory_order_release);
 }
+// [/snippet:record]
 
+// [snippet:snapshot]
 std::size_t TinyRecorder::snapshot(std::span<Event> out) const noexcept {
   const std::uint64_t last = next_.load(std::memory_order_acquire);
   const std::uint64_t first = last > kEvents ? last - kEvents + 1 : 1;
@@ -43,5 +46,6 @@ std::size_t TinyRecorder::snapshot(std::span<Event> out) const noexcept {
   }
   return n;
 }
+// [/snippet:snapshot]
 
 }  // namespace ex21

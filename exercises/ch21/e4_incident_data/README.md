@@ -18,12 +18,13 @@ one stage's capacity falls to 30% at a given second.
 2. `onset(snapshots, stage)`: the first time the rate is below half the stage's median rate of
    the first ten seconds.
 3. `first_to_slow(snapshots)`: the stage with the earliest onset; if several slowed in the same
-   interval, the one furthest downstream.
+   interval, the one furthest upstream (the stages after a slow stage starve at once).
 4. `loss_began(snapshots)`: the first snapshot whose `dropped` count went up.
 
 **Acceptance** (`ch21/e4_incident_data/<variant>/unittest`): a steady run has the offered rate
 and no onset; a restart and a missed snapshot are handled; the slow stage is found whichever of
-the five it is; the stages before it slow later, in order; loss begins only when the queues are
+the five it is, also when a snapshot every two seconds puts the stage it starves in the same
+interval; the stages before it slow later, in order; loss begins only when the queues are
 full, well after the slowdown.
 
 Then answer in `NOTES.md`: the operator's report says "the writer stopped keeping up at 14:32".

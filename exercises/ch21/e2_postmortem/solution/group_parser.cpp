@@ -9,6 +9,7 @@ struct Parser {
   std::size_t pos = 0;
   ParseResult result;
 
+  // [snippet:group]
   // Parses one group; pos is just after its '{'. Returns false on an error. The depth is
   // checked before the recursion: the text decides how deep the stack goes, so the text must
   // not be able to make it deeper than the format allows (MDQ-PR-001 had the same shape).
@@ -35,6 +36,7 @@ struct Parser {
     result.error = "group not closed at the end of the text";
     return false;
   }
+  // [/snippet:group]
 };
 
 }  // namespace

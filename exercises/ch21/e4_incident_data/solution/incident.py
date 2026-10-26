@@ -36,15 +36,18 @@ def onset(snapshots, stage, baseline_s=10.0, drop=0.5):
     return None
 
 
+# [snippet:first_to_slow]
 def first_to_slow(snapshots):
     found = [(onset(snapshots, s), i, s) for i, s in enumerate(STAGES)]
     found = [(t, i, s) for t, i, s in found if t is not None]
     if not found:
         return None
     earliest = min(t for t, _, _ in found)
-    # Same interval: the furthest downstream (highest index) is the cause.
-    _, _, stage = max((i, t, s) for t, i, s in found if t == earliest)
+    # Same interval: the furthest upstream is the cause. The stages after a slow stage starve at
+    # once, the stages before it slow only when the queue in front of it is full.
+    _, _, stage = min((i, t, s) for t, i, s in found if t == earliest)
     return stage, earliest
+# [/snippet:first_to_slow]
 
 
 def loss_began(snapshots):

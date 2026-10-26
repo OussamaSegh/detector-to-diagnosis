@@ -23,8 +23,9 @@ def onset(snapshots, stage, baseline_s=10.0, drop=0.5):
 
 def first_to_slow(snapshots):
     """(stage, t_s): the stage that slowed first, and when. If several slowed in the same
-    interval, the one furthest downstream: a slow stage holds up the ones before it, never the
-    ones after it, at once. None if no stage slowed."""
+    interval, the one furthest upstream: a slow stage starves the stages after it at once, and
+    holds up the ones before it only when the queue in front of it is full. None if no stage
+    slowed."""
     raise NotImplementedError  # TODO
 
 

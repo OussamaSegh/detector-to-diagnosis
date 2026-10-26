@@ -15,6 +15,7 @@ CHECK = pathlib.Path(__file__).resolve()
 SKIP = 125
 
 
+# [snippet:check]
 def check(workdir="."):
     """The exit status for git bisect run, for the commit checked out in workdir."""
     # First: can this commit be tested at all? A commit that does not build (here: import) says
@@ -29,6 +30,7 @@ def check(workdir="."):
     if p.returncode not in (0, 1):
         return SKIP  # the test itself crashed: not a verdict on the answer
     return p.returncode
+# [/snippet:check]
 
 
 def first_bad(repo, good, bad):

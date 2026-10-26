@@ -44,6 +44,16 @@ class Incident(unittest.TestCase):
                 self.assertEqual(stage, slow)
                 self.assertEqual(t, snapshot_time(snaps, 30))
 
+    def test_with_coarse_polling_the_starved_stage_is_not_blamed(self):
+        # A snapshot every two seconds: the slow stage and the stage after it, which it starves,
+        # slow in the same interval. The cause is the one upstream.
+        for slow in ("decode", "sort"):  # not pair: the writer's baseline holds the start-up
+            with self.subTest(slow=slow):
+                snaps = simulate(seconds=60, slow=slow, at_s=30)[::2]
+                after = STAGES[STAGES.index(slow) + 1]
+                self.assertEqual(inc.onset(snaps, slow), inc.onset(snaps, after), "same interval")
+                self.assertEqual(inc.first_to_slow(snaps)[0], slow)
+
     def test_the_stages_before_it_slow_later_in_order(self):
         snaps = simulate(seconds=90, slow="write", at_s=30)
         times = [inc.onset(snaps, s) for s in STAGES]

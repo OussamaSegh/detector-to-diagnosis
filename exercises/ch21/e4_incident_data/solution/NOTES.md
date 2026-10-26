@@ -8,6 +8,12 @@ upstream slows 5 to 7 s after the next one. With the writer slowed, the source s
 begins to drop at 52 s, 22 s after the cause. The stage that is slow when someone looks is
 rarely the stage that slowed first.
 
+**Upstream, not downstream, in a tie.** The stages after a slow stage starve within the interval
+in which it slowed; the stages before it take seconds. When the snapshots are two seconds apart,
+the slow stage and the stage after it fall in the same interval, and the one upstream is the
+cause. A first version of this solution chose the one downstream, and the coarse-polling test
+was added when that rule turned out to blame the starved stage.
+
 **"The writer stopped keeping up at 14:32."** Before agreeing, ask for: the snapshots of every
 stage from well before 14:32 (the baseline, to compare rates with), the times they were taken
 (not their sequence number: a missed poll doubles an interval), the restarts in the window, and
