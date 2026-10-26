@@ -111,11 +111,15 @@ Commits and pushing:
   API path is not permitted through this proxy"), and the GitHub MCP tools cannot create tags.
   The way around it (2026-10-26, asked by the user): add a line `NAME FULLSHA MESSAGE` to
   `.github/tags.txt`, commit and push to main. The workflow `.github/workflows/tags.yml` then
-  creates the annotated tag with the repository's GITHUB_TOKEN (contents: write), as
-  github-actions[bot]. It never moves a tag: one at another commit fails the job. Since a tag
-  pushed with GITHUB_TOKEN starts no workflow, tags.yml dispatches ci.yml on each new
-  `book-v*` tag (ci.yml has `workflow_dispatch` from 0.4.0 on). Still create the tag locally
-  too, so the release zip and the git bundle carry it. Check with `git ls-remote --tags origin`.
+  creates the annotated tag, as github-actions[bot]. It never moves a tag: one at another
+  commit fails the job. GITHUB_TOKEN alone is not enough: GitHub refuses a tag whose commit has
+  workflow files that differ from main's (first run, 2026-10-26: ch00 made, ch01 refused,
+  "without `workflows` permission"), so the job needs the repository secret `TAGS_TOKEN`, a
+  fine-grained token that only the user can create (this repository, Contents and Workflows
+  read and write). Without it the job falls back to GITHUB_TOKEN and dispatches ci.yml on each
+  new `book-v*` tag itself (ci.yml has `workflow_dispatch` from 0.4.0 on). Still create the
+  tag locally too, so the release zip and the git bundle carry it. Check with
+  `git ls-remote --tags origin`.
 - Nothing goes to an external service without the user's approval. Pushing to the user's
   GitHub repository `OussamaSegh/detector-to-diagnosis` (public since 2026-10-26; named neurolf-engineer until the retitling) is approved.
 

@@ -3,14 +3,19 @@
 # with the repository's own token. It only adds tags: one that exists at the listed commit is
 # skipped, and one that exists at another commit fails the job instead of being moved.
 #
-# A tag pushed with GITHUB_TOKEN starts no other workflow, so the tag jobs of ci.yml (the release
-# package) are started here with a workflow_dispatch on each new release tag whose ci.yml accepts
-# one (0.4.0 and later).
+# GitHub refuses a tag from GITHUB_TOKEN when the tagged commit's workflow files differ from
+# main's ("without `workflows` permission"), which is every tag but ch00, and GITHUB_TOKEN cannot
+# be given that permission. So the job pushes with the secret TAGS_TOKEN, a fine-grained token of
+# the repository's owner for this repository only, with Contents and Workflows read and write.
+# Without the secret it falls back to GITHUB_TOKEN, which can only make the tags that GitHub
+# allows. A tag pushed with GITHUB_TOKEN starts no other workflow, so in that case the tag jobs of
+# ci.yml (the release package) are started with a workflow_dispatch on each new release tag whose
+# ci.yml accepts one (0.4.0 and later); a tag pushed with TAGS_TOKEN starts them by itself.
 name: tags
 on:
   push:
     branches: [main]
-    paths: [.github/tags.txt]
+    paths: [.github/tags.txt, .github/workflows/tags.yml]
   workflow_dispatch:
 
 permissions:
@@ -29,15 +34,18 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          token: ${{ secrets.TAGS_TOKEN || github.token }}
       - name: Create the missing tags
         env:
           GH_TOKEN: ${{ github.token }}
+          HAVE_TAGS_TOKEN: ${{ secrets.TAGS_TOKEN != '' }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --quiet --tags origin
           created=()
+          refused=()
           while read -r name sha msg; do
             case "$name" in ''|'#'*) continue ;; esac
             [[ "$name" =~ ^(ch[0-9]{2}|book-v[0-9]+\.[0-9]+\.[0-9]+)$ ]] || { echo "bad tag name: $name"; exit 1; }
@@ -49,10 +57,18 @@ jobs:
               echo "$name: exists at $have, the manifest says $sha"; exit 1
             fi
             git tag -a "$name" "$sha" -m "$msg"
-            git push --quiet origin "refs/tags/$name"
-            echo "$name: created at $sha"
-            created+=("$name")
+            if git push --quiet origin "refs/tags/$name"; then
+              echo "$name: created at $sha"
+              created+=("$name")
+            else
+              refused+=("$name")
+            fi
           done < .github/tags.txt
+          if [ "${#refused[@]}" -gt 0 ]; then
+            echo "refused by GitHub: ${refused[*]} (TAGS_TOKEN set: $HAVE_TAGS_TOKEN)"
+            exit 1
+          fi
+          [ "$HAVE_TAGS_TOKEN" = true ] && exit 0
           for name in "${created[@]}"; do
             case "$name" in book-v*) ;; *) continue ;; esac
             if git show "$name:.github/workflows/ci.yml" | grep -q '^  workflow_dispatch:'; then
