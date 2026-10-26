@@ -1,0 +1,27 @@
+{
+  "comment": "The platform definition of the acquisition PC (Chapter 25, ADR 0020): everything below MiniDAQ that the installed system must be, with exact versions. A change here is a platform change: a change request with the SOUP review of Chapter 14, a new id, new update bundles built for it. tools/platform_check.py compares a running system with this file and writes the platform's SBOM.",
+  "id": "minidaq-platform-1",
+  "base": {"distribution": "ubuntu", "release": "24.04", "architecture": "amd64"},
+  "kernel": {"package": "linux-image-generic", "release_prefix": "6.8.0-",
+             "cmdline": ["isolcpus=1-3", "nohz_full=1-3"],
+             "note": "The Ubuntu 24.04 general-availability kernel series (assumption: confirm with team: the exact kernel build, and whether a real-time kernel is wanted, Chapter 4)."},
+  "packages": [
+    {"name": "libc6", "version": "2.39-0ubuntu8.9", "why": "C library of every program"},
+    {"name": "libstdc++6", "version": "14.2.0-4ubuntu2~24.04.1", "why": "C++ standard library of every program"},
+    {"name": "libgcc-s1", "version": "14.2.0-4ubuntu2~24.04.1", "why": "compiler runtime (unwinding)"},
+    {"name": "libssl3t64", "version": "3.0.13-0ubuntu3.16", "why": "TLS of the control API and signatures of updates (SOUP, Chapter 17)"},
+    {"name": "systemd", "version": "255.4-1ubuntu8.18", "why": "service manager: notifications, watchdog, restarts, hardening"},
+    {"name": "tar", "version": "1.35+dfsg-3ubuntu0.4", "why": "minidaq_update extracts bundles with it"},
+    {"name": "zlib1g", "version": "1:1.3.dfsg-3.1ubuntu2.2", "why": "gzip of update bundles, used by tar through gzip"}
+  ],
+  "sysctl": {"net.core.rmem_max": "4194304"},
+  "users": ["minidaq"],
+  "files": [
+    {"source": "packaging/systemd/minidaq.service", "target": "etc/systemd/system/minidaq.service"},
+    {"source": "packaging/systemd/minidaq-rollback.service", "target": "etc/systemd/system/minidaq-rollback.service"},
+    {"source": "packaging/sysctl/90-minidaq.conf", "target": "etc/sysctl.d/90-minidaq.conf"},
+    {"source": "packaging/udev/90-minidaq-feb.rules", "target": "etc/udev/rules.d/90-minidaq-feb.rules"},
+    {"source": "packaging/sysusers/minidaq.conf", "target": "usr/lib/sysusers.d/minidaq.conf"}
+  ],
+  "platform_id_file": "etc/minidaq/platform-id"
+}

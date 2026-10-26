@@ -282,6 +282,7 @@ void ControlServer::run(const std::stop_token& st) {
       fds.push_back({fd, static_cast<short>(POLLIN | (write ? POLLOUT : 0)), 0});
     }
     // Wake at least every 100 ms to close connections past their deadline.
+    heartbeat_->beat();  // Chapter 25: a command that never returns stops it
     if (::poll(fds.data(), fds.size(), 100) < 0 && errno != EINTR) {
       break;
     }

@@ -300,6 +300,7 @@ void SlowControl::step(std::int64_t now_ns) {
     step_board(b, now_ns);
   }
   cycles_.fetch_add(1, std::memory_order_relaxed);
+  heartbeat_->beat();
   const std::lock_guard lock{mu_};
   for (std::size_t i = 0; i < boards_.size(); ++i) {
     published_[i] = boards_[i].s;

@@ -27,6 +27,9 @@ hw::BoardFault parse_fault(const std::string& f) {
   if (f == "weak_supply") {
     return hw::BoardFault::weak_supply;
   }
+  if (f == "hung_bus") {
+    return hw::BoardFault::hung_bus;
+  }
   if (f == "stalled_link") {
     return hw::BoardFault::stalled_link;
   }

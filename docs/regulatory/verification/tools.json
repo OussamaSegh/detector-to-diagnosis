@@ -152,6 +152,22 @@
      "use": "Simulates the SystemVerilog listing of the board's output FIFO against its testbench (hw/rtl, test hw.rtl, Chapter 24). The listing teaches; it is not part of MiniDAQ or of the evidence for it.",
      "failure": "A wrong listing in the book that the simulation passes; no effect on the product, whose tests use the C++ model of the board.",
      "confidence": ["The testbench failed on two planted defects of the listing: a clear of the overflow flag that wins over a set, and a push into a full FIFO."],
-     "evidence": ["hw/rtl/feb_out_fifo_tb.sv"], "shown_to_fail": ""}
+     "evidence": ["hw/rtl/feb_out_fifo_tb.sv"], "shown_to_fail": ""},
+    {"id": "TL-27", "name": "Update bundle builder (tools/make_update.py, the OpenSSL command line)", "kind": "in-house", "class": "T3",
+     "version": "the commit; OpenSSL 3.0.13 on the reference machine",
+     "use": "Builds the archive that is installed into a slot, with its MANIFEST.sha256, and signs the manifest with the release key (Chapter 25).",
+     "failure": "A bundle whose archive is not the tree that was verified, a MANIFEST.sha256 that vouches for the wrong files, a signature over the wrong bytes.",
+     "confidence": ["tools/test_make_update.py installs bundles it built with minidaq_update, which checks every file against the manifest and the signature independently of the builder.",
+                    "The same tree gives byte-identical bundles, so a release's bundle can be rebuilt and compared."],
+     "evidence": ["tools/test_make_update.py"],
+     "shown_to_fail": "MakeUpdate.test_a_bundle_is_refused_unless_its_signature_and_platform_check"},
+    {"id": "TL-28", "name": "Platform and unit checks (tools/platform_check.py, tools/check_units.py, systemd-analyze)", "kind": "in-house", "class": "T2",
+     "version": "the commit; systemd-analyze 255 on the reference machine",
+     "use": "Compare an installed system with the platform definition and write its SBOM; check the systemd units' rules, syntax and exposure (Chapter 25, installation qualification).",
+     "failure": "An installation that deviates from the platform and passes, or a unit whose hardening was weakened without a failing check.",
+     "confidence": ["tools/test_platform_check.py changes each kind of fact and checks that each gives one named deviation.",
+                    "check_units.py was run on units with a misspelled directive and an invalid value, and failed on both."],
+     "evidence": ["tools/test_platform_check.py", "tools/check_units.py"],
+     "shown_to_fail": "PlatformCheck.test_every_kind_of_difference_is_one_named_deviation"}
   ]
 }

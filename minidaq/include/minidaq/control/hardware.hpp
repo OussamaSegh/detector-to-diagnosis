@@ -37,6 +37,9 @@ class SlowControlHardware final : public HardwarePort {
   void set_triggers(bool on) override { sc_->set_triggers(on); }
   [[nodiscard]] bool triggers_are(bool on) const override { return sc_->triggers_are(on); }
   [[nodiscard]] bool drained() const override { return sc_->drained(); }
+  [[nodiscard]] std::shared_ptr<const rt::Heartbeat> heartbeat() const override {
+    return sc_->heartbeat();
+  }
 
  private:
   SlowControlHardware() = default;

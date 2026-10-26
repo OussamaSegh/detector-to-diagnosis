@@ -26,3 +26,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0017](0017-register-map-and-slow-control.md) | Registers generated from one specification, a bus interface, and a slow-control loop that owns the bias | Accepted |
 | [0018](0018-kernel-udp-receive-with-drop-accounting.md) | Kernel UDP sockets with full drop accounting, and no kernel bypass until a measurement asks for it | Accepted |
 | [0019](0019-firmware-contract-and-run-sequencing.md) | An interface control document with the firmware, a firmware check every cycle, and a run stop that waits for the boards to drain | Accepted |
+| [0020](0020-platform-watchdog-and-signed-updates.md) | A defined platform, a watchdog that sees inside the server, and signed updates into two slots with rollback | Accepted |

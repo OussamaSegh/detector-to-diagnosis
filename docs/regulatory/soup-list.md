@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 7 (MiniDAQ 0.5.0-dev, start of Part V). Status: draft for review.
+Version 8 (MiniDAQ 0.5.0-dev, Chapter 25). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -43,13 +43,13 @@ MiniDAQ minor version.
 | Identification | OpenSSL 3, `libssl` and `libcrypto`, from the target system: `find_package(OpenSSL 3.0 REQUIRED)` in `cmake/Dependencies.cmake`, not pinned by this repository. On the build machine of MiniDAQ 0.3: OpenSSL 3.0.13, Ubuntu 24.04 package `libssl3t64` version `3.0.13-0ubuntu3.16`. The SBOM records the version that the build found, with its distribution package URL. Since change request CR-0004. |
 | Supplier | The OpenSSL Project (https://openssl-library.org), packaged and patched by Canonical for Ubuntu |
 | License | Apache-2.0 |
-| Used by | `minidaq_control`, linked privately, only in the `access` item (`control/access.cpp`, `control/tls.cpp`); through it `minidaq_server` and `minidaq_ctl`. No OpenSSL header in MiniDAQ's public headers; `tools/check_layers.py` forbids it in the core and application layers. |
+| Used by | `minidaq_control`, linked privately, only in the `access` item (`control/access.cpp`, `control/tls.cpp`); through it `minidaq_server` and `minidaq_ctl`. Since CR-0011 also `libcrypto` in the `update` item (`update/bundle.cpp`), through it `minidaq_update`. No OpenSSL header in MiniDAQ's public headers; `tools/check_layers.py` forbids it in the core and application layers. |
 | Why | Decision record [ADR 0014](../adr/0014-control-api-authentication-and-tls.md): TLS and cryptography are not written by MiniDAQ. |
-| Features used | TLS 1.3 server and client over TCP (`TLS_server_method`, `TLS_client_method`, minimum version TLS 1.3, no session tickets, no session cache); X.509 certificate chain verification with host name and IP address checks (`SSL_set1_host`, `X509_VERIFY_PARAM_set1_ip_asc`); PEM loading of a certificate chain, a private key and CA certificates; SHA-256 (`EVP_Digest`); `RAND_bytes`; `CRYPTO_memcmp`; `OPENSSL_cleanse`. Not used: DTLS, TLS 1.2 or older, ALPN, client certificates, CMS, PKCS#7, PKCS#12, CMP, CRMF, OCSP, CRLs, the low-level cipher interfaces. |
-| Functional requirements on it | Negotiates only TLS 1.3 when told to; refuses a certificate that does not chain to the trusted CA or does not match the host name or address; never sends application data before the handshake; `RAND_bytes` returns cryptographically secure random bytes or fails; `CRYPTO_memcmp` takes a time that does not depend on the contents. |
+| Features used | TLS 1.3 server and client over TCP (`TLS_server_method`, `TLS_client_method`, minimum version TLS 1.3, no session tickets, no session cache); X.509 certificate chain verification with host name and IP address checks (`SSL_set1_host`, `X509_VERIFY_PARAM_set1_ip_asc`); PEM loading of a certificate chain, a private key and CA certificates; SHA-256 (`EVP_Digest`, and the incremental `EVP_DigestInit_ex`/`Update`/`Final_ex` for files); Ed25519 signature verification (`EVP_DigestVerifyInit` with no digest, `EVP_DigestVerify`) of public keys read with `PEM_read_PUBKEY`; `RAND_bytes`; `CRYPTO_memcmp`; `OPENSSL_cleanse`. Not used: DTLS, TLS 1.2 or older, ALPN, client certificates, CMS, PKCS#7, PKCS#12, CMP, CRMF, OCSP, CRLs, the low-level cipher interfaces. |
+| Functional requirements on it | Negotiates only TLS 1.3 when told to; refuses a certificate that does not chain to the trusted CA or does not match the host name or address; never sends application data before the handshake; `RAND_bytes` returns cryptographically secure random bytes or fails; Ed25519 verification accepts exactly the signatures of RFC 8032 made with the given key; `CRYPTO_memcmp` takes a time that does not depend on the contents. |
 | Performance requirements on it | None on the hot path. A handshake completes well within the 10 s authentication deadline on the acquisition PC (assumption: confirm with team for the target hardware). |
 | Hardware and software it needs | Linux, the platform's C library; installed by the operating system's package manager. |
-| Safety class of the items that use it | B: `access`, and through it `server` and `ctl` |
+| Safety class of the items that use it | B: `access`, and through it `server` and `ctl`; `update` |
 | What its failure could cause | An unauthorized party controls the acquisition (a defect in verification or in the protocol), a token is disclosed (a defect in encryption), the control server crashes or hangs during a run (a defect in parsing a handshake or a certificate), which loses the control of the scan but not the acquisition threads. |
 | Risk controls outside it | The server refuses insecure configurations itself (SRS-SEC-005); authorization is MiniDAQ's code, tested independently of TLS; the acquisition threads do not use OpenSSL; the platform's security updates (threat-model.md, section 6, item 7); the vulnerability scan of the SBOM and its triage (threat-model.md, section 8). |
 | How MiniDAQ verifies its use | `test_security.cpp`: TLS 1.3 only (a TLS 1.2 client is refused), a client that trusts another CA or connects by another name is refused, an eavesdropper sees no token; the whole suite under AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer (the sanitizers instrument MiniDAQ's code, not the prebuilt library). |
@@ -58,9 +58,12 @@ MiniDAQ minor version.
 | Last review | 2026-10-26, for MiniDAQ 0.5: the Ubuntu package `3.0.13-0ubuntu3.16`, unchanged since the review for MiniDAQ 0.3 (record in [section 4](#4-known-anomaly-reviews)). Result: as for 0.3; MiniDAQ 0.5 needs that package version or later. |
 
 The rest of the platform that the shipped programs run on (C++ standard library, C
-library, Linux kernel interfaces) is also SOUP, but it is supplied by the
-target system rather than pinned by this repository. Its identification and
-qualification belong to the platform definition (Chapter 25).
+library, Linux kernel interfaces, systemd, GNU tar, which `minidaq_update` runs) is also
+SOUP, supplied by the target system rather than pinned by this repository. Since CR-0011 it
+is identified with exact package versions in the platform definition,
+[`platform/platform.json`](../../platform/platform.json) (minidaq-platform-1), checked at each
+installation by `tools/platform_check.py`, which writes the platform's own SBOM. A change of
+any of these versions is a platform change, reviewed as a SOUP change (section 3).
 
 ## 2. Items used only to develop and verify MiniDAQ
 
@@ -221,3 +224,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 5 | Section 2 refers to the tool list for the confidence in each tool (Chapter 20). |
 | 6 | The known-anomaly reviews for MiniDAQ 0.4 (Chapter 21, after MDQ-PR-024). |
 | 7 | The known-anomaly reviews for MiniDAQ 0.5 (start of Part V, after release 0.4.0). |
+| 8 | Chapter 25 (CR-0011): OpenSSL's Ed25519 and incremental SHA-256 for the updater; the platform's SOUP identified by the platform definition. |

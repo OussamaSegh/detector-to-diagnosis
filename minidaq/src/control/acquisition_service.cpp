@@ -420,6 +420,7 @@ void AcquisitionService::monitor(const std::stop_token& st) {
       const std::lock_guard lock{mu_};
       check_run_locked();
     }
+    heartbeat_->beat();  // Chapter 25: a pass that never ends stops it
     std::unique_lock lock{wait_mu_};
     wait_cv_.wait_for(lock, st, opt_.monitor_period, [] { return false; });
   }

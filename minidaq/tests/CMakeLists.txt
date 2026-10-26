@@ -43,8 +43,10 @@ add_executable(minidaq_unit_tests
   unit/test_service_interactions.cpp
   unit/test_hw_registers.cpp
   unit/test_slow_control.cpp
-  unit/test_hardware_service.cpp)
-target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
+  unit/test_hardware_service.cpp
+  unit/test_health.cpp
+  unit/test_update.cpp)
+target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::update OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
   $<$<BOOL:${MINIDAQ_SANITIZERS}>:MINIDAQ_SANITIZED=1>)
@@ -137,6 +139,12 @@ if(Python3_Interpreter_FOUND)
                    $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl>)
   set_tests_properties(docs.version tools.check_version tools.postmortem PROPERTIES LABELS "unit")
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
+  # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
+  add_test(NAME tools.make_update
+           COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_make_update.py $<TARGET_FILE:minidaq_update>)
+  add_test(NAME tools.platform_check COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_platform_check.py)
+  add_test(NAME packaging.units COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/check_units.py ${PROJECT_SOURCE_DIR})
+  set_tests_properties(tools.make_update tools.platform_check packaging.units PROPERTIES LABELS "unit")
   # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
   add_test(NAME tools.listmode
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)
@@ -160,7 +168,7 @@ if(Python3_Interpreter_FOUND)
     set(_time_factor 10)  # sanitized programs run several times slower; the deadlines stretch
     set(_sanitized 1)
   endif()
-  foreach(name control acquisition readout diagnostics hardware)
+  foreach(name control acquisition readout diagnostics hardware platform)
     add_test(NAME system.${name}
              COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_${name}_system.py)
     set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900

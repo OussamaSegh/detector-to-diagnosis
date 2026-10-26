@@ -26,6 +26,7 @@
 #include "minidaq/control/acquisition_service.hpp"
 #include "minidaq/control/tls.hpp"
 #include "minidaq/core/expected.hpp"
+#include "minidaq/rt/health.hpp"
 
 namespace minidaq::control {
 
@@ -55,6 +56,8 @@ class ControlServer {
   [[nodiscard]] Expected<std::uint16_t, std::string> start();
   void stop();
   [[nodiscard]] std::size_t clients() const noexcept { return clients_.load(std::memory_order_relaxed); }
+  // Beats once per pass of the server's loop, at least every 100 ms while it is idle (Chapter 25).
+  [[nodiscard]] std::shared_ptr<const rt::Heartbeat> heartbeat() const noexcept { return heartbeat_; }
 
  private:
   void run(const std::stop_token& st);
@@ -67,6 +70,7 @@ class ControlServer {
   int listen_fd_ = -1;
   int wake_fd_ = -1;  // eventfd: wakes poll() on stop()
   std::atomic<std::size_t> clients_{0};
+  std::shared_ptr<rt::Heartbeat> heartbeat_ = std::make_shared<rt::Heartbeat>();
   std::jthread thread_;
 };
 

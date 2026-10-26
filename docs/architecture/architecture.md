@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 10 (MiniDAQ 0.5.0-dev, Chapter 24). Status: draft for review.
+Version 11 (MiniDAQ 0.5.0-dev, Chapter 25). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -66,11 +66,13 @@ pipeline does not use it yet). The control API's security is described in the
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
-| Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.0 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
-| Operator, scripts, test harness | Control protocol 2.2: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
+| Operator, scripts, test harness | Control protocol 2.3: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
 | Configuration files | JSON, schema version 1.3 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
-| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile` (Chapter 4) |
+| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile` (Chapter 4); the platform is defined in `platform/platform.json` and checked at installation (Chapter 25) |
+| Service manager (systemd) | sd_notify(3) datagrams to `NOTIFY_SOCKET`: READY, STOPPING, STATUS, and WATCHDOG while healthy (`packaging/systemd/minidaq.service`) | out | Restarts the server on a crash or a missed watchdog; starts the rollback unit after repeated failure ([ADR 0020](../adr/0020-platform-watchdog-and-signed-updates.md)) |
+| Release process | Update bundles: Ed25519-signed manifest and archive, read by `minidaq_update` | in | Trusted only through the keys in `/etc/minidaq/update-keys` |
 
 ## 3. Requirements that shape the architecture
 
@@ -99,8 +101,8 @@ enforces it on every `#include` as part of the unit tests (`architecture.layers`
 |---|---|---|---|
 | core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim, hw, the host counters (`net/`) | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
 | application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
-| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `SlowControlHardware`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer`, `TokenStore`, `TlsStream` | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
-| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send`, `minidaq_listmode` | Wiring: choose adapters, parse command lines, handle signals | everything |
+| adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `SlowControlHardware`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer`, `TokenStore`, `TlsStream`, `ServiceManagerLink` and `Watchdog`; `minidaq_update_lib` (bundles, slots) | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
+| apps | `minidaq_server`, `minidaq_ctl`, `minidaq_update`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send`, `minidaq_listmode` | Wiring: choose adapters, parse command lines, handle signals | everything |
 
 The application layer depends on interfaces (ports) that it owns; adapters implement them.
 This is dependency inversion: the policy does not depend on the details, so the service can be
@@ -138,6 +140,8 @@ assume risk controls outside the software (assumption: confirm with team).
 | hw | registers, buses, simulated board, slow control, hardware description and its adapter | server | B | Sets the detectors' bias and switches it off on a fault (H-10) |
 | output | list-mode sink, file operations | server | B | Makes the data durable with its run record |
 | audit | JSON Lines audit log | server | B | Records actions (A alone); B for the same reason as metrics |
+| platform | `ServiceManagerLink`, `Watchdog` (`control/service_manager`) | server | B | Tells systemd the server is ready and, while its loops beat, alive (Chapter 25) |
+| update | `minidaq_update` and its library (`update/`) | its own process, as root | B | Installs only signed versions, and returns to the last good one (Chapter 25) |
 | server | `minidaq_server` | server | B | Wiring and signals |
 | ctl | `minidaq_ctl` | its own process | B | Holds an operator token and verifies the server before sending it (A until CR-0004) |
 | tools | `minidaq_jitter`, `minidaq_latency`, `minidaq_send`, `minidaq_sim`, `minidaq_listmode` | not shipped | none | Development and verification tools (Chapter 20) |
@@ -154,6 +158,7 @@ The software system is class B: its highest item.
 | `AcquisitionPipeline` | core | service | `start()`, `request_stop()`, `wait()`, `finished()`, counters and histograms readable from any thread |
 | `AcquisitionService` | application | protocol, server, tests | `configure`, `start`, `stop`, `reset` return a `CommandResult`; `status()` returns a JSON snapshot; thread-safe |
 | `HardwarePort` | hw (`SlowControlHardware`) | service | `not_ready()`, `fault()` and `boards()` read the last cycle's copy; `acknowledge()` and `set_triggers()` ask the next cycle, which `set_triggers()` starts at once; `triggers_are()` and `drained()` answer from that copy, and a board in fault is neither (Chapter 24) |
+| `rt::Heartbeat`, `rt::HealthMonitor` | rt | service, protocol, hw, server | A loop calls `beat()` once per pass (wait-free); `silent()` lists the heartbeats older than their limit; the monitor is complete before the `Watchdog` reads it (Chapter 25) |
 | `handle_request` | adapters | server | One request line in, one response line out; never throws |
 | Configuration | application | apps, protocol | `parse_config` returns a validated `AcquisitionConfig` or all errors with JSON Pointer paths |
 
@@ -167,6 +172,7 @@ The software system is class B: its highest item.
 | Service monitor | 1 | `AcquisitionService` | No | Every 20 ms: port faults, late singles, end of run, latency snapshots |
 | List-mode I/O | 1 per run | `ListModeSink` | No | Writes blocks, calls fsync by policy, rotates and renames files, returns buffers to the writer |
 | Control server | 1 | `ControlServer::start` | No | `poll()` over up to 8 clients |
+| Watchdog | 1 under systemd with `WatchdogSec=` | `Watchdog` | No | Every half watchdog interval: pings systemd if every heartbeat is recent, reports changes of health (Chapter 25) |
 | Main | 1 | process | No | Waits for SIGINT/SIGTERM, then shuts down in order |
 
 Control threads take the service's mutex; stage threads never do. The only shared state
@@ -240,7 +246,7 @@ the maximum block delay.
 | OpenSSL | 3.0 or later, the platform's (3.0.13 on the build machine) | adapters (`access`, `tls`), linked privately into `minidaq_control` | TLS 1.3, SHA-256, random tokens ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | Correct TLS 1.3 and certificate verification; a cryptographically secure random generator; security updates from the platform |
 | GoogleTest | 1.15.2 | tests only | Unit and exercise tests | Not shipped |
 | Google Benchmark | 1.9.1 | benchmarks only | Performance measurements | Not shipped |
-| C++ standard library, Linux C library and kernel interfaces | as provided by the platform | everything | Threads, atomics, sockets, real-time scheduling | Platform qualification (Chapter 25) |
+| C++ standard library, Linux C library and kernel interfaces, systemd, GNU tar | the exact package versions of `platform/platform.json` (minidaq-platform-1) | everything; tar by `minidaq_update` | Threads, atomics, sockets, real-time scheduling; service supervision; extraction of bundles | Checked at installation by `tools/platform_check.py`, which writes the platform's SBOM (Chapter 25) |
 
 The full SOUP list, with requirements on each item and the anomaly review, is
 [`docs/regulatory/soup-list.md`](../regulatory/soup-list.md) (Chapter 7); `tools/make_sbom.py` generates the CycloneDX SBOM from the same pins.
@@ -260,6 +266,10 @@ The full SOUP list, with requirements on each item and the anomaly review, is
   Since CR-0004 it holds an operator token and must verify the server before sending it, so a
   defect in it can disclose a token (HZ-4): process isolation no longer limits what its
   failure can cause, and `ctl` is class B.
+- `minidaq_update` (item `update`) runs in its own process, as root, and shares nothing with the
+  server but the files it installs; the server cannot write them (`ProtectSystem=strict`).
+  The updater is installed by the platform image outside the slots, so that a defective update
+  cannot replace the program that rolls it back (Chapter 25).
 - A class C item, if the risk analysis ever finds one, would need either the whole process
   at class C or a segregation that holds against its neighbors' failures, such as a separate
   process with a validated interface. Chapter 15 decides whether any hazard needs it.
@@ -279,12 +289,13 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 | Front-end model and capacity | Dead-time stage against both formulas and by hand, chunking, accounting; replay order and rate; count-rate and bottleneck measurements regenerated by one command each | `test_dead_time.cpp`, `test_count_rates.cpp`, `test_replay_source.cpp`, `measurements/ch11/` |
 | Front-end hardware | Register access rules at compile time, the bus, the simulated board's failures, the slow control at simulated time, the service with simulated boards, a board that overheats in a run | `test_hw_registers.cpp`, `test_slow_control.cpp`, `test_hardware_service.cpp`, `system.hardware` |
 | Receive path | Every datagram delivered or counted, the tail of a burst included; the kernel's counter formats from captured text | `test_udp_detector.cpp`, `test_host_counters.cpp`, `measurements/ch23/` |
+| Platform and updates | The notification protocol against a socket the test binds, the health-gated watchdog, a hung bus; signatures, refusals, A/B switching, a power cut after every step; the unit rules and `systemd-analyze verify`; the platform check | `test_health.cpp`, `test_update.cpp`, `system.platform`, `tools.make_update`, `packaging.units`, `tools.platform_check` |
 | Concurrency | All of the above under ThreadSanitizer | `tsan` preset |
 | Review | This document and each ADR are reviewed with the code that implements them | pull requests |
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0018](../adr/README.md). Known anomalies, with their evaluation:
+Decisions: [ADR 0001 to 0020](../adr/README.md). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
@@ -315,3 +326,4 @@ Open issues:
 | 8 | Part IV, recorded at the release checks of 0.4.0 (MDQ-PR-031): the test harness, system tests and release package (Chapters 18 to 20), the diagnostics of Chapter 21 (ADR 0016, CR-0007) and control API 2.1. Also editorial: the text names no manufacturer. |
 | 9 | Part V: the front-end boards and item `hw` (Chapter 22, ADR 0017, CR-0008, control API 2.2) and the receive path's drop counters (Chapter 23, ADR 0018, CR-0009). |
 | 10 | Chapter 24: the firmware contract (ICD-FEB, version 1), the firmware check and the run's sequencing with the boards' triggers and FIFOs (ADR 0019, CR-0010, control API 2.3). |
+| 11 | Chapter 25: the platform (definition, units, health-gated watchdog) and signed updates with rollback; items `platform` and `update`; the threads and SOUP that come with them (ADR 0020, CR-0011). Also corrects what version 10 left stale in section 2: the hardware description schema (1.1) and the control protocol (2.3). |

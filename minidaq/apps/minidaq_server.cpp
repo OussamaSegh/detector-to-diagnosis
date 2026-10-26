@@ -21,6 +21,12 @@
 // when every board is ready, the boards' triggers follow the run (Chapter 24), a hardware fault
 // stops it, and at shutdown every bias is switched off.
 //
+// Under systemd (Chapter 25, packaging/systemd/minidaq.service), the server says READY once its
+// control API is listening and STOPPING at shutdown, and, with WatchdogSec=, pings the watchdog
+// only while its loops beat: the acquisition service's monitor, the control server and the
+// slow control. A loop that stops makes systemd kill the server, which writes its crash report,
+// and start it again. Changes of health go to the audit trail.
+//
 // Runs until SIGINT or SIGTERM; a running acquisition is stopped and drained
 // first. Control it with minidaq_ctl, or with any client that writes one JSON
 // object per line to the socket.
@@ -43,10 +49,13 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/audit_log.hpp"
 #include "minidaq/control/control_server.hpp"
+#include "minidaq/control/file_ops.hpp"
 #include "minidaq/control/hardware.hpp"
+#include "minidaq/control/service_manager.hpp"
 #include "minidaq/control/tls.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/rt/crash_report.hpp"
+#include "minidaq/rt/health.hpp"
 
 #ifndef MINIDAQ_VERSION_STRING
 #define MINIDAQ_VERSION_STRING "unknown"
@@ -159,6 +168,12 @@ int main(int argc, char** argv) {
   }
   // [/snippet:security]
 
+  auto manager = control::ServiceManagerLink::from_environment();
+  if (!manager) {
+    std::fprintf(stderr, "service manager: %s\n", manager.error().c_str());
+    return 1;
+  }
+
   // Block the signals before any thread starts, so that only sigwait() below sees them.
   sigset_t signals;
   sigemptyset(&signals);
@@ -234,11 +249,31 @@ int main(int argc, char** argv) {
               security.tls ? "TLS" : "plain TCP", auth.c_str(), std::string{to_string(service.state())}.c_str());
   (void)std::fflush(stdout);  // a line for a human or a test harness; nothing to do if it fails
 
+  // [snippet:watchdog]
+  // Chapter 25: what must keep beating for the process to be healthy. A loop gets its silence
+  // limit to start; the limits are several times each loop's own period, so that a busy moment
+  // is not a hang.
+  rt::HealthMonitor health;
+  health.watch("acquisition service", service.heartbeat(), std::chrono::seconds{2});
+  health.watch("control server", server.heartbeat(), std::chrono::seconds{5});
+  if (opt.hardware && opt.hardware->heartbeat()) {
+    health.watch("slow control", opt.hardware->heartbeat(), std::chrono::seconds{3});
+  }
+  const control::Watchdog watchdog{*manager, health, [&service](bool healthy, const std::string& why) {
+                                     service.note("watchdog", healthy ? "healthy" : "unhealthy", why, healthy);
+                                   }};
+  if (const int err = manager->ready("state " + std::string{to_string(service.state())}); err != 0) {
+    std::fprintf(stderr, "minidaq_server: READY not sent to %s: %s\n", manager->socket().c_str(),
+                 control::errno_message(err).c_str());
+  }
+  // [/snippet:watchdog]
+
   int sig = 0;
   if (sigwait(&signals, &sig) != 0) {  // fails only for an invalid set
     std::fprintf(stderr, "sigwait failed\n");
   }
   std::printf("minidaq_server: signal %d, shutting down\n", sig);
+  (void)manager->stopping("signal " + std::to_string(sig));  // nothing to do if it is lost
   server.stop();
   if (!token_file.empty()) {
     std::error_code ignored;  // a token file left behind is useless once the server is gone

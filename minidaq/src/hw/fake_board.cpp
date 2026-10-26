@@ -130,13 +130,22 @@ std::uint32_t FakeBoard::read_locked(std::uint32_t address) const {
   }
 }
 
+bool FakeBoard::hang_locked(std::unique_lock<std::mutex>& lock) {
+  if (fault_ != BoardFault::hung_bus) {
+    return false;
+  }
+  // A stuck bus holds the thread that accessed it, not the board: set_fault() still gets in.
+  (void)fault_changed_.wait_for(lock, hang_time, [this] { return fault_ != BoardFault::hung_bus; });
+  return true;
+}
+
 Expected<std::uint32_t, HwError> FakeBoard::read32(std::uint32_t address) {
-  const std::lock_guard lock{mu_};
+  std::unique_lock lock{mu_};
   ++accesses_;
   if (address % 4 != 0 || address > feb::Threshold::address) {
     return Unexpected{HwError{HwErrc::bad_address, address}};
   }
-  if (fault_ == BoardFault::unresponsive) {
+  if (hang_locked(lock) || fault_ == BoardFault::unresponsive) {
     return Unexpected{HwError{HwErrc::timeout, address}};
   }
   if (fault_ == BoardFault::vanished) {
@@ -147,12 +156,12 @@ Expected<std::uint32_t, HwError> FakeBoard::read32(std::uint32_t address) {
 }
 
 HwStatus FakeBoard::write32(std::uint32_t address, std::uint32_t value) {
-  const std::lock_guard lock{mu_};
+  std::unique_lock lock{mu_};
   ++accesses_;
   if (address % 4 != 0 || address > feb::Threshold::address) {
     return {HwError{HwErrc::bad_address, address}};
   }
-  if (fault_ == BoardFault::unresponsive) {
+  if (hang_locked(lock) || fault_ == BoardFault::unresponsive) {
     return {HwError{HwErrc::timeout, address}};
   }
   if (fault_ == BoardFault::vanished) {
@@ -200,9 +209,12 @@ void FakeBoard::set_temperature(double celsius) {
 }
 
 void FakeBoard::set_fault(BoardFault f) {
-  const std::lock_guard lock{mu_};
-  update_locked(clock_());
-  fault_ = f;
+  {
+    const std::lock_guard lock{mu_};
+    update_locked(clock_());
+    fault_ = f;
+  }
+  fault_changed_.notify_all();
 }
 
 void FakeBoard::set_firmware(std::uint32_t fw_version) {

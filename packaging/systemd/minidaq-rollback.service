@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+# Started by minidaq.service's OnFailure= (Chapter 25, ADR 0020): when the server has failed to
+# start three times, and the version running is a trial, go back to the last confirmed version
+# and start the server again. minidaq_update exits with 3 when the failing version is the
+# confirmed one; this unit then fails, nothing is restarted, and the failure waits for a person.
+
+[Unit]
+Description=MiniDAQ: return to the last confirmed version after a failed update
+Documentation=man:systemd.unit(5)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/minidaq/minidaq_update rollback --root /opt/minidaq
+ExecStartPost=/usr/bin/systemctl reset-failed minidaq.service
+ExecStartPost=/usr/bin/systemctl --no-block start minidaq.service

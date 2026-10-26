@@ -21,6 +21,15 @@ digraph minidaq_dataflow {
     crashreport [label="Crash report\n(file or journal)", shape=cylinder];
   }
 
+  // Chapter 25: updates. The updater runs as root, outside the slots it writes.
+  release [label="Release process\n(signs bundles)", shape=box];
+  subgraph cluster_root {
+    label="Acquisition PC: root";
+    style=dashed;
+    updater [label="minidaq_update", shape=ellipse];
+    slots [label="Slots, current,\nupdate state,\ntrusted keys", shape=cylinder];
+  }
+
   client -> server [label="control: control API\nTCP 7700, TLS 1.3 + token"];
   server -> client [label="responses", style=dotted];
   detector -> server [label="readout: MDQ-R1\nover UDP"];
@@ -29,4 +38,7 @@ digraph minidaq_dataflow {
   server -> listmode [label="write"];
   server -> audit [label="append"];
   server -> crashreport [label="write on a fatal signal"];
+  release -> updater [label="bundle: signed\nmanifest + archive"];
+  updater -> slots [label="install, switch"];
+  slots -> server [label="programs run\nfrom current"];
 }

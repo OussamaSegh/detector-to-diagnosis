@@ -18,6 +18,7 @@ add_library(minidaq_core
   src/processing/stream_merger.cpp
   src/rt/realtime.cpp
   src/rt/crash_report.cpp
+  src/rt/health.cpp
   src/hw/register.cpp
   src/hw/mmio_bus.cpp
   src/hw/fake_board.cpp
@@ -48,11 +49,21 @@ add_library(minidaq_control
   src/control/control_server.cpp
   src/control/udp_detector.cpp
   src/control/file_ops.cpp
-  src/control/listmode_sink.cpp)
+  src/control/listmode_sink.cpp
+  src/control/service_manager.cpp)
 add_library(minidaq::control ALIAS minidaq_control)
 target_link_libraries(minidaq_control PUBLIC minidaq::core nlohmann_json::nlohmann_json
                       PRIVATE OpenSSL::SSL OpenSSL::Crypto minidaq::warnings)
 target_compile_definitions(minidaq_control PRIVATE MINIDAQ_VERSION_STRING="${MINIDAQ_VERSION_FULL}")
+
+# Chapter 25: signed updates into two slots, with rollback (ADR 0020). Its own library: only
+# minidaq_update links it, and the server knows nothing of updates.
+add_library(minidaq_update_lib
+  src/update/bundle.cpp
+  src/update/slots.cpp)
+add_library(minidaq::update ALIAS minidaq_update_lib)
+target_link_libraries(minidaq_update_lib PUBLIC minidaq::core
+                      PRIVATE nlohmann_json::nlohmann_json OpenSSL::Crypto minidaq::warnings)
 
 add_subdirectory(apps)
 

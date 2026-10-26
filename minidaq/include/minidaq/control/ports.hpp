@@ -21,6 +21,7 @@
 
 #include "minidaq/config/acquisition_config.hpp"
 #include "minidaq/core/single.hpp"
+#include "minidaq/rt/health.hpp"
 
 namespace minidaq::control {
 
@@ -105,6 +106,9 @@ class HardwarePort {
   [[nodiscard]] virtual bool triggers_are(bool on) const = 0;
   // Every board has its triggers off and nothing left in its output FIFO.
   [[nodiscard]] virtual bool drained() const = 0;
+  // Chapter 25: the slow control's heartbeat, which the process's health watches; empty when
+  // nothing in the port runs on its own.
+  [[nodiscard]] virtual std::shared_ptr<const rt::Heartbeat> heartbeat() const { return nullptr; }
 };
 
 // The service creates a fresh detector and sink for every configuration.

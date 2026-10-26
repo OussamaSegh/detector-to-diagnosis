@@ -29,6 +29,7 @@
 #include <condition_variable>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <string>
@@ -36,6 +37,7 @@
 #include <vector>
 
 #include "minidaq/hw/register.hpp"
+#include "minidaq/rt/health.hpp"
 
 namespace minidaq::hw {
 
@@ -150,6 +152,11 @@ class SlowControl {
     return cycles_.load(std::memory_order_relaxed);
   }
   [[nodiscard]] const SlowControlSettings& settings() const noexcept { return settings_; }
+  // Beats at the end of every cycle (Chapter 25): a cycle that hangs, in a register read that
+  // never returns for example, stops it.
+  [[nodiscard]] std::shared_ptr<const rt::Heartbeat> heartbeat() const noexcept {
+    return heartbeat_;
+  }
 
  private:
   struct Board {
@@ -170,6 +177,7 @@ class SlowControl {
   std::atomic<std::uint64_t> ack_requested_{0};
   std::uint64_t ack_done_ = 0;  // the cycle's own
   std::atomic<std::uint64_t> cycles_{0};
+  std::shared_ptr<rt::Heartbeat> heartbeat_ = std::make_shared<rt::Heartbeat>();
   std::atomic<bool> triggers_wanted_{false};
   // Wakes the cycle's thread before its period is over (set_triggers).
   std::mutex wake_mu_;

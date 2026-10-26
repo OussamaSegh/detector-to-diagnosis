@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: MIT
+# MiniDAQ's acquisition server as a systemd service (Chapter 25, ADR 0020).
+#
+# Installed by the platform image as /etc/systemd/system/minidaq.service. The programs run from
+# /opt/minidaq/current, a symbolic link to the active one of two slots that minidaq_update
+# switches (signed updates with rollback). Site settings are in /etc/minidaq/minidaq.env.
+
+[Unit]
+Description=MiniDAQ acquisition server
+Documentation=man:systemd.service(5)
+After=network-online.target
+Wants=network-online.target
+# Three failed starts within five minutes and systemd stops trying: the unit is failed, and
+# OnFailure= returns to the last confirmed version if the failing one is a trial (an update not
+# yet confirmed). A confirmed version that fails stays failed for a person to look at.
+StartLimitIntervalSec=300
+StartLimitBurst=3
+OnFailure=minidaq-rollback.service
+
+[Service]
+# READY=1 once the control API listens; WATCHDOG=1 while every loop beats (SRS-PLT-001, 002).
+Type=notify
+NotifyAccess=main
+WatchdogSec=10s
+# A missed watchdog sends SIGABRT (the default WatchdogSignal=), so the crash report and the
+# core dump of Chapter 21 record where the server hung.
+Restart=on-failure
+RestartSec=2s
+TimeoutStartSec=30s
+# A stop drains the run (Chapter 24) before the process exits.
+TimeoutStopSec=30s
+
+EnvironmentFile=/etc/minidaq/minidaq.env
+# The TLS key and the token hashes reach the service as credentials: readable by root only on
+# disk, and by this service only, in a private directory (%d), while it runs.
+LoadCredential=server.key:/etc/minidaq/tls/server.key
+LoadCredential=tokens.json:/etc/minidaq/tokens.json
+ExecStart=/opt/minidaq/current/bin/minidaq_server \
+    --bind ${MINIDAQ_BIND} --port ${MINIDAQ_PORT} \
+    --tls-cert /etc/minidaq/tls/server.crt --tls-key %d/server.key --tokens %d/tokens.json \
+    --hardware /etc/minidaq/hardware.json \
+    --audit /var/lib/minidaq/audit.jsonl --crash-report /var/lib/minidaq/crash-reports.txt
+# After READY: a trial version that has come up is confirmed; it then stays after a reboot.
+# '+' runs this one command with full privileges, which writing the update state needs.
+ExecStartPost=+/usr/lib/minidaq/minidaq_update confirm --root /opt/minidaq
+
+# Least privilege (Chapter 17, threat T-07). No root, no capabilities: the real-time settings of
+# Chapter 4 come from resource limits, which allow exactly the priorities of the profile.
+User=minidaq
+Group=minidaq
+CapabilityBoundingSet=
+AmbientCapabilities=
+NoNewPrivileges=yes
+LimitRTPRIO=80
+LimitMEMLOCK=infinity
+StateDirectory=minidaq
+StateDirectoryMode=0750
+RuntimeDirectory=minidaq
+RuntimeDirectoryMode=0700
+Environment=MINIDAQ_RUNTIME_DIR=%t/minidaq
+WorkingDirectory=/var/lib/minidaq
+UMask=0027
+
+# What the process can see and do.
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+# The front-end boards' register windows (Chapter 22); the udev rule gives the group access.
+DevicePolicy=closed
+DeviceAllow=char-uio rw
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+# AF_NETLINK: getifaddrs(3), which finds the readout interface for the NIC counters (Chapter 23).
+RestrictAddressFamilies=AF_INET AF_UNIX AF_NETLINK
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RemoveIPC=yes
+MemoryDenyWriteExecute=yes
+# Not RestrictRealtime=yes: the receiving and sorting threads run under SCHED_FIFO.
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

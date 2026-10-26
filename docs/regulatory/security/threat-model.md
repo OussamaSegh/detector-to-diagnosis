@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 2 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
+Version 3 (MiniDAQ 0.5.0-dev, Chapter 25). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -59,6 +59,11 @@ The source is [dataflow.dot](dataflow.dot); its node names are the element ids o
   key, data, audit trail) are protected by the operating system's file permissions. Whoever
   runs as the operator, or as root, is inside the boundary; MiniDAQ cannot defend against them
   and does not try.
+- **Root on the acquisition PC, and the way software reaches it (Chapter 25).** The installed
+  programs, the update state and the trusted public keys are writable by root only;
+  `minidaq_update` runs as root, outside the slots it writes. A bundle crosses from the
+  manufacturer to the PC on a download or a removable medium and is untrusted until its
+  signature verifies; everything in it is trusted only through the signed manifest.
 
 ## 3. STRIDE analysis
 
@@ -77,7 +82,7 @@ statements and notes. A status is one of:
 |---|---|---|---|---|---|---|
 | client (external) | T-01, T-02: mitigated | | T-03: mitigated | | | |
 | detector (external) | T-04: environment | | T-05: n/a | | | |
-| server (process) | T-06: mitigated | T-07: environment | T-08: mitigated | T-09: accepted | T-10, T-11: mitigated | T-12: mitigated |
+| server (process) | T-06: mitigated | T-07: mitigated | T-08: mitigated | T-09: accepted | T-10, T-11: mitigated | T-12: mitigated |
 | control (flow) | | T-13: mitigated | | T-14: mitigated | T-15: environment | |
 | readout (flow) | | T-16: environment | | T-17: accepted | T-18: mitigated | |
 | config (store) | | T-19: mitigated | T-20: mitigated | T-21: accepted | T-22: mitigated | |
@@ -85,8 +90,12 @@ statements and notes. A status is one of:
 | listmode (store) | | T-27: mitigated | T-28: mitigated | T-29: environment | T-30: mitigated | |
 | audit (store) | | T-31: environment | T-32: n/a | T-33: mitigated | T-34: accepted | |
 | crashreport (store) | | T-35: environment | T-36: n/a | T-37: accepted | T-38: accepted | |
+| release (external) | T-39: mitigated | | T-40: mitigated | | | |
+| bundle (flow) | | T-41: mitigated | | T-42: n/a | T-43: accepted | |
+| updater (process) | T-44: environment | T-45: mitigated | T-46: mitigated | T-47: n/a | T-48: mitigated | T-49: mitigated |
+| slots (store) | | T-50: environment | T-51: mitigated | T-52: n/a | T-53: mitigated | |
 
-Of the 38 entries, 20 are mitigated, 7 rely on the environment, 7 are accepted and 4 are not
+Of the 53 entries, 30 are mitigated, 8 rely on the environment, 8 are accepted and 7 are not
 applicable. Three of the mitigated entries are mitigated only in part, and their remainder is a
 recorded gap of section 7: T-27 (a CRC detects damage, not a deliberate change), T-06 (on
 loopback without TLS) and T-03 (a shared token names a group, not a person).
@@ -197,7 +206,7 @@ what your scanner's instructions for use say and who approves them).
 > 8. keep the acquired data on a file system that other users of the PC cannot fill, such as a
 >    partition or a quota of its own.
 
-Threats with the status "environment" in `threats.json` (T-04, T-07, T-15, T-16, T-29, T-31, T-35)
+Threats with the status "environment" in `threats.json` (T-04, T-15, T-16, T-29, T-31, T-35, T-44, T-50)
 rely on one or more of these items; the effectiveness of RC-25 is the inspection that this text
 is in the accompanying documentation of the release.
 
@@ -265,3 +274,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 |---|---|
 | 1 | First version (Chapter 17): STRIDE analysis T-01 to T-34, attack tree for H-08, environment assumptions (RC-25), gaps, vulnerability management. |
 | 2 | Chapter 21 (CR-0007), recorded at the release checks of 0.4.0 (MDQ-PR-031): the crash report as a data store (T-35 to T-38) and the diagnostics response in T-09. Also editorial: the scope names no manufacturer. |
+| 3 | Chapter 25 (CR-0011): updates as elements of the diagram (release, bundle, updater, slots; T-39 to T-53); T-07 is mitigated by signed updates (RC-34) instead of being left to the platform. |

@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 13 (MiniDAQ 0.5.0-dev). Status: draft for review.
+Version 14 (MiniDAQ 0.5.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -294,6 +294,26 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | SRS-HW-014 | The acquisition service shall switch the boards' triggers off when a run ends on its own, enters the fault state or is reset. | service | T |
 | SRS-HW-015 | The run's integrity verdict shall count as losses each board's FIFO overflows since its triggers were switched on, which the slow-control loop counts and clears every cycle, and a drain that ran out of time (risk control RC-30). | service | T |
 
+### 2.17 Platform and updates (PLT)
+
+How the server runs on the installed system, and how a new version reaches it (Chapter 25,
+ADR 0020, CR-0011). The service manager's protocol is systemd's sd_notify(3); the platform the
+units and the updates assume is `platform/platform.json`.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-PLT-001 | When the service manager names a notification socket (NOTIFY_SOCKET), the server shall send the message `READY` only after its control API listens, and the message `STOPPING` when its shutdown begins. | platform | T |
+| SRS-PLT-002 | When the service manager sets a watchdog interval (WATCHDOG_USEC), the server shall send the message `WATCHDOG` every half interval only while the acquisition service's monitor has beaten within 2 s, the control server within 5 s and the slow-control loop within 3 s, and record each change of its health in the audit trail. | platform | T |
+| SRS-PLT-003 | The updater (`minidaq_update`) shall install a bundle only when its manifest carries an Ed25519 signature that verifies with a key in the trusted keys directory, names the product minidaq and this PC's platform, and gives the archive's size and SHA-256, which the archive matches. | update | T |
+| SRS-PLT-004 | The updater shall extract a bundle only into the slot that is not running, and refuse it when the archive has a member outside its directory or the extracted tree has a file that is not a regular file or a directory, a file not listed in its MANIFEST.sha256, a listed file missing or a file whose SHA-256 differs. | update | T |
+| SRS-PLT-005 | The updater shall refuse a version that is not newer than the confirmed version, unless the downgrade is asked for. | update | T |
+| SRS-PLT-006 | When the updater installs over a confirmed version, the updater shall make the new version a trial, which `confirm` makes the confirmed version and `rollback` replaces with the confirmed version. | update | T |
+| SRS-PLT-007 | After a power cut at any step of an install, a confirmation or a rollback, the updater shall, at its next start, leave `current` naming a slot whose files all verify and that holds the confirmed version or a recorded trial. | update | T |
+| SRS-PLT-008 | The service unit (`packaging/systemd/minidaq.service`) shall start the server as Type=notify with a watchdog, restart it on failure, start the rollback unit when it fails, run it as its own user without capabilities and with a real-time priority limit at least the highest priority of every real-time profile, and confirm a trial only after READY. | platform | I |
+| SRS-PLT-009 | The installation qualification shall find no deviation of the installed system from the platform definition (`platform/platform.json`): distribution, kernel and its command line, package versions, kernel settings, the service's user, the installed unit and configuration files and the platform ID. | platform | I |
+| SRS-PLT-010 | When no trial is installed, the updater's `rollback` shall change nothing and exit with the status `3`, so that the unit that started it fails. | update | T |
+| SRS-PLT-011 | The updater shall refuse to run while another updater runs on the same root. | update | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -301,6 +321,8 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | SRS-PERF-020 | M | [Performance budget](../performance-budget.md), version 4: whole pipeline with the coincidence sorter in the `hardened` build, median 36.6 M words/s (27.3 ns per single), margin 3.7 times at 10 M singles/s, release 0.4.0 (`measurements/release-0.4.0/perf-pipeline.txt`); release 0.3.0 measured 37.9 M words/s in the `release` build. Until version 5 this row quoted 86 M words/s, measured before Chapter 10 (MDQ-PR-014). Re-measure on the acquisition PC. |
 | SRS-PERF-021 | M | [Performance budget](../performance-budget.md), list-mode writer section: 14.0 to 16.4 M coincidences/s with fsync at close, release 0.4.0 (`measurements/release-0.4.0/perf-writer.txt`; about 19 M in Chapter 12, `measurements/ch12/`), at least 4.7 times the 3 M required; the pair stage produces 2.7 M coincidences/s at 70 M singles/s. |
 | SRS-DIAG-005 | M | `bm_flight_recorder` (`measurements/ch21/bm_flight_recorder.txt`): 32.7 ns per event with one thread, 40.9 ns real time with four, 32.5 ns while another thread takes snapshots; a first version with one shared counter took 213 ns with four threads. The limit of 100 ns is a book-level number (assumption: confirm with team). |
+| SRS-PLT-008 | I | `tools/check_units.py` (test `packaging.units`) checks these rules on every build and runs `systemd-analyze verify` on the units; `systemd-analyze security --offline=true` scores their exposure at 1.8 ("OK") on systemd 255 (`measurements/ch25/`). The units' effect on a running system is part of the installation qualification. |
+| SRS-PLT-009 | I | `tools/platform_check.py`, run on the acquisition PC at installation and after every platform change; its fact file and the platform SBOM it writes are the installation record. On the book's virtual machine it reports the kernel and the uninstalled files (`measurements/ch25/platform-check.txt`): that machine is a build machine, not the platform. |
 | SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
 
 ## 4. Changes
@@ -320,3 +342,4 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | 11 | Chapter 22: the front-end hardware requirements SRS-HW-001 to SRS-HW-010 (ADR 0017, CR-0008); control API 2.2. |
 | 12 | Chapter 23: the receive path's drop counters, SRS-RDO-013 to SRS-RDO-015 (ADR 0018, CR-0009). |
 | 13 | Chapter 24: the firmware check and the run's sequencing with the boards, SRS-HW-011 to SRS-HW-015; SRS-HW-004, SRS-HW-007 and SRS-HW-010 extended (ADR 0019, CR-0010); control API 2.3. |
+| 14 | Chapter 25: the platform and updates, SRS-PLT-001 to SRS-PLT-011 (ADR 0020, CR-0011). |

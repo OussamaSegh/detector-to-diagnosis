@@ -13,7 +13,8 @@
 // temperature can follow a file (temperature_file) that a test or a demonstration rewrites.
 //
 // Schema 1.1 (Chapter 24) adds, for simulated boards, the firmware version the board reports,
-// the rates of its output FIFO and the fault "stalled_link"; and for every backend the time the
+// the rates of its output FIFO and the faults "stalled_link" and "hung_bus" (Chapter 25: a bus
+// access that does not return for a minute); and for every backend the time the
 // boards may take to switch their triggers on and to send what they hold at the end of a run:
 //   "run": {"trigger_timeout_ms": 2000, "drain_timeout_ms": 2000}
 // The firmware versions the software supports are not in the file: they are a property of the
@@ -46,7 +47,8 @@ struct BoardConfig {
   double temperature_c = 25.0;
   std::string temperature_file;  // empty: the temperature stays temperature_c
   double dark_current_ua = 2.0;
-  std::string fault = "none";  // "none", "unresponsive", "vanished", "weak_supply", "stalled_link"
+  std::string fault = "none";  // "none", "unresponsive", "vanished", "weak_supply", "stalled_link",
+                               // "hung_bus"
   std::uint32_t firmware = 0x0102'0000;  // FW_VERSION, from "1.2.0"
   double fill_words_per_s = 20'000.0;
   double drain_words_per_s = 1'000'000.0;

@@ -44,7 +44,8 @@ void read_board(const json& j, const std::string& at, const std::string& backend
     r.get<double>("temperature_c", b.temperature_c, -40.0, 125.0);
     r.get("temperature_file", b.temperature_file);
     r.get<double>("dark_current_ua", b.dark_current_ua, 0.0, 10'000.0);
-    r.get("fault", b.fault, {"none", "unresponsive", "vanished", "weak_supply", "stalled_link"});
+    r.get("fault", b.fault, {"none", "unresponsive", "vanished", "weak_supply", "stalled_link",
+                          "hung_bus"});
     std::string firmware;
     r.get("firmware", firmware);
     if (!firmware.empty() && !parse_firmware(firmware, b.firmware)) {

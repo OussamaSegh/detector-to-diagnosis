@@ -5,7 +5,8 @@
 // write-1-to-clear, a self-clearing reset bit), a bias supply that ramps towards its setpoint at
 // the programmed rate, a temperature that a test or a scenario sets, the board's own protection
 // (it switches the bias off above 60 C), and the faults a real board has: it stops answering,
-// it answers all ones like a PCIe device that has gone, its supply cannot hold the setpoint.
+// it answers all ones like a PCIe device that has gone, its supply cannot hold the setpoint, its
+// bus hangs (an access that does not return).
 // Since Chapter 24 it also has an output FIFO: while its triggers are on, events fill it at one
 // rate and the data link empties it at another, and a full FIFO loses data (FIFO_OVERFLOW).
 //
@@ -13,6 +14,8 @@
 // clock. The board brings its state up to that time at every access. Thread-safe.
 #pragma once
 
+#include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <functional>
 #include <mutex>
@@ -27,6 +30,7 @@ enum class BoardFault : std::uint8_t {
   vanished,      // reads return 0xFFFFFFFF, writes are lost (a PCIe device that has gone)
   weak_supply,   // the bias stops 5% short of a setpoint above 30 V and the board flags bias_fault
   stalled_link,  // the data link sends nothing: the output FIFO never empties
+  hung_bus,      // an access does not return for a minute, then times out (Chapter 25)
 };
 
 class FakeBoard final : public RegisterBus {
@@ -53,14 +57,18 @@ class FakeBoard final : public RegisterBus {
   static constexpr double overtemp_limit_c = 60.0;
   static constexpr double ready_band_mv = 50.0;
   static constexpr double fifo_depth_words = 4'096.0;
+  static constexpr std::chrono::seconds hang_time{60};
 
  private:
   void update_locked(std::int64_t now_ns);
   [[nodiscard]] std::uint32_t read_locked(std::uint32_t address) const;
   [[nodiscard]] std::uint32_t status_locked() const;
   void soft_reset_locked();
+  // With hung_bus, waits until hang_time has passed or the fault has changed; true if it hung.
+  bool hang_locked(std::unique_lock<std::mutex>& lock);
 
   mutable std::mutex mu_;
+  std::condition_variable fault_changed_;
   Clock clock_;
   std::int64_t last_ns_;
   std::uint8_t slot_;

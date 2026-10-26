@@ -116,8 +116,12 @@ def run(*cmd):
 def platform_component(name, k):
     """The installed version: the distribution's package if there is one, else the library's own."""
     rel = os_release()
+    native = run("dpkg", "--print-architecture")
     for pkg in k["packages"]:
-        info = run("dpkg-query", "-W", "-f=${Version} ${Architecture}", pkg)
+        # On a multiarch host (an arm64 cross build, say) the package is installed once per
+        # architecture; the build links the native one.
+        info = run("dpkg-query", "-W", "-f=${Version} ${Architecture}", f"{pkg}:{native}") if native else None
+        info = info or run("dpkg-query", "-W", "-f=${Version} ${Architecture}", pkg)
         if info and rel.get("ID") and rel.get("VERSION_ID"):
             version, arch = info.split()
             distro = f"{rel['ID']}-{rel['VERSION_ID']}"

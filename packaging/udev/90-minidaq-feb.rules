@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: MIT
+# The front-end boards' register windows (Chapter 22) belong to the acquisition service's group,
+# and to nobody else (Chapter 25). The UIO driver's name is the board's
+# (assumption: confirm with team: the name the firmware team's driver registers).
+SUBSYSTEM=="uio", ATTR{name}=="minidaq_feb", GROUP="minidaq", MODE="0660"

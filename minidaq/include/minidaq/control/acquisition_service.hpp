@@ -91,6 +91,8 @@ class AcquisitionService {
   bool wait_for(AcqState s, std::chrono::milliseconds timeout) const;
   // Records an event in the audit trail without changing anything.
   void note(std::string_view who, std::string_view action, std::string_view detail, bool ok = true) const;
+  // Beats once per pass of the monitor thread (Chapter 25).
+  [[nodiscard]] std::shared_ptr<const rt::Heartbeat> heartbeat() const noexcept { return heartbeat_; }
 
  private:
   void monitor(const std::stop_token& st);
@@ -134,6 +136,7 @@ class AcquisitionService {
   std::atomic<AcqState> observed_{AcqState::idle};
   mutable std::mutex wait_mu_;
   mutable std::condition_variable_any wait_cv_;
+  std::shared_ptr<rt::Heartbeat> heartbeat_ = std::make_shared<rt::Heartbeat>();
   std::jthread monitor_;  // last: started after everything else exists
 };
 

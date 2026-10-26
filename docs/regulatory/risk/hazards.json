@@ -98,17 +98,19 @@
       "id": "H-05",
       "preliminary": "HZ-2",
       "hazard": "Acquisition interrupted",
-      "sequence": "A control client crashes or sends an overlong request, the disk is briefly slow, or the service ends the run in a fault to protect the data (RC-07, RC-10), and the run stops.",
+      "sequence": "A control client crashes or sends an overlong request, the disk is briefly slow, or the service ends the run in a fault to protect the data (RC-07, RC-10), and the run stops; or a thread of the server hangs (a register read that never returns, a lock never released) and the server stops working while it keeps running; or an update leaves a version that does not start.",
       "hazardous_situation": "The scan is incomplete and must be repeated.",
       "harm": "Additional radiation dose from a second injection, or a delayed diagnosis.",
       "severity": "S2",
       "probability_before": "P4",
       "controls": [
         {"id": "RC-13", "type": "inherent", "description": "The service owns the run: a client that disconnects or misbehaves loses only its own connection.", "requirements": ["SRS-CTL-023", "SRS-CTL-021"], "effectiveness": {"method": "test", "evidence": "ControlServer.AClientThatDisconnectsDoesNotStopTheAcquisition"}},
-        {"id": "RC-14", "type": "inherent", "description": "A slow disk applies backpressure instead of ending the run.", "requirements": ["SRS-OUT-006"], "effectiveness": {"method": "test", "evidence": "ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData"}}
+        {"id": "RC-14", "type": "inherent", "description": "A slow disk applies backpressure instead of ending the run.", "requirements": ["SRS-OUT-006"], "effectiveness": {"method": "test", "evidence": "ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData"}},
+        {"id": "RC-32", "type": "protective", "description": "The server pings the service manager's watchdog only while its loops beat; a hung server is killed with a crash report and restarted, so that the scanner is ready for the next scan without a person (Chapter 25).", "requirements": ["SRS-PLT-001", "SRS-PLT-002", "SRS-PLT-008"], "effectiveness": {"method": "test", "evidence": "ServiceManager.TheWatchdogPingsOnlyWhileEveryLoopBeats"}},
+        {"id": "RC-33", "type": "protective", "description": "An update is installed beside the running version and is a trial until it has come up; one that fails to start is rolled back to the confirmed version, and a power cut at any step leaves a version that runs (Chapter 25, ADR 0020).", "requirements": ["SRS-PLT-004", "SRS-PLT-006", "SRS-PLT-007", "SRS-PLT-010"], "effectiveness": {"method": "test", "evidence": "Update.APowerCutAfterAnyStepLeavesAVersionThatRuns"}}
       ],
       "probability_after": "P2",
-      "residual": "Hardware failures and power loss still interrupt a scan; the files written so far stay readable (H-03).",
+      "residual": "Hardware failures and power loss still interrupt a scan; the files written so far stay readable (H-03). A hang during a scan still ends that scan: the watchdog makes the scanner ready for the next one; it does not save the current one.",
       "status": "closed"
     },
     {
@@ -148,7 +150,7 @@
       "id": "H-08",
       "preliminary": "HZ-4",
       "hazard": "Acquisition controlled by an unauthorized party",
-      "sequence": "A process on the acquisition PC, or on the network if the port is exposed, connects to the control port and sends stop or configure.",
+      "sequence": "A process on the acquisition PC, or on the network if the port is exposed, connects to the control port and sends stop or configure.; or someone replaces the programs on the acquisition PC (threat T-07).",
       "hazardous_situation": "A scan is stopped, or acquired with altered settings.",
       "harm": "A repeated scan with its additional dose, or a quantitation error.",
       "severity": "S2",
@@ -159,7 +161,8 @@
         {"id": "RC-22", "type": "protective", "description": "Roles: a client with the observer role may read the status and nothing else, so a dashboard's token cannot stop a scan.", "requirements": ["SRS-SEC-003"], "effectiveness": {"method": "test", "evidence": "ControlServer.AnIntruderCannotStopARunningScan"}},
         {"id": "RC-23", "type": "protective", "description": "TLS 1.3, with the client verifying the server's certificate before it sends its token, protects the token and the commands on the network.", "requirements": ["SRS-SEC-006", "SRS-SEC-007"], "effectiveness": {"method": "test", "evidence": "ControlServer.TheTokenNeverCrossesTheNetworkInClear"}},
         {"id": "RC-24", "type": "inherent", "description": "Secure defaults: the server does not start without tokens unless told to, never binds beyond loopback without TLS and tokens, and closes connections that do not authenticate in time.", "requirements": ["SRS-SEC-004", "SRS-SEC-005"], "effectiveness": {"method": "test", "evidence": "ControlServer.RefusesInsecureConfigurations"}},
-        {"id": "RC-25", "type": "information", "description": "The accompanying documentation states that the operator's account on the acquisition PC and the token files must be protected by the site, and that the control port belongs on the scanner's dedicated network (docs/regulatory/security/threat-model.md, section 6).", "requirements": [], "effectiveness": {"method": "inspection", "evidence": "docs/regulatory/security/threat-model.md, section 6"}}
+        {"id": "RC-25", "type": "information", "description": "The accompanying documentation states that the operator's account on the acquisition PC and the token files must be protected by the site, and that the control port belongs on the scanner's dedicated network (docs/regulatory/security/threat-model.md, section 6).", "requirements": [], "effectiveness": {"method": "inspection", "evidence": "docs/regulatory/security/threat-model.md, section 6"}},
+        {"id": "RC-34", "type": "protective", "description": "Software reaches the acquisition PC only as a bundle signed with the manufacturer's Ed25519 key, built for its platform and not older than the confirmed version unless a downgrade is asked for, and every file is checked against the signed archive's manifest before it can run (Chapter 25, ADR 0020).", "requirements": ["SRS-PLT-003", "SRS-PLT-004", "SRS-PLT-005"], "effectiveness": {"method": "test", "evidence": "Update.RefusesWhatTheSignatureDoesNotVouchFor"}}
       ],
       "probability_after": "P2",
       "residual": "Acceptable (S2/P2). Controlling the acquisition now needs an operator token: a stolen token or the operator's own account on the acquisition PC, which the site protects (RC-25). P2 is the book's estimate for that (assumption: confirm with team and the security risk assessment of the scanner).",
