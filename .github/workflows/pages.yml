@@ -24,7 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install Pandoc, XeLaTeX and the fonts
+        # About 300 MB. A slow mirror once took over 50 minutes for it, so the step has its own
+        # limit, and a download that stalls is retried instead of waited for.
+        timeout-minutes: 30
         run: |
+          printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\n' | sudo tee /etc/apt/apt.conf.d/80retries
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends pandoc texlive-xetex texlive-latex-extra \
             texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
