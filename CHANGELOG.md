@@ -9,6 +9,10 @@ the patch version.
 ## [Unreleased]
 
 ### Added
+- Colored front covers for the book and the solutions manual (`book/assets/cover.tex`, TikZ): a
+  PET detector ring with lines of response and a glowing hot spot. `book/build.sh` builds them and
+  uses them as page 1 of the PDFs and as the EPUB cover images; the solutions manual now has its
+  own cover. The old `book/assets/cover.png` is removed.
 - The book's download page on GitHub Pages (`.github/workflows/pages.yml`, `book/tools/site.py`):
   the EPUB and the PDF of the book and of the solutions, built on every push to main and listed
   with their SHA-256.

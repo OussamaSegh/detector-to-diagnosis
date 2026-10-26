@@ -1,0 +1,132 @@
+% Front cover of The NeuroLF Engineer and of its solutions manual, 7 x 10 in.
+% book/build.sh compiles it with XeLaTeX into build/cover/cover-<volume>.pdf (page 1 of the
+% print PDF) and renders that to PNG for the EPUB:
+%   xelatex -jobname=cover-book "\def\nlfvolume{book}\input{cover.tex}"
+%   xelatex -jobname=cover-solutions "\def\nlfvolume{solutions}\input{cover.tex}"
+% The picture is a PET detector ring: 36 detector blocks, lines of response between coincident
+% blocks, and the reconstructed activity glowing where the lines cross.
+\documentclass{article}
+\usepackage[paperwidth=7in,paperheight=10in,margin=0pt]{geometry}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{fadings,calc}
+\tikzfading[name=glowfade, inner color=transparent!0, outer color=transparent!100]
+\setmainfont{TeX Gyre Heros}
+\newfontfamily\titlefont{TeX Gyre Adventor}
+\newfontfamily\codefont{Inconsolata}
+\pagestyle{empty}
+\providecommand{\nlfvolume}{book}
+
+% Palette. The ring's colors run through s0..s4 and back to s0.
+\def\nlfsolutions{solutions}
+\ifx\nlfvolume\nlfsolutions
+  \definecolor{bgtop}{HTML}{04161C}
+  \definecolor{bgbottom}{HTML}{0B3B3A}
+  \definecolor{glow}{HTML}{14B8A6}
+  \definecolor{s0}{HTML}{2DD4BF}
+  \definecolor{s1}{HTML}{4ADE80}
+  \definecolor{s2}{HTML}{FACC15}
+  \definecolor{s3}{HTML}{FB923C}
+  \definecolor{s4}{HTML}{FACC15}
+  \definecolor{lor}{HTML}{FDE68A}
+  \definecolor{accent}{HTML}{5EEAD4}
+  \definecolor{hot}{HTML}{FACC15}
+\else
+  \definecolor{bgtop}{HTML}{070B24}
+  \definecolor{bgbottom}{HTML}{2B0B4A}
+  \definecolor{glow}{HTML}{7C3AED}
+  \definecolor{s0}{HTML}{22D3EE}
+  \definecolor{s1}{HTML}{3B82F6}
+  \definecolor{s2}{HTML}{A855F7}
+  \definecolor{s3}{HTML}{EC4899}
+  \definecolor{s4}{HTML}{F59E0B}
+  \definecolor{lor}{HTML}{FDE68A}
+  \definecolor{accent}{HTML}{67E8F9}
+  \definecolor{hot}{HTML}{F97316}
+\fi
+\definecolor{subtle}{HTML}{C7D2FE}
+
+% Color of block i of n: a blend between the two neighboring stops.
+\newcommand{\blockcolor}[2]{%
+  \pgfmathsetmacro{\t}{5*#1/#2}%
+  \pgfmathtruncatemacro{\k}{floor(\t)}%
+  \pgfmathtruncatemacro{\p}{100 - round(100*(\t-\k))}%
+  \pgfmathtruncatemacro{\kn}{mod(\k+1,5)}%
+  \colorlet{blk}{s\k!\p!s\kn}%
+}
+
+\begin{document}
+\noindent
+\begin{tikzpicture}[x=1in,y=1in]
+  % Background and the glow behind the ring.
+  \shade[top color=bgtop, bottom color=bgbottom] (0,0) rectangle (7,10);
+  \fill[glow, opacity=0.55, path fading=glowfade] (3.5,3.78) circle (3.0);
+  \clip (0,0) rectangle (7,10);
+
+  % A faint grid of sinogram-like stripes in the background.
+  \foreach \i in {0,...,27} {
+    \pgfmathsetmacro{\o}{0.025 + 0.02*mod(\i,3)}
+    \draw[white, opacity=\o, line width=0.4pt] (0.25*\i,0) -- (0.25*\i+2.2,10);
+  }
+
+  \coordinate (c) at (3.5,3.78);
+  \def\R{1.8}   % inner radius of the ring
+  \def\D{0.38}   % depth of a block
+  \def\W{0.27}   % width of a block
+  \def\N{36}
+
+  % Lines of response between pairs of blocks (pairs chosen to cross near the center).
+  \foreach \a/\b in {0/17, 2/20, 3/22, 5/24, 7/25, 8/26, 10/29, 11/27, 13/31, 14/33,
+                     16/32, 1/19, 6/23, 9/28, 12/30, 15/34, 4/21, 19/35} {
+    \pgfmathsetmacro{\aa}{\a*10+5}
+    \pgfmathsetmacro{\bb}{\b*10+5}
+    \draw[lor, opacity=0.18, line width=3pt] ($(c)+(\aa:\R)$) -- ($(c)+(\bb:\R)$);
+    \draw[lor, opacity=0.85, line width=0.7pt] ($(c)+(\aa:\R)$) -- ($(c)+(\bb:\R)$);
+  }
+
+  % The reconstructed activity where the lines meet.
+  \fill[hot, opacity=0.9, path fading=glowfade] (c) ellipse (0.95 and 0.75);
+  \fill[s3, opacity=0.6, path fading=glowfade] ($(c)+(0.25,0.15)$) circle (0.45);
+  \fill[lor, opacity=0.95, path fading=glowfade] ($(c)+(-0.1,0.05)$) circle (0.28);
+  \fill[white] ($(c)+(-0.1,0.05)$) circle (0.035);
+
+  % The detector ring: each block has crystals, a lit inner face and a soft halo.
+  \foreach \i in {0,...,35} {
+    \blockcolor{\i}{\N}
+    \pgfmathsetmacro{\ang}{\i*10}
+    \begin{scope}[shift={(c)}, rotate=\ang]
+      \fill[blk, opacity=0.25, path fading=glowfade] (\R+0.21,0) circle (0.42);
+      \fill[blk] (\R,-\W/2) rectangle (\R+\D,\W/2);
+      \fill[white, opacity=0.55] (\R,-\W/2) rectangle (\R+0.035,\W/2);
+      \foreach \u in {1,2,3} {
+        \draw[bgtop, opacity=0.45, line width=0.35pt] (\R,-\W/2+\u*\W/4) -- (\R+\D,-\W/2+\u*\W/4);
+        \draw[bgtop, opacity=0.45, line width=0.35pt] (\R+\u*\D/4,-\W/2) -- (\R+\u*\D/4,\W/2);
+      }
+    \end{scope}
+  }
+  % Thin outer rings.
+  \draw[accent, opacity=0.35, line width=0.6pt] (c) circle (\R+\D+0.12);
+  \draw[accent, opacity=0.18, line width=0.4pt] (c) circle (\R+\D+0.22);
+
+  % Title block.
+  \node[anchor=north, text=accent, font=\fontsize{9.5}{12}\selectfont] at (3.5,9.3)
+    {\addfontfeatures{LetterSpace=16}MODERN C++ \textbullet{} PET DATA ACQUISITION \textbullet{} MEDICAL DEVICE SOFTWARE};
+  \node[anchor=north, text=white, font=\titlefont\bfseries\fontsize{50}{54}\selectfont, align=center]
+    at (3.5,8.85) {The NeuroLF\\[-2pt]Engineer};
+  \fill[left color=s0, right color=s3] (2.3,7.15) rectangle (4.7,7.2);
+  \ifx\nlfvolume\nlfsolutions
+    \node[anchor=north, text=white, font=\bfseries\fontsize{17}{20}\selectfont] at (3.5,7.0)
+      {\addfontfeatures{LetterSpace=18}SOLUTIONS MANUAL};
+  \else
+    \node[anchor=north, text=subtle, font=\fontsize{15}{19}\selectfont, align=center] at (3.5,7.0)
+      {From modern C++ to a regulated\\PET data acquisition system};
+  \fi
+
+  % Footer.
+  \node[anchor=south, text=subtle, font=\fontsize{12.5}{15}\selectfont, align=center] at (3.5,0.82)
+    {\ifx\nlfvolume\nlfsolutions Worked solutions and model answers for every exercise\else
+     A practice book built around MiniDAQ\fi};
+  \node[anchor=south, text=accent, opacity=0.85, font=\codefont\fontsize{10.5}{12}\selectfont] at (3.5,0.42)
+    {singles $\rightarrow$ coincidences $\rightarrow$ sinograms $\rightarrow$ images};
+\end{tikzpicture}
+\end{document}

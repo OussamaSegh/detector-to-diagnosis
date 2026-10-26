@@ -31,8 +31,22 @@ common=(
   --number-sections
 )
 
-build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
-  local list="$1" stem="$2" meta="$3"
+# The front cover (book/assets/cover.tex): a 7 x 10 in PDF that becomes page 1 of the print PDF,
+# and a PNG of it for the EPUB. $1 = book or solutions.
+build_cover() {
+  local vol="$1" dir="$build/cover"
+  mkdir -p "$dir"
+  if [[ ! -f "$dir/cover-$vol.png" || "$here/assets/cover.tex" -nt "$dir/cover-$vol.png" ]]; then
+    (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="cover-$vol" \
+      "\def\nlfvolume{$vol}\input{$here/assets/cover.tex}" >"cover-$vol.xelatex.log" 2>&1) \
+      || { echo "cover failed, see $dir/cover-$vol.log"; grep -n -A3 "^!" "$dir/cover-$vol.log" | head -20; exit 1; }
+    pdftoppm -png -r 240 -singlefile "$dir/cover-$vol.pdf" "$dir/cover-$vol"
+  fi
+}
+
+build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cover (book|solutions)
+  local list="$1" stem="$2" meta="$3" vol="$4"
+  build_cover "$vol"
   local files=()
   while IFS= read -r f; do
     [[ -z "$f" || "$f" == \#* ]] && continue
@@ -42,7 +56,7 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
     pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --split-level=1 --mathml \
       --css "$here/templates/epub.css" \
-      --epub-cover-image "$here/assets/cover.png" \
+      --epub-cover-image "$build/cover/cover-$vol.png" \
       -o "$out/$stem-v$version.epub" "${files[@]}"
     python3 "$here/tools/fix_epub.py" "$out/$stem-v$version.epub"
     echo "built $out/$stem-v$version.epub"
@@ -52,8 +66,14 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
   fi
   if [[ "$what" == pdf || "$what" == all ]]; then
     local tex="$build/tex/$stem.tex"
+    # The cover is page 1. \frontmatter would add a blank page after it (\cleardoublepage).
+    printf '%s\n' '\usepackage{pdfpages}' \
+      "\\AtBeginDocument{\\includepdf[pages=1]{$build/cover/cover-$vol.pdf}}" \
+      '\makeatletter\renewcommand\frontmatter{\clearpage\@mainmatterfalse\pagenumbering{roman}}\makeatother' \
+      > "$build/tex/$stem-cover.tex"
     pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --top-level-division=chapter \
+      --include-in-header "$build/tex/$stem-cover.tex" \
       --pdf-engine=xelatex \
       --include-in-header "$here/templates/book-header.tex" \
       --include-after-body "$here/templates/book-after.tex" \
@@ -80,8 +100,8 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
 }
 
 if [[ "$which" == book || "$which" == both ]]; then
-  build_one "$here/book.txt" "the-neurolf-engineer" "$here/metadata.yaml"
+  build_one "$here/book.txt" "the-neurolf-engineer" "$here/metadata.yaml" book
 fi
 if [[ "$which" == solutions || "$which" == both ]]; then
-  build_one "$here/solutions.txt" "the-neurolf-engineer-solutions" "$here/metadata-solutions.yaml"
+  build_one "$here/solutions.txt" "the-neurolf-engineer-solutions" "$here/metadata-solutions.yaml" solutions
 fi

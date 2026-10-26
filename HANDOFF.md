@@ -5,7 +5,7 @@ Engineer* and MiniDAQ if the current session is lost. Read it fully before you c
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-10-26 04:50 UTC: history rewritten for the fresh repository; 0.4.0 checks running.
+Last updated: 2026-10-26 11:10 UTC: colored covers for both volumes (book/assets/cover.tex).
 
 ## 1. The goal
 
@@ -135,6 +135,7 @@ Dependencies and process:
 | `book/src/` | The chapters, in `partN/chNN-*.md`, and the front matter in `front/`. `book/book.txt` and `book/solutions.txt` give the order. |
 | `book/solutions/chNN.md` | The solutions manual. |
 | `book/build.sh` | Builds the book with Pandoc and XeLaTeX (7x10 in PDF, and EPUB). Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
+| `book/assets/cover.tex` | The front covers (TikZ, 7x10 in), one source for both volumes: `\nlfvolume` is `book` (violet ring) or `solutions` (teal ring, "Solutions Manual"). `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, which becomes page 1 of the PDF (with `\frontmatter` patched so no blank page follows), and renders it at 240 dpi to the EPUB cover PNG. No names, no version on the cover. |
 | `minidaq/` | The C++20 code. `include/minidaq/` holds the core, format, processing, pipeline, rt, control and output layers; `src/`; `apps/` (server, ctl, sim, ...); `tests/unit/` (GoogleTest); `tests/support/property.hpp`. |
 | `exercises/chNN/eK_name/` | Exercises, each with `README.md`, `starter/`, `solution/` (and `NOTES.md`), and `tests/`. Built with `-DMINIDAQ_BUILD_EXERCISES=ON`. Starters are built with `-DMINIDAQ_BUILD_STARTERS=ON` and run with `ctest -L starter` (they must fail). |
 | `docs/regulatory/` | The software file: SRS (`srs.md`, 133 requirements, v7), SDP (`sdp.md`, v5), risk file (`risk/`), SOUP list, problem reports (`problem-reports.json` gives `known-anomalies.md`), trace matrix, CAPAs, change requests, QMS design file (`qms/design-file.json`), and release records (`releases/X.Y.Z.md`). |
