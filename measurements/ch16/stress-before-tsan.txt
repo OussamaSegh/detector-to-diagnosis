@@ -1,4 +1,4 @@
-# 2026-10-25T09:43:38Z commit c0ba0a5 (tag ch15) build build/tsan
+# 2026-10-25T09:43:38Z commit 2470b4b (tag ch15) build build/tsan
 # 4 CPUs, 8 busy loops, ctest -j 16 --repeat until-fail:100 -R '^(Pipeline|AcquisitionService|ControlServer|ListModeSink|UdpDetector|PacedSource|ReplaySource)\.'
     Test #145: PacedSource.NeverDeliversAheadOfTheClock .........................***Failed    0.40 sec
 Expected: (delivered) >= (0.8 * rate * 0.2), actual: 21654 vs 32000

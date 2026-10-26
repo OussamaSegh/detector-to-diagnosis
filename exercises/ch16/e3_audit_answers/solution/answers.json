@@ -15,7 +15,7 @@
          "evidence": ["docs/performance-budget.md", "measurements/ch11/bottleneck.txt", "docs/regulatory/srs.md"]},
   "Q8": {"answer": "One: MDQ-PR-007, the sorter holds its last 104 ns of singles until more data arrives. It loses no coincidence and was evaluated as not safety relevant.",
          "evidence": ["docs/regulatory/known-anomalies.md", "docs/regulatory/problem-reports.json"]},
-  "Q9": {"answer": "Commit 11feccb, 2026-10-24, the Chapter 10 review. Its record is the commit and the CHANGELOG; no reviewer other than its author approved it, although SDP section 5 requires a reviewed pull request. That is a nonconformity, and I will record it as a problem report.",
+  "Q9": {"answer": "Commit 1fdd295, 2026-10-24, the Chapter 10 review. Its record is the commit and the CHANGELOG; no reviewer other than its author approved it, although SDP section 5 requires a reviewed pull request. That is a nonconformity, and I will record it as a problem report.",
          "evidence": ["CHANGELOG.md", "docs/regulatory/sdp.md"]},
   "Q10": {"answer": "The release is a git tag; CI builds and tests that commit with six presets and static analysis, and the release record names the commit, the results and the SBOM, which identifies every SOUP item by its pin.",
           "evidence": ["docs/regulatory/sdp.md", "ci/run_all.sh", ".github/workflows/ci.yml", "tools/make_sbom.py"]}

@@ -1,4 +1,4 @@
-# 2026-10-25T17:01:02Z commit 8821c48 fuzz_sorter 600 s on CPU 3 from fuzz/corpus/sorter
+# 2026-10-25T17:01:02Z commit 57ef123 fuzz_sorter 600 s on CPU 3 from fuzz/corpus/sorter
 INFO: Seed: 1675632241
 #6	INITED cov: 285 ft: 480 corp: 5/1300b exec/s: 0 rss: 34Mb
 #7	NEW    cov: 285 ft: 481 corp: 6/1560b lim: 260 exec/s: 0 rss: 34Mb L: 260/260 MS: 1 CrossOver-

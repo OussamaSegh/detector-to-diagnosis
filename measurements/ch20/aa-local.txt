@@ -1,4 +1,4 @@
-# A/A runs of tools/perf_ab.sh on the reference machine: build/release of de1b7cf against itself, 5 rounds, CPU 1
+# A/A runs of tools/perf_ab.sh on the reference machine: build/release of 23c40ab against itself, 5 rounds, CPU 1
 ## run 1
 benchmark                                                       speed        p  verdict
 BM_DecodePacked/65536                                           0.992   0.4267  ok 

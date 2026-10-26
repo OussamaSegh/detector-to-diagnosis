@@ -69,7 +69,7 @@ book machine before it fails in CI. Tests of a timing property by design (Exerci
 
 All six CI presets and static analysis pass with the changed tests. The changed tests still verify
 their requirements: SRS-PIPE-012, SRS-CTL-011 and SRS-SIM-002 have the same assertions on the
-outcome, and only the waiting changed. The stress run after the correction, at commit `84c5f95`,
+outcome, and only the waiting changed. The stress run after the correction, at commit `c957527`,
 passed all 51 tests (the threaded tests and, new, the protocol tests) in 100 repetitions under the
 same load (`measurements/ch16/stress-after-tsan.txt`); the exercises' run passed 30 repetitions
 (`measurements/ch16/stress-after-ex.txt`), which does not show that

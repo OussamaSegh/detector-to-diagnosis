@@ -1,14 +1,16 @@
-# 2026-10-26T00:07:33Z reproducibility of commit 2d123f52da3c916a08bda8ee19f741a3ca2e4de1, preset hardened
-first checkout:  /tmp/tmp.z8rB3kGMcb/a
-second checkout: /tmp/tmp.z8rB3kGMcb/second-checkout/with-a-longer-path
-609ee05eadf58526271e520d9d0804e0ed01ab7d663f3bea5cc06c64318d07b2  first  minidaq-0.3.0-2d123f52da3c.tar
-609ee05eadf58526271e520d9d0804e0ed01ab7d663f3bea5cc06c64318d07b2  second minidaq-0.3.0-2d123f52da3c.tar
+# Copied from the log of GitHub Actions job 121332027614 (run 40247482911, job
+# reproducible-build, ubuntu-24.04, 2026-10-26T00:05Z). The artifact itself could not be
+# downloaded from the book's machine (its storage host is not reachable from there).
+first checkout:  /tmp/tmp.UeUa56aUCc/a
+second checkout: /tmp/tmp.UeUa56aUCc/second-checkout/with-a-longer-path
+c86eec237e107c76a7a5495d00de379c8182e8b11bc82b2c6b9a6e71a019b413  first  minidaq-0.3.0-d1073fbeca13.tar
+c86eec237e107c76a7a5495d00de379c8182e8b11bc82b2c6b9a6e71a019b413  second minidaq-0.3.0-d1073fbeca13.tar
 identical: the product archive is reproducible
 programs:
   minidaq_server   build ID fbac0e5e14d5136e331b90b76f78ce66deed4cdd  sha256 82557e6b6c46a42b2f0453fb37cd32e773ee44d9f647ddfa8a83618b018e7380
   minidaq_ctl      build ID 614b9137303f8fb7a6d4c00a412c323a69edd51a  sha256 0bed97367fcecadbe21f238b94a7f0fce7379fc4894e75eb6fa84bfdbe5c6755
 manifest:
-  8bcd75c63b962b87a9c7aafa076389e819fc731ad218cf6dfc5e802bbe01b12b  BUILDINFO.json
+  e0267aa9465525bd5d4f3a06e802b41eb9424c93be8a1b0a6809a3b7c0491660  BUILDINFO.json
   0bed97367fcecadbe21f238b94a7f0fce7379fc4894e75eb6fa84bfdbe5c6755  bin/minidaq_ctl
   82557e6b6c46a42b2f0453fb37cd32e773ee44d9f647ddfa8a83618b018e7380  bin/minidaq_server
   f3c7038ece4266d442c986a67474663bcd5fd11732c01de1ec12788ac8ddbeaa  debug/minidaq_ctl.debug
@@ -17,8 +19,8 @@ manifest:
 toolchain:
   binutils: GNU objcopy (GNU Binutils for Ubuntu) 2.42
   c_library: ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39
-  cmake: cmake version 3.28.3
+  cmake: cmake version 3.31.6
   compiler: g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
-  ninja: 1.11.1
+  ninja: 1.13.2
   openssl: OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
-  python: Python 3.13.17
+  python: Python 3.12.3

@@ -211,7 +211,7 @@ important ones:
   Any change to that header makes `ch18/e5_kill_survivors/solution/survivors` fail until the
   mutation run in its README is repeated.
 - A change to MiniDAQ's behavior can break exercise solutions: the tie rule SRS-SRT-013 broke
-  Chapter 10's exercise tests (CI red on 8284e0e). Run the whole `ctest`, exercises included,
+  Chapter 10's exercise tests (CI red on f9cd6c7). Run the whole `ctest`, exercises included,
   before every push of a library change.
 - Run the readout system tests with the CPUs loaded too (MDQ-PR-019 showed only under load).
   `tools/test_report.py` must run on a clean tree, or the report marks itself invalid.
@@ -224,7 +224,7 @@ important ones:
 |---|---|---|---|
 | 0.1.0 | Part I, Chapters 1 to 7 | | |
 | 0.2.0 | Part II, Chapters 8 to 12 | | |
-| 0.3.0 | Part III, Chapters 13 to 17 | b63ff77 (release checks ran on 8821c48) | book-v0.3.0 = be79f34 |
+| 0.3.0 | Part III, Chapters 13 to 17 | e32e702 (release checks ran on 57ef123) | book-v0.3.0 = 37af8f4 |
 
 Release report Claude Docs:
 
@@ -235,16 +235,16 @@ Release report Claude Docs:
 For 0.3.0:
 
 - CI failed on the release commit because the release record was not indexed in the design
-  file. This was fixed in 897a31e and recorded as MDQ-PR-016. The rule since then is to tag
+  file. This was fixed in 0262322 and recorded as MDQ-PR-016. The rule since then is to tag
   only after CI on the release commit is green.
 - The writer measured 15.9 to 17.0 M coincidences/s, below Chapter 12's 18 to 20. Re-measure it
   at 0.4.0.
 
-Chapter 18 (unit and component testing): commits b76f319 to a95b11c, tag `ch18` (local) at
-a95b11c, GitHub CI green. Property harness (ADR 0015), coverage and mutation tools, SRS v7, SDP v5,
+Chapter 18 (unit and component testing): commits 1eb9046 to bd8742e, tag `ch18` (local) at
+bd8742e, GitHub CI green. Property harness (ADR 0015), coverage and mutation tools, SRS v7, SDP v5,
 Exercises 18.1 to 18.5, `measurements/ch18/`.
 
-Chapter 19 (system testing): commits 8284e0e, 6919df2, c3152c7, bddbd57.
+Chapter 19 (system testing): commits f9cd6c7, 68a63e2, 8d115d8, aa538e6.
 
 - System tests in `minidaq/tests/system/` (Python stdlib): control (15), acquisition (5),
   readout (4), stats (10). STP `docs/regulatory/verification/stp.md`, `tools/test_report.py`
@@ -253,14 +253,14 @@ Chapter 19 (system testing): commits 8284e0e, 6919df2, c3152c7, bddbd57.
   MDQ-PR-019 (tracker reordered over-count). CR-0005. MDQ-PR-015 closed by the coverage review.
 - SRS v8 (SRS-CTL-040 to 044, SRS-SYS-001 to 005), SDP v6. Exercises 19.1 to 19.5.
 - `measurements/ch19/`: soak (PASS, with a recorded latency deviation), coverage (88.6% lines),
-  system test report of c3152c7 (34 of 34 pass).
-- Tag `ch19` (local) at ecc1cb3. Local CI green on bddbd57; GitHub CI on ecc1cb3 was red only
-  because of MDQ-PR-020 (runner rmem_max), fixed in 27a2b53 (GitHub CI green). The tag message
+  system test report of 8d115d8 (34 of 34 pass).
+- Tag `ch19` (local) at e12c5f0. Local CI green on aa538e6; GitHub CI on e12c5f0 was red only
+  because of MDQ-PR-020 (runner rmem_max), fixed in 74a98ed (GitHub CI green). The tag message
   says so.
 
-Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (CR-0006),
-1e069f5 (MDQ-PR-021), de1b7cf (MDQ-PR-022, Exercise 5.2 speed test now relative to the starter),
-2d123f5 (repro report lists manifest and toolchain), 2893d09 (perf_ab fails if sides differ).
+Chapter 20 (CI for regulated software): commits 74a98ed (MDQ-PR-020), 447cc4a (CR-0006),
+b9234db (MDQ-PR-021), 23c40ab (MDQ-PR-022, Exercise 5.2 speed test now relative to the starter),
+d1073fb (repro report lists manifest and toolchain), 7654434 (perf_ab fails if sides differ).
 
 - `hardened` preset now has `-g` and `MINIDAQ_REPRODUCIBLE` (cmake/Reproducible.cmake, the two
   `-ffile-prefix-map` maps; source map first, so GCC (last wins) and Clang (longest) agree).
@@ -269,7 +269,7 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
   `docs/regulatory/verification/tools.json` (23 tools; also fails for non-executable scripts),
   `tools/gate_selftest.py` (15 faults; workflow `gates.yml`), `tools/perf_ab.sh` (workflow
   `perf.yml`, A/B on one runner). SDP v7, SOUP list v5, design file clause 4.1.6.
-- `measurements/ch20/` (README): gate self-test 15/15 on 27a2b53 (12 min); reproducible locally
+- `measurements/ch20/` (README): gate self-test 15/15 on 74a98ed (12 min); reproducible locally
   and across machines (GitHub runner builds the same programs; only BUILDINFO.json differs,
   by CMake/Ninja/Python versions); package 24.2 MB; A/A 1/15 false alarms locally, 0/4 on GitHub.
 - GitHub artifacts cannot be downloaded here (blob host blocked): read results from job logs.
@@ -278,12 +278,12 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
 
 ### In progress (as of the last update)
 
-Chapters 20 and 21 are complete and tagged locally: ch20 on 069e5a0, ch21 on 68b4d86, where ci,
+Chapters 20 and 21 are complete and tagged locally: ch20 on eb77c71, ch21 on 6150f42, where ci,
 gates and codeql were green on GitHub (the user pushes tags). MDQ-PR-025 (listings not expanded)
 and MDQ-PR-026 (Exercise 21.5 and the bisect log of git 2.55, which quotes the term) are closed.
 Part IV is written; next is its review and release 0.4.0.
 
-Privacy (2026-10-26): the book is generic (e670ec4). The history rewrite that removes the old
+Privacy (2026-10-26): the book is generic (e50a79e). The history rewrite that removes the old
 e-mail address from 100 commits and scrubs old file versions is prepared but not run: the
 session's safety check blocked git filter-repo, and the user was asked directly. A private
 backup of the old history is in the project files (`backup/old-history-before-privacy-rewrite.bundle`);

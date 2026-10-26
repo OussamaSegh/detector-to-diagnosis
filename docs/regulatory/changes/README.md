@@ -54,4 +54,4 @@ implemented change names its commits and tests that exist.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 16). |
-| 2 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |
+| 2 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e50a79e); the content is unchanged. |

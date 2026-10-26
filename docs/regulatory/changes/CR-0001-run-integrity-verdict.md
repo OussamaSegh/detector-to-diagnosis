@@ -6,7 +6,7 @@
 | Requested | 2026-10-25, by the software lead |
 | Source | risk analysis of hazard H-01 (Chapter 15) |
 | Decision | approved, 2026-10-25, software lead and risk manager |
-| Commits | 572bcd3, 005bd3f, c0ba0a5 |
+| Commits | 809c211, 0179b3f, 2470b4b |
 
 Recorded after the implementation, when change control was introduced in Chapter 16; the
 analysis below is the one the Chapter 15 work followed.

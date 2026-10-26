@@ -102,7 +102,7 @@
       "capa": "CAPA-0001",
       "description": "The test assumed that a debug build's sink is slower than its source, so that the drop policy drops; on a fast runner the sink kept up, nothing dropped, and the test failed.",
       "evaluation": {"safety_relevant": false, "rationale": "A defect of the test, not of the pipeline: the drop policy was correct. A test that fails at random teaches people to rerun it, which can hide a real failure; that is the reason for CAPA-0001."},
-      "resolution": {"change": "dda7a3e: the sink waits until the source has read everything, so the test no longer depends on relative speeds. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).", "verification": "Pipeline.DropPolicyCountsEveryLostWord; the stress run in measurements/ch16/"}
+      "resolution": {"change": "7f01a94: the sink waits until the source has read everything, so the test no longer depends on relative speeds. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).", "verification": "Pipeline.DropPolicyCountsEveryLostWord; the stress run in measurements/ch16/"}
     },
     {
       "id": "MDQ-PR-011",
@@ -113,7 +113,7 @@
       "capa": "CAPA-0001",
       "description": "Exercise 10.4's acceptance test compared the run times of two sorters measured one after the other; a slow spell of the shared virtual machine during one of them changed the ratio.",
       "evaluation": {"safety_relevant": false, "rationale": "An exercise test of speed, not a test of MiniDAQ; no requirement was affected. Same cause as MDQ-PR-010."},
-      "resolution": {"change": "5d12d87: the two sorters run interleaved, best of seven, so a slow spell affects both. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).", "verification": "FastSorter.FastEnough in exercises/ch10/e4_fast_sorter"}
+      "resolution": {"change": "3ea28f5: the two sorters run interleaved, best of seven, so a slow spell affects both. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).", "verification": "FastSorter.FastEnough in exercises/ch10/e4_fast_sorter"}
     },
     {
       "id": "MDQ-PR-012",
@@ -128,7 +128,7 @@
     {
       "id": "MDQ-PR-013",
       "title": "An auth request whose token is not a string ended the control server",
-      "found": "2026-10-25, GitHub CI fuzz-smoke (fuzz_protocol) on commit dcb701a, after Chapter 17",
+      "found": "2026-10-25, GitHub CI fuzz-smoke (fuzz_protocol) on commit 393693d, after Chapter 17",
       "item": "protocol",
       "status": "closed",
       "capa": "CAPA-0003",
@@ -139,11 +139,11 @@
     {
       "id": "MDQ-PR-014",
       "title": "The pipeline's throughput evidence was stale and its regression gate never ran",
-      "found": "2026-10-25, release checks for 0.3.0 on commit 4c3ac87 (tools/perf_gate.py run by hand)",
+      "found": "2026-10-25, release checks for 0.3.0 on commit 5fa917b (tools/perf_gate.py run by hand)",
       "item": "pipeline",
       "status": "closed",
       "capa": "CAPA-0004",
-      "description": "The performance budget and the verification of SRS-PERF-020 quoted 86 M words/s for the whole pipeline, measured at tag ch05. Since commit 1b6bcd3 (Chapter 10) the pair stage is the coincidence sorter and the pipeline runs at about 39 M words/s on the reference machine (BM_Pipeline 0.44 of the baseline). The gate that should have reported it, .github/workflows/perf.yml, runs only on a self-hosted runner labelled perf, which does not exist, so it never ran and nothing reported that.",
+      "description": "The performance budget and the verification of SRS-PERF-020 quoted 86 M words/s for the whole pipeline, measured at tag ch05. Since commit b4422de (Chapter 10) the pair stage is the coincidence sorter and the pipeline runs at about 39 M words/s on the reference machine (BM_Pipeline 0.44 of the baseline). The gate that should have reported it, .github/workflows/perf.yml, runs only on a self-hosted runner labelled perf, which does not exist, so it never ran and nothing reported that.",
       "evaluation": {"safety_relevant": false, "rationale": "SRS-PERF-020 is still met: 37.9 M words/s is 3.8 times the 10 M singles/s it asks for. A pipeline slower than its input loses singles, and losses are counted and reported (RC-01, H-01), so a slower pipeline cannot lose data silently. The defect is in the evidence, not in the software."},
       "resolution": {"change": "Performance budget version 2 and SRS version 6 with the measurement of release 0.3.0; the BM_Pipeline entries of benchmarks/baseline/book-vm.json replaced; tools/release_checks.sh runs the gate before each release (SDP version 4). CAPA-0004 for the cause.", "verification": "measurements/release-0.3.0/perf-pipeline.txt, perf-current.json, perf-gate.txt and pipeline-attribution.txt"}
     },
@@ -163,9 +163,9 @@
       "found": "2026-10-25, Chapter 18 local test run (docs.design_file), then GitHub CI runs 40216164998 and 40216375761",
       "item": "release",
       "status": "closed",
-      "description": "The release checks ran on 8821c48, a clean commit before the release commit. The release commit b63ff77 added docs/regulatory/releases/0.3.0.md, the first file in that directory, and no clause of docs/regulatory/qms/design-file.json listed it, so docs.design_file failed in every preset and the document-control job failed on b63ff77 and be79f34. The release was packaged and tagged locally without waiting for CI on the release commit.",
-      "evaluation": {"safety_relevant": false, "rationale": "No code changed between 8821c48 and be79f34: the release commit adds documents and evidence, and the second commit changes a table in the book. Every software test passed on 8821c48 and on GitHub; the failing tests check the index of documents, not the software."},
-      "resolution": {"change": "Commit 897a31e lists docs/regulatory/releases/ as evidence for clause 7.3.8. SDP version 5, section 8: a release is tagged and packaged only after CI on the release commit itself is green.", "verification": "tools/design_file.py . --check passes on 897a31e; GitHub CI on 897a31e."}
+      "description": "The release checks ran on 57ef123, a clean commit before the release commit. The release commit e32e702 added docs/regulatory/releases/0.3.0.md, the first file in that directory, and no clause of docs/regulatory/qms/design-file.json listed it, so docs.design_file failed in every preset and the document-control job failed on e32e702 and 37af8f4. The release was packaged and tagged locally without waiting for CI on the release commit.",
+      "evaluation": {"safety_relevant": false, "rationale": "No code changed between 57ef123 and 37af8f4: the release commit adds documents and evidence, and the second commit changes a table in the book. Every software test passed on 57ef123 and on GitHub; the failing tests check the index of documents, not the software."},
+      "resolution": {"change": "Commit 0262322 lists docs/regulatory/releases/ as evidence for clause 7.3.8. SDP version 5, section 8: a release is tagged and packaged only after CI on the release commit itself is green.", "verification": "tools/design_file.py . --check passes on 0262322; GitHub CI on 0262322."}
     },
     {
       "id": "MDQ-PR-017",
@@ -201,7 +201,7 @@
     {
       "id": "MDQ-PR-020",
       "title": "The readout system tests depended on a receive buffer the CI runners do not have",
-      "found": "2026-10-25, GitHub Actions runs of 6919df2 and c3152c7: system.readout failed in the presets debug and tsan and passed in the other four and on the reference machine",
+      "found": "2026-10-25, GitHub Actions runs of 68a63e2 and 8d115d8: system.readout failed in the presets debug and tsan and passed in the other four and on the reference machine",
       "item": "tools",
       "status": "closed",
       "description": "Two readout system tests send their stream as fast as possible (minidaq_send --speed 0). On the reference machine net.core.rmem_max is 4 MiB, the server is granted a 4 MiB receive buffer and the burst fits. GitHub's ubuntu-24.04 runners keep Ubuntu's default of 212,992 B: the kernel dropped datagrams of the burst before the slower debug and tsan builds read them, the server counted them as lost, and the tests waited 30 s for datagrams that never came. The tests measured the machine. CI ran ctest without --output-on-failure, so its log named the failing test but not the reason; the failure was reproduced by setting rmem_max to the default on the reference machine. The receive buffer is part of the installation (ADR 0009), but the system test plan did not state it as part of the test environment.",
@@ -212,7 +212,7 @@
     {
       "id": "MDQ-PR-021",
       "title": "Two jobs of the new CI checks failed on their first run: a script not executable, a listing that did not parse",
-      "found": "2026-10-25, GitHub Actions run of f63f5bf (Chapter 20): the jobs perf-ab and reproducible-build failed; the reproducibility check had also failed on the reference machine",
+      "found": "2026-10-25, GitHub Actions run of 447cc4a (Chapter 20): the jobs perf-ab and reproducible-build failed; the reproducibility check had also failed on the reference machine",
       "item": "tools",
       "status": "closed",
       "description": "tools/perf_ab.sh was committed without its executable bit, so the perf workflow stopped with 'Permission denied' before it compared anything. tools/repro_check.sh compared the two packages correctly and printed 'identical', then listed the programs with a Python one-liner whose escaped quotes, inside single quotes, reached Python literally; it did not parse, and the script, run with set -e, failed. Neither defect was on a path that a test exercised: the tests of the release package call tools/release_bundle.py directly, and no test ran the two shell scripts.",
@@ -223,7 +223,7 @@
     {
       "id": "MDQ-PR-022",
       "title": "Exercise 5.2's speed test had a budget in nanoseconds that held only on the reference machine",
-      "found": "2026-10-25, GitHub Actions run of 1e069f5: ch05/e2_hotspot/solution/EventSource.FastEnough failed in the preset gcc-cxx23 at 18.16 ns per single against 18 ns; the run of the next commit passed",
+      "found": "2026-10-25, GitHub Actions run of b9234db: ch05/e2_hotspot/solution/EventSource.FastEnough failed in the preset gcc-cxx23 at 18.16 ns per single against 18 ns; the run of the next commit passed",
       "item": "exercises",
       "status": "closed",
       "capa": "CAPA-0001",
@@ -235,14 +235,14 @@
     {
       "id": "MDQ-PR-023",
       "title": "The performance gate passed over benchmarks that did not run, so its coverage depended on the CI runner's CPU",
-      "found": "2026-10-26, GitHub Actions perf runs of de1b7cf and 2893d09: the gate listed five of the six gated benchmarks on an AMD EPYC 7763 and six on an AMD EPYC 9V74",
+      "found": "2026-10-26, GitHub Actions perf runs of 23c40ab and 7654434: the gate listed five of the six gated benchmarks on an AMD EPYC 7763 and six on an AMD EPYC 9V74",
       "item": "tools",
       "status": "closed",
       "capa": "CAPA-0004",
-      "description": "BM_EnergyFilter/3/50/0/4096 measures the AVX-512 energy filter kernel and reports an error ('kernel not available on this CPU') on a CPU without AVX-512. tools/perf_gate.py ignores benchmark entries with an error, by design for the reference machine, where every gated benchmark runs, and printed nothing about them. GitHub's ubuntu-24.04 runners come with different CPU models, so a push could be compared on all six benchmarks or on five, without a message. Commit 2893d09 first described the cause wrongly, as a benchmark missing from the base side only; tools/perf_ab.sh's count of the runs of each side showed both sides with the errored entries.",
+      "description": "BM_EnergyFilter/3/50/0/4096 measures the AVX-512 energy filter kernel and reports an error ('kernel not available on this CPU') on a CPU without AVX-512. tools/perf_gate.py ignores benchmark entries with an error, by design for the reference machine, where every gated benchmark runs, and printed nothing about them. GitHub's ubuntu-24.04 runners come with different CPU models, so a push could be compared on all six benchmarks or on five, without a message. Commit 7654434 first described the cause wrongly, as a benchmark missing from the base side only; tools/perf_ab.sh's count of the runs of each side showed both sides with the errored entries.",
       "evaluation": {"safety_relevant": false, "rationale": "A gap in the coverage of a verification tool: a regression of one kernel could go unreported on some runners. The release checks run the gate on the reference machine, where the kernel runs."},
       "resolution": {"change": "perf_gate.py lists every benchmark that reported an error, with its message, after the verdicts; perf_ab.sh lists the runs of each side and stops if the sides differ. Chapter 20 describes the case.", "verification": "A run with an errored benchmark is listed as 'not run: kernel not available on this CPU' (checked by hand with a constructed result; tools.perf_gate passes); the next perf run on GitHub shows the line on a runner without AVX-512."},
-      "root_cause": {"whys": ["The perf gate judged five benchmarks on some runners and six on others, without a message.", "The AVX-512 kernel reports an error where the CPU lacks AVX-512, and the gate skipped errored entries silently.", "Skipping was designed for the reference machine, where every gated benchmark runs, and nobody listed what was skipped.", "The gate reported what it judged and nothing about what it did not judge."], "cause": "A verification tool whose coverage was implicit: it did not report the checks it skipped.", "category": "tool", "escape": "The first diagnosis, in commit 2893d09, guessed a cause from one side of the comparison; counting both sides' runs showed the real one."}
+      "root_cause": {"whys": ["The perf gate judged five benchmarks on some runners and six on others, without a message.", "The AVX-512 kernel reports an error where the CPU lacks AVX-512, and the gate skipped errored entries silently.", "Skipping was designed for the reference machine, where every gated benchmark runs, and nobody listed what was skipped.", "The gate reported what it judged and nothing about what it did not judge."], "cause": "A verification tool whose coverage was implicit: it did not report the checks it skipped.", "category": "tool", "escape": "The first diagnosis, in commit 7654434, guessed a cause from one side of the comparison; counting both sides' runs showed the real one."}
     },
     {
       "id": "MDQ-PR-024",
@@ -269,10 +269,10 @@
     {
       "id": "MDQ-PR-026",
       "title": "Exercise 21.5's solution found no result with the git of the CI runners (the bisect output and log formats of git 2.55)",
-      "found": "2026-10-26, GitHub Actions run of aeb0b42: ch21/e5_bisect/solution/unittest failed in all six presets (3 of 5 tests) and passed on the reference machine",
+      "found": "2026-10-26, GitHub Actions run of d2f3b48: ch21/e5_bisect/solution/unittest failed in all six presets (3 of 5 tests) and passed on the reference machine",
       "item": "tools",
       "status": "closed",
-      "description": "first_bad() parsed the output of 'git bisect run' for 'is the first bad commit' and 'The first bad commit could be any of:'. With git 2.43 on the reference machine it found them; with git 2.55 on the runners it found neither and returned an empty list, so every test that expected a result failed. A first correction (129cdd4) read 'git bisect log' instead and failed the same way on the runners. A second correction (c7f4482) made first_bad() raise with git's output when it found nothing; that run showed that git 2.55 writes \"# first 'bad' commit:\" and \"# possible first 'bad' commit:\" in the log, with the term in quotes, where git 2.43 writes \"first bad commit\".",
+      "description": "first_bad() parsed the output of 'git bisect run' for 'is the first bad commit' and 'The first bad commit could be any of:'. With git 2.43 on the reference machine it found them; with git 2.55 on the runners it found neither and returned an empty list, so every test that expected a result failed. A first correction (d404166) read 'git bisect log' instead and failed the same way on the runners. A second correction (cdefc06) made first_bad() raise with git's output when it found nothing; that run showed that git 2.55 writes \"# first 'bad' commit:\" and \"# possible first 'bad' commit:\" in the log, with the term in quotes, where git 2.43 writes \"first bad commit\".",
       "evaluation": {"safety_relevant": false, "rationale": "An exercise solution, not MiniDAQ code; no release was affected."},
       "resolution": {"change": "The solution and the starter read 'git bisect log' through candidates(), which accepts the term with and without quotes; first_bad() raises with git's output when it finds no candidate; a new test parses a log in each format, so the reference machine checks both. The chapter, the README, the notes and the solutions tell the whole sequence, including the correction that was a guess.", "verification": "The solution passes 6 of 6 tests and the starter fails 4 of 6 on the reference machine (git 2.43); the GitHub Actions run of the correcting commit runs the tests with git 2.55."},
       "root_cause": {"whys": ["The bisect tests failed on every runner and passed locally.", "first_bad() found no line it looked for in the output or the log of git 2.55.", "It parsed text that git formats for people, and git 2.55 changed that text (the messages, and the term quoted in the log).", "The test environment had one git version, so nothing showed the dependence.", "The first correction was pushed on a guess about the cause, because the tool returned an empty list instead of the evidence."], "cause": "A tool that parsed the text output of another tool as if it were a fixed interface, and hid what it saw when the parse failed.", "category": "code", "escape": "Only one version of git ran the tests before the push; CI was the first to use another, and its failure gave no evidence until the tool reported git's output."}
@@ -280,7 +280,7 @@
     {
       "id": "MDQ-PR-027",
       "title": "Two singles of one crystal with one time stamp were taken in the order they arrived",
-      "found": "2026-10-26, release checks for 0.4.0 on commit 0df5f42: Properties.TheOrderOfTiesDoesNotMatter with MINIDAQ_PROP_CASES=100 (case 6752 of seed 3505085556721689392)",
+      "found": "2026-10-26, release checks for 0.4.0 on commit 78c3d38: Properties.TheOrderOfTiesDoesNotMatter with MINIDAQ_PROP_CASES=100 (case 6752 of seed 3505085556721689392)",
       "item": "sorter",
       "status": "closed",
       "description": "SRS-SRT-013 asks for the same coincidences, each with the same first and second single, whatever the order of singles with equal times, and the sorter put such singles in crystal order (MDQ-PR-017). Two singles of the same crystal with the same time and different energies stayed in the order they arrived, so the pair's first and second single depended on it. The shrunk counterexample: a fixed 1 ps window, no geometry cut, two singles of crystal 18431 at 0 ps with energies near 435 keV among singles outside the energy window. The 500 cases of the per-commit run had not found it.",
@@ -291,7 +291,7 @@
     {
       "id": "MDQ-PR-028",
       "title": "The flight recorder's concurrent snapshot test could finish before its writers started",
-      "found": "2026-10-26, release checks for 0.4.0 on commit 0df5f42: FlightRecorder.ASnapshotTakenWhileThreadsRecordNeverShowsHalfAnEvent failed in the coverage build (seen == 0)",
+      "found": "2026-10-26, release checks for 0.4.0 on commit 78c3d38: FlightRecorder.ASnapshotTakenWhileThreadsRecordNeverShowsHalfAnEvent failed in the coverage build (seen == 0)",
       "item": "tests",
       "status": "closed",
       "capa": "CAPA-0001",
@@ -303,11 +303,11 @@
     {
       "id": "MDQ-PR-029",
       "title": "The release checks ended after the writer benchmark with status 0, and the gate, the system tests and the fuzzing never ran",
-      "found": "2026-10-26, release checks for 0.4.0 on commit 0df5f42: the output had no line after the writer benchmark and the script's status was 0",
+      "found": "2026-10-26, release checks for 0.4.0 on commit 78c3d38: the output had no line after the writer benchmark and the script's status was 0",
       "item": "tools",
       "status": "closed",
       "capa": "CAPA-0004",
-      "description": "tools/release_checks.sh ran the writer benchmark in a { } group that ended with 'exit $status'. A group runs in the script's own shell, so the exit ended the whole script, with the benchmark's status: 0 when it ran. Every check after it was skipped: the performance regression gate, the system test report and the soak (added in Chapter 19 and never run in a release), the fuzz build and the seven fuzzing campaigns. The defect came with the gate itself (commit 8821c48, release 0.3.0). The 0.3.0 run stopped at the same place, and its record explained the stop as a restart of the session; the remaining checks were then run by hand, so the 0.3.0 evidence is complete, but the cause was misread and the defect stayed.",
+      "description": "tools/release_checks.sh ran the writer benchmark in a { } group that ended with 'exit $status'. A group runs in the script's own shell, so the exit ended the whole script, with the benchmark's status: 0 when it ran. Every check after it was skipped: the performance regression gate, the system test report and the soak (added in Chapter 19 and never run in a release), the fuzz build and the seven fuzzing campaigns. The defect came with the gate itself (commit 57ef123, release 0.3.0). The 0.3.0 run stopped at the same place, and its record explained the stop as a restart of the session; the remaining checks were then run by hand, so the 0.3.0 evidence is complete, but the cause was misread and the defect stayed.",
       "evaluation": {"safety_relevant": false, "rationale": "No release was made without the checks: 0.3.0 ran the remaining ones by hand, and 0.4.0 is held until a full run passes. The defect is in the verification tool, and it hid itself: a check that never runs reported nothing, which is the failure CAPA-0004 is about."},
       "resolution": {"change": "The writer step runs in a subshell. The script sets a guard on exit: a run that ends before the last check prints a FAIL line and exits with status 3. The test tools.release_checks reads the script for an exit inside a { } group and runs the guard on its own. The 0.3.0 release record has a correction note.", "verification": "tools.release_checks fails on the old script and passes on the new one; the release checks of 0.4.0 ran every check to the end (measurements/release-0.4.0/release-checks.txt)."},
       "root_cause": {"whys": ["The checks after the writer benchmark did not run.", "The writer step's exit ended the script, not the step.", "A { } group runs in the current shell, and the step was written as if it were a subshell.", "Nothing checked that the script reached its end, and status 0 looked like success.", "At 0.3.0 the stop was explained by an event that happened at about the same time (a restart), without evidence that it was the cause."], "cause": "A verification script whose early end looked the same as success, and an anomaly in its first run that was explained instead of investigated.", "category": "tool", "escape": "The script had no test of its own (Chapter 20 tests the tools whose output is evidence, but not this one), and its output at 0.3.0 was read for the results of the checks, not for whether all of them were there."}
@@ -315,11 +315,11 @@
     {
       "id": "MDQ-PR-030",
       "title": "Seven controlled documents changed without a new version, and CI skipped the check that finds it",
-      "found": "2026-10-26, release checks for 0.4.0 on commit 0df5f42: docs.design_file in ci/run_all.sh, with the local tag book-v0.3.0",
+      "found": "2026-10-26, release checks for 0.4.0 on commit 78c3d38: docs.design_file in ci/run_all.sh, with the local tag book-v0.3.0",
       "item": "release",
       "status": "closed",
       "capa": "CAPA-0004",
-      "description": "The editorial change that made the book generic (e670ec4) changed seven controlled documents (intended use, regulatory context, risk management plan, architecture, the change control and CAPA procedures, the threat model) without a new version, which the change control procedure asks for even for editorial changes. The document-control job of CI compares the documents with the last release tag, and the release tags are pushed by hand: GitHub had none, so the job printed 'version check skipped' on every run and passed.",
+      "description": "The editorial change that made the book generic (e50a79e) changed seven controlled documents (intended use, regulatory context, risk management plan, architecture, the change control and CAPA procedures, the threat model) without a new version, which the change control procedure asks for even for editorial changes. The document-control job of CI compares the documents with the last release tag, and the release tags are pushed by hand: GitHub had none, so the job printed 'version check skipped' on every run and passed.",
       "evaluation": {"safety_relevant": false, "rationale": "The changes were editorial (names, not content); the defect is in document control, and it was found before the release."},
       "resolution": {"change": "Each document has a new version and a history entry. Without a release tag, the CI job compares with the commit that the newest release record names, so the check cannot be skipped.", "verification": "tools/design_file.py --check --since the 0.3.0 commit passes; the document-control job of the correcting commit runs the comparison on GitHub."},
       "root_cause": {"whys": ["The documents changed and kept their versions.", "The change was made as a text replacement across the repository, not as a change to each document.", "The check that finds it was skipped on GitHub, because it needs a tag that only the reference machine had.", "A skipped check printed a line and passed."], "cause": "A check that passes when it cannot run, again (CAPA-0004), and a bulk editorial change that bypassed the per-document step of change control.", "category": "process", "escape": "The local run of docs.design_file uses the local tag and would have failed, but run_all was not run between the editorial change and the release checks."}

@@ -22,7 +22,7 @@ the patch version.
 - Problem report MDQ-PR-015: the class B item `ctl` has no automated test, found by the coverage
   report; Chapter 19's system tests close it.
 - Problem report MDQ-PR-016 (closed): the 0.3.0 release commit failed CI because the release
-  record was in no clause of the design file (fixed in 897a31e).
+  record was in no clause of the design file (fixed in 0262322).
 - Chapter 19: system tests in `minidaq/tests/system/` (label `system`) that run the shipped
   programs: the control client against the server (exit status, roles, TLS, an impostor server
   that must receive nothing, shutdown on a signal), acquisitions checked against golden data

@@ -1,4 +1,4 @@
-# 2026-10-25T15:35:07Z commit 8821c48 starters: ctest -L starter (every starter fails at least one test, none hangs)
+# 2026-10-25T15:35:07Z commit 57ef123 starters: ctest -L starter (every starter fails at least one test, none hangs)
 In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-release/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:7:
 In destructor 'ex::EventBuffer::~EventBuffer()',
     inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-release/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:

@@ -1,7 +1,7 @@
 # Soak test, Chapter 19 (SRS-SYS-003)
 
 `tools/soak.py` for 30 minutes at 1,000,000 singles/s, sampling every 10 s, on the book's 4-vCPU
-virtual machine, with the release programs built from commit 8284e0e. Files: `summary.txt` (the
+virtual machine, with the release programs built from commit f9cd6c7. Files: `summary.txt` (the
 tool's verdict) and `samples.csv` (every sample).
 
 - Result: PASS. 1,800,032,317 singles (1,000,018/s), no loss, no fault, the run complete.

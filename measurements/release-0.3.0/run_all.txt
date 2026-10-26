@@ -1,4 +1,4 @@
-# 2026-10-25T15:07:04Z commit 8821c48 ci/run_all.sh (all six presets)
+# 2026-10-25T15:07:04Z commit 57ef123 ci/run_all.sh (all six presets)
 === preset: debug ===
 356/525 Test #356: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................***Skipped   0.00 sec
         Start 391: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged

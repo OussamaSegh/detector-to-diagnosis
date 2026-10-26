@@ -6,7 +6,7 @@
 | Requested | 2026-10-25, by the software lead |
 | Source | problem report MDQ-PR-008; hazard H-08 (Chapter 15); threat model (Chapter 17) |
 | Decision | approved, 2026-10-25, software lead and risk manager |
-| Commits | ff0f415 |
+| Commits | 1b3597e |
 
 ## Description
 

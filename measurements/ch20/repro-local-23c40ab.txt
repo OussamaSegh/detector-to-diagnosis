@@ -1,8 +1,8 @@
-# 2026-10-26T00:03:06Z reproducibility of commit de1b7cf7d13446c6c53b6cd12af2649d59d017e8, preset hardened
+# 2026-10-26T00:03:06Z reproducibility of commit 23c40ab563c40e6285aa9511da7b337a3ca62446, preset hardened
 first checkout:  /tmp/tmp.1SuLy7u4HQ/a
 second checkout: /tmp/tmp.1SuLy7u4HQ/second-checkout/with-a-longer-path
-589d66eaf853cf45c0e0c71c53015afe9e0cecfc69c1ae01d0e4d62655a00598  first  minidaq-0.3.0-de1b7cf7d134.tar
-589d66eaf853cf45c0e0c71c53015afe9e0cecfc69c1ae01d0e4d62655a00598  second minidaq-0.3.0-de1b7cf7d134.tar
+589d66eaf853cf45c0e0c71c53015afe9e0cecfc69c1ae01d0e4d62655a00598  first  minidaq-0.3.0-23c40ab563c4.tar
+589d66eaf853cf45c0e0c71c53015afe9e0cecfc69c1ae01d0e4d62655a00598  second minidaq-0.3.0-23c40ab563c4.tar
 identical: the product archive is reproducible
 programs:
   minidaq_server   build ID fbac0e5e14d5136e331b90b76f78ce66deed4cdd  sha256 82557e6b6c46a42b2f0453fb37cd32e773ee44d9f647ddfa8a83618b018e7380

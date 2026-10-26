@@ -83,4 +83,4 @@ RC-05 in the [hazard analysis](risk/hazards.json)).
 |---|---|
 | 1 | First version (Chapter 13). |
 | 2 | The integrity verdict that software reading MiniDAQ's data checks first (risk control RC-05, Chapter 15), and this history (Chapter 16). |
-| 3 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |
+| 3 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e50a79e); the content is unchanged. |

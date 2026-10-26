@@ -11,10 +11,10 @@
 ## Problem
 
 The release checks for 0.3.0 ran the performance regression gate by hand on the release
-candidate `4c3ac87`, and it failed: `BM_Pipeline` ran at 0.44 of its baseline (MDQ-PR-014). The
+candidate `5fa917b`, and it failed: `BM_Pipeline` ran at 0.44 of its baseline (MDQ-PR-014). The
 performance budget and the verification of SRS-PERF-020 in the SRS still quoted 86 M words/s,
 measured at tag `ch05`. Interleaved runs on the reference machine
-(`measurements/release-0.3.0/pipeline-attribution.txt`) put the whole drop on commit `1b6bcd3`
+(`measurements/release-0.3.0/pipeline-attribution.txt`) put the whole drop on commit `b4422de`
 of Chapter 10, which made the pair stage the coincidence sorter: 96 M words/s just before it,
 39 M words/s at it and at the release candidate. The slowdown was intended and the requirement is
 still met at 3.8 times; that seven chapters of documents kept the old number, and that no check

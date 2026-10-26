@@ -148,7 +148,7 @@
     "rationale": "A defect of the test, not of the pipeline: the drop policy was correct. A test that fails at random teaches people to rerun it, which can hide a real failure; that is the reason for CAPA-0001."
    },
    "resolution": {
-    "change": "dda7a3e: the sink waits until the source has read everything, so the test no longer depends on relative speeds. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).",
+    "change": "7f01a94: the sink waits until the source has read everything, so the test no longer depends on relative speeds. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).",
     "verification": "Pipeline.DropPolicyCountsEveryLostWord; the stress run in measurements/ch16/"
    }
   },
@@ -165,7 +165,7 @@
     "rationale": "An exercise test of speed, not a test of MiniDAQ; no requirement was affected. Same cause as MDQ-PR-010."
    },
    "resolution": {
-    "change": "5d12d87: the two sorters run interleaved, best of seven, so a slow spell affects both. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).",
+    "change": "3ea28f5: the two sorters run interleaved, best of seven, so a slow spell affects both. Recorded as a problem report in Chapter 16 (internal audit, finding A-4).",
     "verification": "FastSorter.FastEnough in exercises/ch10/e4_fast_sorter"
    }
   },

@@ -1,4 +1,4 @@
-# 2026-10-25T16:51:01Z commit 8821c48 fuzz_protocol 600 s on CPU 3 from fuzz/corpus/protocol
+# 2026-10-25T16:51:01Z commit 57ef123 fuzz_protocol 600 s on CPU 3 from fuzz/corpus/protocol
 INFO: Seed: 1569610304
 #5	INITED cov: 1831 ft: 2977 corp: 4/682b exec/s: 0 rss: 44Mb
 #6	NEW    cov: 1843 ft: 3091 corp: 5/909b lim: 232 exec/s: 0 rss: 45Mb L: 227/232 MS: 1 CrossOver-

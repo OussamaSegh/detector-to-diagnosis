@@ -6,7 +6,7 @@
 | Requested | 2026-10-25, by the software lead |
 | Source | problem reports MDQ-PR-015, MDQ-PR-017, MDQ-PR-018 and MDQ-PR-019; requirement changes (SRS version 8) |
 | Decision | approved, 2026-10-25, software lead |
-| Commits | 8284e0e, 6919df2 |
+| Commits | f9cd6c7, 68a63e2 |
 
 ## Description
 
@@ -28,7 +28,7 @@ The class B items `ctl` and `server` had no automated test (MDQ-PR-015), and SRS
 Without the tracker correction, a diagnostic counter misleads the investigation of a link
 problem under load.
 
-This request was written after commit 8284e0e, which already contained the sorter correction and
+This request was written after commit f9cd6c7, which already contained the sorter correction and
 the new requirements. That is a deviation from the change control procedure (step 2: the impact
 analysis comes before the code); it is recorded here rather than hidden, and it is the kind of
 slip that internal audit finding A-1 of Chapter 16 describes.

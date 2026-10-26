@@ -136,4 +136,4 @@ records would be a defect in a risk control, and is treated as one.
 | 1 | First version (Chapter 13). |
 | 2 | This history (Chapter 16); the text is unchanged. |
 | 3 | Chapter 17: the evidence of the threat model and the security requirements is linked. |
-| 4 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |
+| 4 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e50a79e); the content is unchanged. |

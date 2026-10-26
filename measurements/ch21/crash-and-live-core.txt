@@ -1,5 +1,5 @@
 # Chapter 21: a crashed server, its report, its postmortem, and a live core (reference machine)
-# 2026-10-26, debug and release preset builds of ca1ed1f; kernel.core_pattern=core, ulimit -c unlimited
+# 2026-10-26, debug and release preset builds of 4c532c4; kernel.core_pattern=core, ulimit -c unlimited
 
 ## A 0.5 s acquisition (configure, start, minidaq_ctl wait configured 20, status), then kill -SEGV from the shell
 

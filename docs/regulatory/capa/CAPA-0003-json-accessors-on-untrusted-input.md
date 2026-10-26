@@ -10,7 +10,7 @@
 
 ## Problem
 
-The CI job `fuzz-smoke` crashed `fuzz_protocol` on commit `dcb701a`, the first commit after Chapter
+The CI job `fuzz-smoke` crashed `fuzz_protocol` on commit `393693d`, the first commit after Chapter
 17 (MDQ-PR-013). One request line from a client that has not authenticated,
 `{"cmd":"auth","token":5}`, ended `minidaq_server` with `nlohmann::json::type_error`: the handler
 read the token with `req.value("token", std::string{})`, which throws when the key is present with

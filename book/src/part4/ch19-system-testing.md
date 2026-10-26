@@ -592,7 +592,7 @@ and writes:
 It exits with `1` if a case failed, so a release cannot cite a failing report. The report of the
 release build of this chapter is `measurements/ch19/system-test-report.md`:
 
-34 test cases ran in 22 seconds on commit `c3152c7`, the `release` preset with GCC, on the
+34 test cases ran in 22 seconds on commit `8d115d8`, the `release` preset with GCC, on the
 book's 4-vCPU machine: 15 of `test_control_system.py`, 5 of `test_acquisition_system.py`, 4 of
 `test_readout_system.py` and 10 of `test_stats.py`. All 34 passed and the working tree was
 clean, so the report says "None" under deviations. Its rows look like this:

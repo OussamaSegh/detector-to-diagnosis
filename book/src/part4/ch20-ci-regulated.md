@@ -248,7 +248,7 @@ test-wait rule of CAPA-0001, the hardening check, the performance gate (the pipe
 | `asan` | AddressSanitizer | pass | fail | caught |
 | `tsan` | ThreadSanitizer | pass | fail | caught |
 
-All 15 faults were caught for the planted reason, on commit `27a2b53` in 12 minutes
+All 15 faults were caught for the planted reason, on commit `74a98ed` in 12 minutes
 (`measurements/ch20/gate-selftest.md`).
 
 Three details are worth copying.
@@ -350,8 +350,8 @@ The dependencies are fetched in each checkout, so their paths differ too. On the
 machine:
 
 ```text
-d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc3304920...  first  minidaq-0.3.0-f63f5bf1653f.tar
-d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc3304920...  second minidaq-0.3.0-f63f5bf1653f.tar
+d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc3304920...  first  minidaq-0.3.0-447cc4ac4713.tar
+d36ea88d571d8bd1de18005dbc9e04530a92a83137929b0fc3304920...  second minidaq-0.3.0-447cc4ac4713.tar
 identical: the product archive is reproducible
 programs:
   minidaq_server   build ID fbac0e5e14d5136e331b90b76f78ce66deed4cdd  sha256 82557e6b6c46...
@@ -381,8 +381,8 @@ like this:
 | `sbom/minidaq.cdx.json` | `43e10818551a...` | `43e10818551a...` |
 | `BUILDINFO.json` | `8bcd75c63b96...` | `e0267aa94655...` |
 
-That is commit `2d123f5` on both (`measurements/ch20/repro-local-2d123f5.txt` and
-`repro-github-2d123f5.txt`). The programs and their debug files are the same bytes, built by
+That is commit `d1073fb` on both (`measurements/ch20/repro-local-d1073fb.txt` and
+`repro-github-d1073fb.txt`). The programs and their debug files are the same bytes, built by
 the same GCC 13.3.0, binutils 2.42 and glibc 2.39 on a different CPU. The archives differ in one
 file, the one that says so: `BUILDINFO.json` records CMake 3.28.3, Ninja 1.11.1 and Python
 3.13.17 on the reference machine, and CMake 3.31.6, Ninja 1.13.2 and Python 3.12.3 on the runner.
@@ -439,7 +439,7 @@ from the program, keeps the symbol table for readable stack traces, and adds a d
 debug file's name with its CRC-32. The build ID, a hash the linker writes into every program,
 is the same in the program and its debug file; a debugger finds the right debug file by either.
 For MiniDAQ the server is 834 KB without its debug information and its debug file
-18.2 MB; for the client the two are 275 KB and 4.9 MB. The product archive of commit `f63f5bf`
+18.2 MB; for the client the two are 275 KB and 4.9 MB. The product archive of commit `447cc4a`
 is 24.2 MB, uncompressed, of which 23.1 MB are the debug files
 (`measurements/ch20/package-contents.txt`).
 
@@ -591,7 +591,7 @@ its median speed dropped by more than 5% and a one-sided Mann-Whitney test gives
 
 A gate on noisy machines must be judged by its false alarm rate: how often does it fail when
 nothing changed? The answer is a measurement, an A/A comparison of a build with itself. On the
-reference machine, 15 A/A jobs of the release build of `de1b7cf` against itself, five rounds
+reference machine, 15 A/A jobs of the release build of `23c40ab` against itself, five rounds
 each, raised one false alarm: `BM_HistogramRecord` 5.4% slower with `p = 0.0045`. In another job
 the same benchmark came out 13.5% slower, with `p = 0.026`, which the gate let pass because the
 evidence was too weak (`measurements/ch20/aa-local.txt`). One alarm in 15 jobs is a rate between

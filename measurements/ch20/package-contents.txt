@@ -1,7 +1,7 @@
--rw-r--r-- 0/0            1612 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/BUILDINFO.json
--rw-r--r-- 0/0             519 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/MANIFEST.sha256
--rwxr-xr-x 0/0          275192 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/bin/minidaq_ctl
--rwxr-xr-x 0/0          833952 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/bin/minidaq_server
--rwxr-xr-x 0/0         4944040 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/debug/minidaq_ctl.debug
--rwxr-xr-x 0/0        18165336 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/debug/minidaq_server.debug
--rw-r--r-- 0/0            3749 2026-10-25 21:43 minidaq-0.3.0-f63f5bf1653f/sbom/minidaq.cdx.json
+-rw-r--r-- 0/0            1612 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/BUILDINFO.json
+-rw-r--r-- 0/0             519 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/MANIFEST.sha256
+-rwxr-xr-x 0/0          275192 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/bin/minidaq_ctl
+-rwxr-xr-x 0/0          833952 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/bin/minidaq_server
+-rwxr-xr-x 0/0         4944040 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/debug/minidaq_ctl.debug
+-rwxr-xr-x 0/0        18165336 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/debug/minidaq_server.debug
+-rw-r--r-- 0/0            3749 2026-10-25 21:43 minidaq-0.3.0-447cc4ac4713/sbom/minidaq.cdx.json

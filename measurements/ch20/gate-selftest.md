@@ -1,6 +1,6 @@
 # MiniDAQ gate self-test
 
-Commit `27a2b53902cd`, 2026-10-25 21:17 UTC, written by `tools/gate_selftest.py`. Each gate
+Commit `74a98ed861f7`, 2026-10-25 21:17 UTC, written by `tools/gate_selftest.py`. Each gate
 ran on the unchanged checkout (control) and then with one planted fault.
 
 | Fault | Gate | Planted | Control | With the fault | Verdict |

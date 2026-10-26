@@ -1,4 +1,4 @@
-# 2026-10-25T16:41:00Z commit 8821c48 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+# 2026-10-25T16:41:00Z commit 57ef123 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
 INFO: Seed: 1542661520
 #5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
 #7	NEW    cov: 85 ft: 193 corp: 5/3869b lim: 1601 exec/s: 0 rss: 33Mb L: 1601/1601 MS: 2 ShuffleBytes-CopyPart-

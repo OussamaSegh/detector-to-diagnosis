@@ -13,7 +13,7 @@
 local box_titles = {
   ["box-why"] = "Why it matters",
   ["box-regulated"] = "In a regulated product",
-  ["box-askteam"] = "Ask your team in your first weeks",
+  ["box-askteam"] = "Ask your team",
   ["box-mistakes"] = "Common mistakes",
   ["box-note"] = "Note",
   ["box-milestone"] = "MiniDAQ milestone",

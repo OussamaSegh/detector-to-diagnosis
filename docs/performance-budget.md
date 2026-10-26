@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Version 2 (MiniDAQ 0.3.0, release review). Status: measured on the book's machine at tag `ch05`, the whole pipeline again for release 0.3.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
+Version 3 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: measured on the book's machine at tag `ch05`, the whole pipeline again for release 0.3.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -33,9 +33,9 @@ repetitions. Raw results: `measurements/ch05/`.
 | Whole pipeline | All five stages, 5 threads on 4 vCPUs, batch 4,096, pair stage = coincidence sorter | 26.4 (37.9 M words/s; 35.4 to 40.4) | 3.8x | 1.3x | `bm_pipeline` `BM_Pipeline/4096/64/real_time` |
 
 The whole-pipeline row was measured for release 0.3.0 (`release` preset, 10 repetitions, commit
-`4c3ac87`, `measurements/release-0.3.0/perf-current-4c3ac87.json`). Until then it showed 11.6 ns (86 M words/s), measured
+`5fa917b`, `measurements/release-0.3.0/perf-current-5fa917b.json`). Until then it showed 11.6 ns (86 M words/s), measured
 at tag `ch05` with the pair stage of Chapter 3, which only matched neighbors. Chapter 10 made the
-pair stage the coincidence sorter (commit `1b6bcd3`), which does the real work and costs most of
+pair stage the coincidence sorter (commit `b4422de`), which does the real work and costs most of
 the difference: interleaved runs of the `hardened` build give 96 M words/s just before that
 commit, 39 M words/s at it and 39 M words/s at the release (`pipeline-attribution.txt`). The
 change was intended; that this row and SRS-PERF-020's evidence kept the old number for seven
@@ -124,3 +124,4 @@ table in the same change, with a reason; the `BM_Pipeline` entries were replaced
 |---|---|
 | 1 | First controlled version (Chapter 16). Earlier states, without versions, are in git at tags `ch05`, `ch07`, `ch11` and `ch12`. |
 | 2 | Release 0.3.0: the whole pipeline re-measured with the coincidence sorter (MDQ-PR-014, CAPA-0004); the regression baseline updated for `BM_Pipeline`. |
+| 3 | Editorial: the repository's history was rewritten to remove personal data, so the cited commit hashes are those of the rewritten commits; the content is unchanged. |

@@ -1,5 +1,5 @@
 # bm_flight_recorder, release preset, taskset -c 1-3, Model name: Intel(R) Xeon(R) Processor @ 2.30GHz, 4 CPUs
-# commit base 069e5a0 + Chapter 21 working tree; GCC 13
+# commit base eb77c71 + Chapter 21 working tree; GCC 13
 
 ## before: one shared recorded_ counter (fetch_add per record), rings not cache-line aligned
 ## (3 repetitions, medians, from the first version of the recorder)
