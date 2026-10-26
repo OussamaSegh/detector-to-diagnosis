@@ -35,6 +35,9 @@ the patch version.
   losses in the integrity verdict; hardware description 1.1 (`run` timeouts, simulated firmware,
   FIFO rates, fault `stalled_link`); control API 2.3. Measurement `measurements/ch24/`.
   SRS-HW-011 to SRS-HW-015 (SRS version 13), RC-30, RC-31, ADR 0019, CR-0010.
+- Chapter 24 text, Exercises 24.1 to 24.4 and their solutions; the SystemVerilog listing of the
+  board's output FIFO (`hw/rtl/feb_out_fifo.sv`) with a self-checking testbench, simulated by the
+  test `hw.rtl` where Icarus Verilog is installed (tool TL-26, optional).
 
 ### Changed
 - The book is a standalone technical book, publishable on Amazon KDP (PR #2): the 10-week
@@ -48,6 +51,9 @@ the patch version.
   be shared with the hardware description; Chapter 6 includes its snippet from there.
 
 ### Fixed
+- A clang-tidy finding in the snmp parser of Chapter 23 (`bugprone-unchecked-optional-access`),
+  caught by the gate self-test on CI; and Exercise 19.5's test compared the host-wide counters of
+  Chapter 23 between two replays, which made it fail intermittently.
 - Part IV review (PR #1): Chapter 18 counted eleven properties and 272 unit tests at its tag (ten
   and 273) and gave unit test timings with no record behind them; Chapter 20 dates its count of
   23 tools (Chapter 21 adds a 24th); two layout fixes in the solutions of Chapters 19 and 21.

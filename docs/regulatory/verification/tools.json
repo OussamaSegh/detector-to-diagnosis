@@ -146,6 +146,12 @@
                     "The test docs.regmap fails while the committed header differs from what the specification generates.",
                     "Registers.TheGeneratedMapMatchesItsSpecification and the slow control's tests check the generated types against the specification and the simulated board."],
      "evidence": ["tools/test_regmap_gen.py", "minidaq/tests/unit/test_hw_registers.cpp"],
-     "shown_to_fail": "Output.test_check_fails_while_an_output_is_out_of_date"}
+     "shown_to_fail": "Output.test_check_fails_while_an_output_is_out_of_date"},
+    {"id": "TL-26", "name": "Icarus Verilog", "kind": "off-the-shelf", "class": "T1",
+     "version": "12.0 on the reference machine; optional, and not installed on CI",
+     "use": "Simulates the SystemVerilog listing of the board's output FIFO against its testbench (hw/rtl, test hw.rtl, Chapter 24). The listing teaches; it is not part of MiniDAQ or of the evidence for it.",
+     "failure": "A wrong listing in the book that the simulation passes; no effect on the product, whose tests use the C++ model of the board.",
+     "confidence": ["The testbench failed on two planted defects of the listing: a clear of the overflow flag that wins over a set, and a push into a full FIFO."],
+     "evidence": ["hw/rtl/feb_out_fifo_tb.sv"], "shown_to_fail": ""}
   ]
 }

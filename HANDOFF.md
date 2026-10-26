@@ -358,7 +358,11 @@ and hardware description 1.1 "run"), integrity counts /hardware/boards/i/fifo_ov
 /hardware/drain_timeouts, API 2.3, SRS-HW-011 to 015 (SRS v13), RC-30, RC-31, ADR 0019, CR-0010,
 architecture v10, measurements/ch24/run_sequence (stop 123 to 140 ms with boards vs 3 to 21 ms
 without). The sender's packet count (tail loss on the network) is an ICD open item for map 1.2.
-Next: the Chapter 24 text and exercises, then Chapter 25.
+Chapter 24 text (book/src/part5/ch24-fpga-interface.md), solutions and Exercises 24.1 to 24.4
+(handshake checker, Gray code, output FIFO model, split counter) are written; hw/rtl holds the
+SystemVerilog FIFO and its testbench (test hw.rtl runs only where iverilog is installed; it is
+installed locally with apt, not on CI, tool TL-26). Book: 455 pages, solutions 148. Next:
+Chapter 25 (platform: image, systemd, watchdog, signed updates with rollback), then 0.5.0.
 
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,

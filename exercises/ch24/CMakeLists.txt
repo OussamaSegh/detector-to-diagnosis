@@ -1,0 +1,4 @@
+minidaq_exercise(e1_handshake)
+minidaq_exercise(e2_gray_code)
+minidaq_exercise(e3_out_fifo)
+minidaq_exercise(e4_split_counter)

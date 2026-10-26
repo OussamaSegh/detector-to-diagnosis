@@ -93,6 +93,15 @@ if(Python3_Interpreter_FOUND)
                                     --header ${PROJECT_SOURCE_DIR}/minidaq/include/minidaq/hw/feb_regs.hpp
                                     --doc ${PROJECT_SOURCE_DIR}/docs/hw/feb-register-map.md)
   add_test(NAME tools.regmap_gen COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_regmap_gen.py)
+  # Chapter 24: the SystemVerilog listing of the board's output FIFO, simulated against its
+  # testbench where Icarus Verilog is installed (tool TL-26, optional).
+  find_program(IVERILOG_EXECUTABLE iverilog)
+  find_program(VVP_EXECUTABLE vvp)
+  if(IVERILOG_EXECUTABLE AND VVP_EXECUTABLE)
+    add_test(NAME hw.rtl COMMAND sh -c "\"$0\" -g2012 -Wall -o \"$2/feb_out_fifo_tb\" \"$3/feb_out_fifo.sv\" \"$3/feb_out_fifo_tb.sv\" && \"$1\" \"$2/feb_out_fifo_tb\""
+             ${IVERILOG_EXECUTABLE} ${VVP_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/hw/rtl)
+    set_tests_properties(hw.rtl PROPERTIES LABELS "unit" PASS_REGULAR_EXPRESSION "^PASS: " FAIL_REGULAR_EXPRESSION "FAIL")
+  endif()
   set_tests_properties(docs.regmap tools.regmap_gen PROPERTIES LABELS "unit")
   # CAPA-0001: every sleep in a test states why (coding standard rule 5.5).
   add_test(NAME tests.waits COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_waits.py ${PROJECT_SOURCE_DIR})
