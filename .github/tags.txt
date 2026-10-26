@@ -29,3 +29,5 @@ book-v0.2.0 87034d56329afb8eb6a2b88e8cefed350a5c80b1 Release 0.2.0: Part II comp
 book-v0.3.0 37af8f479ad6a76ee22783b7ea284cd70b8891a6 Detector to Diagnosis 0.3.0: Part III complete
 book-v0.4.0 69120098fb4904b2889c92a19e4e65f95b56a4b8 Detector to Diagnosis 0.4.0: Part IV complete
 ch23 418a3bbafd13ba594f23505e673ced70f5456ead Chapter 23: high-throughput networking. At 418a3bb, which also holds PR #2 and the fix of a clang-tidy finding that failed ci on the chapter's last commit; ci, codeql, kdp and pages green on GitHub.
+ch24 8a0b0f1509da719ecee088904eb3fe237f098ea1 Chapter 24: FPGA firmware and the interface contract. ci, codeql, gates and kdp green on GitHub.
+ch25 6d077f865f57f1448fd9e16d7d279ca0c0c1b1e7 Chapter 25: the embedded Linux platform. At 6d077f8, which also holds the fixes of two tests that failed only on GitHub CI (tools.platform_check, system.platform under TSan); ci, codeql, kdp and pages green.
