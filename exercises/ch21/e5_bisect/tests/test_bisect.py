@@ -68,6 +68,17 @@ class Bisect(unittest.TestCase):
         (d / "app.py").write_text(GOOD)
         self.assertEqual(bt.check(d), 0)
 
+    def test_the_log_of_old_and_new_git_both_parse(self):
+        # git 2.43 writes "first bad commit" in the log, git 2.55 "first 'bad' commit".
+        a, b, c = "1" * 40, "2" * 40, "3" * 40
+        for term in ("bad", "'bad'"):
+            found = f"# bad: [{a}] commit 5\ngit bisect bad {a}\n# first {term} commit: [{a}] commit 5\n"
+            self.assertEqual(bt.candidates(found), [a])
+            left = "# only skipped commits left to test\n" + "".join(
+                f"# possible first {term} commit: [{x}] commit {i}\n" for i, x in enumerate((a, b, c)))
+            self.assertEqual(sorted(bt.candidates(left)), [a, b, c])
+        self.assertEqual(bt.candidates("# good: [" + a + "] commit 0\n"), [])
+
     def test_the_repository_is_left_as_it_was(self):
         shas = make_repo(self.tmp / "r", bad_at=5, n=12)
         bt.first_bad(self.tmp / "r", shas[0], shas[-1])

@@ -8,9 +8,12 @@ cannot decide among 23, 24 and 25, and `git bisect log` lists all three as possi
 commits; the honest result is the three candidates, and the next step is to read those three
 diffs.
 
-**Read the log, not the messages.** The second version parsed what `git bisect run` prints. It
-passed with git 2.43 and failed on GitHub's runners with git 2.55, where it found neither message in
-the output. The log's comment lines are the record bisect keeps for tools and people alike.
+**Read the log, not the messages, and test both versions.** The second version parsed what
+`git bisect run` prints. It passed with git 2.43 and failed on GitHub's runners with git 2.55, where
+it found neither message. The third read `git bisect log` and failed the same way: git 2.55 writes
+`# first 'bad' commit:` with the term in quotes. Only when `first_bad` raised with git's output
+instead of returning an empty list did the cause show. `candidates()` accepts both forms, and a test
+parses a log of each.
 
 **A stale cache can lie.** The first version of this solution failed three tests for a reason
 that had nothing to do with bisect: `app.py` had the same size in every commit and git checked

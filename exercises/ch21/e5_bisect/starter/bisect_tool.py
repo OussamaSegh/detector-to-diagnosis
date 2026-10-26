@@ -25,6 +25,19 @@ def check(workdir="."):
     return 0 if p.returncode == 0 else 1
 
 
+def candidates(log):
+    """The candidate commits (full SHA-1) that the text of `git bisect log` names: the first bad
+    commit if bisect found it, the possible first bad commits if skipped commits leave it open.
+    Even the log's comments changed: git 2.43 writes "first bad commit", git 2.55 quotes the term,
+    "first 'bad' commit" (bisect lets you rename good and bad). Both are accepted."""
+    m = re.search(r"^# first '?bad'? commit: \[([0-9a-f]{40})\]", log, re.M)
+    if m:
+        return [m.group(1)]
+    # TODO: when skipped commits leave it open, the log lists the candidates on lines
+    # "# possible first bad commit: [SHA-1] subject". Return them.
+    return []
+
+
 def first_bad(repo, good, bad):
     """Runs git bisect between good and bad in repo and returns the list of candidate commits
     (full SHA-1): one commit if bisect found it, several if skipped commits leave it open."""
@@ -35,17 +48,11 @@ def first_bad(repo, good, bad):
     try:
         git("bisect", "start", bad, good)
         git("bisect", "run", sys.executable, str(CHECK))
-        # The bisection log, not the messages of `bisect run`: their wording changes between git
-        # versions (2.43 and 2.55 differ), the log's comment lines are the record bisect keeps.
+        # The bisection log, not the messages of `bisect run`, which are written for people.
         log = git("bisect", "log").stdout
     finally:
         git("bisect", "reset")
-    m = re.search(r"^# first bad commit: \[([0-9a-f]{40})\]", log, re.M)
-    if m:
-        return [m.group(1)]
-    # TODO: when skipped commits leave it open, the log lists the candidates on lines
-    # "# possible first bad commit: [SHA-1] subject". Return them.
-    return []
+    return candidates(log)
 
 if __name__ == "__main__":
     sys.exit(check())

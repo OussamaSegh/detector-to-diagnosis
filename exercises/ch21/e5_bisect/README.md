@@ -14,13 +14,14 @@ bisection and parses its result. The tests build throwaway repositories whose `a
 **Tasks.**
 1. `check(workdir)`: exit status 125 for a commit whose `app.py` does not import, 0 if
    `app.answer()` is 42, 1 otherwise.
-2. `first_bad(repo, good, bad)`: return the candidates when bisect cannot decide, from the
-   lines `# possible first bad commit: [SHA-1]` of `git bisect log`, not an empty list.
+2. `candidates(log)`: return the candidates when bisect cannot decide, from the lines
+   `# possible first bad commit: [SHA-1]` of `git bisect log` (newer git writes `'bad'` in
+   quotes), not an empty list.
 
 **Acceptance** (`ch21/e5_bisect/<variant>/unittest`, needs git): a clean history; commits that
 do not build where bisect tests first, which must be skipped and not blamed; commits that do not
-build right before the defect, which must give the three candidates; the repository is left as
-it was.
+build right before the defect, which must give the three candidates; the log of an older and a
+newer git both parse; the repository is left as it was.
 
 Then answer in `NOTES.md`: in MiniDAQ, what would make a commit untestable, and what in the check
 would you change so that a skipped build never hides a real failure?

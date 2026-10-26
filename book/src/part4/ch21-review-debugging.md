@@ -688,10 +688,17 @@ test that shows the defect, and returns 125 for a build that fails.
 
 Its second version passed on the reference machine and failed on every GitHub runner. It read the
 messages that `git bisect run` prints, "is the first bad commit" and "The first bad commit could be
-any of:", and with the runners' git 2.55 it found neither line in the output that the reference
-machine's git 2.43 gives. The tool now reads `git bisect log`, whose comment lines (`# first bad
-commit:`, `# possible first bad commit:`) are the record bisect keeps. Messages are for people; a
-tool reads the format meant for tools.
+any of:", and with the runners' git 2.55 it found neither. The third version read `git bisect log`
+instead, on the theory that the log is the record bisect keeps for tools, and it failed in exactly
+the same way. That theory was a guess, and the fix was pushed without the evidence to test it. The
+fourth version made the tool fail loudly when it found nothing, with what git had printed, and the
+next CI run showed the cause at once: git 2.55 writes `# first 'bad' commit:` in the log, with the
+term in quotes, because bisect lets you rename "good" and "bad". The tool now accepts both forms,
+and a test parses a log of each so that the reference machine checks both. Three lessons, in
+order of cost: a text format written by another program is an interface only if it is documented
+as one, and even then test it with every version you run; a tool that finds nothing must say so
+with its evidence instead of returning an empty answer; and a fix for a failure you cannot
+reproduce is a hypothesis until the failing environment confirms it.
 
 ### Diagnosing from data
 
@@ -766,7 +773,8 @@ stage whichever it is, also with coarse polling, and the order of the onsets. Th
 first bad commit with `git bisect run` in a history with untestable commits, and report the
 candidates when bisect cannot decide. *Starter:* `exercises/ch21/e5_bisect/starter/bisect_tool.py`.
 *Acceptance:* `tests/test_bisect.py` passes: untestable commits are skipped, not blamed; three
-candidates when they sit next to the defect; the repository is left as it was. Then answer in
+candidates when they sit next to the defect; the log of an older and a newer git both parse; the
+repository is left as it was. Then answer in
 `NOTES.md` what makes a MiniDAQ commit untestable and how the check keeps a skip from hiding a real
 failure. *Time:* 30 minutes.
 
