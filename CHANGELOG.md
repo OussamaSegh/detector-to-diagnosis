@@ -66,6 +66,11 @@ the patch version.
 - A clang-tidy finding in the snmp parser of Chapter 23 (`bugprone-unchecked-optional-access`),
   caught by the gate self-test on CI; and Exercise 19.5's test compared the host-wide counters of
   Chapter 23 between two replays, which made it fail intermittently.
+- `minidaq_server` sent its first watchdog ping before `READY` when the watchdog thread ran first
+  (MDQ-PR-037, found by `system.platform` under TSan); the platform SBOM test failed where the
+  installed jsonschema cannot validate (MDQ-PR-038).
+- Exercise 12.3's trickle test allowed 50 ms of scheduling slack and failed once under
+  AddressSanitizer in the release checks (MDQ-PR-039); the slack is now 100 ms.
 - Part IV review (PR #1): Chapter 18 counted eleven properties and 272 unit tests at its tag (ten
   and 273) and gave unit test timings with no record behind them; Chapter 20 dates its count of
   23 tools (Chapter 21 adds a 24th); two layout fixes in the solutions of Chapters 19 and 21.

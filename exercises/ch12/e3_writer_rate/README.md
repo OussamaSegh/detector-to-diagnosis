@@ -21,7 +21,7 @@ disk, but not `minidaq::control::ListModeSink`, which is a solution.
   end-of-run block. (The starter waits 2.5 s for the disk.)
 - A trickle of 4,096 coincidences every 10 ms: fewer than one fsync per three blocks,
   every written byte covered by an fsync that ends within `max_unsynced` (100 ms) plus
-  one fsync plus 50 ms of scheduling slack, and the last fsync covers the whole file.
+  one fsync plus 100 ms of scheduling slack, and the last fsync covers the whole file.
 - A disk that fills up: `close()` and `fault()` report "No space left on device", and
   nothing hangs.
 

@@ -823,7 +823,7 @@ sink that writes and fsyncs every block on the caller's thread). *Acceptance:*
 500,000 coincidences in batches with `write()` costing at most 0.5 s more than encoding alone
 and no more than two calls as slow as an fsync, the file exactly the input; for a trickle of
 data, fewer than one fsync per three blocks and every byte covered by an fsync within 100 ms
-plus one fsync plus 50 ms; a full disk reported as a fault, with nothing hanging. Then measure
+plus one fsync plus 100 ms; a full disk reported as a fault, with nothing hanging. Then measure
 your disk with `writer_throughput` for each policy and write your choice in `NOTES.md`. *Time:*
 6 hours.
 

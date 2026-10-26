@@ -147,11 +147,13 @@ TEST(FastSink, NoDataWaitsLongerThanMaxUnsyncedForAnFsync) {
   EXPECT_EQ(disk.syncs.back().first, disk.data.size()) << "close() makes everything durable";
   EXPECT_LT(disk.syncs.size(), disk.writes.size() / 3) << "one fsync per block is the slow design";
   // Every write is covered by an fsync that started within max_unsynced (plus
-  // scheduling slack) and ended one sync_time later.
+  // scheduling slack) and ended one sync_time later. The slack is max_unsynced
+  // again: 50 ms was too little under AddressSanitizer on a loaded machine
+  // (MDQ-PR-039).
   for (const auto& [end, when] : disk.writes) {
     const auto covering = std::find_if(disk.syncs.begin(), disk.syncs.end(), [&](const auto& s) { return s.first >= end; });
     ASSERT_NE(covering, disk.syncs.end());
-    EXPECT_LT(covering->second - when, 100ms + disk.sync_time + 50ms) << "bytes up to " << end;
+    EXPECT_LT(covering->second - when, 100ms + disk.sync_time + 100ms) << "bytes up to " << end;
   }
 }
 

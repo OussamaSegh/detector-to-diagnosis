@@ -494,6 +494,33 @@
         "category": "test",
         "escape": "The local environment had every package; CI's had an older one."
       }
+    },
+    {
+      "id": "MDQ-PR-039",
+      "title": "Exercise 12.3's trickle test allowed 50 ms of scheduling slack and failed under AddressSanitizer on a loaded machine",
+      "found": "2026-10-26, release checks of 0.5.0 on 2c65872: FastSink.NoDataWaitsLongerThanMaxUnsyncedForAnFsync failed once in the preset asan-ubsan, with the tests running four at a time",
+      "item": "exercises",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "The test checks that every byte written in a slow trickle is covered by an fsync that ends within max_unsynced (100 ms) plus one fsync (20 ms) plus 50 ms of scheduling slack. Under AddressSanitizer with four tests at a time, the solution's background thread was delayed past the slack once. The same test passed 40 repetitions alone on the same build, so the solution meets the requirement; the slack was the assumption about the machine's speed.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An exercise's test of a timing property; MiniDAQ's own writer and its tests were not involved."
+      },
+      "resolution": {
+        "change": "The slack is max_unsynced again, 100 ms, so the bound is 220 ms; the exercise's README and Chapter 12 say so.",
+        "verification": "The test passes in every preset and in the stress run of the release checks of 0.5.0 on the fixed commit."
+      },
+      "root_cause": {
+        "whys": [
+          "The background fsync ended later than 170 ms after a write.",
+          "The thread that fsyncs was not scheduled in time while four sanitized tests ran on four CPUs.",
+          "The slack was chosen on an idle machine in a Release build, with no margin for the slowest build that runs the test."
+        ],
+        "cause": "A timing test whose margin was set on the fastest build, against CAPA-0001's rule that a test's budget holds on the slowest machine and build that runs it.",
+        "category": "test",
+        "escape": "Exercise 12.3 was written in Chapter 12, before CAPA-0001's margin rule; the rule's review of speed tests looked for speed budgets, not for slack in deadlines."
+      }
     }
   ]
 }
