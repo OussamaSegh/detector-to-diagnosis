@@ -59,6 +59,16 @@ class ReleaseChecks(unittest.TestCase):
         self.assertEqual(run_bash("finished=yes\nexit 0\n").returncode, 0)
         self.assertEqual(run_bash("finished=yes\nexit 1\n").returncode, 1)
 
+    def test_an_unknown_part_is_refused_before_anything_runs(self):
+        p = subprocess.run(["bash", str(SCRIPT), "/nonexistent/out", "600", "3"], capture_output=True, text=True)
+        self.assertEqual(p.returncode, 2)
+        self.assertIn("PART is all, 1 or 2", p.stderr)
+
+    def test_a_part_ends_with_its_summary(self):
+        text = SCRIPT.read_text()
+        self.assertIn('[ "$part" = 1 ] && summary', text)
+        self.assertTrue(text.rstrip().endswith("summary"))
+
     def test_a_dirty_tree_keeps_its_own_status(self):
         self.assertEqual(run_bash("exit 2\n").returncode, 2)
 

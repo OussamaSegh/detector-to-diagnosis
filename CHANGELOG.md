@@ -100,6 +100,9 @@ the patch version.
     skipped its check without a release tag; it now falls back to the last release record's commit.
   - MDQ-PR-031: the architecture (version 8) and the threat model (version 2, the crash report
     store T-35 to T-38) now describe the diagnostics of Chapter 21.
+- `tools/release_checks.sh OUT FUZZ_SECONDS PART` runs part 1 (builds and tests, about 50
+  minutes) or part 2 (gate, system tests, soak, fuzzing, about 90 minutes) on the same commit,
+  for a session that cannot hold the whole run; part 2 refuses another commit than part 1's.
 
 ### Changed
 - The control API is 2.1 (`diagnostics`); an observer may use `diagnostics` as well as `status`

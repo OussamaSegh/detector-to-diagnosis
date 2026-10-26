@@ -5,13 +5,19 @@
 # Run it on the reference machine, quiet, from a clean checkout. Each check writes its output to
 # OUT; the release record cites the files.
 #
-#   tools/release_checks.sh OUT [FUZZ_SECONDS]
+#   tools/release_checks.sh OUT [FUZZ_SECONDS] [PART]
+#
+# PART is all (the default), 1 (the builds and tests up to the benchmarks) or 2 (the gate, the
+# system tests, the soak and the fuzzing). The two parts take about 50 and 90 minutes; run them
+# on the same commit into the same OUT when one session cannot hold the whole run.
 #
 # The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails), and
 # 3 if the run stopped before the last check (MDQ-PR-029).
 set -uo pipefail
 out=${1:?usage: tools/release_checks.sh OUT [FUZZ_SECONDS]}
 fuzz_seconds=${2:-600}
+part=${3:-all}
+case "$part" in all | 1 | 2) ;; *) echo "PART is all, 1 or 2" >&2; exit 2 ;; esac
 root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$root"
 mkdir -p "$out/fuzz"
@@ -33,13 +39,29 @@ stamp() { echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) $*"; }
 check() {  # name status
   if [ "$2" -eq 0 ]; then echo "pass  $1"; else echo "FAIL  $1"; failed+=("$1"); fi
 }
+summary() {
+  finished=yes
+  if [ ${#failed[@]} -gt 0 ]; then
+    echo "${#failed[@]} release checks failed (part $part)" >&2
+    exit 1
+  fi
+  echo "all release checks passed (part $part)"
+  exit 0
+}
 
-{ echo "commit $(git rev-parse HEAD)"; git status --porcelain; } > "$out/commit.txt"
+commit_file=$out/commit.txt
+[ "$part" = 2 ] && commit_file=$out/commit-part-2.txt
+{ echo "commit $(git rev-parse HEAD)"; git status --porcelain; } > "$commit_file"
 if [ -n "$(git status --porcelain)" ]; then
   echo "the working tree is not clean; the release checks need one commit" >&2
   exit 2
 fi
+if [ "$part" = 2 ] && ! cmp -s "$out/commit.txt" "$commit_file"; then
+  echo "part 2 must run on the commit of part 1 ($out/commit.txt)" >&2
+  exit 2
+fi
 
+if [ "$part" != 2 ]; then
 { stamp "ci/run_all.sh (all six presets)"; ci/run_all.sh; } > "$out/run_all.txt" 2>&1
 check "build and tests, six presets" $?
 
@@ -104,6 +126,8 @@ mkdir -p /var/tmp/minidaq-bench
   done
   exit $status ) > "$out/perf-writer.txt"
 check "writer benchmark ran" $?
+fi
+[ "$part" = 1 ] && summary
 
 # The regression gate. It used to run only in perf.yml, on a runner that did not exist
 # (MDQ-PR-014); here it runs on the reference machine, and a failure fails the release checks.
@@ -154,9 +178,4 @@ for t in "${targets[@]}"; do
 done
 
 echo "The pipeline and writer results are read against SRS-PERF-020 and SRS-PERF-021 by hand."
-finished=yes
-if [ ${#failed[@]} -gt 0 ]; then
-  echo "${#failed[@]} release checks failed" >&2
-  exit 1
-fi
-echo "all release checks passed"
+summary
