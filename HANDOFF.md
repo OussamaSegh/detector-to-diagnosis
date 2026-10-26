@@ -1,7 +1,7 @@
 # Handoff: how to continue this work
 
-This file is for an agent (or a person) who has to pick up the generation of *The NeuroLF
-Engineer* and MiniDAQ if the current session is lost. Read it fully before you change
+This file is for an agent (or a person) who has to pick up the generation of *Detector to
+Diagnosis* (formerly titled after a product) and MiniDAQ if the current session is lost. Read it fully before you change
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
@@ -12,7 +12,8 @@ Last updated: 2026-10-26 11:10 UTC: colored covers for both volumes (book/assets
 The reader is a C++ engineer preparing to work on the data acquisition system of a brain PET
 scanner. This repository holds two things:
 
-- **The book** *The NeuroLF Engineer* (`book/`). It has 34 chapters in Parts I to VIII, plus a
+- **The book** *Detector to Diagnosis: Building Regulated Medical Imaging Software in Modern C++*
+  (`book/`, outputs `detector-to-diagnosis-*`). It has 34 chapters in Parts I to VIII, plus a
   new Part IX and an architecture appendix (section 6). It is a 10-week preparation.
 - **MiniDAQ**, the running project: a simulated PET data acquisition system with its regulated
   software file. The code is in `minidaq/`, with `exercises/`, `docs/`, `tools/`, `fuzz/`,
@@ -50,7 +51,7 @@ Accuracy:
 
 - Never invent a reference or a number.
 - Mark an uncertain claim with "verify:".
-- Mark a NeuroLF-specific number with "assumption: confirm with team".
+- Mark a product-specific number with "assumption: confirm with team".
 - Never reproduce ISO or IEC text.
 
 Style:
@@ -90,8 +91,9 @@ Commits and pushing:
 - **The book is generic** (user decision, 2026-10-26): it is written for any engineer who leads
   a PET DAQ. It names no employer of the reader ("your team", "your company"), quotes and cites no
   role description, and gives no calendar dates for the reader's schedule (weeks 1 to 10 only).
-  The NeuroLF's manufacturer appears only in reference entries. Future chapters follow the same
-  rule.
+  Since the retitling (2026-10-26) it names no particular scanner or manufacturer either: write
+  "your scanner" and cite only public standards, guidance and textbooks. Future chapters follow
+  the same rule.
 - Every commit message ends with these lines:
 
   ```
@@ -361,6 +363,3 @@ first Part this applies to.
   - a list-mode record (MDQ-L1) is 16 B;
   - the sinogram scale is 0.963 (depth of interaction);
   - the run record is `<prefix>-<run>.run.json`.
-- Verified company facts, usable without hedges:
-  - NeuroLF 510(k) K241751 was cleared on 2024-07-15, product code KPS;
-  - the MDR CE mark was announced on 2024-10-02.

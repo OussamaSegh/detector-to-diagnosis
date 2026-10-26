@@ -2,7 +2,7 @@
 
 ::: box-why
 A DAQ team needs production C++ that is also fast and low-latency, and the first half of that
-is easy to underrate. NeuroLF is a medical device with a service life of ten
+is easy to underrate. Your scanner is a medical device with a service life of ten
 years or more, and the DAQ software you lead will be read, changed, re-verified and
 audited long after you wrote it. Production C++ means code whose ownership, error paths
 and failure modes are obvious to the next engineer and provable to an auditor. This
@@ -510,7 +510,7 @@ freed before the evaluation ends, and many standard algorithms are `constexpr`.
 
 ### Worked example: the crystal position table
 
-MiniDAQ's reference geometry (the numbers are typical values, not NeuroLF's real ones) is
+MiniDAQ's reference geometry (the numbers are typical values, not your scanner's real ones) is
 a ring of 24 detector blocks, three blocks deep axially, each with 16 by 16 crystals:
 18,432 crystals in total. Crystal ids pack the ring index and the position around the
 ring, and the helpers decompose them with integer arithmetic that the compiler can check:
@@ -682,7 +682,7 @@ concrete and auditable:
 :::
 
 ::: box-askteam
-1. Which C++ standard and which compilers (and versions) does the NeuroLF DAQ build with,
+1. Which C++ standard and which compilers (and versions) does your scanner's DAQ build with,
    and is there a plan to move forward?
 2. Is there a written coding standard (CERT, MISRA C++:2023, AUTOSAR, in-house)? Who
    approves deviations?

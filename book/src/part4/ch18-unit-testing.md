@@ -476,7 +476,7 @@ target, and a review of what is not covered: each uncovered branch either reache
 accepted with a reason. MiniDAQ's development plan (version 5) states its rule as a ratchet: no
 class B item may lose coverage from one release to the next, and every uncovered branch in a
 class B file that changed since the previous release is reviewed before the release (assumption:
-confirm with team the coverage targets of NeuroLF's own development plan).
+confirm with team the coverage targets of your scanner's own development plan).
 
 ### Mutation testing
 
@@ -603,7 +603,7 @@ What the regulated setting adds to this chapter's examples:
 :::
 
 ::: box-askteam
-1. What does the NeuroLF's development plan state as unit acceptance criteria, and is there a
+1. What does your scanner's development plan state as unit acceptance criteria, and is there a
    coverage target per class?
 2. Which coverage tool produces the evidence, and from which build and preset?
 3. How are uncovered branches reviewed, and where is that review recorded?

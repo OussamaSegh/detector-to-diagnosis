@@ -6,7 +6,7 @@
 
 Part I is the largest part of the book (seven chapters, about 30% of your study time) because
 fast, low-latency C++ for a continuous stream of detector data is the core of a DAQ engineer's
-work. A NeuroLF-class scanner can produce tens of millions of singles per
+work. A brain PET scanner can produce tens of millions of singles per
 second; your code must keep up without dropping events and without unbounded latency, and it must
 stay maintainable and auditable for the life of the product.
 

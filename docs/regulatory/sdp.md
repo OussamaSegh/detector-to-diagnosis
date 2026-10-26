@@ -105,9 +105,9 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   notes. That is weaker than ISO 13485 and IEC 62304 expect of a team, and is accepted only for
   this teaching project (internal audit finding A-1, CAPA-0002); a team protects the main
   branch and requires a reviewer who did not write the change (assumption: confirm with team
-  how the NeuroLF's reviews are recorded). A change that touches a risk control, the safety class of an item or a
-  SOUP item also updates the risk file (Chapter 15) and, for SOUP, repeats the known-anomaly
-  review.
+  how your scanner's reviews are recorded). A change that touches a risk control, the safety class
+  of an item or a SOUP item also updates the risk file (Chapter 15) and, for SOUP, repeats the
+  known-anomaly review.
 - **What a real quality system adds:** a change control board for changes after release,
   the regulatory assessment of each change (Chapter 13, Exercise 13.2), and approval
   records with signatures.

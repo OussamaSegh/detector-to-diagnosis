@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // MiniDAQ - reference scanner geometry, computed at compile time (Chapter 1).
 //
-// assumption: confirm with team. NeuroLF's real geometry is not public in
+// assumption: confirm with team. A product's real geometry is rarely public in
 // detail. MiniDAQ uses a brain-sized single-ring-of-blocks scanner with
 // typical values: 300 mm inner diameter, 24 blocks around the ring, 3 block
 // rings axially, 16 x 16 crystals per block, about 2.45 mm crystal pitch.

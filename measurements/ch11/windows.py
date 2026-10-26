@@ -12,7 +12,7 @@ window, and report trues, scatters, randoms, the scatter fraction and the NECR.
 
 The simulated detector has a 300 ps FWHM coincidence time resolution and a
 12% FWHM energy resolution at 511 keV; a real detector's numbers (assumption:
-confirm with team for the NeuroLF) move the optimum.
+confirm with team for your scanner) move the optimum.
 """
 import re
 import subprocess

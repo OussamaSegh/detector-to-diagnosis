@@ -70,7 +70,7 @@ electronics usually multiplex, though: a block of crystals shares a light-sharin
 an ASIC, and an event anywhere in the block makes the whole block busy. MiniDAQ has 72
 blocks of 256 crystals, so the same 100 MBq gives each block about 230,000 singles per second.
 With a 1 µs block dead time that is a busy fraction near 20%. Which unit shares a dead time,
-and how long it lasts, is a property of the NeuroLF's front end that you must ask about
+and how long it lasts, is a property of your scanner's front end that you must ask about
 (assumption: confirm with team). This chapter uses a 1 µs block dead time to show the
 effects, not to predict the real scanner.
 
@@ -368,7 +368,7 @@ the simulator's 300 ps FWHM coincidence time resolution. An object filling MiniD
 radius field of view would need 0.8 ns plus a margin for the resolution. The window a
 scanner needs is set by the diameter of its field of view and its time resolution. It is not
 set by habit. In MiniDAQ the window τ is the largest accepted time difference, so pairs with
-|Δt| ≤ τ pass; some vendors quote the full width 2τ instead (verify: the NeuroLF's
+|Δt| ≤ τ pass; some vendors quote the full width 2τ instead (verify: your scanner's
 convention).
 
 ### The energy window
@@ -406,7 +406,7 @@ comparable: 11% and 6.5% at 30 MBq.
 
 The answer depends on the detector. A better time resolution allows a narrower window. A
 better energy resolution sharpens the photopeak and moves the best threshold up. The
-NeuroLF's own resolutions move both optima (assumption: confirm with team). The method
+your scanner's own resolutions move both optima (assumption: confirm with team). The method
 carries over even where the numbers do not. Sweep each window, plot the NECR, and choose the
 window from the curve, at the activity the protocol uses.
 
@@ -427,12 +427,12 @@ window from the curve, at the activity the protocol uses.
 NEMA NU 2, *Performance Measurements of Positron Emission Tomographs*, is the standard that
 manufacturers use to specify a clinical PET scanner. The current edition is NU 2-2024; most
 published specifications, including many of the scanners you will compare with, still quote
-NU 2-2018 (verify: the edition the NeuroLF's documentation cites). It does not set
+NU 2-2018 (verify: the edition your scanner's documentation cites). It does not set
 limits. It defines how each figure of merit is measured, so that two scanners measured by it
 can be compared. For small-animal scanners, NEMA NU 4-2008 defines the same kinds of tests
 with phantoms the size of a mouse and a rat. A brain-dedicated scanner sits between the two.
 Its ring is smaller than a whole-body scanner's, and the NU 2 phantoms may not fit or may not
-represent a head. Which edition, and which adaptations, the NeuroLF's performance is
+represent a head. Which edition, and which adaptations, your scanner's performance is
 specified with is a question for your team (assumption: confirm with team).
 
 The standard's text is copyrighted, and this book does not reproduce it. What follows is the
@@ -483,7 +483,7 @@ The phantom is water rather than polyethylene, the scanner is MiniDAQ's model ri
 dead time is an assumption. Its value is different: it tells you what the DAQ does to the
 curve. Because the truth is known, it separates the losses of the front end, the sorter's
 policy and the windows. A real measurement cannot. On the real scanner, the same harness
-run on a simulation of the NeuroLF front end predicts the test before it is run, and
+run on a simulation of your scanner's front end predicts the test before it is run, and
 explains it afterwards.
 
 ## The end-to-end throughput budget
@@ -627,9 +627,9 @@ the data it is measured from.
 :::
 
 ::: box-askteam
-1. What is the NeuroLF's dead time, per what unit (crystal, block, ASIC, board), and is it
+1. What is your scanner's dead time, per what unit (crystal, block, ASIC, board), and is it
    closer to paralyzable or non-paralyzable? How is pile-up rejected or corrected?
-2. Which NEMA standard, edition and adaptations are the NeuroLF's performance specified
+2. Which NEMA standard, edition and adaptations are your scanner's performance specified
    with, and what are its peak NECR, the activity at the peak and its scatter fraction?
 3. Which coincidence time window and energy window are used clinically, how was the choice
    made, and is the window quoted as τ or as 2τ?

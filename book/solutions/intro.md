@@ -4,7 +4,7 @@
 
 # How to use this manual {.unnumbered}
 
-This manual contains worked solutions to every exercise in *The NeuroLF Engineer*
+This manual contains worked solutions to every exercise in *Detector to Diagnosis*
 (version {{version}}) and model answers to every *Check yourself* question. The main book
 stays exercise-first: try each exercise against its acceptance tests before you read the
 solution here.

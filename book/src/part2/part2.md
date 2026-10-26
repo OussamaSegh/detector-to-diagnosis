@@ -26,6 +26,6 @@ through the readout link and the sorter to list-mode files and sinograms, and ev
 stage reports what it lost and why.
 
 The physics in these chapters is the minimum a DAQ lead needs, explained for an engineer and
-checked against the standard textbooks. NeuroLF's own numbers are not public in detail;
+checked against the standard textbooks. A product's own numbers are rarely public in detail;
 where this book needs one, it uses a typical value and marks it *assumption: confirm with
 team*.

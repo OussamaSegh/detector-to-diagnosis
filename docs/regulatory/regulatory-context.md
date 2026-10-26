@@ -16,7 +16,7 @@ describes any manufacturer's actual regulatory strategy.
 | Is it a medical device? | Yes: an active device for diagnosis | MiniDAQ is part of it, not a device of its own |
 | EU class | IIa: MDR Annex VIII, Rule 10, "intended to image in vivo distribution of radiopharmaceuticals" | Implementing rule 3.3: software that drives or influences a device is in the device's class, so IIa |
 | US classification | 21 CFR 892.1200, emission computed tomography system, class II, product code KPS; market entry by 510(k) | Part of the 510(k), with the software documentation of FDA's 2023 guidance |
-| Software documentation level (FDA) | Basic or Enhanced, decided for the whole device | assumption: confirm with team which level the NeuroLF's submission used |
+| Software documentation level (FDA) | Basic or Enhanced, decided for the whole device | assumption: confirm with team which level your scanner's submission used |
 | IEC 62304 software safety class | Decided per software system and item from the risk analysis (Chapter 14) | Proposed in the software development plan, not here |
 
 A PET/CT would be class IIb in the EU (Rule 10, last paragraph: devices that emit ionizing
@@ -122,8 +122,8 @@ records would be a defect in a risk control, and is treated as one.
 ## 8. Open questions
 
 1. Which notified body, which conformity assessment route and which software documentation
-   level apply to the NeuroLF, and who is its EU authorized representative?
-2. Which IEC 62304 safety class has the NeuroLF's DAQ software, and on what risk argument?
+   level apply to your scanner, and who is its EU authorized representative?
+2. Which IEC 62304 safety class has your scanner's DAQ software, and on what risk argument?
 3. In which markets beyond the EU, the US and Switzerland is it sold, with which additional
    requirements?
 4. Which version of each standard does the technical documentation claim, and who updates the

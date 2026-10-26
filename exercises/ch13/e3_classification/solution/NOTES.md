@@ -15,5 +15,5 @@
   MDCG 2019-11 and MDCG 2021-24 on software and on classification).
 - **The December 2025 proposal.** The Commission's proposal to revise the MDR would rewrite
   Rule 11 and lower the class of much decision-support software (verify: the text adopted, if
-  any). Rule 10 and implementing rule 3.3 are what decide the NeuroLF's DAQ software, and the
+  any). Rule 10 and implementing rule 3.3 are what decide your scanner's DAQ software, and the
   proposal is not expected to apply before 2027.

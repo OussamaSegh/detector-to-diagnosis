@@ -523,7 +523,7 @@ State the configuration with the result.
 Everything so far runs on one machine with a simulated board. A **hardware-in-the-loop** bench
 replaces `minidaq_send` by a readout board, or a board's development kit, on a dedicated network
 interface of the acquisition PC, with a pulser or a radioactive source for known input
-(assumption: confirm with team which bench the NeuroLF uses). The system tests of
+(assumption: confirm with team which bench your scanner uses). The system tests of
 `test_readout_system.py` are written against what the sender reports; on a bench, the board's
 own counters (packets sent, sequence numbers) take its place, and the same identities must hold.
 
@@ -633,7 +633,7 @@ What the regulated setting adds to this chapter's examples:
 :::
 
 ::: box-askteam
-1. Which test levels does the NeuroLF's development plan define, and where is the boundary
+1. Which test levels does your scanner's development plan define, and where is the boundary
    between integration and system testing drawn?
 2. Is there a hardware-in-the-loop bench for the DAQ, what is on it (board, pulser, source), and
    how is time on it scheduled?

@@ -108,7 +108,7 @@ memory. Chapter 4 shows how a DAQ allocates its big ring buffers on huge pages, 
 ### Putting a stream into numbers
 
 Exercise 2.1 asks you to do this by hand; here is the template you will reuse for every
-design discussion. A NeuroLF-class scanner at high activity might produce 30 million
+design discussion. A brain PET scanner at high activity might produce 30 million
 singles per second (*assumption: confirm with team*; the real number depends on activity,
 geometry and thresholds).
 

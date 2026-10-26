@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-# Builds The NeuroLF Engineer (EPUB + PDF) and the solutions manual.
+# Builds Detector to Diagnosis (EPUB + PDF) and the solutions manual.
 # Usage: book/build.sh [epub|pdf|all] [book|solutions|both]
-# Output: book/build/out/the-neurolf-engineer-v<VERSION>.{epub,pdf}
-#         book/build/out/the-neurolf-engineer-solutions-v<VERSION>.{epub,pdf}
+# Output: book/build/out/detector-to-diagnosis-v<VERSION>.{epub,pdf}
+#         book/build/out/detector-to-diagnosis-solutions-v<VERSION>.{epub,pdf}
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/.." && pwd)"
 what="${1:-all}"
 which="${2:-both}"
 version="$(tr -d '[:space:]' < "$repo/VERSION")"
-date_str="${NEUROLF_DATE:-$(date +%Y-%m-%d)}"
+date_str="${BOOK_DATE:-$(date +%Y-%m-%d)}"
 build="$here/build"
 out="$build/out"
 mkdir -p "$out" "$build/diagrams" "$build/tex"
 
-export NEUROLF_REPO_ROOT="$repo"
-export NEUROLF_DIAGRAM_DIR="$build/diagrams"
-export NEUROLF_STRICT=1
+export BOOK_REPO_ROOT="$repo"
+export BOOK_DIAGRAM_DIR="$build/diagrams"
+export BOOK_STRICT=1
 
 common=(
   --from markdown+smart+fenced_divs+bracketed_spans+pipe_tables+grid_tables+tex_math_dollars+implicit_figures
@@ -100,8 +100,8 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
 }
 
 if [[ "$which" == book || "$which" == both ]]; then
-  build_one "$here/book.txt" "the-neurolf-engineer" "$here/metadata.yaml" book
+  build_one "$here/book.txt" "detector-to-diagnosis" "$here/metadata.yaml" book
 fi
 if [[ "$which" == solutions || "$which" == both ]]; then
-  build_one "$here/solutions.txt" "the-neurolf-engineer-solutions" "$here/metadata-solutions.yaml" solutions
+  build_one "$here/solutions.txt" "detector-to-diagnosis-solutions" "$here/metadata-solutions.yaml" solutions
 fi

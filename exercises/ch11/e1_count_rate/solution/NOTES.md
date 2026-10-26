@@ -47,4 +47,4 @@ time. Both models agree with each other below about 20 MBq, where nτ per block 
 **Limits.** This is a NEMA-style test, not NEMA NU 2: the rates come from the ground truth,
 not from the sinogram analysis the standard prescribes, the phantom is water rather than
 polyethylene, and the dead time is an assumption for illustration (confirm with team for
-the NeuroLF front end).
+your scanner's front end).

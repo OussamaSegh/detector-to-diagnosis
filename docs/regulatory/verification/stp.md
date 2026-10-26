@@ -98,10 +98,10 @@ show that the checks can fail.
 
 A bench replaces `minidaq_send` by a readout board (or a board's development kit) on a
 dedicated network interface of the acquisition PC, with a pulser or a source for known input
-(assumption: confirm with team the bench NeuroLF uses). The system tests of `test_readout_system.py`
-are written against what the sender reports; on the bench, the board's own counters (packets
-sent, sequence numbers) take that place. What only a bench shows: the real link's loss and
-timing under load, the board's firmware behavior at start and stop, and the interface's
+(assumption: confirm with team the bench your scanner uses). The system tests of
+`test_readout_system.py` are written against what the sender reports; on the bench, the board's own
+counters (packets sent, sequence numbers) take that place. What only a bench shows: the real link's
+loss and timing under load, the board's firmware behavior at start and stop, and the interface's
 receive buffers and interrupts. Bench tests are slower and the bench is shared, so they run per
 release and per change of the readout, not per commit.
 

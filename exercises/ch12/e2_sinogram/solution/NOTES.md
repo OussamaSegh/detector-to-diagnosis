@@ -36,4 +36,4 @@ instead of about 156 mm, which scales every distance by 150 / 156 = 0.962. Binni
 an effective radius of about 156 mm removes the scale; real scanners calibrate it.
 Off-axis, the depth also blurs the lines radially (parallax), which a scale does not
 remove: that is why brain scanners care about depth-of-interaction measurement
-(assumption: confirm with team whether the NeuroLF detector measures it).
+(assumption: confirm with team whether your scanner's detector measures it).

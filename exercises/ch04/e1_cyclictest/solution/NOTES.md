@@ -33,4 +33,4 @@ PREEMPT_DYNAMIC, 30 s at 200 us on CPU 1, about 150,000 samples idle; microsecon
 | load_fifo  | 17  | 41  | 267   | 1457   | 8431  |
 
 The VM's maxima are dominated by the hypervisor; expect lower maxima on bare metal (verify on
-the NeuroLF acquisition PC).
+your scanner's acquisition PC).

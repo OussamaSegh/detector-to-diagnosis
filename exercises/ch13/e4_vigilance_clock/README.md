@@ -24,7 +24,7 @@ calendar days, a PSUR every year for every class, and a plan in the order it was
 - `report_plan` lists every report that applies, earliest first.
 
 Then write in `NOTES.md` the plan for this incident: on Thursday 7 January 2027 a hospital in
-Germany reports that a NeuroLF acquisition ended without an error, but a quarter of the
+Germany reports that a brain PET acquisition ended without an error, but a quarter of the
 coincidences were missing from the list-mode file and the scan was read as normal. Is it a
 serious incident? Which clock starts, and when? What would make it a five-day report in the US?
 

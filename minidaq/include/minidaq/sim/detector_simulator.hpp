@@ -44,7 +44,7 @@ struct Phantom {
 
 // What the detector does with a photon that reaches it. The defaults are
 // typical of a LYSO/SiPM brain scanner (assumption: confirm with team for
-// NeuroLF's actual values).
+// your scanner's actual values).
 struct DetectorModel {
   double crystal_mu_per_mm = 0.087;     // LYSO at 511 keV, used for all energies
   double photofraction = 0.6;           // interacting photons depositing their full energy

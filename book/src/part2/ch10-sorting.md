@@ -77,7 +77,7 @@ The rules are:
 
 - A **coincidence window** τ: two singles are candidates if their times differ by at most
   τ. MiniDAQ uses 4 ns, and the window is inclusive: exactly 4,000 ps apart is a pair,
-  4,001 is not. (assumption: confirm with team the window the NeuroLF uses; with a
+  4,001 is not. (assumption: confirm with team the window your scanner uses; with a
   coincidence time resolution of a few hundred picoseconds a window of a few nanoseconds is
   typical.)
 - An **energy window**, applied to each single before it takes part: 435 to 585 keV in
@@ -240,7 +240,7 @@ per ring, and the sectors are the blocks. A minimum difference of 1 rejects pair
 one block; 2 also rejects pairs in neighboring blocks. The distance between sectors s~a~
 and s~b~ is min(|s~a~ − s~b~|, 24 − |s~a~ − s~b~|), so blocks 0 and 23 are neighbors. The
 configuration accepts at most 12, half the ring. (assumption: confirm with team how the
-NeuroLF's sectors are defined; a brain scanner may group modules differently, and the
+your scanner's sectors are defined; a brain scanner may group modules differently, and the
 axial direction can have its own rule.)
 
 ### Field of view
@@ -268,7 +268,7 @@ Chapter 1 rather than computing cosines:
 
 Two crystals at the same transaxial position, in different rings, have no transaxial line
 at all (|q − p| = 0); the function rejects them, which a real scanner would decide with the
-axial geometry (verify: how the NeuroLF's sorter treats pairs in the same transaxial
+axial geometry (verify: how your scanner's sorter treats pairs in the same transaxial
 position).
 
 ## What the policy does: measurements
@@ -384,7 +384,7 @@ other than the policy would have changed.
 
 The practical consequence is that a randoms correction must model the policy it was
 measured with, or use a policy and an estimator that match. This is one of the questions to
-ask the team: which estimator the NeuroLF's reconstruction uses, and whether its bias at
+ask the team: which estimator your scanner's reconstruction uses, and whether its bias at
 the clinical activity has been measured.
 
 ::: box-mistakes
@@ -430,7 +430,7 @@ stream processing systems, where the same problem appears with events from many 
 latest reported time stops. The watermark stops with it, and the merger holds everything.
 Readout firmware sends periodic time markers (or empty packets with a time stamp) for this
 reason, and MiniDAQ's merger accepts them with `advance(board, t)`: a promise that nothing
-earlier than t will follow. (assumption: confirm with team whether the NeuroLF's readout
+earlier than t will follow. (assumption: confirm with team whether your scanner's readout
 sends time markers, and how often.)
 
 **A bound on the wait.** A board that stops completely, because its link failed, would hold
@@ -694,7 +694,7 @@ The campaign runs again whenever the sorter changes.
 ### The target
 
 How fast must the sorter be? A clinical PET scanner can produce tens of millions of singles
-per second at high activity (verify: the NeuroLF's expected peak singles rate, which
+per second at high activity (verify: your scanner's expected peak singles rate, which
 depends on its geometry and the activities used). This chapter sets a target of
 30 M singles per second on one core, with bounded latency, and the measurements are taken
 against it. As always, the target comes from the system, and Chapter 11's count-rate curves
@@ -782,7 +782,7 @@ be answered from the data afterwards.
 sized: 14.8 M singles per second per Gigabit link in MDQ-R1 packets. In exchange, the
 sorter is ordinary C++, testable against a simulator, changeable in a release, and
 the singles can be recorded so that the same acquisition can be sorted again with other
-rules. Research systems and several newer designs take this route; whether the NeuroLF's
+rules. Research systems and several newer designs take this route; whether your scanner's
 sorter is in firmware, in software, or split between them is the first thing to find out
 (assumption: confirm with team).
 
@@ -824,7 +824,7 @@ behavior is part of the device's intended performance.
 :::
 
 ::: box-askteam
-1. Where does the NeuroLF sort coincidences: in firmware, in software, or both? Which
+1. Where does your scanner sort coincidences: in firmware, in software, or both? Which
    rules does each part apply, and where are they specified?
 2. Which window, energy window, multiples policy and geometry cuts are used for clinical
    acquisitions, and who decided them, on what evidence?

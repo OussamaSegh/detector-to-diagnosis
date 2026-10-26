@@ -499,7 +499,7 @@ and counts every word.
 ```{.cpp include="minidaq/src/pipeline/acquisition_pipeline.cpp" snippet="source"}
 ```
 
-Neither policy is "correct" in the abstract. Which one NeuroLF needs depends on what the
+Neither policy is "correct" in the abstract. Which one your scanner needs depends on what the
 front-end does when it is not drained. assumption: confirm with team whether the boards
 have flow control, how deep their buffers are, and whether losing a burst or stalling the
 detector is the lesser harm. What *is* non-negotiable is that a loss is counted where it

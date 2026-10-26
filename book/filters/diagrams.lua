@@ -1,7 +1,7 @@
 -- diagrams.lua: render ```{.dot caption="..."} blocks with Graphviz.
 -- EPUB/HTML get SVG; LaTeX gets PDF (converted from the SVG with rsvg-convert),
 -- so the same source produces vector graphics in both outputs.
-local outdir = os.getenv("NEUROLF_DIAGRAM_DIR") or "build/diagrams"
+local outdir = os.getenv("BOOK_DIAGRAM_DIR") or "build/diagrams"
 local fmt = FORMAT
 
 local function file_exists(p)

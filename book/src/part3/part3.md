@@ -1,7 +1,7 @@
 # Part III: Medical device software standards {.part}
 
 Part III (five chapters, about 15% of your study time) is the frame that every line of the
-NeuroLF's code sits in. A medical device software team organizes its work by the
+your scanner's code sits in. A medical device software team organizes its work by the
 regulations and by ISO 13485, IEC 62304, ISO 14971 and IEC 81001-5-1. None of them
 tells you how to write a coincidence sorter. Together they decide what you must know about it
 before it ships, what you must write down, and what you must do when it fails in the field.

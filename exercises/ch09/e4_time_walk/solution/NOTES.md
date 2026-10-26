@@ -14,7 +14,7 @@ t_off ≈ τ_decay · ln(A / threshold), so ToT is about τ_decay · ln(A) + con
 energy. Doubling the energy adds 27.7 ns, whether you start at 300 keV or 30 keV. A ToT
 energy measurement is therefore compressed at high energy, and it needs a calibration
 curve per channel before an energy window means anything. Some ASICs offer both charge
-integration (QDC) and ToT for this reason (verify: which mode the NeuroLF front end uses).
+integration (QDC) and ToT for this reason (verify: which mode your scanner's front end uses).
 
 **Precision.** The starter's 50 ps scan quantizes the crossing time to 50 ps, larger than
 the walk it is supposed to measure. A measurement tool must be much finer than the effect.

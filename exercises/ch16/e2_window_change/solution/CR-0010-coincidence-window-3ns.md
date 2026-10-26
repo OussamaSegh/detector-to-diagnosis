@@ -22,7 +22,7 @@ Randoms grow in proportion to the window: a 3 ns window should remove about a qu
 at high activity. The window must still contain every true pair: the largest time-of-flight
 difference in a 150 mm radius ring is 2 x 150 mm / c, about 1.0 ns, and three standard
 deviations of a 300 ps FWHM timing resolution add about 0.4 ns, so 3 ns keeps a margin
-(assumption: confirm the NeuroLF's timing resolution and field of view with the team). If the
+(assumption: confirm your scanner's timing resolution and field of view with the team). If the
 change is not made, the randoms correction keeps its larger variance.
 
 ## Impact analysis

@@ -1,8 +1,8 @@
 # Exercise 13.2 (M): What a software change triggers
 
-**Goal.** Write a one-page brief, "What a software change in NeuroLF triggers, regulatory-wise",
-for one concrete change: moving the acquisition PC from Ubuntu 22.04 to Ubuntu 24.04. The DAQ's
-source code does not change; everything below it does.
+**Goal.** Write a one-page brief, "What a software change in your scanner triggers,
+regulatory-wise", for one concrete change: moving the acquisition PC from Ubuntu 22.04 to Ubuntu
+24.04. The DAQ's source code does not change; everything below it does.
 
 **Time.** 2 hours.
 

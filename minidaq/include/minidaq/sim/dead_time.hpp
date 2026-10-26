@@ -20,7 +20,7 @@
 // (Knoll, Radiation Detection and Measurement, chapter 4).
 //
 // It is a teaching model (assumption: confirm with team which parts of the
-// NeuroLF front end have dead time, how long, and of which kind).
+// your scanner's front end have dead time, how long, and of which kind).
 #pragma once
 
 #include <cstdint>

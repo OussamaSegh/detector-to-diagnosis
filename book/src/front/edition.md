@@ -4,7 +4,7 @@
 
 # About this edition {.unnumbered}
 
-This is **version {{version}}** ({{date}}) of *The NeuroLF Engineer*, a work-in-progress edition released Part by Part.
+This is **version {{version}}** ({{date}}) of *Detector to Diagnosis*, a work-in-progress edition released Part by Part.
 Each Part bumps the minor version; the complete, packaged book is version 1.0.0. The
 version of this file is printed on the title page and in every output file name.
 
@@ -28,5 +28,5 @@ that repository at build time, so every listing is compiled and tested.
 
 **This book is for learning.** It is not a substitute for your company's quality management
 system, procedures or training, and nothing in it describes any manufacturer's actual
-processes or NeuroLF's internal design. Hardware numbers for NeuroLF are typical values
+processes or any product's internal design. Hardware numbers in this book are typical values
 for a brain PET scanner and are marked *assumption: confirm with team*.

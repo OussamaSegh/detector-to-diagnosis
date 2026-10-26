@@ -1,10 +1,10 @@
-title: "The NeuroLF Engineer: Solutions Manual"
-subtitle: "Modern C++, PET Data Acquisition and Medical Device Software"
+title: "Detector to Diagnosis: Solutions Manual"
+subtitle: "Building Regulated Medical Imaging Software in Modern C++"
 author:
   - "A practice book prepared with Claude"
 lang: en-US
 rights: "Personal study edition. Code: MIT License. Not a substitute for a manufacturer's QMS procedures."
-description: "Worked solutions to every exercise and model answers to every Check yourself question in The NeuroLF Engineer."
+description: "Worked solutions to every exercise and model answers to every Check yourself question in Detector to Diagnosis."
 subject: "C++; PET; data acquisition; IEC 62304; ISO 14971"
 documentclass: book
 classoption:

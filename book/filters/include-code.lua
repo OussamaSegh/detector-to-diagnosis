@@ -17,8 +17,8 @@
 -- The book never contains code that is not in the repository, so every listing
 -- in the book is compiled and tested by the repository's CI.
 
-local repo_root = os.getenv("NEUROLF_REPO_ROOT") or "."
-local tag = os.getenv("NEUROLF_LISTING_TAG")
+local repo_root = os.getenv("BOOK_REPO_ROOT") or "."
+local tag = os.getenv("BOOK_LISTING_TAG")
 local missing = 0
 
 local function read_file(path)
@@ -178,7 +178,7 @@ function CodeBlock(el)
 end
 
 function Pandoc(doc)
-  if missing > 0 and os.getenv("NEUROLF_STRICT") == "1" then
+  if missing > 0 and os.getenv("BOOK_STRICT") == "1" then
     error("include-code: " .. missing .. " missing listing(s)")
   end
   return doc

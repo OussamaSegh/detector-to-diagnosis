@@ -1,6 +1,6 @@
 # Security policy
 
-MiniDAQ is the teaching project of the book "The NeuroLF Engineer". It is not a medical device
+MiniDAQ is the teaching project of the book "Detector to Diagnosis". It is not a medical device
 and must not be used to acquire patient data. Its threat model and its vulnerability management
 are described in [docs/regulatory/security/threat-model.md](docs/regulatory/security/threat-model.md).
 

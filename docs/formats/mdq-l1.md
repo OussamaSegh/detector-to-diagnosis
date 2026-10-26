@@ -1,6 +1,6 @@
 # MDQ-L1: MiniDAQ list-mode file format, version 1.0
 
-Version 1 of this specification (MiniDAQ 0.3.0-dev, Chapter 16), for format version 1.0.
+Version 2 of this specification (MiniDAQ 0.4.0-dev), for format version 1.0.
 Status: Accepted (ADR 0012). Implementation: `minidaq/include/minidaq/format/list_mode.hpp`
 (C++), with an independent reader in `measurements/ch12/crash.py` and
 `exercises/ch12/e2_sinogram` (Python). Requirements: SRS-LMF-001 to 008 (format) and
@@ -156,7 +156,7 @@ members it does not know, and a writer MAY add more.
 
 The configuration is copied whole, not summarized, so that a file can be interpreted
 without the machine that wrote it. Calibration tables are referenced by identifier and
-version inside it rather than copied (assumption: confirm with team how NeuroLF
+version inside it rather than copied (assumption: confirm with team how your scanner's
 identifies calibration sets).
 
 ## 7. Files, rotation and crash safety
@@ -224,3 +224,4 @@ identifies calibration sets).
 | Version | Change |
 |---|---|
 | 1 | First controlled version (Chapter 16); the text is that of Chapter 12. The specification's version is not the format's: a change to this text that does not change the format gets a new document version and keeps format version 1.0. |
+| 2 | The book's new title: statements about a particular product are now about "your scanner"; the format is unchanged (format version 1.0). |

@@ -80,7 +80,7 @@ for a fixed pulse shape removes the walk entirely; an analog CFD does it by comp
 pulse with a delayed, attenuated copy of itself. And a *very low threshold*, at the level
 of the first few detected optical photons, keeps the walk small because the earliest part
 of the pulse rises steeply. Fast SiPM front ends commonly use the last approach and correct
-the rest in software (verify: the timing method of the NeuroLF front end).
+the rest in software (verify: the timing method of your scanner's front end).
 
 ### Energy: charge integration and time over threshold
 
@@ -358,7 +358,7 @@ matter:
 At MiniDAQ's working rate of 10 M singles/s (Chapter 3), one Gigabit link is 68% full, too
 little margin for the high-activity end of a count-rate test. A scanner of that class uses
 10 GbE, several links, or coincidence filtering in the FPGA so that fewer singles leave the
-detector (verify: NeuroLF's link type and count). The packet rate matters as much as the
+detector (verify: your scanner's link type and count). The packet rate matters as much as the
 byte rate: a receiving CPU pays a cost per packet, so small packets cost more than their
 bytes suggest. With jumbo frames (a 9,000-byte MTU) a packet can hold over a thousand words,
 which is why MDQ-R1 allows up to 1,024.
@@ -645,7 +645,7 @@ A readout link is where data integrity, cybersecurity and SOUP meet.
 :::
 
 ::: box-askteam
-1. Where is the specification of the event words and packets that the NeuroLF readout
+1. Where is the specification of the event words and packets that your scanner's readout
    sends, which version is current, and who approves changes to it?
 2. Which link carries the data from the detector to the acquisition PC (Ethernet, PCIe,
    optical), at what bandwidth, and is the network dedicated to it?

@@ -10,7 +10,7 @@ threat model and of vulnerability management, for a teaching project; it is not 
 any manufacturer's quality management system and does not reproduce either text. In a real product,
 the software's threat model is part of the scanner's security risk assessment, and the
 environment of section 6 is the scanner's, not an acquisition PC's (assumption: confirm with
-team how the NeuroLF's security risk file is organized).
+team how your scanner's security risk file is organized).
 
 The machine-readable part is [threats.json](threats.json): the elements of the data flow
 diagram and one entry per threat. The test `docs.threats` (`tools/check_threats.py`) checks
@@ -173,7 +173,7 @@ of hazard H-08, and their design is recorded in
 The risk control RC-25 of H-08 is this section. Its text is written for the accompanying
 documentation (the instructions for use and the installation instructions) and is inspected
 there before each release. The text below is the book's proposal (assumption: confirm with team
-what the NeuroLF's instructions for use say and who approves them).
+what your scanner's instructions for use say and who approves them).
 
 > **Security of the acquisition PC.** MiniDAQ protects the control of the acquisition against
 > other users and against the network. It cannot protect against anyone who uses the operator's

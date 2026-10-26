@@ -336,7 +336,7 @@ faces, at R = 150 mm. The simulator, however, records each photon at the depth i
 where it interacted, 5.9 mm deep on average, which makes the effective radius about 156 mm.
 Real scanners have the same effect, and their geometry files give an effective radius that
 includes the mean depth of interaction (assumption: confirm with team what radius the
-NeuroLF's reconstruction uses). MiniDAQ keeps the front-face radius and records it in the
+your scanner's reconstruction uses). MiniDAQ keeps the front-face radius and records it in the
 sinogram's header. That makes the bias visible rather than hidden, and Exercise 12.2 asks you
 to quantify it.
 
@@ -719,14 +719,14 @@ time, decay corrected. An error in any of the DAQ's times reaches every SUV comp
 images. That is why Chapter 8 insisted on a trustworthy acquisition start time. MiniDAQ
 records `created_utc` from the DAQ computer's clock when the sink opens. A production system
 must also relate the acquisition clock to UTC, for example with a time-mark tag at a known
-UTC time from a synchronized clock (assumption: confirm with team how the NeuroLF ties its
+UTC time from a synchronized clock (assumption: confirm with team how your scanner ties its
 acquisition clock to UTC).
 
 ### Where raw data fits
 
 DICOM has room for raw data. The *Raw Data* IOD carries data whose content is defined by the
 manufacturer, and vendors use it, or private attributes, to archive list-mode data and
-sinograms next to the images (verify: how the NeuroLF archives raw data, if at all). Most of
+sinograms next to the images (verify: how your scanner archives raw data, if at all). Most of
 the time, however, raw data never leave the scanner's own storage. Reconstruction reads them
 there and sends DICOM images to the hospital's PACS, and the raw data are kept for a period
 the site decides.
@@ -745,7 +745,7 @@ similar laws, which the security controls of Chapter 17 must protect.
 
 The boundary has two consequences for the DAQ. First, the raw data must not leak identity by
 the back door: no patient name in a file name, a comment field or a free-text description
-(assumption: confirm with team what the NeuroLF's configuration descriptions may contain).
+(assumption: confirm with team what your scanner's configuration descriptions may contain).
 Second, simulated data must never pass for measured data. MDQ-L1's metadata has a `simulated`
 flag, which is true for MiniDAQ's synthetic source and for `minidaq_sim`, so a simulated file
 cannot be mistaken for a patient's.
@@ -777,7 +777,7 @@ The list-mode file is where the DAQ's requirements become evidence.
 :::
 
 ::: box-askteam
-1. What does the NeuroLF's list-mode record contain, how many bytes is it, and who reads it
+1. What does your scanner's list-mode record contain, how many bytes is it, and who reads it
    (reconstruction, calibration, the analysis framework)? Is there a written specification
    with versioning rules?
 2. Are raw data kept after reconstruction, where, for how long, and who may access them? Are

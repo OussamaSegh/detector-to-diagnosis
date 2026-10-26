@@ -21,7 +21,7 @@ import sys
 APPS = sys.argv[1] if len(sys.argv) > 1 else "build/release/minidaq/apps"
 ACTIVITIES_MBQ = [5, 10, 20, 30, 50, 70, 100, 140, 200, 300, 400, 700, 1000]
 # Front-end models: (label, extra minidaq_sim arguments). The 1 us block dead
-# time is an assumption for illustration (confirm with team for the NeuroLF).
+# time is an assumption for illustration (confirm with team for your scanner).
 MODELS = [
     ("no dead time", []),
     ("non-paralyzable 1 us per block, pile-up",

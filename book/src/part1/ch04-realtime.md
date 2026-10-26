@@ -52,7 +52,7 @@ All measurements in this chapter come from the book's machine: a 4-vCPU Intel Xe
 in a Firecracker virtual machine (VM), Linux 6.18 with `PREEMPT_DYNAMIC` (not `PREEMPT_RT`),
 clock source `tsc`, GCC 13.3 at `-O2`, running as root. A hypervisor adds its own pauses, so
 every maximum in this chapter is an upper bound for what you would see on bare metal, and
-every number needs repeating on the NeuroLF acquisition PC (verify on the acquisition PC).
+every number needs repeating on your scanner's acquisition PC (verify on the acquisition PC).
 
 ## Scheduling: who runs, and when
 
@@ -167,7 +167,7 @@ Exercise 4.1). The price is a little throughput and more care with interrupt thr
 
 The book's VM runs a `PREEMPT_DYNAMIC` kernel, which can switch between preemption models at
 boot but is not `PREEMPT_RT`; `uname -v` prints `PREEMPT_RT` on a real-time kernel. Whether
-NeuroLF's acquisition PC needs `PREEMPT_RT` is a measurement question, not a belief: with
+your scanner's acquisition PC needs `PREEMPT_RT` is a measurement question, not a belief: with
 isolated CPUs, a stock kernel may already meet the budget that the front-end buffers allow
 (assumption: confirm with team what kernel and budget the product uses).
 
@@ -286,7 +286,7 @@ isolated CPU idle; `lscpu -e` shows which CPUs share a core. **NUMA** (non-unifo
 on a machine with two sockets, memory and PCIe devices are attached to one socket, and access from
 the other socket crosses an interconnect. Put the receiving stages on the socket that owns the
 network card, and allocate their buffers there (`numactl`, or `mbind`), so that data never crosses
-sockets on the hot path. Whether the NeuroLF acquisition PC has one socket or two is something to
+sockets on the hot path. Whether your scanner's acquisition PC has one socket or two is something to
 find out in your first weeks (assumption: confirm with team).
 
 ::: box-mistakes
@@ -466,7 +466,7 @@ PTP corrections, and across sockets it is only valid if the firmware synchronize
 Why not timestamp singles with the PC's clock? Because a coincidence window is a few
 nanoseconds, and the timing resolution of the detector is tens of picoseconds. No clock read
 through an operating system, with its tens of nanoseconds of read cost and microseconds of
-scheduling jitter, comes close. NeuroLF, like every PET system, timestamps singles in the
+scheduling jitter, comes close. Your scanner, like every PET system, timestamps singles in the
 front-end electronics from a common clock distributed to all boards (assumption: confirm with
 team how the clock is distributed and how time markers relate board time to PC time). The PC's
 job is to keep board time and wall-clock time apart, and to relate them when needed (Chapter 9

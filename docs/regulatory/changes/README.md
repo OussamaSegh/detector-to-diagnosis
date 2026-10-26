@@ -5,7 +5,7 @@ Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 How a change to MiniDAQ's design is requested, analyzed, decided and recorded, following what
 ISO 13485 asks of the control of design and development changes and what IEC 62304 asks of software
 change requests, for a teaching project. It is not a procedure of any manufacturer's quality
-management system (assumption: confirm with team how the NeuroLF's change control works).
+management system (assumption: confirm with team how your scanner's change control works).
 
 ## When a change request is needed
 

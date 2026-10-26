@@ -7,7 +7,7 @@ Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: final.
 | Scope | Design and development of MiniDAQ from Chapter 1 to tag `ch15`: planning, inputs, outputs, verification, changes, document and record control, problem resolution |
 | Criteria | The [SDP](../sdp.md) version 2, the [design and development file](design-file.md), and the clauses of ISO 13485:2016 that it maps |
 | Method | Sampling: the coincidence sorter from requirement to test, every controlled document against its git history, every commit that fixed a test, the control API against ADR 0003, the SOUP review against the library's source |
-| Auditor | The book's author. ISO 13485 asks that auditors do not audit their own work; in this teaching project nobody else can, so the findings below are weaker evidence than an independent audit's (assumption: confirm with team who audits the NeuroLF's software process) |
+| Auditor | The book's author. ISO 13485 asks that auditors do not audit their own work; in this teaching project nobody else can, so the findings below are weaker evidence than an independent audit's (assumption: confirm with team who audits your scanner's software process) |
 
 ## Findings
 

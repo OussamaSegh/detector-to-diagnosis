@@ -9,7 +9,7 @@ With 182 words a single costs 8.45 bytes on the wire, 6% more than its 8 bytes o
 **What it means.** One Gigabit link carries at most 14.8 M singles/s in full standard
 frames, 67.6% full at 10 M singles/s. That leaves too little margin for a high-activity
 scan (Chapter 11), so a scanner of that class uses 10 GbE links, several links, or
-on-board coincidence filtering (verify: NeuroLF's link type and count with the team).
+on-board coincidence filtering (verify: your scanner's link type and count with the team).
 Small packets are expensive: at 32 words per packet the overhead is 32%, and the packet
 rate, which costs the receiving CPU per packet, is 5.7 times higher.
 

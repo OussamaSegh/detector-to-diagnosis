@@ -1,7 +1,7 @@
 # Exercise 13.3 (E, extra): Which class is it?
 
 **Goal.** Encode the few EU MDR classification rules that decide a PET scanner's class, and
-its software's, as a small Python model, then use it to explain why the NeuroLF's DAQ
+its software's, as a small Python model, then use it to explain why your scanner's DAQ
 software is class IIa even though a wrong count could feed a serious diagnosis.
 
 **Time.** 45 minutes.
@@ -22,7 +22,7 @@ takes that device's class.
   danger; all other software is class I.
 - An active device that no special rule covers is class I (Rule 13).
 
-Then answer in `NOTES.md`: the NeuroLF's reconstruction software is sold separately as
+Then answer in `NOTES.md`: your scanner's reconstruction software is sold separately as
 standalone software for a second scanner. Which rule now decides its class, and which
 question would you ask the regulatory team?
 

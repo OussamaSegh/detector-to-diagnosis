@@ -618,7 +618,7 @@ for evidence of it across the life cycle.
   including commercial, open-source and off-the-shelf components, and FDA's premarket
   cybersecurity guidance describes what it expects alongside it. In the EU, the MDR's general
   safety and performance requirements on IT security and MDCG 2019-16 guide the same work.
-  verify: whether NeuroLF is a cyber device in the 524B sense and which markets apply
+  verify: whether your scanner is a cyber device in the 524B sense and which markets apply
   (assumption: confirm with team).
 - **SOUP.** IEC 62304 expects each SOUP item to be identified, its requirements stated, and
   its known anomalies evaluated (Chapter 14). The SBOM and the SOUP list are two views of the

@@ -1,7 +1,7 @@
-# The NeuroLF Engineer: MiniDAQ and book sources
+# Detector to Diagnosis: MiniDAQ and book sources
 
-Companion repository for *The NeuroLF Engineer: Modern C++, PET Data Acquisition and
-Medical Device Software*. It contains:
+Companion repository for *Detector to Diagnosis: Building Regulated Medical Imaging Software in
+Modern C++*. It contains:
 
 | Path | What |
 |---|---|
@@ -18,7 +18,7 @@ MiniDAQ is a learning project, not a medical device.
 
 ```bash
 sudo apt-get install -y build-essential cmake ninja-build git clang-18 libclang-rt-18-dev
-git clone <this repo> neurolf && cd neurolf      # or unzip minidaq-vX.Y.Z.zip
+git clone <this repo> minidaq && cd minidaq      # or unzip minidaq-vX.Y.Z.zip
 ci/run_all.sh                                    # configure, build and test: GCC, Clang, ASan+UBSan
 ```
 

@@ -13,7 +13,7 @@ with one pulse per second passes. Real drift changes with temperature on the sca
 seconds to minutes, and the sync stamps carry jitter. More frequent pulses follow the
 changes, at the cost of more marker words in the data. Many systems avoid the problem
 instead: they distribute one reference clock to all boards, so the boards cannot drift
-apart, and use sync pulses only to align the counters at the start (verify: NeuroLF's
+apart, and use sync pulses only to align the counters at the start (verify: your scanner's
 clock distribution with the team).
 
 **From the data alone.** True coincidences have a real time difference that averages

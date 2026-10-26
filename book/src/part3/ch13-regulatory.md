@@ -1,8 +1,8 @@
 # The regulatory landscape for a PET scanner {#ch13}
 
 ::: box-why
-The NeuroLF is a medical device on the European and the US markets, and its manufacturer is
-in Switzerland. Every line of DAQ code you write ships inside that frame: a regulation decides
+The scanner your DAQ code runs in is a medical device on the European and the US markets.
+Every line of DAQ code you write ships inside that frame: a regulation decides
 the device's class, the class decides who must check the design before it is sold, and the
 design must show, in documents someone else can read, that it is safe and does what it claims.
 After it is sold, the same frame decides what happens when a hospital reports a problem, and
@@ -94,10 +94,10 @@ all of this into "how we do it here". That is what you follow day to day (Chapte
 ### What the manufacturer owns
 
 The regulations put the obligations on the *manufacturer*: the legal entity that places the
-device on the market under its name, whoever designed or built it. For the NeuroLF that is
-its Swiss maker. The manufacturer defines the intended purpose, keeps the technical documentation,
-runs the quality management system, monitors the device on the market and reports incidents.
-Engineers do not carry these obligations personally, but every one of them is met with
+device on the market under its name, whoever designed or built it. For your scanner that is
+the company that sells it. The manufacturer defines the intended purpose, keeps the technical
+documentation, runs the quality management system, monitors the device on the market and reports
+incidents. Engineers do not carry these obligations personally, but every one of them is met with
 engineering work: requirements, designs, test reports, problem reports. A useful test for any
 document you write is to ask which obligation it serves.
 
@@ -282,10 +282,9 @@ market:
 
 PET scanners are "emission computed tomography systems" under 21 CFR 892.1200, class II, with
 the product code KPS, and reach the market by 510(k). FDA's public 510(k) database lists many
-such clearances, often for PET/CT systems with a second product code for the CT. The NeuroLF
-is one of them: 510(k) K241751 (NeuroLF Basic, Pro and Advanced, and the NeuroLF Seat), product
-code KPS under 21 CFR 892.1200, found substantially equivalent on 15 July 2024. The manufacturer
-announced the CE marking under the MDR on 2 October 2024.
+such clearances, often for PET/CT systems with a second product code for the CT. Dedicated
+brain PET scanners are cleared the same way, under product code KPS; the database entry of your
+own device names its predicate and its indications for use, and is worth reading early.
 
 ### What a submission says about software
 
@@ -425,7 +424,7 @@ medical devices. Switzerland unilaterally accepts CE marking and certificates fr
 bodies, so EU devices reach the Swiss market with a Swiss authorized representative (CH-REP) on the
 label. In the other direction, the EU treats a Swiss manufacturer as a third-country manufacturer:
 it needs an EU authorized representative, an EU notified body and EUDAMED registration like any
-manufacturer from outside the EU. For a Swiss manufacturer such as the NeuroLF's that is an everyday
+manufacturer from outside the EU. For a Swiss manufacturer that is an everyday
 fact: the CE marking comes from an EU notified body, and the EU authorized representative is on the
 label.
 
@@ -583,10 +582,10 @@ What the regulatory landscape means for your daily work as a DAQ engineer:
 :::
 
 ::: box-askteam
-1. Which notified body certifies the NeuroLF, by which conformity assessment route, and how
+1. Which notified body certifies your scanner, by which conformity assessment route, and how
    does its change notification procedure work for software releases? Who is the EU authorized
    representative?
-2. Which documentation level did the NeuroLF's FDA submission use for software, and which
+2. Which documentation level did your scanner's FDA submission use for software, and which
    predicate device did the 510(k) cite?
 3. What are the IEC 62304 safety classes of the DAQ's software items, and where is the argument
    written down?
@@ -610,8 +609,8 @@ Then explain in a comment why the arrow from IEC 62304 to ISO 13485 is only "ref
 *Time:* 45 minutes.
 
 **Exercise 13.2 (M): What a software change triggers.** *Goal:* write a one-page brief, "What a
-software change in NeuroLF triggers, regulatory-wise", for moving the acquisition PC from Ubuntu
-22.04 to Ubuntu 24.04, with no change to the DAQ's source code. *Starter:*
+software change in your scanner triggers, regulatory-wise", for moving the acquisition PC from
+Ubuntu 22.04 to Ubuntu 24.04, with no change to the DAQ's source code. *Starter:*
 `exercises/ch13/e2_change_brief/` (a draft a reviewer would send back: "no regulatory impact",
 no affected items, unit tests only). *Acceptance:* `tests/test_brief.py` passes: ten sections in
 order (change, software items affected, software safety class, risk, verification, EU, US,
@@ -629,7 +628,7 @@ scanner is IIa by Rule 10, a CT scanner IIb, a PET/CT IIb with both rules report
 that drives a device takes its class; standalone software follows Rule 11 by the impact of the
 decision it informs (IIa, IIb or III), monitoring software IIa or IIb, other software I; an
 active device that no special rule covers is I. Then explain in `NOTES.md` which rule decides
-the class of the NeuroLF's reconstruction software if it is sold separately. *Time:* 45
+the class of your scanner's reconstruction software if it is sold separately. *Time:* 45
 minutes.
 
 **Exercise 13.4 (M, extra): The vigilance clock.** *Goal:* turn the reporting deadlines of MDR
@@ -651,7 +650,7 @@ software of a brain PET scanner, and a test that keeps them complete. **Start:**
 
 1. Write `docs/regulatory/intended-use.md`: intended purpose, intended users, patient
    population, use environment, principle of operation, contraindications and limitations,
-   data, and what MiniDAQ is not, with every NeuroLF-specific statement marked as an
+   data, and what MiniDAQ is not, with every product-specific statement marked as an
    assumption.
 2. Write `docs/regulatory/regulatory-context.md`: the scanner's and the software's class in the
    EU and the US and why, the pathways and quality system rules, the Swiss situation, the
@@ -733,8 +732,8 @@ class the scanner is in and why, and which documents of the regulatory file exis
   Premarket Submissions", guidance, 2023, updated June 2025 (verify: the current version).
 - 21 CFR 820 (Quality Management System Regulation), 21 CFR 803 (Medical Device Reporting) and
   21 CFR 892.1200 (emission computed tomography system), on the eCFR.
-- US FDA, 510(k) database entry and summary for K241751 (NeuroLF), decision date 15 July 2024;
-  Positrigo, press release on the MDR CE marking of the NeuroLF, 2 October 2024.
+- US FDA, Premarket Notification 510(k) database, accessdata.fda.gov, searchable by product
+  code (KPS for PET).
 - Swiss Medical Devices Ordinance (MedDO, SR 812.213) on fedlex.admin.ch, and Swissmedic's pages
   on medical devices and swissdamed.
 - Johner Institute, articles on the MDR, IEC 62304 and regulatory strategy (free online; a good

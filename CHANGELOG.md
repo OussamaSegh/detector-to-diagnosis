@@ -116,6 +116,12 @@ the patch version.
   for a session that cannot hold the whole run; part 2 refuses another commit than part 1's.
 
 ### Changed
+- The book is retitled *Detector to Diagnosis: Building Regulated Medical Imaging Software in
+  Modern C++* (covers, title pages, EPUB and PDF metadata, running heads, the download page, and
+  the output files `detector-to-diagnosis-*`). The text no longer names a particular scanner or
+  manufacturer: questions for the team ask about "your scanner", and Chapter 13 explains the 510(k)
+  of a brain PET scanner without citing one product's clearance. The build's environment variables
+  are `BOOK_DATE`, `BOOK_REPO_ROOT`, `BOOK_DIAGRAM_DIR`, `BOOK_STRICT` and `BOOK_LISTING_TAG`.
 - The control API is 2.1 (`diagnostics`); an observer may use `diagnostics` as well as `status`
   (SRS-SEC-003). SRS version 9, development plan version 8, SOUP list version 6.
 - The `coverage` preset uses Clang source-based coverage with MC/DC instead of gcov, and builds
@@ -269,8 +275,8 @@ on the released commit in `measurements/release-0.3.0/`.
 - Review nits: Chapter 1's counter-wrap story and `-Wdangling-reference` (on GCC 13.3 it comes
   with `-Wextra`, not `-Wall`, measured); Chapter 4 shows the arithmetic of the 110 ms; Chapter 8
   explains that the simulator's photofraction is the full-energy fraction, not the photoelectric
-  fraction; Chapter 11 cites NEMA NU 2-2024 as the current edition; Chapter 13 states the
-  NeuroLF's 510(k) K241751 (15 July 2024) and MDR CE marking (2 October 2024) with sources;
+  fraction; Chapter 11 cites NEMA NU 2-2024 as the current edition; Chapter 13 states how a
+  brain PET scanner is cleared by 510(k) and CE marked under the MDR, with sources;
   Chapter 14 says that requirement counts are those at each chapter's tag; Chapter 16 explains
   ten versus thirteen controlled documents; Chapter 17 states forward secrecy and SNI exactly.
 - The performance budget and SRS-PERF-020's verification still quoted 86 M words/s for the

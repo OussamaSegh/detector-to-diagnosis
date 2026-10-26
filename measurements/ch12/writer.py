@@ -14,7 +14,7 @@ deleted after each run.
     python3 measurements/ch12/writer.py build/release /var/tmp/minidaq-bench > measurements/ch12/writer.txt
 
 The numbers describe this VM's virtual disk; a real acquisition disk (NVMe,
-RAID) needs its own run (assumption: confirm with team which disk NeuroLF
+RAID) needs its own run (assumption: confirm with team which disk your scanner
 writes to).
 """
 import os

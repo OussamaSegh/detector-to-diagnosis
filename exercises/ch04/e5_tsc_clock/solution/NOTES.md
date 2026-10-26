@@ -15,6 +15,6 @@ is invariant and synchronized across sockets. Use it for short intervals on one 
 (benchmarks, per-stage timing), never for event timestamps.
 
 **Detector timestamps.** The coincidence window is a few nanoseconds; no PC clock read
-through an operating system is that precise or that stable. NeuroLF's timestamps come from
+through an operating system is that precise or that stable. Your scanner's timestamps come from
 the front-end electronics' common clock (assumption: confirm with team); the PC only needs
 wall-clock time for logs and file metadata (PTP or NTP, Section 4.4).

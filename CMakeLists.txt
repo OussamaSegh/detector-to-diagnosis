@@ -7,7 +7,7 @@ string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" MINIDAQ_VERSION "${MINIDAQ_VERSIO
 
 project(minidaq
   VERSION ${MINIDAQ_VERSION}
-  DESCRIPTION "MiniDAQ: a simulated PET data acquisition chain (companion code for The NeuroLF Engineer)"
+  DESCRIPTION "MiniDAQ: a simulated PET data acquisition chain (companion code for Detector to Diagnosis)"
   LANGUAGES CXX)
 
 if(PROJECT_IS_TOP_LEVEL)

@@ -279,7 +279,7 @@ Open issues:
 - The sorter holds its last 104 ns of singles until more data or the end of the run; a silent
   source needs time markers to flush them earlier.
 - The dead-time model's parameters (1 µs per block, worst-case pile-up) are illustrations;
-  the NeuroLF front end's measured behavior must replace them before the count-rate curves
+  the measured behavior of your scanner's front end must replace them before the count-rate curves
   are used for a decision.
 
 ## 13. Document history

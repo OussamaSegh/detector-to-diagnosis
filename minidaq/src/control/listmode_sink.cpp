@@ -456,7 +456,7 @@ std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(const config::Acquisitio
       // synthetic source is a simulation; a UDP source is taken to be a
       // detector, so a bench that feeds the link from a simulator says so in
       // the configuration's description (assumption: confirm with team how
-      // NeuroLF marks test and phantom data).
+      // your scanner marks test and phantom data).
       {"simulated", c.source.type != "udp"},
       {"scanner",
        {{"model", "MiniDAQ reference geometry (assumption: confirm with team)"},

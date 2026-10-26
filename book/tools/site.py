@@ -8,6 +8,7 @@ The files (EPUB and PDF, built by book/build.sh) are copied into OUT_DIR, and OU
 lists them with their size and SHA-256, so a reader can check a download."""
 import hashlib
 import html
+import os
 import pathlib
 import shutil
 import sys
@@ -23,7 +24,7 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The NeuroLF Engineer</title>
+<title>Detector to Diagnosis</title>
 <style>
 :root {{ --bg: #fbfaf7; --fg: #1d232b; --muted: #5b6573; --card: #ffffff; --line: #dfe3e8;
         --accent: #1f5fa8; }}
@@ -51,8 +52,8 @@ footer {{ margin-top: 40px; color: var(--muted); font-size: 0.9rem; }}
 </head>
 <body>
 <main>
-<h1>The NeuroLF Engineer</h1>
-<p class="sub">Modern C++, PET data acquisition and medical device software. Version {version}, a
+<h1>Detector to Diagnosis</h1>
+<p class="sub">Building regulated medical imaging software in modern C++. Version {version}, a
 work-in-progress edition released Part by Part.</p>
 {sections}
 <footer>
@@ -82,8 +83,8 @@ def main(argv):
     if len(argv) < 4:
         raise SystemExit(__doc__)
     out, version, files = pathlib.Path(argv[1]), argv[2], [pathlib.Path(f) for f in argv[3:]]
-    repo = "https://github.com/OussamaSegh/neurolf-engineer"
-    commit = __import__("os").environ.get("GITHUB_SHA", "local")[:7]
+    repo = "https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "OussamaSegh/neurolf-engineer")
+    commit = os.environ.get("GITHUB_SHA", "local")[:7]
     out.mkdir(parents=True, exist_ok=True)
     groups = {"book": [], "solutions": []}
     order = [k[0] for k in KINDS]

@@ -6,8 +6,8 @@ MiniDAQ is a learning project, not a medical device. This document is written as
 were the data acquisition (DAQ) software of a dedicated brain PET scanner, so that the rest of
 the regulatory file (requirements, risk analysis, verification) has something definite to
 trace to. Where a statement belongs to the scanner rather than to its software, it says so.
-Statements about the NeuroLF are typical values for a brain PET scanner, not the manufacturer's
-(assumption: confirm with team, against the NeuroLF's instructions for use).
+Statements about your scanner are typical values for a brain PET scanner, not the manufacturer's
+(assumption: confirm with team, against your scanner's instructions for use).
 
 ## Intended purpose
 
@@ -40,7 +40,7 @@ intended purpose). MiniDAQ processes no patient identity (see "Data").
 The scanner's acquisition computer, inside the nuclear medicine or radiology department of a
 hospital or imaging center. The readout electronics are connected over a dedicated network
 that carries nothing else; the control interface is reachable only from the scanner's own
-computers (assumption: confirm with team how the NeuroLF's networks are separated).
+computers (assumption: confirm with team how your scanner's networks are separated).
 
 ## Principle of operation
 

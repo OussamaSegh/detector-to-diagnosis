@@ -1,4 +1,4 @@
-% Front cover of The NeuroLF Engineer and of its solutions manual, 7 x 10 in.
+% Front cover of Detector to Diagnosis and of its solutions manual, 7 x 10 in.
 % book/build.sh compiles it with XeLaTeX into build/cover/cover-<volume>.pdf (page 1 of the
 % print PDF) and renders that to PNG for the EPUB:
 %   xelatex -jobname=cover-book "\def\nlfvolume{book}\input{cover.tex}"
@@ -112,14 +112,14 @@
   \node[anchor=north, text=accent, font=\fontsize{9.5}{12}\selectfont] at (3.5,9.3)
     {\addfontfeatures{LetterSpace=16}MODERN C++ \textbullet{} PET DATA ACQUISITION \textbullet{} MEDICAL DEVICE SOFTWARE};
   \node[anchor=north, text=white, font=\titlefont\bfseries\fontsize{50}{54}\selectfont, align=center]
-    at (3.5,8.85) {The NeuroLF\\[-2pt]Engineer};
+    at (3.5,8.85) {Detector to\\[-2pt]Diagnosis};
   \fill[left color=s0, right color=s3] (2.3,7.15) rectangle (4.7,7.2);
   \ifx\nlfvolume\nlfsolutions
     \node[anchor=north, text=white, font=\bfseries\fontsize{17}{20}\selectfont] at (3.5,7.0)
       {\addfontfeatures{LetterSpace=18}SOLUTIONS MANUAL};
   \else
     \node[anchor=north, text=subtle, font=\fontsize{15}{19}\selectfont, align=center] at (3.5,7.0)
-      {From modern C++ to a regulated\\PET data acquisition system};
+      {Building regulated medical imaging\\software in modern C++};
   \fi
 
   % Footer.

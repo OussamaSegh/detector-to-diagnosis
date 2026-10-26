@@ -13,8 +13,8 @@ with realistic data. The sorter's work depends on how many singles pass the ener
 how many windows hold several singles, so synthetic words with uniform energies
 (`PacedSource`) say little about it.
 
-The NeuroLF front end's dead time, unit and behavior are not known to the book (assumption:
-confirm with team), so the model must be configurable and its parameters recorded with
+The dead time of your scanner's front end, its unit and behavior are not known to the book
+(assumption: confirm with team), so the model must be configurable and its parameters recorded with
 every measurement.
 
 ## Options
@@ -72,7 +72,7 @@ source's own busy time is reported but is not a limit of the pipeline. Isolated 
 
 - Pile-up adds the whole energy of a lost event, the worst case; a real front end adds only
   the light inside its integration window, and may reject pile-up. The model overstates
-  pile-up losses until it is replaced by the NeuroLF's measured behavior.
+  pile-up losses until it is replaced by your scanner's measured behavior.
 - The replay source spends about 65% of a core reading the clock and copying at high rates.
   On a machine with fewer cores than threads that time competes with the stages it feeds.
 - A replayed loop repeats the same singles; a run longer than the recording sees the same

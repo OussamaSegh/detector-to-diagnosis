@@ -120,7 +120,7 @@ address vulnerabilities after release, including coordinated vulnerability discl
 processes that give reasonable assurance of cybersecurity, with updates and patches; and must
 provide an SBOM that includes commercial, open-source and off-the-shelf components. A scanner whose
 acquisition PC is on the hospital network is very likely a cyber device (assumption: confirm with
-team how the NeuroLF has been classified).
+team how your scanner has been classified).
 
 In the EU, the MDR's general safety and performance requirements in Annex I ask for software
 developed according to the state of the art "taking into account the principles of development life
@@ -573,7 +573,7 @@ and the documentation, try to break it. It finds what the authors' model missed,
 authors' blind spots are in the model too. MiniDAQ has not been penetration tested, and its threat
 model says so; for a device, the FDA expects the results of such testing in the submission, and a
 penetration test is planned before the first clinical release (assumption: confirm with team who
-performs it for the NeuroLF).
+performs it for your scanner).
 
 ::: box-mistakes
 - **Testing the happy path of security.** "The operator can log in" is not a security test. The
@@ -714,8 +714,8 @@ What the regulated setting adds to this chapter's examples:
   documentation (EU MDR); they are written to be read by a reviewer who has never seen the code.
 - The security risk assessment uses exploitability, not failure rates, and feeds the safety risk
   file; a vulnerability that can lead to harm is evaluated as a hazard (Chapter 15), with the
-  manufacturer's own scales (assumption: confirm with team which scale the NeuroLF uses, for example
-  CVSS with a medical device rubric).
+  manufacturer's own scales (assumption: confirm with team which scale your scanner uses, for
+  example CVSS with a medical device rubric).
 - The hospital receives documentation for secure installation and operation, often in the MDS2
   form (*Manufacturer Disclosure Statement for Medical Device Security*), and the site's
   responsibilities are written there, not only in the threat model.
@@ -727,7 +727,7 @@ What the regulated setting adds to this chapter's examples:
 :::
 
 ::: box-askteam
-1. Is the NeuroLF classified as a cyber device under section 524B, and which of its interfaces does
+1. Is your scanner classified as a cyber device under section 524B, and which of its interfaces does
    the submission's threat model cover?
 2. Where are the security risk assessment and the threat model kept, and how do they link to the ISO
    14971 risk file?

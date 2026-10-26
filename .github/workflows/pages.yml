@@ -36,7 +36,7 @@ jobs:
             graphviz librsvg2-bin poppler-utils
       - name: Build the EPUBs and the PDFs
         run: |
-          export NEUROLF_DATE="$(git log -1 --format=%cs)"
+          export BOOK_DATE="$(git log -1 --format=%cs)"
           book/build.sh all both
       - name: Write the download page
         run: python3 book/tools/site.py site "$(tr -d '[:space:]' < VERSION)" book/build/out/*.epub book/build/out/*.pdf
