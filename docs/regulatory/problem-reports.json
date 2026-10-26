@@ -386,6 +386,114 @@
         "category": "test",
         "escape": "The reference machine leaves a margin of about 20%; the hardened build on a runner had none, and only one of six presets failed once."
       }
+    },
+    {
+      "id": "MDQ-PR-035",
+      "title": "A clang-tidy finding in the SNMP counter parser reached main",
+      "found": "2026-10-26, the gate self-test on the merge of PR #2 (Chapter 23): bugprone-unchecked-optional-access in parse_snmp_udp",
+      "item": "readout",
+      "status": "closed",
+      "capa": null,
+      "description": "Chapter 23's last edit of minidaq/src/net/host_counters.cpp used a checked optional inside a nested loop in a form clang-tidy 18 cannot follow. Static analysis had run on the chapter before that edit, not after it; CI's static-analysis job and the gates' self-test found it on main.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The optional was checked before use; the finding was about a form the analyzer cannot prove, not a wrong access."
+      },
+      "resolution": {
+        "change": "The value is taken once, after the check (418a3bb). HANDOFF's rules say to run tools/static_analysis.sh after the last edit of every C++ change.",
+        "verification": "static-analysis and gates green on 418a3bb and every later commit."
+      },
+      "root_cause": {
+        "whys": [
+          "clang-tidy reported a finding on main.",
+          "Static analysis ran before the chapter's last edit, not after it.",
+          "The local routine ran the analysis once per chapter, at a fixed step, instead of after each change to C++."
+        ],
+        "cause": "Static analysis run at a fixed step of the work instead of after the last C++ edit.",
+        "category": "process",
+        "escape": "CI caught it on main, one commit later; no release contains it."
+      }
+    },
+    {
+      "id": "MDQ-PR-036",
+      "title": "Exercise 19.5's replay test compared host-wide network counters between runs",
+      "found": "2026-10-26, GitHub Actions runs after Chapter 23: ch19/e5_udp_replay/solution/unittest failed intermittently",
+      "item": "exercises",
+      "status": "closed",
+      "capa": null,
+      "description": "Chapter 23 added host_* and nic_* counters to detector_counters: changes of the whole host's UDP, softnet and network card counters during a run. The exercise's test compared detector_counters of two replays for equality; any other traffic on the host during either run made them differ.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An exercise test compared values that are not the run's; MiniDAQ's own counters and verdict were right."
+      },
+      "resolution": {
+        "change": "The test leaves the host-wide counters out of the comparison (904a6c3); Chapter 23 says that they vary between runs.",
+        "verification": "The solution passes in every preset in CI and in the release checks of 0.5.0."
+      },
+      "root_cause": {
+        "whys": [
+          "Two replays of the same recording reported different detector_counters.",
+          "detector_counters gained host-wide counters in Chapter 23.",
+          "The change did not look for tests that compare detector_counters across runs."
+        ],
+        "cause": "A new field with a different meaning added to a structure that existing tests compared whole.",
+        "category": "test",
+        "escape": "The failure needs other traffic on the host during a run; local runs were quiet."
+      }
+    },
+    {
+      "id": "MDQ-PR-037",
+      "title": "The server could send its first watchdog ping before READY",
+      "found": "2026-10-26, GitHub Actions run of 06f2ee6: system.platform failed in the preset tsan, the first message was WATCHDOG=1",
+      "item": "platform",
+      "status": "closed",
+      "capa": null,
+      "description": "minidaq_server started the watchdog thread, which pings at once, and then sent READY=1 from the main thread. In most runs READY came first; under ThreadSanitizer the new thread ran first. SRS-PLT-001 requires READY only after the control API listens; the ping before it said that the server was alive before it said it was up.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "systemd accepts a ping before READY and the control API was already listening; the order broke the requirement's intent and the test, not the supervision."
+      },
+      "resolution": {
+        "change": "The server sends READY, then starts the watchdog thread (6d077f8); Chapter 25 says why.",
+        "verification": "system.platform passes three times in a row under TSan locally and in every preset in CI on 6d077f8."
+      },
+      "root_cause": {
+        "whys": [
+          "The test saw WATCHDOG=1 before READY=1.",
+          "The watchdog thread was started before READY was sent, and pings in its first pass.",
+          "The order of two messages from two threads was left to the scheduler."
+        ],
+        "cause": "An ordering between two threads that the design assumed and the code did not enforce.",
+        "category": "code",
+        "escape": "Only the TSan build changes thread start-up enough to show it; local runs used the debug build."
+      }
+    },
+    {
+      "id": "MDQ-PR-038",
+      "title": "The platform SBOM test expected validation where the schema library could not validate",
+      "found": "2026-10-26, GitHub Actions runs of b0995fb, 0331d4c and 3ba105b: tools.platform_check failed in every preset",
+      "item": "tools",
+      "status": "closed",
+      "capa": null,
+      "description": "The test skipped when jsonschema was missing, but make_sbom.validate also needs the referencing package of jsonschema 4.18 and later. Ubuntu 24.04's python3-jsonschema is older: validate returned 77 (could not validate) and the test, which expected 0, failed. The check failed instead of passing, so nothing wrong was accepted.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A test tool's check that could not run reported a failure; no product behavior was involved."
+      },
+      "resolution": {
+        "change": "The test skips when either package is missing, as tools.sbom does (06f2ee6).",
+        "verification": "tools.platform_check passes locally (jsonschema 4.26) and is skipped on the runner; CI green on 06f2ee6."
+      },
+      "root_cause": {
+        "whys": [
+          "The test failed on the runner and passed locally.",
+          "The local machine has a newer jsonschema than the runner.",
+          "The test copied only half of the skip condition of the function it calls."
+        ],
+        "cause": "A test's precondition written separately from the precondition of the code it runs.",
+        "category": "test",
+        "escape": "The local environment had every package; CI's had an older one."
+      }
     }
   ]
 }
