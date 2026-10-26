@@ -606,14 +606,21 @@ evidence was too weak (`measurements/ch20/aa-local.txt`). One alarm in 15 jobs i
 enough to ignore". The reference machine is itself a virtual machine, with the caveats of
 Chapter 5.
 
-On GitHub's runners (2 vCPUs of an AMD EPYC 7763), three A/A jobs started by hand with the head
+On GitHub's runners (2 vCPUs each), three A/A jobs started by hand with the head
 as base, and one A/B job of a push that changed no benchmarked code, raised no alarm. Their 23
 median ratios all stayed within 3.2% of 1, and 19 of them within 1.0%: inside one job a runner
 was steadier than the reference machine. Four clean jobs bound the false alarm rate only below 60%,
-so the record grows with every push, and the rate is measured, not assumed. One of the four
-jobs also showed a defect of the comparison: the base side was missing
-`BM_EnergyFilter/3/50/0/4096`, and the gate, which judges the base's benchmarks, left it out
-without a word. `tools/perf_ab.sh` now lists the runs of each side and fails if they differ.
+so the record grows with every push, and the rate is measured, not assumed.
+
+The four jobs did not even measure the same things. The three started by hand listed six
+benchmarks, the push job five: `BM_EnergyFilter/3/50/0/4096`, the AVX-512 kernel of Chapter 5,
+was missing. The jobs had run on different CPUs, an AMD EPYC 9V74 with AVX-512 and an AMD EPYC
+7763 without it, where the benchmark reports an error instead of a result, and the gate passed
+over errored benchmarks in silence. Whether a change was checked for a regression of that kernel
+depended on the machine the job happened to get, and nothing said so (MDQ-PR-023). The gate now
+lists every benchmark that did not run, with its message, and `tools/perf_ab.sh` stops if the two
+sides ran different benchmarks. Whether the AVX-512 kernel matters at all depends on the
+acquisition PC's CPU (assumption: confirm with team).
 
 Interleaving removes the bias a drifting machine adds, but not the spread: a machine that drifts
 by 20% during the job widens each side's samples, and a rank test of two wide samples sees only
@@ -722,7 +729,7 @@ runners; the environment problem the system tests met in CI is corrected and rec
 **Definition of done.** `ci/run_all.sh` is green on all six presets and static analysis reports
 nothing; every GitHub job, including `reproducible-build` and the version check, is green on the
 tagged commit; the gate self-test catches every fault; the two builds of `repro_check.sh` are
-identical; MDQ-PR-020 to MDQ-PR-022 are closed; every starter of the chapter fails. Tag
+identical; MDQ-PR-020 to MDQ-PR-023 are closed; every starter of the chapter fails. Tag
 `ch20`.
 
 ## Check yourself {.unnumbered}
@@ -764,7 +771,7 @@ identical; MDQ-PR-020 to MDQ-PR-022 are closed; every starter of the chapter fai
   shipped programs differed only through paths in the debug information, and two prefix maps
   removed the difference; a GitHub runner then built the same programs, byte for byte.
 - A new check is software too: on their first run the new jobs found two defects in themselves
-  and one flaky exercise test (MDQ-PR-021 and MDQ-PR-022).
+  and one flaky exercise test, and a gap in the performance gate (MDQ-PR-021 to MDQ-PR-023).
 - A release is a product archive that contains only what the commit and the tools determine,
   identified by its SHA-256, and an evidence archive bound to it by that hash; both are verified.
 - Every tool whose output is in the product or is evidence is listed with its class, the reasons

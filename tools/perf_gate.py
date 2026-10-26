@@ -128,6 +128,15 @@ def compare(baseline: dict[str, Samples], current: dict[str, Samples], threshold
 # [/snippet:compare]
 
 
+def errors(path: str) -> dict[str, str]:
+    """The benchmarks of a run that reported an error instead of a result, with the message.
+    load() leaves them out; the gate lists them so that a benchmark that did not run is seen."""
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    return {b.get("run_name", b["name"]): b.get("error_message", "")
+            for b in data.get("benchmarks", []) if b.get("error_occurred")}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("baseline")
@@ -144,6 +153,8 @@ def main(argv: list[str] | None = None) -> int:
         failed |= bad
         state = "REGRESSION" if v.regressed else ("FAIL" if bad else "ok")
         print(f"{v.name[:60]:60} {v.ratio:8.3f} {v.p_value:8.4f}  {state} {v.note}")
+    for name, message in sorted((errors(args.baseline) | errors(args.current)).items()):
+        print(f"{name[:60]:60} {'-':>8} {'-':>8}  not run: {message}")
     return 1 if failed else 0
 
 

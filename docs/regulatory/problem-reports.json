@@ -226,6 +226,16 @@
       "description": "The acceptance test of Exercise 5.2 required at most 18 ns per single, a third of the starter's 53.5 ns on the book's machine. The solution takes about 13 ns there with GCC 13, but a GitHub runner is another machine with another CPU, and its time came within 1% of the budget, so the test passed or failed by chance. The budget stood for 'three times faster than the starter', measured on one machine and then applied to all.",
       "evaluation": {"safety_relevant": false, "rationale": "An exercise test, not a test of MiniDAQ; it could fail a correct solution but not pass a slow one on the reference machine."},
       "resolution": {"change": "The test times a copy of the starter's algorithm in the same process, interleaved with the solution, best of 7 runs each, and requires a third of its time; EX_NS_PER_SINGLE still sets a fixed budget. The exercise, its README, Chapter 5 and the solution notes say so; Chapter 20 uses it as an example of a flaky test.", "verification": "On the reference machine the solution takes 12.7 to 13.2 ns against 47 to 50 ns for the reference with GCC (ratio 3.7 or more), and 16.6 to 17.0 ns against 258 to 261 ns with Clang; the starter fails (45 ns against 45 ns)."}
+    },
+    {
+      "id": "MDQ-PR-023",
+      "title": "The performance gate passed over benchmarks that did not run, so its coverage depended on the CI runner's CPU",
+      "found": "2026-10-26, GitHub Actions perf runs of de1b7cf and 2893d09: the gate listed five of the six gated benchmarks on an AMD EPYC 7763 and six on an AMD EPYC 9V74",
+      "item": "tools",
+      "status": "closed",
+      "description": "BM_EnergyFilter/3/50/0/4096 measures the AVX-512 energy filter kernel and reports an error ('kernel not available on this CPU') on a CPU without AVX-512. tools/perf_gate.py ignores benchmark entries with an error, by design for the reference machine, where every gated benchmark runs, and printed nothing about them. GitHub's ubuntu-24.04 runners come with different CPU models, so a push could be compared on all six benchmarks or on five, without a message. Commit 2893d09 first described the cause wrongly, as a benchmark missing from the base side only; tools/perf_ab.sh's count of the runs of each side showed both sides with the errored entries.",
+      "evaluation": {"safety_relevant": false, "rationale": "A gap in the coverage of a verification tool: a regression of one kernel could go unreported on some runners. The release checks run the gate on the reference machine, where the kernel runs."},
+      "resolution": {"change": "perf_gate.py lists every benchmark that reported an error, with its message, after the verdicts; perf_ab.sh lists the runs of each side and stops if the sides differ. Chapter 20 describes the case.", "verification": "A run with an errored benchmark is listed as 'not run: kernel not available on this CPU' (checked by hand with a constructed result; tools.perf_gate passes); the next perf run on GitHub shows the line on a runner without AVX-512."}
     }
   ]
 }

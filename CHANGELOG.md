@@ -48,6 +48,9 @@ the patch version.
 - Problem report MDQ-PR-022 (closed): Exercise 5.2's speed test had a fixed 18 ns budget, which a
   GitHub runner missed by 1%. It now requires a third of the time of the starter's algorithm,
   timed in the same run.
+- Problem report MDQ-PR-023 (closed): the performance gate passed over benchmarks that reported an
+  error, so on CI runners without AVX-512 the AVX-512 kernel went unchecked without a message.
+  The gate now lists them, and `tools/perf_ab.sh` stops if the two sides ran different benchmarks.
 - Chapter 20: continuous integration for regulated software. `tools/release_bundle.py` (a
   reproducible product archive with split debug information, SBOM, `BUILDINFO.json` and a
   manifest, an evidence archive bound to it by its SHA-256, and their verification, with

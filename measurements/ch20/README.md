@@ -22,8 +22,9 @@ Clang 18) and on GitHub Actions `ubuntu-24.04` runners (2 vCPU, AMD EPYC 7763).
   the exact 95% interval of the rate is 0.2% to 32%.
 - A/A on GitHub (workflow `perf`, runs 40245601223, 40245605698, 40245610438 by
   `workflow_dispatch` with base = head, and 40245121399 for the push of de1b7cf against d4ef398):
-  no alarm in 4 jobs; all 23 median ratios within 3.2% of 1, 19 within 1.0%. In the push job the
-  base side lacked `BM_EnergyFilter/3/50/0/4096` and the gate did not report it; since 2893d09
-  `tools/perf_ab.sh` fails when the sides differ.
+  no alarm in 4 jobs; all 23 median ratios within 3.2% of 1, 19 within 1.0%. The push job ran on
+  an AMD EPYC 7763 without AVX-512, where `BM_EnergyFilter/3/50/0/4096` (the AVX-512 kernel)
+  reports an error, and the gate passed over it without a message (MDQ-PR-023); the three others
+  ran on an AMD EPYC 9V74 and measured it.
 - Local CI (`ci/run_all.sh`) on f63f5bf: all six presets green (614, 614, 614, 615, 613 and 613
   tests).
