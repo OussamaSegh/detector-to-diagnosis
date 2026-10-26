@@ -8,8 +8,8 @@
   treatment, so the case must be assessed as a potential serious incident, even if no harm is
   known yet. That assessment, not the engineer's opinion, decides; when in doubt the MDR asks
   for a report within the deadline (verify: your procedure and MDCG 2023-3 on vigilance terms).
-- **Which clock?** No death and no known serious deterioration: the 15-day clock of Article
-  87(3), from the day the manufacturer became aware, 7 January: report by 22 January 2027. An initial
+- **Which clock?** No death and no known serious deterioration: the 15-day clock of Article 87(3),
+  from the day the manufacturer became aware, 7 January: report by 22 January 2027. An initial
   report can go first and a complete one later.
 - **US.** If the same software runs on scanners in the US, the event is assessed under 21 CFR
   803 too. A malfunction that would be likely to cause or contribute to a serious injury if it

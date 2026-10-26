@@ -4,7 +4,7 @@ Version 8 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
-project; it is not a document of the manufacturer's quality management system and does not
+project; it is not a document of any manufacturer's quality management system and does not
 reproduce the standard. In a real organization most of this plan points to the quality
 system's procedures (document control, change control, training, supplier control) instead
 of restating them; MiniDAQ has no quality system, so the plan says what it does itself and

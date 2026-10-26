@@ -1,8 +1,9 @@
 # Part II: PET physics and data acquisition {.part}
 
-Part II (five chapters, about 20% of your study time) is the domain you will lead. A DAQ team
-owns the coincidence sorter, the sensor readout and the hardware controls; none of them can be designed well without knowing what the detector measures, what the
-electronics deliver, and what the reconstruction downstream needs from you.
+Part II (five chapters, about 20% of your study time) is the domain you will lead. A DAQ team owns
+the coincidence sorter, the sensor readout and the hardware controls; none of them can be designed
+well without knowing what the detector measures, what the electronics deliver, and what the
+reconstruction downstream needs from you.
 
 The chapters follow the data:
 

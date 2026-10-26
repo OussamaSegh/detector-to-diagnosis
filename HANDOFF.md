@@ -87,6 +87,10 @@ Commits and pushing:
   description text, salary or offer details, private situation, tokens or credentials, and no
   private links (claude.ai sessions or projects, the project files folder). Check every diff
   for them before committing; `git grep -i -E "gmail|@[a-z]+\.(com|ch)"` finds the common case.
+- **The book is generic** (user decision, 2026-10-26): it is written for any engineer who leads
+  a PET DAQ. It names no employer of the reader ("your team", "your company"), quotes and cites no
+  role description, and gives no calendar dates for the reader's schedule (weeks 1 to 10 only).
+  The NeuroLF's manufacturer appears only in reference entries. Future chapters follow the same rule.
 - Every commit message ends with these lines:
 
   ```

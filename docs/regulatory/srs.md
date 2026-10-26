@@ -6,7 +6,7 @@ This document states what MiniDAQ's software shall do, one testable requirement 
 follows the content that IEC 62304 expects of software requirements (functional and
 performance requirements, inputs and outputs, interfaces, alarms and faults, security, data
 definitions, and requirements that implement risk controls) for a teaching project. It is not
-a document of the manufacturer's quality management system and does not reproduce the standard.
+a document of any manufacturer's quality management system and does not reproduce the standard.
 
 ## 1. How to read this document
 

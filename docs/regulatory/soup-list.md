@@ -5,7 +5,7 @@ Version 6 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
 MiniDAQ needs it, states what MiniDAQ requires of it, and records how its known
-anomalies are reviewed. It is a teaching example, not a document of the manufacturer's
+anomalies are reviewed. It is a teaching example, not a document of any manufacturer's
 quality management system; your organization's procedure defines the real
 content and the review records it needs.
 

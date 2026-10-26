@@ -1,10 +1,11 @@
 # Memory, caches and data-oriented design {#ch02}
 
 ::: box-why
-A DAQ's C++ code processes a continuous stream of detector data as it arrives. At tens of millions of events per second, arithmetic is almost free and memory is
-everything: one cache miss to DRAM costs as much time as a few hundred additions. The DAQ lead
-is the person who decides how events are laid out in memory, on the wire and on disk, and those
-decisions are expensive to change once firmware, files and analysis code depend on them.
+A DAQ's C++ code processes a continuous stream of detector data as it arrives. At tens of millions
+of events per second, arithmetic is almost free and memory is everything: one cache miss to DRAM
+costs as much time as a few hundred additions. The DAQ lead is the person who decides how events are
+laid out in memory, on the wire and on disk, and those decisions are expensive to change once
+firmware, files and analysis code depend on them.
 :::
 
 **A day in the life.** The physics team wants to add a "pile-up flag" and a depth-of-interaction

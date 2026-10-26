@@ -1,16 +1,14 @@
 # Profiling and performance engineering {#ch05}
 
 ::: box-why
-A DAQ engineer is asked to *optimize* software for performance. In a product team that
-word has a precise meaning: a change that makes a measured number better, by an amount you can
-state with confidence, on the machine the product runs on, without breaking anything else. A
-pull request titled "speed up the sorter" with no numbers is an opinion. One that says "the
-sort stage went from 37 to 130 M singles/s on the reference PC (10 repetitions each, 95%
-interval for the speedup 3.4x to 3.6x), flame graphs attached, regression gate green" is
-engineering.
-This chapter teaches the second kind: how to measure without fooling yourself, how to find
-where the time goes, which compiler and CPU features actually help, and how to keep a win from
-quietly disappearing six months later.
+A DAQ engineer is asked to *optimize* software for performance. In a product team that word has a
+precise meaning: a change that makes a measured number better, by an amount you can state with
+confidence, on the machine the product runs on, without breaking anything else. A pull request
+titled "speed up the sorter" with no numbers is an opinion. One that says "the sort stage went from
+37 to 130 M singles/s on the reference PC (10 repetitions each, 95% interval for the speedup 3.4x to
+3.6x), flame graphs attached, regression gate green" is engineering. This chapter teaches the second
+kind: how to measure without fooling yourself, how to find where the time goes, which compiler and
+CPU features actually help, and how to keep a win from quietly disappearing six months later.
 :::
 
 **A day in the life.** It is your fourth month. Reconstruction has asked for an energy window

@@ -1,14 +1,14 @@
 # Concurrency and lock-free pipelines {#ch03}
 
 ::: box-why
-A data acquisition system (DAQ) is a pipeline: receive, decode, sort, pair, write. At tens
-of millions of events per second no single core can do all of it, so each stage runs on its
-own core and the stages talk through queues. Fast, low-latency code for a detector stream on
-more than one core means three things: queues that cost
-nanoseconds rather than microseconds per hand-off, a shutdown that never loses data, and a
-precise answer to "what happens when the disk is slower than the detector?". Concurrency
-bugs are also the hardest bugs to reproduce in the field. A race that corrupts one batch in
-a million will not show up in a five-minute test, but it will show up in a patient scan.
+A data acquisition system (DAQ) is a pipeline: receive, decode, sort, pair, write. At tens of
+millions of events per second no single core can do all of it, so each stage runs on its own core
+and the stages talk through queues. Fast, low-latency code for a detector stream on more than one
+core means three things: queues that cost nanoseconds rather than microseconds per hand-off, a
+shutdown that never loses data, and a precise answer to "what happens when the disk is slower than
+the detector?". Concurrency bugs are also the hardest bugs to reproduce in the field. A race that
+corrupts one batch in a million will not show up in a five-minute test, but it will show up in a
+patient scan.
 :::
 
 **A day in the life.** A service engineer reports that a long phantom acquisition produced a

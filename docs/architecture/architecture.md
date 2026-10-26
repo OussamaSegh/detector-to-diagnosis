@@ -5,7 +5,7 @@ Version 7 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
 (software items, their interfaces, SOUP, segregation, verification), written for a teaching
-project. It is not a document of the manufacturer's quality management system, and it does not
+project. It is not a document of any manufacturer's quality management system, and it does not
 reproduce the standard: read the standard and your organization's procedures for the actual
 requirements. The reasoning behind individual decisions is in the architecture decision records
 in [`docs/adr/`](../adr/README.md).

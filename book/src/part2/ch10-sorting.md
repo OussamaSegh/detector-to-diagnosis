@@ -1,16 +1,15 @@
 # Coincidence sorting algorithms {#ch10}
 
 ::: box-why
-The coincidence sorter is the heart of the DAQ, and among the first things a DAQ engineer
-works on. Every number the physicists and the
-clinicians later look at, sensitivity, count-rate curves, randoms fractions, the image
-itself, is computed from the pairs the sorter keeps. Its rules are few: a window, an
-energy gate, a geometry gate, a policy for windows with more than two singles, and a
-delayed window for the randoms. Each rule is a choice with measurable consequences, and
-the same stream sorted with two policies gives trues and randoms that differ by several
-percent at high activity. This chapter builds a streaming sorter that is exact, fast and
-the same however its input is chunked, a merger for the streams of many boards, and the
-validation against ground truth that turns "the sorter works" into a measured statement.
+The coincidence sorter is the heart of the DAQ, and among the first things a DAQ engineer works on.
+Every number the physicists and the clinicians later look at, sensitivity, count-rate curves,
+randoms fractions, the image itself, is computed from the pairs the sorter keeps. Its rules are few:
+a window, an energy gate, a geometry gate, a policy for windows with more than two singles, and a
+delayed window for the randoms. Each rule is a choice with measurable consequences, and the same
+stream sorted with two policies gives trues and randoms that differ by several percent at high
+activity. This chapter builds a streaming sorter that is exact, fast and the same however its input
+is chunked, a merger for the streams of many boards, and the validation against ground truth that
+turns "the sorter works" into a measured statement.
 :::
 
 **A day in the life.** A physicist brings you two count-rate curves of the same phantom

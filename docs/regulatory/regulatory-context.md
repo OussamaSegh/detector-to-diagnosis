@@ -7,7 +7,7 @@ scanner ([intended use](intended-use.md)), in the regulations of the three marke
 scanner from a Swiss manufacturer is sold in: the EU, the US and Switzerland. It is a teaching
 example. The facts about regulations were checked in October 2026 and change; every one marked
 "verify" must be checked against the current text before it is relied on. Nothing here
-describes the manufacturer's actual regulatory strategy.
+describes any manufacturer's actual regulatory strategy.
 
 ## 1. The device and its software
 

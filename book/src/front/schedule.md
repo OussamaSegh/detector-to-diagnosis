@@ -1,9 +1,9 @@
 # How to use this book: the 10-week schedule {.unnumbered #schedule}
 
-The book is written for about ten weeks of preparation before a first day as DAQ lead. Each week pairs a deep C++ chapter with a domain chapter
-and a lighter regulatory chapter, so that hard coding days alternate with reading evenings.
-The chapters refer to this table for their week; it is the only place where the schedule is
-stated.
+The book is written for about ten weeks of preparation before a first day as DAQ lead. Each week
+pairs a deep C++ chapter with a domain chapter and a lighter regulatory chapter, so that hard coding
+days alternate with reading evenings. The chapters refer to this table for their week; it is the
+only place where the schedule is stated.
 
 Every chapter starts with an estimate of its reading time, its exercises and its MiniDAQ
 milestone. The two columns of hours add those estimates up (midpoints of the ranges):

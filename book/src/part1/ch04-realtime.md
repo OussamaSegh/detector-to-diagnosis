@@ -280,15 +280,14 @@ documentation of the kernel version you deploy):
   `/sys/devices/virtual/workqueue/cpumask`; set it to the housekeeping CPUs.
 
 Two hardware topics complete the picture. **Simultaneous multithreading** (SMT, Intel's
-"Hyper-Threading") presents each physical core as two CPUs that share execution units and
-caches. A busy stage on one sibling slows the other, so either disable SMT or leave the
-sibling of each isolated CPU idle; `lscpu -e` shows which CPUs share a core. **NUMA**
-(non-uniform memory access): on a machine with two sockets, memory and PCIe devices are
-attached to one socket, and access from the other socket crosses an interconnect. Put the
-receiving stages on the socket that owns the network card, and allocate their buffers there
-(`numactl`, or `mbind`), so that data never crosses sockets on the hot path. Whether the
-NeuroLF acquisition PC has one socket or two is something to find out in your first weeks (assumption:
-confirm with team).
+"Hyper-Threading") presents each physical core as two CPUs that share execution units and caches. A
+busy stage on one sibling slows the other, so either disable SMT or leave the sibling of each
+isolated CPU idle; `lscpu -e` shows which CPUs share a core. **NUMA** (non-uniform memory access):
+on a machine with two sockets, memory and PCIe devices are attached to one socket, and access from
+the other socket crosses an interconnect. Put the receiving stages on the socket that owns the
+network card, and allocate their buffers there (`numactl`, or `mbind`), so that data never crosses
+sockets on the hot path. Whether the NeuroLF acquisition PC has one socket or two is something to
+find out in your first weeks (assumption: confirm with team).
 
 ::: box-mistakes
 - **Pinning without checking.** A CPU number that does not exist, or an affinity that a

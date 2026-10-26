@@ -7,7 +7,7 @@ attack it and how, which threats the software counters and which it leaves to th
 how vulnerabilities in MiniDAQ and in its SOUP are found and handled after release. It follows
 the activities that IEC 81001-5-1 and the FDA's premarket cybersecurity guidance expect of a
 threat model and of vulnerability management, for a teaching project; it is not a document of
-The manufacturer's quality management system and does not reproduce either text. In a real product,
+any manufacturer's quality management system and does not reproduce either text. In a real product,
 the software's threat model is part of the scanner's security risk assessment, and the
 environment of section 6 is the scanner's, not an acquisition PC's (assumption: confirm with
 team how the NeuroLF's security risk file is organized).

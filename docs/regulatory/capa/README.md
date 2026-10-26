@@ -5,7 +5,7 @@ Version 1 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
 How MiniDAQ finds the cause of a nonconformity and removes it, so that the problem does not
 happen again (corrective action), and acts on a cause before it has produced a problem
 (preventive action), following what ISO 13485 asks for both, for a teaching project. It is not
-a procedure of the manufacturer's quality management system (assumption: confirm with team how the
+a procedure of any manufacturer's quality management system (assumption: confirm with team how the
 NeuroLF's CAPA process works and who owns it).
 
 ## When a CAPA is opened

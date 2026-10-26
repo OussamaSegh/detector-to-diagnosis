@@ -4,7 +4,7 @@ Version 1 (MiniDAQ 0.4.0-dev, Chapter 19). Status: draft for review.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
-system testing for a teaching project; it is not a document of the manufacturer's quality management
+system testing for a teaching project; it is not a document of any manufacturer's quality management
 system and does not reproduce the standard. Unit verification is in the
 [development plan](../sdp.md), section 6; this plan adds the levels above it.
 

@@ -416,18 +416,18 @@ watches for new editions, and decides when to move, is one of the questions to a
 
 ## Switzerland
 
-Switzerland is not in the EU, and since May 2021 that has mattered for medical devices. The
-Medical Devices Ordinance (MedDO, SR 812.213), under the Therapeutic Products Act, follows the
-MDR closely, and Swissmedic is the competent authority. Until 2021 the mutual recognition
-agreement (MRA) between the EU and Switzerland let devices certified on either side circulate
-freely. When the MDR began to apply, the MRA was not updated, and the two sides now treat each
-other as third countries for medical devices. Switzerland unilaterally accepts CE marking and
-certificates from EU notified bodies, so EU devices reach the Swiss market with a Swiss
-authorized representative (CH-REP) on the label. In the other direction, the EU treats a Swiss
-manufacturer as a third-country manufacturer: it needs an EU authorized representative, an EU
-notified body and EUDAMED registration like any manufacturer from outside the EU. For a Swiss
-manufacturer such as the NeuroLF's that is an everyday fact: the CE marking comes from an EU notified
-body, and the EU authorized representative is on the label.
+Switzerland is not in the EU, and since May 2021 that has mattered for medical devices. The Medical
+Devices Ordinance (MedDO, SR 812.213), under the Therapeutic Products Act, follows the MDR closely,
+and Swissmedic is the competent authority. Until 2021 the mutual recognition agreement (MRA) between
+the EU and Switzerland let devices certified on either side circulate freely. When the MDR began to
+apply, the MRA was not updated, and the two sides now treat each other as third countries for
+medical devices. Switzerland unilaterally accepts CE marking and certificates from EU notified
+bodies, so EU devices reach the Swiss market with a Swiss authorized representative (CH-REP) on the
+label. In the other direction, the EU treats a Swiss manufacturer as a third-country manufacturer:
+it needs an EU authorized representative, an EU notified body and EUDAMED registration like any
+manufacturer from outside the EU. For a Swiss manufacturer such as the NeuroLF's that is an everyday
+fact: the CE marking comes from an EU notified body, and the EU authorized representative is on the
+label.
 
 Three developments are worth following (verify each). Devices on the Swiss market are
 registered in Swissmedic's swissdamed database: mandatory for new devices from 1 July 2026,

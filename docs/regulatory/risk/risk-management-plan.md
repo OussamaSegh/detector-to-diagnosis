@@ -4,7 +4,7 @@ Version 1 (MiniDAQ 0.3.0-dev, Chapter 15). Status: draft for review.
 
 This plan describes how risk is managed for MiniDAQ's software, following the structure that
 ISO 14971:2019 expects of a risk management plan, for a teaching project. It is not a document
-of the manufacturer's quality management system and does not reproduce the standard. In a real
+of any manufacturer's quality management system and does not reproduce the standard. In a real
 product, the software's risk management is part of the risk management of the whole scanner:
 the hazards below are the scanner's hazards to which the software can contribute, and the
 criteria are the manufacturer's (assumption: confirm with team how the NeuroLF's risk file is
