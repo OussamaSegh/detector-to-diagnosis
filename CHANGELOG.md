@@ -8,6 +8,11 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed
+- Part IV review (PR #1): Chapter 18 counted eleven properties and 272 unit tests at its tag (ten
+  and 273) and gave unit test timings with no record behind them; Chapter 20 dates its count of
+  23 tools (Chapter 21 adds a 24th); two layout fixes in the solutions of Chapters 19 and 21.
+
 ## [0.4.0] - 2026-10-26
 
 Part IV, testing, verification and quality (Chapters 18 to 21), complete. The release record is

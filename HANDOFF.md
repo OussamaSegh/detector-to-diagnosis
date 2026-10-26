@@ -329,8 +329,9 @@ writer benchmark needs about 10 GB free; delete old build directories first.
 
 ### Left to do, in order
 
-1. **Part IV review**: 0.4.0 is released and packaged (2026-10-26); the coordinator was asked
-   to start the Fable review thread. Review and merge its PR here.
+1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in
+   f36a99e); its fixes go out with the next release. VERSION is 0.5.0-dev with the SOUP reviews
+   for 0.5 (789ab17); remember this bump right after every release, or docs.version turns CI red.
 2. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
    must give hardware control real depth (review gap). Release 0.5.0.
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
