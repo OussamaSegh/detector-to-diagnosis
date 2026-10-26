@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-10-26, by the software lead with the service organization |
 | Source | design review of the installed system: the platform under MiniDAQ was not identified (SOUP, Chapter 7), a hung server kept running unnoticed (H-05), a new version was copied over the old one without a way back, and installed software was the platform's to protect (threat T-07) |
 | Decision | approved, 2026-10-26, software lead, risk manager and security expert |
-| Commits | pending |
+| Commits | b0995fb |
 
 ## Description
 
