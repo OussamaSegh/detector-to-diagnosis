@@ -13,7 +13,7 @@ simulator that knows the truth about every single it produces, so that every lat
 chapter can test its algorithms against what really happened.
 :::
 
-**A day in the life.** It is your third week. The physicist who owns image quality stops
+**A day in the life.** It is a Tuesday morning. The physicist who owns image quality stops
 by: after a firmware update the scatter fraction measured with the brain phantom went
 from 28% to 33%, and she wants to know whether the DAQ changed. You open the release
 notes: the update lowered the hardware energy threshold. Before this chapter that sentence
@@ -46,10 +46,9 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 1 and 2, in particular the MDQ-P1 format and the geometry. High-school
-physics is enough; the chapter derives what it uses. Python 3 for Exercises 8.1 and 8.2.
-Reading: about 3 hours. Exercises: 6 to 8 hours. Milestone: 4 hours. In the 10-week schedule at
-the front of the book, this chapter is in week 1, with Chapters 1 and 2.
+Chapters 1 and 2, in particular the MDQ-P1 format and the geometry. High-school physics is enough;
+the chapter derives what it uses. Python 3 for Exercises 8.1 and 8.2. Reading: about 3 hours.
+Exercises: 6 to 8 hours. Milestone: 4 hours.
 
 ## From a decay to two photons
 

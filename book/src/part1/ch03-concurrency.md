@@ -38,11 +38,10 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 1 and 2: strong types, `Single`, the MDQ-P1 format and its decoder, cache lines and
-false sharing. You should have written a program with `std::thread` before. You do not need
-prior experience with atomics. Reading: about 3.5 hours. Exercises: 10 to 14 hours, of which
-Exercise 3.3 alone takes 4 to 6. Milestone: 3 hours. In the 10-week schedule at the front of the
-book, this chapter is in week 2, with Chapters 9 and 13.
+Chapters 1 and 2: strong types, `Single`, the MDQ-P1 format and its decoder, cache lines and false
+sharing. You should have written a program with `std::thread` before. You do not need prior
+experience with atomics. Reading: about 3.5 hours. Exercises: 10 to 14 hours, of which Exercise 3.3
+alone takes 4 to 6. Milestone: 3 hours.
 
 ## Threads, std::jthread and stop tokens
 

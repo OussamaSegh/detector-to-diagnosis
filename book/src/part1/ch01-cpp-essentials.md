@@ -44,8 +44,7 @@ the standard containers. You need a Linux machine (Ubuntu 24.04 or WSL2) with GC
 Clang 18, CMake 3.28 and Ninja; the repository README lists the one-line install.
 
 Reading time is about 3 hours. The exercises take 5 to 6 hours and the MiniDAQ milestone about 2
-hours. In the 10-week schedule at the front of the book, this chapter is in week 1, with
-Chapters 2 and 8.
+hours.
 
 ## Ownership and lifetime
 
@@ -628,7 +627,7 @@ apply to MiniDAQ's code and never to third-party code pulled in by FetchContent:
 they flag every implicit narrowing, which is exactly where unit and range bugs hide.
 Starting a project with them on costs a few `static_cast`s; adding them to a 200,000-line
 codebase later costs weeks. If your team's codebase does not use them, that is a good
-question for your first weeks, not a reason to turn them on everywhere in your first week.
+question to raise with the team, not a reason to turn them on everywhere at once.
 
 ### Worked example: hunting five bugs with sanitizers
 

@@ -46,10 +46,8 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapter 3 (the pipeline and its latency report), Chapter 8 (trues, scatters and randoms, the
-simulator), Chapter 9 (the link budget) and Chapter 10 (the sorter, its windows and its
-multiples policies). Reading: about 3 hours. Exercises: 11 hours. Milestone: 4 hours. In the
-10-week schedule at the front of the book, this chapter is in week 4, with the second half of
-Chapter 10 and Chapter 14.
+simulator), Chapter 9 (the link budget) and Chapter 10 (the sorter, its windows and its multiples
+policies). Reading: about 3 hours. Exercises: 11 hours. Milestone: 4 hours.
 
 ## Dead time and pile-up
 

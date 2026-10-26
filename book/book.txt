@@ -1,6 +1,6 @@
 # Order of source files for the main book
 src/front/edition.md
-src/front/schedule.md
+src/front/how-to-use.md
 src/part1/part1.md
 src/part1/ch01-cpp-essentials.md
 src/part1/ch02-memory.md

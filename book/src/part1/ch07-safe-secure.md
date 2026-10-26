@@ -45,12 +45,11 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 1 to 6, in particular undefined behavior and the sanitizers (Chapter 1), the packed
-decoder (Chapter 2) and the control plane (Chapter 6). You need Clang 18 with libFuzzer
+Chapters 1 to 6, in particular undefined behavior and the sanitizers (Chapter 1), the packed decoder
+(Chapter 2) and the control plane (Chapter 6). You need Clang 18 with libFuzzer
 (`libclang-rt-18-dev` on Ubuntu), `clang-tidy-18`, `cppcheck`, `readelf` (binutils) and Python 3
 with `jsonschema`. Reading: about 3 hours. Exercises: 8 to 10 hours, plus an hour of unattended
-fuzzing. Milestone: 4 hours. In the 10-week schedule at the front of the book, this chapter is
-in week 6, with Chapters 16, 17 and 18.
+fuzzing. Milestone: 4 hours.
 
 ## Coding standards in regulated software
 

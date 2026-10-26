@@ -49,9 +49,8 @@ After this chapter you can:
 
 Chapter 1 (GoogleTest and the presets), Chapter 6 (ports and adapters), Chapter 10 (the coincidence
 sorter), Chapter 14 (unit verification in IEC 62304 and the trace matrix). Reading: about 3 hours.
-Exercises: 7 to 9 hours. Milestone: 4 hours. In the 10-week schedule at the front of the book, this
-chapter is in week 6, with Chapters 7, 16 and 17; if time is short, do Exercises 18.1 to 18.3 and
-leave the extras.
+Exercises: 7 to 9 hours. Milestone: 4 hours. If time is short, do Exercises 18.1 to 18.3 and leave
+the extras.
 
 ## What a unit test is for
 

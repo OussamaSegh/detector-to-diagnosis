@@ -45,12 +45,11 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 5 (benchmarks and the regression gate), Chapter 7 (static analysis, sanitizers,
-hardening and the SBOM), Chapter 14 (the development plan), Chapter 16 (document control, change
-requests and CAPA), Chapter 18 (coverage and mutation testing) and Chapter 19 (system tests and
-the test report). Reading: about 3 hours. Exercises: 6 to 8 hours. Milestone: 4 hours. In the
-10-week schedule at the front of the book, this chapter is in week 7, with Chapters 19 and 21 to
-23; if time is short, do Exercises 20.1, 20.2 and 20.5 and leave the extras.
+Chapter 5 (benchmarks and the regression gate), Chapter 7 (static analysis, sanitizers, hardening
+and the SBOM), Chapter 14 (the development plan), Chapter 16 (document control, change requests and
+CAPA), Chapter 18 (coverage and mutation testing) and Chapter 19 (system tests and the test report).
+Reading: about 3 hours. Exercises: 6 to 8 hours. Milestone: 4 hours. If time is short, do Exercises
+20.1, 20.2 and 20.5 and leave the extras.
 
 ## A pipeline is a set of gates
 

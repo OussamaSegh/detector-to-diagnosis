@@ -48,11 +48,10 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapter 6 (the control API and its protocol), Chapter 7 (fuzzing, static analysis and the SBOM),
-Chapter 14 (software items and SOUP) and Chapter 15 (the risk file and H-08). The code uses
-OpenSSL 3; you do not need to know it beforehand. The exercises are in Python and C++. Reading:
-about 3 hours. Exercises: 7 to 9 hours. Milestone: 4 hours. In the 10-week schedule at the front
-of the book, this chapter is in week 6, with Chapters 7, 16 and 18; if time is short, do
-Exercises 17.1 to 17.3 and leave the extras.
+Chapter 14 (software items and SOUP) and Chapter 15 (the risk file and H-08). The code uses OpenSSL
+3; you do not need to know it beforehand. The exercises are in Python and C++. Reading: about 3
+hours. Exercises: 7 to 9 hours. Milestone: 4 hours. If time is short, do Exercises 17.1 to 17.3 and
+leave the extras.
 
 ## Security in the medical device life cycle
 

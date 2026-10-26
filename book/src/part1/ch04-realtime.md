@@ -41,12 +41,10 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 2 and 3: caches and allocation, the five-stage pipeline and its channels, and
-`std::latch`. You need a Linux machine on which you can run as root (or with `CAP_SYS_NICE` and
-`CAP_IPC_LOCK`), with `rt-tests` and `stress-ng` installed; a virtual machine works for
-everything except bare-metal numbers. Reading: about 3 hours. Exercises: 9 to 12 hours.
-Milestone: 3 hours. In the 10-week schedule at the front of the book, this chapter is in week 3,
-with Chapter 5 and the first half of Chapter 10.
+Chapters 2 and 3: caches and allocation, the five-stage pipeline and its channels, and `std::latch`.
+You need a Linux machine on which you can run as root (or with `CAP_SYS_NICE` and `CAP_IPC_LOCK`),
+with `rt-tests` and `stress-ng` installed; a virtual machine works for everything except bare-metal
+numbers. Reading: about 3 hours. Exercises: 9 to 12 hours. Milestone: 3 hours.
 
 All measurements in this chapter come from the book's machine: a 4-vCPU Intel Xeon at 2.30 GHz
 in a Firecracker virtual machine (VM), Linux 6.18 with `PREEMPT_DYNAMIC` (not `PREEMPT_RT`),
@@ -286,8 +284,8 @@ isolated CPU idle; `lscpu -e` shows which CPUs share a core. **NUMA** (non-unifo
 on a machine with two sockets, memory and PCIe devices are attached to one socket, and access from
 the other socket crosses an interconnect. Put the receiving stages on the socket that owns the
 network card, and allocate their buffers there (`numactl`, or `mbind`), so that data never crosses
-sockets on the hot path. Whether your scanner's acquisition PC has one socket or two is something to
-find out in your first weeks (assumption: confirm with team).
+sockets on the hot path. Whether your scanner's acquisition PC has one socket or two is one of the
+first things to find out about it (assumption: confirm with team).
 
 ::: box-mistakes
 - **Pinning without checking.** A CPU number that does not exist, or an affinity that a

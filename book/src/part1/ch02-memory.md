@@ -35,8 +35,7 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapter 1 (strong types, `Single`, the build). Basic knowledge of what a CPU cache is. Reading:
-about 3 hours. Exercises: 5 to 6 hours. Milestone: 2 hours. In the 10-week schedule at the front
-of the book, this chapter is in week 1, with Chapters 1 and 8.
+about 3 hours. Exercises: 5 to 6 hours. Milestone: 2 hours.
 
 ## The memory hierarchy in numbers
 
@@ -80,7 +79,7 @@ A loop that misses to DRAM on every event can process at most about five million
 per second on one core, whatever its arithmetic does. Second, the L3 on this large server
 part is slow (tens of nanoseconds), because it is a big mesh shared by many cores; on a
 desktop CPU with a small L3, expect 10 to 15 ns. Your acquisition PC's numbers will differ;
-run the benchmark on it in your first weeks.
+run the benchmark on it before you rely on these.
 
 ### Bandwidth, prefetching and why sequential access is cheap
 
