@@ -5,7 +5,7 @@ Engineer* and MiniDAQ if the current session is lost. Read it fully before you c
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-10-26 03:15 UTC: Chapter 21 complete and tagged ch21 locally.
+Last updated: 2026-10-26 04:50 UTC: history rewritten for the fresh repository; 0.4.0 checks running.
 
 ## 1. The goal
 
@@ -283,12 +283,19 @@ gates and codeql were green on GitHub (the user pushes tags). MDQ-PR-025 (listin
 and MDQ-PR-026 (Exercise 21.5 and the bisect log of git 2.55, which quotes the term) are closed.
 Part IV is written; next is its review and release 0.4.0.
 
-Privacy (2026-10-26): the book is generic (e50a79e). The history rewrite that removes the old
-e-mail address from 100 commits and scrubs old file versions is prepared but not run: the
-session's safety check blocked git filter-repo, and the user was asked directly. A private
-backup of the old history is in the project files (`backup/old-history-before-privacy-rewrite.bundle`);
-never push it. After a rewrite, remap the commit hashes cited in documents (CR Commits fields,
-CHANGELOG, problem reports, measurements, HANDOFF) from filter-repo's commit map.
+Privacy (2026-10-26): the book is generic (e50a79e). The user chose a fresh repository: the
+history was rewritten locally with git filter-repo (noreply author, committer and tagger on every
+commit and tag; old file versions scrubbed of personal data), every cited commit hash was mapped
+to the rewritten one (d048834), and the clean history goes to a new, empty GitHub repository of
+the same name once the user has deleted and recreated it. Hashes from before 2026-10-26 04:40 UTC
+in old notes or logs outside the repository refer to the old history. A private backup of the
+old history is in the project files (`backup/old-history-before-privacy-rewrite.bundle`); never
+push it.
+
+Release 0.4.0 (in progress): the first run of the release checks found MDQ-PR-027 to MDQ-PR-031
+(fixed in 068e926, then the old bf3da67); CAPA-0001 and CAPA-0004 were not effective. The second
+run is on the old bf3da67, whose tree equals 068e926 except HANDOFF and the box titles filter;
+the release record cites the rewritten hashes.
 
 ### Left to do, in order
 
