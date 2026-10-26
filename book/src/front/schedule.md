@@ -19,14 +19,16 @@ milestone. The two columns of hours add those estimates up (midpoints of the ran
 | 3 | 4, 5, 10 (first half) | Real-time profile, benchmarks, first sorter | 16 | 45 |
 | 4 | 10 (second half), 11, 14 | Validated sorter, count-rate curves, SRS and SOUP list | 19 | 45 |
 | 5 | 6, 12, 15 | Control API and state machine, list-mode writer, risk file | 22 | 57 |
-| 6 | 7, 16, 17, 18 | Static analysis, fuzzing, SBOM, design file, threat model, unit tests | 20+ | 42+ |
-| 7 | 19 to 23 | Replay and soak tests, CI evidence, hardware layer, tuned receiver | | |
+| 6 | 7, 16, 17, 18 | Static analysis, fuzzing, SBOM, design file, threat model, unit tests | 27 | 57 |
+| 7 | 19 to 23 | Replay and soak tests, CI evidence, hardware layer, tuned receiver | 22+ | 43+ |
 | 8 | 26, 27, 28, 31 | Calibration, Python analysis package, 2D OSEM | | |
 | 9 | 29, 30, 32 (skim 24, 25) | C++ OSEM with bindings, image quality report, build presets | | |
 | 10 | 33, 34 | MiniDAQ 1.0, walkthrough, a 30-60-90 day plan | | |
 
-Week 6's hours do not yet include Chapter 18, and those of weeks 7 to 10 are filled in when
-those chapters are written (this edition contains Parts I to III).
+Week 7's hours do not yet include Chapters 22 and 23, and those of weeks 8 to 10 are filled in
+when those chapters are written (this edition contains Parts I to IV). Week 6 is the heaviest
+week of the core path, at 27 hours: if you can, start Chapter 18 in week 5 or move Chapter 7's
+milestone to the weekend before.
 
 The weeks interleave the Parts, but MiniDAQ grows in chapter order: each milestone starts from
 the previous chapter's tag in the companion repository (`ch07` for Chapter 8's milestone, for
@@ -34,7 +36,8 @@ example). In a week that mixes Parts, start each milestone from its tag rather t
 own code of the week before, and merge your own work into it when you want to keep it.
 
 **Be honest with yourself about the workload.** The core path of Chapters 1 to 17 is about
-110 hours, close to 20 hours a week for the first six weeks. Everything in those chapters is
+110 hours, close to 20 hours a week for the first six weeks; through Chapter 21 it is about
+140 hours. Everything in those chapters is
 about 290 hours, more than ten weeks of evenings and weekends can hold. So:
 
 1. Follow the core path every week: read the chapter, do the milestone, and answer the

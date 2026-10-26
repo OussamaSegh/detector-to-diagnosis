@@ -13,11 +13,12 @@ version of this file is printed on the title page and in every output file name.
 | I. Modern, low-latency C++ | 1 to 7 | 0.1.0 | complete |
 | II. PET physics and data acquisition | 8 to 12 | 0.2.0 | complete |
 | III. Medical device software standards | 13 to 17 | 0.3.0 | complete |
-| IV. Testing, verification and quality | 18 to 21 | 0.4.0 | planned |
+| IV. Testing, verification and quality | 18 to 21 | 0.4.0 | complete |
 | V. Hardware, embedded Linux and networking | 22 to 25 | 0.5.0 | planned |
 | VI. Calibration, corrections and reconstruction | 26 to 30 | 0.6.0 | planned |
 | VII. Python and tooling | 31 to 32 | 0.7.0 | planned |
 | VIII. Capstone and day-one readiness | 33 to 34 | 0.8.0 | planned |
+| IX. Imaging IT, team workflow and AI-assisted coding | 35 to 37 | 1.0.0 | planned |
 
 The companion repository (`minidaq-vX.Y.Z.zip`) contains MiniDAQ with one git tag per
 chapter written so far (`ch00` is the empty starting point, then `ch01`, `ch02` and so on),
