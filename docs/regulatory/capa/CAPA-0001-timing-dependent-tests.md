@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028 and MDQ-PR-033 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034 |
 | Owner | software lead |
 | Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
 
@@ -102,6 +102,14 @@ the release checks because it is the slowest build and starts threads late.
 
 New criterion: no test fails for a timing reason in CI, in the release checks or in the stress
 run between this result and the release of 0.5.0. Due: release 0.5.0.
+
+Later the same day: the release checks of 0.4.0 on 6766495, after MDQ-PR-033, passed the stress
+run (100 repetitions, `measurements/release-0.4.0/stress-tsan.txt`). Then Exercise 5.2's speed test
+failed once in CI, in the hardened build on a GitHub runner, at 2.99 times the starter's speed
+against 3 (MDQ-PR-034): its criterion was relative since MDQ-PR-022 but had no margin. That is a
+failure within the new criterion's period, and the result at 0.5.0 counts it. Further action: a
+speed test leaves a margin of at least 30% between its criterion and what a correct solution
+reaches on the slowest machine that has run it; Exercise 5.2 asks for twice the starter's speed.
 
 ## Closure
 

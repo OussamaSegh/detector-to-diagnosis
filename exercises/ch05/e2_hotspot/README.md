@@ -24,8 +24,9 @@ what it produces statistically.
 **Acceptance tests** (`tests/test_event_source.cpp`): time order and determinism; primary rate
 within 1%; pair fraction within 0.005; energy mean and standard deviation within 0.2 keV and
 the fractions within 1 and 2 sigma within 0.3%; uniform crystals; and, in release builds
-without sanitizers, a third of the time per single of the starter's algorithm, which the test
-times on the same machine in the same run (`EX_NS_PER_SINGLE` sets a fixed budget in ns
+without sanitizers, at most half the time per single of the starter's algorithm, which the test
+times on the same machine in the same run (the goal is a third; the test leaves room for slower
+machines, MDQ-PR-034) (`EX_NS_PER_SINGLE` sets a fixed budget in ns
 instead; see the test).
 
 **Think about it:** which of your changes would also be acceptable in the *detector

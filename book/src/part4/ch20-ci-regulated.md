@@ -633,6 +633,14 @@ Exercise 20.5 argues it got a problem report (MDQ-PR-022), not a retry. The test
 copy of the starter's algorithm in the same run and asks for a third of its time, which is what
 the exercise meant from the start. A budget in nanoseconds is a claim about one machine.
 
+It failed once more, a day later, in the `hardened` job: 14.49 ns against a budget of 14.43 ns,
+the reference at 43.3 ns, a ratio of 2.99 (MDQ-PR-034). The comparison was right and the margin
+was not: a solution three times faster on the reference machine is about three times faster on
+a runner too, so a test that asks for exactly the goal fails by chance half the time it lands
+there. The test now asks for twice the starter's speed, which leaves the solution a margin of
+50% everywhere it has run and still fails the starter, and the exercise keeps three times as its
+goal. A relative criterion needs a margin as much as an absolute one does.
+
 The baseline gate on the reference machine stays where CAPA-0004 put it, in the release checks:
 it is the one that compares against the performance budget. The A/B gate answers a different
 question, "did this change make things slower", and answers it on every change instead of once a

@@ -358,6 +358,34 @@
       "evaluation": {"safety_relevant": false, "rationale": "A defect of tests: the code under test was slow because of the sanitizer and the load, not wrong."},
       "resolution": {"change": "Every wait uses test_support::patience, now 60 s. A passing test does not wait longer; only a hang does.", "verification": "The stress run of the release checks of 0.4.0 passes 100 repetitions of the threaded tests."},
       "root_cause": {"whys": ["The wait ended before the run did.", "Its deadline was 5 s, chosen as 'long' on an idle machine.", "The tests chose their own deadlines instead of the shared one.", "The shared one, 10 s, was itself chosen without measuring the slowest build under load."], "cause": "Deadlines picked by feel instead of from the slowest configuration that runs them.", "category": "test", "escape": "Rule 5.5's check (tests.waits) finds sleeps, not short deadlines; the stress run found it, and MDQ-PR-032 hid it."}
+    },
+    {
+      "id": "MDQ-PR-034",
+      "title": "Exercise 5.2's speed test asked for exactly its goal, three times the starter's speed, and failed on a runner at 2.99",
+      "found": "2026-10-26, GitHub Actions run of 3849498: ch05/e2_hotspot/solution/EventSource.FastEnough failed in the preset hardened at 14.49 ns per single against a budget of 14.43 ns (reference 43.3 ns); the other presets and the next commit passed",
+      "item": "exercises",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "MDQ-PR-022 made the budget relative: a third of the time of the starter's algorithm, timed in the same run. That is the exercise's goal, and the solution reaches it with a ratio of 3.7 or more on the reference machine, but in the hardened build on a GitHub runner the ratio was 2.99. A test that asks for exactly what the solution achieves on some machine fails there by chance.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An exercise test, not a test of MiniDAQ; it failed a correct solution and could not pass a slow one."
+      },
+      "resolution": {
+        "change": "The test asks for half the time of the starter's algorithm; the exercise's goal stays a third. Its README, Chapter 5, the solution notes and Chapter 20 say why.",
+        "verification": "The solution passes in all six presets of the release checks and in CI; the starter still fails (its ratio is about 1)."
+      },
+      "root_cause": {
+        "whys": [
+          "The solution measured 2.99 times the starter's speed against a criterion of 3.",
+          "The criterion was the exercise's goal itself, with no margin.",
+          "MDQ-PR-022 fixed the kind of criterion (relative instead of absolute) and kept its value.",
+          "No rule asked for a margin between what a speed test demands and what a correct solution reaches on the slowest machine that runs it."
+        ],
+        "cause": "A speed criterion without a margin for the machines that run it.",
+        "category": "test",
+        "escape": "The reference machine leaves a margin of about 20%; the hardened build on a runner had none, and only one of six presets failed once."
+      }
     }
   ]
 }

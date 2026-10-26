@@ -111,6 +111,8 @@ the patch version.
     output filter's); it exits with ctest's status, tested in `tools.release_checks`.
   - MDQ-PR-033: eighteen test waits of 5 or 10 s were too short under ThreadSanitizer and load;
     every wait uses `test_support::patience`, now 60 s.
+  - MDQ-PR-034: Exercise 5.2's speed test asked for exactly three times the starter's speed and
+    failed on a runner at 2.99; it asks for twice, and the exercise's goal stays three times.
 - `tools/release_checks.sh OUT FUZZ_SECONDS PART` runs part 1 (builds and tests, about 50
   minutes) or part 2 (gate, system tests, soak, fuzzing, about 90 minutes) on the same commit,
   for a session that cannot hold the whole run; part 2 refuses another commit than part 1's.
