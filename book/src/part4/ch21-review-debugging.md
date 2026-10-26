@@ -875,11 +875,11 @@ MDQ-PR-024 is closed; every starter of the chapter fails. Tag `ch21`.
 - A. Bacchelli and C. Bird, "Expectations, outcomes, and challenges of modern code review",
   *Proceedings of the 35th International Conference on Software Engineering (ICSE)*, 2013.
 - Google, *Engineering Practices Documentation: How to do a code review*,
-  google.github.io/eng-practices.
+  <https://google.github.io/eng-practices/>.
 - A. Zeller, *Why Programs Fail: A Guide to Systematic Debugging*, 2nd edition, Morgan Kaufmann,
   2009.
-- *Debugging with GDB*, the GNU debugger's manual, sourceware.org/gdb/documentation: core files,
-  `$_siginfo`, and separate debug files found by build ID.
+- *Debugging with GDB*, the GNU debugger's manual, <https://sourceware.org/gdb/documentation/>:
+  core files, `$_siginfo`, and separate debug files found by build ID.
 - Linux manual pages `core(5)`, `signal-safety(7)` and `sigaltstack(2)`, man7.org.
 - H.-J. Boehm, "Can seqlocks get along with programming language memory models?", *Proceedings of
   the 2012 ACM SIGPLAN Workshop on Memory Systems Performance and Correctness (MSPC)*, 2012.
