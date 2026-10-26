@@ -22,15 +22,31 @@ jobs:
       EPUBCHECK_VERSION: 5.1.0
     steps:
       - uses: actions/checkout@v5
+      # The runners' Azure Ubuntu mirror has served these packages at a few kB/s (two runs timed
+      # out on 2026-10-26), so the job uses the main archive and keeps the downloaded packages in
+      # the Actions cache.
+      - name: Cache the apt packages
+        uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-kdp-${{ runner.os }}-${{ hashFiles('.github/workflows/kdp.yml') }}
       - name: Install Pandoc, XeLaTeX and the fonts
-        timeout-minutes: 30
+        timeout-minutes: 45
         run: |
           printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\n' | sudo tee /etc/apt/apt.conf.d/80retries
+          for f in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+            if [ -f "$f" ]; then
+              sudo sed -i 's#http://azure.archive.ubuntu.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' "$f"
+            fi
+          done
+          mkdir -p ~/apt-archives/partial
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pandoc texlive-xetex texlive-latex-extra \
+          sudo apt-get install -y --no-install-recommends -o Dir::Cache::Archives="$HOME/apt-archives" \
+            pandoc texlive-xetex texlive-latex-extra \
             texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
             texlive-plain-generic lmodern tex-gyre fonts-texgyre fonts-texgyre-math fonts-inconsolata \
             graphviz librsvg2-bin poppler-utils
+          sudo chown -R "$(id -u):$(id -g)" ~/apt-archives
       - name: Install EPUBCheck
         run: |
           curl -sSfL --retry 5 -o "$RUNNER_TEMP/epubcheck.zip" \
