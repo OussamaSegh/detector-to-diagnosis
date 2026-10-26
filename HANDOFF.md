@@ -119,7 +119,12 @@ Commits and pushing:
   read and write). Without it the job falls back to GITHUB_TOKEN and dispatches ci.yml on each
   new `book-v*` tag itself (ci.yml has `workflow_dispatch` from 0.4.0 on). Still create the
   tag locally too, so the release zip and the git bundle carry it. Check with
-  `git ls-remote --tags origin`.
+  `git ls-remote --tags origin`. The user added `TAGS_TOKEN` on 2026-10-26 (it needed Contents
+  and Workflows set to read and write); run 40323265570 then made all 25 tags (ch00 to ch21,
+  book-v0.1.0 to book-v0.3.0), each at the commit of the manifest, and CI ran on each. The
+  user may revoke the token after a release; a run then fails with "Permission denied", and a
+  new token goes into the same secret. A session can start the workflow with
+  `gh workflow run tags.yml --ref main`.
 - Nothing goes to an external service without the user's approval. Pushing to the user's
   GitHub repository `OussamaSegh/detector-to-diagnosis` (public since 2026-10-26; named neurolf-engineer until the retitling) is approved.
 
