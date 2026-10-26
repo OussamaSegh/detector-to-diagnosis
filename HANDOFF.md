@@ -93,8 +93,11 @@ Commits and pushing:
   A new session uses its own Claude-Session line.
 - "Always push, don't wait": run `git push -q origin main` after every commit. Commit in small
   steps within a chapter.
-- Tag pushes are refused from cloud sessions (HTTP 403). Create tags locally. They travel in
-  the release zip and the git bundle, and the user pushes them.
+- Tag pushes are refused from cloud sessions (HTTP 403). The GitHub API is no way around it:
+  on 2026-10-26 POST git/refs and POST git/tags both returned 403 ("Write access to this GitHub
+  API path is not permitted through this proxy"), and the GitHub MCP tools cannot create tags.
+  Create tags locally. They travel in the release zip and the git bundle, and the user pushes
+  them (`git fetch BUNDLE 'refs/tags/*:refs/tags/*' && git push origin --tags`).
 - Nothing goes to an external service without the user's approval. Pushing to the user's
   GitHub repository `OussamaSegh/neurolf-engineer` (private) is approved.
 
@@ -264,7 +267,7 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
 
 ### In progress (as of the last update)
 
-Chapter 20 is complete except the tag: `ch20` goes on the commit that fills its measurements
+Chapter 20 is complete and tagged ch20 locally (069e5a0, ci, gates and perf green): `ch20` goes on the commit that fills its measurements
 once GitHub CI is green there. Then refresh the bundle and start Chapter 21.
 
 ### Left to do, in order
@@ -306,8 +309,8 @@ first Part this applies to.
 
 ### Waiting on the user
 
-- Push the tags ch10 to ch19 (and ch20 once it is made), book-v0.2.0 and book-v0.3.0 from the
-  zip or bundle. Cloud sessions cannot push tags.
+- Push all 24 tags (ch00 to ch20, book-v0.1.0 to book-v0.3.0): GitHub has none of them yet
+  (checked 2026-10-26). They are in the bundle. Cloud sessions cannot push tags.
 - Enable private vulnerability reporting on the GitHub repository (Chapter 17, SECURITY.md).
 - Answer whether to enable CodeQL code scanning (asked, no answer yet).
 
