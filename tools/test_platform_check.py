@@ -72,8 +72,9 @@ class PlatformCheck(unittest.TestCase):
     def test_the_platform_sbom_is_valid_cyclonedx(self):
         try:
             import jsonschema  # noqa: F401
+            import referencing  # noqa: F401  (jsonschema 4.18 and later; make_sbom.validate needs it)
         except ImportError:
-            self.skipTest("jsonschema is not installed")
+            self.skipTest("jsonschema 4.18 or later is not installed")
         import make_sbom
         bom = platform_check.sbom(DEFINITION, conforming())
         self.assertEqual(make_sbom.validate(bom, TOOLS / "sbom" / "schemas"), 0)
