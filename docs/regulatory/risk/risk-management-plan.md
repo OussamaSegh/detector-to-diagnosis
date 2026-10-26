@@ -1,6 +1,6 @@
 # MiniDAQ risk management plan
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 15). Status: draft for review.
+Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 
 This plan describes how risk is managed for MiniDAQ's software, following the structure that
 ISO 14971:2019 expects of a risk management plan, for a teaching project. It is not a document
@@ -75,3 +75,4 @@ are the reviews of section 4.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 15). |
+| 2 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |

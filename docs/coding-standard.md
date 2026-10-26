@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 3 (MiniDAQ 0.3.0-dev, Part III review). Status: draft for review.
+Version 4 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -103,6 +103,11 @@ detector data.
    not the speed of the machine it runs on. A test that fails at random teaches
    people to rerun it, which hides the day it fails for a reason (CAPA-0001).
    *Enforced:* test `tests.waits`; the stress run of CAPA-0001.
+6. A test that starts threads and then checks what they did first waits until
+   each of them has started its work (a `std::latch` or `std::barrier`), and
+   does not assume that a thread runs before the next statement of the thread
+   that created it (MDQ-PR-028, CAPA-0001). *Enforced:* review (checklist item
+   4.6); the coverage build of the release checks, which starts threads slowly.
 
 ## 6. The hot path
 
@@ -133,3 +138,4 @@ must report nothing before a change is merged.
 | 1 | First version (Chapter 7). |
 | 2 | Rule 5.5 on waiting in tests (CAPA-0001), and this history (Chapter 16). |
 | 3 | Rule 3.5 on reading untrusted JSON (CAPA-0003, problem report MDQ-PR-013). |
+| 4 | Rule 5.6 on tests that start threads (CAPA-0001, problem report MDQ-PR-028). |

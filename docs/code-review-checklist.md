@@ -1,6 +1,6 @@
 # MiniDAQ code review checklist
 
-Version 1 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
+Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 
 The compilers, clang-tidy, cppcheck, the sanitizers and the documentation tests check what a
 machine can check (the [coding standard](coding-standard.md) says which rule each one enforces).
@@ -52,14 +52,19 @@ finding is written as section 7 says.
 4. A test that is skipped somewhere says where and why, and the skip is not where the risk is.
 5. A counter or condition defined as "A and B" has a test with A and not B, and one with B and
    not A: a test of one fault at a time cannot tell the halves apart (MDQ-PR-019).
+6. A test that starts threads waits until each has started its work before it checks what they
+   did (coding standard, rule 5.6; MDQ-PR-028).
 
 ## 5. The regulated parts
 
 1. The trace still holds: requirements, tests, the risk file, the software items and their paths.
 2. A class B item's new branch is taken both ways by some test, or the review accepts it with a
    reason (the coverage review of the release).
-3. A new tool whose output is evidence is in the tool list, with what shows it can fail.
+3. A new tool whose output is evidence is in the tool list, with what shows it can fail, and a
+   check that cannot run, or stops early, fails instead of passing (MDQ-PR-029, MDQ-PR-030).
 4. Controlled documents that changed get a new version before the release.
+5. A change that adds a program option, a command, a file or a data flow lists the architecture
+   and the threat model among its documents, or says why they do not change (MDQ-PR-031).
 
 ## 6. Diagnosability
 
@@ -89,3 +94,4 @@ a problem report (development plan, section 7).
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 21, CR-0007). |
+| 2 | Items 4.6, 5.3 (a check that cannot run fails) and 5.5, from the release checks of 0.4.0 (MDQ-PR-028 to MDQ-PR-031). |

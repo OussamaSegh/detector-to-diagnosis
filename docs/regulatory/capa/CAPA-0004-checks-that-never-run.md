@@ -4,9 +4,9 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (release checks for 0.3.0) |
-| Source | MDQ-PR-014 |
+| Source | MDQ-PR-014; at the effectiveness check, MDQ-PR-023, MDQ-PR-029 and MDQ-PR-030 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0 |
+| Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
 
 ## Problem
 
@@ -96,9 +96,31 @@ on the throughput margin (RC-01 counts every loss).
 Criterion: the release record of 0.4.0 cites the output of `tools/release_checks.sh` for every
 check of SDP section 6 on the released commit, the gate passes or the baseline change has a
 reason, and no number in the performance budget or the SRS's verification column is older than
-the last change to the code it measures without saying so. Due: release 0.4.0. Result: filled in
-at the check.
+the last change to the code it measures without saying so. Due: release 0.4.0.
+
+Result (2026-10-26, release checks of 0.4.0): **not effective.** The first run of
+`tools/release_checks.sh` for 0.4.0 stopped after the writer benchmark and exited with status 0:
+the gate, the system test report, the soak and the fuzzing did not run, and nothing said so
+(MDQ-PR-029). The same defect had stopped the 0.3.0 run, where it was taken for a restart of
+the session. In CI, the document-control job skipped its version check on every run because no
+release tag was on GitHub, and passed (MDQ-PR-030); and the performance gate had passed over
+benchmarks that did not run (MDQ-PR-023, corrected in Chapter 20). Three more checks that could
+not run and reported success: the action made the release checks one script but did not make
+that script, or the jobs, fail when they cannot run.
+
+Further action: the release checks fail with status 3 when they stop before the last check, and
+the test `tools.release_checks` checks the script (MDQ-PR-029); the document-control job falls
+back to the commit of the newest release record and fails if it has neither (MDQ-PR-030); item
+5.3 of the code review checklist (version 2) asks of every check that it fails when it cannot
+run. The tests that CI skips were reviewed: `tools.postmortem` (no gdb on the runners) and the
+speed tests of Exercises 5.2 and 10.4 (unoptimized builds) are skipped by design and run in
+`ci/run_all.sh` and the starters' Release build on the reference machine; `tools.sbom` runs in
+the `sbom` job, which installs its schema validator.
+
+New criterion: the release record of 0.5.0 cites a complete run of `tools/release_checks.sh` on
+the released commit, ending with its summary line, and no problem report between this result
+and the release of 0.5.0 has the cause "a check that could not run passed". Due: release 0.5.0.
 
 ## Closure
 
-Not closed: the effectiveness check is due at release 0.4.0.
+Not closed: the action was not effective at release 0.4.0; the next check is at release 0.5.0.

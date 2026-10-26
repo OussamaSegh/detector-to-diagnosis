@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 7 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
+Version 8 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -14,7 +14,7 @@ in [`docs/adr/`](../adr/README.md).
 
 MiniDAQ receives a stream of detector singles, decodes and time-sorts them, pairs them into
 coincidences and hands the coincidences to a sink, while an operator configures, starts, stops
-and monitors the acquisition over a control API. Version 0.3.0-dev covers:
+and monitors the acquisition over a control API. Version 0.4.0-dev covers:
 
 - the acquisition pipeline (Chapters 2 to 5),
 - the control plane: configuration, state machine, service, audit trail and TCP control API
@@ -35,6 +35,14 @@ and monitors the acquisition over a control API. Version 0.3.0-dev covers:
   [requirements](../regulatory/srs.md), [trace matrix](../regulatory/trace-matrix.md),
   software items and safety classes (section 4), [SOUP list](../regulatory/soup-list.md) and
   [known anomalies](../regulatory/known-anomalies.md).
+- a property-based test harness for the units (Chapter 18,
+  [ADR 0015](../adr/0015-property-based-tests-with-a-small-harness.md)), system tests with
+  replayed data and a soak (Chapter 19), and a reproducible build with a release package of the
+  programs and their evidence (Chapter 20, CR-0006); none of them is part of the shipped
+  programs except the version and build ID they report.
+- diagnostics: a flight recorder of recent events in memory (item core), a crash report
+  written by the dying server (item rt) and the control command `diagnostics`, API 2.1
+  (Chapter 21, [ADR 0016](../adr/0016-flight-recorder-and-crash-report.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -46,7 +54,7 @@ pipeline does not use it yet). The control API's security is described in the
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
-| Operator, scripts, test harness | Control protocol 2.0: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Operator, scripts, test harness | Control protocol 2.1: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
 | Configuration files | JSON, schema version 1.3 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets | both | Real-time settings from an `rt_profile` (Chapter 4) |
@@ -257,7 +265,7 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0014](../adr/README.md). Known anomalies, with their evaluation:
+Decisions: [ADR 0001 to 0016](../adr/README.md). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
@@ -285,3 +293,4 @@ Open issues:
 | 5 | Software items with their safety classes, layers and segregation (Chapter 14). |
 | 6 | This history (Chapter 16), reconstructed from git for versions 1 to 5. Version 1 was also edited in Chapter 7 (the SOUP list, ADR 0008) and version 4 in Chapter 12 (the list-mode sink, the run record, configuration schema 1.3), each before its release and without a record of the change, which is what this history now provides. |
 | 7 | Chapter 17: the control API's security (API 2.0, item `access`, `ctl` class B, OpenSSL as SOUP, CR-0004). Also corrects what version 6 left stale: the API version (1.1 since CR-0003), the nlohmann/json version (3.12.0 since CR-0002) and the range of ADRs. |
+| 8 | Part IV, recorded at the release checks of 0.4.0 (MDQ-PR-031): the test harness, system tests and release package (Chapters 18 to 20), the diagnostics of Chapter 21 (ADR 0016, CR-0007) and control API 2.1. Also editorial: the text names no manufacturer. |

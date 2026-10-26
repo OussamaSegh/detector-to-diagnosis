@@ -169,6 +169,20 @@ TEST(CoincidenceSorter, TiesKeepTheEarlierPair) {
   EXPECT_EQ(out[0].second.time, Picoseconds{1 * ns});
 }
 
+TEST(CoincidenceSorter, TwoSinglesOfOneCrystalWithOneTimeAreTakenInEnergyOrder) {
+  // REQ: SRS-SRT-013
+  // Found by the wide property search of release 0.4.0 (MDQ-PR-027): crystal
+  // order alone left two singles of one crystal in the order they arrived.
+  auto c = plain();
+  c.min_sector_difference = 0;
+  c.fov_radius_mm = 0.0;
+  const auto low_first = run(c, {at(0, a0, 450.0F), at(0, a0, 520.0F)});
+  const auto high_first = run(c, {at(0, a0, 520.0F), at(0, a0, 450.0F)});
+  ASSERT_EQ(low_first.size(), 1U);
+  EXPECT_EQ(low_first, high_first);
+  EXPECT_EQ(low_first[0].first.energy.count(), 450.0F);
+}
+
 TEST(CoincidenceSorter, GeometryCuts) {
   // REQ: SRS-SRT-004
   auto c = plain();

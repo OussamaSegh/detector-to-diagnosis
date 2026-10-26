@@ -1,6 +1,6 @@
 # MiniDAQ change control
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 
 How a change to MiniDAQ's design is requested, analyzed, decided and recorded, following what
 ISO 13485 asks of the control of design and development changes and what IEC 62304 asks of software
@@ -54,3 +54,4 @@ implemented change names its commits and tests that exist.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 16). |
+| 2 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |

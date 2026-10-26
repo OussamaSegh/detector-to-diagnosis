@@ -7,7 +7,8 @@
 #
 #   tools/release_checks.sh OUT [FUZZ_SECONDS]
 #
-# The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails).
+# The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails), and
+# 3 if the run stopped before the last check (MDQ-PR-029).
 set -uo pipefail
 out=${1:?usage: tools/release_checks.sh OUT [FUZZ_SECONDS]}
 fuzz_seconds=${2:-600}
@@ -16,7 +17,17 @@ cd "$root"
 mkdir -p "$out/fuzz"
 out=$(cd "$out" && pwd)
 work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT
+# A run that ends before the last check fails, whatever ended it (MDQ-PR-029).
+finished=no
+on_exit() {
+  local status=$?
+  rm -rf "$work"
+  if [ "$finished" != yes ] && [ "$status" -ne 2 ]; then
+    echo "FAIL  the release checks stopped before the last check (status $status)"
+    exit 3
+  fi
+}
+trap on_exit EXIT
 failed=()
 stamp() { echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) $*"; }
 check() {  # name status
@@ -82,14 +93,16 @@ check "Exercise 18.3, solution passes and starter fails" $?
 check "pipeline benchmark ran" $?
 
 mkdir -p /var/tmp/minidaq-bench
-{ stamp "hardened writer_throughput, fsync=close, 200 M coincidences, 3 runs (SRS-PERF-021)"
+# A subshell, not a { } group: an exit in a group ends the whole script, with status 0, which
+# is how the gate, the system tests and the fuzzing never ran after this step (MDQ-PR-029).
+( stamp "hardened writer_throughput, fsync=close, 200 M coincidences, 3 runs (SRS-PERF-021)"
   status=0
   for _ in 1 2 3; do
     build/hardened/benchmarks/writer_throughput --dir /var/tmp/minidaq-bench \
       --coincidences 200000000 --fsync close 2>&1 || status=1
     rm -f /var/tmp/minidaq-bench/*
   done
-  exit $status; } > "$out/perf-writer.txt"
+  exit $status ) > "$out/perf-writer.txt"
 check "writer benchmark ran" $?
 
 # The regression gate. It used to run only in perf.yml, on a runner that did not exist
@@ -141,6 +154,7 @@ for t in "${targets[@]}"; do
 done
 
 echo "The pipeline and writer results are read against SRS-PERF-020 and SRS-PERF-021 by hand."
+finished=yes
 if [ ${#failed[@]} -gt 0 ]; then
   echo "${#failed[@]} release checks failed" >&2
   exit 1

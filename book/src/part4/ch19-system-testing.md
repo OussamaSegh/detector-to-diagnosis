@@ -272,7 +272,8 @@ open window:
 The rest of the change is what makes it stay fixed:
 
 - a requirement, **SRS-SRT-013**: singles with equal times are taken in crystal order, whatever
-  the order of arrival;
+  the order of arrival (and, since the wide property search of release 0.4.0 found two singles
+  of one crystal with one time stamp, MDQ-PR-027, those in energy order);
 - a property at the unit level, `TheOrderOfTiesDoesNotMatter`, which permutes the singles of equal
   times and requires the same coincidences, with a generator that makes equal times common (about
   one step in thirteen); it fails without the fix;

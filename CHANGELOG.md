@@ -88,6 +88,18 @@ the patch version.
   runners' git 2.55. It parsed the messages of `git bisect run`; reading `git bisect log` was not
   enough, because git 2.55 also writes the log's term in quotes (`first 'bad' commit`). It now
   accepts both forms, raises with git's output when it finds nothing, and a test parses both.
+- Found by the release checks of 0.4.0, all closed:
+  - MDQ-PR-027: two singles of one crystal with one time stamp kept their order of arrival; the
+    sorter now orders ties by crystal and then by energy (SRS-SRT-013).
+  - MDQ-PR-028: the flight recorder's concurrent snapshot test could finish before its writers
+    started; it now waits for them.
+  - MDQ-PR-029: `tools/release_checks.sh` ended after the writer benchmark with status 0, so the
+    gate, the system tests and the fuzzing never ran (0.3.0 ran them by hand); a guard now fails a
+    run that stops early, and the test `tools.release_checks` checks the script.
+  - MDQ-PR-030: seven documents changed without a new version, and CI's document-control job
+    skipped its check without a release tag; it now falls back to the last release record's commit.
+  - MDQ-PR-031: the architecture (version 8) and the threat model (version 2, the crash report
+    store T-35 to T-38) now describe the diagnostics of Chapter 21.
 
 ### Changed
 - The control API is 2.1 (`diagnostics`); an observer may use `diagnostics` as well as `status`

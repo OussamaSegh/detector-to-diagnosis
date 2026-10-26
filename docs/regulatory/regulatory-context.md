@@ -1,6 +1,6 @@
 # MiniDAQ: regulatory context
 
-Version 3 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
+Version 4 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 
 This page places MiniDAQ, written as if it were the DAQ software of a dedicated brain PET
 scanner ([intended use](intended-use.md)), in the regulations of the three markets such a
@@ -136,3 +136,4 @@ records would be a defect in a risk control, and is treated as one.
 | 1 | First version (Chapter 13). |
 | 2 | This history (Chapter 16); the text is unchanged. |
 | 3 | Chapter 17: the evidence of the threat model and the security requirements is linked. |
+| 4 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |

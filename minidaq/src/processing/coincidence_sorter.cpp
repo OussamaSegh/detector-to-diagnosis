@@ -284,13 +284,16 @@ void CoincidenceSorter::compact() {
 // [snippet:insert]
 // Singles with equal times may arrive in any order: the sort stage orders them
 // by crystal within a batch, not across two batches. Putting them in crystal
-// order here makes the coincidences a function of the singles alone, whatever
-// the batches (MDQ-PR-017). Every single at or after opener_ is still in an open
-// window, and none before it can have this time, so the swaps stay there.
+// order here, and two of one crystal in energy order (MDQ-PR-027), makes the
+// coincidences a function of the singles alone, whatever the batches
+// (MDQ-PR-017). Every single at or after opener_ is still in an open window,
+// and none before it can have this time, so the swaps stay there.
 void CoincidenceSorter::insert(const Single& s) {
+  const auto before = [&s](const Single& b) {
+    return s.crystal != b.crystal ? s.crystal < b.crystal : s.energy.count() < b.energy.count();
+  };
   buf_.push_back(s);
-  for (std::size_t i = buf_.size() - 1; i > opener_ && buf_[i - 1].time == s.time && s.crystal < buf_[i - 1].crystal;
-       --i) {
+  for (std::size_t i = buf_.size() - 1; i > opener_ && buf_[i - 1].time == s.time && before(buf_[i - 1]); --i) {
     std::swap(buf_[i - 1], buf_[i]);
   }
 }

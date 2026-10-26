@@ -162,15 +162,18 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Check document versions against the last release tag
+      - name: Check document versions against the last release
         run: |
+          # The last release tag, or else the commit its release record names: the tags are
+          # pushed by hand, and without one this check was skipped on every run (MDQ-PR-030).
           last="$(git describe --tags --abbrev=0 --match 'book-v*' HEAD 2>/dev/null || true)"
           if [ -z "$last" ]; then
-            echo "no release tag in this clone: version check skipped"
-            python3 tools/design_file.py . --check
-          else
-            python3 tools/design_file.py . --check --since "$last"
+            record="$(ls docs/regulatory/releases/*.md | sort -V | tail -n 1)"
+            last="$(grep -oE -m 1 'commit [0-9a-f]{40}' "$record" | cut -d' ' -f2)"
+            echo "no release tag in this clone: comparing with the commit of $record, $last"
           fi
+          test -n "$last" && git cat-file -e "$last^{commit}"
+          python3 tools/design_file.py . --check --since "$last"
 
   release-package:
     # Chapter 20: for a release tag, the product archive of tools/release_bundle.py. Its SHA-256

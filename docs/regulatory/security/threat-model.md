@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 17). Status: draft for review.
+Version 2 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -34,6 +34,7 @@ them.
 | The configuration | Decides how coincidences are formed. | Integrity |
 | Tokens, the start-up token, the TLS private key | Whoever holds an operator token controls the acquisition. | Confidentiality, integrity |
 | The audit trail | Evidence of who did what, for an investigation. | Integrity, availability |
+| Crash reports and the flight recorder's events | Evidence of what the server did before a failure, for an investigation (Chapter 21). | Integrity, availability; confidentiality is low, since they hold no token and no patient data |
 
 MiniDAQ holds no patient identity or other personal health data (Chapter 12): the link between a
 scan and a patient is made by the scanner's software. That keeps most confidentiality threats
@@ -83,8 +84,9 @@ statements and notes. A status is one of:
 | tokens (store) | | T-23: mitigated | T-24: n/a | T-25: mitigated | T-26: accepted | |
 | listmode (store) | | T-27: mitigated | T-28: mitigated | T-29: environment | T-30: mitigated | |
 | audit (store) | | T-31: environment | T-32: n/a | T-33: mitigated | T-34: accepted | |
+| crashreport (store) | | T-35: environment | T-36: n/a | T-37: accepted | T-38: accepted | |
 
-Of the 34 entries, 20 are mitigated, 6 rely on the environment, 5 are accepted and 3 are not
+Of the 38 entries, 20 are mitigated, 7 rely on the environment, 7 are accepted and 4 are not
 applicable. Three of the mitigated entries are mitigated only in part, and their remainder is a
 recorded gap of section 7: T-27 (a CRC detects damage, not a deliberate change), T-06 (on
 loopback without TLS) and T-03 (a shared token names a group, not a person).
@@ -195,7 +197,7 @@ what the NeuroLF's instructions for use say and who approves them).
 > 8. keep the acquired data on a file system that other users of the PC cannot fill, such as a
 >    partition or a quota of its own.
 
-Threats with the status "environment" in `threats.json` (T-04, T-07, T-15, T-16, T-29, T-31)
+Threats with the status "environment" in `threats.json` (T-04, T-07, T-15, T-16, T-29, T-31, T-35)
 rely on one or more of these items; the effectiveness of RC-25 is the inspection that this text
 is in the accompanying documentation of the release.
 
@@ -262,3 +264,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 17): STRIDE analysis T-01 to T-34, attack tree for H-08, environment assumptions (RC-25), gaps, vulnerability management. |
+| 2 | Chapter 21 (CR-0007), recorded at the release checks of 0.4.0 (MDQ-PR-031): the crash report as a data store (T-35 to T-38) and the diagnostics response in T-09. Also editorial: the scope names no manufacturer. |

@@ -111,7 +111,7 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-SRT-010 | When configured like the simulator's reference counter, the coincidence sorter shall find exactly the prompts that the reference counter finds in the simulator's ground truth. | sorter | T |
 | SRS-SRT-011 | The coincidence sorter's delayed window shall estimate the randoms among the prompts to within 15% at 40 MBq. | sorter | T |
 | SRS-SRT-012 | When the take-winner-of-goods policy finds good pairs with equal summed energy, the coincidence sorter shall keep the pair with the earliest first single, and among those the earliest second single. | sorter | T |
-| SRS-SRT-013 | The coincidence sorter shall give the same coincidences, each with the same first and second single, whatever the order in which singles with equal times arrive, and take such singles in crystal order. | sorter | T |
+| SRS-SRT-013 | The coincidence sorter shall give the same coincidences, each with the same first and second single, whatever the order in which singles with equal times arrive, and take such singles in crystal order, and two of one crystal in energy order. | sorter | T |
 | SRS-MRG-001 | The stream merger shall merge the time-ordered streams of several boards into one time-ordered stream, whatever the sizes of the chunks it receives. | merger | T |
 | SRS-MRG-002 | The stream merger shall release a single only when every board has delivered a later single or a time marker. | merger | T |
 | SRS-MRG-003 | When one board falls behind the others by more than the configured maximum skew in µs, the stream merger shall drop and count only that board's late singles. | merger | T |
@@ -287,4 +287,4 @@ ADR 0016).
 | 6 | Release 0.3.0: the verification of SRS-PERF-020 re-measured with the coincidence sorter; the requirement is unchanged and met (problem report MDQ-PR-014, CAPA-0004). |
 | 7 | Chapter 18: SRS-CTL-035, the order of the service's calls to its sink, which the service did and no requirement or test stated; SRS-SRT-007 states the upper limit of the delay (1 ms), which the sorter enforced and the requirement left out (found by mutation testing). |
 | 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-044, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |
-| 9 | Chapter 21: the diagnostics requirements SRS-DIAG-001 to SRS-DIAG-005 (ADR 0016, CR-0007); SRS-SEC-003 lets an observer use `diagnostics`, which only reads. |
+| 9 | Chapter 21: the diagnostics requirements SRS-DIAG-001 to SRS-DIAG-005 (ADR 0016, CR-0007); SRS-SEC-003 lets an observer use `diagnostics`, which only reads. SRS-SRT-013 also orders two singles of one crystal with equal times by energy (problem report MDQ-PR-027). |

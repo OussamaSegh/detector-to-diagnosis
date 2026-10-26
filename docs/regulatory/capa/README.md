@@ -1,6 +1,6 @@
 # MiniDAQ corrective and preventive action
 
-Version 1 (MiniDAQ 0.3.0-dev, Chapter 16). Status: draft for review.
+Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
 
 How MiniDAQ finds the cause of a nonconformity and removes it, so that the problem does not
 happen again (corrective action), and acts on a cause before it has produced a problem
@@ -46,3 +46,4 @@ that no root cause is "human error", and that a closed CAPA records its effectiv
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 16). |
+| 2 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e670ec4); the content is unchanged. |

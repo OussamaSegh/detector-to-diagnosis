@@ -106,6 +106,9 @@ if(Python3_Interpreter_FOUND)
   set_tests_properties(tools.perf_gate PROPERTIES
     ENVIRONMENT "PYTHONPATH=${PROJECT_SOURCE_DIR}/tools;PYTHONDONTWRITEBYTECODE=1")
   set_tests_properties(tools.release_bundle tools.perf_gate PROPERTIES LABELS "unit")
+  # The release checks themselves: no step may end the script early (MDQ-PR-029).
+  add_test(NAME tools.release_checks COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_release_checks.py)
+  set_tests_properties(tools.release_checks PROPERTIES LABELS "unit")
   # Chapter 21: the version the programs report (MDQ-PR-024), and the postmortem of a core dump.
   add_test(NAME docs.version COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_version.py ${PROJECT_SOURCE_DIR})
   add_test(NAME tools.check_version COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_check_version.py)

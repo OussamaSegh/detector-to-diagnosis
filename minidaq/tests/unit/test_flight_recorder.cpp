@@ -136,14 +136,20 @@ TEST(FlightRecorder, ASnapshotTakenWhileThreadsRecordNeverShowsHalfAnEvent) {
   auto& r = fresh();
   constexpr int kWriters = 4;
   std::atomic<bool> stop{false};
+  // The snapshots start only once every writer has recorded: in a slow build (coverage) the 200
+  // snapshots were otherwise all taken before the first writer ran, and saw nothing (MDQ-PR-028).
+  std::latch started(kWriters);
   std::vector<std::thread> writers;
   for (int w = 0; w < kWriters; ++w) {
     writers.emplace_back([&] {
+      r.record(TraceCode::note, 0, ~std::uint64_t{0});
+      started.count_down();
       for (std::uint64_t i = 1; !stop.load(std::memory_order_relaxed); ++i) {
         r.record(TraceCode::note, i, ~i);  // b is always the complement of a
       }
     });
   }
+  started.wait();
   std::vector<TraceEvent> out(FlightRecorder::kCapacity);
   std::size_t seen = 0;
   for (int k = 0; k < 200; ++k) {

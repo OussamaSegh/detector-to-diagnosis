@@ -221,9 +221,13 @@ std::vector<Coincidence> reference_prompts(const SorterConfig& cfg, const std::v
     }
     s.push_back(x);
   }
-  // Singles with equal times count in crystal order, whatever order they came in.
+  // Singles with equal times count in crystal order, and two of one crystal in
+  // energy order, whatever order they came in.
   std::stable_sort(s.begin(), s.end(), [](const Single& a, const Single& b) {
-    return a.time != b.time ? a.time < b.time : a.crystal < b.crystal;
+    if (a.time != b.time) {
+      return a.time < b.time;
+    }
+    return a.crystal != b.crystal ? a.crystal < b.crystal : a.energy.count() < b.energy.count();
   });
   std::vector<Coincidence> out;
   for (std::size_t o = 0; o < s.size();) {

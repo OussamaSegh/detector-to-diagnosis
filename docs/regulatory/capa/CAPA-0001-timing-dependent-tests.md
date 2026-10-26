@@ -4,9 +4,9 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022 and MDQ-PR-028 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0 |
+| Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
 
 ## Problem
 
@@ -81,8 +81,25 @@ Criterion: the stress run of the ThreadSanitizer build with 100 repetitions pass
 that implements this CAPA, and no MiniDAQ test fails in CI for a timing reason between that
 commit and the release of 0.4.0 (CI history and problem reports).
 Due: release 0.4.0.
-Result: filled in at the check.
+
+Result (2026-10-26, release checks of 0.4.0): **not effective.** The stress run passed at the
+CAPA's commit (`measurements/ch16/stress-after-tsan.txt`), but two tests failed for a timing
+reason after it. Exercise 5.2's speed test had a budget that held only on the reference machine
+and failed on a GitHub runner (MDQ-PR-022, corrected in Chapter 20); and the flight recorder's
+concurrent snapshot test, written in Chapter 21, took its snapshots before its writer threads
+had started in the coverage build (MDQ-PR-028). Rule 5.5 covers waiting and sleeping; neither
+failure had a wait to find, so `tests.waits` could not see them. The cause of the CAPA is
+broader than its first action: a test that assumes how fast the machine or a thread is.
+
+Further action: rule 5.6 of the coding standard (version 4) and item 4.6 of the code review
+checklist (version 2): a test that starts threads waits until each has started before it checks
+what they did; a speed test compares with a budget that the slowest machine that runs it can
+meet, or runs only where its budget holds (MDQ-PR-022's resolution). The coverage build stays in
+the release checks because it is the slowest build and starts threads late.
+
+New criterion: no test fails for a timing reason in CI, in the release checks or in the stress
+run between this result and the release of 0.5.0. Due: release 0.5.0.
 
 ## Closure
 
-Not closed: the effectiveness check is due at release 0.4.0.
+Not closed: the action was not effective at release 0.4.0; the next check is at release 0.5.0.
