@@ -9,12 +9,12 @@ Last updated: 2026-10-26 11:10 UTC: colored covers for both volumes (book/assets
 
 ## 1. The goal
 
-The reader is a C++ engineer preparing to work on the data acquisition system of a brain PET
-scanner. This repository holds two things:
+The reader is a C++ engineer who builds or leads the data acquisition software of a PET scanner. This repository holds two things:
 
 - **The book** *Detector to Diagnosis: Building Regulated Medical Imaging Software in Modern C++*
   (`book/`, outputs `detector-to-diagnosis-*`). It has 34 chapters in Parts I to VIII, plus a
-  new Part IX and an architecture appendix (section 6). It is a 10-week preparation.
+  new Part IX and an architecture appendix (section 6). It is a standalone technical book,
+  8.5 x 11 in, publishable on Amazon KDP.
 - **MiniDAQ**, the running project: a simulated PET data acquisition system with its regulated
   software file. The code is in `minidaq/`, with `exercises/`, `docs/`, `tools/`, `fuzz/`,
   `benchmarks/` and `python/`.
@@ -60,8 +60,8 @@ Style:
 - No em-dashes.
 - Prose lines wrapped at 100 characters.
 - Never write "the plan" in the book: readers have no plan.
-- State a chapter's week only as it appears in the front-matter schedule table
-  (`book/src/front/schedule.md`), and update that table when a Part lands.
+- A chapter gives only its reading, exercise and milestone hours; no weeks, no schedule.
+- New figures render at dpi=300; a wide table's column widths sum to 1 or less.
 
 Each chapter follows this template:
 
@@ -88,19 +88,24 @@ Commits and pushing:
   description text, salary or offer details, private situation, tokens or credentials, and no
   private links (claude.ai sessions or projects, the project files folder). Check every diff
   for them before committing; `git grep -i -E "gmail|@[a-z]+\.(com|ch)"` finds the common case.
+  One exception (user decision, 2026-10-26): the author name "Oussama Seghaier" is allowed in the
+  repository (title page, copyright page, covers, default `BOOK_AUTHOR`).
 - **The book is generic** (user decision, 2026-10-26): it is written for any engineer who leads
   a PET DAQ. It names no employer of the reader ("your team", "your company"), quotes and cites no
-  role description, and gives no calendar dates for the reader's schedule (weeks 1 to 10 only).
+  role description, and gives no calendar dates and no schedule.
   Since the retitling (2026-10-26) it names no particular scanner or manufacturer either: write
   "your scanner" and cite only public standards, guidance and textbooks. Future chapters follow
   the same rule.
 - **The book is publishable on Amazon KDP** (user rule, 2026-10-26 14:56 UTC): a standalone
   technical book for any engineer. No study schedule, no week numbers, no "first weeks or 90 days
   at your new job" plan, no reader-specific onboarding (a chapter may still give reading and
-  exercise hours). KDP specifications: a supported trim size (7x10 in), margins and gutter for the
+  exercise hours). KDP specifications: a supported trim size (8.5 x 11 in, one volume, user
+  decision 2026-10-26; at most 828 pages, and the KDP build fails above it), margins and gutter for the
   page count, embedded fonts, no bleed problems, a copyright page, a full-wrap paperback cover
   sized for the spine width, and an EPUB that passes EPUBCheck. Part V onward follows it as it is
-  written; Parts I to IV, Chapter 34's plan and the build are retrofitted.
+  written; Parts I to IV and the build were retrofitted in PR #2 (merged 2026-10-26); Chapter 34
+  must be written generic. KDP asks at upload whether the content is AI-generated; the copyright
+  page says the book was written with AI help.
 - Every commit message ends with these lines:
 
   ```
@@ -157,8 +162,9 @@ Dependencies and process:
 |---|---|
 | `book/src/` | The chapters, in `partN/chNN-*.md`, and the front matter in `front/`. `book/book.txt` and `book/solutions.txt` give the order. |
 | `book/solutions/chNN.md` | The solutions manual. |
-| `book/build.sh` | Builds the book with Pandoc and XeLaTeX (7x10 in PDF, and EPUB). Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
-| `book/assets/cover.tex` | The front covers (TikZ, 7x10 in), one source for both volumes: `\nlfvolume` is `book` (violet ring) or `solutions` (teal ring, "Solutions Manual"). `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, which becomes page 1 of the PDF (with `\frontmatter` patched so no blank page follows), and renders it at 240 dpi to the EPUB cover PNG. No names, no version on the cover. |
+| `book/build.sh` | Builds the book with Pandoc and XeLaTeX (8.5 x 11 in PDF, and EPUB); trim and margins are set in one place at its top. `book/build.sh kdp [book|solutions|both]` writes the KDP interior PDFs (gutter for the page count), full-wrap covers and EPUBs to `book/build/kdp/`, and runs EPUBCheck (`EPUBCHECK_JAR`); workflow `kdp.yml` runs it in CI. Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
+| `book/src/front/how-to-use.md`, `copyright.md` | How to use the book (chapter shape, core and full paths, the repository's tags) and the copyright page (MIT for the code, disclaimer, AI-assistance note). |
+| `book/assets/cover.tex` | The front covers and the full-wrap KDP covers (TikZ; `\nlftrimw`, `\nlftrimh`, `\nlfwrap`, `\nlfspine`, `\nlfpages`, `\nlfauthor`; the 7 x 10 design scaled to the trim), one source for both volumes: `\nlfvolume` is `book` (violet ring) or `solutions` (teal ring, "Solutions Manual"). `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, which becomes page 1 of the PDF (with `\frontmatter` patched so no blank page follows), and renders it at 240 dpi to the EPUB cover PNG. The author name is on the cover; no version. |
 | `minidaq/` | The C++20 code. `include/minidaq/` holds the core, format, processing, pipeline, rt, control and output layers; `src/`; `apps/` (server, ctl, sim, ...); `tests/unit/` (GoogleTest); `tests/support/property.hpp`. |
 | `exercises/chNN/eK_name/` | Exercises, each with `README.md`, `starter/`, `solution/` (and `NOTES.md`), and `tests/`. Built with `-DMINIDAQ_BUILD_EXERCISES=ON`. Starters are built with `-DMINIDAQ_BUILD_STARTERS=ON` and run with `ctest -L starter` (they must fail). |
 | `docs/regulatory/` | The software file: SRS (`srs.md`, 133 requirements, v7), SDP (`sdp.md`, v5), risk file (`risk/`), SOUP list, problem reports (`problem-reports.json` gives `known-anomalies.md`), trace matrix, CAPAs, change requests, QMS design file (`qms/design-file.json`), and release records (`releases/X.Y.Z.md`). |
@@ -216,8 +222,8 @@ A release:
    fuzzing per target.
 2. Copy OUT to `measurements/release-X.Y.Z/`.
 3. Write `docs/regulatory/releases/X.Y.Z.md` and check it with Exercise 14.5's checker.
-4. Bump `VERSION`, add the CHANGELOG section, and update `book/src/front/edition.md` and the
-   schedule table.
+4. Bump `VERSION`, add the CHANGELOG section, and update `book/src/front/edition.md`. For a KDP
+   upload, build with `book/build.sh kdp both`.
 5. Commit and push. **Wait for green GitHub CI on that release commit** (SDP section 8,
    MDQ-PR-016).
 6. Tag `book-vX.Y.Z` (locally, and a line in `.github/tags.txt` pushed to main), build the
@@ -388,12 +394,11 @@ first Part this applies to.
 
 ## 6. Decisions already made (do not reopen)
 
-- Spelling is American. The PDF is 7x10 in, built with XeLaTeX. Diagrams use Graphviz. CI uses
+- Spelling is American. The book is 8.5 x 11 in, one volume, built with XeLaTeX. Diagrams use Graphviz. CI uses
   GitHub Actions. Dependencies are pinned by commit with CMake FetchContent, with a
   system-package option.
 - Chapters 21, 32 and 34 are deepened in place. Part IX holds only the three new chapters.
 - Property-based tests use the in-house harness, not RapidCheck (ADR 0015).
-- There is one 10-week schedule table in the front matter. Chapters refer to it.
 - The user chose to keep the current machine ("Keep it as it is").
 - Facts that later chapters rely on:
   - dead time is 1 µs per block (an assumption);

@@ -28,6 +28,13 @@ the patch version.
   `measurements/ch23/`. SRS-RDO-013 to SRS-RDO-015 (SRS version 12), RC-29, ADR 0018, CR-0009.
 
 ### Changed
+- The book is a standalone technical book, publishable on Amazon KDP (PR #2): the 10-week
+  schedule and the new-job framing are removed from Parts I to IV (a new "How to use this book"
+  replaces the schedule); a copyright page; the trim is 8.5 x 11 in, one volume; `book/build.sh
+  kdp` builds the paperback interiors with the gutter for their page count, full-wrap covers sized
+  to the spine and EPUBs checked by EPUBCheck (workflow `kdp.yml`); the author name is on the
+  title page and covers; the figures of Chapters 8 to 12 render at 300 dpi.
+- The download page link is near the top of the README.
 - The strict JSON reader of the configuration moved to `minidaq/src/config/object_reader.hpp`, to
   be shared with the hardware description; Chapter 6 includes its snippet from there.
 
