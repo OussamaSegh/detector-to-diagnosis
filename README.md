@@ -1,7 +1,12 @@
 # Detector to Diagnosis: MiniDAQ and book sources
 
 Companion repository for *Detector to Diagnosis: Building Regulated Medical Imaging Software in
-Modern C++*. It contains:
+Modern C++*.
+
+**Download the book:** EPUB and PDF of every release are on the
+[download page](https://oussamasegh.github.io/detector-to-diagnosis/).
+
+This repository contains:
 
 | Path | What |
 |---|---|
