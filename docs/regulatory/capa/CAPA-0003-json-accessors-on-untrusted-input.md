@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-10-25, by the software lead (Part III review) |
 | Source | MDQ-PR-001, MDQ-PR-013 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0 |
+| Effectiveness check | release 0.4.0: effective |
 
 ## Problem
 
@@ -92,8 +92,19 @@ that is not a string was never valid.
 
 Criterion: no JSON exception escapes in any fuzz target, in CI or in the 10-minute release
 campaigns, and no problem report of this cause, between this CAPA and the release of 0.4.0. Due:
-release 0.4.0. Result: filled in at the check.
+release 0.4.0.
+
+Result: **effective** (2026-10-26, release checks of 0.4.0). Both release runs of 0.4.0 (commits
+`643cec8` and `6766495`) fuzzed each of the seven targets for 600 s on its own CPU with no crash,
+leak or timeout; the second run executed 5.4 M configuration inputs and 0.68 M control-protocol
+lines, the two targets that parse JSON from outside (`measurements/release-0.4.0/fuzz/`). Every
+`fuzz-smoke` job that finished on the repository's CI since its history was rewritten passed (10
+of 10, 60 s per target). Problem reports MDQ-PR-014 to MDQ-PR-034 contain no JSON exception and
+no other crash on input. The CI history before the rewrite is no longer on GitHub; the problem
+reports cover that period, and none of them is of this cause.
 
 ## Closure
 
-Not closed: the effectiveness check is due at release 0.4.0.
+Closed on 2026-10-26 by the software lead, at the release of 0.4.0: the actions are implemented
+and the effectiveness check passed. A JSON exception on untrusted input found later is a new
+problem report, and the CAPA is reopened if its cause is the same.

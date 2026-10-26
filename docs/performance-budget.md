@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Version 3 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: measured on the book's machine at tag `ch05`, the whole pipeline again for release 0.3.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
+Version 4 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: measured on the book's machine at tag `ch05`, the whole pipeline again for releases 0.3.0 and 0.4.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -42,6 +42,11 @@ change was intended; that this row and SRS-PERF-020's evidence kept the old numb
 chapters was not (MDQ-PR-014, CAPA-0004). This synthetic stream puts every single in the energy
 window and is a heavier load for the sorter than Chapter 11's realistic stream, in which about
 63% of the singles are filtered out before it.
+
+Release 0.4.0 measured the row again (`hardened` preset, 5 repetitions, commit `6766495`,
+`measurements/release-0.4.0/perf-pipeline.txt`): median 36.6 M words/s, 27.3 ns per single, a
+margin of 3.7 times at 10 M singles/s. No code of the pipeline's stages changed between the two
+releases except the sorter's order of singles with equal times (SRS-SRT-013).
 
 ## Hardened builds (Chapter 7)
 
@@ -99,6 +104,7 @@ the sorter produces about 2.7 M coincidences/s (0.039 per single, `bm_sorter`), 
 | Sink on the disk, fsync `close`, 3.2 GB | 19.0 M coincidences/s (about 300 MB/s) | 7.0x | `writer_throughput`, `writer.txt` |
 | Sink on the disk, fsync every 256 blocks, 3.2 GB | 18.6 M coincidences/s | 6.9x | `writer_throughput`, `writer.txt` |
 | Sink on the disk, fsync every 16 blocks, 3.2 GB | 20.5 M coincidences/s | 7.6x | `writer_throughput`, `writer.txt` |
+| Sink on the disk, fsync `close`, 3.2 GB, release 0.4.0 | 14.0 to 16.4 M coincidences/s (3 runs) | 5.2x | `measurements/release-0.4.0/perf-writer.txt` |
 
 Short runs (320 MB) reach 23 to 38 M coincidences/s because the page cache absorbs them; only
 runs longer than the kernel's dirty limit (20% of 15 GiB here) measure the disk. The VM's disk
@@ -118,6 +124,18 @@ is incomplete (CAPA-0004). A change that intentionally slows a row updates the b
 table in the same change, with a reason; the `BM_Pipeline` entries were replaced at release
 0.3.0 because Chapter 10 made the pair stage the coincidence sorter.
 
+At release 0.4.0 the gate failed, twice on two commits: `BM_EnergyFilter/1` and `/3` ran 18% and
+23% slower than the baseline (p < 0.0001, `measurements/release-0.4.0/perf-gate.txt`), while
+`BM_DecodePacked` ran 48% faster. No code that the energy-filter benchmarks run changed since
+0.3.0. An interleaved A/B on the same machine in one job (`tools/perf_ab.sh`, the release build
+of tag `book-v0.3.0` against that of commit `6766495`, 5 rounds of 2 repetitions) found no
+regression: speed 1.02 and 1.00 for the two rows, `BM_Pipeline` 0.95 with p = 0.06
+(`measurements/release-0.4.0/perf-ab/gate.txt`). The machine is slower than on the day the
+baseline was recorded, which a shared VM can be. The baseline is kept: re-recorded on a slow day,
+it would let a real regression of the same size pass on a fast one. The release record shows
+both results; when the baseline gate and the A/B disagree, the A/B decides whether code got
+slower, and the baseline gate says whether the margins of this table still hold.
+
 ## Document history
 
 | Version | Change |
@@ -125,3 +143,4 @@ table in the same change, with a reason; the `BM_Pipeline` entries were replaced
 | 1 | First controlled version (Chapter 16). Earlier states, without versions, are in git at tags `ch05`, `ch07`, `ch11` and `ch12`. |
 | 2 | Release 0.3.0: the whole pipeline re-measured with the coincidence sorter (MDQ-PR-014, CAPA-0004); the regression baseline updated for `BM_Pipeline`. |
 | 3 | Editorial: the repository's history was rewritten to remove personal data, so the cited commit hashes are those of the rewritten commits; the content is unchanged. |
+| 4 | Release 0.4.0: the whole pipeline and the list-mode writer re-measured; the regression gate's failure explained by an interleaved A/B, and the baseline kept. |

@@ -11,6 +11,7 @@
 #include <chrono>
 #include <map>
 #include <numeric>
+#include <span>
 #include <thread>
 #include <vector>
 
@@ -152,6 +153,41 @@ TEST(UdpDetector, DeliversWordsInOrderAndCountsEveryFault) {
   ASSERT_EQ(gaps.size(), 1U);
   EXPECT_EQ(gaps[0].a, 1U);
   EXPECT_EQ(gaps[0].b, 1U);
+}
+
+TEST(UdpDetector, TracesAResynchronizationOfTheLink) {
+  // REQ: SRS-DIAG-004
+  // A board that restarts numbers its packets anew; a jump forward of more than
+  // max_gap_packets is a new numbering, not a loss, and the flight recorder keeps it.
+  // Found by the coverage review of release 0.4.0: the trace had no test.
+  const std::uint64_t began = test_support::trace_clock_ns();
+  auto opened = UdpDetector::open(loopback());
+  ASSERT_TRUE(opened) << opened.error();
+  UdpDetector& d = **opened;
+  Sender tx{d.port()};
+  std::vector<std::uint64_t> words(5 * readout::words_per_standard_mtu);
+  std::iota(words.begin(), words.end(), std::uint64_t{1});
+  const auto half = std::span{words}.first(words.size() / 2);
+  const auto rest = std::span{words}.subspan(words.size() / 2);
+  sim::Packetizer before{{.source = 1, .first_sequence = 100}};
+  sim::Packetizer after{{.source = 1, .first_sequence = 100 + (std::uint32_t{1} << 30)}};
+  for (const auto& p : before.packetize(half, false)) {
+    tx.send(p.bytes);
+  }
+  for (const auto& p : after.packetize(rest, true)) {
+    tx.send(p.bytes);
+  }
+
+  const auto got = read_words(d, words.size());
+  ASSERT_EQ(got.size(), words.size());
+  EXPECT_TRUE(d.end_of_stream());
+  auto c = counters_of(d);
+  EXPECT_EQ(c["sequence_resyncs"], 1U);
+  EXPECT_EQ(c["packets_lost"], 0U) << "a new numbering loses nothing";
+  const auto resyncs = test_support::traced_since(began, TraceCode::link_resync);
+  ASSERT_EQ(resyncs.size(), 1U);
+  EXPECT_EQ(resyncs[0].a, 1U);
+  EXPECT_TRUE(test_support::traced_since(began, TraceCode::link_gap).empty());
 }
 
 TEST(UdpDetector, RunsAnAcquisitionThroughTheService) {

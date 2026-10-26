@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 9 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
+Version 10 (MiniDAQ 0.4.0, release 0.4.0). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -270,8 +270,8 @@ ADR 0016).
 
 | ID | Method | Evidence |
 |---|---|---|
-| SRS-PERF-020 | M | [Performance budget](../performance-budget.md), version 2: whole pipeline with the coincidence sorter 26.4 ns per single (37.9 M words/s), margin 3.8 times at 10 M singles/s, release 0.3.0 (`measurements/release-0.3.0/`); the `hardened` build within noise of it (`pipeline-attribution.txt`). Until version 5 this row quoted 86 M words/s, measured before Chapter 10 (MDQ-PR-014). Re-measure on the acquisition PC. |
-| SRS-PERF-021 | M | [Performance budget](../performance-budget.md), list-mode writer section: about 19 M coincidences/s with fsync on the reference machine (`measurements/ch12/`), against the 2.7 M coincidences/s that the pair stage produces at 70 M singles/s. |
+| SRS-PERF-020 | M | [Performance budget](../performance-budget.md), version 4: whole pipeline with the coincidence sorter in the `hardened` build, median 36.6 M words/s (27.3 ns per single), margin 3.7 times at 10 M singles/s, release 0.4.0 (`measurements/release-0.4.0/perf-pipeline.txt`); release 0.3.0 measured 37.9 M words/s in the `release` build. Until version 5 this row quoted 86 M words/s, measured before Chapter 10 (MDQ-PR-014). Re-measure on the acquisition PC. |
+| SRS-PERF-021 | M | [Performance budget](../performance-budget.md), list-mode writer section: 14.0 to 16.4 M coincidences/s with fsync at close, release 0.4.0 (`measurements/release-0.4.0/perf-writer.txt`; about 19 M in Chapter 12, `measurements/ch12/`), at least 4.7 times the 3 M required; the pair stage produces 2.7 M coincidences/s at 70 M singles/s. |
 | SRS-DIAG-005 | M | `bm_flight_recorder` (`measurements/ch21/bm_flight_recorder.txt`): 32.7 ns per event with one thread, 40.9 ns real time with four, 32.5 ns while another thread takes snapshots; a first version with one shared counter took 213 ns with four threads. The limit of 100 ns is a book-level number (assumption: confirm with team). |
 | SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
 
@@ -288,3 +288,4 @@ ADR 0016).
 | 7 | Chapter 18: SRS-CTL-035, the order of the service's calls to its sink, which the service did and no requirement or test stated; SRS-SRT-007 states the upper limit of the delay (1 ms), which the sorter enforced and the requirement left out (found by mutation testing). |
 | 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-044, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |
 | 9 | Chapter 21: the diagnostics requirements SRS-DIAG-001 to SRS-DIAG-005 (ADR 0016, CR-0007); SRS-SEC-003 lets an observer use `diagnostics`, which only reads. SRS-SRT-013 also orders two singles of one crystal with equal times by energy (problem report MDQ-PR-027). |
+| 10 | Release 0.4.0: the verification of SRS-PERF-020 and SRS-PERF-021 re-measured; both requirements unchanged and met. |
