@@ -21,6 +21,10 @@ MiniDAQ is a learning project, not a medical device.
 
 ## Quick start (Ubuntu 24.04, about 10 minutes)
 
+The book's front matter, *How to use this book*, has the full step-by-step guide: what to
+install, building and testing, a first MiniDAQ session, working from the chapter tags, and doing
+the exercises. The short version:
+
 ```bash
 sudo apt-get install -y build-essential cmake ninja-build git clang-18 libclang-rt-18-dev
 git clone <this repo> minidaq && cd minidaq      # or unzip minidaq-vX.Y.Z.zip
@@ -67,10 +71,10 @@ The list-mode format is specified in [`docs/formats/mdq-l1.md`](docs/formats/mdq
 ## Exercises
 
 ```bash
-cmake --preset debug -DMINIDAQ_BUILD_STARTERS=ON
-cmake --build --preset debug
-ctest --preset debug -L starter -R ch01        # your work: fails until you solve it
-ctest --preset debug -L solution -R ch01       # reference solutions: always green
+cmake --preset debug -B build/mine -DMINIDAQ_BUILD_STARTERS=ON
+cmake --build build/mine
+ctest --test-dir build/mine -L starter -R ch01/e1     # your work: fails until you solve it
+ctest --test-dir build/mine -L solution -R ch01/e1    # reference solution: always green
 ```
 
 ## Building the book

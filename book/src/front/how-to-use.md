@@ -41,9 +41,119 @@ answer, and what to revisit.
 
 ## The companion repository {.unnumbered}
 
-MiniDAQ grows in chapter order. The repository has one git tag per chapter (`ch00` is the empty
-starting point, then `ch01`, `ch02` and so on), so each milestone can start from the previous
-chapter's tag (`ch07` for Chapter 8's milestone, for example) rather than from your own code.
-Merge your own work into it when you want to keep it. The exercises are under
-`exercises/chNN/`, each with its README, starter, solution and tests; the repository README lists
-the tools to install and the commands to build and test.
+Everything the book builds is in the companion repository,
+<https://github.com/OussamaSegh/detector-to-diagnosis>. Each release of the book also comes with
+a zip of the code at the same version on the download page,
+<https://oussamasegh.github.io/detector-to-diagnosis/>. This section takes you from nothing to a
+working MiniDAQ and your first exercise; do it before Chapter 1.
+
+### What you need {.unnumbered}
+
+A Linux machine with Ubuntu 24.04 is the reference: every command in the book was run there.
+Another recent Linux distribution works with its own package names. WSL2 with an Ubuntu 24.04
+distribution works for everything except the real-time measurements of Chapter 4, which need a
+real kernel. macOS works for Parts I to IV with the Homebrew compilers; the hardware, networking
+and platform chapters (4, 22, 23 and 25) need Linux. Plan for 4 GB of memory and 15 GB of disk.
+
+Install the compilers and build tools once:
+
+```bash
+sudo apt-get install -y build-essential cmake ninja-build git python3 \
+  clang-18 clang-tidy-18 libclang-rt-18-dev libssl-dev
+```
+
+A few chapters use one more tool, and say so in their prerequisites: `linux-tools-generic` for
+`perf` (Chapter 5), `gdb` (Chapter 21), `iverilog` for the firmware listing (Chapter 24,
+optional). Everything else, such as GoogleTest and nlohmann/json, is
+downloaded by CMake at a pinned version the first time you configure.
+
+### Get the code and build it {.unnumbered}
+
+```bash
+git clone https://github.com/OussamaSegh/detector-to-diagnosis.git
+cd detector-to-diagnosis
+cmake --preset debug                 # configure into build/debug
+cmake --build --preset debug         # compile MiniDAQ, its tools and the tests
+ctest --preset debug -LE starter     # run every test; all must pass
+```
+
+The first configure takes a few minutes because it fetches the dependencies; a full build takes a
+few more. Other presets build the same code in other ways and are introduced where the book needs
+them: `release` for measurements, `asan-ubsan` and `tsan` for the sanitizers (Chapters 2 and 3),
+`coverage` (Chapter 18). `ci/run_all.sh` runs every configuration the continuous integration
+runs, which is what you do before you call a change finished.
+
+### Run MiniDAQ {.unnumbered}
+
+The programs are in `build/debug/minidaq/apps/`, and each prints its usage when it is given
+`--help`. A first session with the acquisition server and its command-line client, in two
+terminals:
+
+```bash
+# terminal 1: the server, with an audit trail of every command
+build/debug/minidaq/apps/minidaq_server --audit audit.jsonl
+
+# terminal 2: configure a two-second run, start it, wait for its end, read the status
+build/debug/minidaq/apps/minidaq_ctl configure minidaq/configs/short-run.json
+build/debug/minidaq/apps/minidaq_ctl start
+build/debug/minidaq/apps/minidaq_ctl wait configured 30
+build/debug/minidaq/apps/minidaq_ctl status
+```
+
+The client finds the server's access token by itself (Chapter 17 explains how). Stop the server
+with Ctrl+C. Do not worry if MiniDAQ is larger than the chapter you are reading: the repository's
+main branch holds the finished system, and the chapter tags described next show it as it grows.
+
+### Follow MiniDAQ chapter by chapter {.unnumbered}
+
+The repository has one git tag per chapter: `ch00` is the empty starting point, and `chNN` is
+the repository at the end of Chapter NN. To work on a chapter's milestone from the end of the
+chapter before it, make a branch of your own at that tag:
+
+```bash
+git switch -c my-ch08 ch07     # Chapter 8's milestone, starting from the end of Chapter 7
+# ... your work, with commits ...
+git diff ch08 -- minidaq/      # compare with the book's milestone when you are done
+```
+
+Your branch keeps your work; `git switch main` brings back the finished system. Book releases are
+tagged `book-vX.Y.Z`, and the code of a release matches the book of the same version.
+
+### Do the exercises {.unnumbered}
+
+Every exercise lives in `exercises/chNN/eM_name/` with four parts: `README.md` states the goal
+and the acceptance criteria, `starter/` is where you work, `tests/` holds the acceptance tests,
+and `solution/` holds a solution that passes them. The starters are not built by default, because
+their tests fail until you have done the work. Build them in a directory of their own:
+
+```bash
+cmake --preset debug -B build/mine -DMINIDAQ_BUILD_STARTERS=ON
+cmake --build build/mine
+ctest --test-dir build/mine -L starter -R ch01/e1     # your work: red until it is done
+ctest --test-dir build/mine -L solution -R ch01/e1    # the reference solution: always green
+```
+
+Edit the files in `starter/`, rebuild, and run the starter's tests again until they pass. The
+tests are the acceptance criteria, so do not change them to make them pass. A few exercises
+are written in Python or are measurements; their README says how to run them. The solutions
+manual, a separate book, explains every solution: the key points, and the wrong answers people
+commonly give. Read it after you have tried, not before.
+
+### Measurements, documents and the book itself {.unnumbered}
+
+Every number the book quotes from a measurement has its raw results and the script that produced
+it under `measurements/chNN/`; run the script to measure your own machine, and expect different
+numbers with the same shape. The architecture, the decision records and, from Part III, the
+regulatory file are under `docs/`. The book and the solutions manual are built from `book/` with
+`book/build.sh`; the repository README lists the packages that needs.
+
+### When something does not work {.unnumbered}
+
+- **A test fails on a fresh clone.** Check that you are on a tag or on `main` with no local
+  changes (`git status`), then rebuild from scratch with `rm -rf build/debug`. If it still
+  fails, the failure is worth reporting as an issue on the repository, with the output of
+  `ctest --output-on-failure`.
+- **Real-time settings are refused.** `SCHED_FIFO` and locked memory need permissions an
+  ordinary user does not have; Chapter 4 explains which, and how to grant them.
+- **The disk fills up.** Each preset has its own build directory; delete the ones you no longer
+  use.
