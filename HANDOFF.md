@@ -174,12 +174,11 @@ book/build.sh                     # the PDF must have 0 overfull hboxes (grep th
 ```
 
 The download page https://oussamasegh.github.io/neurolf-engineer/ is rebuilt by
-`.github/workflows/pages.yml` on every push to main: the EPUB and three PDFs (print, phone,
-Kindle) of the book and the solutions. Build the narrow PDFs locally with
-`NEUROLF_PDF_FORMAT=phone book/build.sh pdf both` (or `kindle`); they must have no overfull hbox
-over 20 pt (a few small ones from deep code are accepted). The first runs failed on a missing
-`lmodern` package and on a slow apt mirror; the workflow now installs lmodern and retries
-stalled downloads. Pages itself (Settings, Pages, Source: GitHub Actions) was set by the user.
+`.github/workflows/pages.yml` on every push to main: the EPUB and the PDF of the book and the
+solutions. The user dropped the phone and Kindle PDFs (2026-10-26); do not add them back. The
+first runs failed on a missing `lmodern` package and on a slow apt mirror; the workflow now
+installs lmodern and retries stalled downloads. Pages itself (Settings, Pages, Source: GitHub
+Actions) was set by the user.
 
 At the end of a chapter, after GitHub CI is green: tag `chNN` locally, refresh the bundle, and
 update this file and the memory notes.

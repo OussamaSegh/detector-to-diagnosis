@@ -1,7 +1,7 @@
-# The book's download page on GitHub Pages: the EPUB and the PDF in three page formats (print,
-# phone, Kindle Paperwhite), of the book and of the solutions manual, built from the commit by
-# book/build.sh and listed by book/tools/site.py with their SHA-256. Every listing in the book is
-# included from the repository, so the page is rebuilt on every push to main.
+# The book's download page on GitHub Pages: the EPUB and the PDF of the book and of the solutions
+# manual, built from the commit by book/build.sh and listed by book/tools/site.py with their
+# SHA-256. Every listing in the book is included from the repository, so the page is rebuilt on
+# every push to main.
 name: pages
 on:
   push:
@@ -34,14 +34,10 @@ jobs:
             texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
             texlive-plain-generic lmodern tex-gyre fonts-texgyre fonts-texgyre-math fonts-inconsolata \
             graphviz librsvg2-bin poppler-utils
-      - name: Build the EPUBs and the print PDFs
+      - name: Build the EPUBs and the PDFs
         run: |
           export NEUROLF_DATE="$(git log -1 --format=%cs)"
           book/build.sh all both
-      - name: Build the phone PDFs
-        run: NEUROLF_DATE="$(git log -1 --format=%cs)" NEUROLF_PDF_FORMAT=phone book/build.sh pdf both
-      - name: Build the Kindle Paperwhite PDFs
-        run: NEUROLF_DATE="$(git log -1 --format=%cs)" NEUROLF_PDF_FORMAT=kindle book/build.sh pdf both
       - name: Write the download page
         run: python3 book/tools/site.py site "$(tr -d '[:space:]' < VERSION)" book/build/out/*.epub book/build/out/*.pdf
       - uses: actions/upload-pages-artifact@v3

@@ -10,11 +10,8 @@ the patch version.
 
 ### Added
 - The book's download page on GitHub Pages (`.github/workflows/pages.yml`, `book/tools/site.py`):
-  the EPUB and the PDF of the book and of the solutions in three page formats, built on every push
-  to main and listed with their SHA-256. `NEUROLF_PDF_FORMAT=phone` (3.6 x 7.8 in, the shape of a
-  19.5:9 phone screen) and `kindle` (4.2 x 5.6 in, the 3:4 Kindle Paperwhite screen) select the
-  narrow pages in `book/build.sh`; `book/filters/narrow-tables.lua` and
-  `book/templates/narrow-header.tex` fit tables, code and long words to them.
+  the EPUB and the PDF of the book and of the solutions, built on every push to main and listed
+  with their SHA-256.
 - Chapter 18: unit and component testing. A property-based testing harness in
   `minidaq/tests/support/property.hpp` (choice-sequence shrinking, a fixed seed per test,
   `MINIDAQ_PROP_CASES` for a wider search; ADR 0015) with ten properties of the decoder, the

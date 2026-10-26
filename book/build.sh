@@ -3,9 +3,6 @@
 # Usage: book/build.sh [epub|pdf|all] [book|solutions|both]
 # Output: book/build/out/the-neurolf-engineer-v<VERSION>.{epub,pdf}
 #         book/build/out/the-neurolf-engineer-solutions-v<VERSION>.{epub,pdf}
-# NEUROLF_PDF_FORMAT chooses the PDF's page: print (the default, 7 x 10 in), phone (a page with
-# the shape of a Galaxy S25 Ultra's screen) or kindle (the 7-inch Kindle Paperwhite's screen).
-# The phone and kindle PDFs are named ...-v<VERSION>-phone.pdf and ...-v<VERSION>-kindle.pdf.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/.." && pwd)"
@@ -20,32 +17,6 @@ mkdir -p "$out" "$build/diagrams" "$build/tex"
 export NEUROLF_REPO_ROOT="$repo"
 export NEUROLF_DIAGRAM_DIR="$build/diagrams"
 export NEUROLF_STRICT=1
-
-# The page of each PDF format. A screen shows the whole page at its width, so the page has the
-# screen's shape and a size at which 10 pt text is still comfortable once it is scaled to the
-# screen: the S25 Ultra's 1440 x 3120 pixels (19.5:9), the Paperwhite's 1264 x 1680 (3:4).
-# narrow-linewidth is the width of the text in points, for filters/narrow-tables.lua.
-pdf_format="${NEUROLF_PDF_FORMAT:-print}"
-pdf_suffix=""
-pdf_page=()
-pdf_header=()   # after book-header.tex, which loads fvextra
-case "$pdf_format" in
-  print) ;;
-  phone)
-    pdf_suffix="-phone"
-    pdf_page=(-V geometry=paperwidth=3.6in -V geometry=paperheight=7.8in -V geometry=left=0.18in
-              -V geometry=right=0.18in -V geometry=top=0.35in -V geometry=bottom=0.3in
-              -V geometry=headsep=0.12in -V classoption=oneside -V classoption=openany
-              -V classoption=10pt --lua-filter "$here/filters/narrow-tables.lua" -M narrow-linewidth=234) ;;
-  kindle)
-    pdf_suffix="-kindle"
-    pdf_page=(-V geometry=paperwidth=4.2in -V geometry=paperheight=5.6in -V geometry=left=0.2in
-              -V geometry=right=0.2in -V geometry=top=0.35in -V geometry=bottom=0.3in
-              -V geometry=headsep=0.12in -V classoption=oneside -V classoption=openany
-              -V classoption=10pt --lua-filter "$here/filters/narrow-tables.lua" -M narrow-linewidth=274) ;;
-  *) echo "NEUROLF_PDF_FORMAT is print, phone or kindle" >&2; exit 2 ;;
-esac
-[ "$pdf_format" = print ] || pdf_header=(--include-in-header "$here/templates/narrow-header.tex")
 
 common=(
   --from markdown+smart+fenced_divs+bracketed_spans+pipe_tables+grid_tables+tex_math_dollars+implicit_figures
@@ -80,11 +51,11 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
     fi
   fi
   if [[ "$what" == pdf || "$what" == all ]]; then
-    local tex="$build/tex/$stem$pdf_suffix.tex"
-    pandoc "${common[@]}" --metadata-file "$meta" "${pdf_page[@]}" \
+    local tex="$build/tex/$stem.tex"
+    pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --top-level-division=chapter \
       --pdf-engine=xelatex \
-      --include-in-header "$here/templates/book-header.tex" "${pdf_header[@]}" \
+      --include-in-header "$here/templates/book-header.tex" \
       --include-after-body "$here/templates/book-after.tex" \
       -V date="Version $version, $date_str" \
       -s -o "$tex" "${files[@]}"
@@ -96,16 +67,15 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file
     if grep -nE '\\\{\.(cpp|python|cmake|yaml|text|dot)' "$tex" | head -5 | grep . ; then
       echo "unprocessed code-block attributes in $tex (see lines above)"; exit 1
     fi
-    local job="$stem$pdf_suffix" pdf="$out/$stem-v$version$pdf_suffix.pdf"
-    (cd "$build/tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$job.tex" >"$job.latexmk.log" 2>&1) \
-      || { echo "LaTeX failed, see $build/tex/$job.log"; grep -n -A3 "^!" "$build/tex/$job.log" | head -30; exit 1; }
-    cp "$build/tex/$job.pdf" "$pdf"
+    (cd "$build/tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$stem.tex" >"$stem.latexmk.log" 2>&1) \
+      || { echo "LaTeX failed, see $build/tex/$stem.log"; grep -n -A3 "^!" "$build/tex/$stem.log" | head -30; exit 1; }
+    cp "$build/tex/$stem.pdf" "$out/$stem-v$version.pdf"
     # A glyph the font does not have is silently left out of the PDF.
-    if grep -q "Missing character" "$build/tex/$job.log"; then
-      echo "PDF has characters its fonts cannot show:"; grep "Missing character" "$build/tex/$job.log" | sort | uniq -c
+    if grep -q "Missing character" "$build/tex/$stem.log"; then
+      echo "PDF has characters its fonts cannot show:"; grep "Missing character" "$build/tex/$stem.log" | sort | uniq -c
       exit 1
     fi
-    echo "built $pdf ($(pdfinfo "$pdf" 2>/dev/null | awk '/Pages/{print $2}') pages)"
+    echo "built $out/$stem-v$version.pdf ($(pdfinfo "$out/$stem-v$version.pdf" 2>/dev/null | awk '/Pages/{print $2}') pages)"
   fi
 }
 

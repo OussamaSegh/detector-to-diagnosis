@@ -15,11 +15,7 @@ import sys
 KINDS = [  # (suffix of the file name, label, what it is for)
     (".epub", "EPUB", "Reflowable, for e-readers and reading apps (Apple Books, Google Play Books, "
                       "Kobo; Send to Kindle converts it)."),
-    ("-kindle.pdf", "PDF, Kindle Paperwhite", "Pages the shape of the 7-inch Paperwhite's screen, "
-                                              "one column, no margins to zoom past."),
-    ("-phone.pdf", "PDF, phone", "Tall, narrow pages the shape of a Galaxy S25 Ultra's screen; "
-                                 "fits other modern phones too."),
-    (".pdf", "PDF, print", "The book's own 7 x 10 inch pages, for a tablet, a computer or paper."),
+    (".pdf", "PDF", "The book's own 7 x 10 inch pages, for a tablet, a computer or paper."),
 ]
 
 PAGE = """<!doctype html>
