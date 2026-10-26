@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
 #include "minidaq/control/control_protocol.hpp"
 
+#include <array>
+#include <utility>
+#include <vector>
+
 #include <nlohmann/json.hpp>
 
 #include "minidaq/config/acquisition_config.hpp"
+#include "minidaq/core/flight_recorder.hpp"
+#include "minidaq/rt/crash_report.hpp"
 
 #ifndef MINIDAQ_VERSION_STRING
 #define MINIDAQ_VERSION_STRING "unknown"
@@ -64,6 +70,59 @@ bool major_matches(const std::string& v) {
 
 std::string dump(const json& j) { return j.dump(-1, ' ', false, json::error_handler_t::replace); }
 
+CommandId command_id(std::string_view cmd) noexcept {
+  constexpr std::array<std::pair<std::string_view, CommandId>, 7> ids{{{"configure", CommandId::configure},
+                                                                        {"start", CommandId::start},
+                                                                        {"stop", CommandId::stop},
+                                                                        {"reset", CommandId::reset},
+                                                                        {"status", CommandId::status},
+                                                                        {"diagnostics", CommandId::diagnostics},
+                                                                        {"auth", CommandId::auth}}};
+  for (const auto& [name, cid] : ids) {
+    if (name == cmd) {
+      return cid;
+    }
+  }
+  return CommandId::other;
+}
+
+// Every command but hello reaches the flight recorder with its outcome, refusals included.
+std::string traced(std::string_view cmd, const json& response) {
+  const auto ok = response.find("ok");
+  trace(TraceCode::command, static_cast<std::uint64_t>(command_id(cmd)),
+        ok != response.end() && ok->is_boolean() && ok->get<bool>() ? 1U : 0U);
+  return dump(response);
+}
+
+// [snippet:diagnostics]
+json diagnostics(const json& req, const json& id, const AcquisitionService& service) {
+  std::size_t n = diagnostics_default_events;
+  if (const auto it = req.find("events"); it != req.end()) {
+    if (!it->is_number_unsigned() || it->get<std::uint64_t>() > diagnostics_max_events) {
+      return error_response(id, service.state(), "bad_request",
+                            "\"events\" is a whole number from 0 to " + std::to_string(diagnostics_max_events));
+    }
+    n = it->get<std::size_t>();
+  }
+  std::vector<TraceEvent> events(n);
+  events.resize(flight_recorder().snapshot_into(events));
+  const TraceCounts c = flight_recorder().counts();
+  json list = json::array();
+  for (const auto& e : events) {
+    list.push_back({{"t_ns", e.t_ns}, {"ring", e.ring}, {"seq", e.seq}, {"code", to_string(e.code)},
+                    {"a", e.a}, {"b", e.b}});
+  }
+  return json{{"api", api_version},
+              {"id", id},
+              {"ok", true},
+              {"diagnostics",
+               {{"server", std::string{"minidaq "} + MINIDAQ_VERSION_STRING},
+                {"build_id", rt::build_id()},
+                {"recorder", {{"recorded", c.recorded}, {"dropped", c.dropped}, {"torn", c.torn}}},
+                {"events", std::move(list)}}}};
+}
+// [/snippet:diagnostics]
+
 // [snippet:auth]
 json authenticate(const json& req, const json& id, AcquisitionService& service, Session& session,
                   const TokenStore* tokens) {
@@ -113,28 +172,31 @@ std::string handle_request(std::string_view line, AcquisitionService& service, S
                      {"ok", true},
                      {"server", std::string{"minidaq "} + MINIDAQ_VERSION_STRING},
                      {"auth", tokens != nullptr ? "token" : "none"},
-                     {"commands", {"hello", "auth", "configure", "start", "stop", "reset", "status"}}});
+                     {"commands", {"hello", "auth", "configure", "start", "stop", "reset", "status", "diagnostics"}}});
   }
   if (cmd == "auth") {
-    return dump(authenticate(req, id, service, session, tokens));
+    return traced(cmd, authenticate(req, id, service, session, tokens));
   }
   // [snippet:authorize]
   const Role needed = required_role(cmd);
   if (needed > session.identity.role) {
     const bool anonymous = session.identity.role == Role::none;
     service.note(session.who(), cmd, anonymous ? "refused: not authenticated" : "refused: role", false);
-    return dump(error_response(id, service.state(), anonymous ? "unauthenticated" : "forbidden",
+    return traced(cmd, error_response(id, service.state(), anonymous ? "unauthenticated" : "forbidden",
                                anonymous ? "authenticate first (\"auth\")"
                                          : "\"" + cmd + "\" needs the role " + std::string{to_string(needed)}));
   }
   // [/snippet:authorize]
   const std::string who = session.who();
   if (cmd == "status") {
-    return dump(json{{"api", api_version}, {"id", id}, {"ok", true}, {"status", service.status()}});
+    return traced(cmd, json{{"api", api_version}, {"id", id}, {"ok", true}, {"status", service.status()}});
+  }
+  if (cmd == "diagnostics") {
+    return traced(cmd, diagnostics(req, id, service));
   }
   if (cmd == "configure") {
     if (!req.contains("config")) {
-      return dump(error_response(id, service.state(), "bad_request", "configure needs \"config\""));
+      return traced(cmd, error_response(id, service.state(), "bad_request", "configure needs \"config\""));
     }
     auto cfg = config::config_from_json(req["config"]);
     if (!cfg) {
@@ -145,20 +207,20 @@ std::string handle_request(std::string_view line, AcquisitionService& service, S
       service.note(who, "configure", "rejected: invalid configuration", false);
       json r = error_response(id, service.state(), "config_error", config::format_errors(cfg.error()));
       r["error"]["details"] = std::move(details);
-      return dump(r);
+      return traced(cmd, r);
     }
-    return dump(command_response(id, service.configure(*cfg, who)));
+    return traced(cmd, command_response(id, service.configure(*cfg, who)));
   }
   if (cmd == "start") {
-    return dump(command_response(id, service.start(who)));
+    return traced(cmd, command_response(id, service.start(who)));
   }
   if (cmd == "stop") {
-    return dump(command_response(id, service.stop(who)));
+    return traced(cmd, command_response(id, service.stop(who)));
   }
   if (cmd == "reset") {
-    return dump(command_response(id, service.reset(who)));
+    return traced(cmd, command_response(id, service.reset(who)));
   }
-  return dump(error_response(id, service.state(), "unknown_command", "unknown command \"" + cmd + "\""));
+  return traced(cmd, error_response(id, service.state(), "unknown_command", "unknown command \"" + cmd + "\""));
 }
 // [/snippet:handle]
 

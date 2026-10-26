@@ -15,6 +15,7 @@ import json
 import os
 import pathlib
 import re
+import resource
 import select
 import signal
 import struct
@@ -54,8 +55,11 @@ def eventually(condition, seconds, what):
 class Server:
     """minidaq_server in its own process. Use as a context manager; stop() returns its exit status."""
 
-    def __init__(self, workdir, *args, env=None):
+    def __init__(self, workdir, *args, env=None, core_dumps=False):
         self.workdir = pathlib.Path(workdir)
+        # Chapter 21: a server that may crash runs in workdir, where a core file named by a
+        # relative core_pattern lands, with the core size limit lifted.
+        self.core_dumps = core_dumps
         self.runtime = self.workdir / "runtime"
         self.runtime.mkdir(mode=0o700, exist_ok=True)
         self.env = dict(os.environ, MINIDAQ_RUNTIME_DIR=str(self.runtime), **(env or {}))
@@ -66,8 +70,13 @@ class Server:
         self.output = ""
 
     def __enter__(self):
+        def allow_cores():
+            hard = resource.getrlimit(resource.RLIMIT_CORE)[1]  # as far as this user may
+            resource.setrlimit(resource.RLIMIT_CORE, (hard, hard))
+
         self.proc = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     text=True, env=self.env)
+                                     text=True, env=self.env, cwd=self.workdir if self.core_dumps else None,
+                                     preexec_fn=allow_cores if self.core_dumps else None)
         end = deadline(10)
         while self.port is None:
             if self.proc.poll() is not None:

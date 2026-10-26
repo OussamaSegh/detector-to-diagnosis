@@ -3,15 +3,15 @@
 //
 // One request per line, one response per line, in order:
 //
-//   -> {"api": "2.0", "id": 1, "cmd": "auth", "token": "mdq_..."}
-//   <- {"api": "2.0", "id": 1, "ok": true, "identity": "console", "role": "operator"}
-//   -> {"api": "2.0", "id": 7, "cmd": "start"}
-//   <- {"api": "2.0", "id": 7, "ok": true, "state": "running"}
-//   <- {"api": "2.0", "id": 8, "ok": false, "state": "running",
+//   -> {"api": "2.1", "id": 1, "cmd": "auth", "token": "mdq_..."}
+//   <- {"api": "2.1", "id": 1, "ok": true, "identity": "console", "role": "operator"}
+//   -> {"api": "2.1", "id": 7, "cmd": "start"}
+//   <- {"api": "2.1", "id": 7, "ok": true, "state": "running"}
+//   <- {"api": "2.1", "id": 8, "ok": false, "state": "running",
 //       "error": {"code": "illegal_transition", "message": "cannot start in state running"}}
 //
 // Commands: hello, auth (with "token"), configure (with "config"), start,
-// stop, reset, status. Compatibility rules (docs/adr/0003): a request whose
+// stop, reset, status, diagnostics (with an optional "events" count). Compatibility rules (docs/adr/0003): a request whose
 // "api" major version differs is refused with "unsupported_api"; unknown
 // fields are ignored, so a newer client may send fields an older server does
 // not know; new commands and new response fields are added only in minor
@@ -22,6 +22,8 @@
 // 1.0: Chapter 6. 1.1: Chapter 16, the status fields of Chapters 9 to 15.
 // 2.0: Chapter 17 (ADR 0014): a connection authenticates with "auth" before any
 // command but hello; status needs an observer, the other commands an operator.
+// 2.1: Chapter 21 (ADR 0016): diagnostics, for an observer: the build ID and the newest
+// events of the flight recorder.
 #pragma once
 
 #include <array>
@@ -35,7 +37,11 @@
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "2.0";
+inline constexpr std::string_view api_version = "2.1";
+
+// diagnostics: how many flight-recorder events it returns without "events", and at most.
+inline constexpr std::size_t diagnostics_default_events = 64;
+inline constexpr std::size_t diagnostics_max_events = 1024;
 
 // The top-level fields of `status` in this API version. A status has no other
 // field. A field that is not `always` there appears while its part exists: a

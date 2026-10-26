@@ -122,7 +122,7 @@ Role required_role(std::string_view cmd) noexcept {
   if (cmd == "hello" || cmd == "auth") {
     return Role::none;
   }
-  if (cmd == "status") {
+  if (cmd == "status" || cmd == "diagnostics") {
     return Role::observer;
   }
   return Role::operator_;  // configure, start, stop, reset, and any command added later

@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 8 (MiniDAQ 0.4.0-dev, Chapter 19). Status: draft for review.
+Version 9 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -232,7 +232,7 @@ The control API's security requirements (Chapter 17), from the threat model
 |---|---|---|---|
 | SRS-SEC-001 | The control server shall refuse every command except `hello` and `auth`, with the error code `unauthenticated`, on a connection that has not authenticated with a valid token. | protocol | T |
 | SRS-SEC-002 | The control server shall close a connection after an `auth` with an unknown token, and record the refusal in the audit trail with the client's address and without the token. | protocol | T |
-| SRS-SEC-003 | The control server shall allow a client with the observer role only `hello`, `auth` and `status`, refuse other commands with the error code `forbidden`, and record each refusal in the audit trail. | protocol | T |
+| SRS-SEC-003 | The control server shall allow a client with the observer role only `hello`, `auth`, `status` and `diagnostics`, refuse other commands with the error code `forbidden`, and record each refusal in the audit trail. | protocol | T |
 | SRS-SEC-004 | The control server shall close a connection that has not completed the TLS handshake and authenticated within the authentication deadline, 10 s by default. | protocol | T |
 | SRS-SEC-005 | The control server shall refuse to start without a token store unless authentication is turned off explicitly, or on an address outside `127.0.0.0/8` without both TLS and a token store. | protocol | T |
 | SRS-SEC-006 | When TLS is configured, the control server shall accept only `TLS 1.3` connections and answer no client that does not complete the handshake. | access | T |
@@ -253,12 +253,26 @@ Requirements on the programs together, verified by the system tests of Chapter 1
 | SRS-SYS-004 | The server shall write identical coincidence records in two acquisitions with the same configuration and seed, whatever the batch sizes and delays of the pipeline. | service | T |
 | SRS-SYS-005 | When the seed differs from the golden run's, the server shall write an acquisition that agrees with the golden run in its prompt and delayed rates, energy spectrum and time differences, each comparison with a p-value above `0.001`. | service | T |
 
+### 2.15 Diagnostics (DIAG)
+
+What the server keeps and reports so that a failure can be analyzed after the fact (Chapter 21,
+ADR 0016).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-DIAG-001 | The flight recorder shall keep the last 256 events of each recording thread, for up to 32 threads at a time, give a snapshot of complete events only, oldest first by time, and count the events of threads that find no free ring as dropped. | core | T |
+| SRS-DIAG-002 | When the server receives SIGSEGV, SIGBUS, SIGFPE, SIGILL or SIGABRT, the crash report handler shall write a crash report with the signal, its address, the program's version and build ID and the last events of the flight recorder, and then end by the same signal. | rt | T |
+| SRS-DIAG-003 | The `diagnostics` command shall return the program's version and build ID, the flight recorder's counts and its newest events, 64 events or as many as the request asks from 0 to 1024 events, and reject any other count with `bad_request`. | protocol | T |
+| SRS-DIAG-004 | The server shall record in the flight recorder every change of the acquisition state, every control command but `hello` with its outcome, the begin and the end of each run with its completeness, each fault with its source, and each loss and resynchronization of the readout link. | service | T |
+| SRS-DIAG-005 | The flight recorder shall record one event in at most 100 ns on the reference machine, without a lock, also with four threads recording at once. | core | M |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
 |---|---|---|
 | SRS-PERF-020 | M | [Performance budget](../performance-budget.md), version 2: whole pipeline with the coincidence sorter 26.4 ns per single (37.9 M words/s), margin 3.8 times at 10 M singles/s, release 0.3.0 (`measurements/release-0.3.0/`); the `hardened` build within noise of it (`pipeline-attribution.txt`). Until version 5 this row quoted 86 M words/s, measured before Chapter 10 (MDQ-PR-014). Re-measure on the acquisition PC. |
 | SRS-PERF-021 | M | [Performance budget](../performance-budget.md), list-mode writer section: about 19 M coincidences/s with fsync on the reference machine (`measurements/ch12/`), against the 2.7 M coincidences/s that the pair stage produces at 70 M singles/s. |
+| SRS-DIAG-005 | M | `bm_flight_recorder` (`measurements/ch21/bm_flight_recorder.txt`): 32.7 ns per event with one thread, 40.9 ns real time with four, 32.5 ns while another thread takes snapshots; a first version with one shared counter took 213 ns with four threads. The limit of 100 ns is a book-level number (assumption: confirm with team). |
 | SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
 
 ## 4. Changes
@@ -273,3 +287,4 @@ Requirements on the programs together, verified by the system tests of Chapter 1
 | 6 | Release 0.3.0: the verification of SRS-PERF-020 re-measured with the coincidence sorter; the requirement is unchanged and met (problem report MDQ-PR-014, CAPA-0004). |
 | 7 | Chapter 18: SRS-CTL-035, the order of the service's calls to its sink, which the service did and no requirement or test stated; SRS-SRT-007 states the upper limit of the delay (1 ms), which the sorter enforced and the requirement left out (found by mutation testing). |
 | 8 | Chapter 19: the control client and the server program (SRS-CTL-040 to SRS-CTL-044, items ctl and server, problem report MDQ-PR-015), the system requirements SRS-SYS-001 to SRS-SYS-005, and SRS-SRT-013, the order of singles with equal times, which a system test found (problem report MDQ-PR-017). |
+| 9 | Chapter 21: the diagnostics requirements SRS-DIAG-001 to SRS-DIAG-005 (ADR 0016, CR-0007); SRS-SEC-003 lets an observer use `diagnostics`, which only reads. |

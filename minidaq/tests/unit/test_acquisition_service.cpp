@@ -16,6 +16,7 @@
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/sim/synthetic_source.hpp"
 #include "eventually.hpp"
+#include "traced.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -163,7 +164,8 @@ TEST(AcquisitionService, IllegalCommandsChangeNothing) {
 }
 
 TEST(AcquisitionService, DetectorFaultStopsTheRunAndNeedsAReset) {
-  // REQ: SRS-CTL-011
+  // REQ: SRS-CTL-011, SRS-DIAG-004
+  const std::uint64_t began = test_support::trace_clock_ns();
   Script script;
   AcquisitionService svc{options(script)};
   ASSERT_TRUE(svc.configure(small(), "test").ok);
@@ -173,6 +175,10 @@ TEST(AcquisitionService, DetectorFaultStopsTheRunAndNeedsAReset) {
   ASSERT_TRUE(svc.wait_for(AcqState::fault, 5s));
   const auto st = svc.status();
   EXPECT_EQ(st["fault"], "detector: link down");
+  const auto faults = test_support::traced_since(began, TraceCode::fault);
+  ASSERT_EQ(faults.size(), 1U);
+  EXPECT_EQ(faults[0].a, st["run_id"].get<std::uint64_t>());
+  EXPECT_EQ(faults[0].b, static_cast<std::uint64_t>(FaultSource::detector));
   EXPECT_EQ(svc.start("test").code, "illegal_transition");
   EXPECT_EQ(svc.configure(small(), "test").code, "illegal_transition");
   script.fail = false;

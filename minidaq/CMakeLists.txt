@@ -5,6 +5,7 @@ add_library(minidaq_core
   src/format/readout_packet.cpp
   src/format/list_mode.cpp
   src/core/crc32.cpp
+  src/core/flight_recorder.cpp
   src/pipeline/acquisition_pipeline.cpp
   src/sim/synthetic_source.cpp
   src/sim/detector_simulator.cpp
@@ -15,7 +16,8 @@ add_library(minidaq_core
   src/processing/coincidence_sorter.cpp
   src/processing/sinogram.cpp
   src/processing/stream_merger.cpp
-  src/rt/realtime.cpp)
+  src/rt/realtime.cpp
+  src/rt/crash_report.cpp)
 add_library(minidaq::core ALIAS minidaq_core)
 target_include_directories(minidaq_core PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)

@@ -18,6 +18,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/control_protocol.hpp"
 #include "minidaq/control/control_server.hpp"
+#include "minidaq/core/flight_recorder.hpp"
 #include "eventually.hpp"
 #include "test_client.hpp"
 
@@ -117,9 +118,9 @@ TEST(ControlProtocol, EveryFieldOfEveryTypeIsAnswered) {
   // field the protocol reads gets every JSON type, for every command and every kind of client.
   AcquisitionService svc{with_default_adapters()};
   const TokenStore tokens = TokenStore::single("op", Role::operator_, new_token());
-  const std::vector<std::string> commands{"hello", "auth",  "status", "configure",
-                                          "start", "stop",  "reset",  "launch"};
-  const std::vector<std::string> fields{"api", "id", "cmd", "token", "config"};
+  const std::vector<std::string> commands{"hello", "auth", "status", "configure", "start",
+                                          "stop",  "reset", "launch", "diagnostics"};
+  const std::vector<std::string> fields{"api", "id", "cmd", "token", "config", "events"};
   const std::vector<json> values{5, -1, 1.5, "x", "2.0", nullptr, true,
                                  json::array(), json::array({1}), json::object(), json{{"a", 1}}};
   const std::vector<Identity> clients{{}, {"op", Role::operator_}, {"obs", Role::observer}};
@@ -144,7 +145,7 @@ TEST(ControlProtocol, EveryFieldOfEveryTypeIsAnswered) {
       }
     }
   }
-  EXPECT_EQ(requests, 8 * 5 * 11 * 4);
+  EXPECT_EQ(requests, 9 * 6 * 11 * 4);
   EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["ok"], true) << "and the protocol still answers";
 }
 // [/snippet:type_confusion]
@@ -184,9 +185,51 @@ TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
   for (const auto& f : status_fields) {
     EXPECT_TRUE(seen.contains(std::string{f.name})) << "status_fields lists '" << f.name << "', which never appeared";
   }
-  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "2.0");
+  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "2.1");
 }
 // [/snippet:status_fields_test]
+
+TEST(ControlProtocol, DiagnosticsReturnTheNewestEventsOfTheFlightRecorder) {
+  // REQ: SRS-DIAG-003, SRS-DIAG-004
+  AcquisitionService svc{with_default_adapters()};
+  ASSERT_EQ(call(svc, R"({"cmd":"configure","config":{"schema_version":"1.0","stop_after_s":0.01}})")["ok"], true);
+  ASSERT_EQ(call(svc, R"({"cmd":"start"})")["ok"], true);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, 5s));
+  const json r = call(svc, R"({"cmd":"diagnostics","events":1024})");
+  ASSERT_EQ(r["ok"], true) << r.dump();
+  const json& d = r["diagnostics"];
+  EXPECT_NE(d["server"].get<std::string>().find("minidaq"), std::string::npos);
+  EXPECT_FALSE(d["build_id"].get<std::string>().empty());
+  EXPECT_GE(d["recorder"]["recorded"].get<std::uint64_t>(), d["events"].size());
+  // This run, as the recorder saw it: the commands, the state changes, the run's begin and end.
+  std::vector<std::string> seen;
+  for (const auto& e : d["events"]) {
+    seen.push_back(e["code"].get<std::string>() + " " + e["a"].dump() + " " + e["b"].dump());
+  }
+  const auto has = [&](const std::string& what) { return std::ranges::find(seen, what) != seen.end(); };
+  const auto st = [](AcqState x) { return std::to_string(static_cast<int>(x)); };
+  EXPECT_TRUE(has("command " + std::to_string(static_cast<int>(CommandId::configure)) + " 1"));
+  EXPECT_TRUE(has("command " + std::to_string(static_cast<int>(CommandId::start)) + " 1"));
+  EXPECT_TRUE(has("state " + st(AcqState::idle) + " " + st(AcqState::configured)));
+  EXPECT_TRUE(has("state " + st(AcqState::configured) + " " + st(AcqState::running)));
+  const std::uint64_t run = call(svc, R"({"cmd":"status"})")["status"]["run_id"].get<std::uint64_t>();
+  EXPECT_TRUE(has("run_begin " + std::to_string(run) + " 0"));
+  EXPECT_TRUE(has("run_end " + std::to_string(run) + " 1")) << "complete";
+  // Oldest first, and only as many as asked.
+  for (std::size_t i = 1; i < d["events"].size(); ++i) {
+    EXPECT_LE(d["events"][i - 1]["t_ns"], d["events"][i]["t_ns"]);
+  }
+  EXPECT_EQ(call(svc, R"({"cmd":"diagnostics","events":2})")["diagnostics"]["events"].size(), 2U);
+  // The count before the call: the command is traced after its snapshot, and the two operands
+  // of EXPECT_EQ may be evaluated in either order (Clang and GCC differ here).
+  const std::uint64_t before = flight_recorder().counts().recorded;
+  EXPECT_EQ(call(svc, R"({"cmd":"diagnostics"})")["diagnostics"]["events"].size(),
+            std::min<std::size_t>(diagnostics_default_events, before));
+  for (const char* bad : {R"({"cmd":"diagnostics","events":1025})", R"({"cmd":"diagnostics","events":-1})",
+                          R"({"cmd":"diagnostics","events":"5"})", R"({"cmd":"diagnostics","events":1.5})"}) {
+    EXPECT_EQ(call(svc, bad)["error"]["code"], "bad_request") << bad;
+  }
+}
 
 namespace {
 

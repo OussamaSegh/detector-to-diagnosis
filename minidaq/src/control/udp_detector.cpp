@@ -12,6 +12,7 @@
 #include <cstring>
 
 #include "minidaq/core/clock.hpp"
+#include "minidaq/core/flight_recorder.hpp"
 
 namespace minidaq::control {
 
@@ -159,6 +160,15 @@ void UdpDetector::publish_counters() noexcept {
   counters_.resyncs.store(t.resyncs, r);
   counters_.words.store(t.words, r);
   counters_.receive_batches.store(receive_batches_, r);
+  // Only changes reach the flight recorder: a lossy link adds an event per batch, not per call.
+  if (t.lost > traced_lost_) {
+    trace(TraceCode::link_gap, t.lost - traced_lost_, t.lost);
+    traced_lost_ = t.lost;
+  }
+  if (t.resyncs > traced_resyncs_) {
+    trace(TraceCode::link_resync, t.resyncs);
+    traced_resyncs_ = t.resyncs;
+  }
 }
 
 std::optional<std::string> UdpDetector::fault() const {

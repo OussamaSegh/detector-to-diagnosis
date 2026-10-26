@@ -10,6 +10,7 @@
 #include <nlohmann/json.hpp>
 
 #include "minidaq/control/run_integrity.hpp"
+#include "minidaq/core/flight_recorder.hpp"
 
 namespace minidaq::control {
 
@@ -76,6 +77,7 @@ std::string read_small_file(const std::string& path, std::string& out) {
 AcquisitionService::AcquisitionService(ServiceOptions options)
     : opt_{std::move(options)},
       machine_{[this](const Transition& t) {
+        trace(TraceCode::state, static_cast<std::uint64_t>(t.from), static_cast<std::uint64_t>(t.to));
         note("service", "transition",
              std::string{to_string(t.from)} + " -> " + std::string{to_string(t.to)} + " (" +
                  std::string{to_string(t.event)} + ")");
@@ -196,6 +198,7 @@ CommandResult AcquisitionService::start(std::string_view who) {
   snapshot_latest_.reset();
   pipeline_->start();
   take_latency_snapshot_locked();
+  trace(TraceCode::run_begin, run_id_);
   note(who, "start", "run " + std::to_string(run_id_) + ", " + detector_->describe());
   (void)machine_.apply(AcqEvent::start);
   return result(true);
@@ -245,6 +248,11 @@ void AcquisitionService::enter_fault_locked(std::string reason, std::string_view
   fault_ = std::move(reason);
   run_ended_ = std::chrono::steady_clock::now();
   run_ended_set_ = true;
+  const auto source = fault_.starts_with("detector:") ? FaultSource::detector
+                      : fault_.starts_with("sink:")   ? FaultSource::sink
+                      : fault_.starts_with("sort:")   ? FaultSource::sorter
+                                                      : FaultSource::other;
+  trace(TraceCode::fault, run_id_, static_cast<std::uint64_t>(source));
   note(who, "fault", fault_, false);
   (void)machine_.apply(AcqEvent::error);
 }
@@ -294,6 +302,7 @@ void AcquisitionService::check_run_locked() {
     run_ended_ = std::chrono::steady_clock::now();
     run_ended_set_ = true;
     note("service", "run_ended", "run " + std::to_string(run_id_));
+    trace(TraceCode::run_end, run_id_, record["integrity"]["complete"].get<bool>() ? 1U : 0U);
     // [snippet:incomplete]
     if (!record["integrity"]["complete"].get<bool>()) {
       std::string losses;

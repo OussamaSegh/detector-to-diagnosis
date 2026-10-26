@@ -4,6 +4,7 @@
 //   minidaq_ctl [OPTIONS] hello|status|start|stop|reset
 //   minidaq_ctl [OPTIONS] configure acq.json
 //   minidaq_ctl [OPTIONS] wait STATE [SECONDS]
+//   minidaq_ctl [OPTIONS] diagnostics [EVENTS]      (API 2.1: the newest flight-recorder events)
 //   minidaq_ctl new-token NAME observer|operator
 //
 // OPTIONS: --host 127.0.0.1, --port 7700, --token-file FILE (default: where
@@ -155,9 +156,10 @@ int usage(const char* argv0) {
                "usage: %s [OPTIONS] hello|status|start|stop|reset\n"
                "       %s [OPTIONS] configure FILE.json\n"
                "       %s [OPTIONS] wait STATE [SECONDS]\n"
+               "       %s [OPTIONS] diagnostics [EVENTS]\n"
                "       %s new-token NAME observer|operator\n"
                "OPTIONS: --host H, --port N, --token-file FILE, --tls-ca FILE\n",
-               argv0, argv0, argv0, argv0);
+               argv0, argv0, argv0, argv0, argv0);
   return 2;
 }
 
@@ -294,6 +296,17 @@ int run(int argc, char** argv) {
     if (!in || request["config"].is_discarded()) {
       std::fprintf(stderr, "%s: cannot read or not valid JSON\n", argv[i + 1]);
       return 2;
+    }
+  }
+  if (cmd == "diagnostics") {
+    request["api"] = "2.1";  // a 2.0 server answers unknown_command
+    if (i + 1 < argc) {
+      const auto n = minidaq::parse_number<std::uint64_t>(argv[i + 1], 0, 1024);
+      if (!n) {
+        std::fprintf(stderr, "diagnostics: \"%s\" is not a number of events (0 to 1024)\n", argv[i + 1]);
+        return 2;
+      }
+      request["events"] = *n;
     }
   }
   if (!conn.call(request, response)) {

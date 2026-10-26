@@ -5,7 +5,9 @@
 Every report in docs/regulatory/problem-reports.json has an ID, a title, the item it concerns
 and a status. Every report, open or closed, says whether it is relevant to safety and why.
 A closed report names the change and how it was verified; an open one records the decision
-taken about it. docs/regulatory/known-anomalies.md, the list a release states as its known
+taken about it. From MDQ-PR-019 on, a closed report also records its root cause analysis
+(Chapter 21): the chain of whys from the symptom down, the cause, its category, and why the
+defect escaped the checks that should have caught it. docs/regulatory/known-anomalies.md, the list a release states as its known
 residual anomalies, is generated from the open reports.
 
 Usage: anomalies.py ROOT [--write | --check]
@@ -17,6 +19,32 @@ import sys
 
 REPORTS = pathlib.Path("docs/regulatory/problem-reports.json")
 OUT = pathlib.Path("docs/regulatory/known-anomalies.md")
+
+
+# Chapter 21: from MDQ-PR-019 on, a closed report records its root cause analysis.
+RCA_FROM = 19
+CATEGORIES = ("requirements", "design", "code", "test", "tool", "environment", "process")
+
+
+# [snippet:root_cause]
+def root_cause_problems(rid, r):
+    rc = r.get("root_cause")
+    number = int(rid[-3:]) if re.fullmatch(r"MDQ-PR-\d{3}", rid) else 0
+    if rc is None:
+        if r.get("status") == "closed" and number >= RCA_FROM:
+            return [f"{rid}: a closed report from MDQ-PR-{RCA_FROM:03d} on has a root_cause"]
+        return []
+    errors = []
+    whys = rc.get("whys")
+    if not isinstance(whys, list) or len(whys) < 2 or not all(isinstance(w, str) and w.strip() for w in whys):
+        errors.append(f"{rid}: root_cause.whys is a list of at least two answers, from the symptom down")
+    for key in ("cause", "escape"):
+        if not str(rc.get(key, "")).strip():
+            errors.append(f"{rid}: root_cause.{key} is missing")
+    if rc.get("category") not in CATEGORIES:
+        errors.append(f"{rid}: root_cause.category is one of {', '.join(CATEGORIES)}")
+    return errors
+# [/snippet:root_cause]
 
 
 # [snippet:validate]
@@ -46,6 +74,7 @@ def problems(reports):
                 errors.append(f"{rid}: an open report records the decision taken about it")
         else:
             errors.append(f"{rid}: status must be 'open' or 'closed'")
+        errors += root_cause_problems(rid, r)
     return errors
 # [/snippet:validate]
 

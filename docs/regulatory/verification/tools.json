@@ -129,6 +129,14 @@
      "use": "Proposes code, tests and documents (Part IX).",
      "failure": "Plausible code that is wrong, or a test that cannot fail.",
      "confidence": ["Its output enters the product only through the same review, tests and gates as any other change; it is a source of changes, not a verification tool. Whether the team's procedures allow and record it: assumption: confirm with team."],
-     "evidence": [], "shown_to_fail": ""}
+     "evidence": [], "shown_to_fail": ""},
+    {"id": "TL-24", "name": "Postmortem tools (tools/postmortem.sh, tools/core_build_id.py, GDB)", "kind": "in-house", "class": "T2",
+     "version": "the commit; GDB as installed (15.1 on the reference machine)",
+     "use": "Open a core dump of a MiniDAQ program with the matching program and debug information, for the analysis of a problem report (Chapter 21).",
+     "failure": "A core opened with another build, showing plausible and wrong stacks; a build ID read wrongly from a core.",
+     "confidence": ["tools/test_postmortem.py reads the build ID from a real core and refuses a program and a debug file of another build and a file that is not a core.",
+                    "The system test of a crash runs the tool on the core of a crashed server where the machine keeps core files."],
+     "evidence": ["tools/test_postmortem.py", "minidaq/tests/system/test_diagnostics_system.py"],
+     "shown_to_fail": "Postmortem.test_another_build_of_the_same_name_is_refused"}
   ]
 }

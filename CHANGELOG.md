@@ -61,8 +61,24 @@ the patch version.
   `tools/gate_selftest.py` (one planted fault per gate, workflow `gates`); `tools/perf_ab.sh` (the
   benchmarks of a change and of its parent, interleaved on one CI runner, workflow `perf`); CI job
   `release-package` for release tags; change request CR-0006; exercises 20.1 to 20.5.
+- Chapter 21 (code): the flight recorder (`minidaq/core/flight_recorder.hpp`: a ring of 256
+  events per thread, seqlock slots, about 33 ns per event, `bm_flight_recorder`); the crash
+  report (`minidaq/rt/crash_report.hpp`: signal, address or sender, version, build ID and the
+  last events, written with async-signal-safe calls, then the default action and a core dump);
+  `minidaq_server --crash-report FILE`; the `diagnostics` command (control API 2.1, observer
+  role) and `minidaq_ctl diagnostics [EVENTS]`; trace events from the service, the protocol and
+  the readout link; `tools/postmortem.sh` and `tools/core_build_id.py`; the system test of a
+  crashed server; requirements SRS-DIAG-001 to SRS-DIAG-005; ADR 0016; change request CR-0007;
+  the code review checklist (`docs/code-review-checklist.md`); a root cause analysis in every
+  closed problem report from MDQ-PR-019 on (`tools/anomalies.py` checks it); tool TL-24.
+- Problem report MDQ-PR-024 (closed): every build since release 0.3.0 reported version 0.3.0,
+  because VERSION never moved to 0.4.0-dev; it is 0.4.0-dev now, and `tools/check_version.py`
+  (test `docs.version`) fails for a release version outside its release commit. The corrected
+  version asked for the SOUP reviews for 0.4, which are recorded.
 
 ### Changed
+- The control API is 2.1 (`diagnostics`); an observer may use `diagnostics` as well as `status`
+  (SRS-SEC-003). SRS version 9, development plan version 8, SOUP list version 6.
 - The `coverage` preset uses Clang source-based coverage with MC/DC instead of gcov, and builds
   the exercises.
 - SRS version 7: SRS-CTL-035, and SRS-SRT-007 states the delay's upper limit of 1 ms, which the

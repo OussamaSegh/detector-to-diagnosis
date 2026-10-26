@@ -91,6 +91,8 @@ class UdpDetector final : public DetectorPort {
   std::array<std::uint64_t, readout::num_packet_errors> rejected_{};
   std::uint64_t other_source_ = 0;
   std::uint64_t receive_batches_ = 0;
+  std::uint64_t traced_lost_ = 0;     // the loss and resynchronization counts last recorded
+  std::uint64_t traced_resyncs_ = 0;  // in the flight recorder (Chapter 21)
   Counters counters_;
   std::atomic<bool> end_of_stream_{false};
 };

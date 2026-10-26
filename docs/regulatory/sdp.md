@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 7 (MiniDAQ 0.4.0-dev, Chapter 20). Status: draft for review.
+Version 8 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -94,7 +94,8 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   (`tools/make_sbom.py`). The compilers and analyzers are recorded with their
   versions in the tool list, checked against each CI runner, and written into each release
   package (`BUILDINFO.json`).
-- **Changes:** every change is reviewed before it is merged, against the checklist of the
+- **Changes:** every change is reviewed before it is merged, against the
+  [code review checklist](../code-review-checklist.md) and the checklist of the
   [change control procedure](changes/README.md): the requirements, the design documents, the
   tests and the trace still agree; the documentation tests (`docs.*`, `architecture.*`) make most
   of this mechanical. A change to a requirement, a risk control, a class, a SOUP item, an
@@ -156,6 +157,13 @@ in its header, and every requirement it implements is traced.
   records the decision taken about it; a closed one names the change and the test that
   verifies it. `tools/anomalies.py` checks this (test `docs.anomalies`) and generates the
   [known anomalies](known-anomalies.md) that a release states.
+- From MDQ-PR-019 on, a closed report also records its root cause analysis: the chain of whys
+  from the symptom to the cause, the cause's category (requirements, design, code, test, tool,
+  environment or process), and why the defect escaped the checks that should have caught it
+  (Chapter 21). The categories over many reports show where the process leaks; a CAPA starts
+  from them (Chapter 16).
+- The server's flight recorder, its crash report and `tools/postmortem.sh` are the first
+  evidence of a failure in the field (ADR 0016); a report quotes them.
 - Problems found during development of a change, before it is merged, are fixed in the
   change and need no report.
 - A real quality system links problem reports to complaints, CAPA and vigilance
@@ -215,3 +223,4 @@ of Chapter 13.
 | 5 | Chapter 18: the wide search of the property-based tests and the structural coverage review of class B items as verification activities of each release; section 8: tag only after CI on the release commit is green (MDQ-PR-016). |
 | 6 | Chapter 19: system tests of the shipped programs in every change's `ctest`, under the new system test plan; the system test report and the soak as checks of each release. |
 | 7 | Chapter 20: the tool list and its checks replace the tool row of section 4; tool versions, the reproducible build, the gate self-test and the performance A/B comparison as checks of the pipeline; the release package and its evidence archive in sections 6 and 8. |
+| 8 | Chapter 21: the code review checklist in section 5; root cause analysis of problem reports and the diagnostic evidence in section 7. |

@@ -3,6 +3,7 @@
 //
 //   minidaq_server [--port 7700] [--bind 127.0.0.1] [--audit audit.jsonl] [--config acq.json]
 //                  [--tokens tokens.json] [--tls-cert cert.pem --tls-key key.pem] [--no-auth]
+//                  [--crash-report FILE]
 //
 // Clients authenticate with a token (Chapter 17). With --tokens, the server
 // accepts the tokens whose hashes that file lists; without it, the server makes
@@ -11,9 +12,15 @@
 // authentication off, for a test bench on loopback only. Binding to anything
 // but loopback needs --tls-cert, --tls-key and --tokens.
 //
+// If the server dies of a fatal signal, it first writes a crash report (Chapter 21): to FILE,
+// appended, with --crash-report, otherwise to standard error. It then dies of the same signal,
+// with a core dump where the system keeps them (tools/postmortem.sh reads it).
+//
 // Runs until SIGINT or SIGTERM; a running acquisition is stopped and drained
 // first. Control it with minidaq_ctl, or with any client that writes one JSON
 // object per line to the socket.
+#include <fcntl.h>
+
 #include <csignal>
 #include <cstdio>
 #include <exception>
@@ -32,6 +39,11 @@
 #include "minidaq/control/control_server.hpp"
 #include "minidaq/control/tls.hpp"
 #include "minidaq/core/parse_number.hpp"
+#include "minidaq/rt/crash_report.hpp"
+
+#ifndef MINIDAQ_VERSION_STRING
+#define MINIDAQ_VERSION_STRING "unknown"
+#endif
 
 int main(int argc, char** argv) {
   using namespace minidaq;
@@ -42,6 +54,7 @@ int main(int argc, char** argv) {
   std::string tokens_path;
   std::string cert_path;
   std::string key_path;
+  std::string crash_path;
   bool no_auth = false;
   for (int i = 1; i < argc; ++i) {
     const std::string_view a{argv[i]};
@@ -67,10 +80,13 @@ int main(int argc, char** argv) {
       cert_path = v;
     } else if (a == "--tls-key" && v) {
       key_path = v;
+    } else if (a == "--crash-report" && v) {
+      crash_path = v;
     } else {
       std::fprintf(stderr,
                    "usage: %s [--port N] [--bind ADDR] [--audit FILE] [--config FILE]\n"
-                   "          [--tokens FILE] [--tls-cert FILE --tls-key FILE] [--no-auth]\n",
+                   "          [--tokens FILE] [--tls-cert FILE --tls-key FILE] [--no-auth]\n"
+                   "          [--crash-report FILE]\n",
                    argv[0]);
       return 2;
     }
@@ -83,6 +99,24 @@ int main(int argc, char** argv) {
     std::fprintf(stderr, "--tls-cert and --tls-key go together\n");
     return 2;
   }
+
+  // [snippet:crash_report]
+  // First, before any thread: the handler's alternate stack serves this thread, and every
+  // thread started later inherits the handler.
+  int crash_fd = 2;  // standard error: the service manager's journal keeps it
+  if (!crash_path.empty()) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg): open(2) is variadic
+    crash_fd = ::open(crash_path.c_str(), O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC, 0600);
+    if (crash_fd < 0) {
+      std::fprintf(stderr, "cannot open the crash report file %s\n", crash_path.c_str());
+      return 1;
+    }
+  }
+  if (auto installed = rt::install_crash_report(crash_fd, MINIDAQ_VERSION_STRING); !installed) {
+    std::fprintf(stderr, "crash report: %s\n", installed.error().message().c_str());
+    return 1;
+  }
+  // [/snippet:crash_report]
 
   // [snippet:security]
   control::ServerSecurity security;

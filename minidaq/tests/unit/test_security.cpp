@@ -247,6 +247,7 @@ TEST(ControlServer, ObserversMayOnlyReadTheStatus) {
   Client c{*port};
   ASSERT_TRUE(c.auth(t.obs));
   EXPECT_EQ(c.call({{"cmd", "status"}})["status"]["state"], "idle");
+  EXPECT_EQ(c.call({{"cmd", "diagnostics"}})["ok"], true) << "API 2.1: diagnostics only reads";
   const auto r = c.call(configure);
   EXPECT_EQ(r["error"]["code"], "forbidden");
   EXPECT_NE(r["error"]["message"].get<std::string>().find("operator"), std::string::npos);
@@ -419,6 +420,7 @@ TEST(ControlProtocol, AuthenticationInTheProtocolLayer) {
   EXPECT_EQ(json::parse(handle_request(json{{"cmd", "auth"}, {"token", token}}.dump(), svc, s2, &tokens))["ok"], true);
   EXPECT_EQ(s2.who(), "console@tcp:192.0.2.7:4001");
   EXPECT_EQ(required_role("launch"), Role::operator_) << "a command added later needs an operator until decided";
+  EXPECT_EQ(required_role("diagnostics"), Role::observer) << "API 2.1, ADR 0016: it reads, like status";
 }
 
 // [snippet:effectiveness]

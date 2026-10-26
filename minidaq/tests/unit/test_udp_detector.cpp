@@ -21,6 +21,7 @@
 #include "minidaq/control/udp_detector.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/sim/readout_link.hpp"
+#include "traced.hpp"
 
 using namespace minidaq;
 using namespace minidaq::control;
@@ -98,7 +99,8 @@ TEST(UdpDetector, RejectsABadAddressAndReportsTheBoundPort) {
 }
 
 TEST(UdpDetector, DeliversWordsInOrderAndCountsEveryFault) {
-  // REQ: SRS-RDO-007, SRS-RDO-011
+  // REQ: SRS-RDO-007, SRS-RDO-011, SRS-DIAG-004
+  const std::uint64_t began = test_support::trace_clock_ns();
   auto opened = UdpDetector::open(loopback());
   ASSERT_TRUE(opened) << opened.error();
   UdpDetector& d = **opened;
@@ -145,6 +147,11 @@ TEST(UdpDetector, DeliversWordsInOrderAndCountsEveryFault) {
   EXPECT_EQ(c["packets_delivered"], 49U);
   EXPECT_EQ(c["words_delivered"], got.size());
   EXPECT_FALSE(d.fault());
+  // The loss reached the flight recorder once: one packet lost now, one in total.
+  const auto gaps = test_support::traced_since(began, TraceCode::link_gap);
+  ASSERT_EQ(gaps.size(), 1U);
+  EXPECT_EQ(gaps[0].a, 1U);
+  EXPECT_EQ(gaps[0].b, 1U);
 }
 
 TEST(UdpDetector, RunsAnAcquisitionThroughTheService) {

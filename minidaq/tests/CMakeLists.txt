@@ -9,6 +9,8 @@ add_executable(minidaq_unit_tests
   unit/test_packed_single.cpp
   unit/test_readout_packet.cpp
   unit/test_crc32.cpp
+  unit/test_flight_recorder.cpp
+  unit/test_crash_report.cpp
   unit/test_list_mode.cpp
   unit/test_listmode_sink.cpp
   unit/test_coincidence_sorter.cpp
@@ -40,7 +42,8 @@ add_executable(minidaq_unit_tests
   unit/test_service_interactions.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
 # Tests that read shipped files (configurations, profiles, architecture documents).
-target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
+target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+  $<$<BOOL:${MINIDAQ_SANITIZERS}>:MINIDAQ_SANITIZED=1>)
 # Test support shared by the unit tests and the exercises (support/property.hpp).
 target_include_directories(minidaq_unit_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 gtest_discover_tests(minidaq_unit_tests PROPERTIES LABELS "unit")
@@ -103,6 +106,14 @@ if(Python3_Interpreter_FOUND)
   set_tests_properties(tools.perf_gate PROPERTIES
     ENVIRONMENT "PYTHONPATH=${PROJECT_SOURCE_DIR}/tools;PYTHONDONTWRITEBYTECODE=1")
   set_tests_properties(tools.release_bundle tools.perf_gate PROPERTIES LABELS "unit")
+  # Chapter 21: the version the programs report (MDQ-PR-024), and the postmortem of a core dump.
+  add_test(NAME docs.version COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_version.py ${PROJECT_SOURCE_DIR})
+  add_test(NAME tools.check_version COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_check_version.py)
+  add_test(NAME tools.postmortem
+           COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_postmortem.py
+                   $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl>)
+  set_tests_properties(docs.version tools.check_version tools.postmortem PROPERTIES LABELS "unit")
+  set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
   add_test(NAME tools.listmode
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)
@@ -121,14 +132,16 @@ endif()
 # minidaq_send, minidaq_listmode) in their own processes, as an operator would.
 if(Python3_Interpreter_FOUND)
   set(_time_factor 1)
+  set(_sanitized "")
   if(MINIDAQ_SANITIZERS)
     set(_time_factor 10)  # sanitized programs run several times slower; the deadlines stretch
+    set(_sanitized 1)
   endif()
-  foreach(name control acquisition readout)
+  foreach(name control acquisition readout diagnostics)
     add_test(NAME system.${name}
              COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_${name}_system.py)
     set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900
-      ENVIRONMENT "MINIDAQ_APPS=$<TARGET_FILE_DIR:minidaq_server>;MINIDAQ_TEST_TIME_FACTOR=${_time_factor}")
+      ENVIRONMENT "MINIDAQ_APPS=$<TARGET_FILE_DIR:minidaq_server>;MINIDAQ_TEST_TIME_FACTOR=${_time_factor};MINIDAQ_SANITIZED=${_sanitized}")
   endforeach()
   # The statistics the system tests rely on, against tabulated values and for calibration.
   add_test(NAME system.stats COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_stats.py)

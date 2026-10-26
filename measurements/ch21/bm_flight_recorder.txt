@@ -1,0 +1,25 @@
+# bm_flight_recorder, release preset, taskset -c 1-3, Model name: Intel(R) Xeon(R) Processor @ 2.30GHz, 4 CPUs
+# commit base 069e5a0 + Chapter 21 working tree; GCC 13
+
+## before: one shared recorded_ counter (fetch_add per record), rings not cache-line aligned
+## (3 repetitions, medians, from the first version of the recorder)
+BM_TraceRecord/threads:1_median         38.1 ns         37.7 ns            3 items_per_second=26.5166M/s
+BM_TraceRecord/threads:4_median          213 ns          168 ns            3 items_per_second=5.96681M/s
+BM_TraceRecordWhileReading_median       63.0 ns         62.8 ns            3 items_per_second=15.9302M/s
+BM_TraceSnapshot/64_median              1.16 us         1.16 us            3
+BM_TraceSnapshot/1024_median            19.0 us         18.6 us            3
+
+## after: recorded = sum of the rings' next counters, alignas(64) Ring (5 repetitions)
+BM_TraceRecord/threads:1_median         32.7 ns         32.5 ns            5 items_per_second=30.8138M/s
+BM_TraceRecord/threads:1_cv             3.88 %          3.51 %             5 items_per_second=3.38%
+BM_TraceRecord/threads:4_median         40.9 ns         32.6 ns            5 items_per_second=30.7148M/s
+BM_TraceRecord/threads:4_cv             2.39 %          2.00 %             5 items_per_second=2.01%
+BM_TraceRecordWhileReading_median       32.5 ns         32.5 ns            5 items_per_second=30.7387M/s
+BM_TraceRecordWhileReading_cv           0.74 %          0.65 %             5 items_per_second=0.65%
+BM_TraceSnapshot/64_median              1.22 us         1.21 us            5
+BM_TraceSnapshot/64_cv                  4.46 %          3.35 %             5
+BM_TraceSnapshot/1024_median            17.6 us         17.6 us            5
+BM_TraceSnapshot/1024_cv                3.08 %          2.96 %             5
+
+## the clock alone (bm_histogram, taskset -c 1)
+BM_MonotonicClock_median       27.8 ns         27.8 ns            5

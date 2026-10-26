@@ -7,6 +7,7 @@ endforeach()
 # Control plane (Chapter 6).
 add_executable(minidaq_server minidaq_server.cpp)
 target_link_libraries(minidaq_server PRIVATE minidaq::control minidaq::warnings)
+target_compile_definitions(minidaq_server PRIVATE MINIDAQ_VERSION_STRING="${MINIDAQ_VERSION_FULL}")
 add_executable(minidaq_ctl minidaq_ctl.cpp)
 target_link_libraries(minidaq_ctl PRIVATE minidaq::control minidaq::warnings)
 
