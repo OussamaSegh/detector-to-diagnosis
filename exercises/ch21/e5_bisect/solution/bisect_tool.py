@@ -42,17 +42,16 @@ def first_bad(repo, good, bad):
     git("bisect", "reset")
     try:
         git("bisect", "start", bad, good)
-        out = git("bisect", "run", sys.executable, str(CHECK)).stdout
+        git("bisect", "run", sys.executable, str(CHECK))
+        # The bisection log, not the messages of `bisect run`: their wording changes between git
+        # versions (2.43 and 2.55 differ), the log's comment lines are the record bisect keeps.
+        log = git("bisect", "log").stdout
     finally:
         git("bisect", "reset")
-    m = re.search(r"^([0-9a-f]{40}) is the first bad commit", out, re.M)
+    m = re.search(r"^# first bad commit: \[([0-9a-f]{40})\]", log, re.M)
     if m:
         return [m.group(1)]
-    tail = out.split("The first bad commit could be any of:", 1)
-    if len(tail) == 2:
-        return re.findall(r"^([0-9a-f]{40})$", tail[1], re.M)
-    return []
-
+    return re.findall(r"^# possible first bad commit: \[([0-9a-f]{40})\]", log, re.M)
 
 if __name__ == "__main__":
     sys.exit(check())

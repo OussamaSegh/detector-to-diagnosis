@@ -670,9 +670,9 @@ The 125 matters more than it looks. A history has commits that do not build: a r
 over two commits, a dependency that is no longer available, a test that was broken for an
 unrelated reason. A check that calls them bad moves the search before them and blames the wrong
 commit. A check that skips them lets bisect test a neighbor. When skipped commits sit right before
-the defect, bisect cannot decide among them and says "The first bad commit could be any of:"
-followed by the candidates; the honest result is that list, and the next step is to read those
-diffs. Exercise 21.5 builds a check that does this:
+the defect, bisect cannot decide among them, and its log (`git bisect log`) ends with one line
+`# possible first bad commit:` for each candidate; the honest result is that list, and the next
+step is to read those diffs. Exercise 21.5 builds a check that does this:
 
 ```{.python include="exercises/ch21/e5_bisect/solution/bisect_tool.py" snippet="check"}
 ```
@@ -685,6 +685,13 @@ looked good. The check now runs Python with `-B`. Any check that uses a build ou
 from a clean state, or bisect searches the cache instead of the history. For MiniDAQ, that means
 a check that configures a fresh build directory, builds only the target it needs, runs only the
 test that shows the defect, and returns 125 for a build that fails.
+
+Its second version passed on the reference machine and failed on every GitHub runner. It read the
+messages that `git bisect run` prints, "is the first bad commit" and "The first bad commit could be
+any of:", and with the runners' git 2.55 it found neither line in the output that the reference
+machine's git 2.43 gives. The tool now reads `git bisect log`, whose comment lines (`# first bad
+commit:`, `# possible first bad commit:`) are the record bisect keeps. Messages are for people; a
+tool reads the format meant for tools.
 
 ### Diagnosing from data
 

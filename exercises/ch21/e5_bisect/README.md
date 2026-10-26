@@ -14,8 +14,8 @@ bisection and parses its result. The tests build throwaway repositories whose `a
 **Tasks.**
 1. `check(workdir)`: exit status 125 for a commit whose `app.py` does not import, 0 if
    `app.answer()` is 42, 1 otherwise.
-2. `first_bad(repo, good, bad)`: return the candidates when bisect says "The first bad commit
-   could be any of:", not an empty list.
+2. `first_bad(repo, good, bad)`: return the candidates when bisect cannot decide, from the
+   lines `# possible first bad commit: [SHA-1]` of `git bisect log`, not an empty list.
 
 **Acceptance** (`ch21/e5_bisect/<variant>/unittest`, needs git): a clean history; commits that
 do not build where bisect tests first, which must be skipped and not blamed; commits that do not

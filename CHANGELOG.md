@@ -84,6 +84,8 @@ the patch version.
 - Problem report MDQ-PR-025 (closed): Chapter 20's seven listings were written in a syntax the
   book's filter does not implement and were printed as placeholders; the strict book build now
   fails on such a block.
+- Problem report MDQ-PR-026 (closed): Exercise 21.5's solution parsed the messages of
+  `git bisect run`, which it did not find with the CI runners' git 2.55; it reads `git bisect log`.
 
 ### Changed
 - The control API is 2.1 (`diagnostics`); an observer may use `diagnostics` as well as `status`

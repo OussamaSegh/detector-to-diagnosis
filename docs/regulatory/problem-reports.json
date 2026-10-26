@@ -263,6 +263,17 @@
       "evaluation": {"safety_relevant": false, "rationale": "A defect of the book's build, not of MiniDAQ. No release was affected: Chapter 20 is not yet in a released edition (0.4.0 will be the first)."},
       "resolution": {"change": "The fourteen listings of Chapters 20 and 21 use the include attribute. The filter now counts a fenced block that starts with '!include' as a missing listing, so the strict build fails on it.", "verification": "With the corrected filter, pandoc in strict mode fails with 'not an include attribute' on a block in the old syntax (exit 83); with the old filter the same input passed (exit 0). book/build.sh builds both books with no missing listing."},
       "root_cause": {"whys": ["Chapter 20's listings were printed as one-line placeholders.", "They were written in a syntax that the filter does not implement.", "The filter recognized only its own syntax and passed every other block through silently, so a mistyped listing was not an error.", "No check compared the listings the text intends with the listings the build expanded."], "cause": "A build step that accepts input it does not understand without saying so.", "category": "tool", "escape": "Nothing that runs on every change builds the book: the code's CI does not, and Chapter 20 was tagged on the code's CI alone. The book build that would have shown the placeholders runs at a Part's release."}
+    },
+    {
+      "id": "MDQ-PR-026",
+      "title": "Exercise 21.5's solution read the messages of git bisect run, and found none with the git of the CI runners",
+      "found": "2026-10-26, GitHub Actions run of aeb0b42: ch21/e5_bisect/solution/unittest failed in all six presets (3 of 5 tests) and passed on the reference machine",
+      "item": "tools",
+      "status": "closed",
+      "description": "first_bad() parsed the output of 'git bisect run' for 'is the first bad commit' and 'The first bad commit could be any of:'. With git 2.43 on the reference machine it found them; with git 2.55 on the runners it found neither and returned an empty list, so every test that expected a result failed. The messages of git are written for people and are not a stable interface.",
+      "evaluation": {"safety_relevant": false, "rationale": "An exercise solution, not MiniDAQ code; no release was affected."},
+      "resolution": {"change": "The solution and the starter read 'git bisect log', whose comment lines '# first bad commit: [SHA-1]' and '# possible first bad commit: [SHA-1]' are the record bisect keeps. The chapter, the README and the notes say why.", "verification": "The solution passes and the starter fails 3 of 5 tests on the reference machine; the GitHub Actions run of the correcting commit runs the test with git 2.55."},
+      "root_cause": {"whys": ["The bisect tests failed on every runner and passed locally.", "first_bad() found neither message it looked for in the output of git 2.55.", "It parsed messages meant for people instead of the bisection log.", "The test environment had one git version, so nothing showed the dependence."], "cause": "A tool that parsed a human-readable message of another tool as if it were an interface.", "category": "code", "escape": "Only one version of git ran the tests before the push; CI was the first to use another."}
     }
   ]
 }
