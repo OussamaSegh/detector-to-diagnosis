@@ -327,6 +327,15 @@ in old notes or logs outside the repository refer to the old history. A private 
 old history is in the project files (`backup/old-history-before-privacy-rewrite.bundle`); never
 push it.
 
+Part V (started 2026-10-26): Chapter 22 (talking to hardware from Linux) is written: register
+map hw/feb.toml and its generator tools/regmap_gen.py (test docs.regmap), typed registers,
+MmioBus, FakeBoard, SlowControl (SiPM bias law, temperature alarms, latched faults), the
+hardware port of the acquisition service (API 2.2), `minidaq_server --hardware FILE`,
+SRS-HW-001 to 010, H-10, ADR 0017, CR-0008 (b27d6ad), exercises 22.1 to 22.4. New C++ under
+minidaq/*/hw, config/hardware_config and control/hardware is formatted with clang-format
+(Google style, 100 columns). New Markdown documents must be added to a clause of
+docs/regulatory/qms/design-file.json (docs.design_file). Next: Chapters 23 to 25.
+
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,
 benchmarks and fuzz targets of both commits are byte-identical (`identical-binaries.txt`). The

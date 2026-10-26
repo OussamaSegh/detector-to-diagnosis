@@ -1,0 +1,4 @@
+minidaq_python_exercise(e1_regmap)
+minidaq_exercise(e2_bias_control)
+minidaq_exercise(e3_tmp117)
+minidaq_exercise(e4_supply_guard)
