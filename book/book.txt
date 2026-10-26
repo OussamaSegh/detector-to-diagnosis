@@ -25,3 +25,4 @@ src/part4/part4.md
 src/part4/ch18-unit-testing.md
 src/part4/ch19-system-testing.md
 src/part4/ch20-ci-regulated.md
+src/part4/ch21-review-debugging.md

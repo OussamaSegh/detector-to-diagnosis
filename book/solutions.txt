@@ -20,3 +20,4 @@ solutions/ch17.md
 solutions/ch18.md
 solutions/ch19.md
 solutions/ch20.md
+solutions/ch21.md

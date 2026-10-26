@@ -73,7 +73,14 @@ end
 
 function CodeBlock(el)
   local path = el.attributes["include"]
-  if not path then return nil end
+  if not path then
+    -- A listing written in another syntax would be printed as its own text (MDQ-PR-025).
+    if el.text:match("^%s*!include") then
+      io.stderr:write("include-code: not an include attribute: " .. el.text:match("^[^\n]*") .. "\n")
+      missing = missing + 1
+    end
+    return nil
+  end
   local content = read_file(path)
   if not content then
     io.stderr:write("include-code: cannot read " .. path .. "\n")

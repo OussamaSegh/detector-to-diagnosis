@@ -50,6 +50,8 @@ finding is written as section 7 says.
 3. The test waits for conditions, never for fixed times (coding standard, rule 5.5), and its
    numbers do not depend on the machine (MDQ-PR-020, MDQ-PR-022).
 4. A test that is skipped somewhere says where and why, and the skip is not where the risk is.
+5. A counter or condition defined as "A and B" has a test with A and not B, and one with B and
+   not A: a test of one fault at a time cannot tell the halves apart (MDQ-PR-019).
 
 ## 5. The regulated parts
 

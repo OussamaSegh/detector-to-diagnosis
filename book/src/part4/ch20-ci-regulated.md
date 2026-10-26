@@ -194,8 +194,7 @@ need, and runs each fault in turn: it applies the fault's edits (each anchored o
 occur exactly once, so a fault cannot silently stop applying when the code moves), runs the gate,
 restores the checkout and decides:
 
-```python
-!include tools/gate_selftest.py snippet=verdict
+```{.python include="tools/gate_selftest.py" snippet="verdict"}
 ```
 
 The faults are data. Here are four of the fifteen:
@@ -325,8 +324,7 @@ because Chapter 21 debugs core dumps from the field with it, and the server diff
 debug information holds the checkout's absolute path 50 times. GCC and Clang can rewrite those
 paths with `-ffile-prefix-map`, which covers `__FILE__` and the debug information at once:
 
-```cmake
-!include cmake/Reproducible.cmake snippet=maps
+```{.cmake include="cmake/Reproducible.cmake" snippet="maps"}
 ```
 
 With both maps the two servers are identical again. The order of the two maps matters, and the
@@ -345,8 +343,7 @@ directories of different names, configures the `hardened` preset in each with te
 benchmarks off, builds the two shipped programs, packages each build with the release tool of
 the next section, and compares the two archives byte for byte:
 
-```bash
-!include tools/repro_check.sh snippet=twice
+```{.bash include="tools/repro_check.sh" snippet="twice"}
 ```
 
 The dependencies are fetched in each checkout, so their paths differ too. On the reference
@@ -434,8 +431,7 @@ its machine, and it points at the product by hash.
 Splitting the debug information keeps the shipped programs small and the field's core dumps
 debuggable:
 
-```python
-!include tools/release_bundle.py snippet=split
+```{.python include="tools/release_bundle.py" snippet="split"}
 ```
 
 `--only-keep-debug` writes the debug sections to their own file; `--strip-debug` removes them
@@ -450,8 +446,7 @@ is 24.2 MB, uncompressed, of which 23.1 MB are the debug files
 The archive itself must be deterministic too. Python's `tarfile` records the owner, the file
 times and the order in which you add files, so the tool sets all three:
 
-```python
-!include tools/release_bundle.py snippet=deterministic_tar
+```{.python include="tools/release_bundle.py" snippet="deterministic_tar"}
 ```
 
 The archive is not compressed: two machines with different zlib versions compress the same
@@ -540,8 +535,7 @@ and T3 tool has reasons and evidence that exist, and that every `shown_to_fail` 
 real, and it regenerates the table `tools.md` that a reviewer reads. In CI it also compares the
 installed versions with the recorded ones:
 
-```python
-!include tools/check_tools.py snippet=environment
+```{.python include="tools/check_tools.py" snippet="environment"}
 ```
 
 A GitHub runner image is updated every week or two. When it brings a new compiler or analyzer,
@@ -584,8 +578,7 @@ What a single runner can do is compare two things on itself. `tools/perf_ab.sh` 
 of the change and the build of its parent, both made in the same job, and runs the gated
 benchmarks of both, interleaved round by round:
 
-```bash
-!include tools/perf_ab.sh snippet=interleave
+```{.bash include="tools/perf_ab.sh" snippet="interleave"}
 ```
 
 Each round runs two repetitions of each side, A then B in odd rounds and B then A in even ones,

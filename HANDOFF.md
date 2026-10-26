@@ -5,7 +5,7 @@ Engineer* and MiniDAQ if the current session is lost. Read it fully before you c
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-10-25 20:50 UTC, after commit bddbd57 (Chapter 19 committed, CI pending).
+Last updated: 2026-10-26 02:05 UTC, with the Chapter 21 text (CI pending).
 
 ## 1. The goal
 
@@ -90,7 +90,8 @@ Commits and pushing:
 - **The book is generic** (user decision, 2026-10-26): it is written for any engineer who leads
   a PET DAQ. It names no employer of the reader ("your team", "your company"), quotes and cites no
   role description, and gives no calendar dates for the reader's schedule (weeks 1 to 10 only).
-  The NeuroLF's manufacturer appears only in reference entries. Future chapters follow the same rule.
+  The NeuroLF's manufacturer appears only in reference entries. Future chapters follow the same
+  rule.
 - Every commit message ends with these lines:
 
   ```
@@ -278,14 +279,22 @@ Chapter 20 (CI for regulated software): commits 27a2b53 (MDQ-PR-020), f63f5bf (C
 ### In progress (as of the last update)
 
 Chapter 20 is complete and tagged ch20 locally on 069e5a0, where ci, gates and perf were green on
-GitHub. Chapter 21 is in progress.
+GitHub. Chapter 21 is written (code 0e03f6c, exercises 3231443 and aeb0b42, text and solutions
+after them); local CI was green on all six presets for the code. Left for Chapter 21: GitHub CI
+green on the last commit, then tag ch21 locally (the user pushes tags). MDQ-PR-025 (Chapter 20's
+listings were not expanded) is fixed in the same commit as the text.
+
+Privacy (2026-10-26): the book is generic (e670ec4). The history rewrite that removes the old
+e-mail address from 100 commits and scrubs old file versions is prepared but not run: the
+session's safety check blocked git filter-repo, and the user was asked directly. A private
+backup of the old history is in the project files (`backup/old-history-before-privacy-rewrite.bundle`);
+never push it. After a rewrite, remap the commit hashes cited in documents (CR Commits fields,
+CHANGELOG, problem reports, measurements, HANDOFF) from filter-repo's commit map.
 
 ### Left to do, in order
 
 1. Finish Chapter 20 (above).
-2. **Chapter 21**, code review, debugging and incident analysis. Deepen it in place to full
-   depth: gdb, core dumps, debugging a live system without stopping acquisition,
-   record-and-replay, review checklists, and root cause written up as a problem report.
+2. **Chapter 21**: GitHub CI and the tag (see above).
 3. **Part IV review and release 0.4.0.** It includes:
    - the CAPA-0003 and CAPA-0004 effectiveness checks;
    - the writer re-measurement;

@@ -75,6 +75,15 @@ the patch version.
   because VERSION never moved to 0.4.0-dev; it is 0.4.0-dev now, and `tools/check_version.py`
   (test `docs.version`) fails for a release version outside its release commit. The corrected
   version asked for the SOUP reviews for 0.4, which are recorded.
+- Chapter 21 (text): code review with the checklist, reading a core dump with its own build,
+  the flight recorder and its measurements, the crash report, root cause analysis (MDQ-PR-019
+  worked through), bisecting and diagnosing from data; solutions; exercises 21.1 to 21.5 (a
+  review graded against six seeded defects, a postmortem of a recursive parser, a one-writer
+  seqlock recorder under TSan, an incident reconstructed from status snapshots, `git bisect run`
+  through commits that do not build). Review checklist item 4.5 (combinations of faults).
+- Problem report MDQ-PR-025 (closed): Chapter 20's seven listings were written in a syntax the
+  book's filter does not implement and were printed as placeholders; the strict book build now
+  fails on such a block.
 
 ### Changed
 - The control API is 2.1 (`diagnostics`); an observer may use `diagnostics` as well as `status`
