@@ -83,7 +83,7 @@ def main(argv):
     if len(argv) < 4:
         raise SystemExit(__doc__)
     out, version, files = pathlib.Path(argv[1]), argv[2], [pathlib.Path(f) for f in argv[3:]]
-    repo = "https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "OussamaSegh/neurolf-engineer")
+    repo = "https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "OussamaSegh/detector-to-diagnosis")
     commit = os.environ.get("GITHUB_SHA", "local")[:7]
     out.mkdir(parents=True, exist_ok=True)
     groups = {"book": [], "solutions": []}

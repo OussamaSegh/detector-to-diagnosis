@@ -112,7 +112,7 @@ Commits and pushing:
   Create tags locally. They travel in the release zip and the git bundle, and the user pushes
   them (`git fetch BUNDLE 'refs/tags/*:refs/tags/*' && git push origin --tags`).
 - Nothing goes to an external service without the user's approval. Pushing to the user's
-  GitHub repository `OussamaSegh/neurolf-engineer` (public since 2026-10-26) is approved.
+  GitHub repository `OussamaSegh/detector-to-diagnosis` (public since 2026-10-26; named neurolf-engineer until the retitling) is approved.
 
 Dependencies and process:
 
@@ -176,7 +176,7 @@ cmake -S . -B build/starters -DCMAKE_BUILD_TYPE=Release -DMINIDAQ_BUILD_EXERCISE
 book/build.sh                     # the PDF must have 0 overfull hboxes (grep the .log)
 ```
 
-The download page https://oussamasegh.github.io/neurolf-engineer/ is rebuilt by
+The download page https://oussamasegh.github.io/detector-to-diagnosis/ is rebuilt by
 `.github/workflows/pages.yml` on every push to main: the EPUB and the PDF of the book and the
 solutions. The user dropped the phone and Kindle PDFs (2026-10-26); do not add them back. The
 first runs failed on a missing `lmodern` package and on a slow apt mirror; the workflow now
