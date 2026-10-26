@@ -49,11 +49,41 @@ working MiniDAQ and your first exercise; do it before Chapter 1.
 
 ### What you need {.unnumbered}
 
-A Linux machine with Ubuntu 24.04 is the reference: every command in the book was run there.
-Another recent Linux distribution works with its own package names. WSL2 with an Ubuntu 24.04
-distribution works for everything except the real-time measurements of Chapter 4, which need a
-real kernel. macOS works for Parts I to IV with the Homebrew compilers; the hardware, networking
-and platform chapters (4, 22, 23 and 25) need Linux. Plan for 4 GB of memory and 15 GB of disk.
+MiniDAQ is Linux software: it uses Linux interfaces (real-time scheduling, CPU affinity, `eventfd`,
+batched socket receives, the kernel's network counters, systemd), so it builds and runs on Linux
+only. Ubuntu 24.04 is the reference, on x86-64 or on 64-bit ARM (aarch64): every command in the
+book was run there. Another recent distribution works with its own package names. A virtual
+machine works for everything; the one thing it changes is the timing measurements of Chapters 4,
+5 and 23, whose numbers then include the hypervisor (the shapes of the results still show). On
+Windows, use WSL2 with an Ubuntu 24.04 distribution. Plan for 4 GB of memory and 15 GB of disk.
+
+**On a Mac with Apple silicon.** Work in an Ubuntu 24.04 virtual machine for 64-bit ARM, which runs
+at native speed. Two free ways to get one:
+
+- **OrbStack** (<https://orbstack.dev>, free for personal use at the time of writing): install it,
+  then in the macOS terminal run `orb create ubuntu:noble minidaq` once, and `orb -m minidaq`
+  each time to open a shell in the machine.
+- **UTM** (<https://mac.getutm.app>): create a virtual machine with "Virtualize", Linux, and the
+  Ubuntu 24.04 Server image for ARM64 from <https://ubuntu.com/download/server/arm>.
+
+Give the machine at least 4 CPUs and 8 GB of memory if your Mac has it to spare, keep the
+repository in the machine's own file system (your Linux home directory) rather than in a folder
+shared with macOS, which builds much more slowly, and edit with any editor that can open files in
+the machine (VS Code's remote extensions can). Then follow the Linux instructions below in the
+machine's shell. What changes on ARM is small and the book points it out where it matters:
+
+- The SIMD listings of Chapter 5 (AVX2 and AVX-512) are x86-64 instructions. On ARM, MiniDAQ uses
+  its portable branchless filter instead, and the SIMD tests check that the fallback gives the
+  same results; read the listings, and expect your own measurements to show the fallback.
+- Exercise 4.5 reads the x86 time-stamp counter. On ARM its solution returns 0, as the exercise
+  asks, and its two timing tests report themselves as skipped.
+- The control-flow protection of the hardened build (Chapter 7, `-fcf-protection`, Intel CET)
+  exists only on x86-64, so the hardening check does not ask for it on ARM.
+- Inside a virtual machine, `perf` may not see the processor's hardware counters. If `perf stat`
+  prints `<not supported>` for cycles, use the software event `-e cpu-clock`, which works
+  everywhere.
+- Every benchmark number in the book was measured on an x86-64 server. Yours will differ; compare
+  the ratios and the shapes, not the absolute numbers.
 
 Install the compilers and build tools once:
 

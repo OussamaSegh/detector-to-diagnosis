@@ -39,10 +39,11 @@ cmake --build --preset debug
 ctest --preset debug -LE starter
 ```
 
-**macOS:** install Xcode command line tools, then `brew install cmake ninja llvm`; use the
-`clang-release` and `asan-ubsan` presets with `CMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++`.
-Real-time and networking chapters (4, 22, 23, 25) need Linux.
-**WSL2:** follow the Ubuntu instructions inside an Ubuntu 24.04 distribution.
+MiniDAQ uses Linux interfaces and builds on Linux only, x86-64 or aarch64.
+**Mac with Apple silicon:** work in an Ubuntu 24.04 ARM64 virtual machine (OrbStack:
+`orb create ubuntu:noble minidaq`, then `orb -m minidaq`; or UTM) and follow the Ubuntu
+instructions there; *How to use this book* lists what differs on ARM.
+**Windows:** follow the Ubuntu instructions inside WSL2 with an Ubuntu 24.04 distribution.
 
 Offline builds: configure with `-DMINIDAQ_USE_SYSTEM_DEPS=ON` after
 `sudo apt-get install libgtest-dev libgmock-dev`.
