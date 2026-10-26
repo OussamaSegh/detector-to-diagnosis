@@ -361,8 +361,32 @@ without). The sender's packet count (tail loss on the network) is an ICD open it
 Chapter 24 text (book/src/part5/ch24-fpga-interface.md), solutions and Exercises 24.1 to 24.4
 (handshake checker, Gray code, output FIFO model, split counter) are written; hw/rtl holds the
 SystemVerilog FIFO and its testbench (test hw.rtl runs only where iverilog is installed; it is
-installed locally with apt, not on CI, tool TL-26). Book: 455 pages, solutions 148. Next:
-Chapter 25 (platform: image, systemd, watchdog, signed updates with rollback), then 0.5.0.
+installed locally with apt, not on CI, tool TL-26). Book: 455 pages, solutions 148.
+Chapter 25 (embedded Linux platform) is written: platform/platform.json (minidaq-platform-1)
+and tools/platform_check.py (IQ facts, platform SBOM; TL-27), packaging/ (hardened
+minidaq.service, minidaq-rollback.service, sysctl, udev, sysusers; check tools/check_units.py,
+test packaging.units), rt::Heartbeat/HealthMonitor, control::ServiceManagerLink and Watchdog
+(sd_notify without libsystemd; READY after the API listens, WATCHDOG only while every loop
+beats), FakeBoard fault hung_bus, item update (Ed25519 manifest, A/B slots, trial/confirm/
+rollback, repair in open(), power-cut test after every step), minidaq_update, tools/make_update.py
+(TL-28), SRS-PLT-001 to 011 (SRS v14), RC-32 to RC-34, threats T-39 to T-53 (threat model v3),
+ADR 0020, CR-0011 (b0995fb), architecture v11, SOUP list v8, docs/platform/installation.md (INST
+v1). measurements/ch25/service_and_update (READY 5 to 9 ms; hung bus unhealthy at 5 s, systemd
+acts 10 s after the last ping; install 54 to 60 ms, rollback 5 ms; 45 syscalls, none refused by
+@system-service minus @privileged; exposure 9.4 unhardened, 1.7 shipped). Text
+book/src/part5/ch25-embedded-platform.md, solutions and Exercises 25.1 to 25.4 (watchdog
+environment, SemVer precedence, power cut model, verify tree). This container has no systemd as
+PID 1: the units are checked offline only.
+Apple silicon (user has a MacBook Air M5): How to use this book recommends an Ubuntu 24.04 arm64
+VM (OrbStack or UTM). The aarch64 cross build (g++-aarch64-linux-gnu, -Werror) passes; under
+qemu-user 728 of 773 unit and solution tests pass, and the rest are emulator limits
+(timeouts from slowness, /proc/self/exe is qemu, SO_RXQ_OVFL and crash signals not emulated,
+no binfmt for the Python tool tests); DetectorSimulator.SameSeedSameStream and
+Sinogram.APointSourceDrawsASinusoid pass without a time limit (268 s and 354 s under qemu). make_sbom.py and platform_check.py read the native package on multiarch
+hosts.
+PAUSED (user, 2026-10-26 19:10 UTC): after Chapter 25, stop until the user says resume. Do not
+start release 0.5.0 or Part VI without the user's go-ahead. Next, when resumed: tag ch24 and ch25
+(.github/tags.txt) once CI is green, then release 0.5.0 and the Part V review.
 
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,
@@ -376,8 +400,7 @@ writer benchmark needs about 10 GB free; delete old build directories first.
 1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in
    f36a99e); its fixes go out with the next release. VERSION is 0.5.0-dev with the SOUP reviews
    for 0.5 (789ab17); remember this bump right after every release, or docs.version turns CI red.
-2. **Part V** (22 to 25): hardware layer, embedded Linux, networking, and a tuned receiver. It
-   must give hardware control real depth (review gap). Release 0.5.0.
+2. **Part V** (22 to 25): written. Release 0.5.0 (waiting for the user's resume).
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
    image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and

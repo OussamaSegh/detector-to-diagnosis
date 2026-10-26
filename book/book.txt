@@ -30,3 +30,4 @@ src/part5/part5.md
 src/part5/ch22-hardware-linux.md
 src/part5/ch23-networking.md
 src/part5/ch24-fpga-interface.md
+src/part5/ch25-embedded-platform.md

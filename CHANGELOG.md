@@ -35,6 +35,18 @@ the patch version.
   losses in the integrity verdict; hardware description 1.1 (`run` timeouts, simulated firmware,
   FIFO rates, fault `stalled_link`); control API 2.3. Measurement `measurements/ch24/`.
   SRS-HW-011 to SRS-HW-015 (SRS version 13), RC-30, RC-31, ADR 0019, CR-0010.
+- Chapter 25 code: the platform under MiniDAQ. A platform definition with exact package versions
+  (`platform/platform.json`) and its check and SBOM (`tools/platform_check.py`, TL-27); hardened
+  systemd units and the other installed files under `packaging/` (checked by `packaging.units`);
+  heartbeats in the acquisition service, the control server and the slow control, and a
+  watchdog that pings systemd only while every loop beats (`READY`, `WATCHDOG`, `STOPPING`
+  without libsystemd); the `FakeBoard` fault `hung_bus`; signed updates into A/B slots with a
+  trial, confirmation and rollback that survive a power cut at any step (`minidaq_update`,
+  `tools/make_update.py`, TL-28). SRS-PLT-001 to SRS-PLT-011 (SRS version 14), RC-32 to RC-34,
+  threats T-39 to T-53, ADR 0020, CR-0011; measurements in `measurements/ch25/`.
+- Chapter 25 text, solutions and Exercises 25.1 to 25.4.
+- How to use this book: a step-by-step guide to the companion repository, and the way to work on
+  a Mac with Apple silicon (an Ubuntu 24.04 arm64 virtual machine).
 - Chapter 24 text, Exercises 24.1 to 24.4 and their solutions; the SystemVerilog listing of the
   board's output FIFO (`hw/rtl/feb_out_fifo.sv`) with a self-checking testbench, simulated by the
   test `hw.rtl` where Icarus Verilog is installed (tool TL-26, optional).

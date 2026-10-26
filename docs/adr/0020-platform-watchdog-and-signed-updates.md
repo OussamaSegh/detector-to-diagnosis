@@ -61,7 +61,7 @@ the platform team: assumption: confirm with team).
   a core dump, and restarts the server.
 - The server runs as its own user without capabilities; `LimitRTPRIO=` and `LimitMEMLOCK=` give
   exactly what the real-time profiles need; the rest of the unit restricts the file system,
-  devices, address families and system calls (`systemd-analyze security` exposure 1.8).
+  devices, address families and system calls (`systemd-analyze security` exposure 1.7).
 - `minidaq_update` (item update, class B) installs a bundle into the slot that is not running,
   verifies it (signature, then archive digest, then every file), records it as a trial and
   switches `current`; `confirm` runs after READY; three failed starts make the unit fail, and

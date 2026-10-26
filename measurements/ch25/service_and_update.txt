@@ -1,0 +1,42 @@
+Machine: x86_64, 4 CPUs, Linux 6.18.44-fc-v153; systemd 255 (255.4-1ubuntu8.18). Programs: build/release/minidaq/apps.
+
+## 1. Start to READY
+
+5 starts with one simulated board: READY after 5 / 6 / 9 ms (min / median / max) from the start of the process.
+
+## 2. The watchdog (WatchdogSec=10s)
+
+Healthy server, 32 s: 7 pings, gaps 5.00 / 5.00 s (min / max); systemd asks for one within every 10 s.
+
+| Run | Unhealthy at, s | Last ping at, s | systemd acts at, s | Status the server sent |
+|---|---:|---:|---:|---|
+| 1 | 5.01 | 0.01 | 10.01 | unhealthy: slow control never beat |
+| 2 | 5.01 | 0.01 | 10.01 | unhealthy: slow control never beat |
+| 3 | 5.01 | 0.01 | 10.01 | unhealthy: slow control never beat |
+
+## 3. The updater
+
+Bundle: 0.7 MB (1.7 MB unpacked, three programs).
+
+| Command | Time, ms | Exit status |
+|---|---:|---:|
+| install 0.5.0 into an empty root | 57 | 0 |
+| install 0.5.1 as a trial | 46 | 0 |
+| rollback to 0.5.0 | 5 | 0 |
+| rollback again (nothing to do) | 2 | 3 |
+| install 0.5.1 again | 62 | 0 |
+| confirm | 4 | 0 |
+
+## 4. System calls of a run against the unit's filter
+
+A two-second synthetic run with configure, start, wait and status made 45 different system calls: accept4, access, arch_prctl, bind, brk, clock_nanosleep, clone3, close, eventfd2, execve, fstat, futex, geteuid, getpid, getrandom, getsockname, listen, lseek, madvise, mkdir, mmap, mprotect, munmap, newfstatat, openat, poll, prctl, pread64, prlimit64, read, recvfrom, rseq, rt_sigaction, rt_sigprocmask, rt_sigtimedwait, sched_setscheduler, sched_yield, sendto, set_robust_list, set_tid_address, setsockopt, sigaltstack, socket, unlink, write.
+
+Refused by @system-service minus @privileged: none.
+
+## 5. systemd-analyze security --offline=true
+
+| Unit | Exposure (0 to 10, lower is better) | Rating |
+|---|---:|---|
+| without hardening | 9.4 | UNSAFE |
+| as shipped | 1.7 | OK |
+

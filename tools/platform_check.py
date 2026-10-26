@@ -46,6 +46,13 @@ def os_release(root):
     return out
 
 
+def package_version(name):
+    """The installed version; on a multiarch system, that of the native architecture's package."""
+    native = run("dpkg", "--print-architecture")
+    found = run("dpkg-query", "-W", "-f=${Version}", f"{name}:{native}") if native else None
+    return found or run("dpkg-query", "-W", "-f=${Version}", name)
+
+
 # [snippet:collect]
 def collect(definition, root):
     """The facts the definition asks about, from the running system and the files under root."""
@@ -55,7 +62,7 @@ def collect(definition, root):
         "architecture": run("dpkg", "--print-architecture") or pyplatform.machine(),
         "kernel": pyplatform.release(),
         "cmdline": pathlib.Path("/proc/cmdline").read_text().split() if pathlib.Path("/proc/cmdline").is_file() else [],
-        "packages": {p["name"]: run("dpkg-query", "-W", "-f=${Version}", p["name"]) for p in definition["packages"]},
+        "packages": {p["name"]: package_version(p["name"]) for p in definition["packages"]},
         "sysctl": {},
         "users": {u: run("getent", "passwd", u) is not None for u in definition["users"]},
         "files": {},
