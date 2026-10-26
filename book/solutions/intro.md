@@ -17,7 +17,7 @@ repository at build time, so it is the same code the repository's CI compiles an
 
 Model answers are deliberately compact. If your answer covers the same points in
 different words, it is right. If it covers more, even better: write the extra point into
-your learning log as a question for your team in your first weeks.
+your learning log as a question for your team.
 
 ```{=latex}
 \mainmatter

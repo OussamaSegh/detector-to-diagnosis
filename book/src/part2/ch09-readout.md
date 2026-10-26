@@ -41,11 +41,10 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 1 and 2 (strong types, the MDQ-P1 word), Chapter 3 (threads and queues), Chapter 6
-(ports and adapters, the configuration format) and Chapter 8 (the detector chain and the
-simulator). Basic familiarity with sockets helps; the chapter explains what it uses. Reading:
-about 3 hours. Exercises: 6 to 8 hours. Milestone: 5 hours. In the 10-week schedule at the front
-of the book, this chapter is in week 2, with Chapters 3 and 13.
+Chapters 1 and 2 (strong types, the MDQ-P1 word), Chapter 3 (threads and queues), Chapter 6 (ports
+and adapters, the configuration format) and Chapter 8 (the detector chain and the simulator). Basic
+familiarity with sockets helps; the chapter explains what it uses. Reading: about 3 hours.
+Exercises: 6 to 8 hours. Milestone: 5 hours.
 
 ## From a pulse to a time stamp and an energy
 

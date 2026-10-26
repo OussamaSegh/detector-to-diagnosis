@@ -38,7 +38,7 @@ def read():
 def main(dst):
     data = read()
     labels = list(data)
-    fig, ax = plt.subplots(figsize=(6.4, 2.7), dpi=200)
+    fig, ax = plt.subplots(figsize=(6.4, 2.7), dpi=300)
     w = 0.38
     for i, label in enumerate(labels):
         for run, dx, color in (("short", -w / 2, SHORT), ("long", w / 2, LONG)):

@@ -41,11 +41,9 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 3 (threads), Chapter 5 (benchmarks and profiling), Chapter 8 (the physics of trues,
-scatters and randoms, the simulator and its truth counter) and Chapter 9 (time stamps and board
-clocks). Reading: about 3.5 hours. Exercises: 12 to 16 hours. Milestone: 6 hours. In the 10-week
-schedule at the front of the book, this chapter is in weeks 3 and 4: its first half with
-Chapters 4 and 5, its second half with Chapters 11 and 14.
+Chapter 3 (threads), Chapter 5 (benchmarks and profiling), Chapter 8 (the physics of trues, scatters
+and randoms, the simulator and its truth counter) and Chapter 9 (time stamps and board clocks).
+Reading: about 3.5 hours. Exercises: 12 to 16 hours. Milestone: 6 hours.
 
 ## The problem
 

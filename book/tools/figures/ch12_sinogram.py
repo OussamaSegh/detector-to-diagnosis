@@ -33,7 +33,7 @@ def plane(values, rows, cols):
 
 
 def main(dst):
-    fig, axes = plt.subplots(1, 3, figsize=(6.4, 2.6), dpi=200,
+    fig, axes = plt.subplots(1, 3, figsize=(6.4, 2.6), dpi=300,
                              gridspec_kw={"width_ratios": [1, 1, 0.95]})
     # Radial bins are not evenly spaced: label the axis with positions in mm.
     ticks_mm = [-100, -50, 0, 50, 100]

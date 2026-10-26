@@ -11,7 +11,7 @@ its interfaces identified and its decisions justified, and an auditor or a new c
 read that description before they read your code.
 :::
 
-**A day in the life.** It is your sixth week. The detector team asks whether a new firmware
+**A day in the life.** It is a Thursday. The detector team asks whether a new firmware
 version, with a different link protocol, can be tested on Monday. A clinical-site engineer
 reports that a scan stopped when the operator's laptop went to sleep. And quality assurance
 asks which configuration was used for last Thursday's phantom acquisition. In a DAQ where the
@@ -41,10 +41,9 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapters 1 to 5, in particular the pipeline and its counters (Chapter 3) and the latency
-histograms (Chapter 4). You need Graphviz (`dot`) for the diagrams and `nc` (netcat) to talk to
-the server by hand. Reading: about 3 hours. Exercises: 9 to 12 hours. Milestone: 4 hours. In the
-10-week schedule at the front of the book, this chapter is in week 5, with Chapters 12 and 15.
+Chapters 1 to 5, in particular the pipeline and its counters (Chapter 3) and the latency histograms
+(Chapter 4). You need Graphviz (`dot`) for the diagrams and `nc` (netcat) to talk to the server by
+hand. Reading: about 3 hours. Exercises: 9 to 12 hours. Milestone: 4 hours.
 
 MiniDAQ grows a second library in this chapter. `minidaq_core` keeps the hot path: types,
 formats, the pipeline, histograms, real-time settings and the simulator. The new

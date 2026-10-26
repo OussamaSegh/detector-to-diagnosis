@@ -49,12 +49,10 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 3 (atomics and memory order), Chapter 4 (the real-time process), Chapter 7
-(sanitizers and hardening), Chapter 16 (problem reports and CAPA), Chapter 19 (system tests) and
-Chapter 20 (the shipped build, its debug information and build ID). Reading: about 3 hours.
-Exercises: 4 to 6 hours. Milestone: 4 hours. In the 10-week schedule at the front of the book,
-this chapter is in week 7, with Chapters 19, 20, 22 and 23; if time is short, do Exercises 21.1,
-21.2 and 21.5 and leave 21.3 for later.
+Chapter 3 (atomics and memory order), Chapter 4 (the real-time process), Chapter 7 (sanitizers and
+hardening), Chapter 16 (problem reports and CAPA), Chapter 19 (system tests) and Chapter 20 (the
+shipped build, its debug information and build ID). Reading: about 3 hours. Exercises: 4 to 6 hours.
+Milestone: 4 hours. If time is short, do Exercises 21.1, 21.2 and 21.5 and leave 21.3 for later.
 
 ## Reviewing a change
 

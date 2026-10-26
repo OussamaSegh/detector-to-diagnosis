@@ -1,22 +1,12 @@
 title: "Detector to Diagnosis: Solutions Manual"
 subtitle: "Building Regulated Medical Imaging Software in Modern C++"
-author:
-  - "A practice book prepared with Claude"
 lang: en-US
-rights: "Personal study edition. Code: MIT License. Not a substitute for a manufacturer's QMS procedures."
 description: "Worked solutions to every exercise and model answers to every Check yourself question in Detector to Diagnosis."
 subject: "C++; PET; data acquisition; IEC 62304; ISO 14971"
 documentclass: book
 classoption:
   - openany
   - 10pt
-geometry:
-  - paperwidth=7in
-  - paperheight=10in
-  - inner=0.85in
-  - outer=0.7in
-  - top=0.8in
-  - bottom=0.8in
 mainfont: "TeX Gyre Pagella"
 sansfont: "TeX Gyre Heros"
 monofont: "Inconsolata"

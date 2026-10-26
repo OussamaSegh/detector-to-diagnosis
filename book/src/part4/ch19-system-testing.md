@@ -48,12 +48,11 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 3 (the pipeline and its batches), Chapter 6 (the control API and the state machine),
-Chapter 9 (the readout link and its sequence numbers), Chapter 10 (the coincidence sorter),
-Chapter 17 (TLS and tokens) and Chapter 18 (unit tests, properties and coverage). The system
-tests are in Python with the standard library only. Reading: about 3 hours. Exercises: 8 to 10
-hours. Milestone: 5 hours. In the 10-week schedule at the front of the book, this chapter is in
-week 7, with Chapters 20 to 23; if time is short, do Exercises 19.1 to 19.3 and leave the extras.
+Chapter 3 (the pipeline and its batches), Chapter 6 (the control API and the state machine), Chapter
+9 (the readout link and its sequence numbers), Chapter 10 (the coincidence sorter), Chapter 17 (TLS
+and tokens) and Chapter 18 (unit tests, properties and coverage). The system tests are in Python
+with the standard library only. Reading: about 3 hours. Exercises: 8 to 10 hours. Milestone: 5
+hours. If time is short, do Exercises 19.1 to 19.3 and leave the extras.
 
 ## Test levels
 

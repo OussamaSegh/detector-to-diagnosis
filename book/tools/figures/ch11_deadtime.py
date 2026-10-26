@@ -37,7 +37,7 @@ def read_lost():
 
 
 def main(dst):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.8), dpi=200)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.8), dpi=300)
     x = [i / 100 for i in range(301)]
     ax1.plot(x, x, ":", color="gray", linewidth=0.8, label="no dead time")
     ax1.plot(x, [v / (1 + v) for v in x], color=NP, linewidth=1.1, label="non-paralyzable")

@@ -13,7 +13,7 @@ situation, the standards and how they depend on each other, and the obligations 
 market. It ends with MiniDAQ's first regulatory documents.
 :::
 
-**A day in the life.** It is your third week, and the change you are most proud of is ready: a
+**A day in the life.** The change you are most proud of this month is ready: a
 faster merger that cuts the sorter's latency by half. In the review, the quality engineer asks
 three questions. Which requirements does the change touch? Has the risk analysis been looked
 at, given that the merger decides which singles are late? And does the change need to be
@@ -44,11 +44,9 @@ After this chapter you can:
 
 ## Prerequisites and estimated time {.unnumbered}
 
-Chapter 6 (architecture and decision records), Chapter 7 (the SOUP list and the SBOM) and
-Chapter 12 (the run record and the patient-data boundary). No physics or C++ is needed beyond
-that, and the exercises are in Python. Reading: about 3 hours. Exercises: 5 hours. Milestone: 2
-hours. In the 10-week schedule at the front of the book, this chapter is in week 2, the lighter
-evenings next to Chapters 3 and 9.
+Chapter 6 (architecture and decision records), Chapter 7 (the SOUP list and the SBOM) and Chapter 12
+(the run record and the patient-data boundary). No physics or C++ is needed beyond that, and the
+exercises are in Python. Reading: about 3 hours. Exercises: 5 hours. Milestone: 2 hours.
 
 ## Why regulation shapes software
 

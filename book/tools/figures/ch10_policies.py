@@ -40,7 +40,7 @@ def read_table():
 
 def main(dst):
     rows = read_table()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9), dpi=200)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9), dpi=300)
     for i, (policy, (color, marker, label)) in enumerate(STYLE.items()):
         pts = rows[policy]
         x = [p[0] for p in pts]

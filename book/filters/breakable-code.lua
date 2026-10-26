@@ -3,7 +3,8 @@
 -- \texttt is never hyphenated, so a long identifier or path such as
 -- `std::hardware_destructive_interference_size` sticks out into the margin.
 -- For LaTeX output, this filter writes long inline code itself and allows a
--- line break after `_`, `/`, `.`, `,`, `(` and `::`, and inside a long CamelCase
+-- line break after `_`, `/`, `.`, `,`, `(`, `-`, `:`, `?` and `&` (`::` only after both
+-- colons), and inside a long CamelCase
 -- name (a test name such as `TheSorterFindsWhatTheReferenceFinds`) between a
 -- lower-case and an upper-case letter. Headings are left alone
 -- (they go into the table of contents and PDF bookmarks).
@@ -23,7 +24,10 @@ local escapes = {
   ["-"] = "-\\/", ["'"] = "\\textquotesingle{}", ["`"] = "\\textasciigrave{}",
 }
 
-local break_after = { ["_"] = true, ["/"] = true, ["."] = true, [","] = true, ["("] = true }
+local break_after = {
+  ["_"] = true, ["/"] = true, ["."] = true, [","] = true, ["("] = true,
+  ["-"] = true, [":"] = true, ["?"] = true, ["&"] = true,
+}
 
 local function latex_code(text)
   local out = {}

@@ -34,7 +34,7 @@ def read_table():
 
 def main(dst):
     rows = read_table()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.6), dpi=200)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.6), dpi=300)
     for mbq, color in COLORS.items():
         for ax, kind in ((ax1, "time"), (ax2, "energy")):
             pts = rows[(mbq, kind)]

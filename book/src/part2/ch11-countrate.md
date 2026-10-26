@@ -46,10 +46,8 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapter 3 (the pipeline and its latency report), Chapter 8 (trues, scatters and randoms, the
-simulator), Chapter 9 (the link budget) and Chapter 10 (the sorter, its windows and its
-multiples policies). Reading: about 3 hours. Exercises: 11 hours. Milestone: 4 hours. In the
-10-week schedule at the front of the book, this chapter is in week 4, with the second half of
-Chapter 10 and Chapter 14.
+simulator), Chapter 9 (the link budget) and Chapter 10 (the sorter, its windows and its multiples
+policies). Reading: about 3 hours. Exercises: 11 hours. Milestone: 4 hours.
 
 ## Dead time and pile-up
 
@@ -531,7 +529,7 @@ output queue or idled on an empty input, and how much the source dropped.
 `measurements/ch11/bottleneck.py` sweeps the activity:
 
 | Activity | Singles/s | Dropped (%) | Decode (%) | Sort (%) | Pair (%) | p99 (ms) |
-|---:|---:|---:|---:|---:|---:|---:|
+|----:|----:|----:|----:|----:|----:|---:|
 | 20 MBq | 3.3 M | 0 | 1.4–1.6 | 3.5–3.7 | 4.0–4.2 | 1.3 |
 | 100 MBq | 16.7 M | 0 | 6.7–6.8 | 19.1–19.6 | 22.9–23.0 | 1.0–1.7 |
 | 200 MBq | 33.4 M | 0 | 10.8–11.0 | 35.5–36.6 | 45.3–45.7 | 0.8–2.1 |
