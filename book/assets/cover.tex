@@ -1,6 +1,6 @@
 % Covers of Detector to Diagnosis and of its solutions manual. book/build.sh compiles this file
-% with XeLaTeX in two forms:
-% - the front cover alone, 7 x 10 in: page 1 of the screen PDF, and the EPUB cover as a PNG;
+% with XeLaTeX in two forms, for the trim size \nlftrimw x \nlftrimh in (default 7 x 10):
+% - the front cover alone: page 1 of the screen PDF, and the EPUB cover as a PNG;
 %     xelatex -jobname=cover-book "\def\nlfvolume{book}\input{cover.tex}"
 % - the full-wrap paperback cover for KDP: bleed, back cover, spine and front cover, with the
 %   spine width computed from the interior's page count;
@@ -10,6 +10,8 @@
 % given, goes on the front cover and the spine.
 % The picture is a PET detector ring: 36 detector blocks, lines of response between coincident
 % blocks, and the reconstructed activity glowing where the lines cross.
+\providecommand{\nlftrimw}{7}
+\providecommand{\nlftrimh}{10}
 \providecommand{\nlfwrap}{0}
 \providecommand{\nlfspine}{0}
 \providecommand{\nlfpages}{0}
@@ -17,13 +19,16 @@
 % Bleed (0.125 in on every outer edge) only on the full-wrap cover.
 \ifnum\nlfwrap=1
   \def\nlfbleed{0.125}
-  \edef\nlfpaperw{\fpeval{2*0.125 + 7 + \nlfspine + 7}}
+  \edef\nlfpaperw{\fpeval{2*0.125 + 2*\nlftrimw + \nlfspine}}
 \else
   \def\nlfbleed{0}
   \def\nlfspine{0}
-  \def\nlfpaperw{7}
+  \edef\nlfpaperw{\nlftrimw}
 \fi
-\edef\nlfpaperh{\fpeval{10 + 2*\nlfbleed}}
+\edef\nlfpaperh{\fpeval{\nlftrimh + 2*\nlfbleed}}
+% The design is drawn on a 7 x 10 in panel, scaled to the trim height and centered across it.
+\edef\nlfscale{\fpeval{\nlftrimh/10}}
+\edef\nlfoffx{\fpeval{(\nlftrimw - 7*\nlftrimh/10)/2}}
 \documentclass{article}
 \usepackage[paperwidth=\nlfpaperw in,paperheight=\nlfpaperh in,margin=0pt]{geometry}
 \usepackage{fontspec}
@@ -78,7 +83,7 @@
 % Back cover and spine of the full-wrap cover. The back cover's lower right corner, next to the
 % spine, stays empty: KDP prints the barcode there (2 x 1.2 in).
 \newcommand{\backandspine}{%
-  \begin{scope}[shift={(\nlfbleed,\nlfbleed)}]
+  \begin{scope}[shift={(\nlfbleed+\nlfoffx,\nlfbleed)}, scale=\nlfscale, transform shape]
     \fill[glow, opacity=0.25, path fading=glowfade] (3.5,6.2) circle (3.2);
     \node[anchor=north west, text=white, font=\titlefont\bfseries\fontsize{24}{28}\selectfont]
       at (0.75,9.25) {Detector to Diagnosis};
@@ -90,7 +95,7 @@
   \pgfmathparse{\nlfpages >= 80 ? 1 : 0}%
   \ifnum\pgfmathresult=1
     \pgfmathsetmacro{\nlfspinefs}{min(15, 0.42*72*\nlfspine)}%
-    \begin{scope}[shift={(\nlfbleed+7+\nlfspine/2,\nlfbleed)}]
+    \begin{scope}[shift={(\nlfbleed+\nlftrimw+\nlfspine/2,\nlfbleed)}, yscale=\nlfscale]
       \fill[left color=s0, right color=s3, opacity=0.9] (-\nlfspine/2,9.05) rectangle (\nlfspine/2,9.12);
       \node[rotate=-90, anchor=west, text=white,
             font=\titlefont\bfseries\fontsize{\nlfspinefs}{\nlfspinefs}\selectfont]
@@ -141,11 +146,13 @@
   % Background of the whole sheet, bleed included.
   \shade[top color=bgtop, bottom color=bgbottom] (0,0) rectangle (\nlfpaperw,\nlfpaperh);
   \ifnum\nlfwrap=1 \backandspine \fi
-  % The front cover, in its own coordinates: (0,0) to (7,10) is the trimmed front.
-  \begin{scope}[shift={(\nlfbleed+7*\nlfwrap+\nlfspine,\nlfbleed)}]
+  % The front cover: (0,0) to (\nlftrimw,\nlftrimh) is the trimmed front; the design inside
+  % it is drawn on a 7 x 10 panel.
+  \begin{scope}[shift={(\nlfbleed+\nlftrimw*\nlfwrap+\nlfspine,\nlfbleed)}]
+  \clip (0,-\nlfbleed) rectangle (\nlftrimw+\nlfbleed,\nlftrimh+\nlfbleed);
+  \begin{scope}[shift={(\nlfoffx,0)}, scale=\nlfscale, transform shape]
   \fill[glow, opacity=0.55, path fading=glowfade] (3.5,3.78) circle (3.0);
   \begin{scope}
-  \clip (0,-\nlfbleed) rectangle (7+\nlfbleed,10+\nlfbleed);
 
   % A faint grid of sinogram-like stripes in the background.
   \foreach \i in {0,...,27} {
@@ -221,6 +228,7 @@
      A practice book built around MiniDAQ\fi};
   \node[anchor=south, text=accent, opacity=0.85, font=\codefont\fontsize{10.5}{12}\selectfont] at (3.5,\nlffooty-0.36)
     {singles $\rightarrow$ coincidences $\rightarrow$ sinograms $\rightarrow$ images};
+  \end{scope}
   \end{scope}
 \end{tikzpicture}
 \end{document}

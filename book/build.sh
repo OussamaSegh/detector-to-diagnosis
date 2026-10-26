@@ -23,6 +23,10 @@ version="$(tr -d '[:space:]' < "$repo/VERSION")"
 date_str="${BOOK_DATE:-$(date +%Y-%m-%d)}"
 author="${BOOK_AUTHOR:-Oussama Seghaier}"
 paper="${BOOK_PAPER:-white}"
+# The trim size (user decision, 2026-10-26: 8.5 x 11 in, one volume) and the page margins in
+# inches. The inside margin of the KDP interior grows with the page count (kdp_gutter).
+trim_w=8.5 trim_h=11
+margin_inner=1.0 margin_outer=0.85 margin_top=0.85 margin_bottom=0.85
 epubcheck_jar="${EPUBCHECK_JAR:-/usr/share/java/epubcheck.jar}"
 build="$here/build"
 out="$build/out"
@@ -48,7 +52,7 @@ common=(
   --number-sections
 )
 
-# The front cover (book/assets/cover.tex): a 7 x 10 in PDF that becomes page 1 of the screen PDF,
+# The front cover (book/assets/cover.tex): a PDF of the trim size that becomes page 1 of the screen PDF,
 # and a PNG of it for the EPUB. $1 = book or solutions. The author is part of the cover, so a
 # change of BOOK_AUTHOR rebuilds it.
 build_cover() {
@@ -57,7 +61,7 @@ build_cover() {
   if [[ ! -f "$dir/cover-$vol.png" || "$here/assets/cover.tex" -nt "$dir/cover-$vol.png" \
         || "$(cat "$dir/cover-$vol.author" 2>/dev/null)" != "$author" ]]; then
     (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="cover-$vol" \
-      "\def\nlfvolume{$vol}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
+      "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
       >"cover-$vol.xelatex.log" 2>&1) \
       || { echo "cover failed, see $dir/cover-$vol.log"; grep -n -A3 "^!" "$dir/cover-$vol.log" | head -20; exit 1; }
     pdftoppm -png -r 240 -singlefile "$dir/cover-$vol.pdf" "$dir/cover-$vol"
@@ -96,17 +100,18 @@ kdp_gutter() {
 
 pdf_pages() { pdfinfo "$1" | awk '/^Pages:/{print $2}'; }
 
-# Checks a KDP interior: every page 7 x 10 in (no bleed), every font embedded, a page count KDP
+# Checks a KDP interior: every page of the trim size (no bleed), every font embedded, a page count KDP
 # prints, and images of at least 300 ppi (a warning). $1 = PDF.
 check_kdp_interior() {
-  local pdf="$1" n
+  local pdf="$1" n w h
   n="$(pdf_pages "$pdf")"
+  w="$(awk -v x="$trim_w" 'BEGIN { print x * 72 }')" h="$(awk -v x="$trim_h" 'BEGIN { print x * 72 }')"
   if (( n < 24 || n > 828 )); then
-    echo "KDP: $pdf has $n pages; a 7 x 10 in paperback must have 24 to 828"; exit 1
+    echo "KDP: $pdf has $n pages; a $trim_w x $trim_h in paperback must have 24 to 828"; exit 1
   fi
-  if pdfinfo -f 1 -l "$n" "$pdf" | awk '/^Page +[0-9]+ size:/ && !($4 == 504 && $6 == 720) {bad=1} END {exit !bad}'; then
-    echo "KDP: $pdf has pages that are not 7 x 10 in:"
-    pdfinfo -f 1 -l "$n" "$pdf" | awk '/^Page +[0-9]+ size:/ && !($4 == 504 && $6 == 720)' | head -5
+  if pdfinfo -f 1 -l "$n" "$pdf" | awk -v w="$w" -v h="$h" '/^Page +[0-9]+ size:/ && !($4 == w && $6 == h) {bad=1} END {exit !bad}'; then
+    echo "KDP: $pdf has pages that are not $trim_w x $trim_h in:"
+    pdfinfo -f 1 -l "$n" "$pdf" | awk -v w="$w" -v h="$h" '/^Page +[0-9]+ size:/ && !($4 == w && $6 == h)' | head -5
     exit 1
   fi
   if pdffonts "$pdf" | awk 'NR > 2 && $(NF-4) != "yes" {bad=1} END {exit !bad}'; then
@@ -115,7 +120,7 @@ check_kdp_interior() {
   pdfimages -list "$pdf" 2>/dev/null | awk 'NR > 2 && $3 == "image" && ($13 < 300 || $14 < 300) {
       printf "KDP warning: image on page %s at %s x %s ppi (300 or more prints sharply)\n", $1, $13, $14 }' \
     | sort -u | head -20
-  echo "KDP interior ok: $n pages, 7 x 10 in, all fonts embedded"
+  echo "KDP interior ok: $n pages, $trim_w x $trim_h in, all fonts embedded"
 }
 
 # The full-wrap paperback cover. $1 = book or solutions, $2 = interior page count, $3 = output.
@@ -129,7 +134,7 @@ build_wrap_cover() {
   spine="$(awk -v n="$pages" -v p="$perpage" 'BEGIN { printf "%.4f", n * p }')"
   mkdir -p "$dir"
   (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="wrap-$vol" \
-    "\def\nlfvolume{$vol}\def\nlfwrap{1}\def\nlfspine{$spine}\def\nlfpages{$pages}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
+    "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfwrap{1}\def\nlfspine{$spine}\def\nlfpages{$pages}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
     >"wrap-$vol.xelatex.log" 2>&1) \
     || { echo "wrap cover failed, see $dir/wrap-$vol.log"; grep -n -A3 "^!" "$dir/wrap-$vol.log" | head -20; exit 1; }
   cp "$dir/wrap-$vol.pdf" "$pdf"
@@ -174,17 +179,17 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
   fi
   if [[ "$what" == pdf || "$what" == all ]]; then
     # The screen PDF: the cover is page 1, links are colored.
-    build_pdf "$stem" "$meta" "$vol" screen 0.85 "$out/$stem-v$version.pdf" "${files[@]}"
+    build_pdf "$stem" "$meta" "$vol" screen "$margin_inner" "$out/$stem-v$version.pdf" "${files[@]}"
   fi
   if [[ "$what" == kdp ]]; then
     # The paperback interior: no cover, black links, and an inside margin of at least KDP's
-    # gutter for the page count plus 1/8 in. A wider margin can add pages, so build again until
-    # the margin fits the count.
-    local inner=0.85 n need pdf="$out/$stem-v$version-interior.pdf"
+    # gutter for the page count plus 1/8 in, and never below margin_inner. A wider margin can
+    # add pages, so build again until the margin fits the count.
+    local inner="$margin_inner" n need pdf="$out/$stem-v$version-interior.pdf"
     for _ in 1 2 3; do
       build_pdf "$stem" "$meta" "$vol" print "$inner" "$pdf" "${files[@]}"
       n="$(pdf_pages "$pdf")"
-      need="$(awk -v g="$(kdp_gutter "$n")" 'BEGIN { m = g + 0.125; printf "%.3f", (m > 0.85 ? m : 0.85) }')"
+      need="$(awk -v g="$(kdp_gutter "$n")" -v b="$margin_inner" 'BEGIN { m = g + 0.125; printf "%.3f", (m > b ? m : b) }')"
       [[ "$need" == "$(awk -v i="$inner" 'BEGIN { printf "%.3f", i }')" ]] && break
       echo "KDP: $n pages need an inside margin of $need in; building again"
       inner="$need"
@@ -222,8 +227,9 @@ build_pdf() {
       --include-in-header "$here/templates/book-header.tex" \
       --include-before-body "$build/tex/$job-copyright.tex" \
       --include-after-body "$here/templates/book-after.tex" \
-      -V geometry:paperwidth=7in -V geometry:paperheight=10in -V "geometry:inner=${inner}in" \
-      -V geometry:outer=0.7in -V geometry:top=0.8in -V geometry:bottom=0.8in \
+      -V "geometry:paperwidth=${trim_w}in" -V "geometry:paperheight=${trim_h}in" \
+      -V "geometry:inner=${inner}in" -V "geometry:outer=${margin_outer}in" \
+      -V "geometry:top=${margin_top}in" -V "geometry:bottom=${margin_bottom}in" \
       -V date="Version $version, $date_str" \
       -s -o "$tex" "${files[@]}"
   # Images are referenced relative to book/ (src/img/...); LaTeX runs in

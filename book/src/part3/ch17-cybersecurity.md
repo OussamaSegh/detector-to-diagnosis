@@ -610,9 +610,13 @@ its package URL:
 ```{.python include="tools/make_sbom.py" snippet="platform"}
 ```
 
-On the build machine, the entry reads
-`pkg:deb/ubuntu/libssl3t64@3.0.13-0ubuntu3.16?arch=amd64&upstream=openssl&distro=ubuntu-24.04`. A
-scanner then uses the distribution's own security data, which knows which fixes the package
+On the build machine, the entry reads:
+
+```text
+pkg:deb/ubuntu/libssl3t64@3.0.13-0ubuntu3.16?arch=amd64&upstream=openssl&distro=ubuntu-24.04
+```
+
+A scanner then uses the distribution's own security data, which knows which fixes the package
 contains. Where there is no package manager, the generator falls back to the upstream version with a
 CPE identifier.
 

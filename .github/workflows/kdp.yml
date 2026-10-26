@@ -1,5 +1,5 @@
 # Checks that the book and the solutions manual can be published on Amazon KDP: book/build.sh kdp
-# builds the paperback interiors (7 x 10 in, no bleed, every font embedded, a page count KDP
+# builds the paperback interiors (8.5 x 11 in, no bleed, every font embedded, a page count KDP
 # prints, an inside margin for that count), the full-wrap covers sized from the page count, and
 # the EPUBs, which must pass EPUBCheck. The files are kept as an artifact for a week.
 name: kdp
