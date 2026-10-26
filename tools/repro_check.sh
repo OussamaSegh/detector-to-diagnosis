@@ -57,6 +57,13 @@ pb=$(ls "$b"/out/*.tar)
   fi
   echo "programs:"
   python3 "$root/tools/release_bundle.py" programs "$pa"
+  # The manifest and the toolchain, so that packages built on two machines can be compared
+  # file by file from their logs alone.
+  echo "manifest:"
+  tar -xOf "$pa" --wildcards '*/MANIFEST.sha256' | sed 's/^/  /'
+  echo "toolchain:"
+  tar -xOf "$pa" --wildcards '*/BUILDINFO.json' |
+    python3 -c 'import json, sys; [print("  %s: %s" % kv) for kv in json.load(sys.stdin)["toolchain"].items()]'
   exit $status
 } | tee "$out/repro.txt"
 status=${PIPESTATUS[0]}
