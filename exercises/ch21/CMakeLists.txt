@@ -1,0 +1,5 @@
+minidaq_python_exercise(e1_review)
+minidaq_exercise(e2_postmortem)
+minidaq_exercise(e3_flight_recorder)
+minidaq_python_exercise(e4_incident_data)
+minidaq_python_exercise(e5_bisect)

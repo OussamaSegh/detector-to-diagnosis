@@ -1,0 +1,113 @@
+Proposed change: a rate meter for the readout link
+
+Description (from the author): packets per second over the last 16 seconds, for the
+status field "link_rate". The receive thread calls add(), the control thread rate() and
+label(). Tested with test_rate_meter.cpp.
+
+diff --git a/minidaq/include/minidaq/control/rate_meter.hpp b/minidaq/include/minidaq/control/rate_meter.hpp
+new file mode 100644
+index 0000000..9bb89bc
+--- /dev/null
++++ b/minidaq/include/minidaq/control/rate_meter.hpp
+@@ -0,0 +1,32 @@
++// MiniDAQ - packets per second over a sliding window of whole seconds.
++#pragma once
++
++#include <array>
++#include <atomic>
++#include <cstdint>
++#include <string>
++#include <string_view>
++
++namespace minidaq::control {
++
++class RateMeter {
++ public:
++  static constexpr std::size_t kSeconds = 16;
++
++  // Called by the receive thread for every batch of packets.
++  void add(std::uint64_t now_s, std::uint64_t packets) noexcept;
++  // Called by the control thread: packets per second over the window.
++  [[nodiscard]] double rate() const noexcept;
++  // A label for the status, e.g. "link 0: 1.2e+05/s".
++  [[nodiscard]] std::string_view label() const;
++  // Sets the window from a configuration value, in seconds (1 to kSeconds).
++  bool set_window(std::uint64_t seconds);
++
++ private:
++  std::array<std::uint64_t, kSeconds> counts_{};
++  std::atomic<std::uint64_t> latest_s_{0};
++  std::uint64_t window_ = kSeconds;
++  std::uint64_t total_ = 0;
++};
++
++}  // namespace minidaq::control
+diff --git a/minidaq/src/control/rate_meter.cpp b/minidaq/src/control/rate_meter.cpp
+new file mode 100644
+index 0000000..ea12b7a
+--- /dev/null
++++ b/minidaq/src/control/rate_meter.cpp
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: MIT
++#include "minidaq/control/rate_meter.hpp"
++
++#include <cstdio>
++
++namespace minidaq::control {
++
++void RateMeter::add(std::uint64_t now_s, std::uint64_t packets) noexcept {
++  const std::uint64_t last = latest_s_.load(std::memory_order_relaxed);
++  for (std::uint64_t s = last + 1; s <= now_s; ++s) {
++    counts_[s % kSeconds] = 0;  // seconds without packets
++  }
++  counts_[now_s % kSeconds] += packets;
++  total_ += packets;
++  latest_s_.store(now_s, std::memory_order_relaxed);
++}
++
++double RateMeter::rate() const noexcept {
++  std::uint64_t sum = 0;
++  for (std::size_t i = 0; i <= window_; ++i) {
++    sum += counts_[i];
++  }
++  return static_cast<double>(sum) / static_cast<double>(window_);
++}
++
++std::string_view RateMeter::label() const {
++  char buf[32];
++  std::snprintf(buf, sizeof buf, "link 0: %.1e/s", rate());
++  return std::string{buf};
++}
++
++bool RateMeter::set_window(std::uint64_t seconds) {
++  window_ = seconds;
++  if (seconds == 0 || seconds > kSeconds) {
++    return false;
++  }
++  return true;
++}
++
++}  // namespace minidaq::control
+diff --git a/minidaq/tests/unit/test_rate_meter.cpp b/minidaq/tests/unit/test_rate_meter.cpp
+new file mode 100644
+index 0000000..1cd8635
+--- /dev/null
++++ b/minidaq/tests/unit/test_rate_meter.cpp
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: MIT
++#include <gtest/gtest.h>
++
++#include <chrono>
++#include <thread>
++
++#include "minidaq/control/rate_meter.hpp"
++
++using namespace minidaq::control;
++
++TEST(RateMeter, CountsPackets) {
++  RateMeter m;
++  m.add(1, 100);
++  std::this_thread::sleep_for(std::chrono::seconds(1));
++  m.add(2, 100);
++  EXPECT_GT(m.rate(), 0.0);
++}
