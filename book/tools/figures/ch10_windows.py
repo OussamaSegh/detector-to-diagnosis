@@ -50,7 +50,7 @@ def draw_row(ax, y, windows, ts, stagger):
 
 
 def main(dst):
-    fig, ax = plt.subplots(figsize=(6.4, 2.9), dpi=200)
+    fig, ax = plt.subplots(figsize=(6.4, 2.9), dpi=300)
     rows = {"fixed": 2.2, "per single": 1.2, "delayed, D = 20 ns\n(fixed openers)": 0.0}
     for y in rows.values():
         ax.axhline(y + 0.25, color="#dddddd", linewidth=0.6)

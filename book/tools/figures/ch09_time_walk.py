@@ -20,7 +20,7 @@ ENERGIES = [(150, "#e08a2b"), (300, "#7a9a3a"), (511, "#1f5fa8")]
 
 
 def main(dst):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9), dpi=200, sharey=True)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9), dpi=300, sharey=True)
     ts = [i * 0.005 for i in range(0, 1001)]
     for ax, title in ((ax1, "fixed threshold: walk"), (ax2, "constant fraction (20%): no walk")):
         for kev, color in ENERGIES:

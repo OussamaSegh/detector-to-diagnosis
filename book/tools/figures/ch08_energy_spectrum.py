@@ -19,7 +19,7 @@ def main(src, dst):
         for row in csv.DictReader(f):
             (scattered if row["scattered"] == "1" else direct).append(float(row["energy_kev"]))
     bins = [10 * i for i in range(0, 76)]
-    fig, ax = plt.subplots(figsize=(6.4, 3.4), dpi=200)
+    fig, ax = plt.subplots(figsize=(6.4, 3.4), dpi=300)
     ax.hist([direct, scattered], bins=bins, stacked=True, color=["#1f5fa8", "#e08a2b"],
             label=["not scattered in the phantom", "scattered in the phantom"])
     for x in (435, 650):
