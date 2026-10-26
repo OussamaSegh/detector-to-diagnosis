@@ -31,9 +31,10 @@ for ((r = 1; r <= rounds; r++)); do
 done
 # [/snippet:interleave]
 
-python3 - "$out" "$rounds" <<'PY'
-import json, sys
+python3 - "$out" "$rounds" <<'PY' || exit 2
+import collections, json, sys
 out, rounds = sys.argv[1], int(sys.argv[2])
+runs = {}
 for side in ("base", "head"):
     merged = None
     for r in range(1, rounds + 1):
@@ -41,6 +42,12 @@ for side in ("base", "head"):
         merged = merged or {"context": d["context"], "benchmarks": []}
         merged["benchmarks"] += [b for b in d["benchmarks"] if b.get("run_type", "iteration") == "iteration"]
     json.dump(merged, open(f"{out}/{side}.json", "w"), indent=1)
+    runs[side] = collections.Counter(b["name"] for b in merged["benchmarks"])
+    print(f"{side}: " + ", ".join(f"{n} x{c}" for n, c in sorted(runs[side].items())))
+# Both sides must have run the same benchmarks equally often: the gate judges the base's
+# benchmarks only, so one missing in the base would not be judged at all.
+if runs["base"] != runs["head"]:
+    sys.exit("the two sides ran different benchmarks or repetitions")
 PY
 status=0
 python3 "$root/tools/perf_gate.py" "$out/base.json" "$out/head.json" --strict \
