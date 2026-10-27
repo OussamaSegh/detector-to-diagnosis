@@ -384,9 +384,26 @@ qemu-user 728 of 773 unit and solution tests pass, and the rest are emulator lim
 no binfmt for the Python tool tests); DetectorSimulator.SameSeedSameStream and
 Sinogram.APointSourceDrawsASinusoid pass without a time limit (268 s and 354 s under qemu). make_sbom.py and platform_check.py read the native package on multiarch
 hosts.
-PAUSED (user, 2026-10-26 19:10 UTC): after Chapter 25, stop until the user says resume. Do not
-start release 0.5.0 or Part VI without the user's go-ahead. Next, when resumed: tag ch24 and ch25
-(.github/tags.txt) once CI is green, then release 0.5.0 and the Part V review.
+PAUSED again (user, 2026-10-27 00:49 UTC), in the middle of release 0.5.0. Do not tag, release
+or start Part VI until the user says resume. Where it stopped:
+- Done since the first pause: tags ch24 (8a0b0f1) and ch25 (6d077f8) on GitHub (9923206);
+  problem reports MDQ-PR-035 to 040; SOUP list version 9 with the reviews at release 0.5.0
+  (OpenSSL advisories up to 2026-09-29 all patched in 3.0.13-0ubuntu3.16); edition.md marks
+  Part V complete; CHANGELOG Fixed entries for MDQ-PR-037 to 040 (still under Unreleased).
+- Release checks: run 1 on 2c65872 failed Exercise 12.3's trickle test under ASan (MDQ-PR-039,
+  fixed in a6bdeb5); run 2 on a6bdeb5 failed Exercise 10.4's speed test in clang-release
+  (MDQ-PR-040, margin 25%, fixed in 057e708; ci/run_all.sh stopped there, so the stress run
+  failed for lack of a tsan build, which is the correct CAPA-0004 behavior). Run 3 on 057e708
+  was stopped by the pause (and once before by a container restart): no complete run exists.
+- Both failures count against CAPA-0001 at 0.5.0 (as does MDQ-PR-034): record it as not
+  effective in the release record. Process lesson for MDQ-PR-040: apply a CAPA rule to every test
+  it covers, not only the one that failed.
+- Next, when resumed: in a clean worktree at HEAD, `tools/release_checks.sh OUT 600 1`, then
+  `... 600 2` on the same commit, each as a tracked background Bash (a detached job stops when
+  the session idles); do not run other heavy work meanwhile. Then the coverage review of class B
+  files changed since book-v0.4.0, docs/regulatory/releases/0.5.0.md (CAPA-0001 and CAPA-0004
+  results), VERSION 0.5.0 and the CHANGELOG section, green CI, tag book-v0.5.0, package, release
+  report, message the coordinator for the Part V review, then VERSION 0.6.0-dev.
 
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,
@@ -400,7 +417,8 @@ writer benchmark needs about 10 GB free; delete old build directories first.
 1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in
    f36a99e); its fixes go out with the next release. VERSION is 0.5.0-dev with the SOUP reviews
    for 0.5 (789ab17); remember this bump right after every release, or docs.version turns CI red.
-2. **Part V** (22 to 25): written. Release 0.5.0 (waiting for the user's resume).
+2. **Part V** (22 to 25): written. Release 0.5.0 in progress, paused before a complete run of
+   the release checks (see the PAUSED note above).
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
    image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
