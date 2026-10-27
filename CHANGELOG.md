@@ -71,6 +71,8 @@ the patch version.
   installed jsonschema cannot validate (MDQ-PR-038).
 - Exercise 12.3's trickle test allowed 50 ms of scheduling slack and failed once under
   AddressSanitizer in the release checks (MDQ-PR-039); the slack is now 100 ms.
+- Exercise 10.4's speed test asked for exactly twice the baseline, which the reference solution
+  exceeds by 25%, and failed once in the release checks (MDQ-PR-040); it asks for 1.9 times.
 - Part IV review (PR #1): Chapter 18 counted eleven properties and 272 unit tests at its tag (ten
   and 273) and gave unit test timings with no record behind them; Chapter 20 dates its count of
   23 tools (Chapter 21 adds a 24th); two layout fixes in the solutions of Chapters 19 and 21.

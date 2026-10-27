@@ -133,7 +133,10 @@ TEST(FastSorter, FastEnough) {
   RecordProperty("fast_singles_per_s", std::to_string(fast));
   RecordProperty("baseline_singles_per_s", std::to_string(slow));
   const char* env = std::getenv("EX_MIN_SPEEDUP");
-  const double need = env != nullptr ? std::atof(env) : 2.0;
+  // The goal is twice the baseline; the check asks for 1.9 times, 30% below
+  // what the reference solution reaches (2.47 times), so that a busy machine
+  // does not fail a correct solution (CAPA-0001, MDQ-PR-040).
+  const double need = env != nullptr ? std::atof(env) : 1.9;
   EXPECT_GT(fast, need * slow) << "fast " << fast / 1e6 << " M singles/s, baseline " << slow / 1e6 << " M/s";
   const char* target = std::getenv("EX_MIN_SINGLES_PER_S");
   EXPECT_GT(fast, target != nullptr ? std::atof(target) : 30e6)

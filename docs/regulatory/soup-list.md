@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 8 (MiniDAQ 0.5.0-dev, Chapter 25). Status: draft for review.
+Version 9 (MiniDAQ 0.5.0). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -55,7 +55,7 @@ MiniDAQ minor version.
 | How MiniDAQ verifies its use | `test_security.cpp`: TLS 1.3 only (a TLS 1.2 client is refused), a client that trusts another CA or connects by another name is refused, an eavesdropper sees no token; the whole suite under AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer (the sanitizers instrument MiniDAQ's code, not the prebuilt library). |
 | Anomalies found by MiniDAQ | None. A write to a connection that the peer had closed raised `SIGPIPE` and ended the process; this is the documented behavior of `write(2)` on a socket, not an OpenSSL defect, and MiniDAQ blocks or ignores the signal (Chapter 17). |
 | Known-anomaly review | Before each release: read the security advisories of OpenSSL 3.0 and the changelog of the platform's package, and evaluate each fix against the features used above. Record the result below. Between releases: the vulnerability scan of the SBOM (CI job `vulnerability-scan`). |
-| Last review | 2026-10-26, for MiniDAQ 0.5: the Ubuntu package `3.0.13-0ubuntu3.16`, unchanged since the review for MiniDAQ 0.3 (record in [section 4](#4-known-anomaly-reviews)). Result: as for 0.3; MiniDAQ 0.5 needs that package version or later. |
+| Last review | 2026-10-26, at release 0.5.0: the Ubuntu package `3.0.13-0ubuntu3.16`, unchanged since the review for MiniDAQ 0.3, fixes every advisory of OpenSSL 3.0 up to 2026-09-29 (record in [section 4](#4-known-anomaly-reviews)). Result: as for 0.3; MiniDAQ 0.5 needs that package version or later. |
 
 The rest of the platform that the shipped programs run on (C++ standard library, C
 library, Linux kernel interfaces, systemd, GNU tar, which `minidaq_update` runs) is also
@@ -91,6 +91,30 @@ the license, the requirements above against the new version's release notes,
 and the known-anomaly review.
 
 ## 4. Known-anomaly reviews
+
+### 2026-10-26: nlohmann/json 3.12.0 and OpenSSL, at release 0.5.0
+
+Reviewer: the book's author. Why now: release 0.5.0, and the "verify" of the review below asked
+for the OpenSSL project's advisories before it. Part V added two uses of OpenSSL (Ed25519
+signature verification and incremental SHA-256 in the updater, CR-0011) and no new use of
+nlohmann/json beyond the bundle manifest, which is parsed with the same accessors as the
+configuration.
+
+- nlohmann/json: the release history on json.nlohmann.me, read again on 2026-10-26, still names
+  v3.12.0 of 2025-04-11 as the latest release. No change to the review below.
+- OpenSSL: the project's page of vulnerabilities in OpenSSL 3.0, read on 2026-10-26, lists six
+  advisories after the package's date (2026-09-16), all of 2026-09-29 and fixed in 3.0.23:
+  CVE-2026-35189, CVE-2026-54872, CVE-2026-75805, CVE-2026-75806, CVE-2026-77696 and
+  CVE-2026-84782. The changelog of the installed package `3.0.13-0ubuntu3.16` lists a patch for
+  each of the six, so the package fixes them although its date is earlier than the advisories'.
+  This resolves the "verify" of the review below for advisories up to 2026-09-29. Two of the six
+  were not in the table of the review for 0.3: CVE-2026-75805 (the CMP client) and
+  CVE-2026-77696 (SM2 signing); MiniDAQ uses neither. CVE-2026-54872 concerns scalar
+  multiplication for signing; the updater only verifies Ed25519 signatures and the signing key
+  never reaches the device.
+
+Decision: keep both for MiniDAQ 0.5.0. MiniDAQ 0.5.0 needs the OpenSSL package
+`3.0.13-0ubuntu3.16` or later, as 0.3 and 0.4 did.
 
 ### 2026-10-26: nlohmann/json 3.12.0 and OpenSSL, for MiniDAQ 0.5
 
@@ -225,3 +249,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 6 | The known-anomaly reviews for MiniDAQ 0.4 (Chapter 21, after MDQ-PR-024). |
 | 7 | The known-anomaly reviews for MiniDAQ 0.5 (start of Part V, after release 0.4.0). |
 | 8 | Chapter 25 (CR-0011): OpenSSL's Ed25519 and incremental SHA-256 for the updater; the platform's SOUP identified by the platform definition. |
+| 9 | The known-anomaly reviews at release 0.5.0, with the OpenSSL project's advisories up to 2026-09-29. |

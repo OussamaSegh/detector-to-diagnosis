@@ -521,6 +521,33 @@
         "category": "test",
         "escape": "Exercise 12.3 was written in Chapter 12, before CAPA-0001's margin rule; the rule's review of speed tests looked for speed budgets, not for slack in deadlines."
       }
+    },
+    {
+      "id": "MDQ-PR-040",
+      "title": "Exercise 10.4's speed test asked for exactly its goal, twice the baseline, which the reference solution exceeds by only 25%",
+      "found": "2026-10-27, release checks of 0.5.0 on a6bdeb5: FastSorter.FastEnough failed once in the preset clang-release, with the tests running four at a time",
+      "item": "exercises",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "The test requires the solution to sort at least twice as many singles per second as the baseline, best of seven interleaved runs. The reference solution reaches 2.47 to 2.55 times (its NOTES.md) and 2.49 in 20 runs alone or beside three busy loops after the failure, so the criterion had a margin of about 25%, less than the 30% that CAPA-0001's further action of 0.4.0 asks of every speed test. Sharing the machine with three other tests once took more than that.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An exercise's speed test; MiniDAQ's sorter and its own budgets were not involved."
+      },
+      "resolution": {
+        "change": "The test asks for 1.9 times the baseline, 30% below the reference solution's lowest measured ratio; the goal of the exercise stays twice. The README and Chapter 10 say so.",
+        "verification": "The test passes in the release checks of 0.5.0 on the fixed commit; the starter, which is the baseline, still fails it."
+      },
+      "root_cause": {
+        "whys": [
+          "The ratio of the two sorters fell below 2.0 in one run.",
+          "The criterion was the exercise's goal, with no margin for a busy machine.",
+          "When CAPA-0001 added the 30% margin rule (MDQ-PR-034), only Exercise 5.2's test was changed; the other speed tests named in the CAPA were not checked against the rule."
+        ],
+        "cause": "A corrective action applied to the test that failed and not to the other tests the rule covers.",
+        "category": "process",
+        "escape": "The speed test passed on an idle machine and is skipped in CI's unoptimized and sanitized builds; only the release checks run it in a Release build beside other tests."
+      }
     }
   ]
 }

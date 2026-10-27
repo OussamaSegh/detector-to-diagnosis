@@ -16,9 +16,10 @@ for every pair, `std::hypot` and a division for the field-of-view distance.
 - For all four multiples policies, with and without the delayed window, with a 120 mm field
   of view, and with the input in random chunks: exactly the coincidences of MiniDAQ's
   `CoincidenceSorter`, in the same order (the baseline passes this too).
-- `FastSorter.FastEnough` (release builds without sanitizers): at least twice the
-  baseline's singles per second on 20 ms of simulated 20 MBq data, and more than 30 M
-  singles/s inside the energy window (best of seven runs, the two sorters interleaved). `EX_MIN_SPEEDUP` and
+- `FastSorter.FastEnough` (release builds without sanitizers): at least 1.9 times the
+  baseline's singles per second (the goal is twice; the check leaves room for a busy
+  machine) on 20 ms of simulated 20 MBq data, and more than 30 M singles/s inside the energy
+  window (best of seven runs, the two sorters interleaved). `EX_MIN_SPEEDUP` and
   `EX_MIN_SINGLES_PER_S` override the two limits on a machine where you have measured a
   reason to.
 

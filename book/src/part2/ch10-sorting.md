@@ -872,19 +872,19 @@ found once. Half a page: the rule, why it is correct, and what happens without g
 *Time:* 4 hours.
 
 **Exercise 10.4 (H): Reach the throughput target.** *Goal:* make a correct, slow sorter at
-least twice as fast and fast enough for 30 M singles per second inside the energy window on
-one core, without changing a single coincidence, and write a one-page performance report.
+least twice as fast and fast enough for 30 M singles per second inside the energy window on one
+core, without changing a single coincidence, and write a one-page performance report.
 *Starter:* `exercises/ch10/e4_fast_sorter/` (a `std::deque`, two vectors per window, a
-`std::function` per coincidence, `cos` and `sin` per pair, `std::hypot` and a division for
-the field of view). *Acceptance:* `tests/test_fast_sorter.cpp` passes: for all four
-policies, with and without the delayed window, with a 120 mm field of view and random
-chunks, exactly the coincidences of `CoincidenceSorter`; `FastSorter.FastEnough` (release
-builds without sanitizers) measures at least twice the baseline and more than 30 M singles
-per second inside the energy window, best of seven interleaved runs (`EX_MIN_SPEEDUP` and
-`EX_MIN_SINGLES_PER_S` override the limits when you have measured a reason). The report:
-machine, compiler and flags, the profile before with numbers, each change and what it
-bought, the result with its spread, what you would try next. *Time:* 4 hours plus the
-report.
+`std::function` per coincidence, `cos` and `sin` per pair, `std::hypot` and a division for the
+field of view). *Acceptance:* `tests/test_fast_sorter.cpp` passes: for all four policies, with
+and without the delayed window, with a 120 mm field of view and random chunks, exactly the
+coincidences of `CoincidenceSorter`; `FastSorter.FastEnough` (release builds without
+sanitizers) measures at least 1.9 times the baseline, a margin below the goal for a busy
+machine, and more than 30 M singles per second inside the energy window, best of seven
+interleaved runs (`EX_MIN_SPEEDUP` and `EX_MIN_SINGLES_PER_S` override the limits when you have
+measured a reason). The report: machine, compiler and flags, the profile before with numbers,
+each change and what it bought, the result with its spread, what you would try next. *Time:* 4
+hours plus the report.
 
 **Exercise 10.5 (M, extra): Merge by time slices, and measure it against the heap.**
 *Goal:* a slice merger whose output is identical to `StreamMerger`'s, ties included, and a
