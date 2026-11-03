@@ -32,3 +32,4 @@ ch23 418a3bbafd13ba594f23505e673ced70f5456ead Chapter 23: high-throughput networ
 ch24 8a0b0f1509da719ecee088904eb3fe237f098ea1 Chapter 24: FPGA firmware and the interface contract. ci, codeql, gates and kdp green on GitHub.
 ch25 6d077f865f57f1448fd9e16d7d279ca0c0c1b1e7 Chapter 25: the embedded Linux platform. At 6d077f8, which also holds the fixes of two tests that failed only on GitHub CI (tools.platform_check, system.platform under TSan); ci, codeql, kdp and pages green.
 book-v0.5.0 438ea371e1e4735baaafbf0b3a0b3d7c9b950fea Release 0.5.0: Part V complete. Release record docs/regulatory/releases/0.5.0.md; ci, codeql, gates and pages green on GitHub.
+ch26 4cbf0e993954ac228d283e4e406604d44be4ebe3 Chapter 26: detector calibration. ci, codeql, gates, kdp and pages green on GitHub.
