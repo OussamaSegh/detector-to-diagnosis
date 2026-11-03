@@ -82,6 +82,9 @@ TEST(DetectorSimulator, RejectsNaNInEveryNumericField) {
       [](SimulatorConfig& c, double v) { c.detector.ctr_fwhm_ps = v; },
       [](SimulatorConfig& c, double v) { c.detector.threshold_kev = v; },
       [](SimulatorConfig& c, double v) { c.non_collinearity_fwhm_deg = v; },
+      [](SimulatorConfig& c, double v) { c.detector.gain_spread = v; },
+      [](SimulatorConfig& c, double v) { c.detector.saturation_kev = v; },
+      [](SimulatorConfig& c, double v) { c.detector.time_skew_ps = v; },
   };
   for (std::size_t i = 0; i < fields.size(); ++i) {
     SimulatorConfig c = brain_phantom(1e6);
@@ -225,4 +228,89 @@ TEST(DetectorSimulator, TruesAreLinearAndRandomsQuadraticInActivity) {
   const double randoms_ratio = static_cast<double>(b.randoms) / static_cast<double>(a.randoms);
   EXPECT_NEAR(trues_ratio, 4.0, 0.3);
   EXPECT_NEAR(randoms_ratio, 16.0, 3.0);
+}
+
+namespace {
+
+SimulatorConfig uncalibrated(double gain_spread, double saturation_kev, double skew_ps) {
+  SimulatorConfig c = point_in_air();
+  c.detector.gain_spread = gain_spread;
+  c.detector.saturation_kev = saturation_kev;
+  c.detector.time_skew_ps = skew_ps;
+  return c;
+}
+
+}  // namespace
+
+TEST(DetectorSimulator, RefusesAnUncalibratedDetectorBeyondItsRange) {
+  // REQ: SRS-SIM-012
+  EXPECT_FALSE(validate(uncalibrated(0.51, 0.0, 0.0)));
+  EXPECT_FALSE(validate(uncalibrated(-0.01, 0.0, 0.0)));
+  EXPECT_FALSE(validate(uncalibrated(0.0, -1.0, 0.0)));
+  EXPECT_FALSE(validate(uncalibrated(0.0, 0.0, 4'001.0)));
+  EXPECT_TRUE(validate(uncalibrated(0.5, 1.0e6, 4'000.0)));
+}
+
+TEST(DetectorSimulator, AnUncalibratedDetectorReportsEachCrystalsOwnGainAndDelay) {
+  // REQ: SRS-SIM-022
+  const SimulatorConfig plain = point_in_air();
+  const SimulatorConfig raw = uncalibrated(0.1, 4'000.0, 300.0);
+  DetectorSimulator a{plain};
+  DetectorSimulator b{raw};
+  EXPECT_EQ(a.crystal_gains()[0], 1.0);
+  EXPECT_EQ(a.crystal_skews_ps()[0], 0.0);
+
+  // The same decays: crystal by crystal, the reported energy is the gain times the saturated
+  // energy, and the time is later by the crystal's delay.
+  const auto x = a.generate_until(Picoseconds{50'000'000'000});
+  const auto y = b.generate_until(Picoseconds{50'000'000'000});
+  ASSERT_GT(x.size(), 1'000U);
+  // Map each single of b back to its decay and photon to compare.
+  std::size_t compared = 0;
+  std::size_t j = 0;
+  for (const auto& s : x) {
+    // b is ordered by its delayed times; find the same decay and photon nearby.
+    for (std::size_t k = j > 50 ? j - 50 : 0; k < std::min(y.size(), j + 50); ++k) {
+      if (y[k].decay == s.decay && y[k].photon == s.photon) {
+        const std::uint32_t c = s.single.crystal.value();
+        ASSERT_EQ(y[k].single.crystal, s.single.crystal);
+        const double e = static_cast<double>(s.single.energy.count());
+        const double want = b.crystal_gains()[c] * 4'000.0 * -std::expm1(-e / 4'000.0);
+        EXPECT_NEAR(static_cast<double>(y[k].single.energy.count()), want, 1e-3 * want);
+        EXPECT_NEAR(static_cast<double>(y[k].single.time.count() - s.single.time.count()),
+                    b.crystal_skews_ps()[c], 1.0);
+        ++compared;
+        break;
+      }
+    }
+    ++j;
+  }
+  EXPECT_GT(compared, x.size() * 9 / 10);
+
+  // The crystals' values have the spreads asked for, within their bounds.
+  const auto g = b.crystal_gains();
+  const auto t = b.crystal_skews_ps();
+  const double mean_g = std::accumulate(g.begin(), g.end(), 0.0) / static_cast<double>(g.size());
+  double var_g = 0.0;
+  double var_t = 0.0;
+  for (std::size_t i = 0; i < g.size(); ++i) {
+    var_g += (g[i] - mean_g) * (g[i] - mean_g);
+    var_t += t[i] * t[i];
+    ASSERT_GE(g[i], 0.6);
+    ASSERT_LE(g[i], 1.6);
+    ASSERT_LE(std::abs(t[i]), 4'000.0);
+  }
+  EXPECT_NEAR(mean_g, 1.0, 0.005);
+  EXPECT_NEAR(std::sqrt(var_g / static_cast<double>(g.size())), 0.1, 0.005);
+  EXPECT_NEAR(std::sqrt(var_t / static_cast<double>(t.size())), 300.0, 10.0);
+}
+
+TEST(DetectorSimulator, AnUncalibratedDetectorStillDeliversInTimeOrder) {
+  // REQ: SRS-SIM-022
+  DetectorSimulator sim{uncalibrated(0.1, 0.0, 1'000.0)};
+  std::vector<TruthSingle> v(20'000);
+  sim.generate(v);
+  for (std::size_t i = 1; i < v.size(); ++i) {
+    ASSERT_LE(v[i - 1].single.time, v[i].single.time) << i;
+  }
 }

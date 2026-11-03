@@ -149,6 +149,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-SIM-019 | The detector simulator shall produce trues that grow linearly and randoms that grow with the square of the activity. | sim | T |
 | SRS-SIM-020 | The replay source shall loop over a recording with times shifted by the recording's length, so that its output stays in time order. | sim | T |
 | SRS-SIM-021 | The replay source shall replay a recording at its real-time rate or at a configured rate in words/s, paced like the paced source. | sim | T |
+| SRS-SIM-022 | The detector simulator shall, when asked for an uncalibrated detector, report each crystal's energy multiplied by that crystal's gain after a saturation of the given energy scale and each crystal's time later by that crystal's delay, with gains and delays drawn once per simulator from the given spreads and kept within 0.6 to 1.6 and 4 ns, and deliver the singles in the order of their reported times. | sim | T |
 | SRS-DTM-001 | The non-paralyzable dead-time model shall lose every single that arrives while its unit is busy, without extending the dead time. | sim | T |
 | SRS-DTM-002 | The paralyzable dead-time model shall restart the dead time with every arrival, recorded or lost. | sim | T |
 | SRS-DTM-003 | When pile-up is enabled, the dead-time model shall add the energy of a lost single to the recorded single that made the unit busy. | sim | T |

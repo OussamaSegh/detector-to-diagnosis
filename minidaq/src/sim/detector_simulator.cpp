@@ -64,9 +64,10 @@ Expected<SimulatorConfig, std::string> validate(const SimulatorConfig& cfg) {
   const auto& d = cfg.detector;
   const bool detector_ok = positive(d.crystal_mu_per_mm) && in_range(d.photofraction, 0.0, 1.0) &&
                            in_range(d.energy_resolution_fwhm, 0.0, 1.0) && d.energy_resolution_fwhm < 1.0 &&
-                           d.ctr_fwhm_ps >= 0.0 && d.threshold_kev >= 0.0;
+                           d.ctr_fwhm_ps >= 0.0 && d.threshold_kev >= 0.0 && in_range(d.gain_spread, 0.0, 0.5) &&
+                           in_range(d.saturation_kev, 0.0, 1.0e6) && in_range(d.time_skew_ps, 0.0, 4'000.0);
   if (!detector_ok) {
-    return fail("detector model out of range (mu > 0, photofraction in [0, 1], resolution in [0, 1), ctr and threshold >= 0)");
+    return fail("detector model out of range (mu > 0, photofraction in [0, 1], resolution in [0, 1), ctr and threshold >= 0, gain spread in [0, 0.5], saturation in [0, 1e6] keV, time skew in [0, 4000] ps)");
   }
   if (!in_range(cfg.non_collinearity_fwhm_deg, 0.0, 10.0) || cfg.non_collinearity_fwhm_deg == 10.0) {
     return fail("non_collinearity_fwhm_deg must be in [0, 10)");
@@ -87,15 +88,30 @@ DetectorSimulator::DetectorSimulator(const SimulatorConfig& cfg)
       // Each single gets half of the pair's time variance.
       time_sigma_ps_{cfg.detector.ctr_fwhm_ps / (physics::fwhm_per_sigma * std::numbers::sqrt2)},
       time_clamp_ps_{6.0 * time_sigma_ps_},
-      next_decay_ps_{decay_gap_ps_(rng_)} {}
+      next_decay_ps_{decay_gap_ps_(rng_)},
+      gains_(ScannerGeometry::num_crystals, 1.0),
+      skews_ps_(ScannerGeometry::num_crystals, 0.0) {
+  // Chapter 26: the crystals of an uncalibrated detector, from a stream of their own.
+  const auto& d = cfg_.detector;
+  if (d.gain_spread > 0.0 || d.time_skew_ps > 0.0) {
+    std::mt19937_64 crystals{cfg_.seed ^ 0x9E37'79B9'7F4A'7C15ULL};
+    std::normal_distribution<double> unit{0.0, 1.0};
+    for (std::size_t i = 0; i < gains_.size(); ++i) {
+      gains_[i] = std::clamp(1.0 + d.gain_spread * unit(crystals), 0.6, 1.6);
+      skews_ps_[i] = std::round(std::clamp(d.time_skew_ps * unit(crystals), -4'000.0, 4'000.0));
+    }
+    early_skew_ps_ = -std::min(0.0, *std::ranges::min_element(skews_ps_));
+  }
+}
 
 // [snippet:order]
 // A single can be returned once no future decay can produce an earlier one.
 // Flight times are positive, and the time blur is clamped to +-6 sigma, so a
-// decay at time t produces singles no earlier than t - time_clamp_ps_.
+// decay at time t produces singles no earlier than t - time_clamp_ps_ (less the most negative
+// channel delay of an uncalibrated detector, Chapter 26).
 bool DetectorSimulator::ready() const noexcept {
-  return !pending_.empty() &&
-         static_cast<double>(pending_.front().single.time.count()) < std::floor(next_decay_ps_ - time_clamp_ps_);
+  return !pending_.empty() && static_cast<double>(pending_.front().single.time.count()) <
+                                  std::floor(next_decay_ps_ - time_clamp_ps_ - early_skew_ps_);
 }
 // [/snippet:order]
 
@@ -264,10 +280,19 @@ void DetectorSimulator::track_photon(Vec3 p, Vec3 d, std::uint8_t photon) {
 
   // 5. Time: decay time, flight time, and the detector's time blur.
   const double blur = std::clamp(time_sigma_ps_ * gauss_(rng_), -time_clamp_ps_, time_clamp_ps_);
-  const double t = current_decay_ps_ + path_mm / physics::speed_of_light_mm_per_ps + blur;
+  const CrystalId crystal = G::make_crystal(ring, transaxial);
+  const double t =
+      current_decay_ps_ + path_mm / physics::speed_of_light_mm_per_ps + blur + skews_ps_[crystal.value()];
+
+  // 6. What the board reports for an uncalibrated crystal (Chapter 26).
+  double reported = measured;
+  if (cfg_.detector.saturation_kev > 0.0) {
+    reported = cfg_.detector.saturation_kev * -std::expm1(-measured / cfg_.detector.saturation_kev);
+  }
+  reported *= gains_[crystal.value()];
 
   TruthSingle s;
-  s.single = Single{Picoseconds{std::llround(t)}, G::make_crystal(ring, transaxial), KeV{static_cast<float>(measured)}};
+  s.single = Single{Picoseconds{std::llround(t)}, crystal, KeV{static_cast<float>(reported)}};
   s.decay = decay_index_;
   s.photon = photon;
   s.scattered = scattered;

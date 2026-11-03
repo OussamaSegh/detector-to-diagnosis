@@ -51,6 +51,17 @@ struct DetectorModel {
   double energy_resolution_fwhm = 0.12; // FWHM / E at 511 keV, scales as 1/sqrt(E)
   double ctr_fwhm_ps = 300.0;           // coincidence time resolution (pair of singles)
   double threshold_kev = 100.0;         // singles below this are not recorded
+  // An uncalibrated detector (Chapter 26). Each crystal gets its own gain, drawn once from a normal
+  // distribution around 1 with this standard deviation and kept within 0.6 to 1.6 (0: every
+  // crystal nominal); the SiPM saturates, reporting E_sat (1 - exp(-E / E_sat)) for an energy E
+  // (0: linear); and each crystal's channel gets its own delay, normal with this standard
+  // deviation in ps and kept within +-4 ns (0: none). The reported energy is gain times the
+  // saturated energy, as a board that assumes 0.5 keV per code would report it; the threshold
+  // still acts on the deposited energy. The crystals' values come from their own random stream,
+  // so the decays are the same with and without them.
+  double gain_spread = 0.0;
+  double saturation_kev = 0.0;
+  double time_skew_ps = 0.0;
 };
 
 struct SimulatorConfig {
@@ -103,6 +114,10 @@ class DetectorSimulator {
 
   [[nodiscard]] const SimulatorStats& stats() const noexcept { return stats_; }
   [[nodiscard]] const SimulatorConfig& config() const noexcept { return cfg_; }
+  // The truth about each crystal of an uncalibrated detector: its gain and its channel delay in
+  // ps (1 and 0 when the model has none).
+  [[nodiscard]] std::span<const double> crystal_gains() const noexcept { return gains_; }
+  [[nodiscard]] std::span<const double> crystal_skews_ps() const noexcept { return skews_ps_; }
 
  private:
   void simulate_next_decay();
@@ -125,6 +140,9 @@ class DetectorSimulator {
   std::uint64_t decay_index_ = 0;
   double current_decay_ps_ = 0.0;
   std::vector<TruthSingle> pending_;  // min-heap on time: singles not yet returned
+  std::vector<double> gains_;
+  std::vector<double> skews_ps_;
+  double early_skew_ps_ = 0.0;  // the most negative delay, as a positive number
   SimulatorStats stats_{};
 };
 

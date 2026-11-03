@@ -11,6 +11,10 @@
 //   minidaq_sim --activity 20e6 --policy take_winner_of_goods --fov 120
 //   minidaq_sim --nema 1 --activity 100e6 --deadtime paralyzable --tau 200 --pileup 1
 //   minidaq_sim --source point --centre 40,-25,0 --phantom 0 --fov 120 --listmode out/
+//   minidaq_sim --gain-spread 0.1 --saturation 4000 --time-skew 300 --words raw.bin --crystal-truth k.csv
+//
+// The last form simulates an uncalibrated detector (Chapter 26): each crystal its own gain and
+// channel delay, and a saturating SiPM; --crystal-truth writes what a calibration should find.
 #include <algorithm>
 #include <exception>
 #include <cstdio>
@@ -46,7 +50,8 @@ constexpr const char* usage =
     "                   [--mode fixed|per_single] [--policy NAME] [--delay PS] [--sectors N] [--fov MM]\n"
     "                   [--deadtime none|non_paralyzable|paralyzable] [--tau NS] [--pileup 0|1]\n"
     "                   [--deadtime-unit block|crystal] [--nema 0|1]\n"
-    "                   [--centre X,Y,Z] [--listmode DIR] [--max-file-mb N] [--fsync none|close|interval]\n";
+    "                   [--centre X,Y,Z] [--listmode DIR] [--max-file-mb N] [--fsync none|close|interval]\n"
+    "                   [--gain-spread F] [--saturation KEV] [--time-skew PS] [--crystal-truth FILE.csv]\n";
 
 double percent(std::uint64_t part, std::uint64_t whole) {
   return whole == 0 ? 0.0 : 100.0 * static_cast<double>(part) / static_cast<double>(whole);
@@ -129,6 +134,7 @@ int run(int argc, char** argv) {
   CountingWindow window{minidaq::Picoseconds{4'000}, 435.0, 650.0};
   std::string words_path;
   std::string truth_path;
+  std::string crystal_truth_path;  // Chapter 26: each crystal's gain and delay, CSV
   minidaq::SorterConfig sorter;
   DeadTimeConfig dead;
   bool nema = false;
@@ -213,6 +219,14 @@ int run(int argc, char** argv) {
       words_path = v;
     } else if (a == "--truth" && !v.empty()) {
       truth_path = v;
+    } else if (a == "--gain-spread") {
+      ok = minidaq::parse_into(v, cfg.detector.gain_spread, 0.0, 0.5);
+    } else if (a == "--saturation") {
+      ok = minidaq::parse_into(v, cfg.detector.saturation_kev, 0.0, 1.0e6);
+    } else if (a == "--time-skew") {
+      ok = minidaq::parse_into(v, cfg.detector.time_skew_ps, 0.0, 4'000.0);
+    } else if (a == "--crystal-truth" && !v.empty()) {
+      crystal_truth_path = v;
     } else {
       ok = false;
     }
@@ -348,6 +362,19 @@ int run(int argc, char** argv) {
       if (c.name == "coincidences" || c.name == "files" || c.name == "bytes") {
         std::printf("  %s %llu\n", c.name.c_str(), static_cast<unsigned long long>(c.value));
       }
+    }
+  }
+  if (!crystal_truth_path.empty()) {
+    // The answer a calibration should find (Chapter 26): crystal, gain, delay in ps.
+    const File f{std::fopen(crystal_truth_path.c_str(), "w")};  // NOLINT(cppcoreguidelines-owning-memory): owned by File
+    bool ok = f != nullptr && std::fprintf(f.get(), "crystal,gain,delay_ps,saturation_kev\n") > 0;
+    for (std::size_t c = 0; ok && c < sim.crystal_gains().size(); ++c) {
+      ok = std::fprintf(f.get(), "%zu,%.6f,%.0f,%.1f\n", c, sim.crystal_gains()[c], sim.crystal_skews_ps()[c],
+                        cfg.detector.saturation_kev) > 0;
+    }
+    if (!ok) {
+      std::fprintf(stderr, "minidaq_sim: cannot write %s\n", crystal_truth_path.c_str());
+      return 1;
     }
   }
   if (!words_path.empty()) {
