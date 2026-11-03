@@ -28,3 +28,19 @@ if(MINIDAQ_HARDENING)
   add_link_options(-pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack)
   # [/snippet:flags]
 endif()
+
+# minidaq_as_shared_object(<target>): the flags above are for programs. A shared object loaded by
+# another program (a Python module, Chapter 29) needs -fPIC, since a PIE's thread-local and
+# global accesses cannot be relocated in it, and -pie means nothing for it. -fPIC given last wins
+# over -fPIE. Does nothing without MINIDAQ_HARDENING.
+function(minidaq_as_shared_object target)
+  if(NOT MINIDAQ_HARDENING)
+    return()
+  endif()
+  target_compile_options(${target} PRIVATE -fPIC)
+  get_target_property(_link ${target} LINK_OPTIONS)
+  if(_link)
+    list(REMOVE_ITEM _link -pie)
+    set_target_properties(${target} PROPERTIES LINK_OPTIONS "${_link}")
+  endif()
+endfunction()
