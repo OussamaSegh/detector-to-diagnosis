@@ -65,9 +65,10 @@ Expected<SimulatorConfig, std::string> validate(const SimulatorConfig& cfg) {
   const bool detector_ok = positive(d.crystal_mu_per_mm) && in_range(d.photofraction, 0.0, 1.0) &&
                            in_range(d.energy_resolution_fwhm, 0.0, 1.0) && d.energy_resolution_fwhm < 1.0 &&
                            d.ctr_fwhm_ps >= 0.0 && d.threshold_kev >= 0.0 && in_range(d.gain_spread, 0.0, 0.5) &&
-                           in_range(d.saturation_kev, 0.0, 1.0e6) && in_range(d.time_skew_ps, 0.0, 4'000.0);
+                           in_range(d.saturation_kev, 0.0, 1.0e6) && in_range(d.time_skew_ps, 0.0, 4'000.0) &&
+                           in_range(d.efficiency_spread, 0.0, 0.3);
   if (!detector_ok) {
-    return fail("detector model out of range (mu > 0, photofraction in [0, 1], resolution in [0, 1), ctr and threshold >= 0, gain spread in [0, 0.5], saturation in [0, 1e6] keV, time skew in [0, 4000] ps)");
+    return fail("detector model out of range (mu > 0, photofraction in [0, 1], resolution in [0, 1), ctr and threshold >= 0, gain spread in [0, 0.5], saturation in [0, 1e6] keV, time skew in [0, 4000] ps, efficiency spread in [0, 0.3])");
   }
   if (!in_range(cfg.non_collinearity_fwhm_deg, 0.0, 10.0) || cfg.non_collinearity_fwhm_deg == 10.0) {
     return fail("non_collinearity_fwhm_deg must be in [0, 10)");
@@ -90,17 +91,28 @@ DetectorSimulator::DetectorSimulator(const SimulatorConfig& cfg)
       time_clamp_ps_{6.0 * time_sigma_ps_},
       next_decay_ps_{decay_gap_ps_(rng_)},
       gains_(ScannerGeometry::num_crystals, 1.0),
-      skews_ps_(ScannerGeometry::num_crystals, 0.0) {
+      skews_ps_(ScannerGeometry::num_crystals, 0.0),
+      efficiencies_(ScannerGeometry::num_crystals, 1.0) {
   // Chapter 26: the crystals of an uncalibrated detector, from a stream of their own.
   const auto& d = cfg_.detector;
+  const std::uint64_t crystal_seed = d.crystal_seed != 0 ? d.crystal_seed : cfg_.seed;
   if (d.gain_spread > 0.0 || d.time_skew_ps > 0.0) {
-    std::mt19937_64 crystals{cfg_.seed ^ 0x9E37'79B9'7F4A'7C15ULL};
+    std::mt19937_64 crystals{crystal_seed ^ 0x9E37'79B9'7F4A'7C15ULL};
     std::normal_distribution<double> unit{0.0, 1.0};
     for (std::size_t i = 0; i < gains_.size(); ++i) {
       gains_[i] = std::clamp(1.0 + d.gain_spread * unit(crystals), 0.6, 1.6);
       skews_ps_[i] = std::round(std::clamp(d.time_skew_ps * unit(crystals), -4'000.0, 4'000.0));
     }
     early_skew_ps_ = -std::min(0.0, *std::ranges::min_element(skews_ps_));
+  }
+  // Chapter 27: crystals that detect differently, from another stream of their own, so that the
+  // gains and delays of a seed are the same with and without them.
+  if (d.efficiency_spread > 0.0) {
+    std::mt19937_64 crystals{crystal_seed ^ 0xC2B2'AE3D'27D4'EB4FULL};
+    std::normal_distribution<double> eff{1.0 - 2.0 * d.efficiency_spread, d.efficiency_spread};
+    for (double& e : efficiencies_) {
+      e = std::clamp(eff(crystals), 0.05, 1.0);
+    }
   }
 }
 
@@ -278,9 +290,16 @@ void DetectorSimulator::track_photon(Vec3 p, Vec3 d, std::uint8_t photon) {
     return;
   }
 
+  const CrystalId crystal = G::make_crystal(ring, transaxial);
+  // The crystal's efficiency (Chapter 27); no random number is drawn for a perfect crystal, so a
+  // detector without the spread gives the same singles as before.
+  if (const double eff = efficiencies_[crystal.value()]; eff < 1.0 && unit_(rng_) >= eff) {
+    ++stats_.not_detected;
+    return;
+  }
+
   // 5. Time: decay time, flight time, and the detector's time blur.
   const double blur = std::clamp(time_sigma_ps_ * gauss_(rng_), -time_clamp_ps_, time_clamp_ps_);
-  const CrystalId crystal = G::make_crystal(ring, transaxial);
   const double t =
       current_decay_ps_ + path_mm / physics::speed_of_light_mm_per_ps + blur + skews_ps_[crystal.value()];
 

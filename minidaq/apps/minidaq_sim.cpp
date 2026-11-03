@@ -15,9 +15,21 @@
 //
 // The last form simulates an uncalibrated detector (Chapter 26): each crystal its own gain and
 // channel delay, and a saturating SiPM; --crystal-truth writes what a calibration should find.
+//
+//   minidaq_sim --efficiency-spread 0.05 --listmode out/ --truth-sino out/truth
+//
+// gives each crystal its own detection efficiency (Chapter 27), writes the run record with the
+// singles of each crystal that the corrections need, and writes sinograms of the prompts that
+// the truth says are trues, scatters and randoms (out/truth.trues.u32 and so on, in the layout of
+// minidaq_listmode sino). --crystal-seed keeps the crystals of one scanner across runs with
+// different seeds; --source-radius and --source-length make a cylinder that fills the field of
+// view, the normalization source.
 #include <algorithm>
+#include <cstddef>
 #include <exception>
 #include <cstdio>
+#include <fstream>
+#include <span>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -27,11 +39,14 @@
 #include <nlohmann/json.hpp>
 
 #include "minidaq/config/acquisition_config.hpp"
+#include "minidaq/control/corrections_record.hpp"
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/format/packed_single.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
 #include "minidaq/processing/count_rates.hpp"
+#include "minidaq/processing/singles_counter.hpp"
+#include "minidaq/processing/sinogram.hpp"
 #include "minidaq/sim/dead_time.hpp"
 #include "minidaq/sim/detector_simulator.hpp"
 #include "minidaq/sim/truth_counter.hpp"
@@ -51,7 +66,65 @@ constexpr const char* usage =
     "                   [--deadtime none|non_paralyzable|paralyzable] [--tau NS] [--pileup 0|1]\n"
     "                   [--deadtime-unit block|crystal] [--nema 0|1]\n"
     "                   [--centre X,Y,Z] [--listmode DIR] [--max-file-mb N] [--fsync none|close|interval]\n"
-    "                   [--gain-spread F] [--saturation KEV] [--time-skew PS] [--crystal-truth FILE.csv]\n";
+    "                   [--gain-spread F] [--saturation KEV] [--time-skew PS] [--crystal-truth FILE.csv]\n"
+    "                   [--efficiency-spread F] [--truth-sino PREFIX]\n"
+    "                   [--source-radius MM] [--source-length MM] [--crystal-seed N]\n";
+
+// What the truth says a coincidence is (Chapter 27's truth sinograms).
+constexpr std::uint8_t kind_true = 0;
+constexpr std::uint8_t kind_scatter = 1;
+constexpr std::uint8_t kind_random = 2;
+constexpr std::uint8_t kind_delayed = 3;
+
+bool write_raw(const std::string& path, std::span<const std::byte> data) {
+  std::ofstream out{path, std::ios::binary};
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): ostream writes chars
+  out.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size()));
+  return static_cast<bool>(out.flush());
+}
+
+std::vector<std::byte> little_endian(const std::vector<std::uint32_t>& v) {
+  std::vector<std::byte> out(v.size() * 4);
+  for (std::size_t i = 0; i < v.size(); ++i) {
+    for (std::size_t b = 0; b < 4; ++b) {
+      out[i * 4 + b] = static_cast<std::byte>((v[i] >> (8 * b)) & 0xFFU);
+    }
+  }
+  return out;
+}
+
+// Sinograms of the sorted coincidences, the prompts split by what the truth says they are: in the
+// layout of minidaq_listmode sino (SSRB, no TOF), so that a correction can be checked bin by bin.
+bool write_truth_sinograms(const std::string& prefix, const minidaq::SorterConfig& sorter,
+                           const std::vector<minidaq::Coincidence>& found, const std::vector<std::uint8_t>& kinds) {
+  using namespace minidaq;
+  sino::SinogramConfig sc;
+  if (sorter.fov_radius_mm > 0.0) {  // else the default, as minidaq_listmode sino uses
+    sc.fov_radius_mm = sorter.fov_radius_mm;
+  }
+  sc.delayed_window_ps = sorter.delay.count();
+  if (!sino::validate(sc)) {
+    return false;
+  }
+  // One histogrammer per class; a prompt goes to its class's, a delayed to the first's delayeds.
+  std::vector<sino::Histogrammer> h(3, sino::Histogrammer{sc});
+  for (std::size_t i = 0; i < found.size(); ++i) {
+    h[kinds[i] == kind_delayed ? 0 : kinds[i]].add(found[i]);
+  }
+  sino::Histogrammer all{sc};
+  for (const auto& c : found) {
+    all.add(c);
+  }
+  const auto name = [](const std::string& p) { return p.substr(p.find_last_of('/') + 1); };
+  const std::string hdr =
+      sino::interfile_header(all, name(prefix + ".prompts.u32"), name(prefix + ".delayeds.u32"), "minidaq_sim truth");
+  return write_raw(prefix + ".hdr", std::as_bytes(std::span{hdr})) &&
+         write_raw(prefix + ".prompts.u32", little_endian(all.prompts())) &&
+         write_raw(prefix + ".delayeds.u32", little_endian(all.delayeds())) &&
+         write_raw(prefix + ".trues.u32", little_endian(h[0].prompts())) &&
+         write_raw(prefix + ".scatters.u32", little_endian(h[1].prompts())) &&
+         write_raw(prefix + ".randoms.u32", little_endian(h[2].prompts()));
+}
 
 double percent(std::uint64_t part, std::uint64_t whole) {
   return whole == 0 ? 0.0 : 100.0 * static_cast<double>(part) / static_cast<double>(whole);
@@ -62,7 +135,8 @@ double percent(std::uint64_t part, std::uint64_t whole) {
 // found by looking its two singles up in the ground truth.
 minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
                                         const std::vector<minidaq::sim::TruthSingle>& truth, double seconds,
-                                        std::vector<minidaq::Coincidence>& found) {
+                                        std::vector<minidaq::Coincidence>& found,
+                                        std::vector<std::uint8_t>& kinds, minidaq::SorterStats& stats_out) {
   using namespace minidaq;
   std::vector<Single> singles;
   singles.reserve(truth.size());
@@ -85,7 +159,9 @@ minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
   std::uint64_t trues = 0;
   std::uint64_t scatters = 0;
   std::uint64_t randoms = 0;
-  for (const Coincidence& c : found) {
+  kinds.assign(found.size(), kind_delayed);
+  for (std::size_t i = 0; i < found.size(); ++i) {
+    const Coincidence& c = found[i];
     if (c.kind != CoincidenceKind::prompt) {
       continue;
     }
@@ -93,14 +169,18 @@ minidaq::CountRates print_sorter_report(const minidaq::SorterConfig& cfg,
     const auto& b = truth[index.at(key(c.second))];
     if (a.decay != b.decay) {
       ++randoms;
+      kinds[i] = kind_random;
     } else if (a.scattered || b.scattered) {
       ++scatters;
+      kinds[i] = kind_scatter;
     } else {
       ++trues;
+      kinds[i] = kind_true;
     }
   }
   // [/snippet:classify]
   const SorterStats& st = sorter.stats();
+  stats_out = st;
   const auto rate = [&](std::uint64_t n) { return static_cast<double>(n) / seconds; };
   std::printf("sorter: %s window, %s, delay %lld ps, sectors >= %u apart, fov %.0f mm\n",
               std::string{to_string(cfg.mode)}.c_str(), std::string{to_string(cfg.multiples)}.c_str(),
@@ -135,6 +215,9 @@ int run(int argc, char** argv) {
   std::string words_path;
   std::string truth_path;
   std::string crystal_truth_path;  // Chapter 26: each crystal's gain and delay, CSV
+  std::string truth_sino_prefix;   // Chapter 27: sinograms of trues, scatters and randoms
+  double source_radius_mm = 0.0;   // Chapter 27: a cylinder's radius other than the default
+  double source_length_mm = 0.0;   // and its length
   minidaq::SorterConfig sorter;
   DeadTimeConfig dead;
   bool nema = false;
@@ -227,6 +310,16 @@ int run(int argc, char** argv) {
       ok = minidaq::parse_into(v, cfg.detector.time_skew_ps, 0.0, 4'000.0);
     } else if (a == "--crystal-truth" && !v.empty()) {
       crystal_truth_path = v;
+    } else if (a == "--efficiency-spread") {
+      ok = minidaq::parse_into(v, cfg.detector.efficiency_spread, 0.0, 0.3);
+    } else if (a == "--source-radius") {
+      ok = minidaq::parse_into(v, source_radius_mm, 1.0, 140.0);
+    } else if (a == "--crystal-seed") {
+      ok = minidaq::parse_into(v, cfg.detector.crystal_seed, std::uint64_t{0}, ~std::uint64_t{0});
+    } else if (a == "--source-length") {
+      ok = minidaq::parse_into(v, source_length_mm, 1.0, 1'000.0);
+    } else if (a == "--truth-sino" && !v.empty()) {
+      truth_sino_prefix = v;
     } else {
       ok = false;
     }
@@ -239,6 +332,13 @@ int run(int argc, char** argv) {
     // A brain-sized uniform cylinder inside the water phantom.
     cfg.source = {SourceShape::Kind::cylinder, {0.0, 0.0, 0.0}, std::min(80.0, phantom_mm > 0 ? phantom_mm - 10.0 : 80.0),
                   100.0};
+    // Chapter 27's normalization source: a cylinder that fills the field of view.
+    if (source_radius_mm > 0.0) {
+      cfg.source.radius_mm = source_radius_mm;
+    }
+    if (source_length_mm > 0.0) {
+      cfg.source.length_mm = source_length_mm;
+    }
   }
   if (phantom_mm > 0.0) {
     cfg.phantom = {phantom_mm, 180.0};
@@ -292,6 +392,10 @@ int run(int argc, char** argv) {
               percent(st.passed_through, st.photons));
   std::printf("  below threshold      %11llu  %5.1f%%\n", static_cast<unsigned long long>(st.below_threshold),
               percent(st.below_threshold, st.photons));
+  if (cfg.detector.efficiency_spread > 0.0) {
+    std::printf("  not detected         %11llu  %5.1f%%\n", static_cast<unsigned long long>(st.not_detected),
+                percent(st.not_detected, st.photons));
+  }
   std::printf("  recorded singles     %11llu  %5.1f%%\n", static_cast<unsigned long long>(st.singles),
               percent(st.singles, st.photons));
   if (dead.model != DeadTimeModel::none) {
@@ -318,7 +422,9 @@ int run(int argc, char** argv) {
               static_cast<double>(counts.multiples) / seconds);
 
   std::vector<minidaq::Coincidence> found;
-  const minidaq::CountRates r = print_sorter_report(sorter, singles, seconds, found);
+  std::vector<std::uint8_t> kinds;
+  minidaq::SorterStats sorter_stats;
+  const minidaq::CountRates r = print_sorter_report(sorter, singles, seconds, found, kinds, sorter_stats);
   // One line for scripts (measurements/ch11/countrate.py): rates per second.
   std::printf("countrate activity=%.6g singles=%.6g trues=%.6g scatters=%.6g randoms=%.6g sf=%.4f necr1=%.6g necr2=%.6g\n",
               cfg.activity_bq, static_cast<double>(singles.size()) / seconds, r.trues, r.scatters, r.randoms,
@@ -344,7 +450,7 @@ int run(int argc, char** argv) {
     }
     // The run record: what was simulated and the truth behind the records,
     // which no measured run has.
-    const nlohmann::json record = {
+    nlohmann::json record = {
         {"simulation",
          {{"program", "minidaq_sim"},
           {"activity_bq", cfg.activity_bq},
@@ -353,6 +459,12 @@ int run(int argc, char** argv) {
           {"truth", {{"trues", counts.trues}, {"scatters", counts.scatters}, {"randoms", counts.randoms},
                      {"multiples", counts.multiples}}},
           {"sorter_rates_per_s", {{"trues", r.trues}, {"scatters", r.scatters}, {"randoms", r.randoms}}}}}};
+    // What the corrections need besides the coincidences, as the server records it (Chapter 27).
+    minidaq::SinglesCounter counter{sorter.energy_low_kev, sorter.energy_high_kev};
+    for (const auto& s : singles) {
+      counter.record(std::span{&s.single, 1});
+    }
+    record["corrections"] = minidaq::control::corrections_record(counter.snapshot(), sorter, sorter_stats);
     if (auto e = sink->close(record.dump())) {
       std::fprintf(stderr, "minidaq_sim: %s\n", e->c_str());
       return 1;
@@ -367,15 +479,22 @@ int run(int argc, char** argv) {
   if (!crystal_truth_path.empty()) {
     // The answer a calibration should find (Chapter 26): crystal, gain, delay in ps.
     const File f{std::fopen(crystal_truth_path.c_str(), "w")};  // NOLINT(cppcoreguidelines-owning-memory): owned by File
-    bool ok = f != nullptr && std::fprintf(f.get(), "crystal,gain,delay_ps,saturation_kev\n") > 0;
+    bool ok = f != nullptr && std::fprintf(f.get(), "crystal,gain,delay_ps,saturation_kev,efficiency\n") > 0;
     for (std::size_t c = 0; ok && c < sim.crystal_gains().size(); ++c) {
-      ok = std::fprintf(f.get(), "%zu,%.6f,%.0f,%.1f\n", c, sim.crystal_gains()[c], sim.crystal_skews_ps()[c],
-                        cfg.detector.saturation_kev) > 0;
+      ok = std::fprintf(f.get(), "%zu,%.6f,%.0f,%.1f,%.6f\n", c, sim.crystal_gains()[c], sim.crystal_skews_ps()[c],
+                        cfg.detector.saturation_kev, sim.crystal_efficiencies()[c]) > 0;
     }
     if (!ok) {
       std::fprintf(stderr, "minidaq_sim: cannot write %s\n", crystal_truth_path.c_str());
       return 1;
     }
+  }
+  if (!truth_sino_prefix.empty()) {
+    if (!write_truth_sinograms(truth_sino_prefix, sorter, found, kinds)) {
+      std::fprintf(stderr, "minidaq_sim: cannot write %s.*\n", truth_sino_prefix.c_str());
+      return 1;
+    }
+    std::printf("truth sinograms: %s.{trues,scatters,randoms,prompts,delayeds}.u32\n", truth_sino_prefix.c_str());
   }
   if (!words_path.empty()) {
     const File f{std::fopen(words_path.c_str(), "wb")};  // NOLINT(cppcoreguidelines-owning-memory): owned by File

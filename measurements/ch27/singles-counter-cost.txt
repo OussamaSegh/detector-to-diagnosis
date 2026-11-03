@@ -1,0 +1,14 @@
+# Chapter 27: the cost of the singles counter in the decode stage
+
+BM_Pipeline/4096/64 (benchmarks/bm_pipeline.cpp), release build, x86_64, 4 CPUs. "without" is the
+same build with the call singles_.record(...) in the decode stage commented out. Three rounds,
+alternating, each the median of 3 repetitions; items are singles.
+
+| Round | With the counter | Without |
+|---|---:|---:|
+| 1 | 27.9 M/s | 22.2 M/s |
+| 2 | 26.7 M/s | 28.6 M/s |
+| 3 | 27.8 M/s | 27.4 M/s |
+
+The difference is inside the spread between rounds of the same build (22.2 to 28.6 M/s): not
+measurable on this machine, as for the calibration in Chapter 26 (about 30 M/s with and without).

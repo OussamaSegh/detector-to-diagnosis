@@ -13,6 +13,7 @@
 #include <nlohmann/json.hpp>
 
 #include "minidaq/config/calibration_file.hpp"
+#include "minidaq/control/corrections_record.hpp"
 #include "minidaq/control/run_integrity.hpp"
 #include "minidaq/core/flight_recorder.hpp"
 
@@ -436,7 +437,13 @@ void AcquisitionService::check_run_locked() {
     // The last write() has returned: the sink can make the run durable, with
     // the run's record (counters included) next to the data. A run whose data
     // did not reach stable storage ends in a fault.
-    const json record = status_locked();
+    json record = status_locked();
+    // [snippet:corrections-record]
+    // What the corrections need besides the coincidences (Chapter 27); only in the record, since
+    // the 18,432 counts would make every status report 150 KB longer.
+    record["corrections"] = corrections_record(pipeline_->singles().snapshot(), pipeline_->config().sorter,
+                                               pipeline_->sorter_stats());
+    // [/snippet:corrections-record]
     if (auto e = sink_ ? sink_->close(record.dump()) : std::nullopt) {
       return enter_fault_locked("sink: " + *e, "service");
     }

@@ -62,6 +62,17 @@ struct DetectorModel {
   double gain_spread = 0.0;
   double saturation_kev = 0.0;
   double time_skew_ps = 0.0;
+  // Crystals that detect differently (Chapter 27): each crystal records a photon that deposits
+  // enough energy with its own probability, drawn once from a normal distribution with mean
+  // 1 - 2 * efficiency_spread and this standard deviation, kept within 0.05 to 1 (0: every crystal
+  // records every such photon). Light collection, the SiPM's detection efficiency and the
+  // crystal's surface differ from crystal to crystal; normalization corrects for it. From its own
+  // random stream, like the gains.
+  double efficiency_spread = 0.0;
+  // The seed of the crystals' own streams (gains, delays, efficiencies); 0: the simulator's seed.
+  // A scanner keeps its crystals from scan to scan: two runs with different seeds and one crystal
+  // seed are two scans of one scanner, as a normalization scan and the scan it corrects are.
+  std::uint64_t crystal_seed = 0;
 };
 
 struct SimulatorConfig {
@@ -96,6 +107,7 @@ struct SimulatorStats {
   std::uint64_t missed_ring = 0;          // left through the open ends of the ring
   std::uint64_t passed_through = 0;       // reached a crystal without interacting
   std::uint64_t below_threshold = 0;      // interacted, deposited less than the threshold
+  std::uint64_t not_detected = 0;         // deposited enough, lost to the crystal's efficiency
   std::uint64_t singles = 0;              // recorded
 };
 
@@ -118,6 +130,8 @@ class DetectorSimulator {
   // ps (1 and 0 when the model has none).
   [[nodiscard]] std::span<const double> crystal_gains() const noexcept { return gains_; }
   [[nodiscard]] std::span<const double> crystal_skews_ps() const noexcept { return skews_ps_; }
+  // Each crystal's detection probability (1 when the model has no efficiency spread).
+  [[nodiscard]] std::span<const double> crystal_efficiencies() const noexcept { return efficiencies_; }
 
  private:
   void simulate_next_decay();
@@ -142,6 +156,7 @@ class DetectorSimulator {
   std::vector<TruthSingle> pending_;  // min-heap on time: singles not yet returned
   std::vector<double> gains_;
   std::vector<double> skews_ps_;
+  std::vector<double> efficiencies_;
   double early_skew_ps_ = 0.0;  // the most negative delay, as a positive number
   SimulatorStats stats_{};
 };

@@ -36,6 +36,7 @@
 #include "minidaq/pipeline/stage_stats.hpp"
 #include "minidaq/processing/calibration.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
+#include "minidaq/processing/singles_counter.hpp"
 #include "minidaq/rt/realtime.hpp"
 
 namespace minidaq {
@@ -128,6 +129,9 @@ class AcquisitionPipeline {
   [[nodiscard]] const LatencyHistogram& end_to_end_latency() const noexcept { return *end_to_end_; }
   // The photopeak position of each detector block, from the calibrated singles (Chapter 26).
   [[nodiscard]] const PhotopeakMonitor& photopeak() const noexcept { return photopeak_; }
+  // The singles of each crystal in the sorter's energy window, for the corrections (Chapter 27).
+  [[nodiscard]] const SinglesCounter& singles() const noexcept { return singles_; }
+  [[nodiscard]] const PipelineConfig& config() const noexcept { return cfg_; }
   // Valid after start() returns.
   [[nodiscard]] const std::array<rt::StageRtStatus, num_stages>& rt_status() const noexcept { return rt_status_; }
   [[nodiscard]] bool memory_locked() const noexcept { return memory_locked_; }
@@ -156,6 +160,7 @@ class AcquisitionPipeline {
   alignas(cache_line_size) std::atomic<std::uint64_t> late_singles_{0};
   std::unique_ptr<CoincidenceSorter> sorter_;  // used by the pair thread only
   PhotopeakMonitor photopeak_;                 // written by the decode thread only
+  SinglesCounter singles_;                     // written by the decode thread only
   static constexpr std::size_t sorter_fields = 11;
   alignas(cache_line_size) std::array<std::atomic<std::uint64_t>, sorter_fields> sorter_stats_{};
   std::atomic<std::size_t> finished_stages_{0};

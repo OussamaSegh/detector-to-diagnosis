@@ -24,6 +24,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/format/list_mode.hpp"
+#include "minidaq/core/geometry.hpp"
 #include "calibration_fixture.hpp"
 #include "eventually.hpp"
 
@@ -360,7 +361,7 @@ TEST(ListModeSink, RejectsBadConfigurationsAndExistingFiles) {
 }
 
 TEST(ListModeSink, WritesRealFilesThroughTheService) {
-  // REQ: SRS-OUT-009, SRS-OUT-011, SRS-OUT-012
+  // REQ: SRS-OUT-009, SRS-OUT-011, SRS-OUT-012, SRS-COR-002
   const auto dir = std::filesystem::temp_directory_path() / ("minidaq-lm-" + std::to_string(::getpid()));
   std::filesystem::remove_all(dir);
   std::filesystem::create_directories(dir);
@@ -407,6 +408,22 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
   EXPECT_TRUE(record["run"]["detector_counters"].is_object()) << record.dump();
   EXPECT_EQ(record["run"]["stages"][4]["in"], st["stages"][4]["in"]);
   EXPECT_EQ(record["run"]["integrity"]["complete"], true) << record["run"]["integrity"];
+  // What the corrections need (SRS-COR-002): the sorter's windows and every crystal's singles, the
+  // same singles the sorter kept after its energy window.
+  const auto& cor = record["run"]["corrections"];
+  ASSERT_TRUE(cor.is_object()) << "no corrections in the run record";
+  EXPECT_FALSE(st.contains("corrections")) << "only in the record, not in every status report";
+  EXPECT_EQ(cor["energy_window_kev"][0], c.sorter.energy_low_kev);
+  EXPECT_EQ(cor["coincidence_window_ps"], c.pipeline.coincidence_window_ps);
+  ASSERT_EQ(cor["singles_per_crystal"].size(), ScannerGeometry::num_crystals);
+  std::uint64_t sum = 0;
+  for (const auto& n : cor["singles_per_crystal"]) {
+    sum += n.get<std::uint64_t>();
+  }
+  EXPECT_EQ(sum, cor["singles_in_window"].get<std::uint64_t>());
+  EXPECT_EQ(sum, st["sorter"]["singles_in"].get<std::uint64_t>() - st["sorter"]["energy_rejected"].get<std::uint64_t>());
+  EXPECT_EQ(cor["prompts"], st["sorter"]["prompts"]);
+  EXPECT_LT(cor["singles_first_ps"].get<std::int64_t>(), cor["singles_last_ps"].get<std::int64_t>());
   EXPECT_GT(written, 0U);
   EXPECT_EQ(read, written);
   EXPECT_EQ(static_cast<std::uint64_t>(files), st["sink_counters"]["files"].get<std::uint64_t>());

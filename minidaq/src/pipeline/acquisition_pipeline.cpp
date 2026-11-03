@@ -21,6 +21,7 @@ AcquisitionPipeline::AcquisitionPipeline(const PipelineConfig& cfg, WordSource s
       sorted_{cfg.batches_per_channel, cfg.batch_size},
       pairs_{cfg.batches_per_channel, cfg.batch_size},
       sorter_{std::make_unique<CoincidenceSorter>(cfg.sorter)},
+      singles_{cfg.sorter.energy_low_kev, cfg.sorter.energy_high_kev},
       end_to_end_{std::make_unique<LatencyHistogram>()} {
   for (auto& h : stage_latency_) {
     h = std::make_unique<LatencyHistogram>();
@@ -198,10 +199,13 @@ void AcquisitionPipeline::run_decode() {
     Batch<Single>* out = acquire_blocking(decoded_, s);
     const std::int64_t t0 = monotonic_ns();  // service time excludes waiting
     out->size = decoder.decode(in->view(), out->items);
+    // [snippet:decode-count]
     if (calibration != nullptr) {
       calibration->apply(out->view());  // energies and times per crystal (SRS-CAL-002, 003)
     }
     photopeak_.record(out->view());
+    singles_.record(out->view());  // for the randoms and dead-time corrections (SRS-COR-001)
+    // [/snippet:decode-count]
     out->origin_ns = in->origin_ns;
     lat.record(monotonic_ns() - t0);
     StageStats::add(s.items_in, in->size);
@@ -217,6 +221,7 @@ void AcquisitionPipeline::run_decode() {
 // [/snippet:decode]
 
 // [snippet:sort]
+// [snippet:sort-hold]
 // Orders each batch by time. Without a time calibration the stream is ordered batch by batch, as
 // it always was. With one, the correction moves each single by -offset, between -max and -min of
 // the table's offsets: a single that arrives later can come out up to time_spread_ps() earlier
@@ -274,6 +279,7 @@ void AcquisitionPipeline::run_sort() {
     }
     held.erase(held.begin(), end);
   };
+  // [/snippet:sort-hold]
   std::int64_t last_origin_ns = 0;
   for (;;) {
     Batch<Single>* in = decoded_.receive();

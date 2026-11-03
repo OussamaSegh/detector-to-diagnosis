@@ -1,0 +1,73 @@
+# Chapter 27: the corrections against the simulator's truth
+
+Machine: x86_64, 4 CPUs, Python 3.13.17, numpy 2.5.3.
+Scanner: minidaq_sim --efficiency-spread 0.05 --crystal-seed 7.
+Simulated in 0 s (0 if the runs were reused).
+
+## 1. Normalization scan: crystal efficiencies from fan sums
+
+6 runs: 10,484,053 prompts, 898,977 delayeds; read and summed in 3.7 s.
+Fan sum (prompts minus delayeds) per crystal: mean 1,040, so a Poisson error of about 3.1%.
+True efficiencies: mean 0.8994, rms spread 4.91%; relative to their ring's mean, rms 5.45%.
+Found against true (each relative to its ring): rms error 3.38%, worst 14.0%, mean +0.000%.
+Ring means, left to the geometric factors: 0.8896 to 0.9064.
+Per bin, the mean efficiency product over its ring pairs: rms error 1.44% (the products of 48 ring pairs average the crystals' errors).
+Geometric factors: 0.000 to 2.307 (slices x columns, mean 1).
+
+## 2. Patient-like scan: randoms
+
+Run: 5.000 s; 18,069,637 singles in 435 to 650 keV, of which 13.5% in a prompt coincidence; window 4000 ps, fixed.
+Binned prompts 1,143,163: trues 751,117, scatters 274,260, randoms 117,786 (10.3% of the prompts).
+Randoms estimates against the truth, in the binned field of view:
+
+| Estimate | Randoms | Against the truth |
+|---|---:|---:|
+| delayed window | 126,181 | +7.1% |
+| 2 tau S_a S_b / t, all singles | 154,413 | +31.1% |
+| the same, singles in a prompt coincidence subtracted | 115,631 | -1.8% |
+
+Per bin: mean 0.0284 true randoms. The delayeds scatter about the singles estimate by 0.175 rms, Poisson noise on means of 0.0279; the singles estimate has no noise of its own (its singles are thousands per crystal).
+Shape over s (sum of all slices and views): singles estimate / truth from 0.884 to 1.095 across the columns, rms 4.2% (truth Poisson about 4.4% per column).
+
+## 3. Patient-like scan: scatter by tail fitting
+
+True scatter fraction of the binned prompts 26.7%. Tails: |s| from 92 to 112 mm, where the prompts are 4,173 scatters and 23,976 randoms (the singles estimate: 23,432).
+
+| Shape | Under the object | s = 0 | s = 40 | s = 80 | s = 95 |
+|---|---:|---:|---:|---:|---:|
+| Gaussian fitted to the tails, a scale per slice (sigma 33 mm) | 2.376 | 3.84 | 2.12 | 0.76 | 0.91 |
+| model (a simulated phantom of the same size), a scale per slice | 1.160 | 1.14 | 1.17 | 1.16 | 1.06 |
+| model, one scale for all slices | 1.141 | 1.12 | 1.16 | 1.15 | 1.04 |
+| model, one scale, the true randoms subtracted | 1.009 | 0.99 | 1.03 | 1.02 | 0.92 |
+
+Each cell is the estimate over the truth, in counts, summed over the slices and views; under the object is the sum over |s| <= 90 mm. The scale is the Poisson maximum likelihood of each slice's tail counts.
+Slice by slice (slices 20 to 74), model (a simulated phantom of the same size), a scale per slice: scatter under the object against the truth, rms 41.9%.
+Slice by slice (slices 20 to 74), model, one scale for all slices: scatter under the object against the truth, rms 14.3%.
+A slice's tails hold about 431 prompts, of which 66 scatters.
+
+## 4. Patient-like scan: the profile, step by step
+
+Slices 20 to 74, summed over the views, the two sides of s averaged, divided by the source's chord and scaled to a mean of 1 over |s| < 65 mm. A correct correction is flat (1.000) under the source (|s| < 80 mm); the rms is over |s| < 65 mm, away from the edge, which the detector's resolution blurs.
+
+| Step | s = 0 | s = 20 | s = 40 | s = 60 | s = 75 | s = 85 | s = 100 | rms, abs(s) < 65 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| prompts as measured | 0.844 | 0.887 | 0.997 | 1.251 | 1.355 | (0.127) | (0.075) | 14.1% |
+| minus randoms (singles) | 0.843 | 0.888 | 0.997 | 1.249 | 1.285 | (0.070) | (0.016) | 14.0% |
+| normalized | 0.854 | 0.900 | 0.997 | 1.220 | 1.215 | (0.064) | (0.015) | 11.9% |
+| minus scatter (model, one scale) | 0.794 | 0.844 | 0.978 | 1.322 | 1.270 | (-0.012) | (0.003) | 17.5% |
+| attenuation corrected | 0.953 | 0.972 | 0.980 | 1.025 | 0.700 | (-0.004) | (0.001) | 1.9% |
+| truth: trues / (n A) | 0.966 | 0.997 | 1.000 | 1.004 | 0.692 | (0.000) | (0.000) | 1.1% |
+| truth: trues / (n_true A) | 0.966 | 0.997 | 0.999 | 1.004 | 0.692 | (0.000) | (0.000) | 1.1% |
+
+Outside the source a value in parentheses is the profile itself over its value at the center. The central column is low in the truth too, by 2.4 times its Poisson noise. Poisson noise of the trues per column (both sides together): about 1.4%.
+
+## 5. Dead time: the live fraction from the singles per block
+
+The phantom for 1 s at 20 MBq, the same seed, without and with a non-paralyzable dead time of 200 ns per block (minidaq_sim --deadtime non_paralyzable --tau 200). Recorded singles per block: 109 kHz on average, 104 to 118 kHz.
+
+| Quantity | From the singles per block | From the two runs |
+|---|---:|---:|
+| Singles live fraction | 0.9782 | 0.9776 |
+| Coincidence live fraction (trues) | 0.9568 | 0.9565 |
+
+Trues binned: 150,018 without, 143,488 with dead time (Poisson 0.37% on their ratio, though the two runs share their decays). Simulated in 79 s.

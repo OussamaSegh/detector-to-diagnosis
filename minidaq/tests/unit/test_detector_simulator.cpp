@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
@@ -85,6 +86,7 @@ TEST(DetectorSimulator, RejectsNaNInEveryNumericField) {
       [](SimulatorConfig& c, double v) { c.detector.gain_spread = v; },
       [](SimulatorConfig& c, double v) { c.detector.saturation_kev = v; },
       [](SimulatorConfig& c, double v) { c.detector.time_skew_ps = v; },
+      [](SimulatorConfig& c, double v) { c.detector.efficiency_spread = v; },
   };
   for (std::size_t i = 0; i < fields.size(); ++i) {
     SimulatorConfig c = brain_phantom(1e6);
@@ -313,4 +315,91 @@ TEST(DetectorSimulator, AnUncalibratedDetectorStillDeliversInTimeOrder) {
   for (std::size_t i = 1; i < v.size(); ++i) {
     ASSERT_LE(v[i - 1].single.time, v[i].single.time) << i;
   }
+}
+
+TEST(DetectorSimulator, EachCrystalDetectsWithItsOwnEfficiency) {
+  // REQ: SRS-SIM-023
+  SimulatorConfig plain = brain_phantom(5e6);
+  plain.phantom = {};  // in air: every crystal sees about the same photons
+  SimulatorConfig spread = plain;
+  spread.detector.efficiency_spread = 0.05;
+  spread.detector.gain_spread = 0.1;
+  SimulatorConfig gains_only = plain;
+  gains_only.detector.gain_spread = 0.1;
+  EXPECT_FALSE(validate([&] { auto c = spread; c.detector.efficiency_spread = 0.31; return c; }()));
+  EXPECT_FALSE(validate([&] { auto c = spread; c.detector.efficiency_spread = -0.01; return c; }()));
+
+  DetectorSimulator a{plain};
+  DetectorSimulator b{spread};
+  DetectorSimulator g{gains_only};
+  EXPECT_EQ(a.crystal_efficiencies()[0], 1.0);
+  // The efficiencies come from a stream of their own: the gains of a seed are the same.
+  ASSERT_EQ(b.crystal_gains().size(), g.crystal_gains().size());
+  EXPECT_TRUE(std::equal(b.crystal_gains().begin(), b.crystal_gains().end(), g.crystal_gains().begin()));
+
+  // One scanner, two scans: a crystal seed keeps the crystals whatever the seed of the decays.
+  SimulatorConfig scan1 = spread;
+  scan1.detector.crystal_seed = 7;
+  SimulatorConfig scan2 = scan1;
+  scan2.seed = 99;
+  DetectorSimulator s1{scan1};
+  DetectorSimulator s2{scan2};
+  EXPECT_TRUE(std::ranges::equal(s1.crystal_efficiencies(), s2.crystal_efficiencies()));
+  EXPECT_TRUE(std::ranges::equal(s1.crystal_gains(), s2.crystal_gains()));
+  EXPECT_FALSE(std::ranges::equal(s1.crystal_efficiencies(), b.crystal_efficiencies()));
+
+  const auto e = b.crystal_efficiencies();
+  const double mean = std::accumulate(e.begin(), e.end(), 0.0) / static_cast<double>(e.size());
+  double var = 0.0;
+  for (const double x : e) {
+    ASSERT_GE(x, 0.05);
+    ASSERT_LE(x, 1.0);
+    var += (x - mean) * (x - mean);
+  }
+  EXPECT_NEAR(mean, 0.90, 0.005);  // 1 - 2 * 0.05, a little higher for the few clamped at 1
+  EXPECT_NEAR(std::sqrt(var / static_cast<double>(e.size())), 0.05, 0.003);
+
+  // Each crystal records its efficiency's share of the photons that deposit enough energy: the
+  // counts follow the efficiencies, and the photons lost are counted.
+  const auto x = a.generate_until(Picoseconds{150'000'000'000});
+  const auto y = b.generate_until(Picoseconds{150'000'000'000});
+  std::vector<double> na(e.size(), 0.0);
+  std::vector<double> nb(e.size(), 0.0);
+  for (const auto& s : x) {
+    na[s.single.crystal.value()] += 1.0;
+  }
+  for (const auto& s : y) {
+    nb[s.single.crystal.value()] += 1.0;
+  }
+  double sa = 0.0;
+  double sb = 0.0;
+  double expect = 0.0;
+  for (std::size_t c = 0; c < e.size(); ++c) {
+    sa += na[c];
+    sb += nb[c];
+    expect += na[c] * e[c];
+  }
+  EXPECT_NEAR(sb / expect, 1.0, 0.01);
+  EXPECT_NEAR(static_cast<double>(b.stats().not_detected) / (sa - sb), 1.0, 0.05);
+  EXPECT_EQ(a.stats().not_detected, 0U);
+  // Per crystal: the low-efficiency tenth records less than the high one, by about their ratio.
+  std::vector<std::size_t> order(e.size());
+  std::iota(order.begin(), order.end(), std::size_t{0});
+  std::ranges::sort(order, [&](std::size_t i, std::size_t j) { return e[i] < e[j]; });
+  double low_a = 0.0;
+  double low_b = 0.0;
+  double high_a = 0.0;
+  double high_b = 0.0;
+  double low_e = 0.0;
+  double high_e = 0.0;
+  const std::size_t tenth = e.size() / 10;
+  for (std::size_t k = 0; k < tenth; ++k) {
+    low_a += na[order[k]];
+    low_b += nb[order[k]];
+    low_e += e[order[k]];
+    high_a += na[order[e.size() - 1 - k]];
+    high_b += nb[order[e.size() - 1 - k]];
+    high_e += e[order[e.size() - 1 - k]];
+  }
+  EXPECT_NEAR((low_b / low_a) / (high_b / high_a), low_e / high_e, 0.02);
 }

@@ -30,6 +30,7 @@ add_executable(minidaq_unit_tests
   unit/test_energy_filter.cpp
   unit/test_calibration.cpp
   unit/test_calibration_file.cpp
+  unit/test_singles_counter.cpp
   unit/test_physics.cpp
   unit/test_detector_simulator.cpp
   unit/test_acquisition_state.cpp
@@ -150,6 +151,10 @@ if(Python3_Interpreter_FOUND)
   # Chapter 26: the calibration procedure, on a synthetic detector (about 30 s; needs numpy).
   add_test(NAME tools.calib COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_calib.py)
   set_tests_properties(tools.calib PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77 TIMEOUT 300)
+  # Chapter 27: the corrections, on synthetic data and one short simulated run (needs numpy).
+  add_test(NAME tools.recon
+           COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_recon.py $<TARGET_FILE_DIR:minidaq_sim>)
+  set_tests_properties(tools.recon PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
   add_test(NAME tools.listmode
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)

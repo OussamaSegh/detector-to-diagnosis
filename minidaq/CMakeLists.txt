@@ -14,6 +14,7 @@ add_library(minidaq_core
   src/sim/dead_time.cpp
   src/processing/energy_filter.cpp
   src/processing/calibration.cpp
+  src/processing/singles_counter.cpp
   src/processing/coincidence_sorter.cpp
   src/processing/sinogram.cpp
   src/processing/stream_merger.cpp
@@ -46,6 +47,7 @@ add_library(minidaq_control
   src/control/audit_log.cpp
   src/control/acquisition_service.cpp
   src/control/run_integrity.cpp
+  src/control/corrections_record.cpp
   src/control/tls.cpp
   src/control/control_protocol.cpp
   src/control/control_server.cpp
