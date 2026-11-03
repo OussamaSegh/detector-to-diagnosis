@@ -183,6 +183,25 @@ TEST(HardwareConfig, ReportsEveryProblemWithItsLocation) {
   EXPECT_FALSE(config::parse_hardware_config("not json"));
 }
 
+TEST(HardwareConfig, RefusesADescriptionOfTheWrongForm) {
+  // REQ: SRS-HW-010
+  // A document that is not an object, and a version that is not a string: promised by the
+  // coverage review of release 0.5.0.
+  for (const char* doc : {"[]", "42", "\"text\"", "null"}) {
+    auto e = config::parse_hardware_config(doc);
+    ASSERT_FALSE(e) << doc;
+    EXPECT_EQ(config::format_errors(e.error()).rfind("(document): must be an object\n", 0), 0U)
+        << doc;
+  }
+  for (const char* version : {"1.0", "null", "[\"1.0\"]", "{}"}) {
+    const std::string doc =
+        std::string{R"({"schema_version": )"} + version + R"(, "boards": [{}]})";
+    auto e = config::parse_hardware_config(doc);
+    ASSERT_FALSE(e) << doc;
+    EXPECT_EQ(config::format_errors(e.error()), "/schema_version: must be a string\n") << doc;
+  }
+}
+
 TEST(HardwareConfig, RefusesEachFieldOutsideItsRangeOnItsOwn) {
   // REQ: SRS-HW-010
   // Each refusal alone, which the tests above only showed together with others (release
