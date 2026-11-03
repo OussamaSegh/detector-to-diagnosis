@@ -67,17 +67,27 @@ its coefficients, tied to a scanner serial and an expiry date.
 
 ## Consequences
 
+### Positive
+
+- Every single is calibrated before the energy window and the coincidence sorter see it, at no
+  measurable cost, and the summed photopeak goes from 23.0% to 12.0% FWHM (measurements/ch26).
 - The run record and the list-mode metadata name the table (id, version, scanner, creation time,
   CRC), so a table found wrong later identifies the runs it affected (H-11, RC-38).
+- A damaged, edited, foreign or expired table is refused before an acquisition is configured, and
+  the photopeak monitor checks the table against the data of every run.
+- The procedure refuses to write a table from a bad acquisition and names each crystal that
+  failed, including when the source is a point instead of a cylinder.
+
+### Negative
+
 - The procedure's results depend on inputs that no criterion checks: the sensor's saturation
   energy, given on the command line from the bench, and the source's position. A wrong one gives
   a table that passes. The daily quality control with a phantom remains the control for those
   (H-11, residual).
 - Calibrating needs about 30 M singles: 3 s at 20 MBq in the simulation, minutes with a real
-  source of a few MBq. The procedure takes about 40 s and 3 GB of memory for that, on the book's
-  machine.
+  source of a few MBq. The procedure takes about 40 s for that on the book's machine.
 - The curvature limit is asymmetric: the first version allowed 40% each way, and the first table
   of a detector with a saturating SiPM was refused by the server. The tool now checks the server's
-  limits before it writes, and a test checks both have the same.
+  limits before it writes, and a test checks that both have the same limits.
 - The table is per crystal; a board that identifies crystals by position (a flood map and a
   crystal lookup table) needs another calibration step, which Exercise 26.2 sketches.
