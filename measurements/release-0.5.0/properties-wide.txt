@@ -1,0 +1,35 @@
+# 2026-11-03T04:05:25Z commit 6ef606e property-based tests, MINIDAQ_PROP_CASES=100
+Running main() from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/.deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = Properties.*
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from Properties
+[ RUN      ] Properties.TheUnwrapperRestoresEveryTime
+[       OK ] Properties.TheUnwrapperRestoresEveryTime (119 ms)
+[ RUN      ] Properties.PackAndUnpackAreInverse
+[       OK ] Properties.PackAndUnpackAreInverse (17 ms)
+[ RUN      ] Properties.TheSorterFindsWhatTheReferenceFinds
+[       OK ] Properties.TheSorterFindsWhatTheReferenceFinds (414 ms)
+[ RUN      ] Properties.TheOrderOfTiesDoesNotMatter
+[       OK ] Properties.TheOrderOfTiesDoesNotMatter (419 ms)
+[ RUN      ] Properties.LongStreamsGiveTheSameResult
+[       OK ] Properties.LongStreamsGiveTheSameResult (2237 ms)
+[ RUN      ] Properties.EveryCoincidenceIsInItsWindow
+[       OK ] Properties.EveryCoincidenceIsInItsWindow (108 ms)
+[ RUN      ] Properties.FixedWindowsUseEachSingleOnce
+[       OK ] Properties.FixedWindowsUseEachSingleOnce (121 ms)
+[ RUN      ] Properties.BatchSizesDoNotMatter
+[       OK ] Properties.BatchSizesDoNotMatter (171 ms)
+[ RUN      ] Properties.EverySingleIsAccountedFor
+[       OK ] Properties.EverySingleIsAccountedFor (105 ms)
+[ RUN      ] Properties.TheTrackerRestoresOrderAndCountsEveryPacket
+[       OK ] Properties.TheTrackerRestoresOrderAndCountsEveryPacket (543 ms)
+[ RUN      ] Properties.TheMergerOutputIsOrderedAndComplete
+[       OK ] Properties.TheMergerOutputIsOrderedAndComplete (168 ms)
+[ RUN      ] Properties.TheHarnessShrinksACounterexample
+[       OK ] Properties.TheHarnessShrinksACounterexample (0 ms)
+[----------] 12 tests from Properties (4428 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 1 test suite ran. (4428 ms total)
+[  PASSED  ] 12 tests.

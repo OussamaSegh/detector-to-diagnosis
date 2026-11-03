@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-10-25, by the software lead (release checks for 0.3.0) |
 | Source | MDQ-PR-014; at the effectiveness check, MDQ-PR-023, MDQ-PR-029, MDQ-PR-030 and MDQ-PR-032; at 0.5.0, MDQ-PR-041 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
+| Effectiveness check | release 0.4.0: not effective; release 0.5.0: effective |
 
 ## Problem
 
@@ -123,6 +123,18 @@ New criterion: the release record of 0.5.0 cites a complete run of `tools/releas
 the released commit, ending with its summary line, and no problem report between this result
 and the release of 0.5.0 has the cause "a check that could not run passed". Due: release 0.5.0.
 
+Result: **effective** (2026-11-03, release checks of 0.5.0). The release record of 0.5.0
+(`docs/regulatory/releases/0.5.0.md`) cites a complete run of `tools/release_checks.sh` on the
+released commit: four parts on one commit, each ending with its summary line
+(`measurements/release-0.5.0/release-checks.txt`). No problem report between the result of 0.4.0
+and the release of 0.5.0 has the cause "a check that could not run passed". The two runs cut by a
+restart of the machine reported themselves as failed and were not taken for evidence
+(MDQ-PR-041): the guard of MDQ-PR-029 did its work. MDQ-PR-041's own correction, the four parts,
+is tested by `tools.release_checks`, which checks that every check lies in exactly one part.
+
 ## Closure
 
-Not closed: the action was not effective at release 0.4.0; the next check is at release 0.5.0.
+Closed on 2026-11-03 by the software lead at release 0.5.0: the criterion is met. The guards
+stay in force (the status 3 of an incomplete run, the test `tools.release_checks`, item 5.3 of
+the code review checklist); a check that passes without running opens a new problem report and,
+if its cause is this one, a new CAPA.

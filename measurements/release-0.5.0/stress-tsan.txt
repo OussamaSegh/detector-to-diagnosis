@@ -1,0 +1,4 @@
+# 2026-11-03T04:05:25Z commit 6ef606e build build/tsan
+# 4 CPUs, 8 busy loops, ctest -j 16 --repeat until-fail:100 -R '(^|/)(Pipeline|AcquisitionService|ControlServer|ControlProtocol|ListModeSink|UdpDetector|PacedSource|ReplaySource)\.'
+100% tests passed, 0 tests failed out of 66
+# ctest exit status 0

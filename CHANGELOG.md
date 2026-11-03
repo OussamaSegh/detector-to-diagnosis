@@ -8,6 +8,13 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-03
+
+Part V, hardware interfacing, embedded Linux and networking (Chapters 22 to 25), complete. The
+release record is `docs/regulatory/releases/0.5.0.md`, with the evidence of
+`tools/release_checks.sh` in `measurements/release-0.5.0/`. CAPA-0004 is closed as effective;
+CAPA-0001 was not effective again and is checked at 0.6.0.
+
 ### Added
 - Chapter 22 code: the front-end boards. A register map specification (`hw/feb.toml`) and its
   generator (`tools/regmap_gen.py`, tool TL-25) writing typed registers

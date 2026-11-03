@@ -6,7 +6,7 @@
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
 | Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
+| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; again at release 0.6.0 |
 
 ## Problem
 
@@ -111,6 +111,35 @@ failure within the new criterion's period, and the result at 0.5.0 counts it. Fu
 speed test leaves a margin of at least 30% between its criterion and what a correct solution
 reaches on the slowest machine that has run it; Exercise 5.2 asks for twice the starter's speed.
 
+Result (2026-11-03, release checks of 0.5.0): **not effective.** Three tests failed for a
+timing reason within the criterion's period, all tests of exercises and none of MiniDAQ's own:
+Exercise 5.2's speed test in CI (MDQ-PR-034, above), Exercise 12.3's trickle test under
+AddressSanitizer with four tests at a time (MDQ-PR-039) and Exercise 10.4's speed test in the
+`clang-release` build with four tests at a time (MDQ-PR-040). MiniDAQ's own tests passed the
+stress run (66 tests, 100 repetitions under load, `measurements/release-0.5.0/stress-tsan.txt`)
+and CI in the period. MDQ-PR-040 shows why the action fell short: the 30% margin rule of 0.4.0
+was applied to the test that failed, Exercise 5.2, and the other speed tests that this CAPA
+names were not checked against it.
+
+Further action: every timing test that this CAPA names was checked against the margin rule at
+this release, on the slowest build and load that runs it:
+
+| Test | Criterion | Measured by a correct solution | Margin |
+|---|---|---|---|
+| Exercise 5.2, speed | twice the starter's speed | 2.99 times at the slowest (hardened, GitHub runner) | 33% |
+| Exercise 10.4, `FastSorter.FastEnough` | 1.9 times the baseline (MDQ-PR-040) | 2.47 to 2.55 times | 30% |
+| Exercise 12.3, `FastSink.KeepsUpWithTheSorterAndLosesNothing` | under 500 ms in `write()` | about 110 ms | 4.5 times |
+| Exercise 12.3, trickle | max_unsynced + one fsync + 100 ms (MDQ-PR-039) | passes 40 runs alone and the stress run | 100 ms of slack, not 50 |
+| Exercise 4.5, clock tests | wide bounds on the conversion, no speed | not a speed test | not applicable |
+
+Item 4.6 of the code review checklist covers a new timing test; the table above is the review
+of the existing ones, which the rule had left out.
+
+New criterion: no test fails for a timing reason in CI, in the release checks or in the stress
+run between this result and the release of 0.6.0, and every timing test added in Part VI is in
+the table above with its margin. Due: release 0.6.0.
+
 ## Closure
 
-Not closed: the action was not effective at release 0.4.0; the next check is at release 0.5.0.
+Not closed: the action was not effective at releases 0.4.0 and 0.5.0; the next check is at
+release 0.6.0.
