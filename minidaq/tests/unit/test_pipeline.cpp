@@ -9,7 +9,10 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <limits>
+#include <memory>
 #include <mutex>
+#include <random>
 #include <thread>
 #include <vector>
 
@@ -259,4 +262,118 @@ TEST(Pipeline, AppliesRealTimeProfileBeforeStartReturns) {
   EXPECT_EQ(rt[1].running_cpu, 0);
   EXPECT_FALSE(rt[0].pinned);
   p.wait();
+}
+
+namespace {
+
+// A table with every crystal's own gain and a time offset within +-2 ns.
+std::shared_ptr<const CalibrationTable> skewed_table(std::uint64_t seed) {
+  std::mt19937_64 rng{seed};
+  std::uniform_int_distribution<std::int32_t> offset{-2'000, 2'000};
+  std::uniform_real_distribution<float> gain{0.9F, 1.1F};
+  std::vector<CrystalCalibration> k(ScannerGeometry::num_crystals);
+  for (auto& e : k) {
+    e = CrystalCalibration{0.0F, packed::energy_lsb_kev * gain(rng), 0.0F, offset(rng)};
+  }
+  auto t = CalibrationTable::make(
+      CalibrationInfo{"CAL-TEST", 1, "MDQ-TEST", "2026-11-03T00:00:00Z", "2027-11-03T00:00:00Z", 25.0, "test"},
+      std::move(k));
+  return std::make_shared<const CalibrationTable>(std::move(*t));
+}
+
+}  // namespace
+
+TEST(Pipeline, CalibratesEverySingleAndTheCorrectionMakesNoneLate) {
+  // REQ: SRS-CAL-002
+  // REQ: SRS-CAL-003
+  constexpr std::uint64_t n = 200'000;
+  std::vector<std::uint64_t> words(n);
+  sim::SyntheticSource gen{{}};
+  gen.generate(words);
+  const auto table = skewed_table(7);
+  ASSERT_GT(table->time_spread_ps(), 3'900);
+
+  PipelineConfig cfg = small_config(n);
+  cfg.calibration = table;
+  std::size_t pos = 0;
+  std::vector<Coincidence> got;
+  AcquisitionPipeline p{cfg,
+                        [&](std::span<std::uint64_t> out) {
+                          const std::size_t k = std::min(out.size(), words.size() - pos);
+                          std::copy_n(words.begin() + static_cast<std::ptrdiff_t>(pos), k, out.begin());
+                          pos += k;
+                          return k;
+                        },
+                        [&](std::span<const Coincidence> c) { got.insert(got.end(), c.begin(), c.end()); }};
+  p.start();
+  p.wait();
+  ASSERT_TRUE(p.finished());
+
+  // The reference: decode, calibrate, order the whole stream, pair.
+  std::vector<Single> singles(words.size());
+  packed::StreamDecoder dec{ScannerGeometry::num_crystals};
+  singles.resize(dec.decode(words, singles));
+  table->apply(singles);
+  // Ordered batch by batch, as without the hold, the corrected stream has late singles:
+  // this test would not see a missing hold.
+  {
+    auto per_batch = singles;
+    Picoseconds last{std::numeric_limits<std::int64_t>::min()};
+    std::uint64_t late = 0;
+    for (std::size_t i = 0; i < per_batch.size(); i += cfg.batch_size) {
+      const auto first = per_batch.begin() + static_cast<std::ptrdiff_t>(i);
+      const auto end = per_batch.begin() + static_cast<std::ptrdiff_t>(std::min(i + cfg.batch_size, per_batch.size()));
+      std::sort(first, end, time_order);
+      late += static_cast<std::uint64_t>(std::count_if(first, end, [&](const Single& s) { return s.time < last; }));
+      last = std::max(last, (end - 1)->time);
+    }
+    EXPECT_GT(late, 20U);  // 47 with this seed
+  }
+  std::sort(singles.begin(), singles.end(), time_order);
+  std::vector<Coincidence> want;
+  CoincidenceSorter s{cfg.sorter};
+  s.push(singles, want);
+  s.flush(want);
+
+  EXPECT_EQ(p.late_singles(), 0U);
+  ASSERT_EQ(got.size(), want.size());
+  for (std::size_t i = 0; i < want.size(); ++i) {
+    ASSERT_EQ(got[i], want[i]) << i;
+  }
+  expect_conservation(p.stats(), p.sorter_stats());
+  EXPECT_EQ(p.sorter_stats().out_of_order, 0U);
+}
+
+TEST(Pipeline, MonitorsThePhotopeakOfTheCalibratedSingles) {
+  // REQ: SRS-CAL-006
+  constexpr std::uint64_t n = 100'000;
+  std::vector<std::uint64_t> words(n);
+  sim::SyntheticSource gen{{}};
+  gen.generate(words);
+  std::vector<Single> singles(words.size());
+  packed::StreamDecoder dec{ScannerGeometry::num_crystals};
+  singles.resize(dec.decode(words, singles));
+  PhotopeakMonitor want;
+  want.record(singles);
+
+  std::size_t pos = 0;
+  AcquisitionPipeline p{small_config(n),
+                        [&](std::span<std::uint64_t> out) {
+                          const std::size_t k = std::min(out.size(), words.size() - pos);
+                          std::copy_n(words.begin() + static_cast<std::ptrdiff_t>(pos), k, out.begin());
+                          pos += k;
+                          return k;
+                        },
+                        [](std::span<const Coincidence>) {}};
+  p.start();
+  p.wait();
+  const auto got = p.photopeak().snapshot();
+  const auto ref = want.snapshot();
+  std::uint64_t total = 0;
+  for (std::size_t b = 0; b < got.size(); ++b) {
+    EXPECT_EQ(got[b].singles, ref[b].singles) << b;
+    EXPECT_NEAR(got[b].mean_kev, ref[b].mean_kev, 1e-6) << b;
+    total += got[b].singles;
+  }
+  EXPECT_GT(total, n / 4) << "the synthetic source should give photopeak singles";
 }

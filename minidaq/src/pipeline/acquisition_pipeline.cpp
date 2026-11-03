@@ -178,6 +178,8 @@ void AcquisitionPipeline::run_decode() {
   StageStats& s = stats_of(StageId::decode);
   LatencyHistogram& lat = latency_of(StageId::decode);
   packed::StreamDecoder decoder{ScannerGeometry::num_crystals};
+  const CalibrationTable* calibration =
+      cfg_.calibration != nullptr && !cfg_.calibration->is_identity() ? cfg_.calibration.get() : nullptr;
   Backoff idle{cfg_.backoff};
   for (;;) {
     Batch<std::uint64_t>* in = words_.receive();
@@ -196,6 +198,10 @@ void AcquisitionPipeline::run_decode() {
     Batch<Single>* out = acquire_blocking(decoded_, s);
     const std::int64_t t0 = monotonic_ns();  // service time excludes waiting
     out->size = decoder.decode(in->view(), out->items);
+    if (calibration != nullptr) {
+      calibration->apply(out->view());  // energies and times per crystal (SRS-CAL-002, 003)
+    }
+    photopeak_.record(out->view());
     out->origin_ns = in->origin_ns;
     lat.record(monotonic_ns() - t0);
     StageStats::add(s.items_in, in->size);
@@ -210,12 +216,65 @@ void AcquisitionPipeline::run_decode() {
 }
 // [/snippet:decode]
 
+// [snippet:sort]
+// Orders each batch by time. Without a time calibration the stream is ordered batch by batch, as
+// it always was. With one, the correction moves each single by -offset, between -max and -min of
+// the table's offsets: a single that arrives later can come out up to time_spread_ps() earlier
+// than one already seen. The stage therefore holds back the singles that are within that spread
+// of the newest one it has, and sends them with the next batch (SRS-CAL-003). Every single seen
+// has a corrected time at most (newest reported time - min); every later one at least (newest
+// reported time - max); so a single more than the spread older than the newest corrected time
+// can no longer be preceded.
 void AcquisitionPipeline::run_sort() {
   enter_stage(StageId::sort);
   StageStats& s = stats_of(StageId::sort);
   LatencyHistogram& lat = latency_of(StageId::sort);
   Backoff idle{cfg_.backoff};
   Picoseconds last_emitted{std::numeric_limits<std::int64_t>::min()};
+  const std::int64_t hold_ps =
+      cfg_.calibration != nullptr && !cfg_.calibration->is_identity() ? cfg_.calibration->time_spread_ps() : 0;
+  // Held singles plus one batch; allocated once, before the stage counts as started.
+  std::vector<Single> held;
+  held.reserve(hold_ps > 0 ? 2 * cfg_.batch_size : 0);
+  const auto count_late = [&](std::span<const Single> v) {
+    if (!v.empty()) {
+      // Singles older than what we already emitted cannot be fixed here.
+      const auto late = static_cast<std::uint64_t>(
+          std::count_if(v.begin(), v.end(), [&](const Single& x) { return x.time < last_emitted; }));
+      late_singles_.fetch_add(late, std::memory_order_relaxed);
+      last_emitted = std::max(last_emitted, v.back().time);
+    }
+  };
+  // Sends the oldest held singles that may go (all of them at the end), at most one batch.
+  const auto send_held = [&](bool all, std::int64_t origin_ns) {
+    if (held.empty()) {
+      return;
+    }
+    const Picoseconds cutoff{held.back().time.count() - hold_ps};
+    auto end = all ? held.end()
+                   : std::lower_bound(held.begin(), held.end(), cutoff,
+                                      [](const Single& x, Picoseconds t) { return x.time < t; });
+    // Never hold more than a batch: beyond that, the oldest go even if a later single could
+    // still precede them (the late counter would then say so).
+    if (static_cast<std::size_t>(held.end() - end) > cfg_.batch_size) {
+      end = held.end() - static_cast<std::ptrdiff_t>(cfg_.batch_size);
+    }
+    auto from = held.begin();
+    while (from != end) {
+      Batch<Single>* out = acquire_blocking(sorted_, s);
+      const auto n = std::min(static_cast<std::size_t>(end - from), out->items.size());
+      std::copy_n(from, n, out->items.begin());
+      out->size = n;
+      out->origin_ns = origin_ns;
+      count_late(out->view());
+      StageStats::add(s.items_out, n);
+      StageStats::add(s.batches, 1);
+      sorted_.publish(out);
+      from += static_cast<std::ptrdiff_t>(n);
+    }
+    held.erase(held.begin(), end);
+  };
+  std::int64_t last_origin_ns = 0;
   for (;;) {
     Batch<Single>* in = decoded_.receive();
     if (in == nullptr && decoded_.closed()) {
@@ -230,19 +289,26 @@ void AcquisitionPipeline::run_sort() {
       continue;
     }
     idle.reset();
+    if (hold_ps > 0) {
+      const std::int64_t t0 = monotonic_ns();
+      const auto mid = static_cast<std::ptrdiff_t>(held.size());
+      held.insert(held.end(), in->items.begin(), in->items.begin() + static_cast<std::ptrdiff_t>(in->size));
+      std::sort(held.begin() + mid, held.end(), TimeOrder{});
+      std::inplace_merge(held.begin(), held.begin() + mid, held.end(), TimeOrder{});
+      last_origin_ns = in->origin_ns;
+      StageStats::add(s.items_in, in->size);
+      decoded_.release(in);
+      send_held(false, last_origin_ns);
+      lat.record(monotonic_ns() - t0);
+      continue;
+    }
     Batch<Single>* out = acquire_blocking(sorted_, s);
     const std::int64_t t0 = monotonic_ns();
     std::copy_n(in->items.begin(), in->size, out->items.begin());
     out->size = in->size;
     auto v = out->view();
     std::sort(v.begin(), v.end(), TimeOrder{});  // a function object, so the comparison inlines
-    if (!v.empty()) {
-      // Singles older than what we already emitted cannot be fixed here.
-      const auto late = static_cast<std::uint64_t>(std::count_if(
-          v.begin(), v.end(), [&](const Single& x) { return x.time < last_emitted; }));
-      late_singles_.fetch_add(late, std::memory_order_relaxed);
-      last_emitted = std::max(last_emitted, v.back().time);
-    }
+    count_late(v);
     out->origin_ns = in->origin_ns;
     lat.record(monotonic_ns() - t0);
     StageStats::add(s.items_in, in->size);
@@ -251,9 +317,11 @@ void AcquisitionPipeline::run_sort() {
     decoded_.release(in);
     sorted_.publish(out);
   }
+  send_held(true, last_origin_ns);
   sorted_.close();
   finished_stages_.fetch_add(1);
 }
+// [/snippet:sort]
 
 namespace {
 

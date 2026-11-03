@@ -34,6 +34,7 @@
 #include "minidaq/pipeline/channel.hpp"
 #include "minidaq/metrics/latency_histogram.hpp"
 #include "minidaq/pipeline/stage_stats.hpp"
+#include "minidaq/processing/calibration.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
 #include "minidaq/rt/realtime.hpp"
 
@@ -58,6 +59,9 @@ struct PipelineConfig {
   // when the source got around to reading it; without it, a stalled source
   // hides its own backlog (coordinated omission, Chapter 4). Source thread only.
   std::function<std::int64_t(std::uint64_t index)> due_time_ns;
+  // The per-crystal corrections that the decode stage applies (Chapter 26); none: the boards'
+  // energies and times are used as they come, which is the identity table.
+  std::shared_ptr<const CalibrationTable> calibration;
 };
 
 // [snippet:order]
@@ -122,6 +126,8 @@ class AcquisitionPipeline {
   }
   // Time from a batch entering the PC (source) to its coincidences being written, in ns.
   [[nodiscard]] const LatencyHistogram& end_to_end_latency() const noexcept { return *end_to_end_; }
+  // The photopeak position of each detector block, from the calibrated singles (Chapter 26).
+  [[nodiscard]] const PhotopeakMonitor& photopeak() const noexcept { return photopeak_; }
   // Valid after start() returns.
   [[nodiscard]] const std::array<rt::StageRtStatus, num_stages>& rt_status() const noexcept { return rt_status_; }
   [[nodiscard]] bool memory_locked() const noexcept { return memory_locked_; }
@@ -149,6 +155,7 @@ class AcquisitionPipeline {
   std::array<StageStats, num_stages> stats_{};
   alignas(cache_line_size) std::atomic<std::uint64_t> late_singles_{0};
   std::unique_ptr<CoincidenceSorter> sorter_;  // used by the pair thread only
+  PhotopeakMonitor photopeak_;                 // written by the decode thread only
   static constexpr std::size_t sorter_fields = 11;
   alignas(cache_line_size) std::array<std::atomic<std::uint64_t>, sorter_fields> sorter_stats_{};
   std::atomic<std::size_t> finished_stages_{0};
