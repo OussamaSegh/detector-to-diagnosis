@@ -76,9 +76,9 @@ Expected<HardwareConfig, ConfigErrors> parse_hardware_config(std::string_view js
   int minor = 0;
   if (doc.is_object() && !doc.contains("schema_version")) {
     errors.push_back({"/schema_version", "is required"});
-  } else if (!version.empty() &&
+  } else if (doc.is_object() && doc["schema_version"].is_string() &&
              (!detail::parse_version(version, major, minor) || major != hardware_supported_major ||
-              minor > hardware_supported_minor)) {
+              minor > hardware_supported_minor)) {  // "" too (MDQ-PR-042)
     errors.push_back({"/schema_version",
                       "must be \"1.0\" or \"1.1\" (this program reads hardware descriptions "
                       "1.0 and 1.1)"});

@@ -176,6 +176,30 @@ TEST(UpdateManifest, EveryFieldIsRequiredAndTheArchiveIsAPlainName) {
   m = good;
   m["format"] = "minidaq-update 2";
   EXPECT_FALSE(parse_manifest(m.dump()).has_value());
+  // The release coverage review of 0.5.0 found these refusals untested.
+  EXPECT_FALSE(parse_manifest("[1, 2]").has_value()) << "not an object";
+  EXPECT_FALSE(parse_manifest("{").has_value()) << "not JSON";
+  m = good;
+  m["product"] = 7;
+  EXPECT_FALSE(parse_manifest(m.dump()).has_value()) << "a number where a string belongs";
+  m = good;
+  m["size"] = -1;
+  EXPECT_FALSE(parse_manifest(m.dump()).has_value()) << "a negative size";
+  m = good;
+  m["size"] = "10";
+  EXPECT_FALSE(parse_manifest(m.dump()).has_value()) << "a size as a string";
+  m = good;
+  m["version"] = "0.5";
+  EXPECT_FALSE(parse_manifest(m.dump()).has_value()) << "not MAJOR.MINOR.PATCH";
+  m = good;
+  m["archive"] = "";
+  EXPECT_FALSE(parse_manifest(m.dump()).has_value()) << "an empty archive name";
+  for (const std::string& digest : std::vector<std::string>{
+           std::string(63, 'a'), std::string(65, 'a'), std::string(63, 'a') + "g"}) {
+    m = good;
+    m["sha256"] = digest;
+    EXPECT_FALSE(parse_manifest(m.dump()).has_value()) << digest;
+  }
 }
 
 TEST_F(Update, OnlyASignatureByATrustedEd25519KeyIsAccepted) {
@@ -205,6 +229,14 @@ TEST_F(Update, OnlyASignatureByATrustedEd25519KeyIsAccepted) {
   write_public(ed448, keys() / "z-ed448.pem");
   EXPECT_FALSE(verify_signature(message, sign(ed448, message), keys()).has_value());
   EXPECT_FALSE(verify_signature(message, sign(key_, message), dir_ / "no-keys").has_value());
+
+  // A key directory that exists but holds no key, and a .pem file that is not a key, or is a
+  // directory: neither vouches for anything (coverage review of 0.5.0).
+  fs::create_directories(dir_ / "empty-keys" / "dir.pem");
+  write(dir_ / "empty-keys" / "notes.txt", "not a key");
+  EXPECT_FALSE(verify_signature(message, sign(key_, message), dir_ / "empty-keys").has_value());
+  write(dir_ / "empty-keys" / "garbage.pem", "-----BEGIN PUBLIC KEY-----\nnot base64\n");
+  EXPECT_FALSE(verify_signature(message, sign(key_, message), dir_ / "empty-keys").has_value());
 }
 
 TEST_F(Update, InstallsATrialThatIsConfirmedOrRolledBack) {
@@ -375,6 +407,96 @@ TEST_F(Update, APowerCutAfterAnyStepLeavesAVersionThatRuns) {
   }
 }
 // [/snippet:crash-test]
+
+TEST_F(Update, RefusesABundleForAnotherProductOrWithoutItsArchive) {
+  // REQ: SRS-PLT-003, SRS-PLT-004
+  auto store = SlotStore::open(root());
+  ASSERT_TRUE(store.has_value());
+  auto b = bundle("0.5.0");
+  auto m = nlohmann::json::parse(read(b / "update.json"));
+  m["product"] = "otherdaq";
+  write(b / "update.json", m.dump(2));
+  write(b / "update.json.sig", sign(key_, read(b / "update.json")));
+  auto r = store->install(b, options());
+  ASSERT_FALSE(r.has_value());
+  EXPECT_NE(r.error().find("not minidaq"), std::string::npos) << r.error();
+
+  b = bundle("0.5.0");
+  fs::remove(b / "minidaq-0.5.0.tar.gz");
+  r = store->install(b, options());
+  ASSERT_FALSE(r.has_value());
+  EXPECT_NE(r.error().find("not the archive the manifest describes"), std::string::npos)
+      << r.error();
+  EXPECT_FALSE(store->state().has_value()) << "nothing was installed";
+}
+
+TEST(UpdateTree, AManifestNamesEachFileOnceAndInsideTheTree) {
+  // REQ: SRS-PLT-004
+  const fs::path dir = fs::temp_directory_path() / ("minidaq-tree-" + std::to_string(::getpid()));
+  fs::remove_all(dir);
+  write(dir / "bin" / "a", "a");
+  const std::string digest = digest_file(dir / "bin" / "a")->sha256;
+  const auto with = [&](const std::string& manifest) {
+    write(dir / "MANIFEST.sha256", manifest);
+    return verify_tree(dir);
+  };
+  EXPECT_FALSE(verify_tree(dir).has_value()) << "no MANIFEST.sha256";
+  EXPECT_EQ(with(digest + "  bin/a\n").value_or(0), 1U);
+  EXPECT_EQ(with(digest + " *bin/a\n").value_or(0), 1U) << "sha256sum's binary mode";
+  for (const std::string& bad :
+       std::vector<std::string>{digest + " bin/a", digest + "\tbin/a", digest + "  ",
+                                digest + " -bin/a", "short  bin/a"}) {
+    const auto r = with(bad + "\n");
+    ASSERT_FALSE(r.has_value()) << bad;
+    EXPECT_NE(r.error().find("not \"DIGEST  PATH\""), std::string::npos) << r.error();
+  }
+  for (const std::string& path : std::vector<std::string>{"/bin/a", "../bin/a", "bin/../../a", ".",
+                                                          "./", "MANIFEST.sha256"}) {
+    const auto r = with(digest + "  " + path + "\n");
+    ASSERT_FALSE(r.has_value()) << path;
+    EXPECT_NE(r.error().find("bad or repeated path"), std::string::npos) << r.error();
+  }
+  const auto twice = with(digest + "  bin/a\n" + digest + "  ./bin/a\n");
+  ASSERT_FALSE(twice.has_value());
+  EXPECT_NE(twice.error().find("bad or repeated path"), std::string::npos) << twice.error();
+  fs::remove_all(dir);
+}
+
+TEST_F(Update, OpenRefusesAStoreItCannotTrust) {
+  // REQ: SRS-PLT-007
+  // Each case is something no step of minidaq_update leaves behind: a person changed the store,
+  // or the disk did. open() refuses and names it rather than guess which version should run.
+  const auto refused = [&](const std::string& why) {
+    const auto s = SlotStore::open(root());
+    ASSERT_FALSE(s.has_value()) << why;
+    EXPECT_NE(s.error().find(why), std::string::npos) << s.error();
+  };
+  {
+    auto store = SlotStore::open(root());
+    ASSERT_TRUE(store.has_value());
+    EXPECT_EQ(store->confirm().value(), Outcome::nothing_to_do) << "an empty store";
+    EXPECT_EQ(store->rollback().value(), Outcome::nothing_to_do) << "an empty store";
+    ASSERT_TRUE(store->install(bundle("0.5.0"), options()).has_value());
+  }
+  const std::string state = read(root() / "state.json");
+  for (const char* damaged : {"not json", "[]", R"({"trial": null})",
+                              R"({"good": 1, "trial": null})", R"({"good": "a"})"}) {
+    write(root() / "state.json", damaged);
+    refused("state.json is damaged");
+  }
+  write(root() / "state.json", state);
+
+  fs::remove(root() / "current");
+  fs::create_directory_symlink("/etc", root() / "current");
+  refused("not to a slot");
+
+  fs::remove(root() / "current");
+  fs::create_directory_symlink("slots/b", root() / "current");  // good is a, no trial
+  refused("neither the good version nor a trial");
+
+  fs::remove(root() / "state.json");
+  refused("without state.json");
+}
 
 TEST_F(Update, OneProcessAtATime) {
   // REQ: SRS-PLT-011

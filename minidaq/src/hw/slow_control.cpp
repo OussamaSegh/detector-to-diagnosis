@@ -188,10 +188,16 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     latch(b, HwFaultCause::board_overtemp, "the board switched its bias off for overtemperature");
     return;
   }
-  if (feb::ErrorFlags::Overcurrent::get(errors) != 0 || s.current_ua > settings_.max_current_ua) {
+  if (s.current_ua > settings_.max_current_ua) {
     latch(b, HwFaultCause::overcurrent,
           "bias current " + fixed(s.current_ua, 0) + " uA is above the limit " +
               fixed(settings_.max_current_ua, 0) + " uA");
+    return;
+  }
+  if (feb::ErrorFlags::Overcurrent::get(errors) != 0) {  // its own sensor, faster than ours
+    latch(b, HwFaultCause::overcurrent,
+          "the board switched its bias off for overcurrent (" + fixed(s.current_ua, 0) +
+              " uA measured, limit " + fixed(settings_.max_current_ua, 0) + " uA)");
     return;
   }
   if (feb::Status::BiasFault::get(status) != 0) {

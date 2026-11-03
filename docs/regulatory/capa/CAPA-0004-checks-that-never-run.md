@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (release checks for 0.3.0) |
-| Source | MDQ-PR-014; at the effectiveness check, MDQ-PR-023, MDQ-PR-029, MDQ-PR-030 and MDQ-PR-032 |
+| Source | MDQ-PR-014; at the effectiveness check, MDQ-PR-023, MDQ-PR-029, MDQ-PR-030 and MDQ-PR-032; at 0.5.0, MDQ-PR-041 |
 | Owner | software lead |
 | Effectiveness check | release 0.4.0: not effective; again at release 0.5.0 |
 

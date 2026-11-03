@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 8 (MiniDAQ 0.4.0-dev, Chapter 21). Status: draft for review.
+Version 9 (MiniDAQ 0.5.0). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -142,7 +142,10 @@ The checks of a release run in order on one clean commit with `tools/release_che
 which writes one file per check into `OUT` and exits with a failure when any check fails or
 cannot run. Those files, copied to `measurements/release-X.Y.Z/`, are the evidence that the
 release record cites (section 8). A check that is wired only into a workflow is not evidence until
-the run that produced it is cited.
+the run that produced it is cited. When the machine cannot hold the whole run, the script runs in four
+parts (`tools/release_checks.sh OUT 600 1` to `4`), in order, on the same commit and into the
+same `OUT`; each part refuses another commit, and the record cites each part's summary line
+(MDQ-PR-041).
 
 Unit acceptance criteria: a unit (a class or a function with its header) is accepted when its
 tests pass under every preset, it has no static analysis finding, its interface is documented
@@ -224,3 +227,4 @@ of Chapter 13.
 | 6 | Chapter 19: system tests of the shipped programs in every change's `ctest`, under the new system test plan; the system test report and the soak as checks of each release. |
 | 7 | Chapter 20: the tool list and its checks replace the tool row of section 4; tool versions, the reproducible build, the gate self-test and the performance A/B comparison as checks of the pipeline; the release package and its evidence archive in sections 6 and 8. |
 | 8 | Chapter 21: the code review checklist in section 5; root cause analysis of problem reports and the diagnostic evidence in section 7. |
+| 9 | Release 0.5.0: the release checks run in four parts when the machine cannot hold the whole run (MDQ-PR-041). |

@@ -35,7 +35,7 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
   top.get("schema_version", version);
   if (doc.is_object() && !doc.contains("schema_version")) {
     errors.push_back({"/schema_version", "is required"});
-  } else if (!version.empty()) {
+  } else if (doc.is_object() && doc["schema_version"].is_string()) {  // "" too (MDQ-PR-042)
     if (!parse_version(version, c.schema_major, c.schema_minor)) {
       errors.push_back({"/schema_version", "must look like \"1.0\""});
     } else if (c.schema_major != supported_major) {

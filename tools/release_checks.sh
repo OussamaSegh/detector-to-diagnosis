@@ -7,9 +7,12 @@
 #
 #   tools/release_checks.sh OUT [FUZZ_SECONDS] [PART]
 #
-# PART is all (the default), 1 (the builds and tests up to the benchmarks) or 2 (the gate, the
-# system tests, the soak and the fuzzing). The two parts take about 50 and 90 minutes; run them
-# on the same commit into the same OUT when one session cannot hold the whole run.
+# PART is all (the default) or one of four parts, each under 45 minutes on the reference machine:
+# 1 the six presets, static analysis and the starters; 2 the stress run, the wide property
+# search, coverage and the benchmarks; 3 the regression gate, the system tests and the soak; 4
+# the fuzzing. Run the parts in order, on the same commit and into the same OUT, when one session
+# cannot hold the whole run (MDQ-PR-041: a machine that restarts within the hour). Parts 2 to 4
+# use the builds that part 1 made.
 #
 # The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails), and
 # 3 if the run stopped before the last check (MDQ-PR-029).
@@ -17,7 +20,7 @@ set -uo pipefail
 out=${1:?usage: tools/release_checks.sh OUT [FUZZ_SECONDS]}
 fuzz_seconds=${2:-600}
 part=${3:-all}
-case "$part" in all | 1 | 2) ;; *) echo "PART is all, 1 or 2" >&2; exit 2 ;; esac
+case "$part" in all | 1 | 2 | 3 | 4) ;; *) echo "PART is all, 1, 2, 3 or 4" >&2; exit 2 ;; esac
 root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$root"
 mkdir -p "$out/fuzz"
@@ -35,6 +38,7 @@ on_exit() {
 }
 trap on_exit EXIT
 failed=()
+in_part() { [ "$part" = all ] || [ "$part" = "$1" ]; }
 stamp() { echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) $*"; }
 check() {  # name status
   if [ "$2" -eq 0 ]; then echo "pass  $1"; else echo "FAIL  $1"; failed+=("$1"); fi
@@ -50,18 +54,18 @@ summary() {
 }
 
 commit_file=$out/commit.txt
-[ "$part" = 2 ] && commit_file=$out/commit-part-2.txt
+case "$part" in 2 | 3 | 4) commit_file=$out/commit-part-$part.txt ;; esac
 { echo "commit $(git rev-parse HEAD)"; git status --porcelain; } > "$commit_file"
 if [ -n "$(git status --porcelain)" ]; then
   echo "the working tree is not clean; the release checks need one commit" >&2
   exit 2
 fi
-if [ "$part" = 2 ] && ! cmp -s "$out/commit.txt" "$commit_file"; then
-  echo "part 2 must run on the commit of part 1 ($out/commit.txt)" >&2
+if [ "$commit_file" != "$out/commit.txt" ] && ! cmp -s "$out/commit.txt" "$commit_file"; then
+  echo "part $part must run on the commit of part 1 ($out/commit.txt)" >&2
   exit 2
 fi
 
-if [ "$part" != 2 ]; then
+if in_part 1; then
 { stamp "ci/run_all.sh (all six presets)"; ci/run_all.sh; } > "$out/run_all.txt" 2>&1
 check "build and tests, six presets" $?
 
@@ -85,7 +89,10 @@ grep -vE "\((Skipped|Not Run|Timeout)\)$" "$out/starters.txt" |
 comm -23 "$work/starters" "$work/failing" | sed 's/^/passes every test: /' >> "$out/starters.txt"
 [ -s "$work/starters" ] && ! grep -qE "\(Timeout\)$|^passes every test" "$out/starters.txt"
 check "starters fail" $?
+fi
+[ "$part" = 1 ] && summary
 
+if in_part 2; then
 tools/stress_tests.sh build/tsan 100 "$out/stress-tsan.txt"
 check "stress run, tsan, 100 repetitions" $?
 
@@ -127,7 +134,9 @@ mkdir -p /var/tmp/minidaq-bench
   exit $status ) > "$out/perf-writer.txt"
 check "writer benchmark ran" $?
 fi
-[ "$part" = 1 ] && summary
+[ "$part" = 2 ] && summary
+
+if in_part 3; then
 
 # The regression gate. It used to run only in perf.yml, on a runner that did not exist
 # (MDQ-PR-014); here it runs on the reference machine, and a failure fails the release checks.
@@ -143,6 +152,10 @@ python3 tools/test_report.py build/release "$out/system-test-report.md" > "$out/
 check "system test report" $?
 python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes 30 > "$out/soak.txt" 2>&1
 check "soak, 30 minutes at 1 M singles/s" $?
+fi
+[ "$part" = 3 ] && summary
+
+if in_part 4; then
 
 cmake --preset fuzz >/dev/null &&
   cmake --build --preset fuzz -j"$(nproc)" > "$out/fuzz/build.txt" 2>&1
@@ -176,6 +189,7 @@ for t in "${targets[@]}"; do
   grep -q "^crash files: 0$" "$out/fuzz/$t.txt" && grep -q "DONE" "$out/fuzz/$t.txt"
   check "fuzz_$t, $fuzz_seconds s" $?
 done
+fi
 
 echo "The pipeline and writer results are read against SRS-PERF-020 and SRS-PERF-021 by hand."
 summary

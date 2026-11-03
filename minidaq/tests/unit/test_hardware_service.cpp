@@ -183,6 +183,42 @@ TEST(HardwareConfig, ReportsEveryProblemWithItsLocation) {
   EXPECT_FALSE(config::parse_hardware_config("not json"));
 }
 
+TEST(HardwareConfig, RefusesEachFieldOutsideItsRangeOnItsOwn) {
+  // REQ: SRS-HW-010
+  // Each refusal alone, which the tests above only showed together with others (release
+  // coverage review of 0.5.0).
+  const auto refused = [](const std::string& doc, const std::string& where) {
+    auto e = config::parse_hardware_config(doc);
+    ASSERT_FALSE(e) << doc;
+    EXPECT_NE(config::format_errors(e.error()).find(where), std::string::npos)
+        << doc << "\n"
+        << config::format_errors(e.error());
+  };
+  for (const char* bad : {"1.256.0", "1.0.65536"}) {
+    refused(std::string{R"({"schema_version": "1.1", "boards": [{"firmware": ")"} + bad + "\"}]}",
+            "/boards/0/firmware");
+  }
+  for (const char* version : {"", "1", "x.0", "2.0", "1.2", "-1.0"}) {
+    refused(std::string{R"({"schema_version": ")"} + version + R"(", "boards": [{}]})",
+            "/schema_version");
+  }
+  refused("[]", "");
+  refused(R"({"schema_version": "1.0", "boards": {}})", "/boards");
+  refused(R"({"schema_version": "1.0", "boards": []})", "/boards");
+  nlohmann::json many{{"schema_version", "1.0"}, {"boards", nlohmann::json::array()}};
+  for (std::size_t i = 0; i <= config::max_boards; ++i) {
+    many["boards"].push_back({{"slot", i}});
+  }
+  refused(many.dump(), "/boards");
+  refused(R"({"schema_version": "1.0", "backend": "mmio", "boards": [3]})", "/boards/0");
+  refused(R"({"schema_version": "1.0", "boards": [{}],
+              "temperature": {"min_c": 35.0, "warning_c": 35.0, "alarm_c": 40.0}})",
+          "/temperature");
+  refused(R"({"schema_version": "1.0", "boards": [{}],
+              "temperature": {"warning_c": 40.0, "alarm_c": 40.0}})",
+          "/temperature");
+}
+
 TEST(HardwareService, DoesNotStartARunWhileABoardIsNotReady) {
   // REQ: SRS-HW-006
   const TemperatureFile file;

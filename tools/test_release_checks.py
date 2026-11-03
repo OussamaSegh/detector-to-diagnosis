@@ -63,14 +63,31 @@ class ReleaseChecks(unittest.TestCase):
         self.assertEqual(run_bash("finished=yes\nexit 1\n").returncode, 1)
 
     def test_an_unknown_part_is_refused_before_anything_runs(self):
-        p = subprocess.run(["bash", str(SCRIPT), "/nonexistent/out", "600", "3"], capture_output=True, text=True)
+        p = subprocess.run(["bash", str(SCRIPT), "/nonexistent/out", "600", "5"], capture_output=True, text=True)
         self.assertEqual(p.returncode, 2)
-        self.assertIn("PART is all, 1 or 2", p.stderr)
+        self.assertIn("PART is all, 1, 2, 3 or 4", p.stderr)
 
     def test_a_part_ends_with_its_summary(self):
         text = SCRIPT.read_text()
-        self.assertIn('[ "$part" = 1 ] && summary', text)
+        for n in (1, 2, 3):
+            self.assertIn(f'[ "$part" = {n} ] && summary', text)
         self.assertTrue(text.rstrip().endswith("summary"))
+
+    def test_each_part_runs_only_its_own_checks(self):
+        # Every check is inside one part's block, so a part never runs another's checks
+        # (MDQ-PR-041). The blocks open in order, 1 to 4, and each closes before the next.
+        lines = SCRIPT.read_text().splitlines()
+        opened = [n for n, x in enumerate(lines) if re.fullmatch(r"if in_part [1-4]; then", x)]
+        self.assertEqual([lines[n][-7] for n in opened], ["1", "2", "3", "4"])
+        depth = 0
+        for n, x in enumerate(lines):
+            if re.fullmatch(r"if in_part [1-4]; then", x):
+                self.assertEqual(depth, 0, f"line {n + 1}: a part inside a part")
+                depth = 1
+            elif x == "fi" and depth:
+                depth = 0
+            elif x.startswith("check ") and opened[0] < n:
+                self.assertEqual(depth, 1, f"line {n + 1}: a check outside every part")
 
     def test_a_dirty_tree_keeps_its_own_status(self):
         self.assertEqual(run_bash("exit 2\n").returncode, 2)

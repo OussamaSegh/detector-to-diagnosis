@@ -548,6 +548,87 @@
         "category": "process",
         "escape": "The speed test passed on an idle machine and is skipped in CI's unoptimized and sanitized builds; only the release checks run it in a Release build beside other tests."
       }
+    },
+    {
+      "id": "MDQ-PR-041",
+      "title": "The release checks could not finish: the machine restarted within the hour, and parts 1 and 2 took 55 and 70 minutes",
+      "found": "2026-11-03, release checks of 0.5.0 on 0c5c2e8: part 2 stopped twice during the fuzzing, each time when the container restarted, about 50 minutes after it began",
+      "item": "release",
+      "status": "closed",
+      "capa": "CAPA-0004",
+      "description": "The reference machine of the book restarted about every 54 minutes from 2026-11-02 on. Part 1 of tools/release_checks.sh had once been cut the same way (2026-10-27). Both cut runs ended without a summary line and the end-of-run guard of MDQ-PR-029 reported them as failed (status 3 or the FAIL line), so nothing was taken for evidence: the guard worked. But no complete run could be made, and the gate, system tests and soak of the cut runs, which had passed, are not evidence either.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The release was held; no check was skipped or reported as passed."
+      },
+      "resolution": {
+        "change": "tools/release_checks.sh runs in four parts, each under 45 minutes, on the same commit into the same OUT; each part checks that it runs on the commit of part 1, and the test tools.release_checks checks that every check lies in exactly one part. SDP version 9, section 6.",
+        "verification": "tools.release_checks passes; the release checks of 0.5.0 ran as four parts on one commit, each ending with its summary line."
+      },
+      "root_cause": {
+        "whys": [
+          "Part 2 did not reach its end.",
+          "The machine restarted before it did, and a part took longer than the time between restarts.",
+          "The split into two parts was made for the session's limit of two hours, the only limit known then."
+        ],
+        "cause": "The release checks assumed a machine that stays up for the length of a part, which the environment no longer gave.",
+        "category": "process",
+        "escape": "The restarts began after release 0.4.0; no earlier run was long enough to meet one."
+      }
+    },
+    {
+      "id": "MDQ-PR-042",
+      "title": "An empty schema_version was accepted in the acquisition configuration and the hardware description",
+      "found": "2026-11-03, release coverage review of 0.5.0: the branch for an empty version was never taken; the new test HardwareConfig.RefusesEachFieldOutsideItsRangeOnItsOwn showed that {\"schema_version\": \"\"} parses",
+      "item": "config",
+      "status": "closed",
+      "capa": null,
+      "description": "Both readers checked the version only when it was not empty, so that a version of the wrong type, already reported by the reader, would not be reported twice. An empty string then passed as no version at all: the file was read as the current format, which SRS-CFG-002 and SRS-HW-010 forbid. A missing key was refused as required.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An empty version is read as the current format, which is what a file without the field would mean if it were allowed; the content of the file is still checked key by key, and an unknown key is still an error."
+      },
+      "resolution": {
+        "change": "Both readers check every string version, the empty one included; Config.SchemaVersionRules and HardwareConfig.RefusesEachFieldOutsideItsRangeOnItsOwn test it.",
+        "verification": "The two tests fail without the change and pass with it; all presets in the release checks of 0.5.0."
+      },
+      "root_cause": {
+        "whys": [
+          "An empty version raised no error.",
+          "The check ran only for a non-empty value, a guard against a second error for a value of the wrong type.",
+          "The guard tested the value instead of its type."
+        ],
+        "cause": "A condition that stood in for another (empty for not a string), copied from the acquisition reader of Chapter 6 into the hardware reader of Chapter 22.",
+        "category": "code",
+        "escape": "No test gave an empty version; the coverage reviews of 0.3.0 and 0.4.0 did not list the line, which had not changed."
+      }
+    },
+    {
+      "id": "MDQ-PR-043",
+      "title": "A board's own overcurrent trip was reported as a measured current above the limit",
+      "found": "2026-11-03, release coverage review of 0.5.0: the board's overcurrent flag was never set in a test",
+      "item": "hw",
+      "status": "closed",
+      "capa": null,
+      "description": "The slow control latches an overcurrent fault when the board flags one or when the current it reads is above max_current_ua. Both gave the text \"bias current X uA is above the limit Y uA\", which is false when only the board's faster sensor tripped and the reading is below the limit. The fault itself, the bias switched off and the cause code were right.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The protective action was correct; only the explanation to the operator was wrong, which could send a service engineer to the wrong place."
+      },
+      "resolution": {
+        "change": "A trip by the board has its own text, \"the board switched its bias off for overcurrent\", with the measured current and the limit; SlowControl.LatchesTheBoardsOwnOvertemperatureAndOvercurrentFindings tests both flags of the board and the board's overtemperature status.",
+        "verification": "The test passes; the release checks of 0.5.0 on the fixed commit."
+      },
+      "root_cause": {
+        "whys": [
+          "The text described the reading, not the board's flag.",
+          "One branch handled two causes with one message.",
+          "No test set the flag alone, so the text was never read in that case."
+        ],
+        "cause": "Two conditions joined in one branch with a message true for only one of them.",
+        "category": "code",
+        "escape": "The tests made the current too high, which sets both conditions at once."
+      }
     }
   ]
 }

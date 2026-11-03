@@ -72,6 +72,30 @@ class DeadMonitor final : public RegisterBus {
   RegisterBus& inner_;
 };
 
+// A board that reports extra bits in its status and error flags: its own protection found
+// something that the slow control's own readings do not show.
+class Raised final : public RegisterBus {
+ public:
+  Raised(RegisterBus& inner, std::uint32_t status, std::uint32_t errors)
+      : inner_{inner}, status_{status}, errors_{errors} {}
+  Expected<std::uint32_t, HwError> read32(std::uint32_t a) override {
+    auto v = inner_.read32(a);
+    if (v && a == feb::Status::address) {
+      return *v | status_;
+    }
+    if (v && a == feb::ErrorFlags::address) {
+      return *v | errors_;
+    }
+    return v;
+  }
+  HwStatus write32(std::uint32_t a, std::uint32_t v) override { return inner_.write32(a, v); }
+
+ private:
+  RegisterBus& inner_;
+  std::uint32_t status_;
+  std::uint32_t errors_;
+};
+
 }  // namespace
 
 TEST(SlowControl, KeepsTheOvervoltageConstantAsTheTemperatureMoves) {
@@ -215,6 +239,35 @@ TEST(SlowControl, LatchesAFaultForEachWayABoardFails) {
     sc.step(42'800 * ms);
     EXPECT_EQ(sc.snapshot().at(0).fault,
               "the bias did not reach the setpoint in time: 0.000 V measured, 40.700 V set");
+  }
+}
+
+TEST(SlowControl, LatchesTheBoardsOwnOvertemperatureAndOvercurrentFindings) {
+  // REQ: SRS-HW-004
+  // The board's protection acts on its own sensors; the slow control latches a fault whenever
+  // the board says so, even at a temperature and a current that it finds normal itself. Found
+  // untested by the release coverage review of 0.5.0.
+  struct Case {
+    std::uint32_t status;
+    std::uint32_t errors;
+    HwFaultCause cause;
+  };
+  for (const Case c : {Case{feb::Status::Overtemp::mask, 0, HwFaultCause::board_overtemp},
+                       Case{0, feb::ErrorFlags::OvertempTrip::mask, HwFaultCause::board_overtemp},
+                       Case{0, feb::ErrorFlags::Overcurrent::mask, HwFaultCause::overcurrent}}) {
+    const std::uint64_t began = test_support::trace_clock_ns();
+    std::int64_t now = 0;
+    FakeBoard board{0, [&] { return now; }};
+    Raised raised{board, c.status, c.errors};
+    SlowControl sc{{}, {&raised}};
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).state, BoardState::fault) << static_cast<int>(c.cause);
+    EXPECT_EQ(sc.snapshot().at(0).fault.rfind("the board switched its bias off for ", 0), 0U)
+        << sc.snapshot().at(0).fault;
+    const auto events = test_support::traced_since(began, TraceCode::hw_fault);
+    ASSERT_EQ(events.size(), 1U);
+    EXPECT_EQ(events[0].b, static_cast<std::uint64_t>(c.cause));
+    EXPECT_EQ(*read_field<feb::Control::BiasEnable>(board), 0U) << "the bias is off";
   }
 }
 

@@ -70,6 +70,8 @@ TEST(Config, SchemaVersionRules) {
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0"})"), "/schema_version", "major version 2"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.4"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": ""})"), "/schema_version", "must look like"))
+      << "an empty version is not a version (MDQ-PR-042)";
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": 1.0})"), "/schema_version", "must be a string"));
 }
