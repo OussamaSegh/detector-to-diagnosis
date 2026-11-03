@@ -50,6 +50,15 @@ the patch version.
 - Chapter 28 text: the chapter "Image reconstruction: from sinogram to image with OSEM",
   Exercises 28.1 (a backprojector that is the adjoint), 28.2 (the corrections in the model) and
   28.3 (ordered subsets), and their solutions.
+- Chapter 29 code: the reconstruction's projector in C++ (CR-0015, ADR 0024). The library
+  `recon/` (`recon::JosephProjector`, weights on the fly, threads, its GoogleTest tests) and the
+  pybind11 module `recon_cpp` with checks of every array; `project.CppProjector` with the numpy
+  projector's interface; `tools/test_recon_cpp.py` runs the numpy projector's tests on it and
+  compares the two; `measurements/ch29/`. pybind11 3.1.0 as SOUP (SOUP list version 11, tool
+  TL-32); option `MINIDAQ_BUILD_RECON_PYTHON` (needs `python3-dev`). SRS-REC-004 to 006; RC-43.
+- Chapter 29 text: the chapter "C++ and Python: the projector behind a binding", Exercises 29.1
+  (a boundary that checks its arrays), 29.2 (work shared between threads) and 29.3 (is the second
+  implementation the same?), and their solutions.
 
 ### Fixed
 - The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,

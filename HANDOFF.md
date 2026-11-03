@@ -473,8 +473,27 @@ Chapter 28 (reconstruction), 2026-11-03:
   tests/projector.py). The ADR linter of Exercise 6.3 runs on docs/adr: Options must be a
   numbered list (or ### subsections). **Chapter 28 is done** (2026-11-03); tag ch28 once GitHub
   CI is green on its last commit.
-- Next: Chapter 29, the projector in C++ with pybind11 bindings (approved; add the SOUP entry),
-  the same tests on both sides; then Chapter 30 (image quality) and release 0.6.0.
+  Tagged ch28 on 86edea6 (2026-11-03).
+
+Chapter 29 (C++ and Python), 2026-11-03:
+- `recon/` (top level, outside the product): `recon::JosephProjector` (weights on the fly,
+  `walk` shared by forward and back, threads with an image per thread for back), GoogleTest in
+  `recon/tests` (also under tsan). Module `recon_cpp` (`recon/python/recon_cpp.cpp`, pybind11
+  3.1.0 pinned by commit; `c_style | forcecast`, shape checks, GIL released). Option
+  `MINIDAQ_BUILD_RECON_PYTHON` (ON except sanitizers/fuzz; FATAL_ERROR without python3-dev; CI
+  installs python3-dev). `project.CppProjector`; `tools/test_recon_cpp.py` (ctest
+  `tools.recon_cpp`, env MINIDAQ_RECON_CPP) subclasses test_recon's Projection and
+  Reconstruction (their `make` attribute). static_analysis.sh and trace_matrix.py cover recon/.
+- Findings: the first C++ version was no faster than numpy on one thread (66 vs 62 ms); removing
+  the division per step halved it (34 ms); 4 threads 14 ms; OSEM 4x8 1.17 s -> 0.18 s.
+  Agreement 4e-8 forward, 5e-9 back (numpy weights are float32).
+- Exercises 29.1 (pybind11 module `rows`; CMake `minidaq_pybind_exercise`), 29.2 (C++ threads;
+  TSan reports the starter's race), 29.3 (Python equivalence check).
+- CR-0015, ADR 0024, SRS v18 (SRS-REC-004 to 006), RC-43 under H-13, SOUP list v11, SBOM KNOWN,
+  TL-32 (pybind11), TL-31 extended, architecture v15; how-to-use lists python3-numpy and
+  python3-dev. **Chapter 29 is done** (2026-11-03); tag ch29 once GitHub CI is green.
+- Next: Chapter 30 (image quality: resolution, contrast, noise, NEMA-style), then release 0.6.0
+  and the Part VI review (message the coordinator).
 
 ### Left to do, in order
 

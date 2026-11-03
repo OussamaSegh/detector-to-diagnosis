@@ -1,0 +1,15 @@
+# Chapter 29: the first version of the C++ projector
+
+The output of measurements/ch29/projector.py for the first version of recon/src/joseph.cpp, which
+computed t = (center - s_step) / d_step and divided by pixel_mm at every step of every line. The
+current version computes the fractional pixel as f_0 + k df (projector.txt).
+
+## 2. Time of one projection (median of 7)
+
+| Projector | Forward | Back |
+|---|---:|---:|
+| numpy | 61.7 ms | 51.7 ms |
+| C++, 1 thread | 66.3 ms | 65.6 ms |
+| C++, 2 threads | 34.5 ms | 39.4 ms |
+| C++, 4 threads | 20.6 ms | 24.0 ms |
+

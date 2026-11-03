@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 10 (MiniDAQ 0.6.0-dev, start of Part VI). Status: draft for review.
+Version 11 (MiniDAQ 0.6.0-dev, Chapter 29). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -75,6 +75,7 @@ defect in MiniDAQ, so they are pinned and reviewed too, with lighter records.
 |---|---|---|---|
 | GoogleTest | 1.15.2, git commit `b514bdc898e2951020cbdca1304b75f5950d1f59` | BSD-3-Clause | Unit and exercise tests |
 | Google Benchmark | 1.9.1, git commit `96afad55c79e02f5dfca1374e772c2be72ba631b` | Apache-2.0 | Micro-benchmarks and the performance gate |
+| pybind11 | 3.1.0, git commit `97bf890db679505a14dfe547a5e77bb2bd05dc90` | BSD-3-Clause | The Python module `recon_cpp` of the reconstruction tool (TL-31) and Exercise 29.1; since CR-0015 |
 | CycloneDX 1.5 JSON schemas | vendored in `tools/sbom/schemas/`, SHA-256 in its README | Apache-2.0 | SBOM validation |
 | Compilers and analyzers | GCC 13.3, Clang 18, clang-tidy 18, cppcheck 2.13, libFuzzer (Clang 18) as installed on the build machine | various | Building, checking, fuzzing |
 
@@ -266,3 +267,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 8 | Chapter 25 (CR-0011): OpenSSL's Ed25519 and incremental SHA-256 for the updater; the platform's SOUP identified by the platform definition. |
 | 9 | The known-anomaly reviews at release 0.5.0, with the OpenSSL project's advisories up to 2026-09-29. |
 | 10 | The known-anomaly review of nlohmann/json for MiniDAQ 0.6 (start of Part VI, after release 0.5.0). |
+| 11 | pybind11 3.1.0 for the reconstruction tool's C++ projector (CR-0015, Chapter 29). |

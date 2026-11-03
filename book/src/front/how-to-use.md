@@ -88,13 +88,13 @@ machine's shell. What changes on ARM is small and the book points it out where i
 Install the compilers and build tools once:
 
 ```bash
-sudo apt-get install -y build-essential cmake ninja-build git python3 \
-  clang-18 clang-tidy-18 libclang-rt-18-dev libssl-dev
+sudo apt-get install -y build-essential cmake ninja-build git python3 python3-numpy \
+  python3-dev clang-18 clang-tidy-18 libclang-rt-18-dev libssl-dev
 ```
 
 A few chapters use one more tool, and say so in their prerequisites: `linux-tools-generic` for
 `perf` (Chapter 5), `gdb` (Chapter 21), `iverilog` for the firmware listing (Chapter 24,
-optional). Everything else, such as GoogleTest and nlohmann/json, is
+optional). Everything else, such as GoogleTest, nlohmann/json and pybind11, is
 downloaded by CMake at a pinned version the first time you configure.
 
 ### Get the code and build it {.unnumbered}

@@ -35,3 +35,4 @@ src/part6/part6.md
 src/part6/ch26-calibration.md
 src/part6/ch27-corrections.md
 src/part6/ch28-reconstruction.md
+src/part6/ch29-cpp-python.md

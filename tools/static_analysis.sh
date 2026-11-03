@@ -21,7 +21,7 @@ status=0
 echo "== clang-tidy ($("$tidy_bin" --version | grep -o 'version [0-9.]*'))"
 # [snippet:tidy]
 log="$(mktemp)"
-if ! "$tidy" -clang-tidy-binary "$tidy_bin" -p "$build" -quiet -j "$jobs" "$root/minidaq/(src|apps)/" >"$log" 2>&1 \
+if ! "$tidy" -clang-tidy-binary "$tidy_bin" -p "$build" -quiet -j "$jobs" "$root/(minidaq/(src|apps)|recon/src)/" >"$log" 2>&1 \
    || grep -qE '(error|warning): ' "$log"; then
   grep -E '(error|warning): ' "$log" | sort -u || cat "$log"
   status=1
@@ -33,9 +33,9 @@ echo "== cppcheck ($(cppcheck --version))"
 cppcheck --std=c++20 --language=c++ --enable=warning,performance,portability,style \
   --inline-suppr --suppress=missingIncludeSystem \
   --suppressions-list="$root/tools/cppcheck-suppressions.txt" \
-  -I "$root/minidaq/include" -j "$jobs" --error-exitcode=1 --quiet \
+  -I "$root/minidaq/include" -I "$root/recon/include" -j "$jobs" --error-exitcode=1 --quiet \
   --template='{file}:{line}: {severity}: {message} [{id}]' \
-  "$root/minidaq/src" "$root/minidaq/apps" || status=1
+  "$root/minidaq/src" "$root/minidaq/apps" "$root/recon/src" || status=1
 
 if [[ $status -eq 0 ]]; then echo "static analysis: clean"; else echo "static analysis: findings above" >&2; fi
 exit $status

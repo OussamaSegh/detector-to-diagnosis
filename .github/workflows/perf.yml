@@ -36,7 +36,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build libssl-dev python3-numpy
+          sudo apt-get install -y ninja-build libssl-dev python3-numpy python3-dev
       - name: Choose the base commit
         id: base
         run: |

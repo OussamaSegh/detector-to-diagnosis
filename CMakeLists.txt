@@ -30,6 +30,14 @@ option(MINIDAQ_USE_SYSTEM_DEPS "Use system packages for GoogleTest/Benchmark/jso
 set(MINIDAQ_SANITIZERS "" CACHE STRING "Semicolon list of sanitizers: address;undefined | thread")
 option(MINIDAQ_BUILD_FUZZERS "Build libFuzzer targets (Clang only; instruments all code for coverage)" OFF)
 option(MINIDAQ_HARDENING "Compiler and linker hardening for shipped builds (ADR 0008)" OFF)
+# Chapter 29: the reconstruction's C++ projector as a Python module (pybind11, ADR 0024). Not
+# with sanitizers or fuzzing: the module would be loaded into an uninstrumented Python.
+if(MINIDAQ_SANITIZERS OR MINIDAQ_BUILD_FUZZERS)
+  set(_recon_python_default OFF)
+else()
+  set(_recon_python_default ON)
+endif()
+option(MINIDAQ_BUILD_RECON_PYTHON "Build the recon_cpp Python module (needs the Python headers)" ${_recon_python_default})
 option(MINIDAQ_REPRODUCIBLE "Path-independent debug information and __FILE__ for shipped builds (Chapter 20)" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -45,6 +53,7 @@ if(MINIDAQ_BUILD_TESTS)
 endif()
 
 add_subdirectory(minidaq)
+add_subdirectory(recon)
 
 if(MINIDAQ_BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)

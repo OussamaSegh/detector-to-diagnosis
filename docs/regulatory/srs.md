@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 17 (MiniDAQ 0.6.0-dev). Status: draft for review.
+Version 18 (MiniDAQ 0.6.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -347,7 +347,8 @@ corrections themselves are computed after the acquisition (`tools/recon`, tool T
 ### 2.20 Reconstruction (REC)
 
 The image from the corrected sinogram: the system model, maximum-likelihood expectation
-maximization and its ordered subsets (Chapter 28, ADR 0023, CR-0014). The reconstruction runs
+maximization and its ordered subsets (Chapter 28, ADR 0023, CR-0014), and the projector in C++
+with its Python module (Chapter 29, ADR 0024, CR-0015). The reconstruction runs
 after the acquisition (`tools/recon`, tool TL-31).
 
 | ID | Requirement | Item | Method |
@@ -355,6 +356,9 @@ after the acquisition (`tools/recon`, tool TL-31).
 | SRS-REC-001 | The reconstruction tool shall project an image along the line of each sinogram bin, at the bin's own normal angle and distance from the axis for a stated radius of the lines, and backproject with the adjoint of that projection, so that the dot-product test holds to 1e-6 relative. | tools | T |
 | SRS-REC-002 | The reconstruction tool shall estimate the image by maximum likelihood for Poisson counts whose mean is the multiplicative corrections times the projection plus the additive corrections, without changing the measured counts, keeping every pixel non-negative and giving bins whose multiplicative correction is zero no weight. | tools | T |
 | SRS-REC-003 | The reconstruction tool shall divide the views into subsets that hold every view once, each subset every k-th view for k subsets, update the image once per subset with that subset's own sensitivity, and refuse fewer than one subset or more subsets than views. | tools | T |
+| SRS-REC-004 | The reconstruction tool's compiled projector `recon_cpp` shall give the forward and back projections of its numpy projector to 1e-6 relative to the largest value, and pass the same tests. | tools | T |
+| SRS-REC-005 | The reconstruction tool's compiled projector `recon_cpp` and its Python module shall refuse lines, images, sinograms and views that do not fit the geometry with an error that names the sizes, convert arrays of another dtype or memory layout instead of reading them as they are, and leave their inputs unchanged. | tools | T |
+| SRS-REC-006 | The reconstruction tool's compiled projector `recon_cpp` shall give the same forward projection for every number of threads, and a backprojection that is the same in every run with the same number of threads and within 1e-12 relative between numbers of threads. | tools | T |
 
 ## 3. Verification other than test
 
@@ -388,3 +392,4 @@ after the acquisition (`tools/recon`, tool TL-31).
 | 15 | Chapter 26: calibration, SRS-CAL-001 to SRS-CAL-007 (ADR 0021, CR-0012). |
 | 16 | Chapter 27: what the corrections need from the acquisition and the check of a normalization against a run, SRS-COR-001 to SRS-COR-003, and crystals that detect differently in the simulator, SRS-SIM-023 (ADR 0022, CR-0013). SRS-CAL-007 names the criterion on distinct partners, which the tool applied (ADR 0021) and the requirement left out. |
 | 17 | Chapter 28: the reconstruction tool, SRS-REC-001 to SRS-REC-003 (ADR 0023, CR-0014). |
+| 18 | Chapter 29: the reconstruction tool's C++ projector and its Python module, SRS-REC-004 to SRS-REC-006 (ADR 0024, CR-0015). |

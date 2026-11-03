@@ -35,7 +35,7 @@ import sys
 SRS = pathlib.Path("docs/regulatory/srs.md")
 MATRIX = pathlib.Path("docs/regulatory/trace-matrix.md")
 RISK = pathlib.Path("docs/regulatory/risk/hazards.json")
-TEST_DIRS = ["minidaq/tests", "fuzz", "tools"]
+TEST_DIRS = ["minidaq/tests", "fuzz", "tools", "recon/tests"]
 
 # [snippet:parse]
 REQ_ROW = re.compile(r"^\|\s*(SRS-[A-Z]+-\d{3})\s*\|\s*(.*?)\s*\|\s*([\w-]+)\s*\|\s*([A-Z, ]+)\s*\|\s*$")

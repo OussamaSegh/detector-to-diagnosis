@@ -40,6 +40,9 @@ KNOWN = {
     "googlebenchmark": {"name": "benchmark", "group": "google", "license": "Apache-2.0", "scope": "excluded",
                         "purl": "pkg:github/google/benchmark@v{version}",
                         "description": "Micro-benchmark framework (benchmarks only, not shipped)"},
+    "pybind11": {"name": "pybind11", "group": "pybind", "license": "BSD-3-Clause", "scope": "excluded",
+                 "purl": "pkg:github/pybind/pybind11@v{version}",
+                 "description": "Python bindings of the reconstruction tool's C++ projector (tools only, not shipped)"},
 }
 # [/snippet:known]
 

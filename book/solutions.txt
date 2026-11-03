@@ -28,3 +28,4 @@ solutions/ch25.md
 solutions/ch26.md
 solutions/ch27.md
 solutions/ch28.md
+solutions/ch29.md

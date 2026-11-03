@@ -54,3 +54,20 @@ endif()
 # build found (tools/make_sbom.py --platform). 3.0 is the oldest supported
 # release series with TLS 1.3 and the APIs used here.
 find_package(OpenSSL 3.0 REQUIRED)
+
+# The bindings of the reconstruction's C++ projector to Python (Chapter 29, ADR 0024, CR-0015).
+# A build-time dependency of the tool recon_cpp (TL-31), not of the shipped programs. pybind11
+# finds Python itself; the module needs the Python headers (Debian and Ubuntu: python3-dev).
+if(MINIDAQ_BUILD_RECON_PYTHON)
+  find_package(Python3 COMPONENTS Interpreter Development.Module)
+  if(NOT Python3_Development.Module_FOUND)
+    message(FATAL_ERROR "MINIDAQ_BUILD_RECON_PYTHON needs the Python headers: install python3-dev, "
+                        "or configure with -DMINIDAQ_BUILD_RECON_PYTHON=OFF")
+  endif()
+  set(PYBIND11_FINDPYTHON ON CACHE BOOL "" FORCE)
+  FetchContent_Declare(pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG        97bf890db679505a14dfe547a5e77bb2bd05dc90 # v3.1.0
+    SYSTEM)
+  FetchContent_MakeAvailable(pybind11)
+endif()

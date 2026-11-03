@@ -9,7 +9,14 @@ has its normal at phi = k pi / N and s = R cos(d pi / N) = -R sin(pi r / N), r =
 even. The header's phi is their mean; the projector uses each bin's own.
 
 The image is n x n square pixels of pixel_mm, centered on the axis, indexed [row, column] = [y, x].
+
+Two projectors have this interface: Projector, in numpy, the reference, and CppProjector, the
+same algorithm in C++ (Chapter 29, module recon_cpp), which the reconstruction uses when it is
+built. tools/test_recon_cpp.py runs the tests of the first on the second.
 """
+import os
+import sys
+
 import numpy as np
 
 from . import sinogram as sg
@@ -94,3 +101,38 @@ class Projector:
         """(x, y) of every pixel center, each n x n, in mm."""
         c = (np.arange(self.n) - (self.n - 1) / 2.0) * self.pixel_mm
         return np.meshgrid(c, c, indexing="xy")
+
+
+def _pixel_centers(n, pixel_mm):
+    c = (np.arange(n) - (n - 1) / 2.0) * pixel_mm
+    return np.meshgrid(c, c, indexing="xy")
+
+
+# [snippet:cpp]
+def load_cpp():
+    """The module recon_cpp: from the directory in MINIDAQ_RECON_CPP if it is set (the build
+    directory, as CTest sets it), else from sys.path. ImportError if it is not built."""
+    where = os.environ.get("MINIDAQ_RECON_CPP")
+    if where and where not in sys.path:
+        sys.path.insert(0, where)
+    import recon_cpp  # noqa: PLC0415 (only when asked for)
+    return recon_cpp
+
+
+class CppProjector:
+    """Projector's interface on the C++ projector. threads = 0 uses every core."""
+
+    def __init__(self, s_mm, phi, n=128, pixel_mm=2.0, threads=0):
+        self._p = load_cpp().Projector(s_mm, phi, n, pixel_mm, threads)
+        self.n, self.pixel_mm = n, float(pixel_mm)
+        self.shape = tuple(np.shape(s_mm))
+
+    def forward(self, image, views=None):
+        return self._p.forward(image, None if views is None else [int(v) for v in views])
+
+    def back(self, sino, views=None):
+        return self._p.back(sino, None if views is None else [int(v) for v in views])
+
+    def pixel_centers(self):
+        return _pixel_centers(self.n, self.pixel_mm)
+# [/snippet:cpp]

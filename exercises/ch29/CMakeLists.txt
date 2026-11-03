@@ -1,0 +1,3 @@
+minidaq_pybind_exercise(e1_boundary MODULE rows)
+minidaq_exercise(e2_threads)
+minidaq_python_exercise(e3_equivalence)

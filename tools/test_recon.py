@@ -297,11 +297,13 @@ def write_listmode(path, records, metadata=DEFAULT_METADATA, damage=None):
 
 
 class Projection(unittest.TestCase):
+    make = project.Projector  # tools/test_recon_cpp.py runs these tests on the C++ projector
+
     @classmethod
     def setUpClass(cls):
         cls.h = header()
         cls.s, cls.phi = project.bin_lines(cls.h)
-        cls.A = project.Projector(cls.s, cls.phi, n=96, pixel_mm=2.5)
+        cls.A = cls.make(cls.s, cls.phi, n=96, pixel_mm=2.5)
 
     def test_each_view_interleaves_two_angles(self):
         # REQ: SRS-REC-001
@@ -343,11 +345,13 @@ class Projection(unittest.TestCase):
 
 
 class Reconstruction(unittest.TestCase):
+    make = project.Projector
+
     @classmethod
     def setUpClass(cls):
         cls.h = header()
         s, phi = project.bin_lines(cls.h)
-        cls.A = project.Projector(s, phi, n=64, pixel_mm=3.75)
+        cls.A = cls.make(s, phi, n=64, pixel_mm=3.75)
         xs, ys = cls.A.pixel_centers()
         x = ((xs ** 2 + ys ** 2) <= 80.0 ** 2).astype(float)
         x[(xs - 35.0) ** 2 + ys ** 2 <= 15.0 ** 2] = 4.0
