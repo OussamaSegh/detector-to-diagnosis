@@ -12,6 +12,7 @@ the process (Chapter 7).
 | `fuzz_packet` | `readout::parse_packet` and `SequenceTracker` (Chapter 9) | accepted packets re-encode to the same bytes; every packet offered is delivered or stale; delivered sequence numbers increase by at most the maximum gap between resyncs; delivered words match |
 | `fuzz_sorter` | `CoincidenceSorter` and `StreamMerger` (Chapter 10) | output and counters independent of how the input is split; every single in exactly one window (fixed mode); prompts within the window, delayed pairs within [delay, delay + window], every pair good; merging boards gives back the input times in order, nothing late |
 | `fuzz_listmode` | `listmode::Reader`, `parse_block`, `decode_record` (Chapter 12) | every byte after the file header is in a returned block or counted as skipped; a returned block's records, written again by `BlockWriter` and read back, are the same records |
+| `fuzz_calibration` | `config::parse_calibration` (Chapter 26; own target since 0.7.0) | two modes chosen by the first byte. Raw text: a rejection always has an error; an accepted table has one entry per crystal, passes `CalibrationTable::make()` again and carries the CRC of its coefficients. Edits to a valid table (a coefficient, a header text, a stale CRC, an overwritten byte), written as the procedure writes them: unless a byte was overwritten, the reader accepts exactly when `make()` accepts the values and the CRC is right, and returns exactly the values written. Each input reads a 1 MB document, so it runs at about 30 inputs per second |
 
 ## Build and run
 

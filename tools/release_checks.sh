@@ -173,7 +173,7 @@ run_fuzz() {  # target cpu
     echo "crash files: $(ls "$dir"/crash-* "$dir"/leak-* "$dir"/timeout-* 2>/dev/null | wc -l)"
   } > "$out/fuzz/$t.txt"
 }
-targets=(config decoder raw16 protocol packet sorter listmode)
+targets=(config decoder raw16 protocol packet sorter listmode calibration)
 cpus=$(nproc)
 i=0
 while [ $i -lt ${#targets[@]} ]; do  # two targets at a time, each on its own CPU
