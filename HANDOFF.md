@@ -457,6 +457,25 @@ Chapter 27 (corrections), 2026-11-03:
 - Old code still says "centre" (sim `centre_mm`, the `--centre` option): renaming is an API change,
   left for a decision.
 
+Chapter 28 (reconstruction), 2026-11-03:
+- `tools/recon` (TL-31, same package as TL-30): `project.bin_lines` (each bin's own angle: a view
+  interleaves k = 2v for odd r and 2v + 1 for even r; s = -R sin(pi r / N)), `project.Projector`
+  (Joseph, weights kept per view, 89 MB for 192 x 227 and 128 x 128; back is the exact adjoint),
+  `mlem.osem` (corrections in the model, interleaved subsets, per-subset sensitivity), `chain`
+  (Chapter 27's corrections on whole runs).
+- Findings worth keeping: the lines are at R_eff = 156 mm, not the 150 mm front faces (a point
+  source comes out 3.6% too close to the axis at 150); a single realization's CRC varies by about
+  0.1, and the scatter estimate adds about +0.08 to the 12 mm rod, so CRC above 1 is expected;
+  the noise grows 19.5% (it 4) to 80.6% (it 32) while the contrast is reached by it 3 to 8.
+- measurements/ch28/reconstruct.py reuses the ch27 work dir (simulates point, rods, phantom_b).
+- CR-0014, ADR 0023, SRS v17 (SRS-REC-001 to 003), H-13 with RC-41 and RC-42, TL-31,
+  architecture v14. Exercises 28.1 to 28.3 (Python; 28.2 and 28.3 carry their own projector in
+  tests/projector.py). The ADR linter of Exercise 6.3 runs on docs/adr: Options must be a
+  numbered list (or ### subsections). **Chapter 28 is done** (2026-11-03); tag ch28 once GitHub
+  CI is green on its last commit.
+- Next: Chapter 29, the projector in C++ with pybind11 bindings (approved; add the SOUP entry),
+  the same tests on both sides; then Chapter 30 (image quality) and release 0.6.0.
+
 ### Left to do, in order
 
 1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in
