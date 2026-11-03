@@ -275,7 +275,7 @@ Release report Claude Docs:
 - 0.3.0: https://claude.ai/artifact/7CsiwjyrUfGem6d5SPA2tp
 - 0.4.0: https://claude.ai/artifact/8iBrgKkciRovqngjwEHpSX
 - 0.5.0: https://claude.ai/artifact/Eizn2MGX4aL6ovV9MTgzm2
-- 0.6.0: (release report link, added when written)
+- 0.6.0: https://claude.ai/artifact/KihwgqRBH9AxmEgheq5Ndy
 
 For 0.3.0:
 
@@ -549,8 +549,10 @@ Chapter 30 (image quality), 2026-11-03:
    main. Its other note, the book's very small index, is a decision for before 1.0.0. Later
    Part reviews run on an Opus model: the user said never to use Fable again.
 3. **Part VI** (26 to 30): released as 0.6.0 on 2026-11-03 (checks on 893413d, tag
-   book-v0.6.0). After the release: bump VERSION to 0.7.0-dev with the SOUP review for 0.7, and
-   review and merge the Part VI review PR.
+   book-v0.6.0, report https://claude.ai/artifact/KihwgqRBH9AxmEgheq5Ndy). VERSION is 0.7.0-dev
+   with the SOUP review for 0.7 (SOUP list v13). Next: review and merge the Part VI review PR.
+   Merge review PRs LOCALLY with the noreply identity and push; a merge made on GitHub (web or
+   API) takes the account's email as its author (d801e22, 1252200 and 3c14b67 did).
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
    dependency management) to full depth. Release 0.7.0.
 5. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
