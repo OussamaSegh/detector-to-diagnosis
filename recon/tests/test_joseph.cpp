@@ -6,7 +6,9 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <numbers>
 #include <numeric>
 #include <random>

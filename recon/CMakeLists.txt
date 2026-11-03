@@ -15,6 +15,21 @@ if(MINIDAQ_BUILD_RECON_PYTHON)
   target_link_libraries(recon_cpp PRIVATE recon::projector minidaq::warnings)
 endif()
 
+# Hardening (cmake/Hardening.cmake) compiles everything -fPIE and links with -pie, for programs.
+# Code for a shared object needs -fPIC (a PIE's thread-local and global accesses cannot be
+# relocated in one), and -pie has no meaning for it. -fPIC last wins over -fPIE.
+if(MINIDAQ_HARDENING)
+  target_compile_options(recon_projector PRIVATE -fPIC)
+  if(TARGET recon_cpp)
+    target_compile_options(recon_cpp PRIVATE -fPIC)
+    get_target_property(_recon_link recon_cpp LINK_OPTIONS)
+    if(_recon_link)
+      list(REMOVE_ITEM _recon_link -pie)
+      set_target_properties(recon_cpp PROPERTIES LINK_OPTIONS "${_recon_link}")
+    endif()
+  endif()
+endif()
+
 if(MINIDAQ_BUILD_TESTS)
   add_executable(recon_tests tests/test_joseph.cpp)
   target_link_libraries(recon_tests PRIVATE recon::projector GTest::gtest_main minidaq::warnings)

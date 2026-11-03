@@ -3,10 +3,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <functional>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <vector>
 
 namespace recon {
 namespace {
