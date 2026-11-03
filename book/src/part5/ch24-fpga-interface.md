@@ -149,13 +149,13 @@ how the firmware team will answer most of your questions.
 
 ### Checking firmware without the hardware
 
-The testbench `hw/rtl/feb_out_fifo_tb.sv` drives the FIFO with 20,000 cycles of random events and
-a random link, in four phases (a slow link, a fast link twice, then the triggers off), and checks
-every output against a model written as plainly as possible: a circular buffer and a count. It
-was itself checked by planting two defects in the listing, a clear that wins over a set and a
-push into a full FIFO; it caught both. Exercise 24.3 asks you to write the same model in C++ and
-run it on the same stimulus, which is exactly what a software lead contributes to a firmware
-review: an independent reading of the specification, executable.
+The testbench `hw/rtl/feb_out_fifo_tb.sv` drives the FIFO with 20,000 cycles of random events and a
+random link, in four phases of 2,500 cycles, run twice (a slow link, a fast link twice, then the
+triggers off), and checks every output against a model written as plainly as possible: a circular
+buffer and a count. It was itself checked by planting two defects in the listing, a clear that wins
+over a set and a push into a full FIFO; it caught both. Exercise 24.3 asks you to write the same
+model in C++ and run it on the same stimulus, which is exactly what a software lead contributes to a
+firmware review: an independent reading of the specification, executable.
 
 The same idea scales up. `FakeBoard` (Chapter 22) is an executable specification of the whole
 board, which MiniDAQ's tests run against at simulated time. A firmware team that uses Verilator,

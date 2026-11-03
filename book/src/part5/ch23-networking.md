@@ -129,7 +129,8 @@ nobody read and counted what it kept:
 | 8,208 B | 1,048,576 B | 126 | 16,644 B |
 | 8,208 B | 4,194,304 B | 504 | 16,644 B |
 
-: How many datagrams a receive buffer holds, on the loopback interface of the book's machine (measurements/ch23/buffer_footprint.txt).
+: How many datagrams a receive buffer holds, on the loopback interface of the book's machine
+(measurements/ch23/buffer_footprint.txt).
 
 A full-size MDQ-R1 packet of 182 words is charged 2,305 bytes, 57% more than its payload. A
 jumbo datagram of 1,024 words is charged twice its payload, because its allocation is rounded up
@@ -217,7 +218,7 @@ datagrams of 182 words, sent over the loopback interface as fast as the sender c
 buffers of four sizes, three times each. One of the three repetitions:
 
 | Scenario | Buffer granted | Sent | Delivered | Lost (gaps) | Socket drops | Delivered + drops |
-|---|---:|---:|---:|---:|---:|---:|
+|----------------------|----------:|-------:|----------:|--------:|---------:|----------:|
 | real time, 2 MBq | 65,536 | 4,923 | 4,923 | 0 | 0 | 4,923 |
 | burst, 5 MBq | 65,536 | 12,291 | 8,004 | 2,216 | 4,287 | 12,291 |
 | burst, 5 MBq | 262,144 | 12,291 | 8,542 | 2,043 | 3,749 | 12,291 |
@@ -225,7 +226,9 @@ buffers of four sizes, three times each. One of the three repetitions:
 | burst, 5 MBq | 4,194,304 | 12,291 | 12,291 | 0 | 0 | 12,291 |
 | burst, 1,024 words | 1,048,576 | 2,185 | 478 | 1,667 | 1,707 | 2,185 |
 
-: Where the datagrams of a burst go, on the loopback interface (measurements/ch23/drop_accounting.txt, run 2 of 3). The host's RcvbufErrors equaled the socket drops in every run.
+: Where the datagrams of a burst go, on the loopback interface
+(measurements/ch23/drop_accounting.txt, run 2 of 3). The host's RcvbufErrors equaled the socket
+drops in every run.
 
 Three results matter.
 
@@ -307,7 +310,9 @@ it fills a loopback socket with 128 datagrams while the timer is stopped, then d
 | `recvmmsg`, 32 | 8,208 B | 581 / 742 / 943 | 88.6 Gbit/s |
 | `recvmmsg`, 64 | 8,208 B | 611 / 741 / 844 | 88.6 Gbit/s |
 
-: The receiving thread's cost per datagram, 10 repetitions of 128 datagrams, release build, 4 virtual CPUs at 2.1 GHz (measurements/ch23/receive_cost.txt). The kernel's work of queuing the datagrams is not included.
+: The receiving thread's cost per datagram, 10 repetitions of 128 datagrams, release build, 4
+virtual CPUs at 2.1 GHz (measurements/ch23/receive_cost.txt). The kernel's work of queuing the
+datagrams is not included.
 
 Batching saved about 5% for full-size MDQ-R1 packets and nothing for jumbo ones, where batches of
 32 and 64 were slower: 32 buffers of 8 KiB no longer stay in the first-level cache. On this
