@@ -14,15 +14,16 @@ NumPy, an array that the boundary would have read transposed, and a test that pa
 race in it.
 :::
 
-**A day in the life.** A research group reconstructs a phantom with the clinical projector,
-which is C code called from Python through `ctypes`, and finds the hot rod on the left of the
-image where the CT shows it on the right. The geometry is checked, the sinogram is checked, and
-both are right. The cause is one line in the analysis script: the image passed as the starting
-estimate had been transposed with `.T`, which in NumPy changes how an array is read, not where
-its numbers are in memory. The C code read the memory as rows, and the image it was given was
-really the transpose of the one the script showed. Nothing failed: the reconstruction converged
-to a perfectly plausible image, mirrored on the diagonal. The fix is at the boundary. The
-binding now accepts any layout and converts it, or refuses what it cannot read, and a test
+**A day in the life.** A research group simulates a scan of a digital phantom, drawn from a CT,
+with the clinical projector, which is C code called from Python through `ctypes`. The
+reconstruction shows the hot rod below the center of the image, where the phantom has it to the
+right of the center. The reconstruction is checked, the geometry is checked, and both are right.
+The cause is one line in the script that made the phantom: its image had been transposed with
+`.T` to match the CT's axes, which in NumPy changes how an array is read, not where its numbers
+are in memory. The C code read the memory as rows, so it projected the transpose of the phantom
+the script showed. Nothing failed: the simulated data were consistent, and the reconstruction
+converged to a perfectly plausible image, mirrored on the diagonal. The fix is at the boundary.
+The binding now accepts any layout and converts it, or refuses what it cannot read, and a test
 passes a transposed array and compares the result with a contiguous one.
 
 ## Learning objectives {.unnumbered}

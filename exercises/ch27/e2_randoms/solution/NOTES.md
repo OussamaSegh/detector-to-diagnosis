@@ -5,8 +5,8 @@
 - *A random pair needs the second single within tau either way round.* A single at time t pairs
   with any single of the other crystal between t - tau and t + tau: a window of 2 tau, so the rate
   is `2 tau r_i r_j` with `r` in singles per second, and the run holds that times its length. The
-  starter used counts for rates and one tau, which is wrong by the factor `2 / seconds`: in a run
-  of 60 s it was 120 times too small.
+  starter used counts for rates and one tau, which is `seconds / 2` times too large: in the
+  test's run of 60 s, 30 times.
 - *The Casey formula assumes every crystal meets every other.* `D_i D_j / sum(D)` is right when
   `sum(D)` is the sum over the partners that crystal i can meet. On this ring a crystal meets 97
   of 191 crystals, so the formula gave half the randoms (0.50 of the truth), and with the narrow

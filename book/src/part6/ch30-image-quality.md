@@ -86,15 +86,16 @@ samples around it (verify: the edition's wording):
 ```{.python include="tools/recon/quality.py" snippet="width"}
 ```
 
-Both steps matter. Counting the samples above half the maximum, the obvious first version, gives
-a whole number of samples: a Gaussian of 3.5 samples FWHM comes out 15% too narrow when it is
-centered on a sample and 13% too wide when it is not, and the width jumps as the point moves.
-Interpolation makes the width move smoothly with the profile. It still overestimates a curved
-side a little, up to 2.7% for the FWHM and 3.5% for the FWTM at 3.5 samples per FWHM and less
-than half of that at 7, which is why the standard asks for pixels of at most a third of the
-expected FWHM (verify). The parabola matters because both levels are fractions of the maximum: the
-highest sample of a peak centered between two samples is 1.2% below the true maximum at that
-sampling. Exercise 30.1 has you write both, against tests with known answers.
+Both steps matter. Counting the samples above half the maximum, the obvious first version, gives a
+whole number of samples: a Gaussian of 3.5 samples FWHM comes out 15% too narrow when it is centered
+on a sample and 13% too wide when it is not, and the width jumps as the point moves. Interpolation
+makes the width move smoothly with the profile. It still overestimates a curved side a little, up to
+2.7% for the FWHM and 3.5% for the FWTM at 3.5 samples per FWHM and less than half of that at 7,
+which is why the standard asks for pixels of at most a third of the expected FWHM (verify). The
+parabola matters because both levels are fractions of the maximum: the highest sample of a peak
+centered between two samples is 5.4% below the true maximum at that sampling, which widens the FWHM
+by about 4%; the parabola's vertex is within 1.2%. Exercise 30.1 has you write both, against tests
+with known answers.
 
 `width` refuses a profile that does not fall below the level on both sides, which happens when
 the profile is cut too short or a neighboring object is too close. A function that returned a
@@ -407,8 +408,8 @@ was corrected.
 - **The background variability from the pixels.** It is the noise of a pixel, not of an object's
   mean. Use the regions' means, per size.
 - **A contrast as the ratio of ratios.** It reads 0.25 with no contrast. Subtract one from both.
-- **A region "around the rod".** The region decides the number by up to 0.3. Define it, size and
-  position, in the protocol.
+- **A region "around the rod".** The region changed the number by up to 0.4 here. Define it, size
+  and position, in the protocol.
 - **Limits from the results being judged.** A drift widens its own limits. Fix the baseline.
 - **A figure of merit without its protocol.** Record the protocol with every result.
 :::
@@ -430,14 +431,14 @@ was corrected.
 
 ## What this leaves out
 
-MiniDAQ's measurements are 2D and simulated. NEMA NU 2 also measures, and a scanner's
-specification also states: the axial resolution and the resolution off the axial center;
-sensitivity; count rate performance, the noise-equivalent count rate and the scatter fraction
-(Chapter 10 met dead time and randoms); the accuracy of the corrections for attenuation and scatter,
-with a lung insert in the image quality phantom; and, for a time-of-flight scanner, the timing
+MiniDAQ's measurements are 2D and simulated. NEMA NU 2 also measures, and a scanner's specification
+also states: the axial resolution and the resolution off the axial center; sensitivity; count rate
+performance, the noise-equivalent count rate and the scatter fraction (Chapter 11 measured all
+three on MiniDAQ); the accuracy of the corrections for attenuation and scatter, with a lung
+insert in the image quality phantom; and, for a time-of-flight scanner, the timing
 resolution. A clinical evaluation adds task-based measures, observers detecting lesions in images,
-which say more about diagnostic performance than any of these numbers (assumption: confirm with
-team which of these your scanner's design verification includes).
+which say more about diagnostic performance than any of these numbers (assumption: confirm with team
+which of these your scanner's design verification includes).
 
 ## Exercises {.unnumbered}
 
@@ -529,7 +530,7 @@ realization; every starter of the chapter fails. Tag `ch30`.
 - From iteration 2 to 16, the 5 mm rod's contrast went from 0.43 to 0.87 and its variability from
   4.5% to 16.9%. The protocol, OSEM 4 x 8 with a 4 mm filter, gave the 12 mm rod 0.976 (SD 0.027)
   over six realizations.
-- The region changes the number by up to 0.3, and the hottest pixel is the least repeatable choice.
+- The region changes the number by up to 0.4, and the hottest pixel is the least repeatable choice.
 - SRS-IQ-004 sets the limits, verified by measurement; a weekly check compares with limits from a
   fixed baseline and looks for runs.
 
@@ -547,7 +548,7 @@ realization; every starter of the chapter fails. Tag `ch30`.
   tomography: 1. Effect of object size", *Journal of Computer Assisted Tomography* 3 (1979) 299 to
   308, for the partial volume effect (verify).
 - S. R. Cherry, J. A. Sorenson and M. E. Phelps, *Physics in Nuclear Medicine*, 4th edition,
-  Saunders, 2012: the chapters on PET performance and image quality.
+  Elsevier Saunders, 2012: the chapters on PET performance and image quality.
 - L. S. Nelson, "The Shewhart control chart: tests for special causes", *Journal of Quality
   Technology* 16 (1984) 237 to 239, and the Western Electric *Statistical Quality Control
   Handbook* (1956), for run rules (verify).
