@@ -232,7 +232,9 @@ def _fisher_scoring(model: Model, lo: FloatArray, hi: FloatArray, n: FloatArray,
     """Maximum likelihood for Poisson counts by Fisher scoring: Newton's method with the expected
     curvature J^T diag(1/mu) J instead of the exact one, the step halved until the deviance falls,
     the parameters projected onto their bounds. Converged when the step's predicted fall of the
-    deviance, 2 U.step with U the score J^T (n/mu - 1), is below 1e-9."""
+    deviance, 2 U.step with U the score J^T (n/mu - 1), is below 1e-9, or below 1e-4 when no step
+    lowers the deviance any more (the rounding of a sum of a few hundred terms of thousands of
+    counts is about 1e-9 already: the first version stopped with an error there)."""
     k = p.size
     box = list(bounds) if bounds else [(None, None)] * k
     low = np.array([-np.inf if b[0] is None else b[0] for b in box])
@@ -253,7 +255,8 @@ def _fisher_scoring(model: Model, lo: FloatArray, hi: FloatArray, n: FloatArray,
             step[free] = np.linalg.solve(info[np.ix_(free, free)], score[free])
         except np.linalg.LinAlgError:
             raise RuntimeError("fit curvature is singular") from None
-        if 2.0 * float(score @ step) < 1e-9:
+        decrement = 2.0 * float(score @ step)  # the fall of the deviance a full step predicts
+        if decrement < 1e-9:
             return p
         t = 1.0
         while t > 1e-10:
@@ -264,6 +267,11 @@ def _fisher_scoring(model: Model, lo: FloatArray, hi: FloatArray, n: FloatArray,
                 break
             t *= 0.5
         else:
+            # No step lowers the deviance: either the minimum is found to the precision of the
+            # deviance's own sum (a predicted fall far below one unit, which moves no parameter by
+            # a visible part of its error), or the fit is stuck, which is an error.
+            if decrement < 1e-4:
+                return p
             raise RuntimeError("fit cannot lower the deviance from where it stopped")
     raise RuntimeError(f"fit did not converge in {max_steps} steps")
 # [/snippet:scoring]

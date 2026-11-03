@@ -3,7 +3,9 @@
 """Fits: right values, right uncertainties, and loud failures."""
 from __future__ import annotations
 
+import json
 import math
+import pathlib
 
 import numpy as np
 import pytest
@@ -101,3 +103,16 @@ def test_refuses_more_parameters_than_bins() -> None:
     h = F.Histogram(np.array([1.0, 2.0, 3.0]), np.array([0.0, 1.0, 2.0, 3.0]))
     with pytest.raises(ValueError, match="3 bins for 4 parameters"):
         F.fit(h, F.gaussian_plus_constant, [1, 1, 1, 1], ("a", "b", "c", "d"))
+
+
+def test_a_timing_fit_at_the_precision_of_the_deviance_converges() -> None:
+    """A real histogram (seed 2 of the simulated point source, 135,000 prompts) on which the first
+    version of the fit stopped with an error: near the minimum, the deviance's rounding is larger
+    than the decrement the line search asks for, and the search failed although the fit was done.
+    """
+    data = json.loads((pathlib.Path(__file__).parent / "data" / "timing-seed2.json").read_text())
+    h = F.Histogram(np.asarray(data["counts"], dtype=float), np.asarray(data["edges"]))
+    r = F.fit_timing(h)
+    assert r.statistic / r.ndf < 2.0
+    assert F.fwhm(r)[0] == pytest.approx(303.0, rel=0.02)
+    assert abs(r["mean"][0]) < 5 * r["mean"][1] + 2.0

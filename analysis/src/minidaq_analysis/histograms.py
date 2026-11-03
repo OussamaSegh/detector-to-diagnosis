@@ -46,14 +46,10 @@ def pair_counts(c: Coincidences, crystals: int) -> tuple[npt.NDArray[np.int64],
     return keys, counts.astype(np.int64)
 
 
-def merge_pair_counts(a: tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]],
-                      b: tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]]
-                      ) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]]:
-    keys = np.concatenate([a[0], b[0]])
-    counts = np.concatenate([a[1], b[1]])
-    merged, inverse = np.unique(keys, return_inverse=True)
-    return merged, np.bincount(inverse, weights=counts, minlength=merged.size).astype(np.int64)
 # [/snippet:pair_counts]
+
+
+PAIR_MERGE_EVERY = 16  # chunks between merges of the pair counts
 
 
 @dataclass
@@ -67,14 +63,19 @@ class RunHistograms:
     dt_edges: npt.NDArray[np.float64] = field(
         default_factory=lambda: np.arange(-2000.0, 2000.0 + 20.0, 20.0))
     rate_bin_ps: int = 10_000_000_000  # 10 ms
+    # The pair counts are as large as the number of distinct pairs in the run (millions for an
+    # extended source), not as a chunk: a pass that does not need them leaves them out.
+    count_pairs: bool = True
 
     def __post_init__(self) -> None:
         self.energy = np.zeros(self.energy_edges.size - 1)
         self.dt_prompt = np.zeros(self.dt_edges.size - 1)
         self.dt_delayed = np.zeros(self.dt_edges.size - 1)
         self.per_crystal = np.zeros(self.crystals, dtype=np.int64)
-        self.pairs: tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]] = (
-            np.zeros(0, dtype=np.int64), np.zeros(0, dtype=np.int64))
+        # Pair counts of chunks not yet merged: merging after every chunk would sort the growing
+        # total once per chunk, a time that grows with the square of the run (the first version
+        # took minutes on a 1 GiB file with many distinct pairs).
+        self._pair_parts: list[tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]]] = []
         self.rate_prompt = np.zeros(0, dtype=np.int64)
         self.rate_delayed = np.zeros(0, dtype=np.int64)
         self.t0_ps: int | None = None
@@ -109,9 +110,25 @@ class RunHistograms:
                                         bins=self.dt_edges)[0]
         self.per_crystal += np.bincount(p.crystal_a, minlength=self.crystals)
         self.per_crystal += np.bincount(p.crystal_b, minlength=self.crystals)
-        self.pairs = merge_pair_counts(self.pairs, pair_counts(p, self.crystals))
+        if self.count_pairs:
+            self._pair_parts.append(pair_counts(p, self.crystals))
+            if len(self._pair_parts) >= PAIR_MERGE_EVERY:
+                self._pair_parts = [self.pairs]
         self.rate_prompt = _add_rate(self.rate_prompt, p.time_ps, self.t0_ps, self.rate_bin_ps)
         self.rate_delayed = _add_rate(self.rate_delayed, d.time_ps, self.t0_ps, self.rate_bin_ps)
+
+    @property
+    def pairs(self) -> tuple[npt.NDArray[np.int64], npt.NDArray[np.int64]]:
+        """(pair keys, counts) of every prompt so far, sorted by key."""
+        if not self._pair_parts:
+            return np.zeros(0, dtype=np.int64), np.zeros(0, dtype=np.int64)
+        if len(self._pair_parts) > 1:
+            keys = np.concatenate([k for k, _ in self._pair_parts])
+            counts = np.concatenate([c for _, c in self._pair_parts])
+            merged, inverse = np.unique(keys, return_inverse=True)
+            total = np.bincount(inverse, weights=counts, minlength=merged.size)
+            self._pair_parts = [(merged, total.astype(np.int64))]
+        return self._pair_parts[0]
 
     def energy_histogram(self) -> Histogram:
         return Histogram(self.energy.copy(), self.energy_edges)
