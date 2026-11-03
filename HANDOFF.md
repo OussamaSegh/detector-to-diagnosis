@@ -5,7 +5,38 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-10-26 11:10 UTC: colored covers for both volumes (book/assets/cover.tex).
+Last updated: 2026-11-03 21:50 UTC: release 0.6.0 done, Part VI review (PR #4) merged; the next
+thread starts Part VII.
+
+## Start here (next thread, Part VII)
+
+State on 2026-11-03: Parts I to VI are released (0.1.0 to 0.6.0, tag book-v0.6.0 on a809a51;
+report https://claude.ai/artifact/KihwgqRBH9AxmEgheq5Ndy; files in the project folder
+`neurolf-book/v0.6.0/`). main is c6ae09a or later, VERSION 0.7.0-dev, SOUP list v13 has the
+review for 0.7. Tags ch00 to ch30 and book-v0.1.0 to book-v0.6.0 are on GitHub; fetch them with
+`git fetch --force origin 'refs/tags/*:refs/tags/*'`.
+
+Next work, in order:
+
+1. Part VII, Chapters 31 and 32 (section 5, "Left to do", item 4): the scientific Python package,
+   and Chapter 32 (CMake and dependency management) in full depth. Same chapter recipe as Part VI:
+   code, tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
+   passes), SRS rows, risk and threat model review, CR, ADR, chapter text, solutions, CHANGELOG,
+   then tag chNN through `.github/tags.txt` once CI is green.
+2. Owed to release 0.7.0: a fuzz target of its own for `config::parse_calibration` (release
+   0.6.0 record); CAPA-0001's check (no test may fail for a timing reason in CI, the release
+   checks or the stress run; add every timing test of Part VII to the CAPA's margin table); the
+   SOUP review at release; the threat model review of every new file or data flow (checklist
+   item 5.5, MDQ-PR-046).
+3. Release 0.7.0 as in section 4 and the 0.6.0 paragraph of section 5; then message the
+   coordinator for the Part VII review on an Opus model, and merge its PR LOCALLY with the
+   noreply identity (never on GitHub: GitHub merges put the account's email in the author).
+
+Rules that bit in Part VI: never build or test while part 2's benchmarks or part 3 (gate, soak)
+run; read every failed CI job, not just the first cause; a worktree gets only `.deps/*-src`
+(never `*-subbuild` or `*-build`); after adding tests regenerate the trace matrix last; repack a
+release clone (`git gc --prune=now`) before zipping it. The book threads run on an Opus model,
+never Fable.
 
 ## 1. The goal
 
@@ -323,8 +354,10 @@ d1073fb (repro report lists manifest and toolchain), 7654434 (perf_ab fails if s
 
 ### In progress (as of the last update)
 
-Chapters 20 and 21 are complete and tagged locally: ch20 on eb77c71, ch21 on 6150f42, where ci,
-gates and codeql were green on GitHub (the user pushes tags). MDQ-PR-025 (listings not expanded)
+Nothing in progress: Part VI is released and reviewed (see "Start here"). Older notes follow.
+
+Chapters 20 and 21 are complete and tagged: ch20 on eb77c71, ch21 on 6150f42, where ci,
+gates and codeql were green on GitHub. MDQ-PR-025 (listings not expanded)
 and MDQ-PR-026 (Exercise 21.5 and the bisect log of git 2.55, which quotes the term) are closed.
 Part IV is written and released as 0.4.0.
 
