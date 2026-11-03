@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_width)
+minidaq_python_exercise(e2_regions)
+minidaq_python_exercise(e3_qc)

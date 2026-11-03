@@ -24,7 +24,8 @@ except ImportError:  # ctest counts exit status 77 as skipped
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from tools.recon import corrections as cor, listmode, mlem, project, sinogram as sg  # noqa: E402
+from tools.recon import corrections as cor, fbp, listmode, mlem, project  # noqa: E402
+from tools.recon import quality, sinogram as sg  # noqa: E402
 
 BIN_DIR = None
 N = sg.CRYSTALS_PER_RING
@@ -414,6 +415,78 @@ class Reconstruction(unittest.TestCase):
         b = mlem.osem(noisy, self.A, mult, self.add, 2, n_subsets=4)
         self.assertTrue(np.allclose(a, b, rtol=1e-12, atol=0.0))
         self.assertTrue(np.array_equal(noisy, keep))  # the counts are left as measured
+
+
+class ImageQuality(unittest.TestCase):
+    make = project.Projector
+
+    def test_a_width_is_interpolated_from_a_parabolic_peak(self):
+        # REQ: SRS-IQ-001
+        # Straight sides and a symmetric top: exact at any level.
+        p = np.array([0, 0, 1, 3, 4, 5, 4, 3, 1, 0, 0], dtype=float)
+        self.assertAlmostEqual(quality.width(p, 2.0), 2.0 * (7.25 - 2.75), places=12)
+        self.assertAlmostEqual(quality.width(p, 1.0, 0.1), 8.5 - 1.5, places=12)
+        # A Gaussian of 3.5 samples FWHM, wherever it falls: within 3% (FWHM) and 4% (FWTM).
+        for center in np.arange(20.0, 21.0, 0.125):
+            g = np.exp(-0.5 * ((np.arange(41) - center) / 1.5) ** 2)
+            self.assertAlmostEqual(quality.width(g, 1.0) / (1.5 * 2.3548), 1.0, delta=0.03)
+            self.assertAlmostEqual(quality.width(g, 1.0, 0.1) / (1.5 * 4.2919), 1.0, delta=0.04)
+            self.assertAlmostEqual(quality.parabolic_peak(g)[0], center, delta=0.05)
+
+    def test_a_profile_that_does_not_fall_is_refused(self):
+        # REQ: SRS-IQ-001
+        with self.assertRaises(ValueError):
+            quality.width(np.array([5.0, 4.0, 3.0, 1.0, 0.0]), 1.0)  # peak on the first sample
+        with self.assertRaises(ValueError):
+            quality.width(np.array([0.0, 1.0, 3.0, 4.0, 3.0]), 1.0, 0.5)
+
+    def test_fbp_gives_a_disc_its_value_and_a_point_its_place(self):
+        # REQ: SRS-IQ-002
+        h = header()
+        s, phi = project.bin_lines(h, 156.0)
+        a = self.make(s, phi, n=128, pixel_mm=2.0)
+        xs, ys = a.pixel_centers()
+        disc = (np.hypot(xs - 20.0, ys + 10.0) <= 40.0).astype(float)
+        img = fbp.fbp(a.forward(disc), h, 156.0, n=128, pixel_mm=2.0, projector=self.make)
+        inner = np.hypot(xs - 20.0, ys + 10.0) <= 30.0
+        self.assertAlmostEqual(img[inner].mean(), 1.0, delta=0.01)
+        self.assertLess(img[inner].std(), 0.02)
+        blob = np.exp(-0.5 * ((xs - 40.0) ** 2 + (ys + 26.0) ** 2) / 1.5 ** 2)
+        img = fbp.fbp(a.forward(blob), h, 156.0, n=128, pixel_mm=2.0, projector=self.make)
+        rows, cols = quality.point_profiles(img)
+        x = (quality.parabolic_peak(rows)[0] - 63.5) * 2.0
+        y = (quality.parabolic_peak(cols)[0] - 63.5) * 2.0
+        self.assertAlmostEqual(x, 40.0, delta=0.5)
+        self.assertAlmostEqual(y, -26.0, delta=0.5)
+
+    def test_background_variability_is_the_spread_of_region_means(self):
+        # REQ: SRS-IQ-003
+        c = (np.arange(128) - 63.5) * 1.0
+        xs, ys = np.meshgrid(c, c, indexing="xy")
+        centers = [(40.0 * np.cos(t), 40.0 * np.sin(t)) for t in np.arange(12) * np.pi / 6]
+        levels = 10.0 + np.array([1, -1, 2, -2, 0, 0, 1, -1, 3, -3, 0, 0], dtype=float)
+        img = np.full((128, 128), 10.0)
+        for (cx, cy), v in zip(centers, levels):
+            img[quality.disc(xs, ys, cx, cy, 6.0)] = v
+        m, var = quality.background_variability(img, xs, ys, centers, 6.0)
+        self.assertAlmostEqual(m, 10.0, places=12)
+        self.assertAlmostEqual(var, np.std(levels, ddof=1) / 10.0, places=12)
+        self.assertAlmostEqual(quality.contrast_recovery(2.5, 1.0, 4.0), 0.5)
+        self.assertAlmostEqual(quality.contrast_recovery(1.0, 1.0, 4.0), 0.0)
+
+    def test_background_regions_are_placed_the_same_way_and_kept_out(self):
+        # REQ: SRS-IQ-003
+        keep = [(40.0, 0.0, 32.0), (-20.0, 35.0, 28.0), (-20.0, -35.0, 25.0)]
+        a = quality.place_background_rois(12, keep, 70.0, 12.0, spacing_mm=22.0)
+        self.assertEqual(a, quality.place_background_rois(12, keep, 70.0, 12.0, spacing_mm=22.0))
+        for cx, cy in a:
+            self.assertLessEqual(np.hypot(cx, cy) + 12.0, 70.0)
+            for x, y, d in keep:
+                self.assertGreaterEqual(np.hypot(cx - x, cy - y), d)
+        pairs = [np.hypot(p[0] - q[0], p[1] - q[1]) for i, p in enumerate(a) for q in a[i + 1:]]
+        self.assertGreaterEqual(min(pairs), 22.0)
+        with self.assertRaises(ValueError):
+            quality.place_background_rois(40, keep, 70.0, 12.0)
 
 
 class ListMode(unittest.TestCase):

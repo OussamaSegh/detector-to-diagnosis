@@ -39,6 +39,10 @@ class CppReconstruction(base.Reconstruction):
 # [/snippet:same-tests]
 
 
+class CppImageQuality(base.ImageQuality):
+    make = staticmethod(cpp)
+
+
 class SameAsNumpy(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 15 (MiniDAQ 0.6.0-dev, Chapter 29). Status: draft for review.
+Version 16 (MiniDAQ 0.6.0-dev, Chapter 30). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -72,6 +72,10 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   Python through the pybind11 module `recon_cpp`, with the numpy projector as its reference;
   outside the product, part of tool TL-31 (Chapter 29,
   [ADR 0024](../adr/0024-cpp-projector-with-python-bindings.md)).
+- image quality: filtered backprojection for the spatial resolution of point sources, and the
+  figures of merit (widths, contrast recovery, background variability) by which a reconstruction
+  protocol is measured and accepted, in `tools/recon` (tool TL-31, Chapter 30,
+  [ADR 0025](../adr/0025-image-quality-figures-of-merit-after-nema.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -349,3 +353,4 @@ Open issues:
 | 13 | Chapter 27: the inputs of the corrections (the singles counter, the run record's `corrections` object) and the corrections tool `tools/recon` as tool TL-30 (ADR 0022, CR-0013). |
 | 14 | Chapter 28: the reconstruction in `tools/recon` as tool TL-31 (ADR 0023, CR-0014). |
 | 15 | Chapter 29: the C++ projector `recon/` and its Python module, pybind11 as SOUP (ADR 0024, CR-0015). |
+| 16 | Chapter 30: FBP and the image quality figures of merit in `tools/recon` (ADR 0025, CR-0016). |

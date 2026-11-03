@@ -1,0 +1,103 @@
+# Chapter 30: image quality, after NEMA NU 2 in 2D
+
+Machine: x86_64, 4 CPUs, Python 3.13.17, numpy 2.5.3; the C++ projector (Chapter 29).
+Simulated in 0 s of CPU time (0 if the runs were reused).
+
+## 1. Spatial resolution: point sources in air, FBP
+
+| Point at | Pixel | Radial FWHM | Radial FWTM | Tangential FWHM | Tangential FWTM | Peak at x |
+|---:|---:|---:|---:|---:|---:|---:|
+| 10 mm | 0.25 mm | 0.76 mm | 2.83 mm | 1.65 mm | 2.76 mm | 10.21 mm |
+| 10 mm | 0.5 mm | 1.16 mm | 3.00 mm | 1.73 mm | 3.00 mm | 10.25 mm |
+| 10 mm | 1 mm | 1.90 mm | 3.43 mm | 2.08 mm | 3.71 mm | 10.25 mm |
+| 10 mm | 2 mm | 3.68 mm | 5.50 mm | 3.74 mm | 5.54 mm | 10.16 mm |
+| 10.64 mm | 0.25 mm | 1.16 mm | 2.99 mm | 1.66 mm | 2.77 mm | 10.28 mm |
+| 10.64 mm | 0.5 mm | 1.35 mm | 2.96 mm | 1.74 mm | 3.01 mm | 10.35 mm |
+| 10.64 mm | 1 mm | 1.73 mm | 3.60 mm | 2.08 mm | 3.70 mm | 10.58 mm |
+| 10.64 mm | 2 mm | 2.53 mm | 5.28 mm | 3.76 mm | 5.58 mm | 10.86 mm |
+| 50 mm | 0.25 mm | 2.64 mm | 4.78 mm | 1.78 mm | 3.09 mm | 49.92 mm |
+| 50 mm | 0.5 mm | 2.97 mm | 5.21 mm | 1.84 mm | 3.21 mm | 49.96 mm |
+| 50 mm | 1 mm | 3.21 mm | 5.60 mm | 2.15 mm | 4.09 mm | 50.18 mm |
+| 50 mm | 2 mm | 3.96 mm | 6.42 mm | 3.83 mm | 5.70 mm | 50.26 mm |
+| 100 mm | 0.25 mm | 4.79 mm | 8.13 mm | 2.28 mm | 4.68 mm | 100.92 mm |
+| 100 mm | 0.5 mm | 5.05 mm | 8.25 mm | 2.31 mm | 5.00 mm | 101.05 mm |
+| 100 mm | 1 mm | 4.99 mm | 8.36 mm | 2.52 mm | 5.33 mm | 101.22 mm |
+| 100 mm | 2 mm | 5.18 mm | 8.97 mm | 4.10 mm | 8.10 mm | 100.84 mm |
+
+FBP with the ramp filter unwindowed, the data corrected for randoms (from the singles) and normalization; all slices summed. Each profile is summed over a band 4 to 6 mm across (the brightest pixel and round(2 mm / pixel) on each side); the peak by a parabola through three samples, each side by linear interpolation. Peak at x: the parabola's vertex on the radial profile.
+
+## 2. The same points by OSEM, iteration by iteration
+
+| Point at | Width | Iteration 1 | Iteration 2 | Iteration 4 | Iteration 8 | Iteration 16 | Iteration 32 | FBP |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 10 mm | radial FWHM | 1.47 | 1.54 | 1.58 | 1.60 | 1.60 | 1.61 | 1.16 |
+| 10 mm | tangential FWHM | 1.45 | 1.49 | 1.51 | 1.51 | 1.51 | 1.52 | 1.73 |
+| 10.64 mm | radial FWHM | 1.54 | 1.56 | 1.56 | 1.56 | 1.56 | 1.56 | 1.35 |
+| 10.64 mm | tangential FWHM | 1.47 | 1.50 | 1.50 | 1.51 | 1.51 | 1.51 | 1.74 |
+| 50 mm | radial FWHM | 2.65 | 2.64 | 2.59 | 2.57 | 2.56 | 2.55 | 2.97 |
+| 50 mm | tangential FWHM | 1.62 | 1.63 | 1.68 | 1.72 | 1.73 | 1.73 | 1.84 |
+| 100 mm | radial FWHM | 5.19 | 5.28 | 5.27 | 5.26 | 5.28 | 5.29 | 5.05 |
+| 100 mm | tangential FWHM | 2.08 | 2.05 | 2.08 | 2.04 | 2.04 | 2.04 | 2.31 |
+
+Widths in mm. OSEM with 8 subsets, randoms and normalization in the model, 0.5 mm pixels; FBP from section 1 at the same pixel size.
+
+## 2b. Points in the water, on the background's activity
+
+| Point at | Width | Iteration 1 | Iteration 2 | Iteration 4 | Iteration 8 | Iteration 16 | Iteration 32 |
+|---:|---|---:|---:|---:|---:|---:|---:|
+| 10 mm | radial FWHM | 1.42 | 1.51 | 1.57 | 1.59 | 1.60 | 1.61 |
+| 10 mm | tangential FWHM | 1.37 | 1.39 | 1.42 | 1.40 | 1.38 | 1.38 |
+| 50 mm | radial FWHM | 2.43 | 2.61 | 2.59 | 2.56 | 2.55 | 2.54 |
+| 50 mm | tangential FWHM | 1.66 | 1.63 | 1.66 | 1.69 | 1.70 | 1.69 |
+
+A point of 2 MBq for 5 s in the water, added to the background's run (20 MBq in the cylinder); all corrections in the model, 0.5 mm pixels. The background is the mean over the ring 10 to 20 mm from the point, subtracted within 5 mm of it before the profiles are taken.
+
+## 3. Contrast and background variability of the hot rods
+
+Twelve background regions, for each rod size a circle of the rod's radius at each center; the 12 mm regions 8 mm or more from a rod's edge, inside 70 mm of the axis and 22 mm apart: (0, 0), (-22, 0), (2, -22), (10, 20), (24, -28), (-38, -16), (-40, 14), (8, 42), (30, 32), (4, -44), (-56, -2), (46, -32) mm. Each rod's region is the rod.
+
+| Image | CRC 12 mm | 8 mm | 5 mm | Variability 12 mm | 8 mm | 5 mm |
+|---|---:|---:|---:|---:|---:|---:|
+| iteration 2 | 0.91 | 0.79 | 0.43 | 2.5% | 2.5% | 4.5% |
+| iteration 2, 4 mm filter | 0.88 | 0.73 | 0.37 | 2.4% | 2.3% | 3.7% |
+| iteration 2, 6 mm filter | 0.84 | 0.68 | 0.32 | 2.5% | 2.3% | 3.1% |
+| iteration 4 | 1.04 | 1.01 | 0.68 | 2.3% | 3.3% | 7.9% |
+| iteration 4, 4 mm filter | 0.99 | 0.92 | 0.58 | 2.1% | 2.8% | 6.2% |
+| iteration 4, 6 mm filter | 0.95 | 0.85 | 0.50 | 2.0% | 2.6% | 4.9% |
+| iteration 8 | 1.07 | 1.07 | 0.81 | 3.0% | 4.7% | 12.6% |
+| iteration 8, 4 mm filter | 1.01 | 0.96 | 0.67 | 2.5% | 3.9% | 9.5% |
+| iteration 8, 6 mm filter | 0.96 | 0.87 | 0.56 | 2.2% | 3.5% | 7.3% |
+| iteration 16 | 1.08 | 1.09 | 0.87 | 3.8% | 6.1% | 16.9% |
+| iteration 16, 4 mm filter | 1.01 | 0.96 | 0.70 | 2.8% | 4.5% | 12.2% |
+| iteration 16, 6 mm filter | 0.96 | 0.87 | 0.57 | 2.4% | 4.0% | 9.1% |
+
+## 4. Repeatability: six realizations, one protocol
+
+OSEM, 4 iterations of 8 subsets, Gaussian 4 mm FWHM.
+
+| Realization | CRC 12 mm | 8 mm | 5 mm | Variability 12 mm | 8 mm | 5 mm |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 0.995 | 0.923 | 0.581 | 2.1% | 2.8% | 6.2% |
+| 2 | 0.951 | 0.809 | 0.605 | 3.3% | 5.0% | 6.3% |
+| 3 | 1.018 | 0.906 | 0.642 | 4.1% | 6.1% | 8.7% |
+| 4 | 0.951 | 0.885 | 0.586 | 3.9% | 4.2% | 4.5% |
+| 5 | 0.961 | 0.856 | 0.617 | 2.2% | 3.5% | 5.4% |
+| 6 | 0.979 | 0.886 | 0.583 | 3.7% | 4.2% | 6.5% |
+| mean | 0.976 | 0.877 | 0.602 | 3.2% | 4.3% | 6.3% |
+| SD | 0.027 | 0.040 | 0.024 | 0.9% | 1.1% | 1.4% |
+
+## 5. The region of interest decides the number
+
+Realization 1, the protocol of section 4; each rod's background as in sections 3 and 4, from the regions of its size.
+
+| Region | CRC 12 mm | 8 mm | 5 mm |
+|---|---:|---:|---:|
+| the rod (radius r) | 0.99 | 0.92 | 0.58 |
+| its inner half (r / 2) | 1.21 | 1.21 | 0.78 |
+| the rod, 2 mm off | 0.97 | 0.88 | 0.53 |
+| the rod, 4 mm off | 0.90 | 0.76 | 0.40 |
+| its hottest pixel | 1.29 | 1.34 | 0.83 |
+
+Over the six realizations the hottest pixel's CRC has a SD of 0.032, 0.076, 0.055 (12, 8, 5 mm), against 0.027, 0.040, 0.024 for the mean over the rod.
+
+Reconstructions and analysis: 62 s.

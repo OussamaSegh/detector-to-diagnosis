@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 18 (MiniDAQ 0.6.0-dev). Status: draft for review.
+Version 19 (MiniDAQ 0.6.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -360,6 +360,20 @@ after the acquisition (`tools/recon`, tool TL-31).
 | SRS-REC-005 | The reconstruction tool's compiled projector `recon_cpp` and its Python module shall refuse lines, images, sinograms and views that do not fit the geometry with an error that names the sizes, convert arrays of another dtype or memory layout instead of reading them as they are, and leave their inputs unchanged. | tools | T |
 | SRS-REC-006 | The reconstruction tool's compiled projector `recon_cpp` shall give the same forward projection for every number of threads, and a backprojection that is the same in every run with the same number of threads and within 1e-12 relative between numbers of threads. | tools | T |
 
+### 2.21 Image quality (IQ)
+
+The figures of merit by which the reconstruction's images are measured and accepted, after the
+methods of NEMA NU 2 in 2D: the spatial resolution of point sources by filtered backprojection,
+and the contrast recovery and background variability of a phantom of hot rods (Chapter 30,
+ADR 0025, CR-0016). They are part of the reconstruction tool (`tools/recon`, tool TL-31).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-IQ-001 | The reconstruction tool shall measure the full width of a profile's peak at a stated fraction of its maximum, with the maximum from the parabola through the highest sample and its two neighbors and each side interpolated linearly between the samples around the level, and refuse a profile that does not fall below the level on both sides. | tools | T |
+| SRS-IQ-002 | The reconstruction tool shall reconstruct a sinogram by filtered backprojection, with each view interpolated onto the central bins' spacing and an unwindowed ramp filter, giving a uniform disc its value within 1% and a point its position within 0.5 mm. | tools | T |
+| SRS-IQ-003 | The reconstruction tool shall compute a hot region's contrast recovery as its mean over the background's, less one, over the true ratio less one, and the background variability as the sample standard deviation of the means of background regions of one size over their mean, with the regions placed the same way every time at stated distances from the hot objects and the phantom's edge, and refuse a placement that does not fit. | tools | T |
+| SRS-IQ-004 | The reconstruction protocol (OSEM with the corrections in the model, 4 iterations of 8 subsets, 2 mm pixels, a Gaussian post-filter of 4 mm FWHM) shall give the hot-rod phantom of `measurements/ch28` a contrast recovery between 90% and 110% of the true contrast for the 12 mm rod and of at least 75% for the 8 mm rod, and a background variability of at most 6% for regions of 12 mm radius. | tools | M |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -369,6 +383,7 @@ after the acquisition (`tools/recon`, tool TL-31).
 | SRS-DIAG-005 | M | `bm_flight_recorder` (`measurements/ch21/bm_flight_recorder.txt`): 32.7 ns per event with one thread, 40.9 ns real time with four, 32.5 ns while another thread takes snapshots; a first version with one shared counter took 213 ns with four threads. The limit of 100 ns is a book-level number (assumption: confirm with team). |
 | SRS-PLT-008 | I | `tools/check_units.py` (test `packaging.units`) checks these rules on every build and runs `systemd-analyze verify` on the units; `systemd-analyze security --offline=true` scores their exposure at 1.7 ("OK") on systemd 255 (`measurements/ch25/`). The units' effect on a running system is part of the installation qualification. |
 | SRS-PLT-009 | I | `tools/platform_check.py`, run on the acquisition PC at installation and after every platform change; its fact file and the platform SBOM it writes are the installation record. On the book's virtual machine it reports the kernel and the uninstalled files (`measurements/ch25/platform-check.txt`): that machine is a build machine, not the platform. |
+| SRS-IQ-004 | M | `measurements/ch30/quality.txt`, section 4: over six independent realizations of the phantom, a contrast recovery of 0.976 (SD 0.027, lowest 0.951) for the 12 mm rod and 0.877 (SD 0.040, lowest 0.809) for the 8 mm rod, and a background variability of 3.2% (SD 0.9%, highest 4.1%). The limits are book-level numbers (assumption: confirm with team the acceptance values of the scanner's image quality specification). Re-measure after every change to the reconstruction, its corrections or the protocol. |
 | SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
 
 ## 4. Changes
@@ -393,3 +408,4 @@ after the acquisition (`tools/recon`, tool TL-31).
 | 16 | Chapter 27: what the corrections need from the acquisition and the check of a normalization against a run, SRS-COR-001 to SRS-COR-003, and crystals that detect differently in the simulator, SRS-SIM-023 (ADR 0022, CR-0013). SRS-CAL-007 names the criterion on distinct partners, which the tool applied (ADR 0021) and the requirement left out. |
 | 17 | Chapter 28: the reconstruction tool, SRS-REC-001 to SRS-REC-003 (ADR 0023, CR-0014). |
 | 18 | Chapter 29: the reconstruction tool's C++ projector and its Python module, SRS-REC-004 to SRS-REC-006 (ADR 0024, CR-0015). |
+| 19 | Chapter 30: image quality, SRS-IQ-001 to SRS-IQ-004 (ADR 0025, CR-0016). |

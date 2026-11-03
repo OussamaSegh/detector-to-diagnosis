@@ -492,8 +492,32 @@ Chapter 29 (C++ and Python), 2026-11-03:
 - CR-0015, ADR 0024, SRS v18 (SRS-REC-004 to 006), RC-43 under H-13, SOUP list v11, SBOM KNOWN,
   TL-32 (pybind11), TL-31 extended, architecture v15; how-to-use lists python3-numpy and
   python3-dev. **Chapter 29 is done** (2026-11-03); tag ch29 once GitHub CI is green.
-- Next: Chapter 30 (image quality: resolution, contrast, noise, NEMA-style), then release 0.6.0
-  and the Part VI review (message the coordinator).
+- CI on the first push failed: Clang + the runner's libstdc++ needs <algorithm> for
+  std::max_element, and the hardened preset's global -fPIE/-pie broke the pybind11 module (TLS
+  relocation). recon/CMakeLists.txt adds -fPIC and drops -pie for the module when hardening
+  (fc3b431).
+
+Chapter 30 (image quality), 2026-11-03:
+- `tools/recon/fbp.py` (arc correction to pi R / N = 1.28 mm, spatial Ram-Lak kernel, Joseph
+  back, scaled by pi/views * ds / pixel^2) and `tools/recon/quality.py` (`width`,
+  `parabolic_peak`, `point_profiles`, `disc`, `contrast_recovery`, `background_variability` with
+  ddof=1, `place_background_rois`). Tests `ImageQuality` (SRS-IQ-001 to 003), also as
+  `CppImageQuality` in test_recon_cpp.py.
+- measurements/ch30/quality.py imports measurements/ch28/reconstruct.py for its simulation and
+  phantom; work dir shared with ch27/ch28 (adds point_x*, wpoint_x*, phantom_r2..5, rod_r*).
+  Do not run two simulations and the analysis together on 15 GB: a sim was OOM-killed.
+- Findings: FBP radial FWHM 0.76-1.35 mm near the center depends on pixel and point position
+  (bins 1.28 mm, as wide as the response); parallax: radial 2.97 mm at 50, 5.05 at 100; the
+  100 mm point comes out ~1 mm too far out (oblique photons interact shallower than R_eff).
+  OSEM's width of a point converges in 1-2 iterations (also in a warm background). Protocol OSEM
+  4x8 + 4 mm Gaussian over 6 realizations: CRC 12 mm 0.976 (SD 0.027), 8 mm 0.877 (0.040), BV
+  12 mm 3.2% (0.9%). Region choice changes CRC by up to 0.3; the hottest pixel is the least
+  repeatable.
+- CR-0016, ADR 0025, SRS v19 (SRS-IQ-001 to 004; 004 is M with evidence in section 3), RC-44
+  under H-13 (inspection of measurements/ch30/quality.txt), TL-31 extended, architecture v16.
+  Exercises 30.1 to 30.3 (Python). **Chapter 30 is done** (2026-11-03); tag ch30 once GitHub CI
+  is green.
+- Next: release 0.6.0 and the Part VI review (message the coordinator).
 
 ### Left to do, in order
 

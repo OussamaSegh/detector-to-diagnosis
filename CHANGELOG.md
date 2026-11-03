@@ -59,8 +59,21 @@ the patch version.
 - Chapter 29 text: the chapter "C++ and Python: the projector behind a binding", Exercises 29.1
   (a boundary that checks its arrays), 29.2 (work shared between threads) and 29.3 (is the second
   implementation the same?), and their solutions.
+- Chapter 30 code: image quality (CR-0016, ADR 0025). `tools/recon/fbp.py` (FBP with the arc
+  correction and the discrete ramp filter) and `tools/recon/quality.py` (widths from a parabolic
+  peak and linear interpolation, profiles through a point, regions of interest, contrast recovery,
+  background variability, a rule that places the background regions), with the tests
+  `ImageQuality` in `tools/test_recon.py`, also run on the C++ projector; `measurements/ch30/`:
+  point sources by FBP and OSEM, the hot rods over iterations and filters, six realizations of the
+  protocol, and five definitions of a region. SRS-IQ-001 to 004 (SRS-IQ-004 by measurement);
+  RC-44; TL-31 extended.
+- Chapter 30 text: the chapter "Image quality: resolution, contrast and noise", Exercises 30.1
+  (a width that does not depend on the pixels), 30.2 (contrast and noise from regions of
+  interest) and 30.3 (acceptance limits and a trend), and their solutions.
 
 ### Fixed
+- The Chapter 29 library and module in CI: an include that Clang with the runner's libstdc++
+  needs, and `-fPIC` without `-pie` for the module in the hardened preset.
 - The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,
   a photopeak value, what `O_SYNC` does, and table layout. The `mmio_bus.cpp` comment on `O_SYNC`
   now says the same.
