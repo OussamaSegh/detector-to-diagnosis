@@ -8,6 +8,13 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-03
+
+Part VI, calibration, corrections and reconstruction (Chapters 26 to 30), complete. The release
+record is `docs/regulatory/releases/0.6.0.md`, with the evidence of `tools/release_checks.sh` in
+`measurements/release-0.6.0/`. CAPA-0001 was not effective again (MDQ-PR-045) and is checked at
+0.7.0.
+
 ### Added
 - Chapter 26 code: calibration (CR-0012, ADR 0021). A calibration table per scanner
   (`processing/calibration`) with each crystal's energy curve and channel delay, applied by the
@@ -77,6 +84,17 @@ the patch version.
 - The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,
   a photopeak value, what `O_SYNC` does, and table layout. The `mmio_bus.cpp` comment on `O_SYNC`
   now says the same.
+- The hardened preset builds every Python module as a shared object (`minidaq_as_shared_object`),
+  also Exercise 29.1's.
+- From the release reviews of 0.6.0: the watchdog test waits for each output it checks
+  (MDQ-PR-045); the threat model, version 4, has the calibration tables as a data store
+  (MDQ-PR-046); tests for the untaken branches of the coverage review; the hardware description's
+  form tests promised at 0.5.0.
+
+### Changed
+- Release process: the stress run also repeats the `ServiceManager`, `Health` and `SlowControl`
+  tests; code review checklist version 3 (items 4.7 and 5.5); SDP version 10 (a failed CI run is
+  investigated job by job); SOUP list version 12; CAPA-0001 checked again at 0.7.0.
 
 ## [0.5.0] - 2026-11-03
 

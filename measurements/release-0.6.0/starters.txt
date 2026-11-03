@@ -1,0 +1,473 @@
+# 2026-11-03T17:41:40Z commit 893413d starters: ctest -L starter (every starter fails at least one test, none hangs)
+In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:7:
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:56:18:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:58:30:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:56:18:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:58:30:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:41:1:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer may be used after 'void operator delete [](void*)' [-Wuse-after-free]
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:38:3:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/build/starters/_deps/googletest-src/googletest/include/gtest/gtest.h:71,
+                 from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:1:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp: In member function 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:40:25: warning: pointer may be used after 'void operator delete [](void*)' [-Wuse-after-free]
+   40 |   EXPECT_EQ(a.view()[0].crystal, 10U);
+In destructor 'ex::EventBuffer::~EventBuffer()',
+    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:38:3:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+   19 |   ~EventBuffer() { delete[] data_; }
+      |                             ^~~~~
+In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/tests/test_ring.cpp:11:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In constructor 'ex::SinglesRing::SinglesRing(std::size_t)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:20:36: warning: unused parameter 'capacity' [-Wunused-parameter]
+   20 |   explicit SinglesRing(std::size_t capacity) {}
+      |                        ~~~~~~~~~~~~^~~~~~~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'bool ex::SinglesRing::try_push(const minidaq::Single&)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:25:45: warning: unused parameter 's' [-Wunused-parameter]
+   25 |   [[nodiscard]] bool try_push(const Single& s) noexcept {
+      |                               ~~~~~~~~~~~~~~^
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'bool ex::SinglesRing::try_pop(minidaq::Single&)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:33:38: warning: unused parameter 'out' [-Wunused-parameter]
+   33 |   [[nodiscard]] bool try_pop(Single& out) noexcept {
+      |                              ~~~~~~~~^~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'std::size_t ex::SinglesRing::try_push_n(std::span<const minidaq::Single>)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:39:64: warning: unused parameter 'in' [-Wunused-parameter]
+   39 |   [[nodiscard]] std::size_t try_push_n(std::span<const Single> in) noexcept { return 0; }  // TODO
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~~^~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'std::size_t ex::SinglesRing::try_pop_n(std::span<minidaq::Single>)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:41:57: warning: unused parameter 'out' [-Wunused-parameter]
+   41 |   [[nodiscard]] std::size_t try_pop_n(std::span<Single> out) noexcept { return 0; }  // TODO
+      |                                       ~~~~~~~~~~~~~~~~~~^~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp: In function 'ex::Result ex::run_pipeline(std::span<const long unsigned int>, const Config&, const WriteCallback&)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:52: warning: unused parameter 'words' [-Wunused-parameter]
+   15 | Result run_pipeline(std::span<const std::uint64_t> words, const Config& cfg, const WriteCallback& on_write) {
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:73: warning: unused parameter 'cfg' [-Wunused-parameter]
+   15 | Result run_pipeline(std::span<const std::uint64_t> words, const Config& cfg, const WriteCallback& on_write) {
+      |                                                           ~~~~~~~~~~~~~~^~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:99: warning: unused parameter 'on_write' [-Wunused-parameter]
+   15 | Result run_pipeline(std::span<const std::uint64_t> words, const Config& cfg, const WriteCallback& on_write) {
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/tests/test_sync.cpp:7:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp: In function 'std::vector<int> ex::start_together(int)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp:14:44: warning: unused parameter 'n' [-Wunused-parameter]
+   14 | inline std::vector<int> start_together(int n) {
+      |                                        ~~~~^
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp: In function 'ex::PhasedResult ex::phased_sums(const std::vector<std::vector<long int> >&)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp:24:79: warning: unused parameter 'values' [-Wunused-parameter]
+   24 | inline PhasedResult phased_sums(const std::vector<std::vector<std::int64_t>>& values) {
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/tests/test_drop.cpp:7:
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp: In function 'ex::LossReport ex::count_lost(std::span<const long unsigned int>, uint64_t)':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:53:61: warning: unused parameter 'seqs' [-Wunused-parameter]
+   53 | inline LossReport count_lost(std::span<const std::uint64_t> seqs, std::uint64_t first) {
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:53:81: warning: unused parameter 'first' [-Wunused-parameter]
+   53 | inline LossReport count_lost(std::span<const std::uint64_t> seqs, std::uint64_t first) {
+      |                                                                   ~~~~~~~~~~~~~~^~~~~
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp: In instantiation of 'ex::PushResult ex::DropQueue<T>::push(T) [with T = int]':
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/tests/test_drop.cpp:15:3:   required from here
+/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:30:21: warning: unused parameter 'value' [-Wunused-parameter]
+   30 |   PushResult push(T value) {
+      |                   ~~^~~~~
+16% tests passed, 357 tests failed out of 424
+	442 - ch01/e1_strong_types/starter/StrongTypes.DifferentUnitsDoNotMix (Failed)
+	443 - ch01/e1_strong_types/starter/StrongTypes.RawNumbersDoNotSneakIn (Failed)
+	453 - ch01/e2_rule_of_zero/starter/EventBuffer.CopyIsDeep (Subprocess aborted)
+	454 - ch01/e2_rule_of_zero/starter/EventBuffer.CopyAssignIsDeep (Subprocess aborted)
+	455 - ch01/e2_rule_of_zero/starter/EventBuffer.MoveIsNoexceptAndEmptiesSource (Subprocess aborted)
+	459 - ch01/e3_parse_single/starter/ParseSingle.RoundTrip (Failed)
+	460 - ch01/e3_parse_single/starter/ParseSingle.TenMalformedInputs (Failed)
+	461 - ch01/e3_parse_single/starter/ParseSingle.MutationFuzzNeverCrashesAndKeepsInvariants (Failed)
+	468 - ch01/e4_ub_hunt/starter/UbHunt.EnergyHistogramTopBin (Failed)
+	469 - ch01/e4_ub_hunt/starter/UbHunt.CrystalLabel (Failed)
+	471 - ch01/e4_ub_hunt/starter/UbHunt.ChannelMask (Failed)
+	475 - ch01/e5_constexpr_lut/starter/ConstexprLut.PointsOnCircle (Failed)
+	476 - ch01/e5_constexpr_lut/starter/ConstexprLut.Spacing (Failed)
+	477 - ch01/e5_constexpr_lut/starter/ConstexprLut.FirstCrystalInFirstQuadrant (Failed)
+	481 - ch01/e6_event_concepts/starter/Concepts.SinkConcept (Failed)
+	482 - ch01/e6_event_concepts/starter/Concepts.FilterConcept (Failed)
+	483 - ch01/e6_event_concepts/starter/Concepts.FeedAppliesTheFilter (Failed)
+	486 - ch02/e1_stream_budget/starter/StreamBudget.ThirtyMillionSingles (Failed)
+	490 - ch02/e2_aos_soa/starter/Layout.ToSoaPreservesFields (Failed)
+	491 - ch02/e2_aos_soa/starter/Layout.SumsAgree (Failed)
+	496 - ch02/e3_pmr_arena/starter/Stage.SteadyStateDoesNotAllocate (Failed)
+	497 - ch02/e3_pmr_arena/starter/Stage.RejectsOversizedBatch (Failed)
+	502 - ch02/e4_packed_word/starter/PackedWord.FieldsDoNotOverlap (Failed)
+	505 - ch02/e4_packed_word/starter/PackedWord.LittleEndianBytes (Failed)
+	508 - ch02/e5_false_sharing/starter/Counters.StagesAreOnDifferentCacheLines (Failed)
+	513 - ch02/e6_struct_layout/starter/StructLayout.FitsIn24Bytes (Failed)
+	522 - ch03/e1_spsc_ring/starter/SinglesRing.CapacityIsPowerOfTwo (Failed)
+	523 - ch03/e1_spsc_ring/starter/SinglesRing.FifoFullEmpty (Failed)
+	524 - ch03/e1_spsc_ring/starter/SinglesRing.ManyLaps (Failed)
+	525 - ch03/e1_spsc_ring/starter/SinglesRing.BatchedPartial (Failed)
+	526 - ch03/e1_spsc_ring/starter/SinglesRing.TwoThreadStress (Failed)
+	527 - ch03/e1_spsc_ring/starter/SinglesRing.TwoThreadBatchedStress (Failed)
+	530 - ch03/e2_seeded_race/starter/EnergyMonitor.TwoWritersCountEverything (Failed)
+	531 - ch03/e2_seeded_race/starter/EnergyMonitor.WindowIsNeverSeenHalfWritten (Failed)
+	536 - ch03/e3_four_stage_pipeline/starter/FourStage.BlockingRunMatchesReference (Failed)
+	537 - ch03/e3_four_stage_pipeline/starter/FourStage.SmallBatchesAndOddSizes (Failed)
+	538 - ch03/e3_four_stage_pipeline/starter/FourStage.DropPolicyCountsLosses (Failed)
+	542 - ch03/e4_latch_barrier/starter/Latch.EveryoneStartsAfterEveryoneArrived (Failed)
+	543 - ch03/e4_latch_barrier/starter/Barrier.PhaseTotalsAreExact (Failed)
+	549 - ch03/e5_drop_policy/starter/DropQueue.RejectKeepsContentsAndRefuses (Failed)
+	550 - ch03/e5_drop_policy/starter/DropQueue.DropNewestDiscardsIncoming (Failed)
+	551 - ch03/e5_drop_policy/starter/DropQueue.DropOldestEvicts (Failed)
+	552 - ch03/e5_drop_policy/starter/DropQueue.AccountingInvariantUnderRandomTraffic (Failed)
+	553 - ch03/e5_drop_policy/starter/CountLost.GapsAndReordering (Failed)
+	557 - ch03/e6_stop_token/starter/Worker.ProcessesInOrder (Failed)
+	558 - ch03/e6_stop_token/starter/Worker.StopDrainsQueuedItemsAndRefusesNewOnes (Failed)
+	559 - ch03/e6_stop_token/starter/Worker.IdleWorkerStopsPromptly (Failed)
+	565 - ch04/e1_cyclictest/starter/Cyclictest.ParsesRealTwoThreadOutput (Failed)
+	566 - ch04/e1_cyclictest/starter/Cyclictest.PercentilesCountOverflowsAsSamples (Failed)
+	567 - ch04/e1_cyclictest/starter/Cyclictest.SmallHistogramEdgeCases (Failed)
+	569 - ch04/e1_cyclictest/starter/Cyclictest.ErrorNamesTheLine (Failed)
+	579 - ch04/e2_pin_stages/starter/CpuList.ParsesSinglesRangesAndWhitespace (Failed)
+	580 - ch04/e2_pin_stages/starter/CpuList.RejectsMalformedLists (Failed)
+	581 - ch04/e2_pin_stages/starter/Placement.FourCpusMatchesTheBookProfile (Failed)
+	582 - ch04/e2_pin_stages/starter/Placement.FewerCpusShareTheHousekeepingCpu (Failed)
+	583 - ch04/e2_pin_stages/starter/Placement.ExtraCpusStayUnusedAndEmptyThrows (Failed)
+	584 - ch04/e2_pin_stages/starter/Profile.NeverTwoFifoStagesOnOneCpu (Failed)
+	585 - ch04/e2_pin_stages/starter/Profile.PinningOnlyKeepsTheNormalScheduler (Failed)
+	586 - ch04/e2_pin_stages/starter/Profile.RoundTripsThroughTheLibraryFormat (Failed)
+	592 - ch04/e3_stage_histograms/starter/StageLatencies.IntervalSeesOnlyRecentSamples (Failed)
+	593 - ch04/e3_stage_histograms/starter/StageLatencies.RejectsForeignOrReversedSnapshots (SEGFAULT)
+	594 - ch04/e3_stage_histograms/starter/StageLatencies.JsonFormatIsExact (Failed)
+	595 - ch04/e3_stage_histograms/starter/StageLatencies.SnapshotsWhileAWriterRecords (SEGFAULT)
+	600 - ch04/e4_prefault_arena/starter/PrefaultedArena.BumpAllocationRules (Failed)
+	601 - ch04/e4_prefault_arena/starter/PrefaultedArena.MoveTransfersOwnership (Failed)
+	602 - ch04/e4_prefault_arena/starter/PrefaultedArena.LockIsBestEffort (Failed)
+	603 - ch04/e4_prefault_arena/starter/PrefaultedArena.WritingAfterConstructionDoesNotFault (Failed)
+	607 - ch04/e5_tsc_clock/starter/Tsc.CpuinfoFlagsNeedBothWholeWords (Failed)
+	608 - ch04/e5_tsc_clock/starter/Tsc.CalibratedRateIsPlausible (Failed)
+	609 - ch04/e5_tsc_clock/starter/Tsc.TracksMonotonicWithinAThousandth (Failed)
+	614 - ch04/e6_coordinated_omission/starter/Omission.SimulationWaitsForTheStall (Failed)
+	615 - ch04/e6_coordinated_omission/starter/Omission.NaiveMeasurementHidesTheStall (Failed)
+	616 - ch04/e6_coordinated_omission/starter/Omission.BothCorrectionsExposeTheStall (SEGFAULT)
+	617 - ch04/e6_coordinated_omission/starter/Omission.CorrectionLeavesFastSamplesAlone (Failed)
+	621 - ch05/e1_energy_filters/starter/Filters.EverySizeFromZeroToForty (Failed)
+	622 - ch05/e1_energy_filters/starter/Filters.BoundariesNanAndInfinity (Failed)
+	623 - ch05/e1_energy_filters/starter/Filters.HundredThousandRandomSingles (Failed)
+	633 - ch05/e2_hotspot/starter/EventSource.FastEnough (Failed)
+	637 - ch05/e4_energy_spectrum/starter/Spectrum.BothMatchTheReferenceForEverySize (Failed)
+	638 - ch05/e4_energy_spectrum/starter/Spectrum.AccumulatesAcrossCalls (Failed)
+	639 - ch05/e4_energy_spectrum/starter/Spectrum.CountsBeyondThirtyTwoBitsInTheTotal (Failed)
+	645 - ch05/e5_speedup_ci/starter/SpeedupCi.ClearTwoTimesSpeedup (Failed)
+	646 - ch05/e5_speedup_ci/starter/SpeedupCi.NoChangeIncludesOne (Failed)
+	647 - ch05/e5_speedup_ci/starter/SpeedupCi.NoisyFivePercentIsNotProven (Failed)
+	648 - ch05/e5_speedup_ci/starter/SpeedupCi.DeterministicForASeedAndWiderAtHigherConfidence (Failed)
+	649 - ch05/e5_speedup_ci/starter/SpeedupCi.RejectsBadInput (Failed)
+	651 - ch05/e3_perf_gate/starter/unittest (Failed)
+	660 - ch06/e2_state_machine/starter/StateMachine.NamesAreTheSpecifiedOnes (Failed)
+	661 - ch06/e2_state_machine/starter/StateMachine.EveryStateEventPairFollowsTheSpecification (Failed)
+	662 - ch06/e2_state_machine/starter/StateMachine.IllegalEventsChangeNothingAndSayWhy (Failed)
+	663 - ch06/e2_state_machine/starter/StateMachine.LegalEventsReturnAndStoreTheNewState (Failed)
+	664 - ch06/e2_state_machine/starter/StateMachine.NoRunWhileCalibratingAndNoResetAwayFromARun (Failed)
+	665 - ch06/e2_state_machine/starter/StateMachine.ListenerSeesEachTransitionOnceInOrder (Failed)
+	666 - ch06/e2_state_machine/starter/StateMachine.ListenerMayReadTheState (Failed)
+	667 - ch06/e2_state_machine/starter/StateMachine.ConcurrentEventsGiveOneConsistentHistory (Failed)
+	676 - ch06/e4_frame_reader/starter/FrameReader.EncodesTheLengthBigEndian (Failed)
+	677 - ch06/e4_frame_reader/starter/FrameReader.OneFrameInOnePiece (Failed)
+	678 - ch06/e4_frame_reader/starter/FrameReader.OneByteAtATime (Failed)
+	679 - ch06/e4_frame_reader/starter/FrameReader.ManyFramesInOneReadAndEmptyFrames (Failed)
+	680 - ch06/e4_frame_reader/starter/FrameReader.RandomChunkingGivesTheSameFrames (Failed)
+	681 - ch06/e4_frame_reader/starter/FrameReader.TooLargeIsDetectedFromTheHeaderAndIsPermanent (Failed)
+	682 - ch06/e4_frame_reader/starter/FrameReader.HugeLengthDoesNotAllocate (Failed)
+	683 - ch06/e4_frame_reader/starter/FrameReader.CostIsLinearInTheBytesReceived (Failed)
+	690 - ch06/e5_fault_injection/starter/FaultInjection.LinkDownFaultsTheRun (Failed)
+	691 - ch06/e5_fault_injection/starter/FaultInjection.CorruptWordsAreCountedAndNeverPaired (Failed)
+	692 - ch06/e5_fault_injection/starter/FaultInjection.AStallLosesNothingButShowsInLatency (Failed)
+	693 - ch06/e5_fault_injection/starter/FaultInjection.OutOfOrderDataFaultsTheRun (Failed)
+	695 - ch06/e1_diagrams/starter/unittest (Failed)
+	697 - ch06/e3_adrs/starter/unittest (Failed)
+	706 - ch07/e1_tidy_zero/starter/Options.RejectsWhatAtoiAccepts (Failed)
+	707 - ch07/e1_tidy_zero/starter/Options.AFailedParseLeavesTheOptionsUnchanged (Failed)
+	708 - ch07/e1_tidy_zero/starter/RecordFile.WritesLines (SEGFAULT)
+	709 - ch07/e1_tidy_zero/starter/RecordFile.AFullDiskIsReported (Failed)
+	710 - ch07/e1_tidy_zero/starter/RecordFile.WritingToAFileThatDidNotOpenFails (SEGFAULT)
+	718 - ch07/e2_fuzz_packets/starter/Packet.RejectsEveryLieInTheHeader (Failed)
+	719 - ch07/e2_fuzz_packets/starter/Packet.CrashInputsFoundByFuzzingAreRejected (Failed)
+	728 - ch07/e4_untrusted_path/starter/UntrustedFile.RejectsLargeFiles (Failed)
+	729 - ch07/e4_untrusted_path/starter/UntrustedFile.RejectsDevicesAndDirectories (Failed)
+	730 - ch07/e4_untrusted_path/starter/UntrustedFile.RejectsASymbolicLink (Failed)
+	731 - ch07/e4_untrusted_path/starter/UntrustedFile.RejectsAWorldWritableFile (Failed)
+	732 - ch07/e4_untrusted_path/starter/UntrustedFile.DoesNotBlockOnAFifo (Failed)
+	739 - ch07/e5_strict_duration/starter/Duration.FractionsAreExact (Failed)
+	740 - ch07/e5_strict_duration/starter/Duration.RejectsWhatStrtodAccepts (Failed)
+	741 - ch07/e5_strict_duration/starter/Duration.RejectsOverflowInsteadOfWrapping (Failed)
+	743 - ch07/e3_sbom_diff/starter/unittest (Failed)
+	745 - ch07/e1_tidy_zero/starter/clang-tidy (Failed)
+	750 - ch08/e3_randoms/starter/Randoms.Formula (Failed)
+	751 - ch08/e3_randoms/starter/Randoms.CountsHandMadeStreams (Failed)
+	758 - ch08/e4_klein_nishina/starter/Compton.Kinematics (Failed)
+	759 - ch08/e4_klein_nishina/starter/Compton.AngularDistributionAt511 (Failed)
+	760 - ch08/e4_klein_nishina/starter/Compton.AngularDistributionAt140 (Failed)
+	761 - ch08/e4_klein_nishina/starter/Compton.ForwardFraction (Failed)
+	764 - ch08/e5_rates_vs_activity/starter/Rates.FitsExactPowerLaws (Failed)
+	765 - ch08/e5_rates_vs_activity/starter/Rates.SweepMatchesThePhysics (Failed)
+	767 - ch08/e1_time_window/starter/unittest (Failed)
+	769 - ch08/e2_energy_window/starter/unittest (Failed)
+	779 - ch09/e1_tdc_word/starter/TdcWord.OtherWordTypesAreSkippedAndCounted (Failed)
+	781 - ch09/e1_tdc_word/starter/TdcWord.ALateWordIsNotAWrap (Failed)
+	782 - ch09/e1_tdc_word/starter/TdcWord.ALateWordFromBeforeTheWrap (Failed)
+	793 - ch09/e2_link_monitor/starter/LinkMonitor.ReorderingIsNotLoss (Failed)
+	794 - ch09/e2_link_monitor/starter/LinkMonitor.Duplicates (Failed)
+	795 - ch09/e2_link_monitor/starter/LinkMonitor.AcrossTheWrap (Failed)
+	796 - ch09/e2_link_monitor/starter/LinkMonitor.MatchesTheInjectedLossAndReordering (Failed)
+	797 - ch09/e2_link_monitor/starter/LinkMonitor.MatchesTheInjectedDuplicates (Failed)
+	804 - ch09/e3_clock_drift/starter/ClockDrift.IdealSyncRemovesOffsetAndDrift (Failed)
+	805 - ch09/e3_clock_drift/starter/ClockDrift.WithJitterTheResidualIsTheJitter (Failed)
+	806 - ch09/e3_clock_drift/starter/ClockDrift.ACoarseSyncStillWorksForConstantDrift (Failed)
+	807 - ch09/e3_clock_drift/starter/ClockDrift.DriftFromTheDataAlone (Failed)
+	809 - ch09/e4_time_walk/starter/unittest (Failed)
+	811 - ch09/e5_link_budget/starter/unittest (Failed)
+	814 - ch10/e1_reference_sorter/starter/ReferenceSorter.WindowsAreFixedAndMultiplesAreDiscarded (Failed)
+	815 - ch10/e1_reference_sorter/starter/ReferenceSorter.AgreesWithTheGroundTruthAndTheMiniDaqSorter (Failed)
+	818 - ch10/e2_multiples_policies/starter/MultiplesPolicies.OneWindowByHand (Failed)
+	819 - ch10/e2_multiples_policies/starter/MultiplesPolicies.MatchMiniDaqAndOrderAsExpected (Failed)
+	824 - ch10/e3_parallel_slices/starter/ParallelSorter.DenseStreamsWithFewGaps (Failed)
+	825 - ch10/e3_parallel_slices/starter/ParallelSorter.AWindowAcrossTheNominalCut (Failed)
+	831 - ch10/e4_fast_sorter/starter/FastSorter.FastEnough (Failed)
+	834 - ch10/e5_slice_merge/starter/SliceMerge.EqualsTheHeapMerger (Failed)
+	835 - ch10/e5_slice_merge/starter/SliceMerge.EdgesAndEmptyBoards (Failed)
+	837 - ch10/e6_randoms_estimate/starter/unittest (Failed)
+	844 - ch11/e1_count_rate/starter/CountRate.NecrByHand (Failed)
+	845 - ch11/e1_count_rate/starter/CountRate.PeakIsInterpolated (Failed)
+	846 - ch11/e1_count_rate/starter/CountRate.ScattersAreSeparated (Failed)
+	848 - ch11/e1_count_rate/starter/CountRate.DeadTimeLowersTheRates (Failed)
+	849 - ch11/e1_count_rate/starter/CountRate.DeadTimeBringsThePeakDown (Failed)
+	856 - ch11/e2_dead_time/starter/DeadTime.NonParalyzable (Failed)
+	857 - ch11/e2_dead_time/starter/DeadTime.Paralyzable (Failed)
+	858 - ch11/e2_dead_time/starter/DeadTime.BlocksAreIndependent (Failed)
+	859 - ch11/e2_dead_time/starter/DeadTime.PileUpAddsTheEnergy (Failed)
+	860 - ch11/e2_dead_time/starter/DeadTime.RatesFollowTheModels (Failed)
+	861 - ch11/e2_dead_time/starter/DeadTime.MatchesMiniDaqOnSimulatedData (Failed)
+	863 - ch11/e3_bottleneck/starter/unittest (Failed)
+	865 - ch11/e4_dead_time_correction/starter/unittest (Failed)
+	867 - ch11/e5_throughput_budget/starter/unittest (Failed)
+	873 - ch12/e1_listmode_writer/starter/ListModeWriter.RoundTrip (Failed)
+	874 - ch12/e1_listmode_writer/starter/ListModeWriter.MiniDaqReadsYourFile (Failed)
+	876 - ch12/e1_listmode_writer/starter/ListModeWriter.EveryCorruptPayloadByteIsDetected (Failed)
+	877 - ch12/e1_listmode_writer/starter/ListModeWriter.VersionsAndADamagedHeader (Failed)
+	881 - ch12/e3_writer_rate/starter/FastSink.KeepsUpWithTheSorterAndLosesNothing (Failed)
+	882 - ch12/e3_writer_rate/starter/FastSink.NoDataWaitsLongerThanMaxUnsyncedForAnFsync (Failed)
+	885 - ch12/e2_sinogram/starter/unittest (Failed)
+	887 - ch12/e4_crc/starter/unittest (Failed)
+	889 - ch12/e5_recovery/starter/unittest (Failed)
+	891 - ch13/e1_standards_map/starter/unittest (Failed)
+	893 - ch13/e2_change_brief/starter/unittest (Failed)
+	895 - ch13/e3_classification/starter/unittest (Failed)
+	897 - ch13/e4_vigilance_clock/starter/unittest (Failed)
+	899 - ch14/e1_item_classes/starter/unittest (Failed)
+	901 - ch14/e2_sorter_requirements/starter/unittest (Failed)
+	903 - ch14/e3_soup_list/starter/unittest (Failed)
+	905 - ch14/e4_trace_matrix/starter/unittest (Failed)
+	907 - ch14/e5_release_check/starter/unittest (Failed)
+	909 - ch14/e6_known_anomalies/starter/unittest (Failed)
+	920 - ch15/e2_loss_controls/starter/Assess.EveryLossCounterInvalidatesTheRun (Failed)
+	921 - ch15/e2_loss_controls/starter/Assess.LossesAreNamedInTheOrderOfTheCounters (Failed)
+	922 - ch15/e2_loss_controls/starter/Assess.AFaultInvalidatesTheRunWithoutALossCounter (Failed)
+	923 - ch15/e2_loss_controls/starter/LossAlarm.RaisedByTheLossOfOneIntervalNotOfTheRun (Failed)
+	924 - ch15/e2_loss_controls/starter/LossAlarm.StaysRaisedUntilAcknowledged (Failed)
+	927 - ch15/e2_loss_controls/starter/LossAlarm.RejectsAThresholdOutsideItsRange (Failed)
+	929 - ch15/e1_hazard_chains/starter/unittest (Failed)
+	931 - ch15/e3_sorter_fmea/starter/unittest (Failed)
+	933 - ch15/e4_fault_tree/starter/unittest (Failed)
+	935 - ch15/e5_residual_risk/starter/unittest (Failed)
+	937 - ch16/e1_clause_map/starter/unittest (Failed)
+	939 - ch16/e2_window_change/starter/unittest (Failed)
+	941 - ch16/e3_audit_answers/starter/unittest (Failed)
+	943 - ch16/e4_boundary_capa/starter/unittest (Failed)
+	945 - ch16/e5_document_control/starter/unittest (Failed)
+	951 - ch17/e2_token_roles/starter/Roles.UnknownCommandsNeedTheOperator (Failed)
+	953 - ch17/e2_token_roles/starter/TokenStore.RefusesBadFiles (Failed)
+	954 - ch17/e2_token_roles/starter/TokenStore.ComparesWithEveryEntry (Failed)
+	955 - ch17/e2_token_roles/starter/TokenStore.RefusesWhatIsNotAToken (Failed)
+	962 - ch17/e5_secure_bind/starter/Loopback.Ipv6 (Failed)
+	963 - ch17/e5_secure_bind/starter/Loopback.OnlyExactNumericAddresses (Failed)
+	965 - ch17/e5_secure_bind/starter/BindCheck.BeyondLoopbackNeedsTokensAndTls (Failed)
+	967 - ch17/e1_threat_model/starter/unittest (Failed)
+	969 - ch17/e3_vuln_triage/starter/unittest (Failed)
+	971 - ch17/e4_attack_tree/starter/unittest (Failed)
+	983 - ch18/e4_fault_injection/starter/FaultInjection.DescribesItselfAndTheInnerPort (Failed)
+	984 - ch18/e4_fault_injection/starter/FaultInjection.FaultsAfterExactlyTheGivenNumberOfWords (Failed)
+	985 - ch18/e4_fault_injection/starter/FaultInjection.AfterTheFaultTheInnerPortIsNotRead (Failed)
+	987 - ch18/e4_fault_injection/starter/FaultInjection.DropsEveryNthWordAndCountsIt (Failed)
+	988 - ch18/e4_fault_injection/starter/FaultInjection.DropsCountAcrossReads (Failed)
+	989 - ch18/e4_fault_injection/starter/FaultInjection.AStallReturnsNothingAndConsumesNothing (Failed)
+	990 - ch18/e4_fault_injection/starter/FaultInjection.TheServiceEndsTheRunInAFault (Failed)
+	991 - ch18/e4_fault_injection/starter/FaultInjection.DroppedWordsMakeTheRunIncomplete (Failed)
+	1007 - ch18/e1_unwrap_tests/starter/at_least_15_tests (Failed)
+	1008 - ch18/e1_unwrap_tests/starter/mutant_1 (Failed)
+	1009 - ch18/e1_unwrap_tests/starter/mutant_2 (Failed)
+	1010 - ch18/e1_unwrap_tests/starter/mutant_3 (Failed)
+	1011 - ch18/e1_unwrap_tests/starter/mutant_4 (Failed)
+	1012 - ch18/e1_unwrap_tests/starter/mutant_5 (Failed)
+	1013 - ch18/e1_unwrap_tests/starter/mutant_6 (Failed)
+	1014 - ch18/e1_unwrap_tests/starter/mutant_7 (Failed)
+	1025 - ch18/e2_sorter_properties/starter/mutant_1 (Failed)
+	1026 - ch18/e2_sorter_properties/starter/mutant_2 (Failed)
+	1028 - ch18/e2_sorter_properties/starter/mutant_4 (Failed)
+	1029 - ch18/e2_sorter_properties/starter/mutant_5 (Failed)
+	1030 - ch18/e2_sorter_properties/starter/mutant_6 (Failed)
+	1031 - ch18/e2_sorter_properties/starter/mutant_7 (Failed)
+	1032 - ch18/e2_sorter_properties/starter/mutant_8 (Failed)
+	1034 - ch18/e5_kill_survivors/starter/survivors (Failed)
+	1036 - ch19/e1_link_accounting/starter/unittest (Failed)
+	1038 - ch19/e2_golden_power/starter/unittest (Failed)
+	1040 - ch19/e3_soak_analysis/starter/unittest (Failed)
+	1048 - ch19/e4_batching_test/starter/mutant_1 (Failed)
+	1049 - ch19/e4_batching_test/starter/mutant_2 (Failed)
+	1050 - ch19/e4_batching_test/starter/mutant_3 (Failed)
+	1051 - ch19/e4_batching_test/starter/mutant_4 (Failed)
+	1052 - ch19/e4_batching_test/starter/mutant_5 (Failed)
+	1054 - ch19/e5_udp_replay/starter/unittest (Failed)
+	1056 - ch20/e1_manifest/starter/unittest (Failed)
+	1058 - ch20/e3_gate_selftest/starter/unittest (Failed)
+	1060 - ch20/e4_ab_drift/starter/unittest (Failed)
+	1062 - ch20/e5_flaky_triage/starter/unittest (Failed)
+	1064 - ch20/e2_reproducible/starter/unittest (Failed)
+	1073 - ch21/e2_postmortem/starter/GroupParser.RejectsOneLevelMore (Failed)
+	1074 - ch21/e2_postmortem/starter/GroupParser.TheFieldCaptureIsAnErrorNotACrash (SEGFAULT)
+	1079 - ch21/e3_flight_recorder/starter/TinyRecorder.KeepsEventsInOrder (Failed)
+	1080 - ch21/e3_flight_recorder/starter/TinyRecorder.KeepsTheLastEventsWhenItWraps (Failed)
+	1081 - ch21/e3_flight_recorder/starter/TinyRecorder.ASmallSnapshotKeepsTheNewest (Failed)
+	1082 - ch21/e3_flight_recorder/starter/TinyRecorder.ASnapshotNeverHoldsHalfAnEvent (Failed)
+	1084 - ch21/e1_review/starter/unittest (Failed)
+	1086 - ch21/e4_incident_data/starter/unittest (Failed)
+	1088 - ch21/e5_bisect/starter/unittest (Failed)
+	1096 - ch22/e2_bias_control/starter/BiasController.FollowsTheTemperatureToKeepTheOvervoltage (Failed)
+	1097 - ch22/e2_bias_control/starter/BiasController.WritesOnlyWhenTheBiasMovedByTheStep (Failed)
+	1098 - ch22/e2_bias_control/starter/BiasController.StaysInsideItsLimits (Failed)
+	1099 - ch22/e2_bias_control/starter/BiasController.WarnsWithHysteresis (Failed)
+	1100 - ch22/e2_bias_control/starter/BiasController.AnAlarmLatchesUntilAcknowledged (Failed)
+	1101 - ch22/e2_bias_control/starter/BiasController.AnAcknowledgedAlarmWhoseCauseRemainsLatchesAgain (Failed)
+	1102 - ch22/e2_bias_control/starter/BiasController.DoesNotBelieveImpossibleReadings (Failed)
+	1108 - ch22/e3_tmp117/starter/Tmp117.DecodesPositiveTemperatures (Failed)
+	1109 - ch22/e3_tmp117/starter/Tmp117.DecodesNegativeTemperaturesAsTwosComplement (Failed)
+	1110 - ch22/e3_tmp117/starter/Tmp117.TheMostSignificantByteComesFirst (Failed)
+	1111 - ch22/e3_tmp117/starter/Tmp117.RefusesTheResetValueAndValuesOutsideItsRange (Failed)
+	1112 - ch22/e3_tmp117/starter/Tmp117.RecognizesItsDeviceIdWhateverTheRevision (Failed)
+	1122 - ch22/e4_supply_guard/starter/SupplyGuard.TurnsOnAndConfirmsTheOutput (Failed)
+	1123 - ch22/e4_supply_guard/starter/SupplyGuard.RetriesAnIdempotentCommandAFewTimes (Failed)
+	1124 - ch22/e4_supply_guard/starter/SupplyGuard.GivesUpAfterItsAttemptsAndSwitchesTheOutputOff (Failed)
+	1125 - ch22/e4_supply_guard/starter/SupplyGuard.ASupplyThatStopsAnsweringEndsInTheSafeState (Failed)
+	1126 - ch22/e4_supply_guard/starter/SupplyGuard.ASupplyThatDoesNotReachItsSetpointFailsAtTheDeadline (Failed)
+	1127 - ch22/e4_supply_guard/starter/SupplyGuard.ASupplyThatLosesItsSetpointFailsAtOnce (Failed)
+	1128 - ch22/e4_supply_guard/starter/SupplyGuard.KeepsTheFirstReason (Failed)
+	1129 - ch22/e4_supply_guard/starter/SupplyGuard.KeepsTryingToSwitchOffAndWillNotRearmUntilItIsConfirmed (Failed)
+	1130 - ch22/e4_supply_guard/starter/SupplyGuard.AnAcknowledgmentClearsTheTripOnceAndReturnsToOff (Failed)
+	1132 - ch22/e1_regmap/starter/unittest (Failed)
+	1138 - ch23/e2_rxq_ovfl/starter/RxqOvfl.ReadsTheValueOfItsControlMessage (Failed)
+	1140 - ch23/e2_rxq_ovfl/starter/RxqOvfl.ARealSocketReportsItsDropsWithTheNextDatagram (Failed)
+	1141 - ch23/e2_rxq_ovfl/starter/DropCounter.CountsTheDropsBetweenDatagrams (Failed)
+	1142 - ch23/e2_rxq_ovfl/starter/DropCounter.FollowsTheCountAcrossItsWrap (Failed)
+	1147 - ch23/e3_buffer_sizing/starter/BufferSizing.TheKernelCapsTheRequest (Failed)
+	1148 - ch23/e3_buffer_sizing/starter/BufferSizing.CapacityMatchesTheMeasurements (Failed)
+	1149 - ch23/e3_buffer_sizing/starter/BufferSizing.AStallTheBufferSurvives (Failed)
+	1150 - ch23/e3_buffer_sizing/starter/BufferSizing.TheSmallestRequestForAStall (Failed)
+	1156 - ch23/e4_batch_receiver/starter/BatchReceiver.ReceivesQueuedDatagramsInBatches (Failed)
+	1157 - ch23/e4_batch_receiver/starter/BatchReceiver.ReusesItsBuffers (Failed)
+	1158 - ch23/e4_batch_receiver/starter/BatchReceiver.FlagsADatagramThatIsTooLong (Failed)
+	1159 - ch23/e4_batch_receiver/starter/BatchReceiver.ReportsTheKernelsDropCount (Failed)
+	1160 - ch23/e4_batch_receiver/starter/BatchReceiver.KeepsTheErrorOfAFailedReceive (Failed)
+	1162 - ch23/e1_where_dropped/starter/unittest (Failed)
+	1169 - ch24/e1_handshake/starter/Handshake.CountsTransfersStallsAndIdleCycles (Failed)
+	1170 - ch24/e1_handshake/starter/Handshake.ReadyWithoutValidMovesNothing (Failed)
+	1171 - ch24/e1_handshake/starter/Handshake.BackToBackWordsAreNotAViolation (Failed)
+	1172 - ch24/e1_handshake/starter/Handshake.FindsAValidDroppedBeforeItsTransfer (Failed)
+	1173 - ch24/e1_handshake/starter/Handshake.FindsDataThatChangedWhileWaiting (Failed)
+	1174 - ch24/e1_handshake/starter/Handshake.MeasuresTheLongestBackPressure (Failed)
+	1180 - ch24/e2_gray_code/starter/GrayCode.KnownValues (Failed)
+	1182 - ch24/e2_gray_code/starter/GrayCode.OneBitChangesPerStepAlsoWhenThePointerWraps (Failed)
+	1184 - ch24/e2_gray_code/starter/GrayCode.TheReadSideSeesHowManyWordsItMayRead (Failed)
+	1190 - ch24/e3_out_fifo/starter/OutFifo.KeepsTheOrderAndRefusesWhenFull (Failed)
+	1191 - ch24/e3_out_fifo/starter/OutFifo.NothingEntersWhileTheTriggersAreOff (Failed)
+	1192 - ch24/e3_out_fifo/starter/OutFifo.ALostEventWinsOverAClearInTheSameCycle (Failed)
+	1193 - ch24/e3_out_fifo/starter/OutFifo.MatchesAPlainModelOnRandomTraffic (Failed)
+	1194 - ch24/e3_out_fifo/starter/FifoSizing.TheNumbersOfChapter24 (Failed)
+	1200 - ch24/e4_split_counter/starter/SplitCounter.NeverTearsAcrossACarry (Failed)
+	1201 - ch24/e4_split_counter/starter/SplitCounter.GivesUpWhenTheHighHalfNeverHoldsStill (Failed)
+	1202 - ch24/e4_split_counter/starter/SplitCounter.AFailedReadIsNotAValue (Failed)
+	1211 - ch25/e1_watchdog_env/starter/WatchdogSettings.OnPingsTwicePerInterval (Failed)
+	1212 - ch25/e1_watchdog_env/starter/WatchdogSettings.OnlyForTheProcessItNames (Failed)
+	1213 - ch25/e1_watchdog_env/starter/WatchdogSettings.MalformedValuesAreInvalidNotGuessed (Failed)
+	1214 - ch25/e1_watchdog_env/starter/Notification.SplitsAssignmentsInOrder (Failed)
+	1215 - ch25/e1_watchdog_env/starter/Notification.ValuesMayBeEmptyOrHoldEqualsSigns (Failed)
+	1216 - ch25/e1_watchdog_env/starter/Notification.RefusesWhatIsNotAnAssignment (Failed)
+	1222 - ch25/e2_semver/starter/SemVer.ParsesTheParts (Failed)
+	1223 - ch25/e2_semver/starter/SemVer.RefusesWhatTheSpecificationDoesNotAllow (Failed)
+	1224 - ch25/e2_semver/starter/SemVer.TheChainOfSection11 (Failed)
+	1225 - ch25/e2_semver/starter/SemVer.NumbersCompareAsNumbers (Failed)
+	1226 - ch25/e2_semver/starter/SemVer.BuildMetadataHasNoPrecedence (Failed)
+	1233 - ch25/e3_power_cut/starter/AbSlots.TheFirstInstallationSurvivesACutAfterAnyWrite (Failed)
+	1234 - ch25/e3_power_cut/starter/AbSlots.AnUpdateSurvivesACutAfterAnyWrite (Failed)
+	1235 - ch25/e3_power_cut/starter/AbSlots.ARollbackSurvivesACutAfterAnyWrite (Failed)
+	1236 - ch25/e3_power_cut/starter/AbSlots.AConfirmationSurvivesACutAfterAnyWrite (Failed)
+	1238 - ch25/e3_power_cut/starter/AbSlots.AnUpdateThenARollbackRunsTheOldVersionAgain (Failed)
+	1246 - ch25/e4_verify_tree/starter/Tree.FilesChangedMissingOrAdded (Failed)
+	1247 - ch25/e4_verify_tree/starter/Tree.LinksAndSpecialFilesAreNeverFollowed (Failed)
+	1248 - ch25/e4_verify_tree/starter/Tree.ListedPathsMustStayInside (Failed)
+	1249 - ch25/e4_verify_tree/starter/Tree.LinesThatAreNotDigestLines (Failed)
+	1250 - ch25/e4_verify_tree/starter/Tree.NoManifestNothingToTrust (Failed)
+	1252 - ch26/e1_photopeak/starter/unittest (Failed)
+	1254 - ch26/e2_flood_map/starter/unittest (Failed)
+	1256 - ch26/e3_time_offsets/starter/unittest (Failed)
+	1258 - ch27/e1_normalization/starter/unittest (Failed)
+	1260 - ch27/e2_randoms/starter/unittest (Failed)
+	1262 - ch27/e3_attenuation/starter/unittest (Failed)
+	1264 - ch28/e1_adjoint/starter/unittest (Failed)
+	1266 - ch28/e2_model/starter/unittest (Failed)
+	1268 - ch28/e3_subsets/starter/unittest (Failed)
+	1273 - ch29/e2_threads/starter/ParallelFor.CoversEveryIndexOnce (Failed)
+	1274 - ch29/e2_threads/starter/ScatterAdd.EveryThreadCountGivesTheSerialSum (Failed)
+	1275 - ch29/e2_threads/starter/ScatterAdd.TheSameThreadCountGivesTheSameBits (Failed)
+	1276 - ch29/e2_threads/starter/ScatterAdd.RefusesAnIndexOutsideTheOutput (Failed)
+	1278 - ch29/e1_boundary/starter/unittest (Failed)
+	1280 - ch29/e3_equivalence/starter/unittest (Failed)
+	1282 - ch30/e1_width/starter/unittest (Failed)
+	1284 - ch30/e2_regions/starter/unittest (Failed)
+	1286 - ch30/e3_qc/starter/unittest (Failed)

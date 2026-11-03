@@ -265,6 +265,8 @@ important ones:
 | 0.2.0 | Part II, Chapters 8 to 12 | | |
 | 0.3.0 | Part III, Chapters 13 to 17 | e32e702 (release checks ran on 57ef123) | book-v0.3.0 = 37af8f4 |
 | 0.4.0 | Part IV, Chapters 18 to 21 | 6912009 (checks on 61c2e1a and 6766495) | book-v0.4.0 = 6912009 |
+| 0.5.0 | Part V, Chapters 22 to 25 | 438ea37 (checks on 6ef606e) | book-v0.5.0 = 438ea37 |
+| 0.6.0 | Part VI, Chapters 26 to 30 | the release commit (checks on 893413d) | book-v0.6.0 |
 
 Release report Claude Docs:
 
@@ -272,6 +274,8 @@ Release report Claude Docs:
 - 0.2.0: https://claude.ai/artifact/FHtXBkNSkxvrqmio2LmMPp
 - 0.3.0: https://claude.ai/artifact/7CsiwjyrUfGem6d5SPA2tp
 - 0.4.0: https://claude.ai/artifact/8iBrgKkciRovqngjwEHpSX
+- 0.5.0: https://claude.ai/artifact/Eizn2MGX4aL6ovV9MTgzm2
+- 0.6.0: (release report link, added when written)
 
 For 0.3.0:
 
@@ -396,6 +400,18 @@ table. Follow-ups promised by the coverage review for 0.6.0: a system test of th
 the hardware heartbeat stops (hung bus), and tests of the hardware description's forms (not an
 object, version not a string).
 
+Release 0.6.0 (2026-11-03): the release checks ran in four parts on 893413d; everything passed
+except the baseline gate, which flagged the same three rows as at 0.5.0 (the first run shared the
+machine with a build by mistake: never build while part 2's benchmarks or part 3 run); the A/B
+against book-v0.5.0 in `measurements/release-0.6.0/perf-ab/` found no regression. The reviews
+after the checks added the coverage review's tests (ef85887, 7fa5b1d) and found MDQ-PR-045 (a
+watchdog test race, missed in a CI run that also failed for another reason) and MDQ-PR-046 (the
+calibration tables had no threat model review): a9c5ba7, whose programs are byte-identical to
+893413d's; the extended stress run and the coverage were run again on a9c5ba7. CAPA-0001 not
+effective again; next check at 0.7.0. Promised for 0.7.0: a fuzz target for the calibration
+table file (`config::parse_calibration`), which shares the fuzzed configuration reader but has
+no target of its own.
+
 Release 0.4.0 (2026-10-26): part 1 of the release checks passed on 61c2e1a, part 2 on 6766495
 (the gate failed, explained by the A/B in `measurements/release-0.4.0/perf-ab/`); the programs,
 benchmarks and fuzz targets of both commits are byte-identical (`identical-binaries.txt`). The
@@ -517,7 +533,8 @@ Chapter 30 (image quality), 2026-11-03:
   under H-13 (inspection of measurements/ch30/quality.txt), TL-31 extended, architecture v16.
   Exercises 30.1 to 30.3 (Python). **Chapter 30 is done** (2026-11-03); tag ch30 once GitHub CI
   is green.
-- Next: release 0.6.0 and the Part VI review (message the coordinator).
+- Released as 0.6.0 (see the release paragraph above). Next: the Part VI review (message the
+  coordinator), then Part VII.
 
 ### Left to do, in order
 
@@ -531,8 +548,9 @@ Chapter 30 (image quality), 2026-11-03:
    measurement files and the testbench); the mmio_bus.cpp O_SYNC comment it noted was fixed on
    main. Its other note, the book's very small index, is a decision for before 1.0.0. Later
    Part reviews run on an Opus model: the user said never to use Fable again.
-3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
-   image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
+3. **Part VI** (26 to 30): released as 0.6.0 on 2026-11-03 (checks on 893413d, tag
+   book-v0.6.0). After the release: bump VERSION to 0.7.0-dev with the SOUP review for 0.7, and
+   review and merge the Part VI review PR.
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
    dependency management) to full depth. Release 0.7.0.
 5. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34

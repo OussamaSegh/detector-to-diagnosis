@@ -1,0 +1,10 @@
+base: BM_DecodePacked/65536 x10, BM_EnergyFilter/1/50/0/4096 x10, BM_EnergyFilter/3/50/0/4096 x10, BM_HistogramRecord x10, BM_Pipeline/4096/64/real_time x10, BM_SortFunctor/4096/0 x10
+head: BM_DecodePacked/65536 x10, BM_EnergyFilter/1/50/0/4096 x10, BM_EnergyFilter/3/50/0/4096 x10, BM_HistogramRecord x10, BM_Pipeline/4096/64/real_time x10, BM_SortFunctor/4096/0 x10
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           0.943   0.3153  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.908   0.0446  ok 
+BM_EnergyFilter/3/50/0/4096                                     1.019   0.5441  ok 
+BM_HistogramRecord                                              1.087   0.9907  ok 
+BM_Pipeline/4096/64/real_time                                   1.009   0.6303  ok 
+BM_SortFunctor/4096/0                                           0.980   0.4559  ok 
+exit=0

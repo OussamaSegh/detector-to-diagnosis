@@ -1,0 +1,4 @@
+# 2026-11-03T18:29:56Z commit 893413d hardened writer_throughput, fsync=close, 200 M coincidences, 3 runs (SRS-PERF-021)
+writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 21.557 s (close 2.581 s): 9.28 M/s, 149 MB/s; files 3, waits 29052 (9839 ms), fsyncs 4, max fsync 2568.3 ms, max block write 19.47 ms
+writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 19.136 s (close 1.390 s): 10.45 M/s, 167 MB/s; files 3, waits 26945 (8696 ms), fsyncs 4, max fsync 1508.3 ms, max block write 7.31 ms
+writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 19.476 s (close 1.235 s): 10.27 M/s, 164 MB/s; files 3, waits 27274 (9167 ms), fsyncs 4, max fsync 2360.2 ms, max block write 66.71 ms

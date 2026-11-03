@@ -1,0 +1,10 @@
+# 2026-11-03T20:45Z GitHub Actions run of a9c5ba7 (the checked commit's programs with the tests and documents of the reviews), read with the GitHub API
+workflow: ci (.github/workflows/ci.yml), run 127, attempt 1, event push, branch main
+run id: 41709683435
+url: https://github.com/OussamaSegh/detector-to-diagnosis/actions/runs/41709683435
+head_sha: a9c5ba7a08ff5ee6ccab7eda292c75dc16ebbd3b
+started: 2026-11-03T20:07:49Z, updated 2026-11-03T20:22:57Z
+status: completed
+conclusion: success
+other workflows on the same commit: gates run 41709683439 success, codeql run 41709683334 success, perf run 41709683516 success
+ci runs of the checked commit 893413d: 41688528263 success,41688514844 success,41674716009 success

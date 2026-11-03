@@ -1,0 +1,16 @@
+# 2026-11-03T19:24:16Z commit 893413d fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 1569397508
+#5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+#6	NEW    cov: 86 ft: 221 corp: 5/2494b lim: 1601 exec/s: 0 rss: 33Mb L: 226/1601 MS: 1 InsertRepeatedBytes-
+#51	NEW    cov: 87 ft: 312 corp: 22/9319b lim: 1601 exec/s: 0 rss: 35Mb L: 86/1601 MS: 3 CrossOver-InsertByte-InsertRepeatedBytes-
+#184	NEW    cov: 88 ft: 372 corp: 38/13810b lim: 1601 exec/s: 0 rss: 36Mb L: 21/1601 MS: 3 EraseBytes-EraseBytes-EraseBytes-
+#215	NEW    cov: 89 ft: 384 corp: 40/14202b lim: 1601 exec/s: 0 rss: 36Mb L: 14/1601 MS: 1 EraseBytes-
+#1682	NEW    cov: 99 ft: 428 corp: 59/25Kb lim: 1601 exec/s: 0 rss: 43Mb L: 561/1601 MS: 5 CrossOver-CrossOver-ChangeBinInt-CrossOver-CrossOver-
+#2155	NEW    cov: 101 ft: 435 corp: 63/27Kb lim: 1601 exec/s: 0 rss: 45Mb L: 1/1601 MS: 1 EraseBytes-
+#11176580	DONE   cov: 101 ft: 460 corp: 82/26Kb lim: 4096 exec/s: 18596 rss: 454Mb
+stat::number_of_executed_units: 11176580
+stat::average_exec_per_sec:     18596
+stat::new_units_added:          573
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              454
+crash files: 0

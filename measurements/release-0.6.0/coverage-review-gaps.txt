@@ -1,0 +1,89 @@
+== minidaq/apps/minidaq_sim.cpp: 151 changed lines
+  102: if (sorter.fov_radius_mm > 0.0) {  // else the default, as minidaq_listmode sino uses
+       column 7: branch never true
+  106: if (!sino::validate(sc)) {
+       column 7: branch never true
+  121: return write_raw(prefix + ".hdr", std::as_bytes(std::span{hdr})) &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  122: write_raw(prefix + ".prompts.u32", little_endian(all.prompts())) &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  123: write_raw(prefix + ".delayeds.u32", little_endian(all.delayeds())) &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  124: write_raw(prefix + ".trues.u32", little_endian(h[0].prompts())) &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  125: write_raw(prefix + ".scatters.u32", little_endian(h[1].prompts())) &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  126: write_raw(prefix + ".randoms.u32", little_endian(h[2].prompts()));
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  305: } else if (a == "--gain-spread") {
+       column 16: branch never true
+  307: } else if (a == "--saturation") {
+       column 16: branch never true
+  309: } else if (a == "--time-skew") {
+       column 16: branch never true
+  311: } else if (a == "--crystal-truth" && !v.empty()) {
+       column 16: branch never true
+       column 16: condition never shown to decide alone (MC/DC)
+       column 42: branch never taken
+       column 42: condition never shown to decide alone (MC/DC)
+  315: } else if (a == "--source-radius") {
+       column 16: branch never true
+  317: } else if (a == "--crystal-seed") {
+       column 16: branch never true
+  319: } else if (a == "--source-length") {
+       column 16: branch never true
+  321: } else if (a == "--truth-sino" && !v.empty()) {
+       column 16: branch never false
+       column 16: condition never shown to decide alone (MC/DC)
+       column 39: branch never false
+       column 39: condition never shown to decide alone (MC/DC)
+  336: if (source_radius_mm > 0.0) {
+       column 9: branch never true
+  339: if (source_length_mm > 0.0) {
+       column 9: branch never true
+  479: if (!crystal_truth_path.empty()) {
+       column 7: branch never true
+  482: bool ok = f != nullptr && std::fprintf(f.get(), "crystal,gain,delay_ps,saturation_kev,efficiency\n") > 0;
+       column 15: branch never taken
+       column 15: condition never shown to decide alone (MC/DC)
+       column 31: branch never taken
+       column 31: condition never shown to decide alone (MC/DC)
+  483: for (std::size_t c = 0; ok && c < sim.crystal_gains().size(); ++c) {
+       column 29: branch never taken
+       column 29: condition never shown to decide alone (MC/DC)
+       column 35: branch never taken
+       column 35: condition never shown to decide alone (MC/DC)
+  487: if (!ok) {
+       column 9: branch never taken
+  493: if (!write_truth_sinograms(truth_sino_prefix, sorter, found, kinds)) {
+       column 9: branch never true
+== minidaq/src/config/acquisition_config.cpp: 15 changed lines
+
+== minidaq/src/config/calibration_file.cpp: 186 changed lines
+   54: ok = std::isfinite(d) && std::abs(d) <= static_cast<double>(std::numeric_limits<T>::max());
+       column 14: branch never false
+       column 14: condition never shown to decide alone (MC/DC)
+== minidaq/src/control/acquisition_service.cpp: 92 changed lines
+   96: if (n > max_bytes) {
+       column 9: branch never true
+== minidaq/src/control/corrections_record.cpp: 25 changed lines
+
+== minidaq/src/control/listmode_sink.cpp: 4 changed lines
+
+== minidaq/src/hw/mmio_bus.cpp: 2 changed lines
+
+== minidaq/src/pipeline/acquisition_pipeline.cpp: 81 changed lines
+  264: if (static_cast<std::size_t>(held.end() - end) > cfg_.batch_size) {
+       column 9: branch never true
+== minidaq/src/processing/calibration.cpp: 215 changed lines
+
+== minidaq/src/processing/singles_counter.cpp: 76 changed lines
+
+== minidaq/src/sim/detector_simulator.cpp: 52 changed lines
+
