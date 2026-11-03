@@ -30,7 +30,8 @@ def test_names(root):
     """Names that a test can be referred to by: Suite.Name of GoogleTest, Class.method of
     unittest, and the names of CTest tests and exercise variants."""
     names = set()
-    for f in list((root / "minidaq/tests").rglob("*.cpp")) + list((root / "exercises").rglob("*.cpp")):
+    for f in (list((root / "minidaq/tests").rglob("*.cpp")) + list((root / "recon/tests").rglob("*.cpp"))
+              + list((root / "exercises").rglob("*.cpp"))):
         names |= {f"{a}.{b}" for a, b in re.findall(r"^TEST(?:_F)?\((\w+),\s*(\w+)\)", f.read_text(), re.M)}
     for f in list((root / "tools").glob("test_*.py")) + list((root / "minidaq/tests/system").glob("test_*.py")):
         cls = None

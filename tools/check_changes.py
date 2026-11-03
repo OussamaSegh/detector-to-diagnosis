@@ -79,9 +79,10 @@ def check(name, text, known):
 
 
 def tests(root):
-    """Every GoogleTest name in minidaq/tests, as Suite.Name, and every unittest of the tools'
-    tests (tools/test_*.py), as Class.test_name."""
-    names = {f"{s}.{n}" for f in (root / "minidaq/tests").rglob("*.cpp") for s, n in GTEST.findall(f.read_text())}
+    """Every GoogleTest name in minidaq/tests and recon/tests, as Suite.Name, and every unittest
+    of the tools' tests (tools/test_*.py), as Class.test_name."""
+    cpp = list((root / "minidaq/tests").rglob("*.cpp")) + list((root / "recon/tests").rglob("*.cpp"))
+    names = {f"{s}.{n}" for f in cpp for s, n in GTEST.findall(f.read_text())}
     for f in (root / "tools").glob("test_*.py"):
         cls = None
         for line in f.read_text().splitlines():
