@@ -35,3 +35,5 @@ book-v0.5.0 438ea371e1e4735baaafbf0b3a0b3d7c9b950fea Release 0.5.0: Part V compl
 ch26 4cbf0e993954ac228d283e4e406604d44be4ebe3 Chapter 26: detector calibration. ci, codeql, gates, kdp and pages green on GitHub.
 ch27 73a2b754e0e7c1ec1a10866f357d9db67f8fe6f5 Chapter 27: corrections. ci, codeql, gates, kdp and pages green on GitHub.
 ch28 86edea69f17b60b3309cf8d9c81aa481a312ccd7 Chapter 28: image reconstruction. ci, codeql, gates, kdp and pages green on GitHub.
+ch29 893413de586704b9e76ed10806f0ff76a3af8ec2 Chapter 29: C++ and Python (on the first green commit after it, which also holds Chapter 30 and the hardened-build fixes). ci, codeql, gates, kdp and pages green on GitHub.
+ch30 893413de586704b9e76ed10806f0ff76a3af8ec2 Chapter 30: image quality. ci, codeql, gates, kdp and pages green on GitHub.
