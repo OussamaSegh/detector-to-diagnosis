@@ -28,7 +28,7 @@ void SinglesCounter::record(std::span<const Single> singles) noexcept {
     first = std::min(first, s.time.count());
     last = std::max(last, s.time.count());
     any = true;
-    const double e = s.energy.count();  // compared as the sorter compares it
+    const auto e = static_cast<double>(s.energy.count());  // compared as the sorter compares it
     // Not "e < lo || e > hi", which lets NaN through (as in the sorter).
     // NOLINTNEXTLINE(readability-simplify-boolean-expr)
     if (!(e >= lo_ && e <= hi_)) {
