@@ -6,11 +6,11 @@ A pair of singles from one annihilation, seen by crystals i and j, has the time 
     t_i - t_j = (d_i - d_j) + (TOF_ij) + noise
 
 where d is a channel's delay and TOF_ij the difference of the two photons' flights. For a uniform
-cylinder centred in the ring, the activity along each line between two crystals is symmetric about
+cylinder centered in the ring, the activity along each line between two crystals is symmetric about
 the line's midpoint, so the mean TOF of each pair of crystals is zero, and the delays are the
 least-squares solution of
 
-    minimise  sum over pairs (t_i - t_j - d_i + d_j)^2,
+    minimize  sum over pairs (t_i - t_j - d_i + d_j)^2,
 
 up to a constant that no coincidence can see (it is fixed by asking for delays of mean zero). The
 normal equations are L d = r, with L the Laplacian of the graph whose nodes are crystals and whose
@@ -18,7 +18,7 @@ edges are pairs: L_ii the number of pairs crystal i is in, L_ij minus the pairs 
 r_i the sum of (t_i - t_j) over the pairs of i. L is sparse, symmetric and positive semi-definite,
 so conjugate gradients solve it with two bincounts per iteration and no matrix in memory.
 
-The solution is only as good as the graph is connected. A point source at the centre gives each
+The solution is only as good as the graph is connected. A point source at the center gives each
 crystal pairs with the few crystals opposite it, joined to the rest only by the pairs that
 non-collinearity and depth of interaction add: the system is badly conditioned (about 740
 iterations, against about 60) and the delays come out 130 ps rms wrong (Chapter 26). A cylinder

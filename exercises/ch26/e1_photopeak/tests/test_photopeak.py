@@ -33,12 +33,12 @@ def spectrum(rng, peak_code, peak_counts, sigma_fraction=0.05, scatter=0.0, comp
 
 
 def found_code(h, lo_code=600, hi_code=2000):
-    centre, sigma, ok = p.fit(h, lo_code // WIDTH, hi_code // WIDTH)
-    return p.to_code(centre, WIDTH), sigma * WIDTH, ok
+    center, sigma, ok = p.fit(h, lo_code // WIDTH, hi_code // WIDTH)
+    return p.to_code(center, WIDTH), sigma * WIDTH, ok
 
 
 class Positions(unittest.TestCase):
-    def test_a_bin_is_centred_between_its_first_and_last_code(self):
+    def test_a_bin_is_centered_between_its_first_and_last_code(self):
         self.assertEqual(p.to_code(0, 4), 1.5)
         self.assertEqual(p.to_code(255, 4), 1021.5)
         self.assertEqual(p.to_code(10.25, 1), 10.25)
@@ -49,7 +49,7 @@ class Positions(unittest.TestCase):
 
 
 class CleanPeak(unittest.TestCase):
-    def test_centre_and_sigma_without_background(self):
+    def test_center_and_sigma_without_background(self):
         rng = np.random.default_rng(1)
         h = spectrum(rng, 1022.0, 50_000, compton=0.0)
         code, sigma, ok = found_code(h)

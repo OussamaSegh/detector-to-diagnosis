@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 """MiniDAQ's calibration procedure (Chapter 26, tool TL-29).
 
-From the singles of a calibration acquisition (a source of 511 keV photons centred in the field of
+From the singles of a calibration acquisition (a source of 511 keV photons centered in the field of
 view), this package finds each crystal's energy curve and channel delay and writes a calibration
 table (docs/formats/calibration.md) that minidaq_server applies:
 

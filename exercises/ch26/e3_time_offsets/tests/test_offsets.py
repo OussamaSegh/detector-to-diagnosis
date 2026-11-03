@@ -15,15 +15,15 @@ N = PER_RING * RINGS
 
 def pairs(rng, m, fan=60, ctr_sigma_ps=127.0, randoms=0.0, delay_sigma_ps=600.0):
     """m pairs of a ring scanner. Each pair joins a crystal with one in a fan of +-fan crystals
-    across the ring and in any ring, as a centred cylinder gives (fan 0: only the crystal
-    opposite, as a point source at the centre gives). Returns (ci, cj, dt, the true delays, and
+    across the ring and in any ring, as a centered cylinder gives (fan 0: only the crystal
+    opposite, as a point source at the center gives). Returns (ci, cj, dt, the true delays, and
     which pairs are random)."""
     d = rng.normal(0.0, delay_sigma_ps, N)
     ring = rng.integers(0, RINGS, m)
     pos = rng.integers(0, PER_RING, m)
     ci = ring * PER_RING + pos
     other = (pos + PER_RING // 2 + rng.integers(-fan, fan + 1, m)) % PER_RING
-    # A cylinder's lines cross the rings in every combination; a centred point's join a ring
+    # A cylinder's lines cross the rings in every combination; a centered point's join a ring
     # only with its mirror image.
     ring_j = rng.integers(0, RINGS, m) if fan else RINGS - 1 - ring
     cj = ring_j * PER_RING + other

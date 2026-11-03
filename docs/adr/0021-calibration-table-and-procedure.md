@@ -58,7 +58,7 @@ its coefficients, tied to a scanner serial and an expiry date.
   of coincident pairs, by conjugate gradients, with the pairs that random coincidences make set
   aside. It writes the table only if every acceptance criterion passes, including the server's
   own limits (SRS-CAL-007).
-- The source is a uniform cylinder centred in the ring. A centred point source pairs each crystal
+- The source is a uniform cylinder centered in the ring. A centered point source pairs each crystal
   only with the few crystals opposite it: the delays come out 130 ps rms wrong. The criterion on
   each crystal's distinct partners refuses it.
 - The server monitors each block's mean photopeak energy during a run and names the blocks that
@@ -85,7 +85,7 @@ its coefficients, tied to a scanner serial and an expiry date.
   a table that passes. The daily quality control with a phantom remains the control for those
   (H-11, residual).
 - Calibrating needs about 30 M singles: 3 s at 20 MBq in the simulation, minutes with a real
-  source of a few MBq. The procedure takes about 40 s for that on the book's machine.
+  source of a few MBq. The procedure takes 30 to 40 s for that on the book's machine.
 - The curvature limit is asymmetric: the first version allowed 40% each way, and the first table
   of a detector with a saturating SiPM was refused by the server. The tool now checks the server's
   limits before it writes, and a test checks that both have the same limits.

@@ -116,14 +116,14 @@ class Energy(unittest.TestCase):
         full = rng.random(crystal.size) < 0.6
         e = np.where(full, rng.normal(511, 25, crystal.size), rng.uniform(100, 340, crystal.size))
         code = np.clip(np.round(gain[crystal] * energy.saturate(e, E_SAT) / 0.5), 0, 2047)
-        centre, _, counts, ok = energy.photopeaks(energy.spectra(crystal, code.astype(int), n))
+        center, _, counts, ok = energy.photopeaks(energy.spectra(crystal, code.astype(int), n))
         self.assertTrue(ok.all())
-        found = energy.gains_from_peaks(centre, E_SAT)
+        found = energy.gains_from_peaks(center, E_SAT)
         self.assertLess(np.abs(found / gain - 1).max(), 0.01)
         a, b, q, worst = energy.fit_curve(found, E_SAT)
         self.assertLess(worst.max(), 0.005)
         # The curve puts each crystal's photopeak at 511 keV.
-        e_peak = energy.apply(centre, np.arange(n), a, b, q)
+        e_peak = energy.apply(center, np.arange(n), a, b, q)
         self.assertLess(np.abs(e_peak - 511).max(), 2.0)
 
 

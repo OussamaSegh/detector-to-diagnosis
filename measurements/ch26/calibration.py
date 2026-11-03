@@ -6,15 +6,18 @@ The detector: every crystal with its own gain (10% spread), a SiPM that saturate
 and its own channel delay (500 ps spread), as minidaq_sim --gain-spread 0.1 --saturation 1500
 --time-skew 500 makes it, with the truth written by --crystal-truth.
 
-1. A calibration acquisition: a uniform cylinder centred in the ring, no phantom, 20 MBq for 3 s.
+1. A calibration acquisition: a uniform cylinder centered in the ring, no phantom, 20 MBq for 3 s.
    The procedure (python3 -m tools.calib), how long it took, and its results against the truth:
    gains, where each crystal's photopeak lands through its curve, delays, and the energy
    resolution of the summed spectrum before and after.
-2. The same with a point source at the centre: what the acceptance criteria say, and how wrong
+2. The same with a point source at the center: what the acceptance criteria say, and how wrong
    the delays would be if the table were written anyway.
 3. A short acquisition (0.5 s): the crystals the criteria refuse, and why.
 4. minidaq_server with the table: the status names it; a configuration for another scanner serial
    is refused.
+5. The photopeak monitor's baseline in a patient-like run: the cylinder in a 90 mm water phantom,
+   5 MBq for 0.5 s, calibrated with the table of 1: the mean calibrated energy in 430 to 590 keV,
+   as the monitor computes it per block.
 
     python3 measurements/ch26/calibration.py build/release/minidaq/apps > measurements/ch26/calibration.txt
 """
@@ -73,10 +76,10 @@ def delay_error(report, delay):
 
 
 def fwhm_percent(e_kev):
-    """FWHM of the 511 keV photopeak of a summed spectrum, in % of its centre (2 keV bins)."""
+    """FWHM of the 511 keV photopeak of a summed spectrum, in % of its center (2 keV bins)."""
     h = np.histogram(e_kev, bins=512, range=(0, 1024))[0][None, :]
-    centre, sigma, _, ok = energy.fit_photopeaks(h, lo=150, hi=400, smooth=9)
-    return (2.0 * float(centre[0]) + 1.0, 2.3548 * float(sigma[0]) / float(centre[0]) * 100.0,
+    center, sigma, _, ok = energy.fit_photopeaks(h, lo=150, hi=400, smooth=9)
+    return (2.0 * float(center[0]) + 1.0, 2.3548 * float(sigma[0]) / float(center[0]) * 100.0,
             bool(ok[0]))
 
 
@@ -160,8 +163,8 @@ def main():
         raw = code * readout.ENERGY_LSB_KEV
         cal = energy.apply(code, crystal, a, b, q)
         for label, e in (("as reported (0.5 keV per code)", raw), ("calibrated", cal)):
-            centre, fwhm, ok = fwhm_percent(e)
-            print(f"Summed spectrum, {label}: photopeak at {centre:.0f} keV, FWHM {fwhm:.1f}% "
+            center, fwhm, ok = fwhm_percent(e)
+            print(f"Summed spectrum, {label}: photopeak at {center:.0f} keV, FWHM {fwhm:.1f}% "
                   f"(fit {'ok' if ok else 'failed'}).")
         os.unlink(words)
 
@@ -170,7 +173,7 @@ def main():
         r, _, rep, _ = calibrate(tmp, "point", words)
         _, delay = truth_of(truth)
         s = rep["summary"]
-        section("2. Point source at the centre, 3 s")
+        section("2. Point source at the center, 3 s")
         print(f"Exit status {r.returncode}; failed crystals {s['failed_crystals']}; least partners "
               f"{s['partners_min']}, median "
               f"{np.median([c['partners'] for c in rep['crystals']]):.0f}; residual "
@@ -201,6 +204,18 @@ def main():
         for line in r.stderr.splitlines()[-2:]:
             print("    " + line)
 
+        # 5. The monitor's baseline with scatter (before 4, while the table is at hand).
+        words5 = tmp / "phantom.words"
+        subprocess.run([str(APPS / "minidaq_sim"), "--activity", "5e6", "--seconds", "0.5",
+                        "--source", "cylinder", *DETECTOR, "--words", str(words5)], check=True,
+                        capture_output=True)
+        crystal, code, _ = readout.read(words5)
+        e = energy.apply(code, crystal, a, b, q)
+        m = (e >= 430.0) & (e <= 590.0)
+        block = (crystal // 384 // 16) * 24 + (crystal % 384) // 16
+        means = np.bincount(block[m], e[m], 72) / np.bincount(block[m], minlength=72)
+        os.unlink(words5)
+
         # 4. The server.
         section("4. minidaq_server with the table of 1")
         for serial, rc, text, status in server_check(tmp, table):
@@ -210,6 +225,11 @@ def main():
             else:
                 st = json.loads(status)["status"]
                 print("    status calibration: " + json.dumps(st.get("calibration")))
+
+        section("5. The photopeak monitor's baseline, cylinder in a 90 mm water phantom")
+        print(f"Calibrated singles in 430 to 590 keV: {int(m.sum()):,}; mean {e[m].mean():.1f} keV "
+              f"({100 * (e[m].mean() / 511 - 1):+.2f}% from 511); per block {means.min():.1f} to "
+              f"{means.max():.1f} keV.")
 
 
 if __name__ == "__main__":

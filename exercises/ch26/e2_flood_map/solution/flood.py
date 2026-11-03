@@ -77,14 +77,14 @@ def arrange(peaks, side=SIDE):
 
 
 def lut(grid, pixels=256):
-    """The crystal (row * side + column) of every pixel: the peak nearest its centre."""
+    """The crystal (row * side + column) of every pixel: the peak nearest its center."""
     side = grid.shape[0]
-    centres = grid.reshape(-1, 2)
+    centers = grid.reshape(-1, 2)
     rr, cc = np.mgrid[0:pixels, 0:pixels]
     best = np.full((pixels, pixels), np.inf)
     out = np.zeros((pixels, pixels), dtype=np.int32)
-    for k, (r, c) in enumerate(centres):
-        d = (rr + 0.5 - r) ** 2 + (cc + 0.5 - c) ** 2  # pixel k is centred on k + 0.5
+    for k, (r, c) in enumerate(centers):
+        d = (rr + 0.5 - r) ** 2 + (cc + 0.5 - c) ** 2  # pixel k is centered on k + 0.5
         closer = d < best
         best[closer] = d[closer]
         out[closer] = k

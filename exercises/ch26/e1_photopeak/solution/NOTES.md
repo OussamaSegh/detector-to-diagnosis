@@ -17,7 +17,7 @@
 
 **Weights** (Then, by hand, 1). On 300 spectra (`rng` seed 5, the acceptance generator):
 
-| Photopeak counts | Fit | Mean sigma / true | Centre scatter, rms |
+| Photopeak counts | Fit | Mean sigma / true | Center scatter, rms |
 |---:|---|---:|---:|
 | 300 | Guo, weights from the counts | 1.136 | 0.48% |
 | 300 | unweighted | 1.056 | 0.36% |
@@ -29,8 +29,8 @@ pull from the tails, where the logarithm of a few counts is very noisy. At 300 c
 weights themselves are noisy counts, and the fit follows the bins that fluctuated up: sigma
 comes out 14% wide. Guo's paper proposes iterating with the fitted curve's values as the weights
 for exactly this case (verify: section "iterative procedure" of the paper before you cite it).
-The centre, which is what a gain needs, is unbiased in every case. This is why the procedure asks
-for 500 photopeak counts and checks sigma only against a wide band (2 to 10% of the centre).
+The center, which is what a gain needs, is unbiased in every case. This is why the procedure asks
+for 500 photopeak counts and checks sigma only against a wide band (2 to 10% of the center).
 
 **Bands** (2). On the clean spectrum of 50,000 counts, bands just outside the window (2 to
 2.5 sigma) gave sigma 11.5% too small: at 2 sigma the Gaussian is still at 13% of its height,

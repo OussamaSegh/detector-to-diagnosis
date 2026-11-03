@@ -426,8 +426,11 @@ Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it
   130 ps rms wrong). The end-to-end check showed the server's curvature limit (0.4 each way) too
   strict for a saturating SiPM: now 0.4 down and 1.5 up (max_curvature_down/up), and the tool
   checks the server's limits before it writes. minidaq_sim's default source is a cylinder IN a
-  90 mm water phantom: calibration runs need --phantom 0. Still to do: exercises, book text,
-  docs/formats/calibration.md, ADR 0021, CR-0012, H-11, architecture update, CHANGELOG, tag.
+  90 mm water phantom: calibration runs need --phantom 0. Then the documents (format spec, ADR
+  0021, CR-0012, H-11 with RC-35 to RC-38, architecture v12, TL-29), Exercises 26.1 to 26.3
+  (Python, run as ctest via minidaq_python_exercise), the Part VI opener, the chapter text, the
+  solutions and section 5 of the measurement (the monitor's baseline with a phantom: -0.89%).
+  **Chapter 26 is done** (2026-11-03); tag ch26 once GitHub CI is green on its last commit.
 - Exercises 26.1 gains by photopeak fit, 26.2 flood map and crystal LUT (numpy peak finding),
   26.3 time offsets by least squares (H); crystal LUT stays an exercise (boards identify crystals).
 - pybind11 for Chapter 29: approved by the user on 2026-11-03 (decision card). Record it as a
@@ -463,11 +466,11 @@ Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it
 
 ### Review process for each Part (user rule, 2026-10-25)
 
-When a Part is released, message the coordinator. It starts a review thread (Fable model if
-possible) that reviews that Part and opens a PR with fixes on a branch. This thread then reviews
-the PR critically (reject or adjust wrong fixes), merges it into main, pushes, and records the
-merge here. Keep working on the next Part while the review runs. Part IV (release 0.4.0) is the
-first Part this applies to.
+When a Part is released, message the coordinator. It starts a review thread (an Opus model; never
+Fable) that reviews that Part and opens a PR with fixes on a branch. This thread then reviews the PR
+critically (reject or adjust wrong fixes), merges it into main, pushes, and records the merge here.
+Keep working on the next Part while the review runs. Part IV (release 0.4.0) is the first Part this
+applies to.
 
 ### Waiting on the user
 

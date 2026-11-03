@@ -20,6 +20,10 @@ the patch version.
   The calibration procedure `tools/calib` (tool TL-29, numpy only) with acceptance criteria,
   its tests (`tools.calib`) and `measurements/ch26/`. SRS-CAL-001 to 007, SRS-SIM-022; hazard
   H-11 with RC-35 to RC-38.
+- Chapter 26 text: Part VI's opener, the chapter "Detector calibration: energy, timing and the
+  procedure behind them", Exercises 26.1 (photopeak fit), 26.2 (flood map and crystal lookup
+  table) and 26.3 (channel delays by least squares, H), and their solutions. Section 5 of
+  `measurements/ch26` measures the photopeak monitor's baseline with a water phantom.
 
 ### Fixed
 - The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,

@@ -13,8 +13,8 @@ in the grid cell that a regular 16 by 16 grid would give it.
 
 **Acceptance** (`tests/test_flood.py`, a synthetic block whose edges are compressed and
 whose rows bend, 400 events per crystal and a blur of 1 pixel):
-- 256 peaks, one per crystal, each within 1.5 pixels of the crystal's true centre.
-- `arrange` gives every crystal its own cell, within 1.5 pixels of its centre.
+- 256 peaks, one per crystal, each within 1.5 pixels of the crystal's true center.
+- `arrange` gives every crystal its own cell, within 1.5 pixels of its center.
 - The lookup table names the right crystal for more than 98% of the events.
 - A more compressed block with 150 events per crystal: median position error under 0.7
   pixels, worst under 2, and more than 95% of the events identified.

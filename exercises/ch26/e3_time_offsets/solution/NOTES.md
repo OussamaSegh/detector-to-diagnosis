@@ -3,7 +3,7 @@
 **The three mistakes.**
 
 - *No check that the graph is connected.* The pairs measure only differences d_i - d_j, so
-  each connected part of the graph has its own unknown constant. A point source at the centre
+  each connected part of the graph has its own unknown constant. A point source at the center
   joins each crystal with the one opposite it and nothing else: 768 parts of two crystals in the
   acceptance test. The starter answered 1 and solved anyway; the solution gives each crystal the
   smallest label among its partners' until nothing changes, and refuses more than one part.
@@ -26,8 +26,8 @@ eigenvalue (the algebraic connectivity) is small when the graph is nearly in pie
 fan makes a long chain around the ring, a point source makes pieces. The measurement's point
 source took 740 iterations and its delays were 130 ps wrong (`measurements/ch26`).
 
-**A source off centre** (3). A line of response whose midpoint is not where the activity is
-centred gets a mean time-of-flight difference: the projection x of the source's offset on the
+**A source off center** (3). A line of response whose midpoint is not where the activity is
+centered gets a mean time-of-flight difference: the projection x of the source's offset on the
 line gives 2x / c, 133 ps for 20 mm along the line. The pairs of a crystal see the offset from
 their own direction, so the solution absorbs a pattern around the ring, a sinusoid with up to
 about plus or minus 67 ps, into the delays. The procedure cannot see it: its residual is no

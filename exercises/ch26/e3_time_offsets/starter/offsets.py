@@ -2,7 +2,7 @@
 """Exercise 26.3: channel delays from coincident pairs, by least squares.
 
 Each pair (i, j) with time difference dt = t_i - t_j tells you d_i - d_j, up to its noise and the
-pair's time-of-flight difference, which is zero on average for a source centred in the ring. The
+pair's time-of-flight difference, which is zero on average for a source centered in the ring. The
 delays are the least-squares solution of dt = d[ci] - d[cj], with mean zero; the normal equations
 are L d = r with L the Laplacian of the graph of pairs (Chapter 26). Only differences are
 measured, so the solution is unique only where the graph is connected.

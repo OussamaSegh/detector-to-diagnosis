@@ -13,9 +13,9 @@ Steps:
 4. The acceptance criteria (SRS-CAL-007). The table is written only when every crystal passes;
    otherwise each failing crystal is reported, with why, and the exit status is 1.
 
-The source must be a uniform cylinder centred in the field of view (minidaq_sim --source cylinder),
+The source must be a uniform cylinder centered in the field of view (minidaq_sim --source cylinder),
 so that each pair of crystals' mean difference in time of flight is zero (timing.py). A point
-source at the centre has that property too, but it pairs each crystal only with the few opposite
+source at the center has that property too, but it pairs each crystal only with the few opposite
 it, and the delays of those small groups are hard to compare with each other.
 
 Exit status: 0 table written, 1 a criterion failed, 2 the command line or the input file is wrong.
@@ -33,10 +33,10 @@ from . import energy, readout, table, timing
 # The acceptance criteria. Each bounds what one fit can get wrong; the values are this book's
 # (assumption: confirm with team, against the scanner's own specification).
 CRITERIA = {
-    # Photopeak counts per crystal: the centre's statistical error is about sigma / sqrt(counts),
+    # Photopeak counts per crystal: the center's statistical error is about sigma / sqrt(counts),
     # 0.25% of 511 keV at 500 counts and a 6% resolution.
     "min_counts": 500,
-    # A photopeak's sigma as a fraction of its centre: LYSO with SiPMs is about 4 to 6% (10 to
+    # A photopeak's sigma as a fraction of its center: LYSO with SiPMs is about 4 to 6% (10 to
     # 14% FWHM); outside 2 to 10% the fit has found something else.
     "min_sigma_fraction": 0.02,
     "max_sigma_fraction": 0.10,
@@ -48,7 +48,7 @@ CRITERIA = {
     # Coincident pairs per crystal for its delay: the delay's error is about the residual over
     # sqrt(pairs), 33 ps at 100 pairs and the 326 ps residual below.
     "min_pairs": 100,
-    # Distinct crystals each crystal is paired with. A centred cylinder pairs each crystal with a
+    # Distinct crystals each crystal is paired with. A centered cylinder pairs each crystal with a
     # fan across the ring; a point source only with the few opposite it, which leaves the delays
     # of those small groups badly determined (timing.py). This is the criterion that notices the
     # wrong source.
@@ -91,7 +91,7 @@ def parse_args(argv):
 
 
 # [snippet:accept]
-def accept(c, counts, ok, centre, sigma, gain, curve_error, pairs_per_crystal, partners, offsets,
+def accept(c, counts, ok, center, sigma, gain, curve_error, pairs_per_crystal, partners, offsets,
            rms):
     """Each crystal's failures, as a list of reasons per crystal (empty: it passed), and the
     failures of the whole solution."""
@@ -104,9 +104,9 @@ def accept(c, counts, ok, centre, sigma, gain, curve_error, pairs_per_crystal, p
     flag(counts < c["min_counts"], lambda i: f"{counts[i]:.0f} photopeak counts, "
          f"{c['min_counts']} needed")
     flag(~ok, lambda i: "the photopeak fit did not converge")
-    frac = np.where(centre > 0, sigma / np.maximum(centre, 1e-9), np.inf)
+    frac = np.where(center > 0, sigma / np.maximum(center, 1e-9), np.inf)
     flag(ok & ((frac < c["min_sigma_fraction"]) | (frac > c["max_sigma_fraction"])),
-         lambda i: f"photopeak sigma {100 * frac[i]:.1f}% of its centre, "
+         lambda i: f"photopeak sigma {100 * frac[i]:.1f}% of its center, "
          f"{100 * c['min_sigma_fraction']:.0f} to {100 * c['max_sigma_fraction']:.0f}% expected")
     flag(ok & ((gain < c["min_gain"]) | (gain > c["max_gain"])),
          lambda i: f"gain {gain[i]:.3f}, {c['min_gain']} to {c['max_gain']} expected")
@@ -135,8 +135,8 @@ def run(a):
     crystal, code, t = crystal[order], code[order], t[order]
 
     # 1 and 2: energy.
-    centre, sigma, counts, ok = energy.photopeaks(energy.spectra(crystal, code))
-    gain = energy.gains_from_peaks(centre, a.e_sat)
+    center, sigma, counts, ok = energy.photopeaks(energy.spectra(crystal, code))
+    gain = energy.gains_from_peaks(center, a.e_sat)
     ca, cb, cq, curve_error = energy.fit_curve(np.where(ok, gain, 1.0), a.e_sat)
     e_kev = energy.apply(code, crystal, ca, cb, cq)
 
@@ -153,7 +153,7 @@ def run(a):
 
     # 4: acceptance, then the server's own limits on what would be written.
     c = {k: getattr(a, k) for k in CRITERIA}
-    why, overall = accept(c, counts, ok, centre, sigma, gain, curve_error, per_crystal, partners,
+    why, overall = accept(c, counts, ok, center, sigma, gain, curve_error, per_crystal, partners,
                           offsets, rms)
     for k, reason in enumerate(table.server_refusals(ca, cb, cq, offsets)):
         if reason:
@@ -176,7 +176,7 @@ def run(a):
         "criteria": c,
     }
     if a.report:
-        crystals = [{"crystal": k, "counts": float(counts[k]), "centre_code": float(centre[k]),
+        crystals = [{"crystal": k, "counts": float(counts[k]), "center_code": float(center[k]),
                      "sigma_code": float(sigma[k]), "gain": float(gain[k]),
                      "curve_error": float(curve_error[k]), "pairs": int(per_crystal[k]),
                      "partners": int(partners[k]),

@@ -15,7 +15,7 @@ PIXELS = 256
 def block(rng, events_per_crystal=400, blur_px=1.0, compress=0.25, bend=0.01):
     """Events of a flood of a 16 x 16 block: each crystal's true position on a regular grid, then
     the light sharing's distortion (edges compressed by `compress`, rows bent by `bend`), then a
-    blur of `blur_px` pixels. Returns (u, v, true crystal, the centres in pixels [row][column])."""
+    blur of `blur_px` pixels. Returns (u, v, true crystal, the centers in pixels [row][column])."""
     side = f.SIDE
     q = (np.arange(side) + 0.5) / side - 0.5  # -0.47 .. 0.47
     qr, qc = np.meshgrid(q, q, indexing="ij")
@@ -25,31 +25,31 @@ def block(rng, events_per_crystal=400, blur_px=1.0, compress=0.25, bend=0.01):
 
     row = 0.5 + distort(qr) + bend * (2 * qc) ** 2  # the rows sag towards the block's sides
     col = 0.5 + distort(qc)
-    centres = np.stack([row * PIXELS, col * PIXELS], -1)
+    centers = np.stack([row * PIXELS, col * PIXELS], -1)
     crystal = np.repeat(np.arange(side * side), events_per_crystal)
     blur = blur_px / PIXELS
     v = row.reshape(-1)[crystal] + rng.normal(0, blur, crystal.size)
     u = col.reshape(-1)[crystal] + rng.normal(0, blur, crystal.size)
-    return u, v, crystal, centres
+    return u, v, crystal, centers
 
 
 class Peaks(unittest.TestCase):
     def setUp(self):
         self.rng = np.random.default_rng(26)
-        self.u, self.v, self.crystal, self.centres = block(self.rng)
+        self.u, self.v, self.crystal, self.centers = block(self.rng)
         self.img = f.flood(self.u, self.v)
 
     def test_one_peak_per_crystal(self):
         peaks = f.find_peaks(self.img)
         self.assertEqual(peaks.shape, (256, 2))
-        d = np.sqrt(((peaks[:, None, :] - self.centres.reshape(1, -1, 2)) ** 2).sum(-1))
+        d = np.sqrt(((peaks[:, None, :] - self.centers.reshape(1, -1, 2)) ** 2).sum(-1))
         nearest = d.argmin(1)
         self.assertEqual(len(set(nearest.tolist())), 256, "two peaks on one crystal")
         self.assertLess(d.min(1).max(), 1.5, "a peak away from its crystal")
 
     def test_the_grid_is_in_the_order_of_the_crystals(self):
         grid = f.arrange(f.find_peaks(self.img))
-        err = np.sqrt(((grid - self.centres) ** 2).sum(-1))
+        err = np.sqrt(((grid - self.centers) ** 2).sum(-1))
         self.assertLess(err.max(), 1.5)
 
     def test_the_lookup_table_identifies_the_crystals(self):
@@ -61,9 +61,9 @@ class Peaks(unittest.TestCase):
 class HarderBlock(unittest.TestCase):
     def test_a_more_compressed_block_with_fewer_events(self):
         rng = np.random.default_rng(7)
-        u, v, crystal, centres = block(rng, events_per_crystal=150, compress=0.3, bend=0.012)
+        u, v, crystal, centers = block(rng, events_per_crystal=150, compress=0.3, bend=0.012)
         grid = f.arrange(f.find_peaks(f.flood(u, v)))
-        err = np.sqrt(((grid - centres) ** 2).sum(-1))
+        err = np.sqrt(((grid - centers) ** 2).sum(-1))
         self.assertLess(np.median(err), 0.7)
         self.assertLess(err.max(), 2.0)
         found = f.identify(u, v, f.lut(grid))

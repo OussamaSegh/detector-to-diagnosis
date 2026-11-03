@@ -46,45 +46,45 @@ def spectra(crystal, code, n_crystals=readout.NUM_CRYSTALS, width=WIDTH):
 
 def photopeaks(h, width=WIDTH, chunk=2048):
     """fit_photopeaks() on spectra of `width` codes per bin, in chunks of crystals, with the
-    centre and sigma in codes."""
+    center and sigma in codes."""
     out = [fit_photopeaks(h[i:i + chunk], lo=300 // width, hi=2000 // width,
                           smooth=max(3, 36 // width))
            for i in range(0, h.shape[0], chunk)]
-    centre, sigma, counts, ok = (np.concatenate(v) for v in zip(*out))
-    return centre * width + (width - 1) / 2.0, sigma * width, counts, ok
+    center, sigma, counts, ok = (np.concatenate(v) for v in zip(*out))
+    return center * width + (width - 1) / 2.0, sigma * width, counts, ok
 
 
 # [snippet:peak]
 def fit_photopeaks(h, lo, hi, smooth):
-    """The photopeak of each spectrum (rows of h): centre and sigma in bins, and counts.
+    """The photopeak of each spectrum (rows of h): center and sigma in bins, and counts.
 
     1. The peak's first guess is the highest bin of the spectrum smoothed over `smooth` bins,
        between bins lo and hi: above most of the Compton continuum and below saturation.
-    2. A window of +-2 sigma around it (sigma guessed as 6% of the centre, a typical LYSO
+    2. A window of +-2 sigma around it (sigma guessed as 6% of the center, a typical LYSO
        resolution) is fitted as a Gaussian on a straight background: the background is the line
-       through the mean counts of two bands 3 to 3.5 sigma from the centre, and the Gaussian is
+       through the mean counts of two bands 3 to 3.5 sigma from the center, and the Gaussian is
        found by Guo's weighted fit of a parabola to the logarithm of what is left (IEEE Signal
        Process. Mag. 28(5), 2011), which needs no starting values.
-    3. Step 2 is repeated twice, with the window and the bands from the new centre and sigma.
+    3. Step 2 is repeated twice, with the window and the bands from the new center and sigma.
 
-    All crystals at once, with array operations. Returns (centre, sigma, counts, ok); ok is False
+    All crystals at once, with array operations. Returns (center, sigma, counts, ok); ok is False
     where the fit had too few points or gave a parabola that opens upward.
     """
     n, bins = h.shape
     kernel = np.ones(smooth) / smooth
     sm = np.apply_along_axis(lambda r: np.convolve(r, kernel, mode="same"), 1, h.astype(float))
-    centre = lo + np.argmax(sm[:, lo:hi], axis=1).astype(float)
-    sigma = 0.06 * centre
+    center = lo + np.argmax(sm[:, lo:hi], axis=1).astype(float)
+    sigma = 0.06 * center
     x = np.arange(bins, dtype=float)
     ok = np.ones(n, dtype=bool)
     counts = np.zeros(n)
     for _ in range(3):
-        w_lo = np.clip(np.round(centre - 2 * sigma), 1, bins - 2).astype(int)
-        w_hi = np.clip(np.round(centre + 2 * sigma), 1, bins - 2).astype(int)
-        # The background bands: 3 to 3.5 sigma from the centre, where the Gaussian has fallen
+        w_lo = np.clip(np.round(center - 2 * sigma), 1, bins - 2).astype(int)
+        w_hi = np.clip(np.round(center + 2 * sigma), 1, bins - 2).astype(int)
+        # The background bands: 3 to 3.5 sigma from the center, where the Gaussian has fallen
         # to 1% of its height (bands just outside the window would hold its tails).
-        l0, l1 = np.round(centre - 3.5 * sigma), np.round(centre - 3 * sigma) + 1
-        r0, r1 = np.round(centre + 3 * sigma), np.round(centre + 3.5 * sigma) + 1
+        l0, l1 = np.round(center - 3.5 * sigma), np.round(center - 3 * sigma) + 1
+        r0, r1 = np.round(center + 3 * sigma), np.round(center + 3.5 * sigma) + 1
         cols = np.arange(bins)[None, :]
         inside = (cols >= w_lo[:, None]) & (cols <= w_hi[:, None])
         left = (cols >= l0[:, None]) & (cols < l1[:, None])
@@ -98,8 +98,8 @@ def fit_photopeaks(h, lo, hi, smooth):
         background = bl[:, None] + slope[:, None] * (x[None, :] - xl[:, None])
         y = np.where(inside, h - background, 0.0)
         y = np.where(y > 0, y, 0.0)
-        # Guo: minimise sum y^2 (ln y - (A + B u + C u^2))^2, u centred for conditioning.
-        u = (x[None, :] - centre[:, None])
+        # Guo: minimize sum y^2 (ln y - (A + B u + C u^2))^2, u centered for conditioning.
+        u = (x[None, :] - center[:, None])
         w = y * y
         ly = np.log(np.where(y > 0, y, 1.0))
         s = [(w * u ** k).sum(1) for k in range(5)]
@@ -114,15 +114,15 @@ def fit_photopeaks(h, lo, hi, smooth):
         b, c = abc[:, 1], abc[:, 2]
         good &= c < 0
         c = np.where(good, c, -1.0)
-        new_centre = centre - b / (2 * c)
+        new_center = center - b / (2 * c)
         new_sigma = np.sqrt(-1.0 / (2 * c))
-        good &= np.isfinite(new_centre) & np.isfinite(new_sigma) & (new_sigma > 0.5)
-        good &= (new_centre > w_lo - 1) & (new_centre < w_hi + 1)
-        centre = np.where(good, new_centre, centre)
+        good &= np.isfinite(new_center) & np.isfinite(new_sigma) & (new_sigma > 0.5)
+        good &= (new_center > w_lo - 1) & (new_center < w_hi + 1)
+        center = np.where(good, new_center, center)
         sigma = np.where(good, new_sigma, sigma)
         ok &= good
         counts = y.sum(1)
-    return centre, sigma, counts, ok
+    return center, sigma, counts, ok
 # [/snippet:peak]
 
 
@@ -150,9 +150,9 @@ def fit_curve(gain, e_sat, e_lo=200.0, e_hi=700.0, points=64):
 # [/snippet:curve]
 
 
-def gains_from_peaks(centre_code, e_sat):
-    """The gain that puts a photopeak at code `centre_code` at 511 keV."""
-    return np.asarray(centre_code, dtype=float) * readout.ENERGY_LSB_KEV / saturate(PEAK_KEV, e_sat)
+def gains_from_peaks(center_code, e_sat):
+    """The gain that puts a photopeak at code `center_code` at 511 keV."""
+    return np.asarray(center_code, dtype=float) * readout.ENERGY_LSB_KEV / saturate(PEAK_KEV, e_sat)
 
 
 def apply(code, crystal, a, b, q):
