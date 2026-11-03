@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 14 (MiniDAQ 0.5.0-dev). Status: draft for review.
+Version 15 (MiniDAQ 0.6.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -314,6 +314,19 @@ units and the updates assume is `platform/platform.json`.
 | SRS-PLT-010 | When no trial is installed, the updater's `rollback` shall change nothing and exit with the status `3`, so that the unit that started it fails. | update | T |
 | SRS-PLT-011 | The updater shall refuse to run while another updater runs on the same root. | update | T |
 
+### 2.18 Calibration (CAL)
+
+How the singles' energies and times are corrected for each crystal before they are sorted and
+paired (Chapter 26, ADR 0021, CR-0012). A calibration table is a file that the calibration
+procedure writes (`tools/calib`, tool TL-29); its format is `docs/formats/calibration.md`.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-CAL-001 | The server shall refuse a calibration table whose schema is not version 1.0, which has an unknown key, a number of crystals other than the scanner's, a coefficient that is not finite or outside the calibration limits (gain 0.5 to 2 times nominal, energy at the lowest code within 100 keV, a response monotonic and at most 40% from linear up to the highest code, time offset within 5 ns), a CRC-32 that differs from that of its coefficients, an empty id, scanner serial or procedure, or timestamps not of the form YYYY-MM-DDTHH:MM:SSZ. | config | T |
+| SRS-CAL-002 | The pipeline shall replace the energy of every decoded single by a + b c + q c^2 of its crystal's coefficients, with c the energy code that the board reported, before the energy window and the coincidence sorter use it. | pipeline | T |
+| SRS-CAL-003 | The pipeline shall subtract its crystal's time offset from the time of every decoded single before the sort stage orders the singles, and hold back the singles that a later single's correction can still precede, so that the correction itself makes no single late. | pipeline | T |
+| SRS-CAL-006 | The status shall give, for each detector block, the number of calibrated singles between 430 and 590 keV in the run and their mean energy, and name the blocks whose mean differs from 511 keV by more than the drift tolerance (2% by default) once they have at least 1,000 singles in that window. | service | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -343,3 +356,4 @@ units and the updates assume is `platform/platform.json`.
 | 12 | Chapter 23: the receive path's drop counters, SRS-RDO-013 to SRS-RDO-015 (ADR 0018, CR-0009). |
 | 13 | Chapter 24: the firmware check and the run's sequencing with the boards, SRS-HW-011 to SRS-HW-015; SRS-HW-004, SRS-HW-007 and SRS-HW-010 extended (ADR 0019, CR-0010); control API 2.3. |
 | 14 | Chapter 25: the platform and updates, SRS-PLT-001 to SRS-PLT-011 (ADR 0020, CR-0011). |
+| 15 | Chapter 26: calibration, SRS-CAL-001 to SRS-CAL-007 (ADR 0021, CR-0012). |

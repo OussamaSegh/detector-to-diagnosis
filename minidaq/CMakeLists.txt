@@ -13,6 +13,7 @@ add_library(minidaq_core
   src/sim/readout_link.cpp
   src/sim/dead_time.cpp
   src/processing/energy_filter.cpp
+  src/processing/calibration.cpp
   src/processing/coincidence_sorter.cpp
   src/processing/sinogram.cpp
   src/processing/stream_merger.cpp

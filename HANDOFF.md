@@ -403,6 +403,26 @@ coverage review is `measurements/release-0.4.0/coverage-review.md`. CAPA-0003 cl
 effective; CAPA-0001 and CAPA-0004 are re-checked at 0.5.0. Disk: a full part 1 run with the
 writer benchmark needs about 10 GB free; delete old build directories first.
 
+Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it up:
+- core `processing/calibration` (in item `processing`): CalibrationTable (per crystal: energy
+  E = a + b*c + q*c^2 of the 11-bit energy code c, identity a=0 b=0.5 q=0; time offset in ps;
+  table id, version, scanner serial, created, valid_until, reference temperature, procedure,
+  CRC-32 of the coefficients), checks of ranges, apply(Single&). Drift monitor: per block mean of
+  calibrated energies in 430..590 keV against 511.
+- pipeline: decode applies the table; sort holds back a tail of (max - min time offset) so a
+  correction never makes a single late; horizon 0 without a table (unchanged speed).
+- application `config/calibration_file`: strict JSON reader (object_reader), CRC check, scanner
+  match, expiry refused at configure; acquisition config `calibration.file`.
+- sim: per-crystal gain, a saturation nonlinearity and time skews, with truth.
+- run record metadata `calibration` (id, version, file SHA-256 from the adapter, CRC).
+- tools/calib (Python, numpy only: no scipy or scikit-image, which would be new dependencies):
+  photopeak fit, time offsets by least squares (conjugate gradient on the graph Laplacian),
+  writes the table; tool TL-29. SRS-CAL-001 to 007, hazard H-11 (wrong calibration).
+- Exercises 26.1 gains by photopeak fit, 26.2 flood map and crystal LUT (numpy peak finding),
+  26.3 time offsets by least squares (H); crystal LUT stays an exercise (boards identify crystals).
+- pybind11 for Chapter 29 is a new dependency: asked the user (decision card 2026-11-03); the
+  fallback is a C interface with ctypes.
+
 ### Left to do, in order
 
 1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in
