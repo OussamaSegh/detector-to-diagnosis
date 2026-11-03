@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 3 (MiniDAQ 0.5.0-dev, Chapter 25). Status: draft for review.
+Version 4 (MiniDAQ 0.6.0, release 0.6.0). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -32,6 +32,7 @@ them.
 | A scan in progress | Stopping it, or acquiring it with altered settings, means a repeated scan and its dose, or a quantitation error (hazard H-08). | Integrity of control, availability |
 | The acquired data (list-mode files, run records) | Reconstruction and quantitation rely on it. | Integrity; confidentiality is low, since it carries no patient identity |
 | The configuration | Decides how coincidences are formed. | Integrity |
+| The calibration tables | Decide each crystal's energy and time, and so which events the windows keep (hazard H-11, Chapter 26). | Integrity |
 | Tokens, the start-up token, the TLS private key | Whoever holds an operator token controls the acquisition. | Confidentiality, integrity |
 | The audit trail | Evidence of who did what, for an investigation. | Integrity, availability |
 | Crash reports and the flight recorder's events | Evidence of what the server did before a failure, for an investigation (Chapter 21). | Integrity, availability; confidentiality is low, since they hold no token and no patient data |
@@ -94,11 +95,12 @@ statements and notes. A status is one of:
 | bundle (flow) | | T-41: mitigated | | T-42: n/a | T-43: accepted | |
 | updater (process) | T-44: environment | T-45: mitigated | T-46: mitigated | T-47: n/a | T-48: mitigated | T-49: mitigated |
 | slots (store) | | T-50: environment | T-51: mitigated | T-52: n/a | T-53: mitigated | |
+| calibration (store) | | T-54: mitigated | T-55: mitigated | T-56: accepted | T-57: mitigated | |
 
-Of the 53 entries, 30 are mitigated, 8 rely on the environment, 8 are accepted and 7 are not
-applicable. Three of the mitigated entries are mitigated only in part, and their remainder is a
-recorded gap of section 7: T-27 (a CRC detects damage, not a deliberate change), T-06 (on
-loopback without TLS) and T-03 (a shared token names a group, not a person).
+Of the 57 entries, 33 are mitigated, 8 rely on the environment, 9 are accepted and 7 are not
+applicable. Four of the mitigated entries are mitigated only in part, and their remainder is a
+recorded gap of section 7: T-27 and T-54 (a CRC detects damage, not a deliberate change), T-06
+(on loopback without TLS) and T-03 (a shared token names a group, not a person).
 
 ## 4. Attack tree: stop a running scan
 
@@ -218,6 +220,7 @@ forgotten; each is a candidate for a later change request.
 | Gap | Threats | Why it is open | Possible remedy |
 |---|---|---|---|
 | List-mode files are not signed | T-27 | The CRC-32 of each block detects damage, not a deliberate change with a recomputed CRC. Whoever can write the files runs as the operator (section 6). | A signature or a keyed hash (HMAC) over the run's files, with the key held by the server. |
+| Calibration tables are not signed | T-54 | The CRC-32 detects damage, not a deliberate change within the limits with a recomputed CRC; the photopeak monitor sees an energy change during a run, not a change of the time offsets within the limits. Whoever can write the tables runs as the operator (section 6). | A signature by the calibration procedure, verified by the server with a key it trusts, as for update bundles (RC-34). |
 | The audit trail is not tamper-evident | T-31 | It is appended and flushed per record, but its own user can rewrite it. | Forward records to a log server; or chain the records with a hash, so that a removed or changed record is detectable. |
 | No rate limiting of authentication | T-15 | An attacker on the network can try tokens at the rate of new connections. With 256-bit tokens guessing is hopeless; the flood itself is the network's to stop. | A delay after a failed `auth` from the same address. |
 | Port squatting on loopback without TLS | T-06 | Another local user who binds the port first receives the start-up token from `minidaq_ctl`. | TLS on loopback (section 6, item 5), or a Unix domain socket whose permissions do the authentication. |
@@ -275,3 +278,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 1 | First version (Chapter 17): STRIDE analysis T-01 to T-34, attack tree for H-08, environment assumptions (RC-25), gaps, vulnerability management. |
 | 2 | Chapter 21 (CR-0007), recorded at the release checks of 0.4.0 (MDQ-PR-031): the crash report as a data store (T-35 to T-38) and the diagnostics response in T-09. Also editorial: the scope names no manufacturer. |
 | 3 | Chapter 25 (CR-0011): updates as elements of the diagram (release, bundle, updater, slots; T-39 to T-53); T-07 is mitigated by signed updates (RC-34) instead of being left to the platform. |
+| 4 | Release 0.6.0: the calibration tables of Chapter 26 (CR-0012) as a data store (T-54 to T-57) and their gap in section 7; CR-0012 had not listed this document (code review checklist, item 5.5). |

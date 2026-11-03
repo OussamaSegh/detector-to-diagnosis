@@ -656,6 +656,60 @@
         "category": "code",
         "escape": "Every failure test made the board fail its reads (unresponsive, vanished); no test bus refused writes."
       }
+    },
+    {
+      "id": "MDQ-PR-045",
+      "title": "The watchdog test read the audit callback before the watchdog had called it",
+      "found": "2026-11-03, release checks of 0.6.0, review of the CI runs of Part VI: the run of ci.yml on ec4c2e6 failed ServiceManager.TheWatchdogPingsOnlyWhileEveryLoopBeats once in the gcc-cxx23 job (changes.size() was 0, expected 1); the same run failed Exercise 6.3's solution in every job, the cause that was fixed at the time",
+      "item": "tests",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "When the health of the loops changes, the watchdog thread first sends the new STATUS to the service manager and then calls its on_change callback, the audit trail. The test waited for the STATUS datagram and then read the callback's record at once, on the test thread, so a scheduler that paused the watchdog thread between the two calls made it fail. The code is correct: both are sent, in that order, by the same thread; only the test assumed the second had happened when it saw the first.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A defect of a test, not of the program: the watchdog sent both reports in every run, including the failed one."
+      },
+      "resolution": {
+        "change": "The test waits, with test_support::eventually, until the callback has recorded the change, after each STATUS it sees (test_health.cpp).",
+        "verification": "With a pause of 50 ms added between the two calls of the watchdog, the old test fails and the new one passes; the release checks and CI of 0.6.0 on the fixed commit."
+      },
+      "root_cause": {
+        "whys": [
+          "The test read the callback's record before the callback had run.",
+          "It treated two outputs of another thread as one event: seeing the first, it assumed the second.",
+          "The test was written in Chapter 25 with eventually() for each output it waited on, but not for the second output of the same change."
+        ],
+        "cause": "A test that orders its reads by the order in which another thread writes, without waiting for each write.",
+        "category": "test",
+        "escape": "It passed every local run and the stress run, which does not repeat the ServiceManager tests; the CI run where it failed also failed for another reason, and only that reason was investigated at the time."
+      }
+    },
+    {
+      "id": "MDQ-PR-046",
+      "title": "The calibration tables were added without a threat model review",
+      "found": "2026-11-03, release checks of 0.6.0, threat model review before the release (threat model, section 9): CR-0012 added the calibration table files, read by the server at configure, and neither listed the threat model among its documents nor said why it does not change",
+      "item": "release",
+      "status": "closed",
+      "capa": null,
+      "description": "Chapter 26 added a data store that the server reads and that decides each crystal's energy and time (hazard H-11). The threat model, version 3, had no element for it, so tampering with a table, a table that nobody can trace, and a special or very large file named as a table were not analyzed. The code already countered most of them (RC-35 to RC-38, the read of at most 8 MiB from a regular file), but nothing recorded that, and the remaining gap, a deliberate change with a recomputed CRC, was not written down. Item 5.5 of the code review checklist asks for exactly this.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "No control was missing in the code; the analysis and its record were. The open gap is recorded and weighed now (threat model, version 4, section 7)."
+      },
+      "resolution": {
+        "change": "Threat model version 4: the calibration tables as a data store with T-54 to T-57, the diagram, the asset, and the gap of unsigned tables in section 7.",
+        "verification": "docs.threats passes with the new element (tools/check_threats.py checks that every STRIDE category of a store has a threat or a reason, and that the requirements and controls exist)."
+      },
+      "root_cause": {
+        "whys": [
+          "The threat model had no element for the calibration tables.",
+          "CR-0012's documents list did not name it, and its review did not ask.",
+          "Item 5.5 of the checklist was applied to program options and commands, which Chapter 26 added none of; a new file read through an existing option was not seen as a new data flow."
+        ],
+        "cause": "A new data store reached through an existing configuration key was not recognized as a new data flow.",
+        "category": "process",
+        "escape": "tools/check_threats.py checks the elements the model has, not the files the server reads; the release's threat model review, the check meant for it, found it."
+      }
     }
   ]
 }

@@ -1,0 +1,7 @@
+# 2026-11-03T20:05Z MDQ-PR-045: the watchdog test with a 50 ms pause added by hand between the
+# watchdog's STATUS datagram and its on_change callback (service_manager.cpp, not committed),
+# debug build, ctest-free: minidaq_unit_tests --gtest_filter=ServiceManager.TheWatchdog* --gtest_repeat=3
+test as fixed (ef85887 + this commit): 3 of 3 passed
+test as before (HEAD:test_health.cpp): 3 of 3 failed, each at test_health.cpp:241,
+  changes.size() is 0, expected 1: the failure that CI saw once on ec4c2e6 (gcc-cxx23 job)
+The pause was removed afterwards; service_manager.cpp is unchanged in the repository.

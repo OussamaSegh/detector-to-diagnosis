@@ -236,6 +236,15 @@ TEST(ServiceManager, TheWatchdogPingsOnlyWhileEveryLoopBeats) {
     return !all.empty() && all.back().rfind("STATUS=unhealthy: loop silent for", 0) == 0;
   }));
   const auto pings = manager.count("WATCHDOG=1");
+  // The watchdog tells the manager first and the audit trail after, on its own thread: wait for
+  // the second, never assume it has happened when the first is seen (MDQ-PR-045).
+  const auto changes_are = [&](std::size_t n) {
+    return eventually([&] {
+      const std::lock_guard lock{mu};
+      return changes.size() >= n;
+    });
+  };
+  ASSERT_TRUE(changes_are(1));
   {
     const std::lock_guard lock{mu};
     ASSERT_EQ(changes.size(), 1U);
@@ -250,6 +259,7 @@ TEST(ServiceManager, TheWatchdogPingsOnlyWhileEveryLoopBeats) {
     beat->beat();
     return manager.count("WATCHDOG=1") > pings && manager.count("STATUS=healthy") == 1;
   }));
+  ASSERT_TRUE(changes_are(2));
   const std::lock_guard lock{mu};
   ASSERT_EQ(changes.size(), 2U);
   EXPECT_TRUE(changes[1].first);

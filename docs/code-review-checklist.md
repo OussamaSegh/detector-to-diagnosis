@@ -1,6 +1,6 @@
 # MiniDAQ code review checklist
 
-Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
+Version 3 (MiniDAQ 0.6.0, release 0.6.0). Status: draft for review.
 
 The compilers, clang-tidy, cppcheck, the sanitizers and the documentation tests check what a
 machine can check (the [coding standard](coding-standard.md) says which rule each one enforces).
@@ -54,6 +54,8 @@ finding is written as section 7 says.
    not A: a test of one fault at a time cannot tell the halves apart (MDQ-PR-019).
 6. A test that starts threads waits until each has started its work before it checks what they
    did (coding standard, rule 5.6; MDQ-PR-028).
+7. A test that waits for one output of another thread waits again for each further output it
+   checks, even one that thread writes right after: two writes are two events (MDQ-PR-045).
 
 ## 5. The regulated parts
 
@@ -64,7 +66,9 @@ finding is written as section 7 says.
    check that cannot run, or stops early, fails instead of passing (MDQ-PR-029, MDQ-PR-030).
 4. Controlled documents that changed get a new version before the release.
 5. A change that adds a program option, a command, a file or a data flow lists the architecture
-   and the threat model among its documents, or says why they do not change (MDQ-PR-031).
+   and the threat model among its documents, or says why they do not change (MDQ-PR-031). A file
+   that the program reads through an existing option or configuration key is a new data flow
+   too (MDQ-PR-046).
 
 ## 6. Diagnosability
 
@@ -95,3 +99,4 @@ a problem report (development plan, section 7).
 |---|---|
 | 1 | First version (Chapter 21, CR-0007). |
 | 2 | Items 4.6, 5.3 (a check that cannot run fails) and 5.5, from the release checks of 0.4.0 (MDQ-PR-028 to MDQ-PR-031). |
+| 3 | Item 4.7 and the second sentence of item 5.5, from the release checks of 0.6.0 (MDQ-PR-045, MDQ-PR-046). |

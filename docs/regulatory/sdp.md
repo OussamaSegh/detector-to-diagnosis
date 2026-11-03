@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 9 (MiniDAQ 0.5.0). Status: draft for review.
+Version 10 (MiniDAQ 0.6.0). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -167,6 +167,8 @@ in its header, and every requirement it implements is traced.
   from them (Chapter 16).
 - The server's flight recorder, its crash report and `tools/postmortem.sh` are the first
   evidence of a failure in the field (ADR 0016); a report quotes them.
+- A failed CI run is investigated job by job: every failed test of every job gets its cause
+  before the run counts as understood, also when one cause explains most of them (MDQ-PR-045).
 - Problems found during development of a change, before it is merged, are fixed in the
   change and need no report.
 - A real quality system links problem reports to complaints, CAPA and vigilance
@@ -228,3 +230,4 @@ of Chapter 13.
 | 7 | Chapter 20: the tool list and its checks replace the tool row of section 4; tool versions, the reproducible build, the gate self-test and the performance A/B comparison as checks of the pipeline; the release package and its evidence archive in sections 6 and 8. |
 | 8 | Chapter 21: the code review checklist in section 5; root cause analysis of problem reports and the diagnostic evidence in section 7. |
 | 9 | Release 0.5.0: the release checks run in four parts when the machine cannot hold the whole run (MDQ-PR-041). |
+| 10 | Release 0.6.0: a failed CI run is investigated job by job (section 7, MDQ-PR-045, CAPA-0001). |

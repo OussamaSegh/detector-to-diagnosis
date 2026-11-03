@@ -8,7 +8,7 @@ set -eu
 build=$1
 n=$2
 out=$3
-tests=${4:-'(^|/)(Pipeline|AcquisitionService|ControlServer|ControlProtocol|ListModeSink|UdpDetector|PacedSource|ReplaySource)\.'}
+tests=${4:-'(^|/)(Pipeline|AcquisitionService|ControlServer|ControlProtocol|ListModeSink|UdpDetector|PacedSource|ReplaySource|ServiceManager|Health|SlowControl)\.'}
 hogs=""
 for _ in $(seq $((2 * $(nproc)))); do
   sh -c 'while :; do :; done' &

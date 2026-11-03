@@ -19,6 +19,7 @@ digraph minidaq_dataflow {
     listmode [label="List-mode files,\nrun records", shape=cylinder];
     audit [label="Audit trail", shape=cylinder];
     crashreport [label="Crash report\n(file or journal)", shape=cylinder];
+    calibration [label="Calibration\ntables", shape=cylinder];
   }
 
   // Chapter 25: updates. The updater runs as root, outside the slots it writes.
@@ -34,6 +35,7 @@ digraph minidaq_dataflow {
   server -> client [label="responses", style=dotted];
   detector -> server [label="readout: MDQ-R1\nover UDP"];
   config -> server [label="read at configure"];
+  calibration -> server [label="read at configure"];
   tokens -> server [label="read at start"];
   server -> listmode [label="write"];
   server -> audit [label="append"];

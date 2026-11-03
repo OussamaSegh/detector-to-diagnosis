@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045 |
 | Owner | software lead |
 | Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; again at release 0.6.0 |
 
@@ -139,7 +139,38 @@ New criterion: no test fails for a timing reason in CI, in the release checks or
 run between this result and the release of 0.6.0, and every timing test added in Part VI is in
 the table above with its margin. Due: release 0.6.0.
 
+Result (2026-11-03, release checks of 0.6.0): **not effective.** One test failed for a timing
+reason within the criterion's period, and it is one of MiniDAQ's own:
+`ServiceManager.TheWatchdogPingsOnlyWhileEveryLoopBeats`, once in CI, in the `gcc-cxx23` job
+on ec4c2e6 (MDQ-PR-045). It is not a speed test. It read the record of the watchdog's callback
+as soon as it saw the watchdog's datagram, which the same thread sends just before; a pause of
+that thread between the two made it fail. The failure was found only at this check, by reading
+every failed CI run of Part VI job by job: the same run failed every job for another reason
+(Exercise 6.3's solution), and only that reason was investigated at the time. Part VI added no
+timing test (its tests of calibration, corrections and reconstruction compare values, not
+times; its waits use `test_support::patience`), so the table above needs no new row. The other
+tests that record a callback under a mutex were read for the same pattern: the audit records of
+`test_acquisition_service.cpp`, `test_control_protocol.cpp` and `test_security.cpp` are written
+on the thread that answers the command, before the answer, so the test that has the answer has
+the record.
+
+Further action:
+
+- MDQ-PR-045's test waits for each output it checks (`test_health.cpp`).
+- Code review checklist, version 3, item 4.7: a test that waits for one output of another
+  thread waits again for each further output it checks.
+- The stress run of the release checks (`tools/stress_tests.sh`) also repeats the
+  `ServiceManager`, `Health` and `SlowControl` tests, which start threads and were outside it
+  since Chapter 25; it would have run this test 100 times under load. Run for 0.6.0 on the fixed
+  commit (`measurements/release-0.6.0/stress-tsan-extended.txt`).
+- A failed CI run is investigated job by job until every failure has a cause, not only the
+  first one found (SDP, version 10, section 7).
+
+New criterion: no test fails for a timing reason in CI, in the release checks or in the stress
+run between this result and the release of 0.7.0, and every timing test added in Part VII is in
+the table above with its margin. Due: release 0.7.0.
+
 ## Closure
 
-Not closed: the action was not effective at releases 0.4.0 and 0.5.0; the next check is at
-release 0.6.0.
+Not closed: the action was not effective at releases 0.4.0, 0.5.0 and 0.6.0; the next check is
+at release 0.7.0.
