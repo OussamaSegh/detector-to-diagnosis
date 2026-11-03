@@ -421,6 +421,20 @@ TEST_F(Update, RefusesABundleForAnotherProductOrWithoutItsArchive) {
   ASSERT_FALSE(r.has_value());
   EXPECT_NE(r.error().find("not minidaq"), std::string::npos) << r.error();
 
+  // An archive that tar cannot read, signed as it is: a release tool's mistake. tar's failure is
+  // a refusal, and the slot it was extracting into is not used.
+  b = bundle("0.5.0");
+  write(b / "minidaq-0.5.0.tar.gz", "not a gzip stream");
+  const auto d = digest_file(b / "minidaq-0.5.0.tar.gz");
+  m = nlohmann::json::parse(read(b / "update.json"));
+  m["size"] = d->size;
+  m["sha256"] = d->sha256;
+  write(b / "update.json", m.dump(2));
+  write(b / "update.json.sig", sign(key_, read(b / "update.json")));
+  r = store->install(b, options());
+  ASSERT_FALSE(r.has_value());
+  EXPECT_NE(r.error().find("tar --list failed"), std::string::npos) << r.error();
+
   b = bundle("0.5.0");
   fs::remove(b / "minidaq-0.5.0.tar.gz");
   r = store->install(b, options());
