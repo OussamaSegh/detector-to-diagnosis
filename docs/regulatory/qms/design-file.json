@@ -41,6 +41,7 @@
     "docs/regulatory/verification/stp.md",
     "docs/code-review-checklist.md",
     "docs/hw/icd-feb.md",
-    "docs/platform/installation.md"
+    "docs/platform/installation.md",
+    "docs/formats/calibration.md"
   ]
 }

@@ -27,3 +27,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0018](0018-kernel-udp-receive-with-drop-accounting.md) | Kernel UDP sockets with full drop accounting, and no kernel bypass until a measurement asks for it | Accepted |
 | [0019](0019-firmware-contract-and-run-sequencing.md) | An interface control document with the firmware, a firmware check every cycle, and a run stop that waits for the boards to drain | Accepted |
 | [0020](0020-platform-watchdog-and-signed-updates.md) | A defined platform, a watchdog that sees inside the server, and signed updates into two slots with rollback | Accepted |
+| [0021](0021-calibration-table-and-procedure.md) | A calibration table per scanner, applied by the server, made by a Python procedure with acceptance criteria | Accepted |

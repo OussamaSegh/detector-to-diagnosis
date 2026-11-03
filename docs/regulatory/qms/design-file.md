@@ -51,3 +51,4 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/code-review-checklist.md`
 - `docs/hw/icd-feb.md`
 - `docs/platform/installation.md`
+- `docs/formats/calibration.md`

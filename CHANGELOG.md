@@ -8,6 +8,24 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+- Chapter 26 code: calibration (CR-0012, ADR 0021). A calibration table per scanner
+  (`processing/calibration`) with each crystal's energy curve and channel delay, applied by the
+  pipeline's decode stage, with a hold-back in the sort stage so that the time correction makes
+  no single late; its file format (`docs/formats/calibration.md`), read with a CRC-32 check,
+  the scanner serial and the expiry; configuration schema 1.4 (`calibration`); control API 2.4
+  (status field `calibration`, with a per-block photopeak monitor that names drifted blocks); the
+  table named in the run record and the list-mode metadata. `minidaq_sim` simulates an
+  uncalibrated detector (`--gain-spread`, `--saturation`, `--time-skew`, `--crystal-truth`).
+  The calibration procedure `tools/calib` (tool TL-29, numpy only) with acceptance criteria,
+  its tests (`tools.calib`) and `measurements/ch26/`. SRS-CAL-001 to 007, SRS-SIM-022; hazard
+  H-11 with RC-35 to RC-38.
+
+### Fixed
+- The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,
+  a photopeak value, what `O_SYNC` does, and table layout. The `mmio_bus.cpp` comment on `O_SYNC`
+  now says the same.
+
 ## [0.5.0] - 2026-11-03
 
 Part V, hardware interfacing, embedded Linux and networking (Chapters 22 to 25), complete. The

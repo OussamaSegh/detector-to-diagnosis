@@ -202,6 +202,25 @@
       "probability_after": "P2",
       "residual": "A drift within one cycle (100 ms) and within the update step (5 mV, 0.15 C) is not compensated; a sensor that reads a plausible but wrong temperature sets a wrong bias, which the daily quality control with a phantom finds (assumption: confirm with team).",
       "status": "closed"
+    },
+    {
+      "id": "H-11",
+      "preliminary": "HZ-3",
+      "hazard": "A wrong calibration table is applied",
+      "sequence": "A table is computed from a bad acquisition (too few counts, the wrong source, a detector that changed during it), is damaged or edited after it was written, belongs to another scanner, has expired, or becomes wrong as the detector drifts after it was made; the server applies it to every single of every run.",
+      "hazardous_situation": "Energies are shifted crystal by crystal, so the energy window keeps a different share of each detector's events, and channel delays are wrong, so true coincidences fall outside the coincidence window and the time-of-flight information is biased; nothing reports an error.",
+      "harm": "Quantitative values or artifacts in the image contribute to an incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P4",
+      "controls": [
+        {"id": "RC-35", "type": "protective", "description": "The server refuses a calibration table that is damaged or edited by hand (its CRC-32 does not match its coefficients), has a coefficient outside the limits of a working detector, was made for another scanner or has expired, and the acquisition is not configured.", "requirements": ["SRS-CAL-001", "SRS-CAL-004"], "effectiveness": {"method": "test", "evidence": "CalibrationFile.RefusesADamagedOrHandEditedTable"}},
+        {"id": "RC-36", "type": "protective", "description": "The calibration procedure writes a table only when every crystal passes its acceptance criteria (photopeak counts and width, gain, curve error, pairs and partners in coincidence, delay, the timing residual) and the server's limits, and otherwise names each crystal that failed.", "requirements": ["SRS-CAL-007"], "effectiveness": {"method": "test", "evidence": "test_reports_each_failing_crystal_and_writes_nothing"}},
+        {"id": "RC-37", "type": "protective", "description": "During a run the status gives each block's mean calibrated photopeak energy and names the blocks that have drifted beyond the tolerance from 511 keV.", "requirements": ["SRS-CAL-006"], "effectiveness": {"method": "test", "evidence": "CalibrationService.ConfiguresWithATableAndReportsIt"}},
+        {"id": "RC-38", "type": "information", "description": "The run record and the list-mode metadata name the table a run used (id, version, scanner, creation time, CRC-32), so that a table found wrong later identifies the runs it affected.", "requirements": ["SRS-CAL-005"], "effectiveness": {"method": "test", "evidence": "ListModeSink.NamesTheCalibrationTableInTheFilesAndTheRunRecord"}}
+      ],
+      "probability_after": "P2",
+      "residual": "A table that passes every criterion and is still wrong, as with a wrong saturation energy for the sensor or a source placed off centre, is found only by the daily quality control with a phantom; the drift monitor sees a block's drift only once the block has 1,000 singles in the photopeak window, and sees a wrong delay not at all (assumption: confirm with team).",
+      "status": "closed"
     }
   ]
 }

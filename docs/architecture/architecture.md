@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 11 (MiniDAQ 0.5.0-dev, Chapter 25). Status: draft for review.
+Version 12 (MiniDAQ 0.6.0-dev, Chapter 26). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -55,6 +55,11 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   triggers go on after its pipeline starts and whose stop waits until every board has sent what
   its output FIFO holds (items hw and service, control API 2.3, Chapter 24,
   [ADR 0019](../adr/0019-firmware-contract-and-run-sequencing.md)).
+- calibration: a table per scanner of each crystal's energy curve and channel delay, which the
+  pipeline's decode stage applies to every single, a photopeak monitor per block that names the
+  blocks whose calibration has drifted, and the procedure that makes the table, `tools/calib`
+  (items processing, pipeline, config and service, control API 2.4, Chapter 26,
+  [ADR 0021](../adr/0021-calibration-table-and-procedure.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -67,8 +72,9 @@ pipeline does not use it yet). The control API's security is described in the
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
 | Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
-| Operator, scripts, test harness | Control protocol 2.3: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
-| Configuration files | JSON, schema version 1.3 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
+| Operator, scripts, test harness | Control protocol 2.4: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Configuration files | JSON, schema version 1.4 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
+| Calibration table | JSON, schema version 1.0 ([format](../formats/calibration.md)), written by `tools/calib` and named by the configuration | in | Checked against its CRC-32, the scanner serial, its expiry and the limits of a working detector before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile` (Chapter 4); the platform is defined in `platform/platform.json` and checked at installation (Chapter 25) |
 | Service manager (systemd) | sd_notify(3) datagrams to `NOTIFY_SOCKET`: READY, STOPPING, STATUS, and WATCHDOG while healthy (`packaging/systemd/minidaq.service`) | out | Restarts the server on a crash or a missed watchdog; starts the rollback unit after repeated failure ([ADR 0020](../adr/0020-platform-watchdog-and-signed-updates.md)) |
@@ -128,11 +134,11 @@ assume risk controls outside the software (assumption: confirm with team).
 | pipeline | `pipeline/` | server | B | Moves every single between threads |
 | metrics | `metrics/` | server | B | Observes only (A alone); B because nothing segregates it from the pipeline |
 | rt | `rt/` | server | B | Scheduling and memory locking of the stages |
-| processing | energy filter, sinogram, count rates | server | B | Hot-path filter and quality-control views |
+| processing | energy filter, sinogram, count rates, calibration table and photopeak monitor | server | B | Hot-path filter and quality-control views; applies each crystal's calibration (H-11) |
 | sorter | `CoincidenceSorter` | server | B | Decides every coincidence |
 | merger | `StreamMerger` | server | B | Orders many boards' singles |
 | sim | `sim/` | server | B | Test sources linked into the server ([MDQ-PR-009](../regulatory/known-anomalies.md)) |
-| config | `config/` | server | B | Validates the acquisition settings |
+| config | `config/`, including the calibration table file | server | B | Validates the acquisition settings and the calibration table |
 | service | service, state machine, ports | server | B | Owns the run and its faults |
 | protocol | control protocol and server | server | B | Accepts commands from the network |
 | access | tokens, roles, start-up token, TLS (`control/access`, `control/tls`) | server, ctl | B | Decides who may control the acquisition |
@@ -327,3 +333,4 @@ Open issues:
 | 9 | Part V: the front-end boards and item `hw` (Chapter 22, ADR 0017, CR-0008, control API 2.2) and the receive path's drop counters (Chapter 23, ADR 0018, CR-0009). |
 | 10 | Chapter 24: the firmware contract (ICD-FEB, version 1), the firmware check and the run's sequencing with the boards' triggers and FIFOs (ADR 0019, CR-0010, control API 2.3). |
 | 11 | Chapter 25: the platform (definition, units, health-gated watchdog) and signed updates with rollback; items `platform` and `update`; the threads and SOUP that come with them (ADR 0020, CR-0011). Also corrects what version 10 left stale in section 2: the hardware description schema (1.1) and the control protocol (2.3). |
+| 12 | Chapter 26: calibration (the table, its file format, the photopeak monitor, the procedure `tools/calib` as tool TL-29), configuration schema 1.4 and control API 2.4 (ADR 0021, CR-0012). |
