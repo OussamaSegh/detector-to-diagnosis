@@ -1,0 +1,45 @@
+# Chapter 26: calibrating an uncalibrated detector
+
+Machine: x86_64, 4 CPUs, Python 3.13.17, numpy 2.5.3.
+Detector: minidaq_sim --gain-spread 0.1 --saturation 1500 --time-skew 500 --seed 26; acquisitions at 20 MBq, no phantom.
+
+## 1. Uniform cylinder, 3 s
+
+Simulated in 63 s; calibrated in 36.3 s; exit status 0.
+Singles 29,056,443; isolated pairs 2,730,571, of which 177,409 set aside as outliers; timing solution 63 iterations, residual 325.6 ps rms.
+Least photopeak counts 580; least pairs 181; least partners 178; worst curve error 0.44%; failed crystals 0.
+Gain error against the truth: mean +0.052%, rms 0.237%, worst 1.05%.
+Each crystal's true photopeak through its curve: mean 511.04 keV, rms spread 1.45 keV, worst 5.98 keV from 511.
+Delay error against the truth (common constant removed): rms 20.9 ps, worst 90 ps; the delays themselves spread 496 ps rms.
+  in the two rings at each end: rms 22.8 ps, mean +9.8 ps; elsewhere rms 20.5 ps.
+Summed spectrum, as reported (0.5 keV per code): photopeak at 431 keV, FWHM 19.4% (fit ok).
+Summed spectrum, calibrated: photopeak at 511 keV, FWHM 10.8% (fit ok).
+
+## 2. Point source at the centre, 3 s
+
+Exit status 1; failed crystals 18432; least partners 7, median 13; residual 129.3 ps rms; 739 iterations.
+First lines of its report:
+    crystal 0: paired with 11 other crystals, 40 needed
+    crystal 1: paired with 12 other crystals, 40 needed
+    crystal 2: paired with 13 other crystals, 40 needed
+Delay error if the table were written anyway: rms 130.5 ps, worst 297 ps.
+
+## 3. Uniform cylinder, 0.5 s
+
+Exit status 1; table written: False; failed crystals 18432 of 18432.
+   18432 crystals: N photopeak counts, N needed
+   18432 crystals: N coincident pairs, N needed
+    3383 crystals: paired with N other crystals, N needed
+       1 crystals: the photopeak fit did not converge
+       1 crystals: gain N N to N expected
+       1 crystals: photopeak sigma N% of its centre, N to N% expected
+Last lines of its report:
+    and 18412 more crystals
+    no table written: 18432 crystals failed
+
+## 4. minidaq_server with the table of 1
+
+Configuration naming scanner MDQ-REF-0001: minidaq_ctl exit status 0.
+    status calibration: {"crc32": "e012b836", "created_utc": "2026-11-03T09:00:00Z", "drift_tolerance_percent": 2.0, "id": "CAL-0002", "procedure": "CP-026 version 1", "reference_temperature_c": 25.0, "scanner_serial": "MDQ-REF-0001", "time_spread_ps": 4077, "valid_until_utc": "2027-02-01T09:00:00Z", "version": 2}
+Configuration naming scanner MDQ-OTHER-0002: minidaq_ctl exit status 1.
+    /calibration/scanner_serial: the table was made for scanner "MDQ-REF-0001", not "MDQ-OTHER-0002"

@@ -42,9 +42,11 @@ std::string check_entry(const CrystalCalibration& k, const CalibrationLimits& li
   if (k.b_kev + 2.0F * k.q_kev * max_code <= 0.0F) {
     return "energy falls with the code before code 2047";
   }
-  // Curvature bounded both ways: at most max_nonlinearity of the linear term at the top.
-  if (std::abs(k.q_kev) * max_code > lim.max_nonlinearity * k.b_kev) {
-    return "nonlinearity is more than " + std::to_string(lim.max_nonlinearity) + " at code 2047";
+  // Curvature bounded each way, as a fraction of the linear term at the top code.
+  if (const float bend = k.q_kev * max_code / k.b_kev;  // b > 0: checked above
+      bend < -lim.max_curvature_down || bend > lim.max_curvature_up) {
+    return "nonlinearity " + std::to_string(bend) + " at code 2047 is outside -" +
+           std::to_string(lim.max_curvature_down) + " to " + std::to_string(lim.max_curvature_up);
   }
   if (k.time_offset_ps < -lim.max_abs_time_offset_ps ||
       k.time_offset_ps > lim.max_abs_time_offset_ps) {

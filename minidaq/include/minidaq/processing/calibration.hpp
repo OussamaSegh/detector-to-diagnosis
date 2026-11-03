@@ -50,14 +50,18 @@ struct CrystalCalibration {
 // [/snippet:crystal]
 
 // The limits make() enforces. A working detector's gain is within a factor of two of nominal, its
-// response is monotonic over the whole code range and at most 40% below linear at the top, its
-// pedestal is within 100 keV of zero and its channel delays within 5 ns (assumption: confirm with
-// team; these bound a sane table, the procedure's acceptance criteria are tighter).
+// curve is monotonic over the whole code range, its pedestal is within 100 keV of zero and its
+// channel delays within 5 ns. The curvature is bounded differently each way: a saturating SiPM
+// compresses the high codes, so its curve bends up, and at the top code the quadratic term can be
+// larger than the linear one (1.15 times for a gain of 0.6 and an E_sat of 1500 keV, Chapter 26);
+// nothing physical bends it down by much (assumption: confirm with team; these bound a sane
+// table, the procedure's acceptance criteria are tighter).
 struct CalibrationLimits {
   float min_gain = 0.5F;  // b / 0.5 keV
   float max_gain = 2.0F;
   float max_abs_a_kev = 100.0F;
-  float max_nonlinearity = 0.4F;  // -q * c_max^2 / (b * c_max) at c_max = 2047
+  float max_curvature_down = 0.4F;  // -q c_max^2 / (b c_max) at c_max = 2047, for q < 0
+  float max_curvature_up = 1.5F;    //  q c_max^2 / (b c_max), for q > 0
   std::int32_t max_abs_time_offset_ps = 5'000;
 };
 

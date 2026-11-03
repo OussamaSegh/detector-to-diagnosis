@@ -119,7 +119,7 @@ TEST(Calibration, RefusesEachCoefficientOutsideWhatADetectorCanHave) {
       {{-101.0F, 0.5F, 0.0F, 0}, "code 0"},
       {{0.0F, 0.5F, -1.3e-4F, 0}, "falls"},         // slope < 0 before 2047
       {{0.0F, 0.5F, -1.0e-4F, 0}, "nonlinearity"},  // 41% below linear at the top
-      {{0.0F, 0.5F, 1.0e-4F, 0}, "nonlinearity"},   // 41% above
+      {{0.0F, 0.5F, 3.7e-4F, 0}, "nonlinearity"},   // 151% above
       {{0.0F, 0.5F, 0.0F, 5'001}, "time offset"},
       {{0.0F, 0.5F, 0.0F, -5'001}, "time offset"},
   };
@@ -135,6 +135,10 @@ TEST(Calibration, RefusesEachCoefficientOutsideWhatADetectorCanHave) {
   auto k = nominal();
   k[1] = {100.0F, 0.25F, 0.0F, 5'000};
   k[2] = {-100.0F, 1.0F, -0.39F * 1.0F / 2047.0F, -5'000};
+  k[3] = {0.0F, 0.5F, 1.49F * 0.5F / 2047.0F, 0};
+  // The curve tools/calib fits to a crystal of gain 0.6 behind a SiPM with E_sat 1500 keV: its
+  // quadratic term is 1.15 times its linear term at the top code.
+  k[4] = {13.06F, 0.742F, 1.15F * 0.742F / 2047.0F, 0};
   EXPECT_TRUE(CalibrationTable::make(good_info(), k));
 }
 

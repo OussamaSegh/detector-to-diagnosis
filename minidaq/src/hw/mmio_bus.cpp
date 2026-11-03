@@ -57,7 +57,8 @@ Expected<volatile std::uint32_t*, std::string> map_region(int fd, std::size_t si
 Expected<std::unique_ptr<MmioBus>, std::string> MmioBus::open(const std::string& path,
                                                               std::size_t size,
                                                               std::size_t offset) {
-  // O_SYNC: on the sysfs resource files of x86 this asks for an uncached mapping.
+  // O_SYNC: /dev/mem needs it for an uncached mapping; sysfs resource files and UIO regions are
+  // mapped uncached in any case.
   const int fd = ::open(path.c_str(), O_RDWR | O_SYNC | O_CLOEXEC);
   if (fd < 0) {
     // NOLINTNEXTLINE(concurrency-mt-unsafe): opened once, at startup

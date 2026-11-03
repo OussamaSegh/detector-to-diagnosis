@@ -147,6 +147,9 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME tools.platform_check COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_platform_check.py)
   add_test(NAME packaging.units COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/check_units.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(tools.make_update tools.platform_check packaging.units PROPERTIES LABELS "unit")
+  # Chapter 26: the calibration procedure, on a synthetic detector (about 30 s; needs numpy).
+  add_test(NAME tools.calib COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_calib.py)
+  set_tests_properties(tools.calib PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 12: the list-mode tools end to end (simulate, write, verify, damage, histogram).
   add_test(NAME tools.listmode
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_listmode_tools.py $<TARGET_FILE_DIR:minidaq_sim>)

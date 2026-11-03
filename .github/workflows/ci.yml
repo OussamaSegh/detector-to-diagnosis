@@ -28,7 +28,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev python3-numpy
       - name: Tune the network stack as the acquisition PC is installed (ADR 0009)
         # The system test plan's environment (section 3): Ubuntu's default rmem_max is too small
         # for a burst of readout packets, and the kernel would drop them (MDQ-PR-020).
@@ -48,7 +48,7 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libssl-dev
+          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libssl-dev python3-numpy
       - name: Configure (for compile_commands.json)
         run: cmake --preset clang-release
       - name: clang-tidy and cppcheck
@@ -70,7 +70,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build libssl-dev
+          sudo apt-get install -y ninja-build libssl-dev python3-numpy
       - name: Build twice and compare
         run: tools/repro_check.sh repro
       - uses: actions/upload-artifact@v4
@@ -86,7 +86,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev python3-numpy
       - name: Build fuzzers
         run: |
           cmake --preset fuzz -DMINIDAQ_FUZZ_SMOKE_SECONDS=60
@@ -189,7 +189,7 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build libssl-dev
+          sudo apt-get install -y ninja-build libssl-dev python3-numpy
       - name: Build the shipped programs and package them
         run: |
           cmake --preset hardened -DMINIDAQ_BUILD_TESTS=OFF -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF

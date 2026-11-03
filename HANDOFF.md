@@ -418,10 +418,20 @@ Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it
 - tools/calib (Python, numpy only: no scipy or scikit-image, which would be new dependencies):
   photopeak fit, time offsets by least squares (conjugate gradient on the graph Laplacian),
   writes the table; tool TL-29. SRS-CAL-001 to 007, hazard H-11 (wrong calibration).
+- Done and pushed: a4e9eac (core), 689e79d (pipeline), 8294fd8 (simulator), c55d36b (file,
+  config 1.4, service, API 2.4), then tools/calib with tools/test_calib.py (ctest tools.calib,
+  about 30 s, skips without numpy; CI installs python3-numpy) and measurements/ch26 (about 4
+  minutes: a centred cylinder, 20 MBq, 3 s, no phantom; gains 0.24% rms, delays 20.9 ps rms,
+  summed FWHM 19.4% to 10.8%; a point source is refused by the partners criterion and would be
+  130 ps rms wrong). The end-to-end check showed the server's curvature limit (0.4 each way) too
+  strict for a saturating SiPM: now 0.4 down and 1.5 up (max_curvature_down/up), and the tool
+  checks the server's limits before it writes. minidaq_sim's default source is a cylinder IN a
+  90 mm water phantom: calibration runs need --phantom 0. Still to do: exercises, book text,
+  docs/formats/calibration.md, ADR 0021, CR-0012, H-11, architecture update, CHANGELOG, tag.
 - Exercises 26.1 gains by photopeak fit, 26.2 flood map and crystal LUT (numpy peak finding),
   26.3 time offsets by least squares (H); crystal LUT stays an exercise (boards identify crystals).
-- pybind11 for Chapter 29 is a new dependency: asked the user (decision card 2026-11-03); the
-  fallback is a C interface with ctypes.
+- pybind11 for Chapter 29: approved by the user on 2026-11-03 (decision card). Record it as a
+  SOUP item when Chapter 29 adds it.
 
 ### Left to do, in order
 
@@ -430,8 +440,11 @@ Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it
    for 0.5 (789ab17); remember this bump right after every release, or docs.version turns CI red.
 2. **Part V** (22 to 25): released as 0.5.0 on 2026-11-03 (release commit 438ea37, tag
    book-v0.5.0 on GitHub, report https://claude.ai/artifact/Eizn2MGX4aL6ovV9MTgzm2). VERSION is
-   0.6.0-dev with the SOUP review for 0.6 (SOUP list v10). Pending: the Fable Part V review PR,
-   which this thread reviews and merges.
+   0.6.0-dev with the SOUP review for 0.6 (SOUP list v10). Part V review: PR #3 merged on
+   2026-11-03 (3c14b67, text fixes in chapters 22 to 25; every claim checked against the
+   measurement files and the testbench); the mmio_bus.cpp O_SYNC comment it noted was fixed on
+   main. Its other note, the book's very small index, is a decision for before 1.0.0. Later
+   Part reviews run on an Opus model: the user said never to use Fable again.
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
    image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
