@@ -396,7 +396,10 @@ The cycle for one board is the heart of the chapter, and it is short enough to r
 
 Read it for its order. Everything is read before anything is decided, and one failed read makes
 the whole cycle of that board a failure: deciding from half a cycle's readings is how a
-controller acts on a temperature from one moment and a current from another. The identity is
+controller acts on a temperature from one moment and a current from another. A failed write
+fails the cycle too, and only a cycle in which every access succeeded ends a run of failed
+cycles; three in a row latch a fault, so a board that answers every read and refuses every
+write cannot sit unbiased forever with no fault to say why. The identity is
 checked before any other register is believed. The temperature is checked before it is used. The
 board's own findings (its overtemperature trip, its overcurrent flag, its supply fault) come
 before the software's. Only then is a bias computed, and on a board that has just been powered up

@@ -629,6 +629,33 @@
         "category": "code",
         "escape": "The tests made the current too high, which sets both conditions at once."
       }
+    },
+    {
+      "id": "MDQ-PR-044",
+      "title": "A board that answered every read and refused every write never latched a fault",
+      "found": "2026-11-03, release coverage review of 0.5.0: the write-failure branches of the slow control were never taken; the new test SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly showed the board staying off after three failed cycles",
+      "item": "hw",
+      "status": "closed",
+      "capa": null,
+      "description": "The count of consecutive failed cycles was reset as soon as a cycle's reads succeeded, before its writes. A write that failed raised the count to 1, and the next cycle's reads set it back to 0, so max_failed_cycles was never reached for writes. A board whose setpoint register refused writes stayed off, with its bias disabled and failed_accesses growing, but in no fault: the acquisition could not start and nothing said why. SRS-HW-004 asks for a fault after max_failed_cycles cycles with a failed access.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The bias stayed off, the safe state, and the board was never ready, so no acquisition ran on it; the defect hid the cause from the operator."
+      },
+      "resolution": {
+        "change": "A failed read or write fails the cycle the same way, and only a cycle whose every access succeeded resets the count (slow_control.cpp); Chapter 22 says so. The board's own overcurrent flag keeps its place before the software's reading (MDQ-PR-043).",
+        "verification": "The new test fails before the change and passes after it; the release checks of 0.5.0 on the fixed commit."
+      },
+      "root_cause": {
+        "whys": [
+          "The count of failed cycles never reached 3.",
+          "It was reset when the reads succeeded, before the writes of the same cycle.",
+          "The reset was written with the reads in Chapter 22; the write failures were added later in the same function and incremented the count without checking it."
+        ],
+        "cause": "A counter reset at the end of one phase of a cycle instead of at the end of the cycle.",
+        "category": "code",
+        "escape": "Every failure test made the board fail its reads (unresponsive, vanished); no test bus refused writes."
+      }
     }
   ]
 }

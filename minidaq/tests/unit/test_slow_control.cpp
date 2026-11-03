@@ -96,6 +96,25 @@ class Raised final : public RegisterBus {
   std::uint32_t errors_;
 };
 
+// A board on which writes to one register fail while `refuse` is set, as on a bus that loses
+// some transactions.
+class RefusedWrites final : public RegisterBus {
+ public:
+  RefusedWrites(RegisterBus& inner, std::uint32_t address) : inner_{inner}, address_{address} {}
+  bool refuse = true;
+  Expected<std::uint32_t, HwError> read32(std::uint32_t a) override { return inner_.read32(a); }
+  HwStatus write32(std::uint32_t a, std::uint32_t v) override {
+    if (refuse && a == address_) {
+      return HwStatus{HwError{HwErrc::bus_error, a}};
+    }
+    return inner_.write32(a, v);
+  }
+
+ private:
+  RegisterBus& inner_;
+  std::uint32_t address_;
+};
+
 }  // namespace
 
 TEST(SlowControl, KeepsTheOvervoltageConstantAsTheTemperatureMoves) {
@@ -474,4 +493,62 @@ TEST(SlowControl, ALatchedFaultSwitchesTheBiasAndTheTriggersOff) {
   EXPECT_FALSE(rig.state().triggers);
   EXPECT_FALSE(rig.sc.triggers_are(true));
   EXPECT_FALSE(rig.sc.drained()) << "a board in fault cannot say what it still holds";
+}
+
+TEST(SlowControl, AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly) {
+  // REQ: SRS-HW-002, SRS-HW-004
+  // The write paths that the release coverage review of 0.5.0 found untested.
+  {
+    // The setpoint cannot be written: the supply is never enabled, and the cycles with a failed
+    // access end in a fault.
+    std::int64_t now = 0;
+    FakeBoard board{0, [&] { return now; }};
+    RefusedWrites bus{board, feb::BiasSetpoint::address};
+    SlowControl sc{{}, {&bus}};
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).failed_accesses, 1U);
+    EXPECT_EQ(*read_field<feb::Control::BiasEnable>(board), 0U) << "no enable without a setpoint";
+    sc.step(now);
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).state, BoardState::fault);
+    EXPECT_EQ(*read_field<feb::Control::BiasEnable>(board), 0U);
+  }
+  {
+    // A new setpoint that cannot be written, and then can: one failed access, then the update.
+    std::int64_t now = 0;
+    FakeBoard board{0, [&] { return now; }};
+    RefusedWrites bus{board, feb::BiasSetpoint::address};
+    bus.refuse = false;
+    SlowControl sc{{}, {&bus}};
+    for (; now <= 45 * s; now += 100 * ms) {
+      sc.step(now);
+    }
+    ASSERT_EQ(sc.snapshot().at(0).state, BoardState::ready);
+    bus.refuse = true;
+    board.set_temperature(30.0);  // a new setpoint is due
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).failed_accesses, 1U);
+    bus.refuse = false;
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).failed_accesses, 1U);
+    EXPECT_NE(sc.snapshot().at(0).state, BoardState::fault) << "one failed cycle is tolerated";
+    EXPECT_GT(*read<feb::BiasSetpoint>(board), 40'700U) << "the new setpoint was written";
+  }
+  {
+    // The triggers cannot be switched on: the slow control does not say they are.
+    std::int64_t now = 0;
+    FakeBoard board{0, [&] { return now; }};
+    RefusedWrites bus{board, feb::Control::address};
+    bus.refuse = false;
+    SlowControl sc{{}, {&bus}};
+    for (; now <= 45 * s; now += 100 * ms) {
+      sc.step(now);
+    }
+    bus.refuse = true;
+    sc.set_triggers(true);
+    sc.step(now);
+    EXPECT_FALSE(sc.triggers_are(true));
+    EXPECT_EQ(sc.snapshot().at(0).failed_accesses, 1U);
+    EXPECT_EQ(*read_field<feb::Control::TriggerEnable>(board), 0U);
+  }
 }

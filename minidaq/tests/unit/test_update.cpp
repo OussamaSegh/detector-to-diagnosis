@@ -421,6 +421,18 @@ TEST_F(Update, RefusesABundleForAnotherProductOrWithoutItsArchive) {
   ASSERT_FALSE(r.has_value());
   EXPECT_NE(r.error().find("not minidaq"), std::string::npos) << r.error();
 
+  // The archive changed after signing, its size kept: only the digest tells.
+  b = bundle("0.5.0");
+  {
+    std::string bytes = read(b / "minidaq-0.5.0.tar.gz");
+    bytes[bytes.size() / 2] = static_cast<char>(bytes[bytes.size() / 2] ^ 1);
+    write(b / "minidaq-0.5.0.tar.gz", bytes);
+  }
+  r = store->install(b, options());
+  ASSERT_FALSE(r.has_value());
+  EXPECT_NE(r.error().find("not the archive the manifest describes"), std::string::npos)
+      << r.error();
+
   // An archive that tar cannot read, signed as it is: a release tool's mistake. tar's failure is
   // a refusal, and the slot it was extracting into is not used.
   b = bundle("0.5.0");

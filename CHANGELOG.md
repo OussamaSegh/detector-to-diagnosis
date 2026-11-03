@@ -78,6 +78,8 @@ the patch version.
   above the limit (MDQ-PR-043). Both found by the coverage review of 0.5.0, which also added
   tests of the updater's refusals, of a store it cannot trust, and of the board's protection
   flags.
+- A board that answered every read and refused every write never latched a fault: the count
+  of failed cycles was reset by the reads (MDQ-PR-044, found by the same review).
 - `tools/release_checks.sh` runs in four parts of under 45 minutes each, for a machine that
   restarts within the hour (MDQ-PR-041).
 - Part IV review (PR #1): Chapter 18 counted eleven properties and 272 unit tests at its tag (ten

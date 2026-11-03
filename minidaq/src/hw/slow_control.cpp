@@ -103,7 +103,16 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     }
     return;
   }
-  // Read everything first; one failed access makes the whole cycle of this board fail.
+  // One failed access, a read or a write, makes the whole cycle of this board fail; a run of
+  // them latches a fault. Only a cycle whose every access succeeded ends the run (MDQ-PR-044).
+  const auto failed_cycle = [&](const HwError& e) {
+    ++s.failed_accesses;
+    if (++b.consecutive_failures >= settings_.max_failed_cycles) {
+      latch(b, HwFaultCause::no_answer,
+            "no answer in " + std::to_string(b.consecutive_failures) + " cycles" + where(e));
+    }
+  };
+  // Read everything first.
   std::optional<HwError> failed;
   auto rd = [&](std::uint32_t address) -> std::uint32_t {
     if (failed) {
@@ -125,14 +134,9 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
   const std::uint32_t monitor = rd(feb::BiasMonitor::address);
   const std::uint32_t current = rd(feb::BiasCurrent::address);
   if (failed) {
-    ++s.failed_accesses;
-    if (++b.consecutive_failures >= settings_.max_failed_cycles) {
-      latch(b, HwFaultCause::no_answer,
-            "no answer in " + std::to_string(b.consecutive_failures) + " cycles" + where(*failed));
-    }
+    failed_cycle(*failed);
     return;
   }
-  b.consecutive_failures = 0;
   if (feb::BoardId::Magic::get(id) != 0x4D51) {
     std::array<char, 96> buf{};
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
@@ -188,16 +192,16 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     latch(b, HwFaultCause::board_overtemp, "the board switched its bias off for overtemperature");
     return;
   }
-  if (s.current_ua > settings_.max_current_ua) {
-    latch(b, HwFaultCause::overcurrent,
-          "bias current " + fixed(s.current_ua, 0) + " uA is above the limit " +
-              fixed(settings_.max_current_ua, 0) + " uA");
-    return;
-  }
   if (feb::ErrorFlags::Overcurrent::get(errors) != 0) {  // its own sensor, faster than ours
     latch(b, HwFaultCause::overcurrent,
           "the board switched its bias off for overcurrent (" + fixed(s.current_ua, 0) +
               " uA measured, limit " + fixed(settings_.max_current_ua, 0) + " uA)");
+    return;
+  }
+  if (s.current_ua > settings_.max_current_ua) {
+    latch(b, HwFaultCause::overcurrent,
+          "bias current " + fixed(s.current_ua, 0) + " uA is above the limit " +
+              fixed(settings_.max_current_ua, 0) + " uA");
     return;
   }
   if (feb::Status::BiasFault::get(status) != 0) {
@@ -221,9 +225,8 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     (void)clear<feb::ErrorFlags>(*b.bus, feb::ErrorFlags::FifoOverflow::mask);
   }
   if (triggers != s.triggers) {
-    if (!write_field<feb::Control::TriggerEnable>(*b.bus, triggers ? 1U : 0U)) {
-      ++s.failed_accesses;
-      ++b.consecutive_failures;
+    if (const auto w = write_field<feb::Control::TriggerEnable>(*b.bus, triggers ? 1U : 0U); !w) {
+      failed_cycle(w.error);
       return;
     }
     s.triggers = triggers;
@@ -244,24 +247,27 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
   s.at_limit = wanted != s.target_mv;
   const auto code = static_cast<std::uint32_t>(std::lround(wanted));
   if (!b.configured) {
-    const bool written = write<feb::BiasRampRate>(*b.bus, settings_.ramp_mv_per_s) &&
-                         write<feb::BiasSetpoint>(*b.bus, code) &&
-                         write_field<feb::Control::BiasEnable>(*b.bus, 1);
-    if (!written) {
-      ++s.failed_accesses;
-      ++b.consecutive_failures;
+    HwStatus w = write<feb::BiasRampRate>(*b.bus, settings_.ramp_mv_per_s);
+    if (w) {
+      w = write<feb::BiasSetpoint>(*b.bus, code);
+    }
+    if (w) {
+      w = write_field<feb::Control::BiasEnable>(*b.bus, 1);
+    }
+    if (!w) {
+      failed_cycle(w.error);
       return;
     }
     b.configured = true;
     s.setpoint_mv = code;
   } else if (std::abs(wanted - s.setpoint_mv) >= settings_.update_step_mv) {
-    if (!write<feb::BiasSetpoint>(*b.bus, code)) {
-      ++s.failed_accesses;
-      ++b.consecutive_failures;
+    if (const auto w = write<feb::BiasSetpoint>(*b.bus, code); !w) {
+      failed_cycle(w.error);
       return;
     }
     s.setpoint_mv = code;
   }
+  b.consecutive_failures = 0;  // every access of this cycle succeeded
 
   // Ready, ramping, or late: a supply that has not reached its setpoint by the time the ramp
   // needs plus a grace period has failed, whatever its status says.
