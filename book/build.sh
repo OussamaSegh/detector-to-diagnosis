@@ -235,9 +235,10 @@ build_pdf() {
   # Images are referenced relative to book/ (src/img/...); LaTeX runs in
   # build/tex, so give it the same view.
   ln -sfn "$here/src" "$build/tex/src"
-  # A fenced block whose attributes Pandoc cannot parse (for example "[[" in
-  # a from/to value) silently becomes paragraph text: fail instead.
-  if grep -nE '\\\{\.(cpp|python|cmake|yaml|text|dot)' "$tex" | head -5 | grep . ; then
+  # A fenced block whose attributes Pandoc cannot parse (for example "[[" or
+  # leading spaces in a from/to value) silently becomes paragraph text: fail
+  # instead. breakable-code.lua may put \allowbreak{} after the dot.
+  if grep -nE '\\\{\.(\\allowbreak\{\})?(cpp|python|cmake|yaml|text|dot)' "$tex" | head -5 | grep . ; then
     echo "unprocessed code-block attributes in $tex (see lines above)"; exit 1
   fi
   (cd "$build/tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$job.tex" >"$job.latexmk.log" 2>&1) \

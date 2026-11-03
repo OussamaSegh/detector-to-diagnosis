@@ -24,6 +24,22 @@ the patch version.
   procedure behind them", Exercises 26.1 (photopeak fit), 26.2 (flood map and crystal lookup
   table) and 26.3 (channel delays by least squares, H), and their solutions. Section 5 of
   `measurements/ch26` measures the photopeak monitor's baseline with a water phantom.
+- Chapter 27 code: the inputs of the corrections (CR-0013, ADR 0022). A singles counter in the
+  decode stage (`processing/singles_counter`: each crystal's singles in the energy window, each
+  block's singles, first and last time) and a `corrections` object in the run record with the
+  sorter's windows and window mode, the singles and the prompts and delayeds (MDQ-L1
+  specification version 3). `minidaq_sim` gains crystal efficiencies (`--efficiency-spread`,
+  `--crystal-seed`), an extended source (`--source-radius`, `--source-length`) and truth
+  sinograms of each kind of coincidence (`--truth-sino`). The corrections tool `tools/recon`
+  (tool TL-30, numpy only): a list-mode reader, the sinogram binning, component-based
+  normalization, randoms from the singles, calculated attenuation, scatter by a model's shape
+  scaled to the tails by Poisson likelihood, dead time and decay, and the check of a
+  normalization against a run; its tests (`tools.recon`) and `measurements/ch27/`.
+  SRS-COR-001 to 003, SRS-SIM-023; hazard H-12 with RC-39 and RC-40.
+- Chapter 27 text: the chapter "Corrections: normalization, randoms, scatter, attenuation, dead
+  time and decay", Exercises 27.1 (crystal efficiencies from a normalization scan), 27.2 (the
+  randoms of every line) and 27.3 (a head outline and the decay of a frame), and their
+  solutions.
 
 ### Fixed
 - The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,

@@ -436,6 +436,27 @@ Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it
 - pybind11 for Chapter 29: approved by the user on 2026-11-03 (decision card). Record it as a
   SOUP item when Chapter 29 adds it.
 
+Chapter 27 (corrections), 2026-11-03:
+- MiniDAQ: `processing/singles_counter` (per crystal in the energy window, per block every single)
+  counted in the decode stage; `control/corrections_record` writes `run.corrections` (format 1)
+  into the run record at the end of a run. NOTE: the run record nests the service's report under
+  `run`, so the tool reads `record["run"]["corrections"]`. MDQ-L1 spec v3 describes it.
+- minidaq_sim: `--efficiency-spread`, `--crystal-seed`, `--source-radius`, `--source-length`,
+  `--truth-sino PREFIX` (prompts, delayeds, trues, scatters, randoms sinograms).
+- `tools/recon` (TL-30, numpy only): listmode reader, sinogram binning (EndToEnd test equals
+  `minidaq_listmode sino` bin for bin), corrections; ctest `tools.recon` (about 25 s).
+- Findings worth keeping: randoms from singles must subtract each crystal's prompts (kill-all;
+  +31% without, -1.8% with); a Gaussian tail fit fails for a head's short tails (2.4x); the
+  scatter scale must be a Poisson likelihood in counts (least squares on S/n runs low and noisy
+  because end slices have n of a few percent); the randoms in the tails (6 per scatter count)
+  make the scatter 14% high; dead time from per-block singles matches the simulator to 0.03%.
+- measurements/ch27/corrections.py takes a work dir to reuse runs (about 10 minutes from scratch).
+- CR-0013, ADR 0022, SRS v16 (SRS-COR-001 to 003, SRS-SIM-023), H-12 with RC-39 and RC-40,
+  architecture v13. Exercises 27.1 to 27.3 (Python). **Chapter 27 is done** (2026-11-03); tag
+  ch27 once GitHub CI is green on its last commit.
+- Old code still says "centre" (sim `centre_mm`, the `--centre` option): renaming is an API change,
+  left for a decision.
+
 ### Left to do, in order
 
 1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in

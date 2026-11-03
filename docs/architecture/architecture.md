@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 12 (MiniDAQ 0.6.0-dev, Chapter 26). Status: draft for review.
+Version 13 (MiniDAQ 0.6.0-dev, Chapter 27). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -60,6 +60,11 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   blocks whose calibration has drifted, and the procedure that makes the table, `tools/calib`
   (items processing, pipeline, config and service, control API 2.4, Chapter 26,
   [ADR 0021](../adr/0021-calibration-table-and-procedure.md)).
+- the inputs of the corrections: a singles counter per crystal and per block in the pipeline and
+  a `corrections` object in the run record (the windows, the singles, the prompts and delayeds),
+  from which the corrections tool, `tools/recon`, computes the normalization, randoms, scatter,
+  attenuation, dead-time and decay corrections after the acquisition (items processing and
+  service, Chapter 27, [ADR 0022](../adr/0022-corrections-offline-from-list-mode.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -70,7 +75,7 @@ pipeline does not use it yet). The control API's security is described in the
 | External entity | Interface | Direction | Notes |
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
-| Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity |
+| Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity; the run record's `corrections` object is what `tools/recon` (tool TL-30) reads with the files |
 | Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
 | Operator, scripts, test harness | Control protocol 2.4: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
 | Configuration files | JSON, schema version 1.4 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
@@ -134,7 +139,7 @@ assume risk controls outside the software (assumption: confirm with team).
 | pipeline | `pipeline/` | server | B | Moves every single between threads |
 | metrics | `metrics/` | server | B | Observes only (A alone); B because nothing segregates it from the pipeline |
 | rt | `rt/` | server | B | Scheduling and memory locking of the stages |
-| processing | energy filter, sinogram, count rates, calibration table and photopeak monitor | server | B | Hot-path filter and quality-control views; applies each crystal's calibration (H-11) |
+| processing | energy filter, sinogram, count rates, calibration table, photopeak monitor and singles counter | server | B | Hot-path filter and quality-control views; applies each crystal's calibration (H-11); counts the singles the randoms and dead-time corrections need (H-12) |
 | sorter | `CoincidenceSorter` | server | B | Decides every coincidence |
 | merger | `StreamMerger` | server | B | Orders many boards' singles |
 | sim | `sim/` | server | B | Test sources linked into the server ([MDQ-PR-009](../regulatory/known-anomalies.md)) |
@@ -334,3 +339,4 @@ Open issues:
 | 10 | Chapter 24: the firmware contract (ICD-FEB, version 1), the firmware check and the run's sequencing with the boards' triggers and FIFOs (ADR 0019, CR-0010, control API 2.3). |
 | 11 | Chapter 25: the platform (definition, units, health-gated watchdog) and signed updates with rollback; items `platform` and `update`; the threads and SOUP that come with them (ADR 0020, CR-0011). Also corrects what version 10 left stale in section 2: the hardware description schema (1.1) and the control protocol (2.3). |
 | 12 | Chapter 26: calibration (the table, its file format, the photopeak monitor, the procedure `tools/calib` as tool TL-29), configuration schema 1.4 and control API 2.4 (ADR 0021, CR-0012). |
+| 13 | Chapter 27: the inputs of the corrections (the singles counter, the run record's `corrections` object) and the corrections tool `tools/recon` as tool TL-30 (ADR 0022, CR-0013). |

@@ -177,6 +177,15 @@
                     "On minidaq_sim's detector with 10% gain spread, a saturating SiPM and 500 ps delay spread, the gains came out within 0.18% rms and the delays within 21 ps rms of the truth (measurements/ch26).",
                     "The server checks every table it loads against its own limits and its CRC (SRS-CAL-001), and the photopeak monitor names a block whose calibration drifted (SRS-CAL-006)."],
      "evidence": ["tools/test_calib.py", "measurements/ch26/calibration.txt"],
-     "shown_to_fail": "Procedure.test_reports_each_failing_crystal_and_writes_nothing"}
+     "shown_to_fail": "Procedure.test_reports_each_failing_crystal_and_writes_nothing"},
+    {"id": "TL-30", "name": "Corrections (tools/recon)", "kind": "in-house", "class": "T3",
+     "version": "the commit; Python 3.12 and numpy 1.26 on the reference machine",
+     "use": "Read MiniDAQ's list-mode files and run records, bin them into sinograms, and compute the normalization, randoms, attenuation, scatter, dead-time and decay corrections that the reconstruction applies (Chapter 27).",
+     "failure": "A correction that is wrong and looks plausible: the image's values and uniformity would be wrong without an error, in every study corrected with it (H-12).",
+     "confidence": ["tools/test_recon.py checks the reader against files with damaged blocks and headers, the binning against minidaq_listmode's sinograms bin for bin, and each correction on data whose answer is known.",
+                    "On minidaq_sim's scanner with a 5% efficiency spread and a water phantom, the corrected profile is flat within 1.9% rms against 1.1% for the truth's own noise, and each correction is compared with the simulator's truth (measurements/ch27).",
+                    "The tool refuses a normalization taken with another energy window, coincidence window, window mode or calibration table (SRS-COR-003)."],
+     "evidence": ["tools/test_recon.py", "measurements/ch27/corrections.txt"],
+     "shown_to_fail": "Compatibility.test_refuses_a_normalization_from_other_settings"}
   ]
 }

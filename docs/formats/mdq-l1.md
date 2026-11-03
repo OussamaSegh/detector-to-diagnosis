@@ -1,6 +1,6 @@
 # MDQ-L1: MiniDAQ list-mode file format, version 1.0
 
-Version 2 of this specification (MiniDAQ 0.4.0-dev), for format version 1.0.
+Version 3 of this specification (MiniDAQ 0.6.0-dev), for format version 1.0.
 Status: Accepted (ADR 0012). Implementation: `minidaq/include/minidaq/format/list_mode.hpp`
 (C++), with an independent reader in `measurements/ch12/crash.py` and
 `exercises/ch12/e2_sinogram` (Python). Requirements: SRS-LMF-001 to 008 (format) and
@@ -180,6 +180,13 @@ identifies calibration sets).
   the end of the run: the counters of the link (packets lost, reordered, stale), of every
   pipeline stage and the configuration. A file set without a run record ended in a crash
   or a fault; its counters are in the DAQ's log only.
+- `run.corrections` (format 1, Chapter 27) holds what the corrections need from the
+  acquisition besides the coincidences: the sorter's `energy_window_kev`,
+  `coincidence_window_ps`, `window_mode` and `delayed_window_ps`; `singles_in_window`, the
+  singles in the energy window counted per crystal (`singles_per_crystal`, in crystal index
+  order) and their first and last time (`singles_first_ps`, `singles_last_ps`);
+  `singles_per_block`, every valid single per detector block whatever its energy; and the
+  numbers of `prompts` and `delayeds`. The counts are of the whole run (SRS-COR-002).
 
 ## 8. Reading rules
 
@@ -225,3 +232,4 @@ identifies calibration sets).
 |---|---|
 | 1 | First controlled version (Chapter 16); the text is that of Chapter 12. The specification's version is not the format's: a change to this text that does not change the format gets a new document version and keeps format version 1.0. |
 | 2 | The book's new title: statements about a particular product are now about "your scanner"; the format is unchanged (format version 1.0). |
+| 3 | Chapter 27: the run record's `corrections` object (CR-0013); the list-mode files are unchanged (format version 1.0). |

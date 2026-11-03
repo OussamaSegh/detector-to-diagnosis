@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 15 (MiniDAQ 0.6.0-dev). Status: draft for review.
+Version 16 (MiniDAQ 0.6.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -150,6 +150,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-SIM-020 | The replay source shall loop over a recording with times shifted by the recording's length, so that its output stays in time order. | sim | T |
 | SRS-SIM-021 | The replay source shall replay a recording at its real-time rate or at a configured rate in words/s, paced like the paced source. | sim | T |
 | SRS-SIM-022 | The detector simulator shall, when asked for an uncalibrated detector, report each crystal's energy multiplied by that crystal's gain after a saturation of the given energy scale and each crystal's time later by that crystal's delay, with gains and delays drawn once per simulator from the given spreads and kept within 0.6 to 1.6 and 4 ns, and deliver the singles in the order of their reported times. | sim | T |
+| SRS-SIM-023 | The detector simulator shall, when asked for a spread of detection efficiencies, give each crystal a detection probability drawn once from a normal distribution of mean 1 minus twice the spread and of standard deviation the spread, kept within 0.05 to 1 and drawn from a random stream separate from the gains', and record a photon that deposits enough energy in a crystal with that crystal's probability, drawing every crystal's gain, delay and efficiency from the crystal seed when one is given, whatever the seed of the decays. | sim | T |
 | SRS-DTM-001 | The non-paralyzable dead-time model shall lose every single that arrives while its unit is busy, without extending the dead time. | sim | T |
 | SRS-DTM-002 | The paralyzable dead-time model shall restart the dead time with every arrival, recorded or lost. | sim | T |
 | SRS-DTM-003 | When pile-up is enabled, the dead-time model shall add the energy of a lost single to the recorded single that made the unit busy. | sim | T |
@@ -329,7 +330,19 @@ procedure writes (`tools/calib`, tool TL-29); its format is `docs/formats/calibr
 | SRS-CAL-004 | The acquisition service shall refuse to configure an acquisition whose calibration table was made for another scanner serial than the configuration names, or whose validity ended before the time of configuration. | service | T |
 | SRS-CAL-005 | The run record and the list-mode file's metadata shall name the calibration table the run used: its id, version, scanner serial, creation time and the CRC-32 of its coefficients, or "identity" when none is configured. | output | T |
 | SRS-CAL-006 | The status shall give, for each detector block, the number of calibrated singles between 430 and 590 keV in the run and their mean energy, and name the blocks whose mean differs from 511 keV by more than the drift tolerance (2% by default) once they have at least 1,000 singles in that window. | service | T |
-| SRS-CAL-007 | The calibration tool shall write a table only when every crystal has at least the minimum number of photopeak counts (500 counts by default), a photopeak fit that converged with a sigma of 2 to 10% of its centre, a gain of 0.6 to 1.6 times nominal, an energy curve within 1% of the response from 200 to 700 keV, at least 100 pairs in coincidence and a delay within 5 ns, and when the residual of the timing solution is within its limit (400 ps rms by default); otherwise it reports each crystal that failed, and why, and writes no table. | tools | T |
+| SRS-CAL-007 | The calibration tool shall write a table only when every crystal has at least the minimum number of photopeak counts (500 counts by default), a photopeak fit that converged with a sigma of 2 to 10% of its center, a gain of 0.6 to 1.6 times nominal, an energy curve within 1% of the response from 200 to 700 keV, at least 100 pairs in coincidence, partners in at least 40 crystals, and a delay within 5 ns, and when the residual of the timing solution is within its limit (400 ps rms by default); otherwise it reports each crystal that failed, and why, and writes no table. | tools | T |
+
+### 2.19 Corrections (COR)
+
+What the acquisition records for the corrections that turn counts into activity: normalization,
+randoms, scatter, attenuation, dead time and decay (Chapter 27, ADR 0022, CR-0013). The
+corrections themselves are computed after the acquisition (`tools/recon`, tool TL-30).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-COR-001 | The pipeline shall count, for each crystal, the decoded and calibrated singles whose energy is within the coincidence sorter's energy window, count for each detector block every decoded single whatever its energy, and keep the earliest and the latest time of the singles it counted. | pipeline | T |
+| SRS-COR-002 | The run record shall carry the coincidence sorter's energy window, coincidence window, window mode and delayed window offset, the singles counted for each crystal and their sum, the singles counted for each block, the earliest and latest time, and the numbers of prompt and delayed coincidences. | output | T |
+| SRS-COR-003 | The corrections tool shall refuse to normalize a run with a normalization scan whose run record names another energy window, coincidence window, window mode or calibration table than the run's, or has no corrections object, and name each difference. | tools | T |
 
 ## 3. Verification other than test
 
@@ -361,3 +374,4 @@ procedure writes (`tools/calib`, tool TL-29); its format is `docs/formats/calibr
 | 13 | Chapter 24: the firmware check and the run's sequencing with the boards, SRS-HW-011 to SRS-HW-015; SRS-HW-004, SRS-HW-007 and SRS-HW-010 extended (ADR 0019, CR-0010); control API 2.3. |
 | 14 | Chapter 25: the platform and updates, SRS-PLT-001 to SRS-PLT-011 (ADR 0020, CR-0011). |
 | 15 | Chapter 26: calibration, SRS-CAL-001 to SRS-CAL-007 (ADR 0021, CR-0012). |
+| 16 | Chapter 27: what the corrections need from the acquisition and the check of a normalization against a run, SRS-COR-001 to SRS-COR-003, and crystals that detect differently in the simulator, SRS-SIM-023 (ADR 0022, CR-0013). SRS-CAL-007 names the criterion on distinct partners, which the tool applied (ADR 0021) and the requirement left out. |

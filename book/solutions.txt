@@ -26,3 +26,4 @@ solutions/ch23.md
 solutions/ch24.md
 solutions/ch25.md
 solutions/ch26.md
+solutions/ch27.md

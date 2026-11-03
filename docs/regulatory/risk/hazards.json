@@ -219,7 +219,24 @@
         {"id": "RC-38", "type": "information", "description": "The run record and the list-mode metadata name the table a run used (id, version, scanner, creation time, CRC-32), so that a table found wrong later identifies the runs it affected.", "requirements": ["SRS-CAL-005"], "effectiveness": {"method": "test", "evidence": "ListModeSink.NamesTheCalibrationTableInTheFilesAndTheRunRecord"}}
       ],
       "probability_after": "P2",
-      "residual": "A table that passes every criterion and is still wrong, as with a wrong saturation energy for the sensor or a source placed off centre, is found only by the daily quality control with a phantom; the drift monitor sees a block's drift only once the block has 1,000 singles in the photopeak window, and sees a wrong delay not at all (assumption: confirm with team).",
+      "residual": "A table that passes every criterion and is still wrong, as with a wrong saturation energy for the sensor or a source placed off center, is found only by the daily quality control with a phantom; the drift monitor sees a block's drift only once the block has 1,000 singles in the photopeak window, and sees a wrong delay not at all (assumption: confirm with team).",
+      "status": "closed"
+    },
+    {
+      "id": "H-12",
+      "preliminary": "HZ-3",
+      "hazard": "Corrections computed from inputs that do not belong to the data",
+      "sequence": "The randoms or dead-time correction uses singles counted through another energy window than the coincidences, or of another run; or a normalization measured with another energy window, coincidence window, window mode or calibration table is applied to a run, because a scan was repeated, a setting changed or a file was taken from the wrong directory.",
+      "hazardous_situation": "Each bin is corrected by a factor that is wrong by the difference between the two settings: crystal efficiencies through another energy window differ crystal by crystal, a randoms estimate scales with the window, and nothing reports an error.",
+      "harm": "Quantitative values or artifacts in the image contribute to an incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P3",
+      "controls": [
+        {"id": "RC-39", "type": "protective", "description": "The run record carries the sorter's energy window, coincidence window, window mode and delayed window, and the singles of each crystal and block counted by the same pipeline that made the run's coincidences, so the corrections of a run are computed from that run's own inputs.", "requirements": ["SRS-COR-001", "SRS-COR-002"], "effectiveness": {"method": "test", "evidence": "ListModeSink.WritesRealFilesThroughTheService"}},
+        {"id": "RC-40", "type": "protective", "description": "The corrections tool refuses a normalization scan whose run record names another energy window, coincidence window, window mode or calibration table than the run's, and names each difference.", "requirements": ["SRS-COR-003"], "effectiveness": {"method": "test", "evidence": "test_refuses_a_normalization_from_other_settings"}}
+      ],
+      "probability_after": "P2",
+      "residual": "Corrections whose model does not fit the object are not detected by these controls: an attenuation outline that is not the patient's (a calculated correction assumes a shape), scatter tails that the object leaves no room for, or a dead-time model of the wrong kind. They are found by the phantom measurements of image quality (Chapter 30) and the site's quality control (assumption: confirm with team).",
       "status": "closed"
     }
   ]

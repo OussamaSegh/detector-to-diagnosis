@@ -231,7 +231,7 @@ The bound is the spread of the offsets: a single can come out at most (largest o
 offset) earlier than one already seen. The sort stage holds back the singles that are within that
 spread of the newest one, and sends them with the next batch:
 
-```{.cpp include="minidaq/src/pipeline/acquisition_pipeline.cpp" snippet="sort" to="  std::int64_t last_origin_ns"}
+```{.cpp include="minidaq/src/pipeline/acquisition_pipeline.cpp" snippet="sort-hold"}
 ```
 
 The comment at the top is the proof, and it is worth reading twice: every single already seen has a
