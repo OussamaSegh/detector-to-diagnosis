@@ -37,3 +37,5 @@ src/part6/ch27-corrections.md
 src/part6/ch28-reconstruction.md
 src/part6/ch29-cpp-python.md
 src/part6/ch30-image-quality.md
+src/part7/part7.md
+src/part7/ch31-scientific-python.md

@@ -21,4 +21,5 @@ By hand:
    bytes from the start of the file (MDQ-L1 section 3.1 pads the header) and RECORD has no
    padding: 16 bytes, little-endian fields, the layout on disk.
 3. A dense matrix of 18,432 x 18,432 int64 counts would take 2.7 GB; a point source touches
-   tens of thousands of pairs (measurements/ch31: about 61,000 pairs in 2 s at 2 MBq).
+   tens of thousands of pairs (the QC report's `pairs_hit` for a 2-second run of the simulator's
+   point source).

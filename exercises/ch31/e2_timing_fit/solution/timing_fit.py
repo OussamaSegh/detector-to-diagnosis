@@ -21,7 +21,7 @@ def expected(edges, p):
 def _jacobian(edges, p):
     jac = np.empty((edges.size - 1, p.size))
     for i in range(p.size):
-        h = 1e-6 * max(abs(p[i]), 1e-3)
+        h = 1e-5 * max(abs(p[i]), 1.0)  # at least 1e-5 of a unit: a mean near 0 needs it
         up, down = p.copy(), p.copy()
         up[i] += h
         down[i] -= h

@@ -67,8 +67,8 @@ The earlier tools keep their own readers; moving them onto the package is a chan
 ### Positive
 
 - At 1,000 counts in a peak, least squares weighted by the counts underestimates the area by 13%
-  and its errors are 26% too small; the Poisson fit's bias is under 1% and its pulls have a
-  standard deviation near one (measurements/ch31). The difference is gone above about 10,000
+  and the estimates spread 1.26 times as much as its errors say; the Poisson fit's bias is under
+  1% (measurements/ch31). The difference is gone above about 10,000
   counts, which is why it is not seen on strong peaks.
 - A 1 GiB run is analyzed with 179 MiB of private memory when the pair counts are left out, and
   1.3 GiB with them on a synthetic file of many distinct pairs, against 6 GiB for the reader of

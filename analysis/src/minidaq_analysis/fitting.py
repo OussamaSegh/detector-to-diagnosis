@@ -130,10 +130,18 @@ class FitResult:
         return f(self.values), float(math.sqrt(max(float(g @ self.covariance @ g), 0.0)))
 
 
+def _step(v: float) -> float:
+    """Step of a central difference: relative for a large parameter, and at least 1e-5 of a unit
+    for one near zero. The first version took 1e-6 of max(|v|, 1e-3): for a timing peak's mean of
+    0.016 ps that is 1.6e-8 ps, where the difference of two model values is mostly rounding, and
+    the fit's score was noise near the minimum (CR-0017)."""
+    return 1e-5 * max(abs(v), 1.0)
+
+
 def _gradient(f: Callable[[FloatArray], float], p: FloatArray) -> FloatArray:
     g = np.empty_like(p)
     for i in range(p.size):
-        h = 1e-6 * max(abs(p[i]), 1e-3)
+        h = _step(float(p[i]))
         up, down = p.copy(), p.copy()
         up[i] += h
         down[i] -= h
@@ -145,7 +153,7 @@ def _jacobian(model: Model, lo: FloatArray, hi: FloatArray, p: FloatArray) -> Fl
     """d expected / d parameter, one column per parameter, by central differences."""
     jac = np.empty((lo.size, p.size))
     for i in range(p.size):
-        h = 1e-6 * max(abs(p[i]), 1e-3)
+        h = _step(float(p[i]))
         up, down = p.copy(), p.copy()
         up[i] += h
         down[i] -= h
@@ -213,6 +221,12 @@ def fit(hist: Histogram, model: Model, p0: Sequence[float] | FloatArray, names: 
         raise ValueError(f"unknown method {method!r}")
     if not np.all(np.isfinite(cov)) or np.any(np.diag(cov) < 0):
         raise RuntimeError("fit covariance is not finite")
+    # A parameter whose error is wider than everything its bounds allow is not determined by the
+    # data: the mean and width of a peak whose area went to zero, for instance.
+    for name, err, b in zip(names, np.sqrt(np.diag(cov)), bounds or [], strict=False):
+        if b[0] is not None and b[1] is not None and err > b[1] - b[0]:
+            raise RuntimeError(f"fit does not determine {name}: its error {err:.3g} is wider "
+                               f"than its bounds")
     return FitResult(tuple(names), np.asarray(p, dtype=np.float64), np.asarray(cov), statistic,
                      ndf, method, mu, hist)
 # [/snippet:fit]
@@ -231,10 +245,11 @@ def _fisher_scoring(model: Model, lo: FloatArray, hi: FloatArray, n: FloatArray,
                     max_steps: int = 100) -> FloatArray:
     """Maximum likelihood for Poisson counts by Fisher scoring: Newton's method with the expected
     curvature J^T diag(1/mu) J instead of the exact one, the step halved until the deviance falls,
-    the parameters projected onto their bounds. Converged when the step's predicted fall of the
-    deviance, 2 U.step with U the score J^T (n/mu - 1), is below 1e-9, or below 1e-4 when no step
-    lowers the deviance any more (the rounding of a sum of a few hundred terms of thousands of
-    counts is about 1e-9 already: the first version stopped with an error there)."""
+    the parameters projected onto their bounds. Converged when the fall of the deviance that a full
+    step predicts, U.step with U the score J^T (n/mu - 1), is below 5e-10, or below 5e-5 when no
+    step lowers the deviance any more: then the minimum is found to the precision of the
+    derivatives and of the deviance's own sum, and moving on would change no parameter by a
+    visible part of its error."""
     k = p.size
     box = list(bounds) if bounds else [(None, None)] * k
     low = np.array([-np.inf if b[0] is None else b[0] for b in box])
@@ -255,8 +270,10 @@ def _fisher_scoring(model: Model, lo: FloatArray, hi: FloatArray, n: FloatArray,
             step[free] = np.linalg.solve(info[np.ix_(free, free)], score[free])
         except np.linalg.LinAlgError:
             raise RuntimeError("fit curvature is singular") from None
-        decrement = 2.0 * float(score @ step)  # the fall of the deviance a full step predicts
-        if decrement < 1e-9:
+        # The deviance is -2 log L + constant: its gradient is -2 U and its expected curvature
+        # 2 info, so a full step predicts a fall of 2 U.step - step.info.step = U.step.
+        decrement = float(score @ step)
+        if decrement < 5e-10:
             return p
         t = 1.0
         while t > 1e-10:
@@ -270,7 +287,7 @@ def _fisher_scoring(model: Model, lo: FloatArray, hi: FloatArray, n: FloatArray,
             # No step lowers the deviance: either the minimum is found to the precision of the
             # deviance's own sum (a predicted fall far below one unit, which moves no parameter by
             # a visible part of its error), or the fit is stuck, which is an error.
-            if decrement < 1e-4:
+            if decrement < 5e-5:
                 return p
             raise RuntimeError("fit cannot lower the deviance from where it stopped")
     raise RuntimeError(f"fit did not converge in {max_steps} steps")

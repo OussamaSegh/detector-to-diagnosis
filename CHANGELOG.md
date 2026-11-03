@@ -8,6 +8,33 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+- Fuzz target `fuzz_calibration` for `config::parse_calibration`, owed by the release record of
+  0.6.0: raw text, and edits of a valid table written as the procedure writes it, with the
+  reader's acceptance compared with the table's own checks; in `tools/release_checks.sh`.
+- Chapter 31 code: the analysis package `analysis/` (CR-0017, ADR 0026, tool TL-33). MDQ-L1
+  through a memory map in chunks of whole blocks (`ListModeFile`, `Run`); histograms of a run
+  filled chunk by chunk; Poisson maximum likelihood fits by Fisher scoring with bounds and errors
+  from the inverse Fisher information; the crystal-ordered time difference for the CTR; rate
+  constancy and dip tests; the QC report `minidaq-qc` against a TOML protocol, with exit
+  statuses 0, 1 and 2, figures with residuals and a provenance record (SHA-256 manifest,
+  environment). `requirements.lock` pins every Python package (tools TL-34 to TL-36); CTest runs
+  pytest, mypy (strict) and ruff; CI job `python`. SRS-ANA-001 to 006; hazard H-14 with RC-45 and
+  RC-46. `measurements/ch31/` (readers on 1 GiB, Neyman against Poisson, five QC runs, the run
+  without time blur, four ways to fill a histogram). Exercises 31.1 to 31.3.
+- Chapter 31 text: Part VII's opener and the chapter "The scientific Python package: analysis you
+  can defend", with its solutions.
+
+### Fixed
+- The analysis fit's numerical derivatives took a step of 1e-6 of the parameter with a floor of
+  1e-3, 1.6e-8 ps for a timing mean near zero, and stopped one simulated run's fit with an error
+  at its minimum; the step has a floor of 1e-5 of a unit, and a parameter whose error is wider
+  than its bounds is an error. Regression test on that run's histogram.
+
+### Changed
+- `tools/check_changes.py` and `tools/check_tools.py` know the analysis package's pytest names
+  (`module::test`); each analysis test carries its own requirement tag.
+
 ## [0.6.0] - 2026-11-03
 
 Part VI, calibration, corrections and reconstruction (Chapters 26 to 30), complete. The release

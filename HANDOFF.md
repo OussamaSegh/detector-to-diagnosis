@@ -5,8 +5,8 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-03 21:50 UTC: release 0.6.0 done, Part VI review (PR #4) merged; the next
-thread starts Part VII.
+Last updated: 2026-11-04: Part VII in progress. Chapter 31 written (code, tests, measurements,
+exercises, documents, text, solutions); next: tag ch31 after green CI, then Chapter 32.
 
 ## Start here (next thread, Part VII)
 
@@ -354,7 +354,24 @@ d1073fb (repro report lists manifest and toolchain), 7654434 (perf_ab fails if s
 
 ### In progress (as of the last update)
 
-Nothing in progress: Part VI is released and reviewed (see "Start here"). Older notes follow.
+Part VII (thread started 2026-11-03).
+
+- Done: `fuzz/fuzz_calibration.cpp` (owed to 0.7.0, in release_checks); Chapter 31 complete:
+  `analysis/` (TL-33), its lock file and CI job `python`, SRS-ANA-001 to 006 (SRS v20), H-14
+  with RC-45/46, CR-0017, ADR 0026, architecture v17, SOUP list v14, tools TL-33 to TL-36,
+  threat model v5 (gap: QC reports are not signed), `measurements/ch31/`, Exercises 31.1 to
+  31.3, text `book/src/part7/` and `book/solutions/ch31.md`.
+- User approved (decision card, 2026-11-03): SciPy, Matplotlib, pytest, mypy, ruff, Numba,
+  scikit-build-core. NOT approved: Conan, lmfit, Jupyter. Do not use them.
+- Lessons: the analysis tests skip (77) without the lock file's packages; the CI job sets
+  MINIDAQ_ANALYSIS_REQUIRED=1. Python here is /usr/local/bin/python3 (3.13); use
+  `python3 -m mypy` and `python3 -m ruff`, not the uv tool ones. Book build needs
+  fonts-texgyre and fonts-inconsolata (apt). Numerical derivatives need a step floor for a
+  parameter near zero (CR-0017).
+- Next: tag ch31 once CI is green; Chapter 32 (CMake in full depth); the 0.7.0 items (CAPA-0001
+  margin table with every Part VII timing test, SOUP review, threat model review); release.
+
+Older notes follow.
 
 Chapters 20 and 21 are complete and tagged: ch20 on eb77c71, ch21 on 6150f42, where ci,
 gates and codeql were green on GitHub. MDQ-PR-025 (listings not expanded)
