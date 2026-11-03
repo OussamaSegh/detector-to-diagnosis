@@ -408,8 +408,10 @@ writer benchmark needs about 10 GB free; delete old build directories first.
 1. **Part IV review**: done. PR #1 merged on 2026-10-26 (d801e22, one line rewrapped in
    f36a99e); its fixes go out with the next release. VERSION is 0.5.0-dev with the SOUP reviews
    for 0.5 (789ab17); remember this bump right after every release, or docs.version turns CI red.
-2. **Part V** (22 to 25): released as 0.5.0 on 2026-11-03. Then the Part V review PR, and
-   VERSION 0.6.0-dev.
+2. **Part V** (22 to 25): released as 0.5.0 on 2026-11-03 (release commit 438ea37, tag
+   book-v0.5.0 on GitHub, report https://claude.ai/artifact/Eizn2MGX4aL6ovV9MTgzm2). VERSION is
+   0.6.0-dev with the SOUP review for 0.6 (SOUP list v10). Pending: the Fable Part V review PR,
+   which this thread reviews and merges.
 3. **Part VI** (26 to 30): calibration, corrections, 2D OSEM, C++ OSEM with bindings, and
    image quality. It needs a C++ and Python crossing exercise. Release 0.6.0.
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
