@@ -372,7 +372,7 @@ rollback, repair in open(), power-cut test after every step), minidaq_update, to
 (TL-28), SRS-PLT-001 to 011 (SRS v14), RC-32 to RC-34, threats T-39 to T-53 (threat model v3),
 ADR 0020, CR-0011 (b0995fb), architecture v11, SOUP list v8, docs/platform/installation.md (INST
 v1). measurements/ch25/service_and_update (READY 5 to 9 ms; hung bus unhealthy at 5 s, systemd
-acts 10 s after the last ping; install 54 to 60 ms, rollback 5 ms; 45 syscalls, none refused by
+acts 10 s after the last ping; install 46 to 62 ms, rollback 5 ms; 45 syscalls, none refused by
 @system-service minus @privileged; exposure 9.4 unhardened, 1.7 shipped). Text
 book/src/part5/ch25-embedded-platform.md, solutions and Exercises 25.1 to 25.4 (watchdog
 environment, SemVer precedence, power cut model, verify tree). This container has no systemd as

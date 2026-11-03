@@ -19,7 +19,7 @@ simulated time.
 
 **A day in the life.** It is 14:10 on a Tuesday, and the physicist who runs the daily quality
 control shows you two energy spectra of the same phantom, one from 8:00 and one from 13:30. The
-afternoon photopeak sits at 486 keV instead of 511, and the count rate in the energy window is a few
+afternoon photopeak sits at 485 keV instead of 511, and the count rate in the energy window is a few
 percent lower. Nothing in the logs says anything went wrong. You ask for the temperatures of the
 detector blocks: the room's air conditioning failed at 11:00, and the blocks went from 25 to 29 °C.
 At 34 mV per degree, four degrees raised the breakdown voltage of every SiPM by 136 mV, and with the
@@ -115,8 +115,9 @@ regions you get (region N at N times the page size). A `resourceN` file of a PCI
 uncached; a `resourceN_wc` file, where it exists, is mapped write-combining, for memory such as a
 frame buffer where the order and size of writes do not matter. Registers are never write-combined.
 
-MiniDAQ's `MmioBus` opens the file with `O_SYNC`, which on these files asks for an uncached
-mapping, and checks the size and the offset before it maps:
+MiniDAQ's `MmioBus` opens the file with `O_SYNC`, which `/dev/mem` needs for an uncached mapping
+(the `resourceN` files and UIO regions are mapped uncached in any case), and checks the size and
+the offset before it maps:
 
 ```{.cpp include="minidaq/include/minidaq/hw/mmio_bus.hpp" snippet="mmio"}
 ```
@@ -369,9 +370,9 @@ near 24.5 V and 21.5 mV/°C. The law is the same, the numbers are the board's.) 
 one degree warmer takes 34 mV off a 2.7 V overvoltage: 1.3% of gain per degree. The fix is to let
 the bias follow the temperature:
 
-  V_bias(T) = V_bd(25 °C) + k · (T − 25 °C) + V_ov
+  V~bias~(T) = V~bd~(25 °C) + k · (T − 25 °C) + V~ov~
 
-with k = 34 mV/°C and V_ov = 2.7 V. At 25 °C that is 40.7 V; at 30 °C, 40.87 V.
+with k = 34 mV/°C and V~ov~ = 2.7 V. At 25 °C that is 40.7 V; at 30 °C, 40.87 V.
 
 This assumes the temperature the sensor reads is the temperature of the SiPMs, which is only
 approximately true: a sensor on the board lags the SiPMs and misses the gradient across them. The
@@ -509,9 +510,9 @@ test, or a demonstration, warms a detector by writing a number:
 ### Testing without hardware, at simulated time
 
 `FakeBoard` is a board as a program: its eleven registers with their access rules, a supply that
-moves towards its setpoint at the programmed rate, the board's own overtemperature trip, and four
-modes of failure (none, unresponsive, vanished, weak supply). Its time is a function its owner
-gives:
+moves towards its setpoint at the programmed rate, the board's own overtemperature trip, and three
+modes of failure besides normal operation (unresponsive, vanished, weak supply). Its time is a
+function its owner gives:
 
 ```{.cpp include="minidaq/src/hw/fake_board.cpp" snippet="fake-physics"}
 ```

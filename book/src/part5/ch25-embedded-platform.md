@@ -440,7 +440,7 @@ confirmed all the same. A stricter confirmation, after a daily quality-control s
 a later design decision that ADR 0020 records as open.
 
 The measured cost is small: installing a bundle of the three programs (0.7 MB, 1.7 MB unpacked) took
-54 to 60 ms, a rollback and a confirmation 5 ms each. The time a site cares about is the server's
+46 to 62 ms, a rollback 5 ms and a confirmation 4 ms. The time a site cares about is the server's
 restart, a few milliseconds to `READY`, and the minutes of the service engineer's procedure around
 it.
 
@@ -514,11 +514,12 @@ it, which is why its own updater only touches `/opt/minidaq`.
   records.
 - **Regulators expect updatability.** In the United States, section 524B of the Federal Food, Drug,
   and Cosmetic Act requires manufacturers of cyber devices to provide postmarket updates and
-  patches, and the FDA's premarket cybersecurity guidance (2023) expects the submission to describe
-  how software is updated and how the updates are authenticated. The EU's MDR, in Annex I section
-  17, requires software to be developed and manufactured according to the state of the art, taking
-  into account information security among other principles. A device without an authenticated update
-  path is hard to defend in either market (verify: the current guidance text before you cite it).
+  patches, and the FDA's premarket cybersecurity guidance (final in 2023, revised in 2025) expects
+  the submission to describe how software is updated and how the updates are authenticated. The EU's
+  MDR, in Annex I section 17, requires software to be developed and manufactured according to the
+  state of the art, taking into account information security among other principles. A device
+  without an authenticated update path is hard to defend in either market (verify: the current
+  guidance text before you cite it).
 - **The signing key is part of the design.** Who holds it, how it is protected and how it is
   replaced belong in the security risk management file and the threat model (T-39 to T-53 in
   MiniDAQ's), not only in an operations note.
@@ -669,7 +670,7 @@ made; every starter of the chapter fails. Tag `ch25`.
   refuse other platforms and older versions.
 - The order of the writes is the design: install records before it switches, rollback switches
   before it records, and `open()` repairs what any cut leaves; a test cuts the power after every
-  step. Installing took about 60 ms and a rollback 5 ms.
+  step. Installing took 46 to 62 ms and a rollback 5 ms.
 - Updates are maintenance in IEC 62304's sense and an explicit expectation of regulators; the
   signing key and its handling belong in the threat model and the security risk management file.
 
@@ -695,8 +696,8 @@ made; every starter of the chapter fails. Tag `ch25`.
 - T. Preston-Werner, *Semantic Versioning 2.0.0* (semver.org): the version precedence rules of
   Exercise 25.2.
 - FDA, *Cybersecurity in Medical Devices: Quality System Considerations and Content of Premarket
-  Submissions*, final guidance, 2023, and section 524B of the Federal Food, Drug, and Cosmetic Act:
-  what a submission must say about updates and patches.
+  Submissions*, final guidance, 2023 (revised 2025), and section 524B of the Federal Food, Drug, and
+  Cosmetic Act: what a submission must say about updates and patches.
 - IEC 62304:2006+A1:2015, clause 6 (software maintenance process) and clause 8 (configuration
   management, including SOUP identification); IEC 81001-5-1:2021 for security activities across the
   product life cycle, including the delivery of updates.
