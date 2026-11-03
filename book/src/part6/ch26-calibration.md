@@ -86,7 +86,7 @@ delay and the saturation energy, which no real detector would tell you.
 
 On the simulated detector, the summed energy spectrum of all crystals has its photopeak at 435 keV
 instead of 511, and 23.0% FWHM wide instead of the 12.0% of a calibrated detector
-(`measurements/ch26/calibration.txt`). The energy window of 435 to 650 keV that MiniDAQ's sorter
+(`measurements/ch26/calibration.txt`). The energy window of 435 to 585 keV that MiniDAQ's sorter
 uses (Chapter 10) then cuts through the middle of most crystals' photopeaks, and keeps a share of
 each crystal's events that depends on that crystal's gain: a crystal with a high gain keeps all of
 its photopeak, one with a low gain keeps half. The image gets the pattern of the gains, which a
@@ -624,8 +624,8 @@ truth, and the point source is refused; every starter of the chapter fails. Tag 
 ## Further reading {.unnumbered}
 
 - S. R. Cherry, J. A. Sorenson and M. E. Phelps, *Physics in Nuclear Medicine*, 4th edition,
-  Elsevier, 2012: the chapters on scintillation detectors and PET instrumentation, for energy
-  resolution, gain and timing.
+  Elsevier Saunders, 2012: the chapters on scintillation detectors and PET instrumentation, for
+  energy resolution, gain and timing.
 - H. Guo, "A Simple Algorithm for Fitting a Gaussian Function", *IEEE Signal Processing Magazine*
   28(5), 2011: the weighted log-parabola fit of the photopeaks, and its iterative form for noisy
   data.

@@ -72,8 +72,9 @@ activity along the line, and
 - n is the normalization: the efficiency of the line, the product of its two crystals' detection
   efficiencies and a geometric factor (solid angle, angle of incidence, the axial position of the
   line);
-- A is the attenuation: the probability that both photons leave the body, exp(-mu l) integrated
-  along the line;
+- A is the attenuation: the probability that both photons leave the body, exp(-mu d) for a
+  chord of length d through a uniform medium, and in general the exponential of minus mu
+  integrated along the line;
 - L is the live fraction: the share of the coincidences that the electronics were not busy for;
 - S is the scatter, before the normalization (assumption: confirm with team whether your scanner's
   scatter model includes the normalization or not; a model that works in normalized units divides
@@ -278,7 +279,7 @@ The crystals' efficiencies came out 3.4% rms wrong per crystal, the Poisson erro
 1,040 counts (3.1%) plus a little. A bin's efficiency is the mean over the ring pairs of the bin's
 slice, so the errors of many crystals average out and the bin's efficiency was 1.4% wrong. For 1%
 per crystal the scan needs 10,000 counts per crystal, 92 million coincidences for 18,432 crystals,
-about 260 s at 10 MBq in the simulation. A real normalization scan takes hours (assumption: confirm
+about 290 s at 10 MBq in the simulation. A real normalization scan takes hours (assumption: confirm
 with team how long yours is and how often it is repeated).
 
 ### A normalization belongs to its settings
@@ -305,9 +306,10 @@ possible (RC-39).
 Both photons of a pair must leave the body. If one travels a and the other b through tissue of
 attenuation coefficient mu, the pair survives with probability exp(-mu a) exp(-mu b) =
 exp(-mu (a + b)), and a + b is the whole chord through the body, wherever on the line the
-annihilation was. That is why attenuation correction in PET is a factor per line, exp(mu L) for a
-uniform medium, and why it is large: water at 511 keV has mu = 0.096 per cm (verify: NIST XCOM),
-so a line through the center of a head of 18 cm is corrected by exp(1.73) = 5.6.
+annihilation was. That is why attenuation correction in PET is a factor per line,
+exp(mu (a + b)) for a uniform medium, and why it is large: water at 511 keV has mu = 0.096 per cm
+(verify: NIST XCOM), so a line through the center of a head of 18 cm is corrected by
+exp(1.73) = 5.6.
 
 MiniDAQ's tool models the phantom as what it is, a water cylinder, and averages over the ring
 pairs of each slice, whose oblique lines cross more water:
@@ -613,7 +615,8 @@ fails. Tag `ch27`.
   Tomography: Basic Sciences*, Springer, 2005: the chapters on data corrections and quantification,
   for each correction of this chapter in more depth.
 - S. R. Cherry, J. A. Sorenson and M. E. Phelps, *Physics in Nuclear Medicine*, 4th edition,
-  Elsevier, 2012: the PET chapters, for the measurement model and the sources of each correction.
+  Elsevier Saunders, 2012: the PET chapters, for the measurement model and the sources of each
+  correction.
 - M. E. Casey and E. J. Hoffman, "Quantitation in positron emission computed tomography: 7. A
   technique to reduce noise in accidental coincidence measurements and coincidence efficiency
   calibration", *Journal of Computer Assisted Tomography* 10(5), 1986: the variance reduction of
