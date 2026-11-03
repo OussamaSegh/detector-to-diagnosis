@@ -1,0 +1,82 @@
+# Chapter 28: 2D OSEM on simulated MiniDAQ data
+
+Machine: x86_64, 4 CPUs, Python 3.13.17, numpy 2.5.3.
+Simulated in 0 s (0 if the runs were reused).
+
+## 1. Geometry: a point source at (40, -25) mm in air
+
+| Lines at radius | x found | y found | Distance from the axis, found / true | FWHM x | FWHM y |
+|---|---:|---:|---:|---:|---:|
+| 150 mm | 38.58 | -24.11 | 0.9645 | 2.1 mm | 1.9 mm |
+| 156 mm | 40.11 | -25.06 | 1.0028 | 2.0 mm | 1.8 mm |
+
+With the lines at the front faces the point comes out 3.6% too close to the axis: the photons interact on average below the front face, so the lines are at about 156 mm. OSEM, 8 subsets, 10 iterations, 1 mm pixels; the FWHM is of the reconstructed point at that iteration, not the scanner's resolution (Chapter 30).
+
+## 2. A phantom of hot rods: OSEM iteration by iteration
+
+Lines at 156 mm. Data: slices 20 to 74 summed, 1,044,524 prompts, of which 684,140 trues; the model's additive term (randoms from the singles, scatter scaled to the tails) 366,418. Image 128 x 128 pixels of 2 mm. Rods of radius 12, 8 and 5 mm at 4 times the background; their regions are the inner half radius. Background: 1860 pixels within 60 mm of the axis and 12 mm or more from a rod's edge.
+
+| Iteration | Log-likelihood over iteration 1 | Background noise (CoV) | CRC 12 mm | CRC 8 mm | CRC 5 mm |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 0 | 7.2% | 0.78 | 0.57 | 0.25 |
+| 2 | 3,117 | 11.0% | 1.14 | 1.03 | 0.54 |
+| 3 | 3,766 | 15.3% | 1.23 | 1.22 | 0.75 |
+| 4 | 4,058 | 19.5% | 1.24 | 1.27 | 0.87 |
+| 6 | 4,388 | 27.2% | 1.23 | 1.27 | 0.95 |
+| 8 | 4,604 | 34.2% | 1.22 | 1.25 | 0.96 |
+| 12 | 4,890 | 46.2% | 1.23 | 1.23 | 0.94 |
+| 16 | 5,069 | 56.1% | 1.24 | 1.22 | 0.92 |
+| 24 | 5,278 | 70.7% | 1.25 | 1.22 | 0.88 |
+| 32 | 5,391 | 80.6% | 1.25 | 1.23 | 0.86 |
+
+32 iterations of 8 subsets in 6 s, with the likelihood and the metrics at every iteration; the normalization read from the scans in 4 s. CRC is the contrast recovery coefficient, (rod / background - 1) / (4 - 1): 1 is the true contrast.
+
+## 2b. How certain is one phantom's CRC?
+
+A second, independent realization (b) of the same phantom, reconstructed the same way, and both realizations' trues alone (no randoms, no scatter, no estimate of either):
+
+| Iteration | Realization | Background noise (CoV) | CRC 12 mm | CRC 8 mm | CRC 5 mm |
+|---:|---|---:|---:|---:|---:|
+| 4 | a | 19.5% | 1.24 | 1.27 | 0.87 |
+| 4 | b | 20.3% | 1.11 | 0.99 | 1.03 |
+| 8 | a | 34.2% | 1.22 | 1.25 | 0.96 |
+| 8 | b | 35.8% | 1.08 | 0.93 | 1.13 |
+| 16 | a | 56.1% | 1.24 | 1.22 | 0.92 |
+| 16 | b | 58.7% | 1.07 | 0.88 | 1.08 |
+| 4 | a, trues only | | 1.15 | 1.16 | 0.97 |
+| 4 | b, trues only | | 1.03 | 1.02 | 1.15 |
+
+## 3. MLEM and OSEM: the same number of image updates
+
+| Image updates | MLEM iterations | OSEM iterations (8 subsets) | Log-likelihood over OSEM's iteration 1, MLEM | OSEM | CRC 12 mm, MLEM | OSEM |
+|---:|---:|---:|---:|---:|---:|---:|
+| 8 | 8 | 1 | -36 | 0 | 0.77 | 0.78 |
+| 16 | 16 | 2 | 3,111 | 3,117 | 1.13 | 1.14 |
+| 1 | 1 | - | -295,185 | | 0.10 | |
+
+## 4. The background's profile with and without the corrections in the model
+
+OSEM, 4 iterations of 8 subsets; the mean of the background over rings 10 mm wide, over the ring from 0 to 10 mm, and away from the rods (12 mm or more from an edge).
+
+| Model | 0 to 10 mm | 20 to 30 mm | 40 to 50 mm | 60 to 70 mm | CRC 12 mm |
+|---|---:|---:|---:|---:|---:|
+| all corrections | 1.007 | 0.977 | 0.978 | 1.037 | 1.24 |
+| the true randoms and scatter (the simulator's) | 0.987 | 0.968 | 0.997 | 1.048 | 1.16 |
+| estimated randoms, true scatter | 0.983 | 0.972 | 0.998 | 1.047 | 1.16 |
+| no attenuation | 0.657 | 0.729 | 0.994 | 1.620 | 1.53 |
+| no scatter | 1.091 | 1.037 | 0.977 | 0.895 | 0.82 |
+| no normalization | 0.940 | 0.959 | 0.996 | 1.105 | 1.26 |
+| none | 0.705 | 0.801 | 1.027 | 1.466 | 0.99 |
+
+Each ring's mean over the mean of the four rings: a correct model gives 1.000 in each.
+
+## 5. A post-filter: noise against contrast
+
+| Image | Background noise (CoV) | CRC 12 mm | CRC 8 mm | CRC 5 mm |
+|---|---:|---:|---:|---:|
+| iteration 4 | 19.5% | 1.24 | 1.27 | 0.87 |
+| iteration 4, Gaussian 4 mm FWHM | 9.7% | 1.21 | 1.20 | 0.75 |
+| iteration 4, Gaussian 6 mm FWHM | 7.1% | 1.18 | 1.11 | 0.62 |
+| iteration 32 | 80.6% | 1.25 | 1.23 | 0.86 |
+| iteration 32, Gaussian 4 mm FWHM | 23.4% | 1.18 | 1.18 | 0.86 |
+| iteration 32, Gaussian 6 mm FWHM | 13.2% | 1.16 | 1.12 | 0.73 |

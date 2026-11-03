@@ -24,7 +24,7 @@ except ImportError:  # ctest counts exit status 77 as skipped
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from tools.recon import corrections as cor, listmode, sinogram as sg  # noqa: E402
+from tools.recon import corrections as cor, listmode, mlem, project, sinogram as sg  # noqa: E402
 
 BIN_DIR = None
 N = sg.CRYSTALS_PER_RING
@@ -294,6 +294,97 @@ def write_listmode(path, records, metadata=DEFAULT_METADATA, damage=None):
     if damage is not None:
         raw[damage] ^= 0x01
     pathlib.Path(path).write_bytes(raw)
+
+
+class Projection(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.h = header()
+        cls.s, cls.phi = project.bin_lines(cls.h)
+        cls.A = project.Projector(cls.s, cls.phi, n=96, pixel_mm=2.5)
+
+    def test_each_view_interleaves_two_angles(self):
+        # The pair (i, j) has its normal at (i + j + 1) pi / N; r odd and r even alternate.
+        ti, tj = sg.crystal_pairs(self.h)
+        v, c = 10, np.flatnonzero(ti[10] >= 0)[:6]
+        k = ti[v, c] + tj[v, c] + 1
+        k = np.where(k >= sg.CRYSTALS_PER_RING, k - sg.CRYSTALS_PER_RING, k)
+        self.assertTrue(np.allclose(self.phi[v, c], k * np.pi / sg.CRYSTALS_PER_RING))
+        self.assertAlmostEqual(self.phi[v].mean(), self.h.phi[v], delta=0.01 * np.pi / 384)
+
+    def test_the_backprojector_is_the_adjoint(self):
+        rng = np.random.default_rng(6)
+        x = rng.random((96, 96))
+        y = rng.random(self.s.shape)
+        lhs = (self.A.forward(x) * y).sum()
+        rhs = (x * self.A.back(y)).sum()
+        self.assertAlmostEqual(lhs / rhs, 1.0, delta=1e-6)
+
+    def test_a_disc_projects_to_its_chords(self):
+        xs, ys = self.A.pixel_centers()
+        disc = ((xs ** 2 + ys ** 2) <= 80.0 ** 2).astype(float)
+        got = self.A.forward(disc)
+        want = 2.0 * np.sqrt(np.clip(80.0 ** 2 - self.s ** 2, 0.0, None))
+        inner = np.abs(self.s) < 70.0
+        # A disc of square pixels has a ragged edge: about half a pixel of chord on each side.
+        self.assertLess(np.abs(got - want)[inner].mean(), 1.0)
+        self.assertLess(np.abs(got - want)[inner].max(), 4.0)
+
+    def test_an_off_center_object_lies_on_its_sinusoid(self):
+        xs, ys = self.A.pixel_centers()
+        blob = np.exp(-0.5 * ((xs - 40.0) ** 2 + (ys + 25.0) ** 2) / 3.0 ** 2)
+        got = self.A.forward(blob)
+        peak = self.s[np.arange(self.s.shape[0]), got.argmax(axis=1)]
+        want = 40.0 * np.cos(self.phi[:, 0]) - 25.0 * np.sin(self.phi[:, 0])
+        self.assertLess(np.abs(peak - want).max(), 1.6)  # half a radial bin at s = 47 mm
+
+
+class Reconstruction(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.h = header()
+        s, phi = project.bin_lines(cls.h)
+        cls.A = project.Projector(s, phi, n=64, pixel_mm=3.75)
+        xs, ys = cls.A.pixel_centers()
+        x = ((xs ** 2 + ys ** 2) <= 80.0 ** 2).astype(float)
+        x[(xs - 35.0) ** 2 + ys ** 2 <= 15.0 ** 2] = 4.0
+        cls.truth = x
+        rng = np.random.default_rng(7)
+        cls.mult = rng.uniform(0.3, 1.0, s.shape)  # normalization and attenuation
+        cls.add = np.full(s.shape, 0.5)            # randoms and scatter
+        cls.mean = mlem.expected(x, cls.A, cls.mult, cls.add)
+        cls.y = rng.poisson(cls.mean).astype(float)
+
+    def test_mlem_never_lowers_the_likelihood(self):
+        ll = []
+        mlem.osem(self.y, self.A, self.mult, self.add, 12,
+                  callback=lambda it, x: ll.append(
+                      mlem.log_likelihood(self.y, mlem.expected(x, self.A, self.mult, self.add))))
+        self.assertTrue(all(b >= a - 1e-6 * abs(a) for a, b in zip(ll, ll[1:])), ll)
+
+    def test_one_subset_is_mlem_and_subsets_go_faster(self):
+        a = mlem.osem(self.y, self.A, self.mult, self.add, 3, n_subsets=1)
+        b = mlem.osem(self.y, self.A, self.mult, self.add, 3)
+        self.assertTrue(np.array_equal(a, b))
+        ll = lambda x: mlem.log_likelihood(self.y, mlem.expected(x, self.A, self.mult, self.add))
+        fast = mlem.osem(self.y, self.A, self.mult, self.add, 3, n_subsets=8)
+        slow = mlem.osem(self.y, self.A, self.mult, self.add, 24)
+        self.assertGreater(ll(fast), ll(a))
+        self.assertAlmostEqual((ll(fast) - ll(a)) / (ll(slow) - ll(a)), 1.0, delta=0.05)
+
+    def test_noiseless_data_give_the_object(self):
+        x = mlem.osem(self.mean, self.A, self.mult, self.add, 40, n_subsets=8)
+        xs, ys = self.A.pixel_centers()
+        inside = (xs ** 2 + ys ** 2 <= 70.0 ** 2) & ((xs - 35.0) ** 2 + ys ** 2 > 20.0 ** 2)
+        hot = (xs - 35.0) ** 2 + ys ** 2 <= 10.0 ** 2
+        self.assertAlmostEqual(x[inside].mean(), 1.0, delta=0.02)
+        self.assertAlmostEqual(x[hot].mean(), 4.0, delta=0.12)
+        self.assertGreaterEqual(x.min(), 0.0)
+
+    def test_subsets_must_cover_the_views(self):
+        self.assertEqual(sorted(sum(mlem.subsets(192, 8), [])), list(range(192)))
+        with self.assertRaises(ValueError):
+            mlem.subsets(192, 0)
 
 
 class ListMode(unittest.TestCase):
