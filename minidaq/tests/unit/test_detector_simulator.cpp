@@ -253,6 +253,21 @@ TEST(DetectorSimulator, RefusesAnUncalibratedDetectorBeyondItsRange) {
   EXPECT_TRUE(validate(uncalibrated(0.5, 1.0e6, 4'000.0)));
 }
 
+TEST(DetectorSimulator, ADelaySpreadAloneLeavesEveryGainAtOne) {
+  // REQ: SRS-SIM-022
+  // The gains and delays come from one stream, drawn crystal by crystal, so the delays are the
+  // same with and without a gain spread.
+  DetectorSimulator alone{uncalibrated(0.0, 0.0, 300.0)};
+  DetectorSimulator both{uncalibrated(0.1, 0.0, 300.0)};
+  const auto g = alone.crystal_gains();
+  EXPECT_TRUE(std::all_of(g.begin(), g.end(), [](double x) { return x == 1.0; }));
+  const auto t = alone.crystal_skews_ps();
+  const auto u = both.crystal_skews_ps();
+  ASSERT_EQ(t.size(), u.size());
+  EXPECT_TRUE(std::equal(t.begin(), t.end(), u.begin()));
+  EXPECT_TRUE(std::any_of(t.begin(), t.end(), [](double x) { return x != 0.0; }));
+}
+
 TEST(DetectorSimulator, AnUncalibratedDetectorReportsEachCrystalsOwnGainAndDelay) {
   // REQ: SRS-SIM-022
   const SimulatorConfig plain = point_in_air();

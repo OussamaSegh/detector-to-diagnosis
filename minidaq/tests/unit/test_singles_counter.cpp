@@ -98,3 +98,16 @@ TEST(CorrectionsRecord, NamesTheWindowsAndCarriesEveryCrystal) {
   EXPECT_EQ(j["prompts"], 12);
   EXPECT_EQ(j["delayeds"], 4);
 }
+
+TEST(SinglesCounter, ABatchOfOnlyUnknownCrystalsChangesNothing) {
+  // REQ: SRS-COR-001
+  SinglesCounter c{435.0, 585.0};
+  c.record(std::vector<Single>{at(ScannerGeometry::num_crystals, 511.0F, 7),
+                               at(std::numeric_limits<std::uint32_t>::max(), 511.0F, 9)});
+  c.record(std::vector<Single>{});
+  const auto s = c.snapshot();
+  EXPECT_EQ(s.total, 0U);
+  EXPECT_EQ(std::accumulate(s.per_block.begin(), s.per_block.end(), std::uint64_t{0}), 0U);
+  EXPECT_EQ(s.first_ps, 0);  // no times: as for an empty run
+  EXPECT_EQ(s.last_ps, 0);
+}

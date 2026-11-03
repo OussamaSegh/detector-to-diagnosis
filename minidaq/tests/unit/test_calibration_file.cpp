@@ -137,6 +137,10 @@ TEST(CalibrationFile, RefusesEachMalformedPart) {
       {[](json& j) { j["time"]["offset_ps"][9] = 1.5; }, "/time/offset_ps/9", "integer of 32 bits"},
       {[](json& j) { j["time"]["offset_ps"][9] = 3'000'000'000LL; }, "/time/offset_ps/9",
        "32 bits"},
+      {[](json& j) { j["time"]["offset_ps"][9] = -3'000'000'000LL; }, "/time/offset_ps/9",
+       "32 bits"},
+      {[](json& j) { j["schema_version"] = 1; }, "/schema_version", "must be a string"},
+      {[](json& j) { j["time"] = 1; }, "/time", "must be an object"},
       {[](json& j) { j["reference_temperature_c"] = 200; }, "/reference_temperature_c", "between"},
   };
   for (const auto& c : cases) {

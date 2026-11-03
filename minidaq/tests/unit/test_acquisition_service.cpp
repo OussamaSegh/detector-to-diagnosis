@@ -6,7 +6,10 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cstdio>
+#include <fstream>
 #include <mutex>
+#include <string>
 #include <vector>
 
 #include <nlohmann/json.hpp>
@@ -382,4 +385,16 @@ TEST(AcquisitionService, ProfilePathMustBeASmallRegularFile) {
   }
   c.rt_profile = "/dev/zero";
   EXPECT_NE(svc.configure(c, "test").message.find("not a regular file"), std::string::npos);
+  // A regular file one byte over the limit of 64 KiB.
+  const std::string big = ::testing::TempDir() + "minidaq_big_rt_profile.conf";
+  {
+    std::ofstream f{big, std::ios::binary | std::ios::trunc};
+    f << std::string(std::size_t{64} * 1024 + 1, '#');
+  }
+  c.rt_profile = big;
+  const auto r = svc.configure(c, "test");
+  EXPECT_EQ(r.code, "config_error");
+  EXPECT_NE(r.message.find("larger than 64 KiB"), std::string::npos) << r.message;
+  EXPECT_EQ(svc.state(), AcqState::idle);
+  std::remove(big.c_str());
 }

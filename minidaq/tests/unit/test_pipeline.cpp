@@ -283,6 +283,45 @@ std::shared_ptr<const CalibrationTable> skewed_table(std::uint64_t seed) {
 
 }  // namespace
 
+TEST(Pipeline, ABatchWithoutValidWordsAndAnIdentityTableChangeNothing) {
+  // REQ: SRS-PIPE-010
+  // REQ: SRS-CAL-002
+  // A first batch of words that all name a crystal the scanner does not have decodes to an empty
+  // batch; the identity table is the same as no table. Either way the output is the reference's.
+  constexpr std::uint64_t n = 100'000;
+  const std::size_t batch = small_config(n).batch_size;
+  std::vector<std::uint64_t> words(n);
+  sim::SyntheticSource gen{{}};
+  gen.generate(words);
+  std::fill_n(words.begin(), batch, packed::crystal_mask << packed::crystal_shift);
+  const auto want = reference(words, batch, PipelineConfig{}.sorter);
+  ASSERT_GT(want.size(), n / 10);
+  for (const bool identity : {false, true}) {
+    PipelineConfig cfg = small_config(n);
+    if (identity) {
+      cfg.calibration = std::make_shared<const CalibrationTable>(CalibrationTable::identity());
+    }
+    std::size_t pos = 0;
+    std::vector<Coincidence> got;
+    AcquisitionPipeline p{cfg,
+                          [&](std::span<std::uint64_t> out) {
+                            const std::size_t k = std::min(out.size(), words.size() - pos);
+                            std::copy_n(words.begin() + static_cast<std::ptrdiff_t>(pos), k, out.begin());
+                            pos += k;
+                            return k;
+                          },
+                          [&](std::span<const Coincidence> c) { got.insert(got.end(), c.begin(), c.end()); }};
+    p.start();
+    p.wait();
+    ASSERT_TRUE(p.finished());
+    EXPECT_EQ(got, want) << "identity " << identity;
+    const auto st = p.stats();
+    expect_conservation(st, p.sorter_stats());
+    EXPECT_EQ(st[1].items_filtered, batch) << "identity " << identity;
+    EXPECT_EQ(p.late_singles(), 0U);
+  }
+}
+
 TEST(Pipeline, CalibratesEverySingleAndTheCorrectionMakesNoneLate) {
   // REQ: SRS-CAL-002
   // REQ: SRS-CAL-003

@@ -167,6 +167,7 @@ TEST(Calibration, RefusesATableThatDoesNotSayWhereAndWhenItWasMade) {
       {[](CalibrationInfo& i) { i.valid_until_utc = "soon"; }, "valid_until_utc"},
       {[](CalibrationInfo& i) { i.valid_until_utc = i.created_utc; }, "not after"},
       {[](CalibrationInfo& i) { i.reference_temperature_c = 130.0; }, "reference_temperature"},
+      {[](CalibrationInfo& i) { i.reference_temperature_c = -50.0; }, "reference_temperature"},
       {[](CalibrationInfo& i) { i.reference_temperature_c = std::nan(""); },
        "reference_temperature"},
   };
@@ -198,12 +199,18 @@ TEST(Calibration, KnowsAUtcTimestampWhenItSeesOne) {
   EXPECT_TRUE(is_utc_timestamp("2026-11-03T08:00:00Z"));
   EXPECT_TRUE(is_utc_timestamp("2028-02-29T23:59:59Z"));
   EXPECT_TRUE(is_utc_timestamp("2000-02-29T00:00:00Z"));
+  EXPECT_TRUE(is_utc_timestamp("2027-02-28T00:00:00Z"));
   for (const char* bad : {"2027-02-29T00:00:00Z", "1900-02-29T00:00:00Z", "2026-13-01T00:00:00Z",
                           "2026-00-01T00:00:00Z", "2026-04-31T00:00:00Z", "2026-11-00T00:00:00Z",
                           "2026-11-03T24:00:00Z", "2026-11-03T08:60:00Z", "2026-11-03T08:00:60Z",
                           "2026-11-03T08:00:00", "2026-11-03T08:00:00+01:00",
                           "2026-11-03 08:00:00Z", "2026/11/03T08:00:00Z", "2026-11-03T08-00:00Z",
-                          "2026-11-03T08:00-00Z", "2026-1x-03T08:00:00Z", "", "20261103T080000Z"}) {
+                          "2026-11-03T08:00-00Z", "2026-1x-03T08:00:00Z", "", "20261103T080000Z",
+                          // each separator wrong in turn, and a non-digit in each field, both
+                          // above '9' and below '0'
+                          "2026-11+03T08:00:00Z", "2026-11-03T08:00:00z", "20x6-11-03T08:00:00Z",
+                          "2026-11-0xT08:00:00Z", "2026-11-03Tx8:00:00Z", "2026-11-03T08:x0:00Z",
+                          "2026-11-03T08:00:0xZ", "2026-11-03T08:00:0/Z", "/026-11-03T08:00:00Z"}) {
     EXPECT_FALSE(is_utc_timestamp(bad)) << bad;
   }
 }
