@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 19 (MiniDAQ 0.6.0-dev). Status: draft for review.
+Version 20 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -374,6 +374,21 @@ ADR 0025, CR-0016). They are part of the reconstruction tool (`tools/recon`, too
 | SRS-IQ-003 | The reconstruction tool shall compute a hot region's contrast recovery as its mean over the background's, less one, over the true ratio less one, and the background variability as the sample standard deviation of the means of background regions of one size over their mean, with the regions placed the same way every time at stated distances from the hot objects and the phantom's edge, and refuse a placement that does not fit. | tools | T |
 | SRS-IQ-004 | The reconstruction protocol (OSEM with the corrections in the model, 4 iterations of 8 subsets, 2 mm pixels, a Gaussian post-filter of 4 mm FWHM) shall give the hot-rod phantom of `measurements/ch28` a contrast recovery between 90% and 110% of the true contrast for the 12 mm rod and of at least 75% for the 8 mm rod, and a background variability of at most 6% for regions of 12 mm radius. | tools | M |
 
+### 2.22 Analysis (ANA)
+
+The analysis package `minidaq-analysis` (`analysis/`, tool TL-33): list-mode files read through a
+memory map, fits of histograms with uncertainties, and the acquisition quality control report
+(Chapter 31, ADR 0026, CR-0017). It is a tool, not part of the shipped software.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-ANA-001 | The analysis package shall read MDQ-L1 files through a memory map, chunk by chunk of whole blocks with the memory of one chunk, return the same coincidences for every chunk size, skip and count tags, and refuse a file whose header, block headers, record CRCs, sequence numbers or closing block are not as the format specifies, and a run whose files do not end as their place in the run requires, with an error that names the file, the block and the reason. | tools | T |
+| SRS-ANA-002 | The analysis package shall fit histograms by maximum likelihood for Poisson counts, with models integrated over each bin and parameter bounds, give each parameter's standard error from the inverse of the Fisher information so that over repeated synthetic histograms the differences between estimate and truth have a mean between -0.15 and 0.15 times the standard error and a standard deviation between 0.85 and 1.15 times the standard error, propagate the covariance to derived quantities, and raise an error instead of returning a value when a fit does not converge. | tools | T |
+| SRS-ANA-003 | The analysis package shall measure the coincidence time resolution on the time of the single in the lower-numbered crystal minus that of the higher-numbered one, with the delayed window removed from delayed coincidences, and fill its histograms identically for every chunk size. | tools | T |
+| SRS-ANA-004 | The analysis package shall test the prompt rate of a run for constancy (dispersion statistic against chi-square) and for a dip (the lowest bin's Poisson probability times the number of bins), and find the loss of 16% of one bin's counts at 1,000 counts per bin. | tools | T |
+| SRS-ANA-005 | The analysis package's QC report shall check every limit of its protocol file (photopeak position and resolution, time resolution and offset, fit quality, constancy, no dip, prompts in the files equal to the prompts the run record states, time order), write the result as JSON and Markdown with figures and the provenance of every input, exit with status `0` when every check passes, `1` when one fails and `2` when the run cannot be analyzed, and write no report for a damaged run. | tools | T |
+| SRS-ANA-006 | The analysis package shall record every input of a report by path, size and SHA-256 in a manifest whose own SHA-256 does not depend on the order of the inputs, and report every file of a manifest that is missing or whose size or SHA-256 differs. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -409,3 +424,4 @@ ADR 0025, CR-0016). They are part of the reconstruction tool (`tools/recon`, too
 | 17 | Chapter 28: the reconstruction tool, SRS-REC-001 to SRS-REC-003 (ADR 0023, CR-0014). |
 | 18 | Chapter 29: the reconstruction tool's C++ projector and its Python module, SRS-REC-004 to SRS-REC-006 (ADR 0024, CR-0015). |
 | 19 | Chapter 30: image quality, SRS-IQ-001 to SRS-IQ-004 (ADR 0025, CR-0016). |
+| 20 | Chapter 31: the analysis package, SRS-ANA-001 to SRS-ANA-006 (ADR 0026, CR-0017). |

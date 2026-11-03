@@ -58,6 +58,31 @@ jobs:
         # step fails until the tool list (docs/regulatory/verification/tools.json) records it.
         run: python3 tools/check_tools.py . --check --environment
 
+  python:
+    # Chapter 31: the analysis package in the environment it is specified with
+    # (analysis/requirements.lock): its tests (with the simulator), type check and lint.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libssl-dev python3-venv
+      - name: Python environment from the lock file
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --no-deps -r analysis/requirements.lock
+          "$RUNNER_TEMP/venv/bin/pip" check
+      - name: Build the simulator
+        run: |
+          cmake --preset release -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF \
+            -DMINIDAQ_BUILD_RECON_PYTHON=OFF -DPython3_EXECUTABLE="$RUNNER_TEMP/venv/bin/python"
+          cmake --build --preset release --target minidaq_sim
+      - name: Tests, types and lint of the analysis package
+        env:
+          MINIDAQ_ANALYSIS_REQUIRED: "1"
+        run: ctest --test-dir build/release -R '^analysis\.' --output-on-failure --no-tests=error
+
   reproducible-build:
     # Chapter 20: the shipped build, made twice from two checkouts in different directories,
     # gives the same product archive byte for byte. repro.txt keeps the programs' SHA-256, to

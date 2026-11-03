@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: MIT
+# minidaq-analysis (Chapter 31): pure Python, built with scikit-build-core with CMake switched
+# off. Chapter 32 turns CMake on for the compiled part.
+[build-system]
+requires = ["scikit-build-core==1.1.2"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "minidaq-analysis"
+version = "0.7.0.dev0"
+description = "MiniDAQ list-mode analysis and acquisition quality control (Detector to Diagnosis, Chapter 31)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26", "scipy>=1.11", "matplotlib>=3.6"]
+
+[project.optional-dependencies]
+fast = ["numba>=0.59"]
+dev = ["pytest", "mypy", "ruff"]
+
+[project.scripts]
+minidaq-qc = "minidaq_analysis.__main__:main"
+
+[tool.scikit-build]
+wheel.cmake = false
+wheel.packages = ["src/minidaq_analysis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["slow: runs the simulator or takes more than a few seconds"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "matplotlib.*", "numba.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "NPY", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N812"]  # `fitting as F`, `provenance as P`: short module aliases in tests

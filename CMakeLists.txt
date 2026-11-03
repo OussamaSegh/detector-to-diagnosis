@@ -54,6 +54,7 @@ endif()
 
 add_subdirectory(minidaq)
 add_subdirectory(recon)
+add_subdirectory(analysis)
 
 if(MINIDAQ_BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)
