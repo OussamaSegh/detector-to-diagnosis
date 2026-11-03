@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <exception>
 
+#include "minidaq/config/calibration_file.hpp"
 #include "minidaq/control/audit.hpp"
 #include "minidaq/core/geometry.hpp"
 
@@ -472,6 +473,9 @@ std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(const config::Acquisitio
         {"delayed_window_ps", c.sorter.delay_ps},
         {"coincidence_window_ps", c.pipeline.coincidence_window_ps}}},
       {"configuration", config::to_json(c)},
+      // Chapter 26: which calibration made these energies and times (SRS-CAL-005).
+      {"calibration", c.calibration.loaded ? config::to_json(*c.calibration.loaded)
+                                           : nlohmann::json{{"id", "identity"}}},
   };
   auto sink = ListModeSink::open(std::move(s), make_posix_file_ops());
   if (!sink) {

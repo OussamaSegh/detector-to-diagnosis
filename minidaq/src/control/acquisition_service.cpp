@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 #include "minidaq/control/acquisition_service.hpp"
 
+#include "minidaq/config/calibration_file.hpp"
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include <cerrno>
+#include <cmath>
 
 #include <nlohmann/json.hpp>
 
+#include "minidaq/config/calibration_file.hpp"
 #include "minidaq/control/run_integrity.hpp"
 #include "minidaq/core/flight_recorder.hpp"
 
@@ -62,7 +66,8 @@ json hardware_json(const HardwarePort& hw) {
 // it afterwards would leave a window in which the file can be swapped.
 constexpr std::size_t max_profile_bytes = std::size_t{64} * 1024;
 
-std::string read_small_file(const std::string& path, std::string& out) {
+std::string read_small_file(const std::string& path, std::string& out,
+                            std::size_t max_bytes = max_profile_bytes) {
   const int fd = ::open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NONBLOCK);  // a FIFO must not block
   if (fd < 0) {
     return "cannot read \"" + path + "\"";
@@ -71,10 +76,10 @@ std::string read_small_file(const std::string& path, std::string& out) {
   std::string problem;
   if (::fstat(fd, &st) != 0 || !S_ISREG(st.st_mode)) {
     problem = "\"" + path + "\" is not a regular file";
-  } else if (static_cast<std::size_t>(st.st_size) > max_profile_bytes) {
-    problem = "\"" + path + "\" is larger than 64 KiB";
+  } else if (static_cast<std::size_t>(st.st_size) > max_bytes) {
+    problem = "\"" + path + "\" is larger than " + std::to_string(max_bytes >> 10U) + " KiB";
   } else {
-    std::string buf(max_profile_bytes + 1, '\0');  // +1: notice a file that grew
+    std::string buf(max_bytes + 1, '\0');  // +1: notice a file that grew
     std::size_t n = 0;
     for (;;) {
       const ssize_t r = ::read(fd, buf.data() + n, buf.size() - n);
@@ -87,8 +92,8 @@ std::string read_small_file(const std::string& path, std::string& out) {
         break;
       }
     }
-    if (n > max_profile_bytes) {
-      problem = "\"" + path + "\" is larger than 64 KiB";
+    if (n > max_bytes) {
+      problem = "\"" + path + "\" is larger than " + std::to_string(max_bytes >> 10U) + " KiB";
     } else {
       out.assign(buf.data(), n);
     }
@@ -165,9 +170,47 @@ CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg
     }
     profile = *parsed;
   }
+  // [snippet:configure-calibration]
+  // Chapter 26: the calibration table, read and checked now, so that a run never starts with a
+  // table that is damaged, made for another scanner or out of date (SRS-CAL-001, SRS-CAL-004).
+  std::shared_ptr<const CalibrationTable> table;
+  if (!cfg.calibration.file.empty()) {
+    std::string text;
+    if (const std::string problem =
+            read_small_file(cfg.calibration.file, text, config::max_calibration_file_bytes);
+        !problem.empty()) {
+      note(who, "configure", "rejected: " + problem, false);
+      return result(false, "config_error", "/calibration/file: " + problem);
+    }
+    auto parsed = config::parse_calibration(text);
+    if (!parsed) {
+      const std::string why = config::format_errors(parsed.error());
+      note(who, "configure", "rejected: calibration table " + cfg.calibration.file + ": " + why, false);
+      return result(false, "config_error", "/calibration/file: " + why);
+    }
+    if (parsed->info().scanner_serial != cfg.calibration.scanner_serial) {
+      const std::string why = "the table was made for scanner \"" + parsed->info().scanner_serial +
+                              "\", not \"" + cfg.calibration.scanner_serial + "\"";
+      note(who, "configure", "rejected: " + why, false);
+      return result(false, "config_error", "/calibration/scanner_serial: " + why);
+    }
+    // Both in YYYY-MM-DDTHH:MM:SS form: the first 19 characters compare as times.
+    const std::string now = utc_now_iso8601().substr(0, 19) + "Z";
+    if (parsed->info().valid_until_utc <= now) {
+      const std::string why = "the table " + parsed->info().id + " version " +
+                              std::to_string(parsed->info().version) + " was valid until " +
+                              parsed->info().valid_until_utc + "; calibrate again";
+      note(who, "configure", "rejected: " + why, false);
+      return result(false, "config_error", "/calibration/file: " + why);
+    }
+    table = std::make_shared<const CalibrationTable>(std::move(*parsed));
+  }
+  // [/snippet:configure-calibration]
   config_ = cfg;
+  config_->calibration.loaded = table;
   profile_ = profile;
-  note(who, "configure", config::to_json(cfg).dump());
+  note(who, "configure",
+       config::to_json(cfg).dump() + (table ? ", calibration " + config::to_json(*table).dump() : ""));
   (void)machine_.apply(AcqEvent::configure);
   return result(true);
 }
@@ -509,8 +552,42 @@ json AcquisitionService::status_locked() const {
   if (opt_.hardware) {
     j["hardware"]["drain_timeouts"] = drain_timeouts_;  // 2.3: Chapter 24
   }
+  j["calibration"] = calibration_json_locked();  // 2.4: Chapter 26
   j["integrity"] = assess_integrity(j);  // risk control RC-01
   return j;
 }
+
+// [snippet:calibration-status]
+// The table in use and, during and after a run, each block's photopeak: how many calibrated
+// singles fell between 430 and 590 keV and their mean, and the blocks whose mean is further
+// from 511 keV than the tolerance once they have enough singles to say so (SRS-CAL-006).
+json AcquisitionService::calibration_json_locked() const {
+  if (!config_) {
+    return nullptr;
+  }
+  const auto& table = config_->calibration.loaded;
+  json j = table ? config::to_json(*table) : json{{"id", "identity"}};
+  j["drift_tolerance_percent"] = config_->calibration.drift_tolerance_percent;
+  if (!pipeline_) {
+    return j;
+  }
+  constexpr std::uint64_t enough = 1'000;
+  constexpr double peak_kev = 511.0;
+  const double tolerance = config_->calibration.drift_tolerance_percent / 100.0;
+  json blocks = json::array();
+  json drifted = json::array();
+  const auto snap = pipeline_->photopeak().snapshot();
+  for (std::size_t b = 0; b < snap.size(); ++b) {
+    blocks.push_back({{"singles", snap[b].singles}, {"mean_kev", snap[b].mean_kev}});
+    if (snap[b].singles >= enough && std::abs(snap[b].mean_kev - peak_kev) > tolerance * peak_kev) {
+      drifted.push_back(b);
+    }
+  }
+  j["photopeak"] = {{"window_kev", {PhotopeakMonitor::window_lo_kev, PhotopeakMonitor::window_hi_kev}},
+                    {"blocks", std::move(blocks)},
+                    {"drifted_blocks", std::move(drifted)}};
+  return j;
+}
+// [/snippet:calibration-status]
 
 }  // namespace minidaq::control

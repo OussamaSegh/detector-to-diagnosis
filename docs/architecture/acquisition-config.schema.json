@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/minidaq/acquisition-config-1.2.schema.json",
-  "title": "MiniDAQ acquisition configuration, schema version 1.2",
-  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6; version 1.1 adds the UDP source of Chapter 9, 1.2 the coincidence sorter settings of Chapter 10, 1.3 the list-mode output of Chapter 12). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "$id": "https://example.invalid/minidaq/acquisition-config-1.4.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 1.4",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6; version 1.1 adds the UDP source of Chapter 9, 1.2 the coincidence sorter settings of Chapter 10, 1.3 the list-mode output of Chapter 12, 1.4 the calibration table of Chapter 26). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
   "type": "object",
   "required": ["schema_version"],
   "additionalProperties": false,
@@ -84,6 +84,16 @@
         "records_per_block": { "type": "integer", "minimum": 1, "maximum": 65536 },
         "buffers": { "description": "blocks in flight between the encoder and the disk", "type": "integer", "minimum": 2, "maximum": 65536 },
         "max_block_delay_ms": { "description": "a block is written at the latest this long after its first record", "type": "integer", "minimum": 1, "maximum": 60000 }
+      }
+    },
+    "calibration": {
+      "description": "The calibration table the run applies (schema 1.4, Chapter 26; docs/formats/calibration.md). file empty: the identity table. scanner_serial is required with a file and must match the table's.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string" },
+        "scanner_serial": { "type": "string" },
+        "drift_tolerance_percent": { "description": "a block whose photopeak mean is further from 511 keV is named in the status", "type": "number", "minimum": 0.1, "maximum": 50 }
       }
     }
   }

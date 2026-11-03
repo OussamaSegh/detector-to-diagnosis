@@ -25,6 +25,9 @@
 // 2.1: Chapter 21 (ADR 0016): diagnostics, for an observer: the build ID and the newest
 // events of the flight recorder.
 // 2.2: Chapter 22 (ADR 0017): status field "hardware", the front-end boards' slow control.
+// 2.3: Chapter 24 (ADR 0019): the boards' triggers, FIFOs and drain timeouts in "hardware".
+// 2.4: Chapter 26 (ADR 0021): status field "calibration", the table in use and the photopeak of
+// each detector block.
 #pragma once
 
 #include <array>
@@ -38,7 +41,7 @@
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "2.3";
+inline constexpr std::string_view api_version = "2.4";
 
 // diagnostics: how many flight-recorder events it returns without "events", and at most.
 inline constexpr std::size_t diagnostics_default_events = 64;
@@ -59,6 +62,7 @@ inline constexpr std::array status_fields{
     StatusField{"detector", true},        StatusField{"sink", true},
     StatusField{"integrity", true},       // 1.1: Chapter 15, risk control RC-01
     StatusField{"hardware", true},        // 2.2: Chapter 22, null without hardware
+    StatusField{"calibration", true},     // 2.4: Chapter 26, null until configured
     StatusField{"detector_counters", false},  // 1.1: Chapter 9
     StatusField{"sink_counters", false},  // 1.1: Chapter 12
     StatusField{"run", false},            StatusField{"stages", false},

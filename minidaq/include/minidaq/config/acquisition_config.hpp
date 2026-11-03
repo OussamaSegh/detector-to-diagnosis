@@ -18,6 +18,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -31,8 +32,9 @@
 namespace minidaq::config {
 
 inline constexpr int supported_major = 1;
-// 1.1: source type "udp" (Chapter 9); 1.2: "sorter" (Chapter 10); 1.3: "output" (Chapter 12)
-inline constexpr int supported_minor = 3;
+// 1.1: source type "udp" (Chapter 9); 1.2: "sorter" (Chapter 10); 1.3: "output" (Chapter 12);
+// 1.4: "calibration" (Chapter 26)
+inline constexpr int supported_minor = 4;
 
 // The UDP readout link (Chapter 9, minidaq/control/udp_detector.hpp).
 struct UdpSettings {
@@ -89,6 +91,17 @@ struct OutputSettings {
   friend bool operator==(const OutputSettings&, const OutputSettings&) = default;
 };
 
+// The calibration table the run applies (Chapter 26, minidaq/processing/calibration.hpp).
+struct CalibrationSettings {
+  std::string file;            // a calibration table (docs/formats/calibration.md); empty: identity
+  std::string scanner_serial;  // the table must have been made for this scanner; required with file
+  double drift_tolerance_percent = 2.0;  // a block's photopeak further from 511 keV is named
+  // Not part of the file: the table that configure() loaded from `file`, for the run record and
+  // the list-mode metadata. Null until then, and for the identity table.
+  std::shared_ptr<const CalibrationTable> loaded;
+  friend bool operator==(const CalibrationSettings&, const CalibrationSettings&) = default;
+};
+
 struct AcquisitionConfig {
   int schema_major = supported_major;
   int schema_minor = supported_minor;
@@ -97,6 +110,7 @@ struct AcquisitionConfig {
   PipelineSettings pipeline;
   SorterSettings sorter;
   OutputSettings output;
+  CalibrationSettings calibration;
   std::string rt_profile;   // path of a real-time profile file (Chapter 4); empty: none
   double stop_after_s = 0;  // 0: run until stopped
 

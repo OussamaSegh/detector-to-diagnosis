@@ -24,6 +24,7 @@
 #include "minidaq/control/adapters.hpp"
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/format/list_mode.hpp"
+#include "calibration_fixture.hpp"
 #include "eventually.hpp"
 
 using namespace minidaq;
@@ -397,6 +398,7 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
     EXPECT_EQ(meta["configuration"]["output"]["type"], "listmode");
     EXPECT_EQ(meta["simulated"], true) << "the synthetic source is a simulation";
     EXPECT_TRUE(meta["configuration"]["sorter"].contains("multiples")) << "defaults are stored too";
+    EXPECT_EQ(meta["calibration"]["id"], "identity") << "no table configured";
   }
   // The run record: the service's counters, next to the data (SRS-OUT-010).
   ASSERT_TRUE(record.is_object()) << "no run record";
@@ -446,4 +448,47 @@ TEST(ListModeSink, StoresTheRunRecordNextToTheFiles) {
   const auto& raw2 = disk2.files.at(path);
   const auto j2 = nlohmann::json::parse(std::string{reinterpret_cast<const char*>(raw2.data()), raw2.size()});
   EXPECT_EQ(j2["run"], "not json") << "kept as text, not dropped";
+}
+
+TEST(ListModeSink, NamesTheCalibrationTableInTheFilesAndTheRunRecord) {
+  // REQ: SRS-CAL-005
+  const auto dir = std::filesystem::temp_directory_path() / ("minidaq-lm-cal-" + std::to_string(::getpid()));
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const auto table = dir / "table.json";
+  std::ofstream{table} << calibration_fixture::good_table().dump();
+  AcquisitionService svc{with_default_adapters()};
+  config::AcquisitionConfig c;
+  c.source.rate_hz = 2e6;
+  c.stop_after_s = 0.05;
+  c.output.type = "listmode";
+  c.output.directory = dir.string();
+  c.calibration.file = table.string();
+  c.calibration.scanner_serial = "MDQ-REF-0001";
+  ASSERT_TRUE(svc.configure(c, "test").ok);
+  ASSERT_TRUE(svc.start("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience)) << svc.status().dump();
+  int files = 0;
+  nlohmann::json record;
+  for (const auto& e : std::filesystem::directory_iterator{dir}) {
+    if (e.path().string().ends_with(".run.json")) {
+      std::ifstream in{e.path()};
+      record = nlohmann::json::parse(in);
+    } else if (e.path().extension() == ".mdql") {
+      std::ifstream in{e.path(), std::ios::binary};
+      const std::vector<char> raw{std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
+      const auto meta = nlohmann::json::parse(read_file(std::as_bytes(std::span{raw})).metadata);
+      EXPECT_EQ(meta["calibration"]["id"], "CAL-0001");
+      EXPECT_EQ(meta["calibration"]["version"], 3);
+      EXPECT_EQ(meta["calibration"]["scanner_serial"], "MDQ-REF-0001");
+      EXPECT_EQ(meta["calibration"]["created_utc"], "2026-11-03T08:00:00Z");
+      EXPECT_EQ(meta["calibration"]["crc32"], calibration_fixture::good_table()["crc32"]);
+      ++files;
+    }
+  }
+  EXPECT_GE(files, 1);
+  ASSERT_TRUE(record.is_object());
+  EXPECT_EQ(record["run"]["calibration"]["id"], "CAL-0001") << record.dump().substr(0, 400);
+  EXPECT_EQ(record["run"]["calibration"]["crc32"], calibration_fixture::good_table()["crc32"]);
+  std::filesystem::remove_all(dir);
 }

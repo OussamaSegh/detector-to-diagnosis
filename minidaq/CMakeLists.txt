@@ -37,6 +37,7 @@ target_link_libraries(minidaq_core PUBLIC Threads::Threads PRIVATE minidaq::warn
 add_library(minidaq_control
   src/config/acquisition_config.cpp
   src/config/hardware_config.cpp
+  src/config/calibration_file.cpp
   src/control/access.cpp
   src/control/acquisition_state.cpp
   src/control/adapters.cpp

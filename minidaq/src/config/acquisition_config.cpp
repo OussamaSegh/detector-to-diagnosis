@@ -129,6 +129,16 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
       errors.push_back({"/output/prefix", "must be non-empty and contain no '/'"});
     }
   }
+  if (const json* cal = top.object("calibration")) {
+    ObjectReader r{*cal, top.child("calibration"), errors};
+    r.get("file", c.calibration.file);
+    r.get("scanner_serial", c.calibration.scanner_serial);
+    r.get("drift_tolerance_percent", c.calibration.drift_tolerance_percent, 0.1, 50.0);
+    r.finish();
+    if (!c.calibration.file.empty() && c.calibration.scanner_serial.empty()) {
+      errors.push_back({"/calibration/scanner_serial", "is required with /calibration/file"});
+    }
+  }
   top.finish();
   // Rules that involve two values, reported at the value a user would change.
   if (c.sorter.delay_ps != 0 && c.sorter.delay_ps <= c.pipeline.coincidence_window_ps) {
@@ -200,6 +210,10 @@ json to_json(const AcquisitionConfig& c) {
         {"records_per_block", c.output.records_per_block},
         {"buffers", c.output.buffers},
         {"max_block_delay_ms", c.output.max_block_delay_ms}}},
+      {"calibration",
+       {{"file", c.calibration.file},
+        {"scanner_serial", c.calibration.scanner_serial},
+        {"drift_tolerance_percent", c.calibration.drift_tolerance_percent}}},
       {"rt_profile", c.rt_profile},
       {"stop_after_s", c.stop_after_s},
   };
@@ -228,6 +242,7 @@ PipelineConfig to_pipeline_config(const AcquisitionConfig& c) {
   p.sorter.fov_radius_mm = c.sorter.fov_radius_mm;
   p.source_overflow = c.pipeline.overflow;
   p.max_batch_delay = std::chrono::microseconds{c.pipeline.max_batch_delay_us};
+  p.calibration = c.calibration.loaded;
   if (c.stop_after_s > 0) {
     p.total_words = static_cast<std::uint64_t>(std::llround(c.stop_after_s * c.source.rate_hz));
   }
