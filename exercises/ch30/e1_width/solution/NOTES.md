@@ -8,8 +8,8 @@ profile. Linear interpolation across a curved side still overestimates a little:
 the FWHM and 3.5% for the FWTM at 3.5 samples per FWHM, and 0.4% and 1.1% at 7.
 
 **The parabola** (2). Both levels are fractions of the maximum, so an error in the maximum moves
-both. The highest sample of a Gaussian centered between two samples is 5.4% below its true peak
-at 3.5 samples per FWHM. Taken as the maximum, it lowers both levels by 5.4%: the FWHM comes out
+both. The highest sample of a Gaussian centered between two samples is 5.5% below its true peak
+at 3.5 samples per FWHM. Taken as the maximum, it lowers both levels by 5.5%: the FWHM comes out
 about 4% wide and the FWTM about 1% wide, because near a tenth of the maximum the sides are
 steeper in relative terms and a lower level moves the crossings less. The parabola puts the
 maximum within 1.2% here, and the widths within the 2.7% and 3.5% of the interpolation.

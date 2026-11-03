@@ -550,10 +550,10 @@ Chapter 30 (image quality), 2026-11-03:
    Part reviews run on an Opus model: the user said never to use Fable again.
 3. **Part VI** (26 to 30): released as 0.6.0 on 2026-11-03 (checks on 893413d, tag
    book-v0.6.0, report https://claude.ai/artifact/KihwgqRBH9AxmEgheq5Ndy). VERSION is 0.7.0-dev
-   with the SOUP review for 0.7 (SOUP list v13). Next: review and merge the Part VI review PR
-   (branch claude/project-thread-ewvqti: text fixes in chapters 26 to 30, solutions 27 and 30,
-   and the notes of Exercises 27.2 and 30.1; every number checked against measurements/ch26 to
-   ch30, and every Part VI starter fails and solution passes).
+   with the SOUP review for 0.7 (SOUP list v13). Part VI review: PR #4 merged locally on
+   2026-11-03 (text fixes in chapters 26 to 30, solutions 27 and 30, the notes of Exercises 27.2
+   and 30.1; each number checked against the code and measurements); one of its numbers corrected
+   on main (the highest sample is 5.5% low, not 5.4%). Its fixes go out with 0.7.0.
    Merge review PRs LOCALLY with the noreply identity and push; a merge made on GitHub (web or
    API) takes the account's email as its author (d801e22, 1252200 and 3c14b67 did).
 4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and

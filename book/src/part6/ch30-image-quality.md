@@ -93,7 +93,7 @@ makes the width move smoothly with the profile. It still overestimates a curved 
 2.7% for the FWHM and 3.5% for the FWTM at 3.5 samples per FWHM and less than half of that at 7,
 which is why the standard asks for pixels of at most a third of the expected FWHM (verify). The
 parabola matters because both levels are fractions of the maximum: the highest sample of a peak
-centered between two samples is 5.4% below the true maximum at that sampling, which widens the FWHM
+centered between two samples is 5.5% below the true maximum at that sampling, which widens the FWHM
 by about 4%; the parabola's vertex is within 1.2%. Exercise 30.1 has you write both, against tests
 with known answers.
 
@@ -211,8 +211,8 @@ show; small extended objects in a warm background are, as the next section measu
 So a resolution quoted from an iterative reconstruction says something about that reconstruction
 with those settings, and can be made to look better than the scanner by choosing the object and
 the iterations. NEMA's FBP number is comparable between scanners because there is almost
-nothing to choose. A datasheet that quotes both should say which is which (assumption: confirm with team
-which reconstruction your scanner's specification uses for resolution).
+nothing to choose. A datasheet that quotes both should say which is which (assumption: confirm
+with team which reconstruction your scanner's specification uses for resolution).
 
 ## Contrast and noise
 
