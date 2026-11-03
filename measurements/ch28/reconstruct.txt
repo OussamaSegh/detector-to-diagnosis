@@ -29,7 +29,7 @@ Lines at 156 mm. Data: slices 20 to 74 summed, 1,044,524 prompts, of which 684,1
 | 24 | 5,278 | 70.7% | 1.25 | 1.22 | 0.88 |
 | 32 | 5,391 | 80.6% | 1.25 | 1.23 | 0.86 |
 
-32 iterations of 8 subsets in 6 s, with the likelihood and the metrics at every iteration; the normalization read from the scans in 4 s. CRC is the contrast recovery coefficient, (rod / background - 1) / (4 - 1): 1 is the true contrast.
+32 iterations of 8 subsets in 6 s, with the likelihood and the metrics at every iteration; the normalization read from the scans in 5 s. CRC is the contrast recovery coefficient, (rod / background - 1) / (4 - 1): 1 is the true contrast.
 
 ## 2b. How certain is one phantom's CRC?
 
@@ -53,6 +53,8 @@ A second, independent realization (b) of the same phantom, reconstructed the sam
 | 8 | 8 | 1 | -36 | 0 | 0.77 | 0.78 |
 | 16 | 16 | 2 | 3,111 | 3,117 | 1.13 | 1.14 |
 | 1 | 1 | - | -295,185 | | 0.10 | |
+
+One OSEM iteration projects and backprojects every view once, as one MLEM iteration does, at the same cost; the last row is that one MLEM iteration.
 
 ## 4. The background's profile with and without the corrections in the model
 

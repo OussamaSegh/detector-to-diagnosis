@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 16 (MiniDAQ 0.6.0-dev). Status: draft for review.
+Version 17 (MiniDAQ 0.6.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -344,6 +344,18 @@ corrections themselves are computed after the acquisition (`tools/recon`, tool T
 | SRS-COR-002 | The run record shall carry the coincidence sorter's energy window, coincidence window, window mode and delayed window offset, the singles counted for each crystal and their sum, the singles counted for each block, the earliest and latest time, and the numbers of prompt and delayed coincidences. | output | T |
 | SRS-COR-003 | The corrections tool shall refuse to normalize a run with a normalization scan whose run record names another energy window, coincidence window, window mode or calibration table than the run's, or has no corrections object, and name each difference. | tools | T |
 
+### 2.20 Reconstruction (REC)
+
+The image from the corrected sinogram: the system model, maximum-likelihood expectation
+maximization and its ordered subsets (Chapter 28, ADR 0023, CR-0014). The reconstruction runs
+after the acquisition (`tools/recon`, tool TL-31).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-REC-001 | The reconstruction tool shall project an image along the line of each sinogram bin, at the bin's own normal angle and distance from the axis for a stated radius of the lines, and backproject with the adjoint of that projection, so that the dot-product test holds to 1e-6 relative. | tools | T |
+| SRS-REC-002 | The reconstruction tool shall estimate the image by maximum likelihood for Poisson counts whose mean is the multiplicative corrections times the projection plus the additive corrections, without changing the measured counts, keeping every pixel non-negative and giving bins whose multiplicative correction is zero no weight. | tools | T |
+| SRS-REC-003 | The reconstruction tool shall divide the views into subsets that hold every view once, each subset every k-th view for k subsets, update the image once per subset with that subset's own sensitivity, and refuse fewer than one subset or more subsets than views. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -375,3 +387,4 @@ corrections themselves are computed after the acquisition (`tools/recon`, tool T
 | 14 | Chapter 25: the platform and updates, SRS-PLT-001 to SRS-PLT-011 (ADR 0020, CR-0011). |
 | 15 | Chapter 26: calibration, SRS-CAL-001 to SRS-CAL-007 (ADR 0021, CR-0012). |
 | 16 | Chapter 27: what the corrections need from the acquisition and the check of a normalization against a run, SRS-COR-001 to SRS-COR-003, and crystals that detect differently in the simulator, SRS-SIM-023 (ADR 0022, CR-0013). SRS-CAL-007 names the criterion on distinct partners, which the tool applied (ADR 0021) and the requirement left out. |
+| 17 | Chapter 28: the reconstruction tool, SRS-REC-001 to SRS-REC-003 (ADR 0023, CR-0014). |

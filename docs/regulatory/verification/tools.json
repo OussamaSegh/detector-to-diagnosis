@@ -186,6 +186,15 @@
                     "On minidaq_sim's scanner with a 5% efficiency spread and a water phantom, the corrected profile is flat within 1.9% rms against 1.1% for the truth's own noise, and each correction is compared with the simulator's truth (measurements/ch27).",
                     "The tool refuses a normalization taken with another energy window, coincidence window, window mode or calibration table (SRS-COR-003)."],
      "evidence": ["tools/test_recon.py", "measurements/ch27/corrections.txt"],
-     "shown_to_fail": "Compatibility.test_refuses_a_normalization_from_other_settings"}
+     "shown_to_fail": "Compatibility.test_refuses_a_normalization_from_other_settings"},
+    {"id": "TL-31", "name": "Reconstruction (tools/recon)", "kind": "in-house", "class": "T3",
+     "version": "the commit; Python 3.12 and numpy 1.26 on the reference machine",
+     "use": "Reconstruct an image from a corrected sinogram: the projector and its adjoint, and MLEM and OSEM with the corrections in the model (Chapter 28).",
+     "failure": "An image that is not the maximum-likelihood image of the data and looks plausible: activity misplaced, contrast or background biased, or stripes along the gaps, in every image reconstructed with it (H-13).",
+     "confidence": ["tools/test_recon.py checks the dot-product test, the sinusoid of an off-center object, that the likelihood never decreases, that noiseless data give the object back, that unmeasured bins take no part and that the subsets cover the views.",
+                    "On minidaq_sim's data a point source comes out within 0.3% of its distance from the axis with the lines at 156 mm, and a phantom's background stays flat within 4% from the center to 70 mm with the corrections in the model, against 0.66 to 1.62 without attenuation (measurements/ch28).",
+                    "Exercises 28.1 to 28.3 each show a mistake of the kind H-13 names failing its tests."],
+     "evidence": ["tools/test_recon.py", "measurements/ch28/reconstruct.txt"],
+     "shown_to_fail": "Reconstruction.test_unmeasured_bins_take_no_part"}
   ]
 }

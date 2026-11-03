@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 13 (MiniDAQ 0.6.0-dev, Chapter 27). Status: draft for review.
+Version 14 (MiniDAQ 0.6.0-dev, Chapter 28). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -65,6 +65,9 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   from which the corrections tool, `tools/recon`, computes the normalization, randoms, scatter,
   attenuation, dead-time and decay corrections after the acquisition (items processing and
   service, Chapter 27, [ADR 0022](../adr/0022-corrections-offline-from-list-mode.md)).
+- the reconstruction: OSEM with the corrections in the model and a matrix-free Joseph projector
+  whose backprojection is its exact adjoint, in the same tool, `tools/recon` (tool TL-31,
+  Chapter 28, [ADR 0023](../adr/0023-iterative-reconstruction-with-the-corrections-in-the-model.md)).
 
 Not yet covered: a source that reads several readout links at once (the merger exists, the
 pipeline does not use it yet). The control API's security is described in the
@@ -340,3 +343,4 @@ Open issues:
 | 11 | Chapter 25: the platform (definition, units, health-gated watchdog) and signed updates with rollback; items `platform` and `update`; the threads and SOUP that come with them (ADR 0020, CR-0011). Also corrects what version 10 left stale in section 2: the hardware description schema (1.1) and the control protocol (2.3). |
 | 12 | Chapter 26: calibration (the table, its file format, the photopeak monitor, the procedure `tools/calib` as tool TL-29), configuration schema 1.4 and control API 2.4 (ADR 0021, CR-0012). |
 | 13 | Chapter 27: the inputs of the corrections (the singles counter, the run record's `corrections` object) and the corrections tool `tools/recon` as tool TL-30 (ADR 0022, CR-0013). |
+| 14 | Chapter 28: the reconstruction in `tools/recon` as tool TL-31 (ADR 0023, CR-0014). |

@@ -40,6 +40,16 @@ the patch version.
   time and decay", Exercises 27.1 (crystal efficiencies from a normalization scan), 27.2 (the
   randoms of every line) and 27.3 (a head outline and the decay of a frame), and their
   solutions.
+- Chapter 28 code: the reconstruction (CR-0014, ADR 0023). In `tools/recon` (tool TL-31,
+  numpy only): each bin's line (`project.bin_lines`, the lines at a stated radius), Joseph's
+  projector with its exact adjoint (`project.Projector`), MLEM and OSEM with the corrections in
+  the model and interleaved subsets (`mlem`), and the corrections of Chapter 27 as steps on whole
+  runs (`chain`); tests in `tools.recon` and `measurements/ch28/` (geometry from a point source,
+  a phantom of hot rods iteration by iteration, MLEM against OSEM, the model without each
+  correction, a post-filter). SRS-REC-001 to 003; hazard H-13 with RC-41 and RC-42.
+- Chapter 28 text: the chapter "Image reconstruction: from sinogram to image with OSEM",
+  Exercises 28.1 (a backprojector that is the adjoint), 28.2 (the corrections in the model) and
+  28.3 (ordered subsets), and their solutions.
 
 ### Fixed
 - The text of Chapters 22 to 25, from the Part V review (PR #3): the install times of Chapter 25,

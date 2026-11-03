@@ -274,6 +274,8 @@ def main():
         print(f"| {8 * k} | {8 * k} | {k} | {ll_m[8 * k][0] - base:,.0f} | "
               f"{rows[k][0] - base:,.0f} | {ll_m[8 * k][1][2][0]:.2f} | {rows[k][1][2][0]:.2f} |")
     print(f"| 1 | 1 | - | {ll_m[1][0] - base:,.0f} | | {ll_m[1][1][2][0]:.2f} | |")
+    print("\nOne OSEM iteration projects and backprojects every view once, as one MLEM iteration "
+          "does, at the same cost; the last row is that one MLEM iteration.")
 
     # 4. The corrections in the model.
     section("4. The background's profile with and without the corrections in the model")

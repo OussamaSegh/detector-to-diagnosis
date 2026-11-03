@@ -29,3 +29,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0020](0020-platform-watchdog-and-signed-updates.md) | A defined platform, a watchdog that sees inside the server, and signed updates into two slots with rollback | Accepted |
 | [0021](0021-calibration-table-and-procedure.md) | A calibration table per scanner, applied by the server, made by a Python procedure with acceptance criteria | Accepted |
 | [0022](0022-corrections-offline-from-list-mode.md) | Corrections computed after the acquisition from the list mode and the run record | Accepted |
+| [0023](0023-iterative-reconstruction-with-the-corrections-in-the-model.md) | Iterative reconstruction with the corrections in the model | Accepted |

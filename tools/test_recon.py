@@ -304,6 +304,7 @@ class Projection(unittest.TestCase):
         cls.A = project.Projector(cls.s, cls.phi, n=96, pixel_mm=2.5)
 
     def test_each_view_interleaves_two_angles(self):
+        # REQ: SRS-REC-001
         # The pair (i, j) has its normal at (i + j + 1) pi / N; r odd and r even alternate.
         ti, tj = sg.crystal_pairs(self.h)
         v, c = 10, np.flatnonzero(ti[10] >= 0)[:6]
@@ -313,6 +314,7 @@ class Projection(unittest.TestCase):
         self.assertAlmostEqual(self.phi[v].mean(), self.h.phi[v], delta=0.01 * np.pi / 384)
 
     def test_the_backprojector_is_the_adjoint(self):
+        # REQ: SRS-REC-001
         rng = np.random.default_rng(6)
         x = rng.random((96, 96))
         y = rng.random(self.s.shape)
@@ -331,6 +333,7 @@ class Projection(unittest.TestCase):
         self.assertLess(np.abs(got - want)[inner].max(), 4.0)
 
     def test_an_off_center_object_lies_on_its_sinusoid(self):
+        # REQ: SRS-REC-001
         xs, ys = self.A.pixel_centers()
         blob = np.exp(-0.5 * ((xs - 40.0) ** 2 + (ys + 25.0) ** 2) / 3.0 ** 2)
         got = self.A.forward(blob)
@@ -356,6 +359,7 @@ class Reconstruction(unittest.TestCase):
         cls.y = rng.poisson(cls.mean).astype(float)
 
     def test_mlem_never_lowers_the_likelihood(self):
+        # REQ: SRS-REC-002
         ll = []
         mlem.osem(self.y, self.A, self.mult, self.add, 12,
                   callback=lambda it, x: ll.append(
@@ -363,6 +367,7 @@ class Reconstruction(unittest.TestCase):
         self.assertTrue(all(b >= a - 1e-6 * abs(a) for a, b in zip(ll, ll[1:])), ll)
 
     def test_one_subset_is_mlem_and_subsets_go_faster(self):
+        # REQ: SRS-REC-003
         a = mlem.osem(self.y, self.A, self.mult, self.add, 3, n_subsets=1)
         b = mlem.osem(self.y, self.A, self.mult, self.add, 3)
         self.assertTrue(np.array_equal(a, b))
@@ -373,6 +378,7 @@ class Reconstruction(unittest.TestCase):
         self.assertAlmostEqual((ll(fast) - ll(a)) / (ll(slow) - ll(a)), 1.0, delta=0.05)
 
     def test_noiseless_data_give_the_object(self):
+        # REQ: SRS-REC-002
         x = mlem.osem(self.mean, self.A, self.mult, self.add, 40, n_subsets=8)
         xs, ys = self.A.pixel_centers()
         inside = (xs ** 2 + ys ** 2 <= 70.0 ** 2) & ((xs - 35.0) ** 2 + ys ** 2 > 20.0 ** 2)
@@ -382,9 +388,28 @@ class Reconstruction(unittest.TestCase):
         self.assertGreaterEqual(x.min(), 0.0)
 
     def test_subsets_must_cover_the_views(self):
-        self.assertEqual(sorted(sum(mlem.subsets(192, 8), [])), list(range(192)))
-        with self.assertRaises(ValueError):
-            mlem.subsets(192, 0)
+        # REQ: SRS-REC-003
+        groups = mlem.subsets(192, 8)
+        self.assertEqual(sorted(sum(groups, [])), list(range(192)))
+        for g in groups:  # interleaved: every eighth view
+            self.assertEqual(set(np.diff(g)), {8})
+        for count in (0, 193):
+            with self.assertRaises(ValueError):
+                mlem.subsets(192, count)
+
+    def test_unmeasured_bins_take_no_part(self):
+        # REQ: SRS-REC-002
+        mult = self.mult.copy()
+        mult[:, ::7] = 0.0   # gaps: no line of response measured there
+        y = self.y.copy()
+        y[:, ::7] = 0.0
+        noisy = self.y.copy()
+        noisy[:, ::7] = 1000.0
+        keep = noisy.copy()
+        a = mlem.osem(y, self.A, mult, self.add, 2, n_subsets=4)
+        b = mlem.osem(noisy, self.A, mult, self.add, 2, n_subsets=4)
+        self.assertTrue(np.allclose(a, b, rtol=1e-12, atol=0.0))
+        self.assertTrue(np.array_equal(noisy, keep))  # the counts are left as measured
 
 
 class ListMode(unittest.TestCase):
