@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 4 (MiniDAQ 0.6.0, release 0.6.0). Status: draft for review.
+Version 5 (MiniDAQ 0.7.0-dev, Chapter 31). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -221,6 +221,7 @@ forgotten; each is a candidate for a later change request.
 |---|---|---|---|
 | List-mode files are not signed | T-27 | The CRC-32 of each block detects damage, not a deliberate change with a recomputed CRC. Whoever can write the files runs as the operator (section 6). | A signature or a keyed hash (HMAC) over the run's files, with the key held by the server. |
 | Calibration tables are not signed | T-54 | The CRC-32 detects damage, not a deliberate change within the limits with a recomputed CRC; the photopeak monitor sees an energy change during a run, not a change of the time offsets within the limits. Whoever can write the tables runs as the operator (section 6). | A signature by the calibration procedure, verified by the server with a key it trusts, as for update bundles (RC-34). |
+| QC reports are not signed | T-27 | The analysis package (Chapter 31) is a tool outside the scope of section 1. Its report records the SHA-256 of every input, which proves which bytes it read, not who wrote them or the report; a report edited after the fact, or computed from list-mode files changed with recomputed CRCs (T-27), looks like any other. | Sign the report with the run's files (the remedy of the first gap), or keep the reports where only the QC staff can write, which the site provides (assumption: confirm with team). |
 | The audit trail is not tamper-evident | T-31 | It is appended and flushed per record, but its own user can rewrite it. | Forward records to a log server; or chain the records with a hash, so that a removed or changed record is detectable. |
 | No rate limiting of authentication | T-15 | An attacker on the network can try tokens at the rate of new connections. With 256-bit tokens guessing is hopeless; the flood itself is the network's to stop. | A delay after a failed `auth` from the same address. |
 | Port squatting on loopback without TLS | T-06 | Another local user who binds the port first receives the start-up token from `minidaq_ctl`. | TLS on loopback (section 6, item 5), or a Unix domain socket whose permissions do the authentication. |
@@ -279,3 +280,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 2 | Chapter 21 (CR-0007), recorded at the release checks of 0.4.0 (MDQ-PR-031): the crash report as a data store (T-35 to T-38) and the diagnostics response in T-09. Also editorial: the scope names no manufacturer. |
 | 3 | Chapter 25 (CR-0011): updates as elements of the diagram (release, bundle, updater, slots; T-39 to T-53); T-07 is mitigated by signed updates (RC-34) instead of being left to the platform. |
 | 4 | Release 0.6.0: the calibration tables of Chapter 26 (CR-0012) as a data store (T-54 to T-57) and their gap in section 7; CR-0012 had not listed this document (code review checklist, item 5.5). |
+| 5 | Chapter 31 (CR-0017): the analysis package reviewed against the diagram. It runs outside the scope of section 1 and adds no element, flow or interface to MiniDAQ: it reads the list-mode store, verifying every CRC, and writes reports that people read. The gap "QC reports are not signed" in section 7. |

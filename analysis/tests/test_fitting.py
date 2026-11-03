@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-# REQ: SRS-ANA-002
 """Fits: right values, right uncertainties, and loud failures."""
 from __future__ import annotations
 
@@ -24,6 +23,7 @@ def poisson_histogram(rng: np.random.Generator, p: np.ndarray, edges: np.ndarray
 
 
 def test_bin_integrated_gaussian_holds_its_area() -> None:
+    # REQ: SRS-ANA-002
     edges = np.arange(-50.0, 50.5, 0.5)
     counts = F.gaussian_counts(edges[:-1], edges[1:], 1000.0, 1.3, 4.0)
     assert counts.sum() == pytest.approx(1000.0, rel=1e-9)
@@ -33,6 +33,7 @@ def test_bin_integrated_gaussian_holds_its_area() -> None:
 
 
 def test_recovers_the_true_parameters(rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-002
     r = F.fit_photopeak(poisson_histogram(rng, TRUE), 440.0, 580.0)
     for name, true in zip(("area", "mean", "sigma"), TRUE[:3], strict=True):
         value, error = r[name]
@@ -47,6 +48,7 @@ def test_recovers_the_true_parameters(rng: np.random.Generator) -> None:
 def test_the_errors_are_the_spread_of_the_estimates(rng: np.random.Generator) -> None:
     """Over repeated histograms, (estimate - truth) / error must have mean 0 and SD 1: a fit
     whose errors were too small (or too large) by 15% fails."""
+    # REQ: SRS-ANA-002
     pulls = []
     for _ in range(300):
         r = F.fit_photopeak(poisson_histogram(rng, TRUE), 440.0, 580.0)
@@ -61,6 +63,7 @@ def test_the_errors_are_the_spread_of_the_estimates(rng: np.random.Generator) ->
 def test_neyman_least_squares_underestimates_a_weak_peak(rng: np.random.Generator) -> None:
     """At a few counts per bin, weighting by the observed counts pulls the area down; maximum
     likelihood does not (the bias the chapter measures)."""
+    # REQ: SRS-ANA-002
     weak = np.array([400.0, 511.0, 26.0, 0.5, 0.5])
     ney, poi = [], []
     for _ in range(200):
@@ -75,6 +78,7 @@ def test_neyman_least_squares_underestimates_a_weak_peak(rng: np.random.Generato
 def test_derived_errors_include_the_correlation() -> None:
     """FWHM/E from a covariance with a correlation: the propagated error equals the analytic
     one, and differs from the error that ignores the correlation."""
+    # REQ: SRS-ANA-002
     values = np.array([1.0, 500.0, 20.0])
     cov = np.array([[0, 0, 0], [0, 4.0, 1.5], [0, 1.5, 1.0]])
     r = F.FitResult(("area", "mean", "sigma"), values, cov, 0.0, 1, "poisson",
@@ -88,6 +92,7 @@ def test_derived_errors_include_the_correlation() -> None:
 
 
 def test_a_fit_that_cannot_work_raises_instead_of_returning_a_number() -> None:
+    # REQ: SRS-ANA-002
     empty = F.Histogram(np.zeros(EDGES.size - 1), EDGES)
     with pytest.raises(ValueError, match="too few"):
         F.fit_photopeak(empty, 440.0, 580.0)
@@ -100,6 +105,7 @@ def test_a_fit_that_cannot_work_raises_instead_of_returning_a_number() -> None:
 
 
 def test_refuses_more_parameters_than_bins() -> None:
+    # REQ: SRS-ANA-002
     h = F.Histogram(np.array([1.0, 2.0, 3.0]), np.array([0.0, 1.0, 2.0, 3.0]))
     with pytest.raises(ValueError, match="3 bins for 4 parameters"):
         F.fit(h, F.gaussian_plus_constant, [1, 1, 1, 1], ("a", "b", "c", "d"))
@@ -110,6 +116,7 @@ def test_a_timing_fit_at_the_precision_of_the_deviance_converges() -> None:
     version of the fit stopped with an error: near the minimum, the deviance's rounding is larger
     than the decrement the line search asks for, and the search failed although the fit was done.
     """
+    # REQ: SRS-ANA-002
     data = json.loads((pathlib.Path(__file__).parent / "data" / "timing-seed2.json").read_text())
     h = F.Histogram(np.asarray(data["counts"], dtype=float), np.asarray(data["edges"]))
     r = F.fit_timing(h)

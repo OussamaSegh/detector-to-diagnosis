@@ -257,6 +257,23 @@
       "probability_after": "P2",
       "residual": "The controls verify the algorithm against its own model, and the image quality of one protocol on simulated 2D phantoms (Chapter 30). Whether the model fits the scanner in 3D, with real phantoms and the clinical protocols, is found by the validation of the image chain (assumption: confirm with team).",
       "status": "closed"
+    },
+    {
+      "id": "H-14",
+      "preliminary": "HZ-3",
+      "hazard": "A quality control report that passes a degraded detector or a run that lost data",
+      "sequence": "The QC analysis of a daily or acceptance run fits the photopeak or the timing peak by least squares weighted by the observed counts, which underestimates a weak peak's area and changes its width; measures the time resolution on the folded time difference; reads a run whose files are truncated, out of order or damaged without noticing; does not test the rate for a lost block; or reports numbers that cannot be traced to the files and code that produced them.",
+      "hazardous_situation": "The report states that the scanner meets its limits while its energy or time resolution has degraded or a run lost coincidences, and the scanner is used for patients; or a failed check cannot be investigated because its inputs are not known.",
+      "harm": "Quantitative values or artifacts in the image contribute to an incorrect diagnosis.",
+      "severity": "S2",
+      "probability_before": "P3",
+      "controls": [
+        {"id": "RC-45", "type": "protective", "description": "The analysis package fits by Poisson maximum likelihood with errors from the inverse Fisher information, checked by pull tests, measures the time resolution on the crystal-ordered time difference, and raises an error when a fit does not converge.", "requirements": ["SRS-ANA-002", "SRS-ANA-003"], "effectiveness": {"method": "test", "evidence": "test_the_errors_are_the_spread_of_the_estimates"}},
+        {"id": "RC-46", "type": "protective", "description": "The QC report reads only complete and intact runs, tests the rate for constancy and for a dip, compares the prompts in the files with the run record, checks every limit of a protocol file, exits with a status a script can act on, and records the SHA-256 of every input and the environment that produced it.", "requirements": ["SRS-ANA-001", "SRS-ANA-004", "SRS-ANA-005", "SRS-ANA-006"], "effectiveness": {"method": "test", "evidence": "test_a_lost_block_and_a_wrong_count_are_found"}}
+      ],
+      "probability_after": "P2",
+      "residual": "The limits of the default protocol are the book's, set from the simulator's resolutions (assumption: confirm with team the scanner's QC limits and their frequency). The package checks one run against fixed limits; a slow drift within the limits is found by trending the reports over time, which is not part of this tool.",
+      "status": "closed"
     }
   ]
 }

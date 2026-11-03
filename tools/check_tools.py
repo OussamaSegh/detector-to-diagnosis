@@ -42,6 +42,8 @@ def test_names(root):
             m = re.match(r"    def (test_\w+)\(", line)
             if m and cls:
                 names.add(f"{cls}.{m.group(1)}")
+    for f in (root / "analysis/tests").glob("test_*.py"):  # pytest: module::function
+        names |= {f"{f.stem}::{n}" for n in re.findall(r"^def (test_\w+)\(", f.read_text(), re.M)}
     for f in root.rglob("CMakeLists.txt"):
         if ".deps" in f.parts or "build" in f.parts:
             continue

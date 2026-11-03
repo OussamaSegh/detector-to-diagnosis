@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-# REQ: SRS-ANA-005
 """The QC report end to end, on synthetic runs with known faults, and on the simulator."""
 from __future__ import annotations
 
@@ -33,6 +32,7 @@ def checks(report: dict) -> dict[str, bool]:  # type: ignore[type-arg]
 
 def test_a_good_run_passes_and_says_where_it_came_from(tmp_path: pathlib.Path,
                                                        rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-005
     record = run_of(tmp_path, synthetic(rng, N, seconds=2.0))
     out = tmp_path / "qc"
     assert main([str(record), str(out)]) == 0
@@ -50,6 +50,7 @@ def test_a_good_run_passes_and_says_where_it_came_from(tmp_path: pathlib.Path,
 
 def test_a_worse_detector_fails_its_limits(tmp_path: pathlib.Path,
                                            rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-005
     record = run_of(tmp_path, synthetic(rng, N, ctr_ps=450.0, resolution=0.16))
     out = tmp_path / "qc"
     assert main([str(record), str(out)]) == 1
@@ -61,6 +62,7 @@ def test_a_worse_detector_fails_its_limits(tmp_path: pathlib.Path,
 
 def test_a_lost_block_and_a_wrong_count_are_found(tmp_path: pathlib.Path,
                                                   rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-005
     r = synthetic(rng, N, seconds=2.0)
     # Remove 4,000 consecutive coincidences (a lost stretch of 40 ms); keep the recorded count.
     keep = np.ones(N, dtype=bool)
@@ -75,6 +77,7 @@ def test_a_lost_block_and_a_wrong_count_are_found(tmp_path: pathlib.Path,
 
 def test_a_protocol_file_sets_the_limits(tmp_path: pathlib.Path,
                                          rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-005
     from minidaq_analysis.report import DEFAULT_PROTOCOL
     strict = tmp_path / "strict.toml"
     strict.write_text(DEFAULT_PROTOCOL.replace("ctr_max_ps = 400.0", "ctr_max_ps = 250.0"))
@@ -87,6 +90,7 @@ def test_a_protocol_file_sets_the_limits(tmp_path: pathlib.Path,
 
 def test_a_damaged_run_is_an_error_not_a_report(tmp_path: pathlib.Path,
                                                 rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-005
     record = run_of(tmp_path, synthetic(rng, 10_000))
     f = record.parent / "t-test-0000.mdql"
     data = bytearray(f.read_bytes())
@@ -102,6 +106,7 @@ def test_a_simulated_point_source_passes_with_the_simulators_resolutions(
         tmp_path: pathlib.Path) -> None:
     """minidaq_sim's detector: 12% energy resolution, 300 ps CTR (the singles' blur; the depth
     of interaction adds about 1%, Chapter 31)."""
+    # REQ: SRS-ANA-005
     sim = pathlib.Path(os.environ["MINIDAQ_APPS"]) / "minidaq_sim"
     subprocess.run([str(sim), "--source", "point", "--phantom", "0", "--activity", "1e6",
                     "--seconds", "1", "--seed", "31", "--listmode", str(tmp_path)],

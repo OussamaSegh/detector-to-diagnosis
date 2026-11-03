@@ -32,3 +32,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0023](0023-iterative-reconstruction-with-the-corrections-in-the-model.md) | Iterative reconstruction with the corrections in the model | Accepted |
 | [0024](0024-cpp-projector-with-python-bindings.md) | The projector in C++, called from Python through pybind11 | Accepted |
 | [0025](0025-image-quality-figures-of-merit-after-nema.md) | Image quality measured by figures of merit after NEMA NU 2, with fixed methods and limits from repeatability | Accepted |
+| [0026](0026-analysis-package-poisson-fits-and-provenance.md) | The run analysis as an installable Python package, with Poisson fits and provenance | Accepted |

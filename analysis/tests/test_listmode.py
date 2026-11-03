@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-# REQ: SRS-ANA-001
 """The memory-mapped list-mode reader against an independent writer (tests/mdql.py)."""
 from __future__ import annotations
 
@@ -20,6 +19,7 @@ def write(tmp_path: pathlib.Path, data: bytes, name: str = "f.mdql") -> pathlib.
 
 
 def test_reads_back_what_was_written(tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-001
     r = synthetic(rng, 10_000)
     with ListModeFile(write(tmp_path, mdql.file_bytes(r, block_records=1000))) as f:
         c = f.coincidences()
@@ -37,6 +37,7 @@ def test_reads_back_what_was_written(tmp_path: pathlib.Path, rng: np.random.Gene
 def test_every_chunk_size_gives_the_same_coincidences(tmp_path: pathlib.Path,
                                                       rng: np.random.Generator,
                                                       chunk: int) -> None:
+    # REQ: SRS-ANA-001
     r = synthetic(rng, 5_000)
     path = write(tmp_path, mdql.file_bytes(r, block_records=1000))
     with ListModeFile(path) as f:
@@ -50,6 +51,7 @@ def test_every_chunk_size_gives_the_same_coincidences(tmp_path: pathlib.Path,
 
 
 def test_skips_and_counts_tags(tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-001
     r = mdql.concat(synthetic(rng, 100), mdql.tag(5), mdql.tag(10**9, kind=1, value=3))
     with ListModeFile(write(tmp_path, mdql.file_bytes(r))) as f:
         (c, tags), = list(f.chunks())
@@ -57,6 +59,7 @@ def test_skips_and_counts_tags(tmp_path: pathlib.Path, rng: np.random.Generator)
 
 
 def test_a_file_with_no_coincidences_is_read(tmp_path: pathlib.Path) -> None:
+    # REQ: SRS-ANA-001
     empty = mdql.records([], [], [], [], [], [])
     with ListModeFile(write(tmp_path, mdql.file_bytes(empty))) as f:
         assert len(f.coincidences()) == 0
@@ -81,6 +84,7 @@ def damaged(data: bytes, at: int, value: int | None = None) -> bytes:
 def test_refuses_a_file_that_is_not_complete_and_intact(tmp_path: pathlib.Path,
                                                         rng: np.random.Generator, what: str,
                                                         edit: object, message: str) -> None:
+    # REQ: SRS-ANA-001
     del what
     good = mdql.file_bytes(synthetic(rng, 3000), block_records=1000)
     assert callable(edit)
@@ -91,6 +95,7 @@ def test_refuses_a_file_that_is_not_complete_and_intact(tmp_path: pathlib.Path,
 
 def test_without_verification_a_damaged_payload_is_not_noticed_at_open(
         tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-001
     good = mdql.file_bytes(synthetic(rng, 3000), block_records=1000)
     path = write(tmp_path, damaged(good, len(good) - 100))
     with ListModeFile(path, verify=False) as f:  # the cost of not verifying: a quiet error
@@ -99,6 +104,7 @@ def test_without_verification_a_damaged_payload_is_not_noticed_at_open(
 
 def test_refuses_data_after_the_closing_block_and_a_wrong_sequence(
         tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-001
     r = synthetic(rng, 10)
     good = mdql.file_bytes(r)
     with pytest.raises(FormatError, match="data after the closing block"):
@@ -112,6 +118,7 @@ def test_refuses_data_after_the_closing_block_and_a_wrong_sequence(
 
 
 def test_a_run_joins_its_files_in_order(tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-001
     r = synthetic(rng, 3000, seconds=3.0)
     cut = [0, 1000, 2000, 3000]
     parts = [{k: v[cut[i]:cut[i + 1]] for k, v in r.items()} for i in range(3)]
@@ -122,6 +129,7 @@ def test_a_run_joins_its_files_in_order(tmp_path: pathlib.Path, rng: np.random.G
 
 def test_a_run_whose_files_end_wrongly_is_refused(tmp_path: pathlib.Path,
                                                   rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-001
     r = synthetic(rng, 100)
     record = mdql.write_run(tmp_path, [r, r])
     # The first file ends the run: the second would be data after the end of the run.
@@ -132,6 +140,7 @@ def test_a_run_whose_files_end_wrongly_is_refused(tmp_path: pathlib.Path,
 
 
 def test_the_record_must_be_a_run_record(tmp_path: pathlib.Path) -> None:
+    # REQ: SRS-ANA-001
     p = tmp_path / "x.run.json"
     p.write_text('{"format": "something else", "files": ["a"]}')
     with pytest.raises(FormatError, match="not an MDQ-L1 run record"):

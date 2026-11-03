@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 13 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 14 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -76,6 +76,7 @@ defect in MiniDAQ, so they are pinned and reviewed too, with lighter records.
 | GoogleTest | 1.15.2, git commit `b514bdc898e2951020cbdca1304b75f5950d1f59` | BSD-3-Clause | Unit and exercise tests |
 | Google Benchmark | 1.9.1, git commit `96afad55c79e02f5dfca1374e772c2be72ba631b` | Apache-2.0 | Micro-benchmarks and the performance gate |
 | pybind11 | 3.1.0, git commit `97bf890db679505a14dfe547a5e77bb2bd05dc90` | BSD-3-Clause | The Python module `recon_cpp` of the reconstruction tool (TL-31) and Exercise 29.1; since CR-0015 |
+| Python packages of the analysis package | exact versions in `analysis/requirements.lock` (NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2, Numba 0.68.1 with llvmlite 0.50.0, pytest 9.2.0, mypy 2.4.1, ruff 0.17.3, scikit-build-core 1.1.2, and the packages they need), installed from wheels into a virtual environment; CI runs `pip check` | As each package's metadata states: BSD-3-Clause with bundled permissive parts (NumPy), BSD (SciPy, Numba), BSD-2-Clause and Apache-2.0 with the LLVM exception (llvmlite), PSF-based (Matplotlib), MIT (pytest, mypy, ruff), Apache-2.0 (scikit-build-core) | The analysis package `analysis/` (TL-33): computation and figures (TL-34), its tests and static checks (TL-35), a measurement (Numba, TL-36); since CR-0017 |
 | CycloneDX 1.5 JSON schemas | vendored in `tools/sbom/schemas/`, SHA-256 in its README | Apache-2.0 | SBOM validation |
 | Compilers and analyzers | GCC 13.3, Clang 18, clang-tidy 18, cppcheck 2.13, libFuzzer (Clang 18) as installed on the build machine | various | Building, checking, fuzzing |
 
@@ -300,3 +301,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 11 | pybind11 3.1.0 for the reconstruction tool's C++ projector (CR-0015, Chapter 29). |
 | 12 | The known-anomaly reviews at release 0.6.0, with pybind11. |
 | 13 | The known-anomaly review for MiniDAQ 0.7 (start of Part VII, after release 0.6.0). |
+| 14 | The Python packages of the analysis package, pinned by its lock file (CR-0017, Chapter 31). |

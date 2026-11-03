@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-# REQ: SRS-ANA-003
 """The time difference ordered by crystal, and histograms that add up chunk by chunk."""
 from __future__ import annotations
 
@@ -23,6 +22,7 @@ def coincidences(tmp_path: pathlib.Path, r: dict[str, np.ndarray]):  # type: ign
 
 def test_the_signed_difference_is_the_whole_peak(tmp_path: pathlib.Path,
                                                  rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-003
     c = coincidences(tmp_path, synthetic(rng, 40_000, tof_ps=-120.0, delayed_fraction=0.0))
     assert np.all(c.dt_ps >= 0)  # as stored: later minus earlier
     s = signed_dt_ps(c)
@@ -37,6 +37,7 @@ def test_the_signed_difference_is_the_whole_peak(tmp_path: pathlib.Path,
 
 
 def test_delayeds_lose_their_delay(tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-003
     c = coincidences(tmp_path, synthetic(rng, 20_000, delayed_fraction=0.5))
     s = signed_dt_ps(c.select(c.delayed), DELAY_PS)
     assert s.min() >= -2000 and s.max() <= 2000 and abs(s.mean()) < 50
@@ -44,6 +45,7 @@ def test_delayeds_lose_their_delay(tmp_path: pathlib.Path, rng: np.random.Genera
 
 def test_pair_counts_merge_to_the_counts_of_the_whole(tmp_path: pathlib.Path,
                                                       rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-003
     c = coincidences(tmp_path, synthetic(rng, 30_000, delayed_fraction=0.0))
     keys, counts = pair_counts(c, CRYSTALS)
     assert counts.sum() == len(c)
@@ -56,6 +58,7 @@ def test_pair_counts_merge_to_the_counts_of_the_whole(tmp_path: pathlib.Path,
 
 def test_the_histograms_do_not_depend_on_the_chunks(tmp_path: pathlib.Path,
                                                     rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-003
     p = tmp_path / "f.mdql"
     p.write_bytes(mdql.file_bytes(synthetic(rng, 20_000), block_records=700))
     results = []

@@ -1,0 +1,31 @@
+# Chapter 31 measurements: filling the per-crystal timing histogram
+
+machine: x86_64, Python 3.13.18, numpy 2.5.3, numba 0.68.1; one thread
+10,000,000 entries (int32 crystal and dt_ps, dt normal with sigma 300 ps), 576 crystals x 200 bins of 20 ps from -2000 ps; time = min and median of 5 runs
+
+| implementation | entries | time, ms (min, median) | ns per entry | vs NumPy |
+|---|---|---|---|---|
+| Python loop | 1,000,000 | 164.6, 178.6 | 164.6 | 0.10x |
+| NumPy floor_divide + bincount | 10,000,000 | 168.9, 181.1 | 16.9 | 1.00x |
+| Numba @njit (after compiling) | 10,000,000 | 19.4, 19.6 | 1.9 | 8.69x |
+| C++ through pybind11 (dthist) | 10,000,000 | 38.5, 38.8 | 3.8 | 4.39x |
+
+Numba's first call, which compiles the function: 0.26 s
+Every implementation gives the same counts and the same number outside, bin for bin.
+
+## Why the C++ is slower than Numba: one experiment
+
+The same solution source, built outside the project as a plain module (g++ 13 or clang++ 18, -O3,
+no LTO), timed on the same 10,000,000 entries, minimum of 5 runs, in a separate session:
+
+| build | time, ms |
+|---|---|
+| g++ -O3, the solution as it is | 32 to 34 |
+| clang++ 18 -O3, the solution as it is | 28 |
+| g++ -O3, the bin computed by a 32-bit division when the numbers fit | 26 |
+| Numba, with lo, bin and bins passed as arguments (not constants) | 22 |
+
+A 64-bit integer division is the slowest instruction in the loop; LLVM, which Numba and clang use,
+tests for operands that fit in 32 bits and divides in 32 bits when they do. That explains about
+a fifth of the difference; the rest was not found. The C++ is not slower by design, but it is
+not faster for being C++: the loop is the same loop, and the compiler decides.

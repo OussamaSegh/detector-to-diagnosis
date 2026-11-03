@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-# REQ: SRS-ANA-006
 """The dataset manifest notices any change to the bytes."""
 from __future__ import annotations
 
@@ -10,6 +9,7 @@ from minidaq_analysis import provenance as P
 
 
 def test_a_manifest_verifies_until_a_byte_changes(tmp_path: pathlib.Path) -> None:
+    # REQ: SRS-ANA-006
     (tmp_path / "a.mdql").write_bytes(b"x" * 1000)
     (tmp_path / "sub").mkdir()
     (tmp_path / "sub" / "b.json").write_text("{}")
@@ -25,6 +25,7 @@ def test_a_manifest_verifies_until_a_byte_changes(tmp_path: pathlib.Path) -> Non
 
 
 def test_the_manifest_id_names_the_content_not_the_order(tmp_path: pathlib.Path) -> None:
+    # REQ: SRS-ANA-006
     for name in ("a", "b"):
         (tmp_path / name).write_text(name)
     one = P.make_manifest([tmp_path / "a", tmp_path / "b"], tmp_path)
@@ -36,6 +37,7 @@ def test_the_manifest_id_names_the_content_not_the_order(tmp_path: pathlib.Path)
 
 
 def test_the_environment_names_the_versions_that_change_numbers() -> None:
+    # REQ: SRS-ANA-006
     env = P.environment(["minidaq-qc", "x"])
     assert env["libraries"]["numpy"] and env["libraries"]["scipy"]
     assert env["command"] == ["minidaq-qc", "x"] and env["created_utc"].endswith("Z")
