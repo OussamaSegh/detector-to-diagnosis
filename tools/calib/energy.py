@@ -62,10 +62,10 @@ def fit_photopeaks(h, lo, hi, smooth):
        between bins lo and hi: above most of the Compton continuum and below saturation.
     2. A window of +-2 sigma around it (sigma guessed as 6% of the centre, a typical LYSO
        resolution) is fitted as a Gaussian on a straight background: the background is the line
-       through the mean counts just outside the window, and the Gaussian is found by Guo's
-       weighted fit of a parabola to the logarithm of what is left (IEEE Signal Process. Mag.
-       28(5), 2011), which needs no starting values and no iteration.
-    3. Steps 2 and 3 are repeated twice with the window from the new sigma.
+       through the mean counts of two bands 3 to 3.5 sigma from the centre, and the Gaussian is
+       found by Guo's weighted fit of a parabola to the logarithm of what is left (IEEE Signal
+       Process. Mag. 28(5), 2011), which needs no starting values.
+    3. Step 2 is repeated twice, with the window and the bands from the new centre and sigma.
 
     All crystals at once, with array operations. Returns (centre, sigma, counts, ok); ok is False
     where the fit had too few points or gave a parabola that opens upward.
@@ -81,15 +81,19 @@ def fit_photopeaks(h, lo, hi, smooth):
     for _ in range(3):
         w_lo = np.clip(np.round(centre - 2 * sigma), 1, bins - 2).astype(int)
         w_hi = np.clip(np.round(centre + 2 * sigma), 1, bins - 2).astype(int)
-        side = np.maximum(2, ((w_hi - w_lo) // 8)).astype(int)
+        # The background bands: 3 to 3.5 sigma from the centre, where the Gaussian has fallen
+        # to 1% of its height (bands just outside the window would hold its tails).
+        l0, l1 = np.round(centre - 3.5 * sigma), np.round(centre - 3 * sigma) + 1
+        r0, r1 = np.round(centre + 3 * sigma), np.round(centre + 3.5 * sigma) + 1
         cols = np.arange(bins)[None, :]
         inside = (cols >= w_lo[:, None]) & (cols <= w_hi[:, None])
-        left = (cols >= (w_lo - side)[:, None]) & (cols < w_lo[:, None])
-        right = (cols > w_hi[:, None]) & (cols <= (w_hi + side)[:, None])
+        left = (cols >= l0[:, None]) & (cols < l1[:, None])
+        right = (cols >= r0[:, None]) & (cols < r1[:, None])
+        ok &= (l0 >= 0) & (r1 <= bins) & left.any(1) & right.any(1)
         bl = (h * left).sum(1) / np.maximum(left.sum(1), 1)
         br = (h * right).sum(1) / np.maximum(right.sum(1), 1)
-        xl = (w_lo - (side + 1) / 2.0)
-        xr = (w_hi + (side + 1) / 2.0)
+        xl = (l0 + l1 - 1) / 2.0
+        xr = (r0 + r1 - 1) / 2.0
         slope = (br - bl) / np.maximum(xr - xl, 1.0)
         background = bl[:, None] + slope[:, None] * (x[None, :] - xl[:, None])
         y = np.where(inside, h - background, 0.0)

@@ -25,7 +25,7 @@ saturation, delays) and writes the truth.
 
 ## Reason
 
-Uncalibrated, the summed photopeak is 19.4% FWHM wide instead of 10.8%, the energy window keeps a
+Uncalibrated, the summed photopeak is 23.0% FWHM wide instead of 12.0%, the energy window keeps a
 different share of each crystal's events, and true coincidences fall outside the coincidence
 window (measurements/ch26): quantitative values and uniformity are wrong without an error (H-11).
 

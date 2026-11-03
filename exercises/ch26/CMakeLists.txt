@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_photopeak)
+minidaq_python_exercise(e2_flood_map)
+minidaq_python_exercise(e3_time_offsets)

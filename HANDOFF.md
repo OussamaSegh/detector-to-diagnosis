@@ -421,8 +421,8 @@ Part VI plan for Chapter 26 (started 2026-11-03), so a later session can pick it
 - Done and pushed: a4e9eac (core), 689e79d (pipeline), 8294fd8 (simulator), c55d36b (file,
   config 1.4, service, API 2.4), then tools/calib with tools/test_calib.py (ctest tools.calib,
   about 30 s, skips without numpy; CI installs python3-numpy) and measurements/ch26 (about 4
-  minutes: a centred cylinder, 20 MBq, 3 s, no phantom; gains 0.24% rms, delays 20.9 ps rms,
-  summed FWHM 19.4% to 10.8%; a point source is refused by the partners criterion and would be
+  minutes: a centred cylinder, 20 MBq, 3 s, no phantom; gains 0.18% rms, delays 20.9 ps rms,
+  summed FWHM 23.0% to 12.0%; a point source is refused by the partners criterion and would be
   130 ps rms wrong). The end-to-end check showed the server's curvature limit (0.4 each way) too
   strict for a saturating SiPM: now 0.4 down and 1.5 up (max_curvature_down/up), and the tool
   checks the server's limits before it writes. minidaq_sim's default source is a cylinder IN a

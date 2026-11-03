@@ -10,8 +10,8 @@ time as the time. A real detector is not that uniform: each crystal and its SiPM
 gain (spread by about 10%), the SiPM saturates as more of its cells fire, so the response bends at
 high energies, and each timing channel has its own delay (cables, electronics, hundreds of ps).
 Uncalibrated, the energy window keeps a different share of each crystal's events, the summed
-photopeak is twice as wide as one crystal's (19.4% FWHM against 10.8%, measurements/ch26), and true
-coincidences fall outside the coincidence window. Three questions:
+photopeak is about twice as wide as a calibrated one (23.0% FWHM against 12.0%, measurements/ch26),
+and true coincidences fall outside the coincidence window. Three questions:
 
 - where the correction is applied: on the board, in the server, or later, on the list-mode data;
 - what the correction is, and how it is stored and protected;
