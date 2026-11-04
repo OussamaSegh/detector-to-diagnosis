@@ -32,3 +32,4 @@ solutions/ch29.md
 solutions/ch30.md
 solutions/ch31.md
 solutions/ch32.md
+solutions/ch33.md

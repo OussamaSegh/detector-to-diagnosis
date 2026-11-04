@@ -8,6 +8,25 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+
+- Part VIII begins. Chapter 33, the capstone: the chain end to end. `tools/e2e.py` (TL-40) runs a
+  daily-QC point source and a water phantom through `minidaq_send`, the server over UDP, the list
+  mode, the sinograms, the corrections and OSEM, with the QC report of Chapter 31; the server's
+  records must equal those of the offline reference (`minidaq_sim --link 1`, which models the
+  readout link with `quantize_as_on_link`, SRS-SIM-024), every count must balance between the
+  stages, and the image must have the phantom's size and be flat. The test `system.e2e` runs a
+  short version on every change; the release checks run it in part 3 and now write
+  `release-checks.txt` themselves.
+- The MiniDAQ 1.0 acceptance specification (`docs/regulatory/verification/acceptance.json`,
+  ACC-01 to ACC-09) and `tools/acceptance.py` (TL-41): PASS, FAIL, MISSING or STALE per criterion
+  from one output directory of the release checks; only PASS counts.
+- The requirements freeze: `docs/regulatory/srs-baseline.json` (SRS version 21) and
+  `tools/req_baseline.py` (TL-42, test `docs.baseline`).
+- SRS version 22 (SRS-SIM-024, SRS-SYS-006 to SRS-SYS-008, SRS-PERF-022), development plan
+  version 12, threat model version 8, CR-0020, ADR 0028; measurements in `measurements/ch33/`;
+  Exercises 33.1 to 33.3; chapter text and solutions.
+
 ### Changed
 
 - VERSION is 0.8.0-dev (Part VIII). The SOUP list is version 16, with the known-anomaly review
@@ -15,6 +34,8 @@ the patch version.
 
 ### Fixed
 
+- `minidaq_sim` printed as recorded the single it had simulated past the end of the run
+  (MDQ-PR-055, found by the end-to-end accounting).
 - The test `cmake.consumer` asks for the minor version of the build it tests, read from VERSION,
   not a fixed `find_package(recon 0.7)` that the 0.8.0-dev build refused (MDQ-PR-054).
 - The Python packages' versions follow VERSION: `minidaq_analysis.__version__`, which every QC

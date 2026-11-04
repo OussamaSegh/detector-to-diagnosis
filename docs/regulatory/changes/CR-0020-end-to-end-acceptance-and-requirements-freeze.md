@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-04, by the software lead |
 | Source | improvement: the capstone of MiniDAQ 1.0 (Chapter 33); problem report MDQ-PR-055 |
 | Decision | approved, 2026-11-04, software lead |
-| Commits | none yet |
+| Commits | 392e4ae, 78800d4 |
 
 ## Description
 

@@ -1,0 +1,3 @@
+minidaq_exercise(e1_counts_add_up)
+minidaq_python_exercise(e2_acceptance_verdict)
+minidaq_python_exercise(e3_requirements_freeze)

@@ -5,8 +5,8 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-04: Part VII in progress. Chapter 31 written (code, tests, measurements,
-exercises, documents, text, solutions); next: tag ch31 after green CI, then Chapter 32.
+Last updated: 2026-11-04: Part VIII in progress. Chapter 33 written (code, tests, measurements,
+exercises, documents, text, solutions); next: tag ch33 after green CI, then Chapter 34.
 
 ## Start here (next thread, Part VIII)
 
@@ -355,6 +355,23 @@ d1073fb (repro report lists manifest and toolchain), 7654434 (perf_ab fails if s
   scans tools/ too.
 
 ### In progress (as of the last update)
+
+Part VIII (thread started 2026-11-04).
+
+- Chapter 33 complete: `quantize_as_on_link` + `minidaq_sim --link 1` (SRS-SIM-024),
+  `tools/e2e.py` (TL-40, test `system.e2e`, ~35 s debug), `acceptance.json` ACC-01..09 +
+  `tools/acceptance.py` (TL-41), `srs-baseline.json` (SRS v21) + `tools/req_baseline.py` (TL-42,
+  `docs.baseline`), SRS v22, SDP v12, threat model v8, CR-0020 (implemented), ADR 0028,
+  MDQ-PR-055, `measurements/ch33/`, Exercises 33.1 to 33.3, `book/src/part8/`,
+  `book/solutions/ch33.md`.
+- At release 0.8.0: run `tools/acceptance.py OUT` after part 4 and keep the report as item 7 of
+  the release record (SDP v12 section 8); retake the baseline with
+  `tools/req_baseline.py . --write "SRS version 22, release 0.8.0"` after reviewing
+  `--diff`. Any later SRS change needs an approved CR naming the requirement, or docs.baseline
+  fails.
+- Lessons: a fresh clone is shallow; run `git fetch --unshallow` or docs.changes fails;
+  problem-reports.json and tools.json are hand formatted (append, never json.dump the file); the
+  pre-commit hook needs `git clang-format --staged -- '*.cpp' '*.hpp'` for touched C++ lines.
 
 Part VII (thread started 2026-11-03).
 

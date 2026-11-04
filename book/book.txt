@@ -40,3 +40,5 @@ src/part6/ch30-image-quality.md
 src/part7/part7.md
 src/part7/ch31-scientific-python.md
 src/part7/ch32-cmake-and-dependencies.md
+src/part8/part8.md
+src/part8/ch33-capstone-end-to-end.md
