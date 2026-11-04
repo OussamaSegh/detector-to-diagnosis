@@ -149,6 +149,9 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME tools.check_format COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_check_format.py)
   add_test(NAME tools.pre_commit COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_pre_commit.py)
   set_tests_properties(tools.check_format tools.pre_commit PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77)
+  # Release 0.7.0: the known-vulnerability audit of the tools' Python lock file (SOUP list, section 2).
+  add_test(NAME tools.lock_audit COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_lock_audit.py)
+  set_tests_properties(tools.lock_audit PROPERTIES LABELS "unit")
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update

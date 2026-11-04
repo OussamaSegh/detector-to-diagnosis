@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 6 (MiniDAQ 0.7.0-dev, Chapter 32). Status: draft for review.
+Version 7 (MiniDAQ 0.7.0-dev, release 0.7.0). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -243,6 +243,10 @@ A vulnerability can be in MiniDAQ's own code or in its SOUP. The process:
    whether MiniDAQ uses the affected function. An empty scan is believed only because the same
    job scans a control copy of the SBOM with the original noble OpenSSL package
    (3.0.13-0ubuntu3) and fails if that finds nothing.
+   The tools that produce the evidence are not in the SBOM. The Python packages pinned in
+   `analysis/requirements.lock` are checked by `tools/lock_audit.py` (TL-39) in the CI job
+   `python`, which looks up each pinned version in the Python Package Index's vulnerability
+   records and fails for an affected one (since release 0.7.0, MDQ-PR-051).
 3. **Triage every finding.** Each finding gets a decision in
    [vulnerability-triage.json](vulnerability-triage.json), in the analysis states of CycloneDX's
    vulnerability exploitability exchange (VEX): `not_affected` with a justification (for
@@ -283,3 +287,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 4 | Release 0.6.0: the calibration tables of Chapter 26 (CR-0012) as a data store (T-54 to T-57) and their gap in section 7; CR-0012 had not listed this document (code review checklist, item 5.5). |
 | 5 | Chapter 31 (CR-0017): the analysis package reviewed against the diagram. It runs outside the scope of section 1 and adds no element, flow or interface to MiniDAQ: it reads the list-mode store, verifying every CRC, and writes reports that people read. The gap "QC reports are not signed" in section 7. |
 | 6 | Chapter 32 (CR-0018): the installed CMake package, the wheel and the pre-commit hook reviewed against the diagram. They are build-time artifacts for tools and for developers' machines and add no element, flow or interface to the running MiniDAQ; the pinned third-party sources and their scan (section 8) are unchanged. The gap "The build runs the repository's code" in section 7. |
+| 7 | Release 0.7.0, the review before the release with the risk file: Part VII added no element, flow or interface to the running MiniDAQ (versions 5 and 6), and none of the 57 threats is open; the gaps of section 7 stand. The SOUP review found two pinned tool packages with published vulnerabilities (MDQ-PR-051); section 8 now covers the tools' lock file, with the audit TL-39. |

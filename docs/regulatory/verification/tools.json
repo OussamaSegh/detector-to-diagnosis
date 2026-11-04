@@ -247,6 +247,13 @@
      "failure": "A wheel that holds another build of the module than the project's (other flags, another source), or that does not hold it: images reconstructed with the wrong projector, as for TL-32 (H-13).",
      "confidence": ["The wheel is built by the same CMake project and targets as the build tree's module; recon.wheel installs it alone into an empty directory and runs the projector's tests against it, with nothing of the build tree on the path, in the CI job python.",
                     "Increased confidence from use: the build backend that the pybind11 and scikit-build projects recommend for CMake extensions."],
-     "evidence": ["recon/tests/test_wheel.py", "recon/python/pyproject.toml"], "shown_to_fail": "recon.wheel"}
+     "evidence": ["recon/tests/test_wheel.py", "recon/python/pyproject.toml"], "shown_to_fail": "recon.wheel"},
+    {"id": "TL-39", "name": "Lock file audit (tools/lock_audit.py)", "kind": "own", "class": "T2",
+     "version": "the commit",
+     "use": "Reports the published vulnerabilities of every package pinned in analysis/requirements.lock, from the Python Package Index's records (SOUP list, section 2); in CI's job python and in the SOUP review of each release.",
+     "failure": "A pinned package with a published vulnerability reported as clean: a tool of the analysis or of the reconstruction keeps a defect that its supplier has fixed.",
+     "confidence": ["A record without the vulnerability field, or an index that cannot be read, is an error (exit 2), never a clean result.",
+                    "Its tests use a fake index with a pin that has advisories, one without and one that the index answers without the field."],
+     "evidence": ["tools/test_lock_audit.py"], "shown_to_fail": "tools.lock_audit"}
   ]
 }

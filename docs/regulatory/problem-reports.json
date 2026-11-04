@@ -821,6 +821,33 @@
         "category": "process",
         "escape": "The commit of Chapter 32's text ran the docs tests and the book build, not the whole test suite."
       }
+    },
+    {
+      "id": "MDQ-PR-051",
+      "title": "Two packages pinned in the analysis lock file had published vulnerabilities that nothing reported",
+      "found": "2026-11-04, SOUP review for release 0.7.0: the Python Package Index lists 55 advisory records against pillow 12.3.0 (fixed in 13.0.0) and one against Pygments 2.17.2 (fixed in 2.20.0)",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "analysis/requirements.lock (CR-0017) pins every package of the analysis package's environment, including dependencies of dependencies such as Pillow (Matplotlib) and Pygments (pytest). The SOUP review read the release pages of the shipped items and of pybind11 only, and CI's vulnerability scan matches the SBOM, which lists the shipped software only. Neither looked at the lock file's pins, and two of them had published vulnerabilities.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "Tools only. The analysis package writes PNG figures and never decodes an image it did not make, and never uses the affected Pygments lexer; no advisory was reachable from its use."
+      },
+      "resolution": {
+        "change": "The lock file pins Pillow 13.0.0 and Pygments 2.21.0. tools/lock_audit.py (TL-39) looks up every pin in the index's vulnerability records and fails for an affected one; CI's job python runs it on every push. SOUP list version 15 records the review.",
+        "verification": "tools.lock_audit; the analysis package's tests, mypy and ruff, recon.wheel and pip check with the new pins; lock_audit.py reports 28 packages, none affected."
+      },
+      "root_cause": {
+        "whys": [
+          "Two pins had advisories that no review or check reported.",
+          "The SOUP review covered the items it named, and the lock file was recorded as one row of section 2.",
+          "The vulnerability scan was built for the SBOM of the shipped programs and the tools' packages are not in it."
+        ],
+        "cause": "Known-vulnerability monitoring covered the shipped software, not the pinned tools that produce the evidence.",
+        "category": "process",
+        "escape": "The lock file was added in Chapter 31 with a license and version review, without a vulnerability lookup."
+      }
     }
   ]
 }

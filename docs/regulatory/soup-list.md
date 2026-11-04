@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 14 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 15 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -76,7 +76,7 @@ defect in MiniDAQ, so they are pinned and reviewed too, with lighter records.
 | GoogleTest | 1.15.2, git commit `b514bdc898e2951020cbdca1304b75f5950d1f59` | BSD-3-Clause | Unit and exercise tests |
 | Google Benchmark | 1.9.1, git commit `96afad55c79e02f5dfca1374e772c2be72ba631b` | Apache-2.0 | Micro-benchmarks and the performance gate |
 | pybind11 | 3.1.0, git commit `97bf890db679505a14dfe547a5e77bb2bd05dc90` | BSD-3-Clause | The Python module `recon_cpp` of the reconstruction tool (TL-31) and Exercise 29.1; since CR-0015 |
-| Python packages of the analysis package | exact versions in `analysis/requirements.lock` (NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2, Numba 0.68.1 with llvmlite 0.50.0, pytest 9.2.0, mypy 2.4.1, ruff 0.17.3, scikit-build-core 1.1.2, and the packages they need), installed from wheels into a virtual environment; CI runs `pip check` | As each package's metadata states: BSD-3-Clause with bundled permissive parts (NumPy), BSD (SciPy, Numba), BSD-2-Clause and Apache-2.0 with the LLVM exception (llvmlite), PSF-based (Matplotlib), MIT (pytest, mypy, ruff), Apache-2.0 (scikit-build-core) | The analysis package `analysis/` (TL-33): computation and figures (TL-34), its tests and static checks (TL-35), a measurement (Numba, TL-36); since CR-0017 |
+| Python packages of the analysis package | exact versions in `analysis/requirements.lock` (NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2, Numba 0.68.1 with llvmlite 0.50.0, pytest 9.2.0, mypy 2.4.1, ruff 0.17.3, scikit-build-core 1.1.2, and the packages they need, among them Pillow 13.0.0 and Pygments 2.21.0 since release 0.7.0), installed from wheels into a virtual environment; CI runs `pip check` and, since release 0.7.0, `tools/lock_audit.py` (TL-39), which fails for a pinned version with a published vulnerability | As each package's metadata states: BSD-3-Clause with bundled permissive parts (NumPy), BSD (SciPy, Numba), BSD-2-Clause and Apache-2.0 with the LLVM exception (llvmlite), PSF-based (Matplotlib), MIT (pytest, mypy, ruff), Apache-2.0 (scikit-build-core) | The analysis package `analysis/` (TL-33): computation and figures (TL-34), its tests and static checks (TL-35), a measurement (Numba, TL-36); since CR-0017 |
 | CycloneDX 1.5 JSON schemas | vendored in `tools/sbom/schemas/`, SHA-256 in its README | Apache-2.0 | SBOM validation |
 | Compilers and analyzers | GCC 13.3, Clang 18, clang-tidy 18, cppcheck 2.13, libFuzzer (Clang 18) as installed on the build machine | various | Building, checking, fuzzing |
 
@@ -93,6 +93,39 @@ the license, the requirements above against the new version's release notes,
 and the known-anomaly review.
 
 ## 4. Known-anomaly reviews
+
+### 2026-11-04: every item, for release 0.7.0
+
+Reviewer: the book's author. Why now: release 0.7.0. Part VII added no use of nlohmann/json or
+OpenSSL in the shipped programs; its analysis package (Chapter 31) and its build changes (Chapter
+32) are tools of section 2.
+
+- nlohmann/json: the project's release page on GitHub, read on 2026-11-04, names v3.12.0 of
+  2025-04-11 as the latest release. No change to the review of 3.12.0.
+- OpenSSL: the project's page of vulnerabilities in OpenSSL 3.0, read on 2026-11-04, lists no
+  advisory after the six of 2026-09-29, which the review at release 0.5.0 found patched in the
+  installed package; the build machine still has `3.0.13-0ubuntu3.16` (`dpkg -l`).
+- pybind11: the Python Package Index, read on 2026-11-04, names 3.1.0 of 2026-08-06 as the latest
+  release, the version pinned, with no published vulnerability.
+- The Python packages of `analysis/requirements.lock`: for the first time, each pinned version
+  was looked up in the Python Package Index's records, which list the advisories of the OSV
+  database for each release. Two of 28 had published vulnerabilities (MDQ-PR-051): Pillow
+  12.3.0, a dependency of Matplotlib, with 55 advisory records (some name one defect twice, as
+  GHSA and PYSEC), all fixed in 13.0.0, most of them in the decoders of image formats (TIFF,
+  GIF, PDF, BMP, FlashPix, EPS and others); and Pygments
+  2.17.2, a dependency of pytest, with one advisory in a lexer that MiniDAQ never uses, fixed in
+  2.20.0. The analysis package only writes PNG figures with Matplotlib and never opens an image
+  it did not make, so none of the advisories was reachable from its use; the pins were raised
+  anyway, to Pillow 13.0.0 and Pygments 2.21.0, because a tool that keeps a known defect is
+  reviewed again at every release. With them, the analysis package's tests, type check and lint,
+  the wheel's test and `pip check` pass, and the audit reports no package with a known
+  vulnerability. NumPy 2.5.4 is newer than the pinned 2.5.3 and has no advisory against 2.5.3;
+  the pin stays.
+
+Decision: keep nlohmann/json 3.12.0, OpenSSL (package `3.0.13-0ubuntu3.16` or later) and pybind11
+3.1.0 for MiniDAQ 0.7.0, with the lock file at Pillow 13.0.0 and Pygments 2.21.0. CI's job
+`python` runs `tools/lock_audit.py` on every push, so that a new advisory against a pin is reported
+between releases, as the vulnerability scan does for the SBOM.
 
 ### 2026-11-03: nlohmann/json 3.12.0 and OpenSSL, for MiniDAQ 0.7
 
@@ -302,3 +335,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 12 | The known-anomaly reviews at release 0.6.0, with pybind11. |
 | 13 | The known-anomaly review for MiniDAQ 0.7 (start of Part VII, after release 0.6.0). |
 | 14 | The Python packages of the analysis package, pinned by its lock file (CR-0017, Chapter 31). |
+| 15 | The known-anomaly reviews for release 0.7.0: Pillow 13.0.0 and Pygments 2.21.0 in the lock file (MDQ-PR-051), and the lock file audit (TL-39). |

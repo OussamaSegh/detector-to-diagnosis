@@ -388,9 +388,14 @@ Part VII (thread started 2026-11-03).
   CAPA's margin table (six exercise rows added, measured under load); gate fault `clocks`;
   coding standard v6. MDQ-PR-050 (ADR 0027 options not a list) fixed. LESSON: run the WHOLE
   ctest before a commit that touches docs/adr (the ADR linter is an exercise test).
+- SOUP review for 0.7.0 DONE (SOUP list v15): nlohmann 3.12.0 latest, OpenSSL no advisory
+  after 2026-09-29, pybind11 3.1.0 latest; lock file: Pillow 12.3.0 and Pygments 2.17.2 had
+  advisories (MDQ-PR-051) -> 13.0.0 / 2.21.0, CR-0019, `tools/lock_audit.py` (TL-39, CI job
+  python; pypi.org JSON works from here, api.osv.dev and api.github.com do not). Threat model
+  v7 = the release review (done). Locally pip needs --ignore-installed for Debian packages.
 - Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness result (two failures in
-  the period: MDQ-PR-047, MDQ-PR-048; not effective; write the result and the next criterion), SOUP review for 0.7, threat model review at
-  release; release 0.7.0; message the coordinator for the Opus Part VII review.
+  the period: MDQ-PR-047, MDQ-PR-048; not effective; write the result and the next
+  criterion); release 0.7.0; message the coordinator for the Opus Part VII review.
 
 Older notes follow.
 

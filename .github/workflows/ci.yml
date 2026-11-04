@@ -86,6 +86,7 @@ jobs:
     # Chapter 31: the analysis package in the environment it is specified with
     # (analysis/requirements.lock): its tests (with the simulator), type check and lint.
     # Chapter 32: the wheel of recon_cpp, built by scikit-build-core from the same lock file.
+    # Release 0.7.0: no pinned package may have a known vulnerability (tools/lock_audit.py).
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -98,6 +99,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/pip" install --no-deps -r analysis/requirements.lock
           "$RUNNER_TEMP/venv/bin/pip" check
+      - name: Known vulnerabilities of the pinned packages (SOUP list, section 2)
+        run: python3 tools/lock_audit.py analysis/requirements.lock
       - name: Build the simulator
         run: |
           cmake --preset release -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF \

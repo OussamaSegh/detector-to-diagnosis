@@ -51,6 +51,9 @@ the patch version.
   failed build (`tail -30` with several files).
 - ADR 0027 wrote its options as prose, which the ADR linter refuses (MDQ-PR-050): they are a
   numbered list.
+- Two packages pinned in `analysis/requirements.lock` had published vulnerabilities
+  (MDQ-PR-051, CR-0019): Pillow 13.0.0 (was 12.3.0) and Pygments 2.21.0 (was 2.17.2). The new
+  `tools/lock_audit.py` (TL-39) fails for a pin with an advisory, in CI's job `python`.
 
 ### Changed
 - `tools/check_changes.py` and `tools/check_tools.py` know the analysis package's pytest names
