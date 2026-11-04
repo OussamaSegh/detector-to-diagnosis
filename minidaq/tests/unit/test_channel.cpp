@@ -53,6 +53,7 @@ TEST(ChannelStress, CloseAfterLastPublishIsNeverMissed) {
   for (int trial = 0; trial < 200; ++trial) {
     Channel<std::uint64_t> ch{4, 16};
     constexpr std::uint64_t batches = 50;
+    // threads: joined
     std::jthread producer([&] {
       for (std::uint64_t i = 0; i < batches;) {
         if (Batch<std::uint64_t>* b = ch.acquire()) {

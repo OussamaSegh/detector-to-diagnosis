@@ -39,6 +39,7 @@ def app(name):
 
 
 def deadline(seconds):
+    # clock: deadline
     return time.monotonic() + seconds * SLOW
 
 
@@ -46,6 +47,7 @@ def eventually(condition, seconds, what):
     """Polls condition() until it is true; fails with `what` after `seconds` (times SLOW)."""
     end = deadline(seconds)
     while not condition():
+        # clock: deadline
         if time.monotonic() > end:
             raise AssertionError(f"timed out after {seconds * SLOW:.0f} s waiting for {what}")
         time.sleep(0.05)  # sleep: poll
@@ -82,6 +84,7 @@ class Server:
             if self.proc.poll() is not None:
                 raise AssertionError(f"minidaq_server exited with {self.proc.returncode}: "
                                      f"{self.proc.stdout.read()}")
+            # clock: deadline
             if time.monotonic() > end:
                 self.proc.kill()
                 raise AssertionError("minidaq_server did not report its port within 10 s")

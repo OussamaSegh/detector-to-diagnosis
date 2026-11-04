@@ -151,6 +151,7 @@ TEST(AcquisitionState, ConcurrentEventsAreSerialized) {
   std::atomic<int> ok{0};
   std::vector<std::jthread> threads;
   for (int k = 0; k < 4; ++k) {
+    // threads: joined
     threads.emplace_back([&, k] {
       for (int i = 0; i < 2000; ++i) {
         const AcqEvent e = all_events[static_cast<std::size_t>((i + k) % 6)];

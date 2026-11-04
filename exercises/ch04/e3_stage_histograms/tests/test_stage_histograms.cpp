@@ -70,6 +70,7 @@ TEST(StageLatencies, SnapshotsWhileAWriterRecords) {
   std::atomic<bool> stop{false};
   std::atomic<std::uint64_t> written{0};
   auto prev = lat.snapshot();  // before the writer starts: the intervals must add up to everything
+  // threads: joined
   std::thread writer{[&] {
     std::uint64_t n = 0;
     while (!stop.load(std::memory_order_relaxed)) {
@@ -80,8 +81,10 @@ TEST(StageLatencies, SnapshotsWhileAWriterRecords) {
   }};
 
   std::uint64_t seen = 0;
+  // clock: deadline (how long the loop runs; any duration gives the same result)
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds{300};
   int intervals = 0;
+  // clock: deadline
   while (std::chrono::steady_clock::now() < deadline) {
     auto next = lat.snapshot();
     const auto iv = lat.interval(prev, next);  // must never throw: counts only grow

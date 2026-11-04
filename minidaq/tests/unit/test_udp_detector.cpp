@@ -71,6 +71,7 @@ std::map<std::string, std::uint64_t> counters_of(const DetectorPort& d) {
 std::vector<std::uint64_t> read_words(DetectorPort& d, std::size_t n) {
   std::vector<std::uint64_t> out;
   std::vector<std::uint64_t> buf(4096);
+  // clock: deadline
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
   while (out.size() < n && std::chrono::steady_clock::now() < deadline) {
     const std::size_t got = d.read(buf);
@@ -86,8 +87,11 @@ std::vector<std::uint64_t> read_words(DetectorPort& d, std::size_t n) {
 std::vector<std::uint64_t> read_until_quiet(DetectorPort& d) {
   std::vector<std::uint64_t> out;
   std::vector<std::uint64_t> buf(4096);
+  // Every datagram is queued before the read starts, so a quiet gap cannot end the read early.
+  // clock: deadline
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
   auto last = std::chrono::steady_clock::now();
+  // clock: deadline
   while (std::chrono::steady_clock::now() - last < std::chrono::milliseconds(50) &&
          std::chrono::steady_clock::now() < deadline) {
     const std::size_t got = d.read(buf);
@@ -95,6 +99,7 @@ std::vector<std::uint64_t> read_until_quiet(DetectorPort& d) {
     if (got == 0) {
       std::this_thread::sleep_for(std::chrono::microseconds(100));  // sleep: poll
     } else {
+      // clock: deadline
       last = std::chrono::steady_clock::now();
     }
   }
@@ -246,11 +251,13 @@ TEST(UdpDetector, RunsAnAcquisitionThroughTheService) {
   for (const auto& p : pk.packetize(words, false)) {
     tx.send(p.bytes);
   }
+  // clock: deadline
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
   nlohmann::json st;
   do {
     std::this_thread::sleep_for(std::chrono::milliseconds(20));  // sleep: poll
     st = svc.status();
+    // clock: deadline
   } while (st["stages"][1]["out"].get<std::uint64_t>() < words.size() && std::chrono::steady_clock::now() < deadline);
   ASSERT_TRUE(svc.stop("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, std::chrono::seconds(5)));

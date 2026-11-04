@@ -30,6 +30,7 @@ template <typename F>
 void within(std::chrono::milliseconds limit, F f, const char* what) {
   auto done = std::make_shared<std::promise<void>>();
   auto fut = done->get_future();
+  // threads: joined (waited for through the future)
   std::thread([done, f]() mutable {
     f();
     done->set_value();
@@ -155,6 +156,7 @@ TEST(FrameReader, CostIsLinearInTheBytesReceived) {
             wire.insert(wire.end(), f.begin(), f.end());
           }
           ex::FrameReader r{16};
+          // clock: speed (CAPA-0001 margin table)
           const auto t0 = std::chrono::steady_clock::now();
           r.feed(wire);
           int n = 0;
@@ -162,6 +164,7 @@ TEST(FrameReader, CostIsLinearInTheBytesReceived) {
             ++n;
           }
           EXPECT_EQ(n, frames);
+          // clock: speed
           return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
         };
         const double small = time_for(250'000);

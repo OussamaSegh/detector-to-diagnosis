@@ -90,6 +90,7 @@ TEST_F(UntrustedFile, DoesNotBlockOnAFifo) {
   ASSERT_EQ(::mkfifo(fifo.c_str(), 0600), 0);
   std::promise<bool> done;
   auto result = done.get_future();
+  // threads: joined (waited for through the future)
   std::thread{[&done, path = fifo.string()] { done.set_value(static_cast<bool>(read_untrusted_file(path, 64))); }}
       .detach();
   const bool returned = result.wait_for(std::chrono::seconds{2}) == std::future_status::ready;

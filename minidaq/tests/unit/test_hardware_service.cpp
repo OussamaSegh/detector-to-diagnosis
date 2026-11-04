@@ -432,8 +432,10 @@ TEST(HardwareService, AStopWaitsForTheBoardsAndADrainThatRunsOutOfTimeIsALoss) {
     return svc.status()["hardware"]["boards"][1]["fifo_words"].get<int>() > 0;
   })) << "the second board has taken data its link cannot send";
   ASSERT_TRUE(svc.stop("test").ok);
+  // clock: minimum (more time is still correct)
   const auto stopped = std::chrono::steady_clock::now();
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
+  // clock: minimum
   EXPECT_GE(std::chrono::steady_clock::now() - stopped, 200ms)
       << "the pipeline ran until the drain timed out";
   const std::lock_guard lock{records.mu};

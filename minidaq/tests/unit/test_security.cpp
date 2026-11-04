@@ -478,6 +478,7 @@ class Relay {
     socklen_t len = sizeof a;
     ::getsockname(listen_, reinterpret_cast<sockaddr*>(&a), &len);
     port_ = ntohs(a.sin_port);
+    // threads: joined (the socket listens before the thread starts)
     thread_ = std::jthread{[this](const std::stop_token& st) { run(st); }};
   }
   ~Relay() {

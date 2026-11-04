@@ -18,23 +18,20 @@ repository, on a machine set up as the CI runners are. Four questions had no ans
 
 ## Options
 
-For using a library from another project: copy its sources (a fork that drifts); add the whole
-MiniDAQ tree with `add_subdirectory` or FetchContent (every MiniDAQ option and target enters the
-user's project); or install the library with a CMake package that `find_package` reads.
-
-For the configurations: keep the documented `cmake --preset X && cmake --build --preset X && ctest
---preset X`; a script per configuration (`ci/run_all.sh` already loops over them); or workflow
-presets (presets file version 6), which name the three steps as one.
-
-For the Python module: setuptools with a `build_ext` that compiles the module again (a second
-description of the sources, flags and dependencies); or scikit-build-core, which runs the existing
-CMake project and installs one component into the wheel.
-
-For dependencies: FetchContent pinned by commit or archive hash, as since Chapter 1; a package
-manager (Conan or vcpkg). Conan was proposed in Chapter 31 and not approved.
-
-For formatting: no rule (the status quo); reformat every file once and then check every file; or
-check only the lines each change touches.
+1. **Using a library from another project.** Copy its sources (a fork that drifts); add the
+   whole MiniDAQ tree with `add_subdirectory` or FetchContent (every MiniDAQ option and target
+   enters the user's project); or install the library with a CMake package that `find_package`
+   reads.
+2. **The configurations.** Keep the documented `cmake --preset X && cmake --build --preset X &&
+   ctest --preset X`; a script per configuration (`ci/run_all.sh` already loops over them); or
+   workflow presets (presets file version 6), which name the three steps as one.
+3. **The Python module.** Setuptools with a `build_ext` that compiles the module again (a second
+   description of the sources, flags and dependencies); or scikit-build-core, which runs the
+   existing CMake project and installs one component into the wheel.
+4. **Dependencies.** FetchContent pinned by commit or archive hash, as since Chapter 1; or a
+   package manager (Conan or vcpkg). Conan was proposed in Chapter 31 and not approved.
+5. **Formatting.** No rule (the status quo); reformat every file once and then check every file;
+   or check only the lines each change touches.
 
 ## Decision
 

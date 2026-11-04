@@ -319,9 +319,11 @@ TEST(AcquisitionService, StatusReportsTheLastIntervalSeparately) {
   o.interval_period = 30ms;
   AcquisitionService svc{o};
   ASSERT_TRUE(svc.configure(small(), "test").ok);
+  // clock: measure (a delay can only skip the first check)
   const auto t0 = std::chrono::steady_clock::now();
   ASSERT_TRUE(svc.start("test").ok);
   const bool early = svc.status().contains("recent_latency_ns");
+  // clock: measure
   if (std::chrono::steady_clock::now() - t0 < o.interval_period) {
     EXPECT_FALSE(early) << "no complete interval yet";  // only checkable if this thread was not delayed
   }
@@ -335,6 +337,7 @@ TEST(AcquisitionService, StatusReportsTheLastIntervalSeparately) {
     const auto in_interval = st["recent_latency_ns"]["decode"]["count"].get<std::uint64_t>();
     return in_interval > 0 && in_interval < st["latency_ns"]["decode"]["count"].get<std::uint64_t>();
   })) << st.dump(2);
+  // clock: measure (compared with the interval of the same run)
   const double since_start = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
   const double interval_s = st["recent_latency_ns"]["interval_s"].get<double>();
   EXPECT_GE(interval_s, 0.025);

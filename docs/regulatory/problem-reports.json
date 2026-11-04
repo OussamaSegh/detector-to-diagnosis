@@ -794,6 +794,33 @@
         "category": "tool",
         "escape": "Local runs reused build directories whose caches kept the old entry."
       }
+    },
+    {
+      "id": "MDQ-PR-050",
+      "title": "ADR 0027 did not list its options as the ADR format requires",
+      "found": "2026-11-04, full local ctest run on ebbe4fa plus the CAPA-0001 changes: ch06/e3_adrs/solution/unittest failed with \"'## Options' must list at least two options\" for ADR 0027",
+      "item": "docs",
+      "status": "closed",
+      "capa": "",
+      "description": "ADR 0027 wrote its options as prose paragraphs, one per decision area. The ADR linter of Exercise 6.3, whose solution test checks every record in docs/adr, counts the list items of the Options section and found none.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A design record's format; its content and the product are unchanged."
+      },
+      "resolution": {
+        "change": "The Options section of ADR 0027 lists its five decision areas as numbered items, each with its alternatives; the text is unchanged.",
+        "verification": "ch06/e3_adrs/solution/unittest and the docs tests pass."
+      },
+      "root_cause": {
+        "whys": [
+          "The ADR linter found no list items in the Options section.",
+          "ADR 0027 decides five things at once and was written as one paragraph per decision.",
+          "Before the commit, only the docs.* tests were run, and the ADR format is checked by an exercise test, not by a docs test."
+        ],
+        "cause": "A record was checked with a subset of the tests that read it.",
+        "category": "process",
+        "escape": "The commit of Chapter 32's text ran the docs tests and the book build, not the whole test suite."
+      }
     }
   ]
 }

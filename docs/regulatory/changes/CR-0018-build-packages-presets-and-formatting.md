@@ -65,7 +65,8 @@ for tool users.
 ADR 0027 (new) and the ADR index; the SRS, version 21; the trace matrix; the coding standard,
 version 5 (rule 1.4); the development plan, version 11 (section 6); the tool list (TL-37, TL-38);
 the architecture description, version 18; the threat model, version 6 (reviewed: no element added;
-the gap "The build runs the repository's code"); the problem reports MDQ-PR-048 and MDQ-PR-049;
+the gap "The build runs the repository's code"); the problem reports MDQ-PR-048, MDQ-PR-049 and
+MDQ-PR-050 (ADR 0027's options as a list);
 CAPA-0001; the CHANGELOG.
 
 ### Regulatory

@@ -107,11 +107,13 @@ TEST(FastSorter, FastEnough) {
     auto s = make();
     std::vector<Coincidence> out;
     out.reserve(stream().size() / 4);
+    // clock: speed (CAPA-0001 margin table)
     const auto t0 = std::chrono::steady_clock::now();
     for (std::size_t i = 0; i < stream().size(); i += 4096) {
       s->push(std::span{stream()}.subspan(i, std::min<std::size_t>(4096, stream().size() - i)), out);
     }
     s->flush(out);
+    // clock: speed
     const double sec = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
     return static_cast<double>(stream().size()) / sec;
   };

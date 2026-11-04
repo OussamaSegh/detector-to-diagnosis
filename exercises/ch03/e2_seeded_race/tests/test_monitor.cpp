@@ -20,6 +20,7 @@ TEST(EnergyMonitor, TwoWritersCountEverything) {
     }
   };
   {
+    // threads: joined
     std::jthread a{writer, 1U};
     std::jthread b{writer, 2U};
   }
@@ -43,6 +44,7 @@ TEST(EnergyMonitor, WindowIsNeverSeenHalfWritten) {
   // windows, so publication and reads are guaranteed to overlap in time
   // (TSan can only report accesses that actually happen concurrently).
   std::atomic<bool> reader_done{false};
+  // threads: joined
   std::jthread control([&] {
     // Windows always satisfy high = low + 100, so a mixed read is detectable.
     for (int i = 0; !reader_done.load(); ++i) {

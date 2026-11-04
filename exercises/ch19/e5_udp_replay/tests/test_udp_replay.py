@@ -112,9 +112,11 @@ class Replay(unittest.TestCase):
 
     def replay_time(self, speed):
         with receiver() as sock:
+            # clock: speed (CAPA-0001 margin table)
             start = time.monotonic()
             self.assertEqual(udp_replay.replay(self.cap, "127.0.0.1", sock.getsockname()[1], speed), 3)
             self.assertEqual(drain(sock, 3), [b"\x00", b"\x01", b"\x02"])
+            # clock: speed
             return time.monotonic() - start
 
     def test_speed_one_keeps_the_gaps(self):

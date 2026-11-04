@@ -76,6 +76,7 @@ TEST(SpscRingStress, TwoThreadsPreserveEverySequenceNumber) {
   // REQ: SRS-PIPE-002
   constexpr std::uint64_t n = 2'000'000;
   SpscRing<std::uint64_t> r{1024};
+  // threads: joined
   std::jthread producer([&] {
     for (std::uint64_t i = 0; i < n;) {
       if (r.try_push(std::uint64_t{i})) {
@@ -100,6 +101,7 @@ TEST(SpscRingStress, BatchedTransferOfStructs) {
   };
   constexpr std::uint64_t n = 1'000'000;
   SpscRing<Item> r{256};
+  // threads: joined
   std::jthread producer([&] {
     std::vector<Item> buf(37);
     std::uint64_t i = 0;

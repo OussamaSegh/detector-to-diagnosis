@@ -34,6 +34,7 @@ TEST(MpmcQueueStress, FourProducersTwoConsumersExactlyOnce) {
   {
     std::vector<std::jthread> threads;
     for (int p = 0; p < producers; ++p) {
+      // threads: joined
       threads.emplace_back([&, p] {
         for (std::uint32_t i = 0; i < per_producer;) {
           // Value encodes producer and index, so every item is unique.
@@ -44,6 +45,7 @@ TEST(MpmcQueueStress, FourProducersTwoConsumersExactlyOnce) {
       });
     }
     for (int c = 0; c < consumers; ++c) {
+      // threads: joined
       threads.emplace_back([&] {
         while (consumed.load(std::memory_order_relaxed) < producers * std::uint64_t{per_producer}) {
           if (auto v = q.try_pop()) {
@@ -66,6 +68,7 @@ TEST(MpmcQueueStress, PerProducerOrderIsPreserved) {
   MpmcQueue<std::uint64_t> q{256};
   std::vector<std::jthread> threads;
   for (int p = 0; p < producers; ++p) {
+    // threads: joined
     threads.emplace_back([&, p] {
       for (std::uint32_t i = 0; i < per_producer;) {
         if (q.try_push((static_cast<std::uint64_t>(p) << 32) | i)) {

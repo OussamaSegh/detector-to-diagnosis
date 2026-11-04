@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 5 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 6 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -110,12 +110,18 @@ detector data.
    or `hides only`, and a test of a timing requirement asserts the requirement,
    not the speed of the machine it runs on. A test that fails at random teaches
    people to rerun it, which hides the day it fails for a reason (CAPA-0001).
+   A clock read in a test states its kind, `// clock: deadline`, `speed`,
+   `measure`, `data` or `minimum`, and a `speed` test is a row of CAPA-0001's
+   margin table, with a margin of at least 30%.
    *Enforced:* test `tests.waits`; the stress run of CAPA-0001.
 6. A test that starts threads and then checks what they did first waits until
    each of them has started its work (a `std::latch` or `std::barrier`), and
    does not assume that a thread runs before the next statement of the thread
-   that created it (MDQ-PR-028, CAPA-0001). *Enforced:* review (checklist item
-   4.6); the coverage build of the release checks, which starts threads slowly.
+   that created it (MDQ-PR-028, CAPA-0001). A thread start in a test states
+   why, `// threads: joined` (what the test checks is complete when the threads
+   are joined) or `started` (it waits for the start). *Enforced:* test
+   `tests.waits`; review (checklist item 4.6); the coverage build of the
+   release checks, which starts threads slowly.
 
 ## 6. The hot path
 
@@ -148,3 +154,4 @@ must report nothing before a change is merged.
 | 3 | Rule 3.5 on reading untrusted JSON (CAPA-0003, problem report MDQ-PR-013). |
 | 4 | Rule 5.6 on tests that start threads (CAPA-0001, problem report MDQ-PR-028). |
 | 5 | Rule 1.4 on formatting, checked on changed lines (Chapter 32, ADR 0027, CR-0018). |
+| 6 | Rules 5.5 and 5.6: clock reads and thread starts in tests state their kind, checked by `tests.waits` (CAPA-0001, MDQ-PR-047, MDQ-PR-048). |

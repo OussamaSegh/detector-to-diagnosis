@@ -24,9 +24,11 @@ Single make(std::int64_t i) {
 // instead of spinning forever.
 class Deadline {
  public:
+  // clock: deadline
   explicit Deadline(std::chrono::seconds s) : end_{std::chrono::steady_clock::now() + s} {}
   [[nodiscard]] bool expired() {
     if (!expired_ && ++calls_ % 4096 == 0) {
+      // clock: deadline
       expired_ = std::chrono::steady_clock::now() > end_;
     }
     return expired_;
@@ -102,6 +104,7 @@ TEST(SinglesRing, TwoThreadStress) {
   constexpr std::int64_t n = 2'000'000;
   SinglesRing r{1024};
   std::atomic<bool> give_up{false};
+  // threads: joined
   std::jthread producer([&] {
     for (std::int64_t i = 0; i < n && !give_up.load(std::memory_order_relaxed);) {
       if (r.try_push(make(i))) {
@@ -127,6 +130,7 @@ TEST(SinglesRing, TwoThreadBatchedStress) {
   constexpr std::int64_t n = 1'000'000;
   SinglesRing r{512};
   std::atomic<bool> give_up{false};
+  // threads: joined
   std::jthread producer([&] {
     std::vector<Single> buf(100);
     for (std::int64_t i = 0; i < n && !give_up.load(std::memory_order_relaxed);) {

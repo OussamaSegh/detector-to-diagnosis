@@ -343,10 +343,12 @@ TEST(SlowControl, SaysWhyAnAcquisitionMayNotStart) {
 
 TEST(SlowControl, RunsItsOwnCycleOnAThreadUntilStopped) {
   // REQ: SRS-HW-001
+  // clock: data (timestamps)
   FakeBoard board{0, [] { return std::chrono::steady_clock::now().time_since_epoch().count(); }};
   SlowControlSettings settings;
   settings.period = std::chrono::milliseconds{1};
   SlowControl sc{settings, {&board}};
+  // clock: data (timestamps)
   sc.start([] { return std::chrono::steady_clock::now().time_since_epoch().count(); });
   EXPECT_TRUE(test_support::eventually([&] { return sc.cycles() >= 3; }));
   EXPECT_EQ(sc.snapshot().at(0).state, BoardState::ramping);

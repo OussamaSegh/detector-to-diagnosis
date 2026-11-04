@@ -383,8 +383,13 @@ Part VII (thread started 2026-11-03).
 - Lessons: test build changes in a FRESH build directory (old caches hide toolchain-file
   changes); the hook refuses a literal address in its own test (build it at run time); the book
   build needs latexmk and librsvg2-bin too (apt) in a fresh container.
-- Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness (two failures in the
-  period: MDQ-PR-047, MDQ-PR-048; not effective), SOUP review for 0.7, threat model review at
+- CAPA-0001 action done (pre-0.7.0): `tests.waits` checks `// clock: <kind>` and
+  `// threads: joined|started` (same line or two above); every speed test must be a row of the
+  CAPA's margin table (six exercise rows added, measured under load); gate fault `clocks`;
+  coding standard v6. MDQ-PR-050 (ADR 0027 options not a list) fixed. LESSON: run the WHOLE
+  ctest before a commit that touches docs/adr (the ADR linter is an exercise test).
+- Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness result (two failures in
+  the period: MDQ-PR-047, MDQ-PR-048; not effective; write the result and the next criterion), SOUP review for 0.7, threat model review at
   release; release 0.7.0; message the coordinator for the Opus Part VII review.
 
 Older notes follow.

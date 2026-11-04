@@ -49,10 +49,17 @@ the patch version.
 - `tools/release_bundle.py` and `tools/test_report.py` could not find the compiler of a build
   configured through a toolchain file (MDQ-PR-049); `tools/repro_check.sh` printed no logs on a
   failed build (`tail -30` with several files).
+- ADR 0027 wrote its options as prose, which the ADR linter refuses (MDQ-PR-050): they are a
+  numbered list.
 
 ### Changed
 - `tools/check_changes.py` and `tools/check_tools.py` know the analysis package's pytest names
   (`module::test`); each analysis test carries its own requirement tag.
+- CAPA-0001: `tests.waits` also requires every clock read in a test to state its kind (`// clock:
+  deadline|speed|measure|data|minimum`) and every thread start to state why its timing does not
+  matter (`// threads: joined|started`); all 57 clock reads and 33 thread starts were tagged.
+  Six speed tests of the exercises join the CAPA's margin table; gate self-test fault `clocks`;
+  coding standard 6.
 
 ## [0.6.0] - 2026-11-03
 

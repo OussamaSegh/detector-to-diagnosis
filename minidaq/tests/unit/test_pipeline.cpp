@@ -132,8 +132,10 @@ TEST(Pipeline, DropPolicyCountsEveryLostWord) {
                           return got;
                         },
                         [&](std::span<const Coincidence>) {
+                          // clock: deadline
                           const auto deadline = std::chrono::steady_clock::now() + 10s;
                           while (!source_done.load(std::memory_order_acquire) &&
+                                 // clock: deadline
                                  std::chrono::steady_clock::now() < deadline) {
                             std::this_thread::sleep_for(100us);  // sleep: poll
                           }

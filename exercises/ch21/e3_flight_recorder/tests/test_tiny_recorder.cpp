@@ -65,6 +65,7 @@ TEST(TinyRecorder, ASnapshotNeverHoldsHalfAnEvent) {
   // writer may not run at all during the 20,000 snapshots, which then see nothing (MDQ-PR-048,
   // coding standard rule 5.6).
   std::latch started{1};
+  // threads: started (the latch)
   std::thread writer{[&] {
     for (std::uint64_t i = 1; !stop.load(std::memory_order_relaxed); ++i) {
       r.record(i, ~i);  // b is always the complement of a, and a is the event's number

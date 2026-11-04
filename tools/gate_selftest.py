@@ -93,6 +93,11 @@ FAULTS = [
             "TEST(Config, Sleeps) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }\n\n"
             "TEST(Config, MinimalDocumentGetsDefaults) {")],
           ["python3", "tools/check_test_waits.py", "."], r"a sleep without"),
+    Fault("clocks", "test clocks (CAPA-0001)", "a test that times itself without saying why",
+          [("minidaq/tests/unit/test_config.cpp", "TEST(Config, MinimalDocumentGetsDefaults) {",
+            "TEST(Config, Times) { (void)std::chrono::steady_clock::now(); }\n\n"
+            "TEST(Config, MinimalDocumentGetsDefaults) {")],
+          ["python3", "tools/check_test_waits.py", "."], r"a clock read without"),
     Fault("hardening", "hardening of the shipped programs", "a program linked without PIE and BIND_NOW",
           [], ["sh", "-c", "g++ -O2 -no-pie -Wl,-z,lazy selftest/p.cpp -o selftest/p && "
                            "python3 tools/check_hardening.py selftest/p"],

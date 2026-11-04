@@ -35,6 +35,7 @@ class Reproducible(unittest.TestCase):
     def setUpClass(cls):
         cls.tmp = pathlib.Path(tempfile.mkdtemp())
         cls.first = build(VARIANT, cls.tmp / "one" / "demo")
+        # clock: data (the build's timestamp)
         start = int(time.time())
         while int(time.time()) == start:  # the second build in the next second of the clock
             time.sleep(0.05)  # sleep: poll

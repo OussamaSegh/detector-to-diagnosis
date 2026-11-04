@@ -60,8 +60,10 @@ class WhatItDetects(unittest.TestCase):
     def test_two_bit_errors_in_a_block(self):
         # 64 KiB of records is 524,288 bits; a block of 1 KiB already has 33 million pairs.
         self.assertEqual(c.undetected_two_bit_errors(8), 0)
+        # clock: speed (CAPA-0001 margin table)
         t0 = time.monotonic()
         self.assertEqual(c.undetected_two_bit_errors(1024), 0)
+        # clock: speed
         self.assertLess(time.monotonic() - t0, 60.0, "count the pairs without computing each one's CRC")
 
     def test_some_errors_are_missed(self):

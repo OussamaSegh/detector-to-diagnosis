@@ -175,12 +175,14 @@ TEST(FaultInjection, DroppedWordsMakeTheRunIncomplete) {
   ASSERT_TRUE(svc.configure({}, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   // Wait until some words have been dropped, then end the run normally.
+  // clock: deadline
   const auto deadline = std::chrono::steady_clock::now() + 10s;
   const auto dropped = [&svc] {
     const auto st = svc.status();
     const auto it = st.find("detector_counters");
     return it != st.end() && it->contains("rejected_injected") && (*it)["rejected_injected"] != 0;
   };
+  // clock: deadline
   while (!dropped() && std::chrono::steady_clock::now() < deadline) {
     std::this_thread::sleep_for(1ms);  // sleep: poll the status until a word was dropped
   }

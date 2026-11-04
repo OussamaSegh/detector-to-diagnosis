@@ -38,6 +38,7 @@ std::uint64_t store_buffering(int n) {
   Cell x, y, go, done;
   int r2 = 0;  // written by B before done.store(release), read by A after done.load(acquire)
   std::uint64_t both_zero = 0;
+  // threads: joined
   std::jthread b([&] {
     for (int i = 1; i <= n; ++i) {
       while (go.v.load(std::memory_order_acquire) != i) {
@@ -83,6 +84,7 @@ TEST(MemoryModel, MessagePassingWithReleaseAcquire) {
   for (int round = 0; round < 2'000; ++round) {
     std::uint64_t payload = 0;  // plain, non-atomic data
     std::atomic<bool> ready{false};
+    // threads: joined
     std::jthread producer([&] {
       payload = 0xC0FFEE + static_cast<std::uint64_t>(round);
       ready.store(true, std::memory_order_release);

@@ -74,6 +74,7 @@ TEST(CrashReport, AReportNamesTheSignalTheProgramAndTheLastEvents) {
   const auto path = report_path("format");
   const int fd = ::open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0600);
   ASSERT_GE(fd, 0);
+  // threads: joined
   std::thread{[] { trace(TraceCode::run_begin, 7, 0); }}.join();
   siginfo_t info{};
   info.si_signo = SIGSEGV;

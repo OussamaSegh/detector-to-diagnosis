@@ -72,6 +72,7 @@ template <typename F>
 void within(std::chrono::milliseconds limit, F f, const char* what) {
   auto done = std::make_shared<std::promise<void>>();
   auto fut = done->get_future();
+  // threads: joined (waited for through the future)
   std::thread([done, f]() mutable {
     f();
     done->set_value();
@@ -197,6 +198,7 @@ TEST(StateMachine, ConcurrentEventsGiveOneConsistentHistory) {
         std::atomic<long> applied{0};
         std::vector<std::thread> threads;
         for (int i = 0; i < 4; ++i) {
+          // threads: joined
           threads.emplace_back([&, i] {
             std::mt19937 rng(static_cast<unsigned>(i) + 1U);
             std::uniform_int_distribution<std::size_t> pick(0, ex::all_events.size() - 1);

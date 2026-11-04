@@ -34,8 +34,10 @@ TEST(Randoms, MeasuredRateMatchesTheFormula) {
 TEST(Randoms, LinearTime) {
   const auto a = ex83::poisson_times_ps(1e6, 1.0, 3);
   const auto b = ex83::poisson_times_ps(1e6, 1.0, 4);
+  // clock: speed (CAPA-0001 margin table)
   const auto t0 = std::chrono::steady_clock::now();
   // A wide window: a quadratic counter visits about 2,000 b-singles per a-single.
   (void)ex83::count_pairs_within(a, b, 1'000'000'000);  // 1 ms
+  // clock: speed
   EXPECT_LT(std::chrono::steady_clock::now() - t0, std::chrono::seconds{1});
 }

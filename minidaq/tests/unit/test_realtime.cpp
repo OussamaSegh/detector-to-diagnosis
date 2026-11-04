@@ -54,6 +54,7 @@ TEST(RtProfile, FormatRoundTrips) {
 
 TEST(Realtime, PinToCpuZero) {
   // REQ: SRS-RT-002
+  // threads: joined
   std::jthread t([] {
     const auto r = rt::pin_current_thread(0);
     ASSERT_TRUE(r) << r.error().message();
@@ -68,6 +69,7 @@ TEST(Realtime, InvalidCpuIsAnError) {
 }
 
 TEST(Realtime, SchedOtherAlwaysWorksFifoReportsErrors) {
+  // threads: joined
   std::jthread t([] {
     EXPECT_TRUE(rt::set_current_thread_scheduler(rt::SchedPolicy::other, 0));
     EXPECT_FALSE(rt::set_current_thread_scheduler(rt::SchedPolicy::fifo, 0)) << "priority 0 is invalid for fifo";
@@ -80,6 +82,7 @@ TEST(Realtime, SchedOtherAlwaysWorksFifoReportsErrors) {
 }
 
 TEST(Realtime, ApplyStageReportsWhatHappened) {
+  // threads: joined
   std::jthread t([] {
     const auto st = rt::apply_stage({0, rt::SchedPolicy::other, 0}, 128 * 1024);
     EXPECT_TRUE(st.applied);
@@ -92,6 +95,7 @@ TEST(Realtime, ApplyStageReportsWhatHappened) {
 
 TEST(Realtime, PrefaultedStackDoesNotFaultAgain) {
   // REQ: SRS-RT-003
+  // threads: joined
   std::jthread t([] {
     rt::prefault_stack(512 * 1024);
     const auto before = rt::thread_page_faults();
@@ -102,5 +106,6 @@ TEST(Realtime, PrefaultedStackDoesNotFaultAgain) {
 }
 
 TEST(Realtime, TimerSlackCanBeSet) {
+  // threads: joined
   std::jthread t([] { EXPECT_TRUE(rt::set_timer_slack_ns(1)); });
 }

@@ -42,12 +42,14 @@ class SlowOps final : public control::FileOps {
       return Unexpected{ENOSPC};
     }
     d_.data.insert(d_.data.end(), b.begin(), b.end());
+    // clock: data (when each write happened)
     d_.writes.emplace_back(d_.data.size(), Clock::now());
     return b.size();
   }
   int sync(int) override {
     std::this_thread::sleep_for(d_.sync_time);  // sleep: device (an fsync)
     const std::lock_guard lock{d_.mu};
+    // clock: data (when each sync happened)
     d_.syncs.emplace_back(d_.data.size(), Clock::now());
     return 0;
   }
@@ -95,6 +97,7 @@ std::vector<Coincidence> read_back(const std::vector<std::byte>& f, bool& end_of
 Clock::duration encode_only(const std::vector<Coincidence>& in) {
   std::vector<std::byte> buf(listmode::block_bytes(4096));
   listmode::BlockWriter w{buf, 4096};
+  // clock: speed (CAPA-0001 margin table)
   const auto t0 = Clock::now();
   for (const auto& c : in) {
     if (w.append(c) != listmode::BlockWriter::Append::ok) {
@@ -103,6 +106,7 @@ Clock::duration encode_only(const std::vector<Coincidence>& in) {
       (void)w.append(c);
     }
   }
+  // clock: speed
   return Clock::now() - t0;
 }
 
@@ -114,8 +118,10 @@ TEST(FastSink, KeepsUpWithTheSorterAndLosesNothing) {
   Clock::duration in_write{0};
   int slow_calls = 0;
   for (std::size_t i = 0; i < in.size(); i += 4096) {
+    // clock: speed (CAPA-0001 margin table)
     const auto t0 = Clock::now();
     sink.write(std::span{in}.subspan(i, std::min<std::size_t>(4096, in.size() - i)));
+    // clock: speed
     const auto dt = Clock::now() - t0;
     in_write += dt;
     slow_calls += dt >= disk.sync_time ? 1 : 0;

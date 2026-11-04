@@ -84,6 +84,7 @@ class FakeManager {
 
 TEST(Health, ALoopIsHealthyWhileItBeatsAndGetsItsLimitToStart) {
   // REQ: SRS-PLT-002
+  // clock: data (the monitor is given every time explicitly)
   const auto t0 = Clock::now();
   auto beat = std::make_shared<rt::Heartbeat>();
   rt::HealthMonitor health;
@@ -105,6 +106,7 @@ TEST(Health, ALoopIsHealthyWhileItBeatsAndGetsItsLimitToStart) {
 
 TEST(Health, EveryLoopCountsAndABeatFromBeforeTheWatchDoesNotUseUpTheLimit) {
   // REQ: SRS-PLT-002
+  // clock: data (the monitor is given every time explicitly)
   const auto t0 = Clock::now();
   auto a = std::make_shared<rt::Heartbeat>();
   auto b = std::make_shared<rt::Heartbeat>();

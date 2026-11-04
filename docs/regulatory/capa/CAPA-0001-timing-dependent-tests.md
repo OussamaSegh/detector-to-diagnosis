@@ -132,6 +132,16 @@ this release, on the slowest build and load that runs it:
 | Exercise 12.3, trickle | max_unsynced + one fsync + 100 ms (MDQ-PR-039) | passes 40 runs alone and the stress run | 100 ms of slack, not 50 |
 | Exercise 4.5, clock tests | wide bounds on the conversion, no speed | not a speed test | not applicable |
 | Exercise 31.3, `test_is_much_faster_than_the_python_loop` | 15 times a Python loop, best of five, optimized builds only (MDQ-PR-047) | 29 times at the slowest, with four other processes busy | 94% |
+| Exercise 3.6, `Worker.IdleWorkerStopsPromptly` (added at 0.7.0) | `stop()` under 100 ms | 8.0 ms at the slowest of 50 runs (1) | 12 times |
+| Exercise 6.4, `FrameReader.CostIsLinearInTheBytesReceived` (added at 0.7.0) | 4 times the frames in under 8 times the time plus 50 ms | the limit was at least 2.9 times the time taken, in 20 runs (1) | 194% |
+| Exercise 8.3, `Randoms.LinearTime` (added at 0.7.0) | under 1 s | 36 ms at the slowest of 30 runs (1) | 28 times |
+| Exercise 12.3, `FastSink.KeepsUpWithTheSorterAndLosesNothing`, slow calls (added at 0.7.0) | at most 2 `write()` calls of 20 ms or more | 0 in 20 runs (1) | 2 calls |
+| Exercise 12.4, `test_two_bit_errors_in_a_block` (added at 0.7.0) | under 60 s | 1.55 s at the slowest of 5 runs (1) | 39 times |
+| Exercise 19.5, replay at speed 2 and 0 (added at 0.7.0) | under 0.39 s and under 0.15 s, times `MINIDAQ_TEST_TIME_FACTOR` | 0.200 s and 0.2 ms at the slowest of 10 runs (1) | 95%, and 750 times |
+
+(1) Measured on 2026-11-04 in the `Release` build of the exercises on the book machine (4 CPUs)
+with six busy processes running, by printing the measured time from a temporary copy of the
+test; the debug and sanitizer builds of CI passed the same tests on every run of Part VII.
 
 Item 4.6 of the code review checklist covers a new timing test; the table above is the review
 of the existing ones, which the rule had left out.
@@ -181,6 +191,20 @@ with other tests building in parallel (MDQ-PR-048). It is the defect of MDQ-PR-0
 that test in the exercises, which the search for other instances in 0.4.0 did not cover and the
 stress run does not select. Rule 5.6 is still enforced by review only. The result at 0.7.0 counts
 this failure too.
+
+Further action in the period, ahead of the check at 0.7.0:
+
+- `tests.waits` (`tools/check_test_waits.py`) now enforces rule 5.6 and the margin rule too: a
+  clock read in a test states its kind (`// clock: deadline`, `speed`, `measure`, `data` or
+  `minimum`) and a thread start states why the test does not depend on when the thread runs
+  (`// threads: joined` or `started`). Every test of MiniDAQ, of the reconstruction library, of
+  the analysis package and of the exercises was read and tagged: 57 clock reads and 33 thread
+  starts. A `speed` tag names a row of the table above.
+- Reading every clock read found six speed tests that the table did not list, all in the
+  exercises (Exercises 3.6, 6.4, 8.3, 12.3's slow calls, 12.4 and 19.5). Each was run under load
+  and is now a row of the table, with its margin; none was below 30%.
+- The gate self-test plants an untagged clock read (fault `clocks`) as well as an untagged
+  sleep (fault `waits`).
 
 ## Closure
 

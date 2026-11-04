@@ -166,8 +166,10 @@ class ReferenceSource {
 
 template <class Source>
 double ns_per_single(Source& src, std::vector<ex::Single>& v) {
+  // clock: speed (CAPA-0001 margin table)
   const auto t0 = std::chrono::steady_clock::now();
   src.generate(v);
+  // clock: speed
   const auto t1 = std::chrono::steady_clock::now();
   return std::chrono::duration<double, std::nano>(t1 - t0).count() / static_cast<double>(v.size());
 }

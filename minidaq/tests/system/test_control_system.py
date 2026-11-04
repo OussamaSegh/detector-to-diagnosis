@@ -135,6 +135,7 @@ class ImpostorServer:
         self.port = self.sock.getsockname()[1]
         self.received = b""
         self.handshakes = 0
+        # threads: joined (the socket listens before the thread starts)
         self.thread = threading.Thread(target=self._serve, daemon=True)
 
     def __enter__(self):

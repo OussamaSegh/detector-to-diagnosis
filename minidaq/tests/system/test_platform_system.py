@@ -39,6 +39,7 @@ class Manager:
                 data = self.sock.recv(4096)
             except BlockingIOError:
                 return self.messages
+            # clock: data (when each message came)
             self.messages.append((time.monotonic(), data.decode()))
 
     def texts(self):
@@ -93,6 +94,7 @@ class Platform(SystemTest):
                        "the server to report itself unhealthy")
             unhealthy = [m for m in self.manager.texts() if m.startswith("STATUS=unhealthy")][0]
             self.assertEqual(unhealthy[:len("STATUS=unhealthy: slow control")], "STATUS=unhealthy: slow control")
+            # clock: measure
             since = time.monotonic()
             time.sleep(1.0)  # sleep: hides only (a ping in this second would fail the test)
             self.assertEqual([t for t in self.manager.pings() if t > since], [])

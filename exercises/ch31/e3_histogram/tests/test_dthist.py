@@ -80,8 +80,10 @@ class Histogram(unittest.TestCase):
         def best(f):
             times = []
             for _ in range(5):
+                # clock: speed (CAPA-0001 margin table)
                 t0 = time.perf_counter()
                 out = f()
+                # clock: speed
                 times.append(time.perf_counter() - t0)
             return min(times), out
 

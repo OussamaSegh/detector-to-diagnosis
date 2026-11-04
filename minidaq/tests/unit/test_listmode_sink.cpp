@@ -329,6 +329,7 @@ TEST(ListModeSink, ABlockIsWrittenAtTheLatestAfterTheMaximumDelay) {
   EXPECT_EQ((*s)->stats().blocks, 0U);
   std::this_thread::sleep_for(30ms);  // sleep: minimum (more than max_block_delay)
   (*s)->write({});  // the pipeline's writer calls write() at least every max_batch_delay
+  // clock: deadline
   const auto deadline = std::chrono::steady_clock::now() + 2s;
   while ((*s)->stats().blocks == 0 && std::chrono::steady_clock::now() < deadline) {
     std::this_thread::sleep_for(1ms);  // sleep: poll

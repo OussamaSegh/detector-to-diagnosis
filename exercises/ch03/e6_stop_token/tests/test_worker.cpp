@@ -21,6 +21,7 @@ template <typename F>
 void within(std::chrono::milliseconds limit, F f, const char* what) {
   auto done = std::make_shared<std::promise<void>>();
   auto fut = done->get_future();
+  // threads: joined (waited for through the future)
   std::thread([done, f]() mutable {
     f();
     done->set_value();
@@ -73,8 +74,10 @@ TEST(Worker, IdleWorkerStopsPromptly) {
   within(2'000ms, [] {
     ex::Worker w{[](int) {}};
     std::this_thread::sleep_for(20ms);  // sleep: minimum (lets it block in its wait)
+    // clock: speed (CAPA-0001 margin table)
     const auto t0 = std::chrono::steady_clock::now();
     w.stop();
+    // clock: speed
     const auto dt = std::chrono::steady_clock::now() - t0;
     EXPECT_LT(dt, 100ms);
   }, "IdleWorkerStopsPromptly");

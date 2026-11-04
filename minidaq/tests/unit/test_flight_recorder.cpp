@@ -22,6 +22,7 @@ FlightRecorder& fresh() {
   return r;
 }
 
+// threads: joined
 void in_thread(auto f) { std::thread{f}.join(); }
 
 std::vector<TraceEvent> snapshot(FlightRecorder& r, std::size_t n = FlightRecorder::kCapacity) {
@@ -118,6 +119,7 @@ TEST(FlightRecorder, CountsTheEventsOfThreadsThatFindNoFreeRing) {
   std::latch recorded{static_cast<std::ptrdiff_t>(kThreads)};
   std::vector<std::thread> threads;
   for (std::size_t t = 0; t < kThreads; ++t) {
+    // threads: joined
     threads.emplace_back([&] {
       r.record(TraceCode::note, 1);
       r.record(TraceCode::note, 2);
@@ -141,6 +143,7 @@ TEST(FlightRecorder, ASnapshotTakenWhileThreadsRecordNeverShowsHalfAnEvent) {
   std::latch started(kWriters);
   std::vector<std::thread> writers;
   for (int w = 0; w < kWriters; ++w) {
+    // threads: started (the latch)
     writers.emplace_back([&] {
       r.record(TraceCode::note, 0, ~std::uint64_t{0});
       started.count_down();
