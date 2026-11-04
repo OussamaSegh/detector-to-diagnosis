@@ -1,0 +1,27 @@
+# 2026-11-04T04:17:28Z commit cfb708f fuzz_sorter 600 s on CPU 3 from fuzz/corpus/sorter
+INFO: Seed: 4134457089
+#6	INITED cov: 292 ft: 491 corp: 5/1300b exec/s: 0 rss: 34Mb
+#8	NEW    cov: 292 ft: 494 corp: 6/1560b lim: 260 exec/s: 0 rss: 35Mb L: 260/260 MS: 2 ChangeByte-ShuffleBytes-
+#17	NEW    cov: 293 ft: 568 corp: 11/2733b lim: 260 exec/s: 0 rss: 36Mb L: 229/260 MS: 2 ChangeBit-CopyPart-
+#61	NEW    cov: 296 ft: 712 corp: 31/6923b lim: 260 exec/s: 0 rss: 41Mb L: 254/260 MS: 5 ShuffleBytes-ChangeBit-InsertByte-InsertRepeatedBytes-InsertRepeatedBytes-
+#84	NEW    cov: 299 ft: 795 corp: 38/7994b lim: 260 exec/s: 0 rss: 44Mb L: 85/260 MS: 2 CMP-InsertRepeatedBytes- DE: "\027\000"-
+#188	NEW    cov: 300 ft: 890 corp: 58/11718b lim: 260 exec/s: 0 rss: 56Mb L: 226/260 MS: 2 PersAutoDict-InsertRepeatedBytes- DE: "\027\000"-
+#355	NEW    cov: 302 ft: 986 corp: 80/15475b lim: 260 exec/s: 0 rss: 74Mb L: 49/260 MS: 3 ShuffleBytes-ChangeByte-CopyPart-
+#424	NEW    cov: 304 ft: 1009 corp: 87/16301b lim: 260 exec/s: 0 rss: 81Mb L: 260/260 MS: 5 ChangeBit-ChangeBit-CopyPart-ChangeASCIIInt-ChangeByte-
+#513	NEW    cov: 305 ft: 1038 corp: 98/17Kb lim: 260 exec/s: 0 rss: 91Mb L: 97/260 MS: 5 ChangeByte-EraseBytes-ChangeASCIIInt-CrossOver-InsertByte-
+#514	NEW    cov: 310 ft: 1081 corp: 99/17Kb lim: 260 exec/s: 0 rss: 91Mb L: 17/260 MS: 1 CrossOver-
+#657	NEW    cov: 311 ft: 1104 corp: 108/19Kb lim: 260 exec/s: 0 rss: 106Mb L: 241/260 MS: 5 PersAutoDict-EraseBytes-ShuffleBytes-CopyPart-InsertByte- DE: "\001\024"-
+#716	NEW    cov: 313 ft: 1120 corp: 114/20Kb lim: 260 exec/s: 0 rss: 106Mb L: 260/260 MS: 4 ChangeBit-ChangeASCIIInt-ChangeBit-CrossOver-
+#724	NEW    cov: 314 ft: 1125 corp: 117/20Kb lim: 260 exec/s: 0 rss: 106Mb L: 130/260 MS: 1 CopyPart-
+#1549	NEW    cov: 320 ft: 1250 corp: 157/25Kb lim: 260 exec/s: 0 rss: 109Mb L: 40/260 MS: 1 PersAutoDict- DE: "\377\377"-
+#1890	NEW    cov: 321 ft: 1265 corp: 166/26Kb lim: 260 exec/s: 0 rss: 109Mb L: 2/260 MS: 5 CMP-EraseBytes-CMP-CopyPart-CrossOver- DE: "\230>\000\000\360P\000\000"-"\001\000\000\000\000\000\000\035"-
+#4397	NEW    cov: 322 ft: 1328 corp: 189/28Kb lim: 260 exec/s: 0 rss: 110Mb L: 256/260 MS: 5 ChangeBit-InsertByte-CrossOver-ChangeBit-CopyPart-
+#8879	NEW    cov: 323 ft: 1348 corp: 206/29Kb lim: 260 exec/s: 8879 rss: 112Mb L: 154/260 MS: 1 InsertRepeatedBytes-
+#9774	NEW    cov: 324 ft: 1353 corp: 211/29Kb lim: 260 exec/s: 4887 rss: 112Mb L: 121/260 MS: 5 EraseBytes-ShuffleBytes-ChangeBit-ChangeBinInt-CrossOver-
+#2688496	DONE   cov: 324 ft: 1606 corp: 359/82Kb lim: 4096 exec/s: 4473 rss: 133Mb
+stat::number_of_executed_units: 2688496
+stat::average_exec_per_sec:     4473
+stat::new_units_added:          2566
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              133
+crash files: 0

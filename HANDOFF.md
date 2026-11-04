@@ -396,6 +396,10 @@ Part VII (thread started 2026-11-03).
 - Release checks 0.7.0 part 1 on 1572784 FAILED: MDQ-PR-052 (Ex 10.4 absolute 30 M rate, now
   only with EX_MIN_SINGLES_PER_S) and MDQ-PR-053 (starters need -G Ninja for Ex 32.3). CAPA-0001
   0.7.0 result written (not effective; 047, 048, 052). Part 1 restarted on the fix commit.
+- Release checks 0.7.0: all four parts PASSED on cfb708f (measurements/release-0.7.0, gate
+  passed outright). Release record docs/regulatory/releases/0.7.0.md, VERSION 0.7.0. ch32 tagged
+  at 8092b58. Owed to 0.8.0: make fuzz_calibration faster (20 exec/s: each input writes a whole
+  table); CAPA-0001 check at 0.8.0.
 - Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness result (two failures in
   the period: MDQ-PR-047, MDQ-PR-048; not effective; write the result and the next
   criterion); release 0.7.0; message the coordinator for the Opus Part VII review.

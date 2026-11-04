@@ -1,0 +1,17 @@
+# 2026-11-04T03:57:25Z commit cfb708f fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 4045980118
+#5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+#7	NEW    cov: 83 ft: 191 corp: 5/2293b lim: 1601 exec/s: 0 rss: 33Mb L: 25/1601 MS: 2 ChangeBit-ChangeBinInt-
+#10	NEW    cov: 85 ft: 206 corp: 7/3199b lim: 1601 exec/s: 0 rss: 33Mb L: 880/1601 MS: 1 EraseBytes-
+#15	NEW    cov: 86 ft: 229 corp: 10/3611b lim: 1601 exec/s: 0 rss: 33Mb L: 307/1601 MS: 2 ChangeASCIIInt-EraseBytes-
+#53	NEW    cov: 87 ft: 318 corp: 26/11542b lim: 1601 exec/s: 0 rss: 35Mb L: 1050/1601 MS: 2 InsertRepeatedBytes-InsertRepeatedBytes-
+#367	NEW    cov: 88 ft: 399 corp: 52/25Kb lim: 1601 exec/s: 0 rss: 38Mb L: 28/1601 MS: 4 CopyPart-PersAutoDict-CrossOver-EraseBytes- DE: "\204Q\000\000"-
+#497	NEW    cov: 89 ft: 411 corp: 58/29Kb lim: 1601 exec/s: 0 rss: 38Mb L: 15/1601 MS: 1 EraseBytes-
+#1211	NEW    cov: 101 ft: 435 corp: 66/33Kb lim: 1601 exec/s: 0 rss: 42Mb L: 1/1601 MS: 3 ShuffleBytes-ChangeASCIIInt-CrossOver-
+#14748163	DONE   cov: 101 ft: 459 corp: 85/29Kb lim: 4096 exec/s: 24539 rss: 458Mb
+stat::number_of_executed_units: 14748163
+stat::average_exec_per_sec:     24539
+stat::new_units_added:          735
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              458
+crash files: 0

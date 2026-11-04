@@ -1,0 +1,23 @@
+# 2026-11-04T03:17:32Z commit cfb708f hardened bm_pipeline, 5 repetitions (SRS-PERF-020)
+4
+2026-11-04T03:17:32+00:00
+Running build/hardened/benchmarks/bm_pipeline
+Run on (4 X 2100 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x4)
+  L1 Instruction 32 KiB (x4)
+  L2 Unified 2048 KiB (x4)
+  L3 Unified 266240 KiB (x1)
+Load Average: 4.35, 8.02, 13.91
+-----------------------------------------------------------------------------------------------
+Benchmark                                     Time             CPU   Iterations UserCounters...
+-----------------------------------------------------------------------------------------------
+BM_Pipeline/4096/64/real_time               239 ms         7.22 ms            3 items_per_second=35.1297M/s
+BM_Pipeline/4096/64/real_time               237 ms         7.26 ms            3 items_per_second=35.4337M/s
+BM_Pipeline/4096/64/real_time               214 ms         6.86 ms            3 items_per_second=39.1286M/s
+BM_Pipeline/4096/64/real_time               222 ms         7.42 ms            3 items_per_second=37.8216M/s
+BM_Pipeline/4096/64/real_time               224 ms         7.24 ms            3 items_per_second=37.4753M/s
+BM_Pipeline/4096/64/real_time_mean          227 ms         7.20 ms            5 items_per_second=36.9978M/s
+BM_Pipeline/4096/64/real_time_median        224 ms         7.24 ms            5 items_per_second=37.4753M/s
+BM_Pipeline/4096/64/real_time_stddev       10.4 ms        0.206 ms            5 items_per_second=1.68693M/s
+BM_Pipeline/4096/64/real_time_cv           4.57 %          2.86 %             5 items_per_second=4.56%

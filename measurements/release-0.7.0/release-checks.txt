@@ -1,0 +1,29 @@
+## part 1
+pass  build and tests, six presets
+pass  static analysis
+pass  starters fail
+all release checks passed (part 1)
+## part 2
+pass  stress run, tsan, 100 repetitions
+pass  property-based tests, wide search
+pass  coverage report
+pass  Exercise 18.3, solution passes and starter fails
+pass  pipeline benchmark ran
+pass  writer benchmark ran
+all release checks passed (part 2)
+## part 3
+pass  performance regression gate
+pass  system test report
+pass  soak, 30 minutes at 1 M singles/s
+all release checks passed (part 3)
+## part 4
+pass  fuzz build
+pass  fuzz_config, 600 s
+pass  fuzz_decoder, 600 s
+pass  fuzz_raw16, 600 s
+pass  fuzz_protocol, 600 s
+pass  fuzz_packet, 600 s
+pass  fuzz_sorter, 600 s
+pass  fuzz_listmode, 600 s
+pass  fuzz_calibration, 600 s
+all release checks passed (part 4)

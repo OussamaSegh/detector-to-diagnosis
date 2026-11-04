@@ -16,15 +16,15 @@ version of this file is printed on the title page and in every output file name.
 | IV. Testing, verification and quality | 18 to 21 | 0.4.0 | complete |
 | V. Hardware, embedded Linux and networking | 22 to 25 | 0.5.0 | complete |
 | VI. Calibration, corrections and reconstruction | 26 to 30 | 0.6.0 | complete |
-| VII. Python and tooling | 31 to 32 | 0.7.0 | planned |
+| VII. Python and tooling | 31 to 32 | 0.7.0 | complete |
 | VIII. Capstone | 33 to 34 | 0.8.0 | planned |
 | IX. Imaging IT, team workflow and AI-assisted coding | 35 to 37 | 1.0.0 | planned |
 
 The companion repository (`minidaq-vX.Y.Z.zip`) contains MiniDAQ with one git tag per
 chapter written so far (`ch00` is the empty starting point, then `ch01`, `ch02` and so on),
-and every exercise starter and solution; the Python analysis package and the complete
-regulatory file arrive with the later Parts. Every code listing in this book is included from
-that repository at build time, so every listing is compiled and tested.
+every exercise starter and solution, and, since Part VII, the Python analysis package; the
+complete regulatory file arrives with the later Parts. Every code listing in this book is
+included from that repository at build time, so every listing is compiled and tested.
 
 Hardware numbers in this book are typical values for a brain PET scanner and are marked
 *assumption: confirm with team*. The copyright page says what the book is not a substitute

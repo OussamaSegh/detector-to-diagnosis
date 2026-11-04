@@ -8,6 +8,13 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-04
+
+Part VII, Python and tooling (Chapters 31 and 32), complete. The release record is
+`docs/regulatory/releases/0.7.0.md`, with the evidence of `tools/release_checks.sh` in
+`measurements/release-0.7.0/`. CAPA-0001 was not effective again (MDQ-PR-047, MDQ-PR-048,
+MDQ-PR-052); its new mechanical check is judged at 0.8.0.
+
 ### Added
 - Fuzz target `fuzz_calibration` for `config::parse_calibration`, owed by the release record of
   0.6.0: raw text, and edits of a valid table written as the procedure writes it, with the

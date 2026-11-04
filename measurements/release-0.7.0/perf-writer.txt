@@ -1,0 +1,4 @@
+# 2026-11-04T03:17:36Z commit cfb708f hardened writer_throughput, fsync=close, 200 M coincidences, 3 runs (SRS-PERF-021)
+writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 16.654 s (close 0.976 s): 12.01 M/s, 192 MB/s; files 3, waits 42073 (8971 ms), fsyncs 4, max fsync 1179.0 ms, max block write 14.07 ms
+writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 12.904 s (close 1.349 s): 15.50 M/s, 248 MB/s; files 3, waits 18127 (4466 ms), fsyncs 4, max fsync 1331.2 ms, max block write 4.84 ms
+writer fsync=close every=256 records=4096 buffers=64 file_mb=1024: 200003584 coincidences, 3201.6 MB in 12.683 s (close 0.899 s): 15.77 M/s, 252 MB/s; files 3, waits 17713 (4655 ms), fsyncs 4, max fsync 954.8 ms, max block write 6.98 ms

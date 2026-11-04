@@ -1,0 +1,9 @@
+# 2026-11-04 GitHub Actions run of cfb708f (the checked commit), read with gh
+workflow: ci (.github/workflows/ci.yml), run 150, attempt 1, event push, branch main
+run id: 41757302721
+url: https://github.com/OussamaSegh/detector-to-diagnosis/actions/runs/41757302721
+head_sha: cfb708fb44b22b8e9648f2ad211600c96ae55490
+started: 2026-11-04T01:55:19Z, updated 2026-11-04T02:12:45Z
+conclusion: success
+jobs: fuzz-smoke success, python success, document-control success, sbom success, build-test (clang-release) success, static-analysis success, format success, build-test (asan-ubsan) success, build-test (debug) success, build-test (hardened) success, build-test (tsan) success, build-test (gcc-cxx23) success, reproducible-build success, release-package skipped, vulnerability-scan success
+other workflows on the same commit: gates run 41757302667 success, codeql run 41757302534 success, kdp run 41757302535 success, pages run 41757302573 success

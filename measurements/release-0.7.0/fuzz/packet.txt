@@ -1,0 +1,28 @@
+# 2026-11-04T04:17:28Z commit cfb708f fuzz_packet 600 s on CPU 2 from fuzz/corpus/packet
+INFO: Seed: 4133181523
+#7	INITED cov: 100 ft: 213 corp: 6/1607b exec/s: 0 rss: 33Mb
+#8	NEW    cov: 100 ft: 215 corp: 7/1763b lim: 637 exec/s: 0 rss: 33Mb L: 156/637 MS: 1 CopyPart-
+#9	NEW    cov: 101 ft: 222 corp: 8/2400b lim: 637 exec/s: 0 rss: 34Mb L: 637/637 MS: 1 CopyPart-
+#10	NEW    cov: 104 ft: 226 corp: 9/2556b lim: 637 exec/s: 0 rss: 34Mb L: 156/637 MS: 1 ChangeBinInt-
+#11	NEW    cov: 105 ft: 241 corp: 10/2967b lim: 637 exec/s: 0 rss: 34Mb L: 411/637 MS: 1 CopyPart-
+#12	NEW    cov: 106 ft: 243 corp: 11/3379b lim: 637 exec/s: 0 rss: 34Mb L: 412/637 MS: 1 InsertByte-
+#13	NEW    cov: 107 ft: 245 corp: 12/4016b lim: 637 exec/s: 0 rss: 34Mb L: 637/637 MS: 1 ShuffleBytes-
+#16	NEW    cov: 108 ft: 277 corp: 14/4276b lim: 637 exec/s: 0 rss: 34Mb L: 104/637 MS: 2 ChangeBit-CMP- DE: "\000\000P0\000\000\\\360"-
+#21	NEW    cov: 110 ft: 322 corp: 16/4614b lim: 637 exec/s: 0 rss: 35Mb L: 173/637 MS: 1 CrossOver-
+#46	NEW    cov: 111 ft: 382 corp: 26/7239b lim: 637 exec/s: 0 rss: 37Mb L: 207/637 MS: 3 CMP-CopyPart-ChangeBinInt- DE: "\377\377\377\006"-
+#90	NEW    cov: 112 ft: 394 corp: 31/8204b lim: 637 exec/s: 0 rss: 41Mb L: 173/637 MS: 1 ChangeBit-
+#240	NEW    cov: 113 ft: 425 corp: 45/12525b lim: 637 exec/s: 0 rss: 53Mb L: 165/637 MS: 2 ChangeBinInt-PersAutoDict- DE: "\377\377\377\006"-
+#384	NEW    cov: 114 ft: 427 corp: 47/12669b lim: 637 exec/s: 0 rss: 64Mb L: 190/637 MS: 2 PersAutoDict-CopyPart- DE: "\377\377\377\001"-
+#608	NEW    cov: 115 ft: 432 corp: 52/14422b lim: 637 exec/s: 0 rss: 82Mb L: 164/637 MS: 2 CopyPart-CMP- DE: "\377\377\377\377\377\377\377\017"-
+#790	NEW    cov: 116 ft: 448 corp: 54/14772b lim: 637 exec/s: 0 rss: 97Mb L: 419/637 MS: 1 ShuffleBytes-
+#1934	NEW    cov: 117 ft: 468 corp: 70/22Kb lim: 637 exec/s: 0 rss: 188Mb L: 489/637 MS: 2 ChangeBinInt-CrossOver-
+#7063	NEW    cov: 118 ft: 499 corp: 92/29Kb lim: 637 exec/s: 0 rss: 351Mb L: 1/637 MS: 2 PersAutoDict-CrossOver- DE: "\373\377\377\377"-
+#9229	NEW    cov: 120 ft: 505 corp: 94/29Kb lim: 637 exec/s: 0 rss: 352Mb L: 637/637 MS: 2 ShuffleBytes-ChangeBit-
+#29185	NEW    cov: 123 ft: 534 corp: 112/33Kb lim: 637 exec/s: 0 rss: 354Mb L: 637/637 MS: 1 ChangeByte-
+#11442599	DONE   cov: 123 ft: 748 corp: 232/146Kb lim: 4096 exec/s: 19039 rss: 374Mb
+stat::number_of_executed_units: 11442599
+stat::average_exec_per_sec:     19039
+stat::new_units_added:          3080
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              374
+crash files: 0
