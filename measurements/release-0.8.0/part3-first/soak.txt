@@ -1,0 +1,6 @@
+soak: 1e+06 singles/s for 30.0 min, 181 samples every 10 s
+machine: vm, 4 CPUs; programs build/release/minidaq/apps
+singles in: 1800037341 (1000021/s); losses 0; fault None; complete True
+resident memory: first 30.2 MiB, last 30.8 MiB, max 30.8 MiB; trend +0.019 MiB/h (standard error 0.033) over 121 samples after 10 min
+end-to-end latency over each interval: p99 max 26.61 ms, max 36.44 ms
+result: PASS

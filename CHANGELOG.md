@@ -8,6 +8,16 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-04
+
+Part VIII, the capstone (Chapters 33 and 34), complete. The release record is
+`docs/regulatory/releases/0.8.0.md`, with the evidence of `tools/release_checks.sh` and the
+acceptance verdict in `measurements/release-0.8.0/`. Two acceptance criteria failed on the
+reference machine as it ran that day, the performance gate (ACC-08) and the new latency limit
+(ACC-04); the programs of release 0.7.0 failed both the same way on the same machine, so the
+release was made with a deviation that the record states and the author approved. CAPA-0001 had
+no timing failure in the period.
+
 ### Added
 
 - Part VIII begins. Chapter 33, the capstone: the chain end to end. `tools/e2e.py` (TL-40) runs a
@@ -35,11 +45,17 @@ the patch version.
 
 ### Changed
 
-- VERSION is 0.8.0-dev (Part VIII). The SOUP list is version 16, with the known-anomaly review
-  for MiniDAQ 0.8.
+- VERSION is 0.8.0. The SOUP list is version 17, with the known-anomaly reviews for release
+  0.8.0; the requirements baseline is retaken at SRS version 23.
+- CI's build jobs install SciPy and Matplotlib, which the daily QC inside `system.e2e` needs
+  (MDQ-PR-056); `tools/e2e.py` reports a QC run that wrote no report as a failed check.
+- The release checks keep the gate step's build output (MDQ-PR-058).
 
 ### Fixed
 
+- `fuzz_calibration`'s oracle expected a rejection whenever an edit had written a NaN, even after
+  a later edit overwrote it; it now judges the table it ends with (MDQ-PR-057, found in a CI run
+  of the Part VII review that nobody had read).
 - The item map claimed two paths that hold no file (`minidaq/src/metrics/`,
   `minidaq/src/processing/count_rates`, both components header-only); found by the first survey
   and removed (CR-0021).

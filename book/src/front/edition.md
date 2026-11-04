@@ -17,7 +17,7 @@ version of this file is printed on the title page and in every output file name.
 | V. Hardware, embedded Linux and networking | 22 to 25 | 0.5.0 | complete |
 | VI. Calibration, corrections and reconstruction | 26 to 30 | 0.6.0 | complete |
 | VII. Python and tooling | 31 to 32 | 0.7.0 | complete |
-| VIII. Capstone | 33 to 34 | 0.8.0 | planned |
+| VIII. Capstone | 33 to 34 | 0.8.0 | complete |
 | IX. Imaging IT, team workflow and AI-assisted coding | 35 to 37 | 1.0.0 | planned |
 
 The companion repository (`minidaq-vX.Y.Z.zip`) contains MiniDAQ with one git tag per

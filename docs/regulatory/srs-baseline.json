@@ -1,7 +1,7 @@
 {
  "comment": "The requirements freeze (Chapter 33): a digest of every SRS requirement when the baseline was taken. tools/req_baseline.py --check fails for every requirement added, changed or removed since, that no approved or implemented change request names.",
- "name": "SRS version 21, release 0.7.0",
- "srs_version": 21,
+ "name": "SRS version 23, release 0.8.0",
+ "srs_version": 23,
  "requirements": {
   "SRS-CORE-001": "eb26536bfb030254",
   "SRS-FMT-001": "5eeee035cc2f9e6d",
@@ -40,6 +40,7 @@
   "SRS-PERF-010": "0e5fb68259b5c79a",
   "SRS-PERF-020": "4faf6eeaac20b974",
   "SRS-PERF-021": "394349f2120d4a61",
+  "SRS-PERF-022": "6ec1401bbc5f312b",
   "SRS-PROC-001": "19362cdb56877cf3",
   "SRS-SRT-001": "0cb353d82616d9bb",
   "SRS-SRT-002": "e066a30b8571f184",
@@ -82,6 +83,7 @@
   "SRS-SIM-021": "d6773c86f5a66f7b",
   "SRS-SIM-022": "8134566c21fbbb1c",
   "SRS-SIM-023": "1623a54bc88337a9",
+  "SRS-SIM-024": "f0ab40b6d5710bcc",
   "SRS-DTM-001": "e95238e72462dda1",
   "SRS-DTM-002": "5d408e5a7622f751",
   "SRS-DTM-003": "37ed4594e875ad07",
@@ -152,6 +154,9 @@
   "SRS-SYS-003": "040242a46320a623",
   "SRS-SYS-004": "2e15ddd66766c0a0",
   "SRS-SYS-005": "9d56f77f79d560e2",
+  "SRS-SYS-006": "594f42c2a39e4436",
+  "SRS-SYS-007": "af4d46d09cd5490a",
+  "SRS-SYS-008": "c39d27bcfb265fa2",
   "SRS-DIAG-001": "baf767d50b61a296",
   "SRS-DIAG-002": "d944f5b18b96bc01",
   "SRS-DIAG-003": "7556dab22c238798",
@@ -213,6 +218,9 @@
   "SRS-BLD-002": "29629d9b27ba6d59",
   "SRS-BLD-003": "c8f43e1a444cd751",
   "SRS-BLD-004": "3b3e6e2a8d8826da",
-  "SRS-BLD-005": "d0238ec2dcdb020d"
+  "SRS-BLD-005": "d0238ec2dcdb020d",
+  "SRS-SVY-001": "5b2751570b4a5e00",
+  "SRS-SVY-002": "b0941dd14b5b4256",
+  "SRS-SVY-003": "c9347dfb8557fea9"
  }
 }

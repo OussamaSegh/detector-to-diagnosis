@@ -1,0 +1,53 @@
+Interleaved perf suites on the reference machine, 2026-11-04, after the gate against benchmarks/baseline/book-vm.json failed:
+0.7.0 = 3f7d720 (release 0.7.0), 0.8.0 = d262ff0 (release candidate); order 0.7.0, 0.8.0, 0.7.0, 0.8.0; tools/perf_suite.sh ... 2
+
+== 0.7.0-1 against book-vm.json
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           0.939   0.0010  REGRESSION 
+BM_EnergyFilter/1/50/0/4096                                     0.910   0.0005  REGRESSION 
+BM_EnergyFilter/3/50/0/4096                                     0.890   0.0000  REGRESSION 
+BM_HistogramRecord                                              0.917   0.0000  REGRESSION 
+BM_Pipeline/4096/64/real_time                                   0.899   0.0000  REGRESSION 
+BM_SortFunctor/4096/0                                           0.879   0.0000  REGRESSION 
+== 0.7.0-2 against book-vm.json
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           0.945   0.0026  REGRESSION 
+BM_EnergyFilter/1/50/0/4096                                     0.901   0.0004  REGRESSION 
+BM_EnergyFilter/3/50/0/4096                                     0.858   0.0000  REGRESSION 
+BM_HistogramRecord                                              0.935   0.0001  REGRESSION 
+BM_Pipeline/4096/64/real_time                                   0.881   0.0000  REGRESSION 
+BM_SortFunctor/4096/0                                           0.889   0.0000  REGRESSION 
+== 0.8.0-1 against book-vm.json
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           0.940   0.0010  REGRESSION 
+BM_EnergyFilter/1/50/0/4096                                     0.882   0.0001  REGRESSION 
+BM_EnergyFilter/3/50/0/4096                                     0.890   0.0005  REGRESSION 
+BM_HistogramRecord                                              0.949   0.0004  REGRESSION 
+BM_Pipeline/4096/64/real_time                                   0.908   0.0000  REGRESSION 
+BM_SortFunctor/4096/0                                           0.876   0.0000  REGRESSION 
+== 0.8.0-2 against book-vm.json
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           0.953   0.0034  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.886   0.0001  REGRESSION 
+BM_EnergyFilter/3/50/0/4096                                     0.897   0.0000  REGRESSION 
+BM_HistogramRecord                                              0.913   0.0000  REGRESSION 
+BM_Pipeline/4096/64/real_time                                   0.910   0.0000  REGRESSION 
+BM_SortFunctor/4096/0                                           0.919   0.0000  REGRESSION 
+== round 1: 0.8.0 against 0.7.0 (--strict)
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           1.001   0.5733  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.970   0.0073  ok 
+BM_EnergyFilter/3/50/0/4096                                     1.000   0.5733  ok 
+BM_HistogramRecord                                              1.035   0.9624  ok 
+BM_Pipeline/4096/64/real_time                                   1.010   0.7821  ok 
+BM_SortFunctor/4096/0                                           0.997   0.6303  ok 
+exit 0
+== round 2: 0.8.0 against 0.7.0 (--strict)
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           1.008   0.5733  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.984   0.2644  ok 
+BM_EnergyFilter/3/50/0/4096                                     1.045   0.9738  ok 
+BM_HistogramRecord                                              0.977   0.3153  ok 
+BM_Pipeline/4096/64/real_time                                   1.033   0.8763  ok 
+BM_SortFunctor/4096/0                                           1.034   0.9474  ok 
+exit 0

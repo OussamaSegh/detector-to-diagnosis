@@ -1,0 +1,26 @@
+# 2026-11-04T11:10:37Z commit d262ff0 fuzz_sorter 600 s on CPU 3 from fuzz/corpus/sorter
+INFO: Seed: 2960862892
+#6	INITED cov: 292 ft: 491 corp: 5/1300b exec/s: 0 rss: 34Mb
+#7	NEW    cov: 292 ft: 504 corp: 6/1560b lim: 260 exec/s: 0 rss: 34Mb L: 260/260 MS: 1 CrossOver-
+#52	NEW    cov: 293 ft: 646 corp: 26/6565b lim: 260 exec/s: 0 rss: 40Mb L: 260/260 MS: 1 PersAutoDict- DE: "\010\000\000\000\000\000\000\000"-
+#65	NEW    cov: 294 ft: 657 corp: 31/7793b lim: 260 exec/s: 0 rss: 41Mb L: 260/260 MS: 5 ChangeBit-ChangeByte-CMP-ShuffleBytes-ChangeByte- DE: "\000\000"-
+#113	NEW    cov: 297 ft: 772 corp: 41/9084b lim: 260 exec/s: 0 rss: 47Mb L: 165/260 MS: 2 ChangeBinInt-InsertRepeatedBytes-
+#308	NEW    cov: 300 ft: 921 corp: 72/14644b lim: 260 exec/s: 0 rss: 68Mb L: 188/260 MS: 3 CopyPart-CrossOver-InsertRepeatedBytes-
+#505	NEW    cov: 301 ft: 980 corp: 84/16Kb lim: 260 exec/s: 0 rss: 89Mb L: 260/260 MS: 3 ChangeBinInt-ShuffleBytes-CrossOver-
+#554	NEW    cov: 302 ft: 994 corp: 92/17Kb lim: 260 exec/s: 0 rss: 94Mb L: 260/260 MS: 4 ChangeBinInt-ShuffleBytes-ChangeASCIIInt-ChangeBinInt-
+#606	NEW    cov: 315 ft: 1050 corp: 97/17Kb lim: 260 exec/s: 0 rss: 100Mb L: 7/260 MS: 3 ChangeBit-ChangeByte-CrossOver-
+#1567	NEW    cov: 316 ft: 1241 corp: 152/24Kb lim: 260 exec/s: 0 rss: 108Mb L: 185/260 MS: 4 ChangeBinInt-CrossOver-PersAutoDict-EraseBytes- DE: "\010\000\000\000\000\000\000\000"-
+#1694	NEW    cov: 317 ft: 1252 corp: 156/24Kb lim: 260 exec/s: 0 rss: 108Mb L: 21/260 MS: 2 ShuffleBytes-EraseBytes-
+#1909	NEW    cov: 318 ft: 1258 corp: 162/24Kb lim: 260 exec/s: 0 rss: 108Mb L: 3/260 MS: 1 CrossOver-
+#3304	NEW    cov: 320 ft: 1288 corp: 181/26Kb lim: 260 exec/s: 0 rss: 109Mb L: 121/260 MS: 1 CrossOver-
+#4440	NEW    cov: 321 ft: 1299 corp: 188/26Kb lim: 260 exec/s: 0 rss: 109Mb L: 246/260 MS: 3 CrossOver-ChangeASCIIInt-ChangeByte-
+#5084	NEW    cov: 322 ft: 1305 corp: 194/27Kb lim: 260 exec/s: 5084 rss: 111Mb L: 217/260 MS: 5 CopyPart-InsertByte-CrossOver-PersAutoDict-PersAutoDict- DE: "\001\014"-"\377\377\377\024"-
+#6599	NEW    cov: 323 ft: 1315 corp: 202/28Kb lim: 260 exec/s: 6599 rss: 111Mb L: 249/260 MS: 1 InsertRepeatedBytes-
+#32561	NEW    cov: 324 ft: 1377 corp: 248/30Kb lim: 260 exec/s: 5426 rss: 113Mb L: 256/260 MS: 1 InsertByte-
+#2612340	DONE   cov: 324 ft: 1600 corp: 380/79Kb lim: 4096 exec/s: 4346 rss: 140Mb
+stat::number_of_executed_units: 2612340
+stat::average_exec_per_sec:     4346
+stat::new_units_added:          2789
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              140
+crash files: 0

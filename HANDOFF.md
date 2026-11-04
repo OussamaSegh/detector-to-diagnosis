@@ -5,8 +5,9 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-04: Part VIII in progress. Chapters 33 and 34 written; next: tags ch33 and
-ch34 after green CI, the items owed to 0.8.0, then release 0.8.0.
+Last updated: 2026-11-04: Part VIII complete; release 0.8.0 recorded (checks on d262ff0, with an
+approved deviation for ACC-04 and ACC-08, see the release record). Next: tag book-v0.8.0 after
+green CI on the release commit, package, then the Opus review of Part VIII and Part IX.
 
 ## Start here (next thread, Part VIII)
 
@@ -368,11 +369,16 @@ Part VIII (thread started 2026-11-04).
   CR-0021 (also removed two dead prefixes from software-items.json), ADR 0029, threat model v9,
   `measurements/ch34/`, Exercises 34.1 to 34.3 (34.3 is a mutation exercise, 7 mutants),
   `book/src/part8/ch34-first-90-days.md`, `book/solutions/ch34.md`.
-- At release 0.8.0: run `tools/acceptance.py OUT` after part 4 and keep the report as item 7 of
-  the release record (SDP v12 section 8); retake the baseline with
-  `tools/req_baseline.py . --write "SRS version 22, release 0.8.0"` after reviewing
-  `--diff`. Any later SRS change needs an approved CR naming the requirement, or docs.baseline
-  fails.
+- Release 0.8.0 (2026-11-04): checks in four parts on d262ff0 (`measurements/release-0.8.0/`);
+  part 3 failed twice, the perf gate (every benchmark ~0.9 of `book-vm.json`) and ACC-04 (soak
+  p99 up to 55.6 ms > 10 ms). The 0.7.0 programs on the same machine failed both the same way
+  (interleaved perf equal; 0.7.0 soak p99 206.6 ms): the user approved releasing with a recorded
+  deviation. If the next release's part 3 fails the same way, a CR for the gate's baseline and
+  the latency margin is due. CAPA-0001 closed as effective. New reports: MDQ-PR-056 (CI lacked
+  SciPy for `system.e2e`), 057 (`fuzz_calibration` oracle, found in an UNREAD CI run of the
+  Part VII review: read a review branch's runs before merging), 058 (gate step hid its build
+  output). SOUP v17; baseline retaken at SRS v23. Any later SRS change needs an approved CR
+  naming the requirement, or docs.baseline fails.
 - Lessons: a fresh clone is shallow; run `git fetch --unshallow` or docs.changes fails;
   problem-reports.json and tools.json are hand formatted (append, never json.dump the file); the
   pre-commit hook needs `git clang-format --staged -- '*.cpp' '*.hpp'` for touched C++ lines.
@@ -673,8 +679,8 @@ Chapter 30 (image quality), 2026-11-03:
 4. **Part VII** (31 and 32): released as 0.7.0 on 2026-11-04 (checks on cfb708f, tag
    book-v0.7.0 on 3f7d720, report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw). VERSION is
    0.8.0-dev with the SOUP review for 0.8 (SOUP list v16). Part VII review: PR #5 merged locally on 2026-11-04 (5f5611c).
-5. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
-   (the first 90 days: questions to ask, a ramp-up plan) to full depth. Release 0.8.0.
+5. **Part VIII** (33 and 34): written 2026-11-04 and recorded as release 0.8.0 (checks on
+   d262ff0, deviation for ACC-04 and ACC-08 approved by the user).
 6. **Part IX** (new, numbered after 34), three full chapters:
    - DICOM and PACS integration;
    - Git and team workflow in a regulated team;

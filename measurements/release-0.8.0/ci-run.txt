@@ -1,0 +1,10 @@
+# 2026-11-04 GitHub Actions runs, read with gh
+candidate d262ff01c3766cf0e57582c00d1635858bf7d32e:
+  ci run 164 (41798219427): failure; the six build-test jobs failed only system.e2e, whose daily
+    QC could not import SciPy on the runners (MDQ-PR-056); every other job passed
+  gates run 81 (41798219296): success; codeql run 126 (41798219352): success; pages run 115: success
+first green commit after it, 3eb11d24b4721fd1400a1a1bf6fa7701b6531a46 (ci.yml installs SciPy and
+Matplotlib; tools/e2e.py reports a QC run without a report as a failed check; no product change):
+  ci run 165 (41808634030): success; gates (41808634034): success; codeql (41808634026): success;
+  pages (41808634025): success
+every later commit before the release commit (570f024, 57b4a40, 6b59137, 9d55b98): ci success

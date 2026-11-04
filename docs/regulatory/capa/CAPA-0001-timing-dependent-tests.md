@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
 | Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045; at 0.7.0, MDQ-PR-047, MDQ-PR-048 and MDQ-PR-052 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; release 0.6.0: not effective; release 0.7.0: not effective; again at release 0.8.0 |
+| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; release 0.6.0: not effective; release 0.7.0: not effective; release 0.8.0: effective |
 
 ## Problem
 
@@ -231,7 +231,24 @@ run between this result and the release of 0.8.0; every test added in Part VIII 
 criterion holds, the CAPA is closed as effective at 0.8.0; if a test fails for a timing reason
 that `tests.waits` accepted, the cause is analyzed again from the start.
 
+Result: **effective** (2026-11-04, release checks of 0.8.0). Every failed run of the period was
+read job by job: no test failed for a timing reason in CI, in the release checks or in the stress
+run (95 concurrent tests, 100 repetitions each under ThreadSanitizer on a loaded machine,
+`measurements/release-0.8.0/stress-tsan.txt`). The failures of the period had other causes: CI's
+build jobs lacked SciPy for the daily QC inside `system.e2e` (MDQ-PR-056), a fuzz target's
+oracle was wrong (MDQ-PR-057), `docs.version` failed on the commit that recorded the tag of
+0.7.0 before VERSION moved on, and the document gate of `gates` failed once on a design file
+that did not yet index the requirements baseline. Part VIII added no speed test, and every
+test it added passes `tests.waits`. The performance regression gate and the latency limit of
+SRS-PERF-022 failed in part 3 of the release checks because the reference machine was slower and
+noisier that day (the programs of release 0.7.0 failed both the same way on it); they are
+measurements of the machine's speed by design, not tests that this CAPA covers, and the release
+record treats them as a deviation.
+
 ## Closure
 
-Not closed: the action was not effective at releases 0.4.0, 0.5.0, 0.6.0 and 0.7.0; the next
-check is at release 0.8.0.
+Closed on 2026-11-04 by the software lead at release 0.8.0: the criterion is met over the first
+period after the mechanical check. The guards stay in force (`tests.waits` with its tags for
+clock reads, thread starts and sleeps, the margin table, the gate self-test's faults `waits` and
+`clocks`); a test that fails for a timing reason opens a new problem report and, if its cause is
+this one, a new CAPA.

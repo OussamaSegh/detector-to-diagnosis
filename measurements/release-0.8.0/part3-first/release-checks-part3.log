@@ -1,0 +1,5 @@
+FAIL  performance regression gate
+pass  system test report
+pass  soak, 30 minutes at 1 M singles/s
+pass  end to end: the reference's records, every count balanced, QC, image
+1 release checks failed (part 3)
