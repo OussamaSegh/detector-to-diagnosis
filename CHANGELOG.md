@@ -8,6 +8,11 @@ the patch version.
 
 ## [Unreleased]
 
+### Changed
+
+- VERSION is 0.9.0-dev (Part IX); the Python packages are 0.9.0.dev0. The SOUP list is version 18,
+  with the known-anomaly review for MiniDAQ 0.9.
+
 ## [0.8.0] - 2026-11-04
 
 Part VIII, the capstone (Chapters 33 and 34), complete. The release record is

@@ -5,39 +5,38 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-04: Part VIII complete; release 0.8.0 recorded (checks on d262ff0, with an
-approved deviation for ACC-04 and ACC-08, see the release record). Next: tag book-v0.8.0 after
-green CI on the release commit, package, then the Opus review of Part VIII and Part IX.
+Last updated: 2026-11-04: RELEASED 0.8.0 (tag book-v0.8.0 on 5770582); VERSION 0.9.0-dev. Next:
+the Opus review of Part VIII (PR to merge locally), then Part IX.
 
-## Start here (next thread, Part VIII)
+## Start here (next thread, Part IX)
 
-State on 2026-11-04: Parts I to VII are released (0.1.0 to 0.7.0, tag book-v0.7.0 on 3f7d720;
-report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw; files in the project folder
-`neurolf-book/v0.7.0/`). VERSION is 0.8.0-dev and SOUP list v16 has the review for 0.8. Tags ch00
-to ch32 and book-v0.1.0 to book-v0.7.0 are on GitHub; fetch them with
-`git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part VII was asked of
-the coordinator on 2026-11-04: review its PR critically and merge it LOCALLY with the noreply
-identity (never on GitHub: GitHub merges put the account's email in the author).
+State on 2026-11-04: Parts I to VIII are released (0.1.0 to 0.8.0, tag book-v0.8.0 on 5770582;
+release report and files kept outside the repository). VERSION is 0.9.0-dev and SOUP list v18 has the review for 0.9. Tags ch00
+to ch34 and book-v0.1.0 to book-v0.8.0 are on GitHub; fetch them with
+`git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part VIII was asked of
+the coordinator on 2026-11-04: read ALL of its branch's CI runs first (MDQ-PR-057 hid in an unread
+run), review its PR critically and merge it LOCALLY with the noreply identity (never on GitHub:
+GitHub merges put the account's email in the author).
 
 Next work, in order:
 
-1. Part VIII, Chapters 33 and 34 (section 5, "Left to do", item 5): the capstone MiniDAQ 1.0
-   and day-one readiness, with Chapter 34 (the first 90 days) in full depth. Same chapter recipe:
-   code, tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
-   passes), SRS rows, risk and threat model review, CR, ADR, chapter text, solutions, CHANGELOG,
-   then tag chNN through `.github/tags.txt` once CI is green.
-2. Owed to release 0.8.0: make `fuzz_calibration` faster (20 exec/s, each input writes a whole
-   table); CAPA-0001's check at 0.8.0 (new criterion: every speed test tagged `// clock:` and in
-   the margin table; no timing failure in CI, the release checks or the stress run); the SOUP
-   review and lock file audit at release; the threat model review of every new file or data flow.
-3. Release 0.8.0 as in section 4; then message the coordinator for the Part VIII review on an
-   Opus model.
+1. Merge the Part VIII review PR when it comes (see above).
+2. Part IX (section 5, "Left to do", item 6): three new chapters after 34 (DICOM and PACS; Git and
+   team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
+   tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
+   passes), SRS rows (each SRS change needs an approved CR naming the requirement, or
+   docs.baseline fails), risk and threat model review, CR, ADR, chapter text, solutions,
+   CHANGELOG, then tag chNN through `.github/tags.txt` once CI is green. Ask the user before any
+   new dependency (a DICOM library would be one).
+3. The architecture appendix (item 7), then release 0.9.0 as in section 4 and message the
+   coordinator for the review. If part 3 fails the gate and ACC-04 again the way 0.8.0 did, a CR
+   for the gate's baseline and the latency margin is due (see the 0.8.0 status bullet).
 
-Rules that bit in Part VII: run the WHOLE ctest (exercises too) before every commit; test build
-changes in a FRESH build directory; a test must not fix a value that the release changes (VERSION
-bump broke `cmake.consumer`, MDQ-PR-054); the release checks build starters with Ninja. Never
-build or test while part 2's benchmarks or part 3 (gate, soak) run. The book threads run on an
-Opus model, never Fable.
+Rules that bit in Parts VII and VIII: run the WHOLE ctest (exercises too) before every commit;
+after a VERSION bump re-run cmake in the build directory before ctest (cmake.consumer reads
+VERSION at configure time); test build changes in a FRESH build directory; the release checks
+build starters with Ninja. Never build or test while part 2's benchmarks or part 3 (gate, soak)
+run. The book threads run on an Opus model, never Fable.
 
 ## 1. The goal
 
@@ -379,6 +378,9 @@ Part VIII (thread started 2026-11-04).
   Part VII review: read a review branch's runs before merging), 058 (gate step hid its build
   output). SOUP v17; baseline retaken at SRS v23. Any later SRS change needs an approved CR
   naming the requirement, or docs.baseline fails.
+- RELEASED 0.8.0 on 2026-11-04: CI green on 5770582 (ci, gates, codeql, kdp, pages), tag
+  book-v0.8.0 on 5770582; the packaged files and the report are kept outside the repository. VERSION 0.9.0-dev, SOUP list v18 (review for
+  0.9). Opus Part VIII review asked of the coordinator. Next: Part IX (see "Start here").
 - Lessons: a fresh clone is shallow; run `git fetch --unshallow` or docs.changes fails;
   problem-reports.json and tools.json are hand formatted (append, never json.dump the file); the
   pre-commit hook needs `git clang-format --staged -- '*.cpp' '*.hpp'` for touched C++ lines.
@@ -680,7 +682,8 @@ Chapter 30 (image quality), 2026-11-03:
    book-v0.7.0 on 3f7d720, report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw). VERSION is
    0.8.0-dev with the SOUP review for 0.8 (SOUP list v16). Part VII review: PR #5 merged locally on 2026-11-04 (5f5611c).
 5. **Part VIII** (33 and 34): written 2026-11-04 and recorded as release 0.8.0 (checks on
-   d262ff0, deviation for ACC-04 and ACC-08 approved by the user).
+   d262ff0, deviation for ACC-04 and ACC-08 approved by the user); released 2026-11-04, tag
+   book-v0.8.0 on 5770582. VERSION is 0.9.0-dev (SOUP list v18).
 6. **Part IX** (new, numbered after 34), three full chapters:
    - DICOM and PACS integration;
    - Git and team workflow in a regulated team;
