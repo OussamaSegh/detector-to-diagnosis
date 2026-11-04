@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <atomic>
+#include <latch>
 #include <thread>
 #include <vector>
 
@@ -60,11 +61,19 @@ TEST(TinyRecorder, ASmallSnapshotKeepsTheNewest) {
 TEST(TinyRecorder, ASnapshotNeverHoldsHalfAnEvent) {
   TinyRecorder r;
   std::atomic<bool> stop{false};
+  // The snapshots start once the writer has recorded its first event: on a busy machine the
+  // writer may not run at all during the 20,000 snapshots, which then see nothing (MDQ-PR-048,
+  // coding standard rule 5.6).
+  std::latch started{1};
   std::thread writer{[&] {
     for (std::uint64_t i = 1; !stop.load(std::memory_order_relaxed); ++i) {
       r.record(i, ~i);  // b is always the complement of a, and a is the event's number
+      if (i == 1) {
+        started.count_down();
+      }
     }
   }};
+  started.wait();
   std::size_t seen = 0;
   for (int k = 0; k < 20000; ++k) {
     const auto e = take(r);

@@ -174,3 +174,36 @@ function(minidaq_pybind_exercise dir)
       ENVIRONMENT "PYTHONPATH=${_out};PYTHONDONTWRITEBYTECODE=1")
   endforeach()
 endfunction()
+
+# minidaq_cmake_exercise(<dir>)
+# A CMake project as the deliverable (Chapter 32): <dir>/starter and <dir>/solution are each a
+# whole project, and the unittest tests in <dir>/tests configure, build, install and use it in
+# scratch directories. The tests find the project in EX_PROJECT and use this build's CMake,
+# generator and C++ compiler (EX_CMAKE, EX_GENERATOR, EX_CXX), without its flags: the project is
+# built as a user of it would build it. Not with sanitizers or fuzzing, whose runtime a nested
+# build would not link.
+function(minidaq_cmake_exercise dir)
+  find_package(Python3 COMPONENTS Interpreter)
+  if(NOT Python3_Interpreter_FOUND OR MINIDAQ_SANITIZERS OR MINIDAQ_BUILD_FUZZERS)
+    message(STATUS "Python 3 not found, or a sanitizer or fuzzing build: skipping ${dir}")
+    return()
+  endif()
+  get_filename_component(_abs ${dir} ABSOLUTE)
+  get_filename_component(_name ${_abs} NAME)
+  get_filename_component(_chdir ${_abs} DIRECTORY)
+  get_filename_component(_ch ${_chdir} NAME)
+  set(_variants)
+  if(MINIDAQ_BUILD_EXERCISES)
+    list(APPEND _variants solution)
+  endif()
+  if(MINIDAQ_BUILD_STARTERS)
+    list(APPEND _variants starter)
+  endif()
+  foreach(_v IN LISTS _variants)
+    set(_t ${_ch}/${_name}/${_v}/unittest)
+    add_test(NAME ${_t}
+             COMMAND ${Python3_EXECUTABLE} -m unittest discover -s ${_abs}/tests -t ${_abs}/tests)
+    set_tests_properties(${_t} PROPERTIES LABELS ${_v} TIMEOUT 600
+      ENVIRONMENT "EX_PROJECT=${_abs}/${_v};EX_CMAKE=${CMAKE_COMMAND};EX_GENERATOR=${CMAKE_GENERATOR};EX_CXX=${CMAKE_CXX_COMPILER};EX_WORK=${CMAKE_CURRENT_BINARY_DIR}/${_name}_${_v};PYTHONDONTWRITEBYTECODE=1")
+  endforeach()
+endfunction()

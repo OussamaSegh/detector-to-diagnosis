@@ -737,6 +737,35 @@
         "category": "test",
         "escape": "Every local run used an optimized build (the release preset and an exercise build in Release), where the test passed; CI's debug job was the first to run it unoptimized."
       }
+    },
+    {
+      "id": "MDQ-PR-048",
+      "title": "Exercise 21.3's concurrent snapshot test could finish before its writer started",
+      "found": "2026-11-04, local run of every test of the release build on commit c72ed58 with ctest -j4 while other tests built nested projects: ch21/e3_flight_recorder/solution/TinyRecorder.ASnapshotNeverHoldsHalfAnEvent failed once in 0.00 s and passed on 200 repetitions alone",
+      "item": "exercises",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "The test starts one writer thread and takes 20,000 snapshots at once, then checks that the snapshots saw some event. With six busy processes on four CPUs it failed 249 times in 300 (seen == 0): the snapshots took about a millisecond and were all done before the writer recorded once. It is the defect of MDQ-PR-028 in the exercise's copy of that test, written the same day.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A defect of an exercise's test, not of MiniDAQ or of the solution; when the test passes it shows what it claims."
+      },
+      "resolution": {
+        "change": "The writer counts down a std::latch after its first event and the snapshots start after it, as the product's test does since MDQ-PR-028; the check that the snapshots saw events stays.",
+        "verification": "300 runs with six busy processes on four CPUs: 249 failures before the change, none after; the full test run of the release build."
+      },
+      "root_cause": {
+        "whys": [
+          "The snapshots saw no event.",
+          "They finished before the writer thread recorded its first event.",
+          "The test assumed that a thread runs before the next statements of the thread that started it, the assumption MDQ-PR-028 found in the product's flight recorder test.",
+          "The fix of MDQ-PR-028 changed that test and added rule 5.6, but the search for other instances covered minidaq/tests only, not the exercises' tests, one of which had been written from the same test.",
+          "Rule 5.6 is enforced by review, and the stress run of CAPA-0001 runs product suites only (tools/stress_tests.sh), so nothing ran this test under load."
+        ],
+        "cause": "The extent of MDQ-PR-028 was not searched in the exercises, and no mechanical check finds a test that starts threads without waiting for them to start.",
+        "category": "test",
+        "escape": "The test passes on an idle machine; CI's jobs run tests with fewer parallel jobs than CPUs, and the stress run does not select exercise tests."
+      }
     }
   ]
 }

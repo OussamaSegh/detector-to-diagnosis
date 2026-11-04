@@ -4,9 +4,9 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045; in the period to 0.7.0, MDQ-PR-047 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045; in the period to 0.7.0, MDQ-PR-047 and MDQ-PR-048 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; again at release 0.6.0 |
+| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; release 0.6.0: not effective; again at release 0.7.0 |
 
 ## Problem
 
@@ -175,6 +175,12 @@ In the period: Exercise 31.3's speed test, added in Part VII, failed in CI's deb
 (MDQ-PR-047). It had been written without the rules of this CAPA: it timed an unoptimized module,
 from one run, with no measured margin. It is fixed and is now a row of the table above. The
 result at 0.7.0 counts the failure.
+
+Also in the period: Exercise 21.3's concurrent snapshot test failed in a local run of every test
+with other tests building in parallel (MDQ-PR-048). It is the defect of MDQ-PR-028, in a copy of
+that test in the exercises, which the search for other instances in 0.4.0 did not cover and the
+stress run does not select. Rule 5.6 is still enforced by review only. The result at 0.7.0 counts
+this failure too.
 
 ## Closure
 

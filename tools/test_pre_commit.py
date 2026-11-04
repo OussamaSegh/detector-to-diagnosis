@@ -52,6 +52,10 @@ class PreCommit(unittest.TestCase):
         r = self.add("notes.md", "Contact: someone@example.com, 1+me@users.noreply.github.com\n")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
+    def test_a_decorator_or_an_annotation_is_not_an_address(self):
+        r = self.add("t.py", "@unittest.skipUnless(True, 'x')\nclass A:\n    pass\n")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
     def test_unformatted_cpp_is_refused(self):
         # REQ: SRS-BLD-005
         r = self.add("a.cpp", "int  add(int a,int b){return a+b;}\n")

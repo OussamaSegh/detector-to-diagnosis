@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: MIT
+@PACKAGE_INIT@
+# pulse has no dependencies of its own; a library that had some would find them here, with
+# include(CMakeFindDependencyMacro) and find_dependency(...), before its targets.
+include("${CMAKE_CURRENT_LIST_DIR}/pulseTargets.cmake")
+check_required_components(pulse)

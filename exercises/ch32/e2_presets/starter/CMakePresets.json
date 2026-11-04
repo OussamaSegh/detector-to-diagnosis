@@ -1,0 +1,16 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {"major": 3, "minor": 25, "patch": 0},
+  "configurePresets": [
+    {
+      "name": "dev",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    },
+    {
+      "name": "asan",
+      "inherits": "dev",
+      "cacheVariables": {"CMAKE_CXX_FLAGS": "-fsanitize=address"}
+    }
+  ]
+}

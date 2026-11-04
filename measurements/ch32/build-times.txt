@@ -1,0 +1,14 @@
+# measurements/ch32/build_times.py . <scratch> 4, the release preset (GCC 13.3, -O2, Ninja).
+# The machine was otherwise idle except for about 3 s of small exercise builds during the clean build.
+# The touched files: expected.hpp is included directly by 39 files and through other headers by
+# most of the code; crc32.hpp directly by 14; crc32.cpp is in the core library, which every
+# program and test executable links (128 links); minidaq_send.cpp is one program's only source.
+machine: x86_64, 4 CPUs; c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; jobs 4
+commit: c72ed58
+configure (fresh directory, sources present):     6.4 s
+clean build of every target:                   156.6 s, 453 commands
+build with nothing to do:                        2.1 s, 2 commands
+after touching minidaq/include/minidaq/core/expected.hpp:    84.5 s, 253 commands
+after touching minidaq/include/minidaq/core/crc32.hpp:    12.7 s, 141 commands
+after touching minidaq/src/core/crc32.cpp:     2.9 s, 129 commands
+after touching minidaq/apps/minidaq_send.cpp:     1.6 s, 2 commands

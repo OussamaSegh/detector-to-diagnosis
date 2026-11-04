@@ -1,0 +1,36 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {"major": 3, "minor": 25, "patch": 0},
+  "configurePresets": [
+    {
+      "name": "dev",
+      "displayName": "Debug build with the tests",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    },
+    {
+      "name": "asan",
+      "displayName": "Debug build with AddressSanitizer",
+      "inherits": "dev",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address"
+      }
+    }
+  ],
+  "buildPresets": [
+    {"name": "dev", "configurePreset": "dev"},
+    {"name": "asan", "configurePreset": "asan"}
+  ],
+  "testPresets": [
+    {"name": "dev", "configurePreset": "dev", "output": {"outputOnFailure": true}},
+    {"name": "asan", "configurePreset": "asan", "output": {"outputOnFailure": true},
+     "environment": {"ASAN_OPTIONS": "detect_leaks=1:abort_on_error=0"}}
+  ],
+  "workflowPresets": [
+    {"name": "dev", "steps": [{"type": "configure", "name": "dev"}, {"type": "build", "name": "dev"},
+                              {"type": "test", "name": "dev"}]},
+    {"name": "asan", "steps": [{"type": "configure", "name": "asan"}, {"type": "build", "name": "asan"},
+                               {"type": "test", "name": "asan"}]}
+  ]
+}

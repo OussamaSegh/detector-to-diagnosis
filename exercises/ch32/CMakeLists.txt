@@ -1,0 +1,3 @@
+minidaq_cmake_exercise(e1_install)
+minidaq_cmake_exercise(e2_presets)
+minidaq_cmake_exercise(e3_rebuild)

@@ -23,7 +23,10 @@ import subprocess
 import sys
 
 TOOLS = pathlib.Path(__file__).resolve().parent.parent
-ADDRESS = re.compile(r"[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,})")
+# An address: a local part that starts with a letter or digit (so a Python decorator, "@name", is
+# not one), "@", and a domain with a dot.
+ADDRESS = re.compile(r"(?<![\w.%+-])[A-Za-z0-9][A-Za-z0-9._%+-]*"
+                     r"@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,})")
 ALLOWED_DOMAINS = ("example.com", "example.org", "example.invalid", "users.noreply.github.com")
 ALLOWED_LOCAL = ("noreply@", "no-reply@")
 
@@ -40,7 +43,7 @@ def addresses(diff):
         if line.startswith("+++ "):
             current = line[6:] if line.startswith("+++ b/") else line[4:]
         elif line.startswith("+") and not line.startswith("+++"):
-            for m in ADDRESS.finditer(line):
+            for m in ADDRESS.finditer(line[1:]):
                 domain = m.group(1).lower()
                 if domain.endswith(ALLOWED_DOMAINS) or m.group(0).lower().startswith(ALLOWED_LOCAL):
                     continue
