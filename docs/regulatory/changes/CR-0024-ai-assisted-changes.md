@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-04, by the software lead |
 | Source | improvement: AI-assisted coding for medical-device software (Chapter 37) |
 | Decision | approved, 2026-11-04, software lead |
-| Commits | none yet |
+| Commits | df01679 |
 
 ## Description
 

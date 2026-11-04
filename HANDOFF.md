@@ -27,8 +27,11 @@ Next work, in order:
    test-only tools and pinned in the lock file; CI's job python sets
    `MINIDAQ_DICOM_ORACLE_REQUIRED=1`). Chapter 36 (Git and team workflow) done: commit 4c04619
    (CR-0023, ADR 0031, TL-46, the commit policy checked in CI from 34cf130; see the commit
-   message rules in section 2). Next: Chapter 37 (AI-assisted coding, CR-0024, ADR 0032, TL-47,
-   SRS version 26, threat model version 12). Part IX (section 5, "Left to
+   message rules in section 2). Chapter 37 (AI-assisted coding) done: commit df01679 (CR-0024,
+   ADR 0032, TL-47 and TL-48, commit policy version 2 with the rule `assisted`: an assisted commit
+   that changes product code changes a test or carries a `Tests:` trailer; SDP version 13).
+   Next: the architecture appendix, then release 0.9.0 (the edition table still says Part IX is
+   1.0.0: change it to 0.9.0 at the release). Part IX (section 5, "Left to
    do", item 6): three new chapters after 34 (DICOM and PACS; Git and
    team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
    tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
