@@ -253,8 +253,10 @@ A release:
    fuzzing per target.
 2. Copy OUT to `measurements/release-X.Y.Z/`.
 3. Write `docs/regulatory/releases/X.Y.Z.md` and check it with Exercise 14.5's checker.
-4. Bump `VERSION`, add the CHANGELOG section, and update `book/src/front/edition.md`. For a KDP
-   upload, build with `book/build.sh kdp both`.
+4. Bump `VERSION`, add the CHANGELOG section, and update `book/src/front/edition.md`. Bump the
+   Python package versions with it (`analysis/pyproject.toml`, `minidaq_analysis.__version__`,
+   `recon/python/pyproject.toml`; `0.8.0-dev` is `0.8.0.dev0`): `analysis.pytest` fails otherwise
+   (Part VII review). For a KDP upload, build with `book/build.sh kdp both`.
 5. Commit and push. **Wait for green GitHub CI on that release commit** (SDP section 8,
    MDQ-PR-016).
 6. Tag `book-vX.Y.Z` (locally, and a line in `.github/tags.txt` pushed to main), build the
@@ -405,6 +407,9 @@ Part VII (thread started 2026-11-03).
   0.8.0-dev, SOUP list v16 (review for 0.8). The bump found MDQ-PR-054 (`cmake.consumer` asked
   for a fixed recon 0.7; it now reads VERSION). Opus Part VII review asked of the coordinator.
   Next: Part VIII (see "Start here").
+- Opus review of Part VII (2026-11-04): PR on branch claude/project-thread-6umbqv, Chapter 31
+  text fixes, the Python package versions tied to VERSION (they said 0.7.0.dev0 through release
+  0.7.0), one exercise docstring. Merge it locally.
 
 Older notes follow.
 

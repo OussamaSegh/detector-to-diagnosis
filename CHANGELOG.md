@@ -17,6 +17,17 @@ the patch version.
 
 - The test `cmake.consumer` asks for the minor version of the build it tests, read from VERSION,
   not a fixed `find_package(recon 0.7)` that the 0.8.0-dev build refused (MDQ-PR-054).
+- The Python packages' versions follow VERSION: `minidaq_analysis.__version__`, which every QC
+  report's environment record names, and both `pyproject.toml` files said 0.7.0.dev0 through
+  release 0.7.0 and into 0.8.0-dev. They are 0.8.0.dev0, and a test of `analysis.pytest`
+  (SRS-ANA-006) compares them with VERSION (Part VII review).
+- Chapter 31 (Part VII review): decoding the whole 1 GiB file takes 3.7 GiB, not 3.8, and why (29
+  bytes per record, held twice by the concatenation); the file header is not 32 bytes; nine
+  packages besides NumPy for Matplotlib, not eleven; Chapter 32 does not turn on CMake in the
+  analysis package; the constancy test's check is the uniformity of p at 0.05; mean resolution
+  11.975%; NumPy is four to nine times slower than the compiled loops, and the C++ against Numba
+  is told as the measurement found it. Exercise 31.2's test docstring: about 19 counts in each
+  top bin, not 6.
 
 ## [0.7.0] - 2026-11-04
 

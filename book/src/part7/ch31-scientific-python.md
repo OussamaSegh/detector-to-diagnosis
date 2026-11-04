@@ -89,9 +89,10 @@ the project, so a test can only import it as installed or through an explicit pa
 accident from the current directory; a test that passes only because it found the source next to it
 is a test of the wrong thing. The `pyproject.toml` is the one place for the package's metadata and
 its tools' settings (pytest, mypy, ruff); its build backend is scikit-build-core with CMake switched
-off for now, because Chapter 32 turns CMake on for a compiled part, and switching backends then
-would be a change of its own. And `py.typed` says that the type hints are meant for callers: mypy in
-strict mode checks the package, and a caller's mypy checks its use.
+off, because the package is pure Python, and the same backend builds a compiled part with CMake when
+one is needed, as Chapter 32 does for the projector's wheel, without a change of backend. And
+`py.typed` says that the type hints are meant for callers: mypy in strict mode checks the package,
+and a caller's mypy checks its use.
 
 ### An environment you can rebuild
 
@@ -101,14 +102,14 @@ are not an environment. Two machines that install the package a month apart get 
 versions, and the day-in-the-life story shows what that can do to a number.
 
 `requirements.lock` is the environment: every package, direct and indirect, at one exact version
-(NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2 and the eleven packages Matplotlib needs, pytest, mypy
-and ruff with theirs, Numba and llvmlite, scikit-build-core). CI's job `python` creates a virtual
-environment, installs exactly that list, and runs `pip check`, which fails if any installed
-package's own requirements are not met by the others. Then it builds the simulator and runs the
-three CTest tests with `MINIDAQ_ANALYSIS_REQUIRED=1`, so a missing package is a failure there
-instead of a skip. A developer's machine without the environment skips the three tests with CTest's
-status 77, and says why, rather than failing them or running them against whatever NumPy the system
-has.
+(NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2 and the nine packages Matplotlib needs besides NumPy,
+pytest, mypy and ruff with theirs, Numba and llvmlite, scikit-build-core). CI's job `python` creates
+a virtual environment, installs exactly that list, and runs `pip check`, which fails if any
+installed package's own requirements are not met by the others. Then it builds the simulator and
+runs the three CTest tests with `MINIDAQ_ANALYSIS_REQUIRED=1`, so a missing package is a failure
+there instead of a skip. A developer's machine without the environment skips the three tests with
+CTest's status 77, and says why, rather than failing them or running them against whatever NumPy the
+system has.
 
 Every package in the lock file is SOUP of a tool: none of it ships in the product, but its results
 become evidence. The SOUP list's section 2 names them with the lock file as their pin, and the tool
@@ -143,8 +144,9 @@ and every value would be wrong without an error.
 ### A memory map, block by block
 
 `ListModeFile` opens the file and maps it with `mmap`: the operating system makes the file's bytes
-addressable without reading them, and pages them in as they are touched. Opening reads the 32-byte
-file header and then walks the block headers:
+addressable without reading them, and pages them in as they are touched. Opening reads the file
+header (32 bytes of fixed fields, the JSON metadata padded to a multiple of 8 bytes, and a CRC) and
+then walks the block headers:
 
 ```{.python include="analysis/src/minidaq_analysis/listmode.py" snippet="walk"}
 ```
@@ -197,9 +199,11 @@ against the process while it maps them, but owned by the kernel, shared, and dro
 memory is short. A pass that maps a 1 GiB file shows about 1 GiB of file pages whatever it does;
 what decides whether it fits on a laptop is the private memory.
 
-Decoding the whole file costs 3.8 GiB however it is read: about 56 bytes per record once each field
-is an array of its own and the time is 64 bits. The corrections tool's reader costs 6 GiB because it
-also builds intermediate arrays. The chunked pass costs 179 MiB, the size of one chunk's arrays and
+Decoding the whole file through the map costs 3.7 GiB. The decoded fields take 29 bytes per record
+(the time in 64 bits, the crystals, the time difference and the energies in 32, the delayed flag in
+one), 1.8 GiB for the file, and `coincidences()` holds the decoded chunks and their concatenation at
+the same time, which doubles it. The corrections tool's reader costs 6 GiB because it also builds
+intermediate arrays. The chunked pass costs 179 MiB, the size of one chunk's arrays and
 the histograms, and would cost the same for a 100 GiB run. The row with pair counts is the lesson of
 the measurement: counting coincidences per crystal pair keeps one entry per distinct pair, and an
 extended source over the whole ring has tens of millions of them. That memory grows with the run,
@@ -308,13 +312,13 @@ A second failure taught more. On seed 2 of the five simulated QC runs below, the
 with "fit cannot lower the deviance". The fit was at its minimum to every visible digit, but the
 predicted fall was 8e-8 and no step, however short, lowered the deviance. The derivatives were the
 cause. `J` is computed by central differences, and the first version's step was 1e-6 of the
-parameter's value, with a floor of 1e-3. The timing peak's mean was 0.016 ps, so its step was 1.6e-8
-ps, where the difference of two model values is mostly rounding: the score for the mean changed sign
-with the step size, and the Newton step pointed uphill. The fix gives every step a floor of 1e-5 of
-a unit (`_step` in `fitting.py`), and the fit then converges normally, with a predicted fall of
-7e-12. A second, defensive change accepts a fit that no step can improve when its predicted fall is
-already below 5e-5, a change far below any parameter's error, and still raises an error when a stuck
-fit is far from its minimum.
+parameter's value, or of 1e-3 for a smaller value. The timing peak's mean was 0.016 ps, so its step
+was 1.6e-8 ps, where the difference of two model values is mostly rounding: the score for the mean
+changed sign with the step size, and the Newton step pointed uphill. The fix gives every step a
+floor of 1e-5 of a unit (`_step` in `fitting.py`), and the fit then converges normally, with a
+predicted fall of 7e-12. A second, defensive change accepts a fit that no step can improve when its
+predicted fall is already below 5e-5, a change far below any parameter's error, and still raises an
+error when a stuck fit is far from its minimum.
 
 The regression test is that run's real timing histogram, stored in
 `analysis/tests/data/timing-seed2.json`: it fails with the old code and passes with either change. A
@@ -401,7 +405,8 @@ The dispersion test asks whether the counts per bin vary more than Poisson count
 would. Its statistic, the sum of `(n - mean)^2 / mean`, is chi-square with one fewer degrees of
 freedom than bins, so `p_constant` is uniform between 0 and 1 for a constant rate: at a limit of
 0.001, one good run in a thousand fails. `test_a_constant_rate_is_rejected_at_the_stated_rate`
-checks exactly that rate over 2,000 synthetic runs.
+checks the uniformity over 2,000 synthetic runs: 5% of them must fall below 0.05, within the
+binomial spread (a rate of one in a thousand would need far more runs to test).
 
 The dispersion test is weak against one bad bin among many: one bin that lost 16% of its counts adds
 little to a sum over 200 bins. The dip test looks at the lowest bin: the probability that a Poisson
@@ -458,7 +463,7 @@ of 12% FWHM at 511 keV and blurs each single's time so that a pair has 300 ps FW
 | 4 | pass | 511.02 ± 0.07 | 11.963 ± 0.036 | 303.9 ± 0.6 | +0.34 ± 0.35 |
 | 5 | pass | 510.99 ± 0.07 | 11.993 ± 0.037 | 302.9 ± 0.6 | +0.95 ± 0.35 |
 
-The energy resolution comes back as 11.98%, within its error of the simulator's 12%: the analysis
+The energy resolution comes back as 11.975%, within its error of the simulator's 12%: the analysis
 measures what the detector was made to do. The five values spread by 0.020% against a reported error
 of 0.037%; five values are too few to call that a disagreement (the sample standard deviation of
 five draws is below 0.55 of the true one about one time in eight).
@@ -513,12 +518,15 @@ thread:
 | Numba `@njit`, after a 0.26 s compilation | 19 | 1.9 | 8.7x |
 | C++ through pybind11 | 39 | 3.8 | 4.4x |
 
-All four give the same counts, bin for bin. NumPy is ten times faster than the Python loop and ten
-times slower than the compiled loops, because its version makes four temporary arrays of 10 million
-entries (an int64 copy, the bins, a mask, the keys), each a full pass through memory. The C++ is
-twice as slow as Numba for reasons outside the language: LLVM, which Numba uses, divides in 32 bits
-when the operands fit, and GCC's 64-bit division is the slowest instruction in the loop; with a
-32-bit division the C++ takes 26 ms. A loop in C++ is not faster for being in C++.
+All four give the same counts, bin for bin. NumPy is ten times faster than the Python loop and four
+to nine times slower than the compiled loops, because its version makes four temporary arrays of 10
+million entries (an int64 copy, the bins, a mask, the keys), each a full pass through memory. The
+C++ is twice as slow as Numba, and the reasons found are outside the language. Built outside the
+project as a plain module, the same source took 32 to 34 ms with GCC and 28 ms with Clang. LLVM,
+which Numba and Clang use, divides in 32 bits when the operands fit, and GCC's 64-bit division is
+the slowest instruction in the loop; with a 32-bit division the GCC build took 26 ms, against 22 ms
+for Numba with the same values passed as arguments. The rest of the difference was not found. A loop
+in C++ is not faster for being in C++.
 
 For this package none of them is needed: 0.2 s of NumPy per 10 million coincidences is small next to
 reading them. The package stays pure Python and installs anywhere; Numba appears only in the
@@ -677,7 +685,7 @@ every starter of the chapter fails. Tag `ch31`.
   checks with `pip check`.
 - `ListModeFile` maps MDQ-L1, checks every header, CRC and sequence number at open, and views each
   block's records in place as a structured array. A chunked pass over 1 GiB takes 179 MiB of private
-  memory; decoding the whole file takes 3.8 GiB, and the corrections tool's reader 6 GiB.
+  memory; decoding the whole file takes 3.7 GiB, and the corrections tool's reader 6 GiB.
 - Models give expected counts per bin, integrated over the bin; a line is written by its two end
   values so that bounds keep it non-negative.
 - Least squares weighted by the counts underestimates a 1,000-count peak by 13% with errors too
@@ -690,7 +698,7 @@ every starter of the chapter fails. Tag `ch31`.
   of 160 in 1,000 is found.
 - The QC report checks a TOML protocol's limits, the prompt count and the time order, writes JSON,
   Markdown, figures with residuals and provenance, and exits 0, 1 or 2.
-- Five simulated runs pass with 11.98% and 303.4 ps; the 3 ps are the depth of interaction.
+- Five simulated runs pass with 11.975% and 303.4 ps; the 3 ps are the depth of interaction.
 - A manifest of SHA-256 and an environment record make a report traceable; they do not make it
   authentic.
 
