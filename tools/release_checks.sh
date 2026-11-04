@@ -148,7 +148,8 @@ if in_part 3; then
 
 # The regression gate. It used to run only in perf.yml, on a runner that did not exist
 # (MDQ-PR-014); here it runs on the reference machine, and a failure fails the release checks.
-{ cmake --preset release >/dev/null && cmake --build --preset release -j"$(nproc)" >/dev/null &&
+# The build's own output stays in perf-suite.txt: a build that fails says why (MDQ-PR-058).
+{ cmake --preset release && cmake --build --preset release -j"$(nproc)" &&
   tools/perf_suite.sh "$out/perf-current.json" build/release 2; } > "$out/perf-suite.txt" 2>&1 &&
   python3 tools/perf_gate.py benchmarks/baseline/book-vm.json "$out/perf-current.json" --strict \
     > "$out/perf-gate.txt" 2>&1

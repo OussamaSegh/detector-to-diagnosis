@@ -1011,6 +1011,33 @@
         "category": "process",
         "escape": "The release 0.7.0 fuzzing did not reach the input; the review branch's run did, and the merge looked only at the runs on main. The CAPA-0001 check of every failed run of the period found it."
       }
+    },
+    {
+      "id": "MDQ-PR-058",
+      "title": "The release checks' performance gate discarded its build's output, so a failed build left no reason",
+      "found": "2026-11-04, release checks part 3 for 0.8.0 on d262ff0: 'FAIL performance regression gate' with an empty perf-suite.txt, no perf-current.json and no perf-gate.txt",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "tools/release_checks.sh sends the output of 'cmake --preset release' and 'cmake --build' in the gate step to /dev/null, so when that step failed, within a second of starting, nothing said why. Run again by hand with the output kept, the same commands configured and built without error, and the suite ran.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The release checks' evidence, not the product; the failure was visible (the check failed) and the gate was run again in full before any verdict was taken."
+      },
+      "resolution": {
+        "change": "The configure and build output of the gate step goes to perf-suite.txt with the suite's own output.",
+        "verification": "bash -n tools/release_checks.sh; the test tools.release_checks; the next release run of part 3 keeps the build's output in perf-suite.txt."
+      },
+      "root_cause": {
+        "whys": [
+          "The gate step failed with no output.",
+          "Its build commands wrote to /dev/null, chosen to keep the log short.",
+          "Every other step keeps its output; this one was written when the build was assumed to have been done by an earlier part."
+        ],
+        "cause": "A step of the release evidence discarded the output that explains its own failure.",
+        "category": "tool",
+        "escape": "The step had never failed before, so the missing output had never been needed."
+      }
     }
   ]
 }
