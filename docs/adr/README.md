@@ -34,3 +34,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0025](0025-image-quality-figures-of-merit-after-nema.md) | Image quality measured by figures of merit after NEMA NU 2, with fixed methods and limits from repeatability | Accepted |
 | [0026](0026-analysis-package-poisson-fits-and-provenance.md) | The run analysis as an installable Python package, with Poisson fits and provenance | Accepted |
 | [0027](0027-installable-packages-presets-and-changed-line-formatting.md) | Installable CMake packages, a workflow preset per configuration, a wheel from the same project, and formatting checked on changed lines | Accepted |
+| [0028](0028-end-to-end-reference-acceptance-specification-and-requirements-freeze.md) | The chain checked end to end against an offline reference, a written acceptance specification, and a requirements freeze | Accepted |

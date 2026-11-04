@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 7 (MiniDAQ 0.7.0-dev, release 0.7.0). Status: draft for review.
+Version 8 (MiniDAQ 0.8.0-dev). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -288,3 +288,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 5 | Chapter 31 (CR-0017): the analysis package reviewed against the diagram. It runs outside the scope of section 1 and adds no element, flow or interface to MiniDAQ: it reads the list-mode store, verifying every CRC, and writes reports that people read. The gap "QC reports are not signed" in section 7. |
 | 6 | Chapter 32 (CR-0018): the installed CMake package, the wheel and the pre-commit hook reviewed against the diagram. They are build-time artifacts for tools and for developers' machines and add no element, flow or interface to the running MiniDAQ; the pinned third-party sources and their scan (section 8) are unchanged. The gap "The build runs the repository's code" in section 7. |
 | 7 | Release 0.7.0, the review before the release with the risk file: Part VII added no element, flow or interface to the running MiniDAQ (versions 5 and 6), and none of the 57 threats is open; the gaps of section 7 stand. The SOUP review found two pinned tool packages with published vulnerabilities (MDQ-PR-051); section 8 now covers the tools' lock file, with the audit TL-39. |
+| 8 | Chapter 33 (CR-0020): the end-to-end run, the acceptance evaluator and the requirements freeze reviewed against the diagram. They run the shipped programs on the loopback interface, as the system tests do, read the release checks' files and the regulatory documents, and add no element, flow or interface to the running MiniDAQ. `minidaq_sim --link` changes only the simulator. |

@@ -930,6 +930,33 @@
         "category": "test",
         "escape": "Chapter 32's test was added during 0.7.0-dev; the first VERSION bump after it was the first chance to see it fail."
       }
+    },
+    {
+      "id": "MDQ-PR-055",
+      "title": "minidaq_sim reported as recorded the singles it had simulated past the end of the run",
+      "found": "2026-11-04, Chapter 33's end-to-end run: minidaq_sim said 445,867 recorded singles for a run of which minidaq_send, from the same seed, sent 445,866",
+      "item": "sim",
+      "status": "closed",
+      "capa": "",
+      "description": "DetectorSimulator::generate_until stops at the first single at or after the end and keeps it for the next call; its statistics count every single it has simulated, that one included. minidaq_sim printed those statistics as 'recorded singles', while its list mode, its sorter report and its count rates used only the singles before the end. Over three seeds the difference was one single each time.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A line of the simulator's printed summary, a development tool; no coincidence, list-mode file, sinogram or count rate changed, and no measurement in the book quotes the line."
+      },
+      "resolution": {
+        "change": "minidaq_sim prints the number of singles it uses as 'recorded singles' and, when there are any, the singles simulated past the end on their own line.",
+        "verification": "tools/e2e.py and the test system.e2e: the singles the reference records equal the singles minidaq_send sends from the same seed; the whole ctest passes."
+      },
+      "root_cause": {
+        "whys": [
+          "The printed count and the count of the singles used differed by the singles past the end.",
+          "The line printed the simulator's statistics, which count every single simulated, not the singles returned.",
+          "Nothing compared that line with another stage's count until a chain put two programs side by side."
+        ],
+        "cause": "A summary printed a counter of one quantity under the name of another.",
+        "category": "code",
+        "escape": "No test reads minidaq_sim's printed summary; the simulator's tests check the singles it returns. The end-to-end accounting of Chapter 33 is the first check that compares counts across programs."
+      }
     }
   ]
 }

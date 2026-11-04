@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 #include "minidaq/sim/readout_link.hpp"
 
+#include "minidaq/core/geometry.hpp"
+#include "minidaq/format/packed_single.hpp"
+
 #include <algorithm>
+#include <array>
 #include <stdexcept>
 #include <utility>
 
@@ -91,5 +95,17 @@ void LinkFaults::apply(std::vector<Datagram>& packets) {
   packets = std::move(out);
 }
 // [/snippet:apply]
+
+void quantize_as_on_link(std::span<TruthSingle> singles) {
+  packed::StreamDecoder decoder{ScannerGeometry::num_crystals};
+  for (auto& s : singles) {
+    const std::array<std::uint64_t, 1> word{packed::encode(s.single)};
+    std::array<Single, 1> out{};
+    if (decoder.decode(word, out) != 1) {
+      throw std::invalid_argument("quantize_as_on_link: a single's crystal is not in the scanner");
+    }
+    s.single = out[0];
+  }
+}
 
 }  // namespace minidaq::sim

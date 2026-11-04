@@ -1,0 +1,98 @@
+{
+ "title": "MiniDAQ 1.0 acceptance specification",
+ "version": 1,
+ "comment": "What MiniDAQ must show as a whole before it is called 1.0 (Chapter 33), each criterion with the requirements it demonstrates, its target, and the evidence file of the release checks that shows it. tools/acceptance.py evaluates every criterion from one OUT directory of tools/release_checks.sh: PASS, FAIL, MISSING (no evidence: never a pass) or STALE (evidence of another commit). The targets are book-level numbers (assumption: confirm with team the values of the scanner's system requirements). Changes to this file go through change control like the SRS.",
+ "criteria": [
+  {
+   "id": "ACC-01",
+   "what": "The acquisition pipeline's throughput, with the coincidence sorter, in the hardened build",
+   "requirements": ["SRS-PERF-020"],
+   "target": "median of 5 repetitions at least 20 M singles/s (10 M required, a margin of 2)",
+   "evidence": "perf-pipeline.txt",
+   "part": 2,
+   "rule": "pipeline_median",
+   "limit": 20000000
+  },
+  {
+   "id": "ACC-02",
+   "what": "The list-mode writer's throughput with fsync at close",
+   "requirements": ["SRS-PERF-021"],
+   "target": "the slowest of 3 runs at least 3 M coincidences/s",
+   "evidence": "perf-writer.txt",
+   "part": 2,
+   "rule": "writer_slowest",
+   "limit": 3000000
+  },
+  {
+   "id": "ACC-03",
+   "what": "A long acquisition at the reference rate",
+   "requirements": ["SRS-SYS-003"],
+   "target": "30 minutes at 1 M singles/s: no loss, no fault, complete, memory growth within 1 MiB/h",
+   "evidence": "soak.txt",
+   "part": 3,
+   "rule": "soak",
+   "limit": 30
+  },
+  {
+   "id": "ACC-04",
+   "what": "End-to-end latency at the reference rate",
+   "requirements": ["SRS-PERF-022"],
+   "target": "the 99th percentile of every 10 s interval of the soak at most 10 ms",
+   "evidence": "soak.txt",
+   "part": 3,
+   "rule": "soak_latency",
+   "limit": 10.0
+  },
+  {
+   "id": "ACC-05",
+   "what": "The chain end to end: the server's records against the offline reference, every count balanced between the stages, the daily QC",
+   "requirements": ["SRS-SYS-006", "SRS-SYS-007", "SRS-ANA-005"],
+   "target": "every check of both acquisitions of tools/e2e.py passes, the records equal to the reference's",
+   "evidence": "e2e/e2e.json",
+   "part": 3,
+   "rule": "e2e_chain"
+  },
+  {
+   "id": "ACC-06",
+   "what": "The image at the end of the chain",
+   "requirements": ["SRS-SYS-008"],
+   "target": "the phantom's radius at half level within 2 mm of 80 mm, center over periphery within 10% of 1",
+   "evidence": "e2e/e2e.json",
+   "part": 3,
+   "rule": "e2e_image"
+  },
+  {
+   "id": "ACC-07",
+   "what": "The system test plan, executed on the release build",
+   "requirements": ["SRS-SYS-001", "SRS-SYS-002", "SRS-SYS-004", "SRS-SYS-005"],
+   "target": "every test case passed, none skipped",
+   "evidence": "system-test-report.md",
+   "part": 3,
+   "rule": "system_tests"
+  },
+  {
+   "id": "ACC-08",
+   "what": "Every verification of a release (SDP section 6) that the release checks run",
+   "requirements": [],
+   "target": "all four parts end with 'all release checks passed', on the commit of part 1",
+   "evidence": "release-checks.txt",
+   "part": 0,
+   "rule": "release_checks"
+  },
+  {
+   "id": "ACC-09",
+   "what": "Every requirement verified, every hazard closed or justified, every anomaly evaluated, the requirements frozen or changed under change control",
+   "requirements": [],
+   "target": "the checks docs.trace, docs.risk, docs.anomalies and docs.baseline pass on the commit",
+   "evidence": "the repository at the commit",
+   "part": 1,
+   "rule": "repository",
+   "commands": [
+    ["tools/trace_matrix.py", ".", "--check"],
+    ["tools/check_risk.py", "."],
+    ["tools/anomalies.py", ".", "--check"],
+    ["tools/req_baseline.py", ".", "--check"]
+   ]
+  }
+ ]
+}

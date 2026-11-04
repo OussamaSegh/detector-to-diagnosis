@@ -1,0 +1,14 @@
+# Chapter 33: the end-to-end image checks with and without attenuation correction
+
+Machine: x86_64, 4 CPUs; numpy 2.5.3.
+
+| Seed | Prompts binned | Radius, AC | Center/periphery, AC | Radius, no AC | Center/periphery, no AC |
+|---:|---:|---:|---:|---:|---:|
+| 33 | 132,417 | 80.25 mm | 1.042 | 82.72 mm | 0.861 |
+| 34 | 132,973 | 80.26 mm | 1.001 | 82.64 mm | 0.817 |
+| 35 | 132,097 | 80.18 mm | 1.008 | 82.68 mm | 0.828 |
+| 36 | 132,793 | 80.48 mm | 0.937 | 82.76 mm | 0.756 |
+| 37 | 132,985 | 80.40 mm | 0.951 | 82.71 mm | 0.765 |
+
+With AC: radius 80.18 to 80.48 mm, center/periphery 0.937 to 1.042. Without: radius 82.64 to 82.76 mm, center/periphery 0.756 to 0.861.
+The checks of tools/e2e.py: radius within 2 mm of 80 mm, center/periphery within 0.1 of 1.

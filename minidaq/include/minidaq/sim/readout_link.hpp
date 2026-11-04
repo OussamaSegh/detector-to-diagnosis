@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "minidaq/format/readout_packet.hpp"
+#include "minidaq/sim/detector_simulator.hpp"
 
 namespace minidaq::sim {
 
@@ -80,5 +81,15 @@ class LinkFaults {
   LinkFaultCounts counts_;
 };
 // [/snippet:faults]
+
+// [snippet:as_on_link]
+// What the readout link keeps of each single (Chapter 33): the single encoded as an MDQ-P1 word and
+// decoded again, as the server receives it. The time is truncated to 5 ps and the energy rounded to
+// 0.5 keV; the truth fields are kept. `singles` must be in time order from time 0, as
+// DetectorSimulator::generate_until returns them, so that the decoder unwraps the 38-bit time.
+// minidaq_sim --link 1 applies it before the sorter, which makes its coincidences those that
+// minidaq_server writes from the same singles sent by minidaq_send.
+void quantize_as_on_link(std::span<TruthSingle> singles);
+// [/snippet:as_on_link]
 
 }  // namespace minidaq::sim

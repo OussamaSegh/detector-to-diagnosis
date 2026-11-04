@@ -49,6 +49,7 @@
 #include "minidaq/processing/sinogram.hpp"
 #include "minidaq/sim/dead_time.hpp"
 #include "minidaq/sim/detector_simulator.hpp"
+#include "minidaq/sim/readout_link.hpp"
 #include "minidaq/sim/truth_counter.hpp"
 
 namespace {
@@ -69,6 +70,11 @@ constexpr const char* usage =
     "                   [--gain-spread F] [--saturation KEV] [--time-skew PS] [--crystal-truth FILE.csv]\n"
     "                   [--efficiency-spread F] [--truth-sino PREFIX]\n"
     "                   [--source-radius MM] [--source-length MM] [--crystal-seed N]\n";
+// Chapter 33.
+constexpr const char* usage_link =
+    "                   [--link 0|1]\n"
+    "  --link 1 passes the singles through the readout link's MDQ-P1 encoding before the sorter\n"
+    "  (5 ps, 0.5 keV), as minidaq_send and minidaq_server do\n";
 
 // What the truth says a coincidence is (Chapter 27's truth sinograms).
 constexpr std::uint8_t kind_true = 0;
@@ -221,6 +227,7 @@ int run(int argc, char** argv) {
   minidaq::SorterConfig sorter;
   DeadTimeConfig dead;
   bool nema = false;
+  bool link = false;  // Chapter 33: quantize the singles as the readout link does
   bool centre_given = false;
   physics::Vec3 centre{0.0, 0.0, 0.0};
   minidaq::config::AcquisitionConfig listmode;  // its output section, and the metadata of the files
@@ -320,11 +327,15 @@ int run(int argc, char** argv) {
       ok = minidaq::parse_into(v, source_length_mm, 1.0, 1'000.0);
     } else if (a == "--truth-sino" && !v.empty()) {
       truth_sino_prefix = v;
+    } else if (a == "--link") {
+      ok = v == "0" || v == "1";
+      link = v == "1";
     } else {
       ok = false;
     }
     if (!ok) {
       std::fputs(usage, stderr);
+      std::fputs(usage_link, stderr);
       return 2;
     }
   }
@@ -378,6 +389,9 @@ int run(int argc, char** argv) {
   singles.reserve(generated.size());
   front_end.push(generated, singles);
   front_end.flush(singles);
+  if (link) {
+    quantize_as_on_link(singles);
+  }
   const auto& st = sim.stats();
   const auto counts = count_coincidences(singles, window);
 
@@ -396,8 +410,14 @@ int run(int argc, char** argv) {
     std::printf("  not detected         %11llu  %5.1f%%\n", static_cast<unsigned long long>(st.not_detected),
                 percent(st.not_detected, st.photons));
   }
-  std::printf("  recorded singles     %11llu  %5.1f%%\n", static_cast<unsigned long long>(st.singles),
-              percent(st.singles, st.photons));
+  // The simulator stops at the first single at or after the end; the singles of the decays it had
+  // simulated past the end are counted in its statistics but not used (MDQ-PR-055).
+  std::printf("  recorded singles     %11zu  %5.1f%%\n", generated.size(),
+              percent(generated.size(), st.photons));
+  if (st.singles > generated.size()) {
+    std::printf("  past the end         %11llu  (simulated, not used)\n",
+                static_cast<unsigned long long>(st.singles - generated.size()));
+  }
   if (dead.model != DeadTimeModel::none) {
     const auto& d = front_end.stats();
     std::printf("dead time %s per %s, %.0f ns%s: %llu lost (%.1f%%), %llu piled up\n",
@@ -456,9 +476,14 @@ int run(int argc, char** argv) {
           {"activity_bq", cfg.activity_bq},
           {"seconds", seconds},
           {"seed", cfg.seed},
-          {"truth", {{"trues", counts.trues}, {"scatters", counts.scatters}, {"randoms", counts.randoms},
-                     {"multiples", counts.multiples}}},
-          {"sorter_rates_per_s", {{"trues", r.trues}, {"scatters", r.scatters}, {"randoms", r.randoms}}}}}};
+          {"link", link},
+          {"truth",
+           {{"trues", counts.trues},
+            {"scatters", counts.scatters},
+            {"randoms", counts.randoms},
+            {"multiples", counts.multiples}}},
+          {"sorter_rates_per_s",
+           {{"trues", r.trues}, {"scatters", r.scatters}, {"randoms", r.randoms}}}}}};
     // What the corrections need besides the coincidences, as the server records it (Chapter 27).
     minidaq::SinglesCounter counter{sorter.energy_low_kev, sorter.energy_high_kev};
     for (const auto& s : singles) {

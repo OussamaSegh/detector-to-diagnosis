@@ -8,6 +8,7 @@ add_executable(minidaq_unit_tests
   unit/test_raw_single.cpp
   unit/test_packed_single.cpp
   unit/test_readout_packet.cpp
+  unit/test_readout_link_quantize.cpp
   unit/test_crc32.cpp
   unit/test_flight_recorder.cpp
   unit/test_crash_report.cpp
@@ -152,6 +153,12 @@ if(Python3_Interpreter_FOUND)
   # Release 0.7.0: the known-vulnerability audit of the tools' Python lock file (SOUP list, section 2).
   add_test(NAME tools.lock_audit COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_lock_audit.py)
   set_tests_properties(tools.lock_audit PROPERTIES LABELS "unit")
+  # Chapter 33: the acceptance specification's evaluator and the requirements freeze.
+  add_test(NAME tools.acceptance COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_acceptance.py)
+  add_test(NAME tools.req_baseline COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_req_baseline.py)
+  add_test(NAME docs.baseline COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/req_baseline.py
+           ${PROJECT_SOURCE_DIR} --check)
+  set_tests_properties(tools.acceptance tools.req_baseline docs.baseline PROPERTIES LABELS "unit")
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update
@@ -195,6 +202,11 @@ if(Python3_Interpreter_FOUND)
     set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900
       ENVIRONMENT "MINIDAQ_APPS=$<TARGET_FILE_DIR:minidaq_server>;MINIDAQ_TEST_TIME_FACTOR=${_time_factor};MINIDAQ_SANITIZED=${_sanitized}")
   endforeach()
+  # Chapter 33: the chain end to end, through the shipped programs, against the offline reference.
+  add_test(NAME system.e2e
+           COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_e2e.py $<TARGET_FILE_DIR:minidaq_server>)
+  set_tests_properties(system.e2e PROPERTIES LABELS "system" TIMEOUT 900
+    ENVIRONMENT "MINIDAQ_APPS=$<TARGET_FILE_DIR:minidaq_server>;MINIDAQ_TEST_TIME_FACTOR=${_time_factor};MINIDAQ_SANITIZED=${_sanitized}")
   # The statistics the system tests rely on, against tabulated values and for calibration.
   add_test(NAME system.stats COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_stats.py)
   set_tests_properties(system.stats PROPERTIES LABELS "unit")

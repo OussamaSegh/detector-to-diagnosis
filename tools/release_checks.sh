@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # The release checks of SDP section 6 that are not run on every change, in order, on one commit:
 # all presets, static analysis, starters, the stress run, the performance requirements and the
-# regression gate, the system test report and the soak, and 10 minutes of fuzzing per target.
+# regression gate, the system test report, the soak and the end-to-end run, and 10 minutes of
+# fuzzing per target.
 # Run it on the reference machine, quiet, from a clean checkout. Each check writes its output to
 # OUT; the release record cites the files.
 #
@@ -9,10 +10,10 @@
 #
 # PART is all (the default) or one of four parts, each under 45 minutes on the reference machine:
 # 1 the six presets, static analysis and the starters; 2 the stress run, the wide property
-# search, coverage and the benchmarks; 3 the regression gate, the system tests and the soak; 4
-# the fuzzing. Run the parts in order, on the same commit and into the same OUT, when one session
-# cannot hold the whole run (MDQ-PR-041: a machine that restarts within the hour). Parts 2 to 4
-# use the builds that part 1 made.
+# search, coverage and the benchmarks; 3 the regression gate, the system tests, the soak and the
+# end-to-end run; 4 the fuzzing. Run the parts in order, on the same commit and into the same OUT,
+# when one session cannot hold the whole run (MDQ-PR-041: a machine that restarts within the
+# hour). Parts 2 to 4 use the builds that part 1 made.
 #
 # The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails), and
 # 3 if the run stopped before the last check (MDQ-PR-029).
@@ -40,16 +41,21 @@ trap on_exit EXIT
 failed=()
 in_part() { [ "$part" = all ] || [ "$part" = "$1" ]; }
 stamp() { echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) $*"; }
+# Every result also goes to OUT/release-checks.txt, one section per part, which
+# tools/acceptance.py reads (Chapter 33); a part run again appends a new section.
 check() {  # name status
-  if [ "$2" -eq 0 ]; then echo "pass  $1"; else echo "FAIL  $1"; failed+=("$1"); fi
+  local line
+  if [ "$2" -eq 0 ]; then line="pass  $1"; else line="FAIL  $1"; failed+=("$1"); fi
+  echo "$line"
+  echo "$line" >> "$out/release-checks.txt"
 }
 summary() {
   finished=yes
   if [ ${#failed[@]} -gt 0 ]; then
-    echo "${#failed[@]} release checks failed (part $part)" >&2
+    echo "${#failed[@]} release checks failed (part $part)" | tee -a "$out/release-checks.txt" >&2
     exit 1
   fi
-  echo "all release checks passed (part $part)"
+  echo "all release checks passed (part $part)" | tee -a "$out/release-checks.txt"
   exit 0
 }
 
@@ -64,6 +70,7 @@ if [ "$commit_file" != "$out/commit.txt" ] && ! cmp -s "$out/commit.txt" "$commi
   echo "part $part must run on the commit of part 1 ($out/commit.txt)" >&2
   exit 2
 fi
+echo "## part $part" >> "$out/release-checks.txt"
 
 if in_part 1; then
 { stamp "ci/run_all.sh (all six presets)"; ci/run_all.sh; } > "$out/run_all.txt" 2>&1
@@ -153,6 +160,11 @@ python3 tools/test_report.py build/release "$out/system-test-report.md" > "$out/
 check "system test report" $?
 python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes 30 > "$out/soak.txt" 2>&1
 check "soak, 30 minutes at 1 M singles/s" $?
+# Chapter 33: the chain end to end on the same programs, against the offline reference, with the
+# daily QC report and the reconstruction of a phantom (SRS-SYS-006 to SRS-SYS-008).
+MINIDAQ_RECON_CPP=build/release/recon python3 tools/e2e.py build/release/minidaq/apps "$out/e2e" \
+  > "$out/e2e.txt" 2>&1
+check "end to end: the reference's records, every count balanced, QC, image" $?
 fi
 [ "$part" = 3 ] && summary
 
@@ -192,5 +204,5 @@ for t in "${targets[@]}"; do
 done
 fi
 
-echo "The pipeline and writer results are read against SRS-PERF-020 and SRS-PERF-021 by hand."
+echo "After the last part, evaluate the acceptance specification: tools/acceptance.py $out"
 summary

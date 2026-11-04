@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 11 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 12 (MiniDAQ 0.8.0-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -130,14 +130,16 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Exercise starters | each new exercise and each release, `ctest -L starter` on a `Release` build (`tools/release_checks.sh`) | every starter fails at least one test, none hangs |
 | System test report | each release, `tools/test_report.py` on the `release` build (`tools/release_checks.sh`) | every test case of the system test plan passes on the clean release commit; the report is signed by the tester |
 | Soak | each release, `tools/soak.py`, 30 minutes at 1 M singles/s on the reference machine (`tools/release_checks.sh`) | the criteria of SRS-SYS-003 over 30 minutes: no loss, no fault, the run complete, resident memory growing by no more than 1 MiB per hour after a 10-minute warm-up (the 8-hour run belongs to the system test on the acquisition PC, SRS section 3) |
+| End to end | every change, without the image (test `system.e2e`); each release, with the image (`tools/e2e.py`, `tools/release_checks.sh` part 3) | the server's records equal the offline reference's over a clean link, every count balances between the stages, the daily QC report passes, the phantom's image meets SRS-SYS-008 (Chapter 33) |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
-| Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020 and SRS-PERF-021 met; `tools/perf_gate.py` finds no row of the budget slower than the baseline, or the baseline and the budget were updated with a reason (CAPA-0004) |
+| Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020, SRS-PERF-021 and SRS-PERF-022 met (acceptance criteria ACC-01, ACC-02 and ACC-04); `tools/perf_gate.py` finds no row of the budget slower than the baseline, or the baseline and the budget were updated with a reason (CAPA-0004) |
 | Stress run of the threaded tests | each release, `tools/stress_tests.sh` on the `tsan` build, 100 repetitions | no failure, result in `measurements/` (CAPA-0001) |
 | Code review | every change; every Part | the author's review against the change control checklist; a Part review of all changes of the Part (section 5) |
 | Change requests and CAPA | every change (`docs.changes`, `docs.capa`) | every request complete and consistent; every implemented one names its commits and tests |
 | Document control | every change, against the last release (`tools/design_file.py --since`) | every controlled document that changed has a new version and history row |
 | Release package | each release (`tools/release_bundle.py make` and `verify`; CI job `release-package` on the tag) | the product archive verifies; its SHA-256 is the same from the reference machine and from CI, or the difference is explained by a recorded tool version; the evidence archive names it |
 | Risk management review | each release | the risk file is complete, every hazard is closed or its open status is justified for the release's intended use, the overall residual risk is acceptable (risk management plan, section 4) |
+| Requirements freeze | every change (`docs.baseline`); the baseline taken again at each release, after the review of every difference | every requirement added, changed or removed since the baseline is named by an approved or implemented change request (Chapter 33) |
 
 The checks of a release run in order on one clean commit with `tools/release_checks.sh OUT`,
 which writes one file per check into `OUT` and exits with a failure when any check fails or
@@ -189,7 +191,10 @@ release record shows:
 6. how the release was built: the preset, the commands and the tool versions, as the product
    archive's `BUILDINFO.json` records them, and the check that a second build gives the same
    archive (`tools/repro_check.sh`);
-7. where the release is archived: the product archive and the evidence archive with their
+7. the acceptance report: `tools/acceptance.py OUT` on the output of the release checks, every
+   criterion of the [acceptance specification](verification/acceptance.json) PASS for the commit
+   (MISSING and STALE are not a pass);
+8. where the release is archived: the product archive and the evidence archive with their
    SHA-256, the source zip with its git history, the book files and the SBOM, kept for the
    lifetime of the product plus the retention period of the quality system (assumption: confirm
    with team).
@@ -233,3 +238,4 @@ of Chapter 13.
 | 9 | Release 0.5.0: the release checks run in four parts when the machine cannot hold the whole run (MDQ-PR-041). |
 | 10 | Release 0.6.0: a failed CI run is investigated job by job (section 7, MDQ-PR-045, CAPA-0001). |
 | 11 | The formatting check of changed lines in section 6 (Chapter 32, ADR 0027, CR-0018). |
+| 12 | Chapter 33: the end-to-end run and the requirements freeze in section 6, the acceptance report in section 8 (ADR 0028, CR-0020). |

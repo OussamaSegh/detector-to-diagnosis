@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 21 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 22 (MiniDAQ 0.8.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -96,6 +96,7 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-PERF-010 | The latency histogram shall report every percentile within a relative error of 1/128 of the value, and never below the exact value. | metrics | T |
 | SRS-PERF-020 | The acquisition pipeline shall sustain 10,000,000 singles/s with a margin of at least 2 times on the reference machine with the `hardened` preset. | pipeline | M |
 | SRS-PERF-021 | The list-mode sink shall sustain at least 3,000,000 coincidences/s with the `close` fsync policy on the reference machine. | output | M |
+| SRS-PERF-022 | When it acquires 1,000,000 singles/s, the acquisition pipeline shall keep the 99th percentile of the end-to-end latency of every 10 s interval of an acquisition at or below 10 ms on the reference machine. | pipeline | M |
 
 ### 2.7 Processing (PROC, SRT, MRG, SNO, CNT)
 
@@ -151,6 +152,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-SIM-021 | The replay source shall replay a recording at its real-time rate or at a configured rate in words/s, paced like the paced source. | sim | T |
 | SRS-SIM-022 | The detector simulator shall, when asked for an uncalibrated detector, report each crystal's energy multiplied by that crystal's gain after a saturation of the given energy scale and each crystal's time later by that crystal's delay, with gains and delays drawn once per simulator from the given spreads and kept within 0.6 to 1.6 and 4 ns, and deliver the singles in the order of their reported times. | sim | T |
 | SRS-SIM-023 | The detector simulator shall, when asked for a spread of detection efficiencies, give each crystal a detection probability drawn once from a normal distribution of mean 1 minus twice the spread and of standard deviation the spread, kept within 0.05 to 1 and drawn from a random stream separate from the gains', and record a photon that deposits enough energy in a crystal with that crystal's probability, drawing every crystal's gain, delay and efficiency from the crystal seed when one is given, whatever the seed of the decays. | sim | T |
+| SRS-SIM-024 | The readout link model shall give, for each single, the single that the server decodes from its MDQ-P1 word: the time truncated to a multiple of 5 ps across the wraps of the 38-bit counter, the energy rounded to a multiple of 0.5 keV, the crystal unchanged, and the truth fields kept, and refuse a single whose crystal is not in the scanner. | sim | T |
 | SRS-DTM-001 | The non-paralyzable dead-time model shall lose every single that arrives while its unit is busy, without extending the dead time. | sim | T |
 | SRS-DTM-002 | The paralyzable dead-time model shall restart the dead time with every arrival, recorded or lost. | sim | T |
 | SRS-DTM-003 | When pile-up is enabled, the dead-time model shall add the energy of a lost single to the recorded single that made the unit busy. | sim | T |
@@ -257,6 +259,9 @@ Requirements on the programs together, verified by the system tests of Chapter 1
 | SRS-SYS-003 | The server shall acquire at 1,000,000 singles/s for 8 hours without a loss, a fault or a growth of its resident memory of more than 1 MiB per hour after the first 10 minutes. | service | M |
 | SRS-SYS-004 | The server shall write identical coincidence records in two acquisitions with the same configuration and seed, whatever the batch sizes and delays of the pipeline. | service | T |
 | SRS-SYS-005 | When the seed differs from the golden run's, the server shall write an acquisition that agrees with the golden run in its prompt and delayed rates, energy spectrum and time differences, each comparison with a p-value above `0.001`. | service | T |
+| SRS-SYS-006 | When the singles of an acquisition reach the server over a readout link that loses, delays and duplicates no packet, the server shall write list-mode files whose coincidence records are identical, record for record, to those that the offline sorter of `minidaq_sim` writes from the same singles quantized as on the link, with the same sorter configuration. | service | T |
+| SRS-SYS-007 | The server's final status shall account for every single and every coincidence of an acquisition between its stages: packets delivered and lost equal to packets sent, packets received equal to delivered and stale, singles into the sorter equal to words delivered less invalid words, singles into the sorter equal to those rejected by energy, left alone, in multiples and twice the pair windows, pair windows equal to prompts and those rejected by geometry, coincidences written equal to prompts and delayed, and the files holding exactly those prompts and delayed. | service | T |
+| SRS-SYS-008 | When an acquisition of the end-to-end phantom (an 80 mm radius cylinder of activity in a 90 mm radius water cylinder) is reconstructed, the chain of the server, the sinogram binning, the randoms and attenuation corrections and OSEM shall give an image in which the activity's radius at half its level is within 2 mm of 80 mm and the mean of the disc within 24 mm of the center is within 10% of the mean of the ring from 24 to 48 mm. | tools | D |
 
 ### 2.15 Diagnostics (DIAG)
 
@@ -415,6 +420,8 @@ shipped programs do not change.
 | SRS-PLT-009 | I | `tools/platform_check.py`, run on the acquisition PC at installation and after every platform change; its fact file and the platform SBOM it writes are the installation record. On the book's virtual machine it reports the kernel and the uninstalled files (`measurements/ch25/platform-check.txt`): that machine is a build machine, not the platform. |
 | SRS-IQ-004 | M | `measurements/ch30/quality.txt`, section 4: over six independent realizations of the phantom, a contrast recovery of 0.976 (SD 0.027, lowest 0.951) for the 12 mm rod and 0.877 (SD 0.040, lowest 0.809) for the 8 mm rod, and a background variability of 3.2% (SD 0.9%, highest 4.1%). The limits are book-level numbers (assumption: confirm with team the acceptance values of the scanner's image quality specification). Re-measure after every change to the reconstruction, its corrections or the protocol. |
 | SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
+| SRS-SYS-008 | D | `tools/e2e.py`, run by the release checks (part 3) on the release build: its phantom acquisition, reconstructed by OSEM with 4 iterations of 8 subsets and 2 mm pixels, and the two image checks in `e2e/e2e.json` (`measurements/ch33/e2e/`: radius 80.25 mm, center over periphery 1.042). Without the attenuation correction the same data give 0.86 (`measurements/ch33/README.md`). The limits are book-level numbers (assumption: confirm with team the scanner's acceptance tests). |
+| SRS-PERF-022 | M | The soak of SRS-SYS-003 samples the end-to-end latency of every 10 s interval (`tools/soak.py`, `soak.txt` of each release): release 0.7.0 measured a highest 99th percentile of 4.42 ms over 30 minutes (`measurements/release-0.7.0/soak.txt`). The limit of 10 ms is a book-level number, about twice the measured value (assumption: confirm with team what the scanner's real-time display and the gating need). Evaluated by `tools/acceptance.py`, criterion ACC-04. |
 
 ## 4. Changes
 
@@ -441,3 +448,4 @@ shipped programs do not change.
 | 19 | Chapter 30: image quality, SRS-IQ-001 to SRS-IQ-004 (ADR 0025, CR-0016). |
 | 20 | Chapter 31: the analysis package, SRS-ANA-001 to SRS-ANA-006 (ADR 0026, CR-0017). |
 | 21 | Chapter 32: the build, SRS-BLD-001 to SRS-BLD-005 (ADR 0027, CR-0018). |
+| 22 | Chapter 33: the readout link model, SRS-SIM-024; the chain end to end, SRS-SYS-006 to SRS-SYS-008; the end-to-end latency, SRS-PERF-022, which the soak measured since Chapter 19 and no requirement stated (ADR 0028, CR-0020). The requirements are frozen against the baseline `srs-baseline.json` (version 21) from this version on. |
