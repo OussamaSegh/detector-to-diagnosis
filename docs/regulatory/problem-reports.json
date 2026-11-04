@@ -710,6 +710,33 @@
         "category": "process",
         "escape": "tools/check_threats.py checks the elements the model has, not the files the server reads; the release's threat model review, the check meant for it, found it."
       }
+    },
+    {
+      "id": "MDQ-PR-047",
+      "title": "Exercise 31.3's speed test was timed in the debug build and from one run",
+      "found": "2026-11-04, CI run of ci.yml on 97c1bed, job build-test (debug): ch31/e3_histogram/solution/unittest failed test_is_much_faster_than_the_python_loop (C++ 0.0044 s, loop 0.0187 s: 4.2 times, the criterion 20)",
+      "item": "exercises",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "The test timed the solution's C++ histogram against a Python loop once each and asked for 20 times the loop's speed. In the debug build the module is compiled without optimization and reached 4.2 times; in an optimized build a single run also fell to 8.4 times now and then, when one run took a page fault or was preempted. The solution is correct: every other test passed, and its counts equal the reference's.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A defect of an exercise's test, not of MiniDAQ or of the solution."
+      },
+      "resolution": {
+        "change": "The module reports whether it was compiled with NDEBUG (dthist.optimized) and the test skips otherwise, as the C++ speed tests of Exercises 5.2 and 10.4 do; each side is the best of five runs; the criterion is 15 times, against 29 times reached at the slowest with four other processes busy (a margin of 94%). The test is a row of CAPA-0001's margin table.",
+        "verification": "50 repetitions of the measurement alone and 30 under load in an optimized build (minimum 34 and 29 times); the debug build skips the test; CI on the fixed commit."
+      },
+      "root_cause": {
+        "whys": [
+          "The test asserted a speed in a build that is not optimized.",
+          "It was written in Part VII without applying the rules of CAPA-0001 for a speed test: run only where the budget holds, a margin of at least 30% measured on the slowest build and load, an entry in the margin table.",
+          "Item 4.6 of the code review checklist names these rules, but nothing checks mechanically that a new test which reads a clock was classified; the review of the exercise checked its acceptance against the starter and the solution, not its timing."
+        ],
+        "cause": "A new timing test reached CI without the CAPA-0001 rules applied, because nothing forces a test that reads a clock to be classified.",
+        "category": "test",
+        "escape": "Every local run used an optimized build (the release preset and an exercise build in Release), where the test passed; CI's debug job was the first to run it unoptimized."
+      }
     }
   ]
 }

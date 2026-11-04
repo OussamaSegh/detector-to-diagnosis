@@ -616,9 +616,9 @@ write the histogram in C++ called through pybind11, with the bin edges exactly t
 safe boundary. *Starter:* `exercises/ch31/e3_histogram/starter/dthist.cpp`. *Acceptance:*
 `tests/test_dthist.py` passes: the counts of a NumPy reference bin for bin, the edges (`lo` in the
 first bin, `lo - 1` outside), int64 arrays converted, wrong lengths and crystal ids refused, and at
-least 20 times the speed of a Python loop. Then answer in `NOTES.md` which entries the starter put
-in the first bin, what `forcecast` does to a value that does not fit, and whether the C++ is worth
-its build. *Time:* 2 hours.
+least 15 times the speed of a Python loop in an optimized build. Then answer in `NOTES.md` which
+entries the starter put in the first bin, what `forcecast` does to a value that does not fit, and
+whether the C++ is worth its build. *Time:* 2 hours.
 
 ## MiniDAQ milestone: the analysis package {.unnumbered}
 

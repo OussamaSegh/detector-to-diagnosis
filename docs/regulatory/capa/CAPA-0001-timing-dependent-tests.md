@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045; in the period to 0.7.0, MDQ-PR-047 |
 | Owner | software lead |
 | Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; again at release 0.6.0 |
 
@@ -131,6 +131,7 @@ this release, on the slowest build and load that runs it:
 | Exercise 12.3, `FastSink.KeepsUpWithTheSorterAndLosesNothing` | under 500 ms in `write()` | about 110 ms | 4.5 times |
 | Exercise 12.3, trickle | max_unsynced + one fsync + 100 ms (MDQ-PR-039) | passes 40 runs alone and the stress run | 100 ms of slack, not 50 |
 | Exercise 4.5, clock tests | wide bounds on the conversion, no speed | not a speed test | not applicable |
+| Exercise 31.3, `test_is_much_faster_than_the_python_loop` | 15 times a Python loop, best of five, optimized builds only (MDQ-PR-047) | 29 times at the slowest, with four other processes busy | 94% |
 
 Item 4.6 of the code review checklist covers a new timing test; the table above is the review
 of the existing ones, which the rule had left out.
@@ -169,6 +170,11 @@ Further action:
 New criterion: no test fails for a timing reason in CI, in the release checks or in the stress
 run between this result and the release of 0.7.0, and every timing test added in Part VII is in
 the table above with its margin. Due: release 0.7.0.
+
+In the period: Exercise 31.3's speed test, added in Part VII, failed in CI's debug build
+(MDQ-PR-047). It had been written without the rules of this CAPA: it timed an unoptimized module,
+from one run, with no measured margin. It is fixed and is now a row of the table above. The
+result at 0.7.0 counts the failure.
 
 ## Closure
 

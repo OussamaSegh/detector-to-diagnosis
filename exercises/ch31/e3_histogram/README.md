@@ -20,7 +20,8 @@ the whole loop. Build it with `cmake -S . -B build/debug -DMINIDAQ_BUILD_STARTER
   outside.
 - `int64` arrays are converted and give the same counts.
 - Arrays of different lengths, and a crystal id beyond `crystals`, raise `ValueError`.
-- On 50,000 entries, at least 20 times faster than a Python loop over the entries.
+- On 50,000 entries, at least 15 times faster than a Python loop over the entries (the best of
+  five runs each, in an optimized build).
 
 **Then, by hand.**
 1. Which entries did the starter count in the first bin that belong outside? Write the rule of

@@ -77,4 +77,11 @@ PYBIND11_MODULE(dthist, m) {
   m.def("histogram", &histogram, py::arg("crystal"), py::arg("dt_ps"), py::arg("crystals"),
         py::arg("lo_ps"), py::arg("bin_ps"), py::arg("bins"),
         "(counts[crystals, bins], outside): each crystal's histogram of dt_ps.");
+  // Whether the module was compiled with optimization (NDEBUG): the speed test is only
+  // meaningful then (CAPA-0001, MDQ-PR-047).
+#ifdef NDEBUG
+  m.attr("optimized") = true;
+#else
+  m.attr("optimized") = false;
+#endif
 }

@@ -32,7 +32,10 @@ finds: take int64, or check the range before converting.
 
 On 10,000,000 entries: NumPy (`floor_divide` and one `bincount`) 169 ms, the C++ 39 ms, Numba
 19 ms after a compilation of 0.26 s. A Python loop takes 165 ns per entry, 1.6 s for the same
-entries, so the test's "20 times faster than the loop" passes with a wide margin.
+entries. The test asks for 15 times the loop's speed on 50,000 entries, best of five runs each, in
+an optimized build only: the first version asked for 20 times from one run each, and failed in
+CI's debug build at 4.2 times (MDQ-PR-047). A correct solution reached 29 times at the slowest,
+with four other processes busy, a margin of 94% over the criterion (CAPA-0001).
 
 The C++ is four times faster than NumPy, and half as fast as Numba. NumPy is slower because it
 makes four temporary arrays of 10 million entries (the int64 copy, the bins, the mask, the keys),

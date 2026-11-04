@@ -4,6 +4,7 @@ import time
 import unittest
 
 import numpy as np
+import dthist
 from dthist import histogram
 
 CRYSTALS, LO, BIN, BINS = 576, -2000, 20, 200
@@ -67,16 +68,27 @@ class Histogram(unittest.TestCase):
             histogram(self.crystal, self.dt, 10, LO, BIN, BINS)  # crystal ids up to 575
 
     def test_is_much_faster_than_the_python_loop(self):
+        # CAPA-0001: a speed test, in its margin table. Only an optimized module is timed: the
+        # debug build ran 4.2 times the loop's speed in CI (MDQ-PR-047). Each side is the best of
+        # five runs, because a single run can include a page fault or a preemption; a correct
+        # solution reached 29 times the loop at the slowest, with four other processes busy.
+        if not getattr(dthist, "optimized", False):
+            self.skipTest("speed is only checked in an optimized build")
         n = 50_000
-        t0 = time.perf_counter()
-        slow = python_loop(self.crystal[:n], self.dt[:n], CRYSTALS, LO, BIN, BINS)
-        t_loop = time.perf_counter() - t0
-        t0 = time.perf_counter()
-        fast = histogram(self.crystal[:n], self.dt[:n], CRYSTALS, LO, BIN, BINS)
-        t_cpp = time.perf_counter() - t0
-        np.testing.assert_array_equal(fast[0], slow[0])
-        self.assertLess(t_cpp * 20, t_loop, f"C++ {t_cpp:.4f} s, loop {t_loop:.4f} s")
+        crystal, dt = self.crystal[:n], self.dt[:n]
 
+        def best(f):
+            times = []
+            for _ in range(5):
+                t0 = time.perf_counter()
+                out = f()
+                times.append(time.perf_counter() - t0)
+            return min(times), out
+
+        t_loop, slow = best(lambda: python_loop(crystal, dt, CRYSTALS, LO, BIN, BINS))
+        t_cpp, fast = best(lambda: histogram(crystal, dt, CRYSTALS, LO, BIN, BINS))
+        np.testing.assert_array_equal(fast[0], slow[0])
+        self.assertLess(t_cpp * 15, t_loop, f"C++ {t_cpp:.5f} s, loop {t_loop:.5f} s")
 
 if __name__ == "__main__":
     unittest.main()
