@@ -984,6 +984,33 @@
         "category": "process",
         "escape": "The release checks run on the development machine, which has every package; a new system test was not run in a CI-like environment before it was pushed. The CI failure was seen on the next look at the runs, before the release."
       }
+    },
+    {
+      "id": "MDQ-PR-057",
+      "title": "fuzz_calibration aborted on a valid table: its oracle remembered a NaN that a later edit had overwritten",
+      "found": "2026-11-04, the CAPA-0001 check of release 0.8.0: CI job fuzz-smoke on the Part VII review's commit (1eb2b89) failed with fuzz.calibration; the input was in the job's log and reproduced on main",
+      "item": "tests",
+      "status": "closed",
+      "capa": "",
+      "description": "In edit mode the target applies up to 64 edits to a valid calibration table and expects the reader to accept exactly when the final table is valid. It decided 'not finite' with a flag set when any edit wrote a NaN or an infinity, so an input that wrote a NaN to a coefficient and later overwrote it with a finite value expected a rejection; the reader accepted the finite table, correctly, and the target aborted. The failure was on the review branch's run and went unread: the branch was merged locally after the main thread's own CI was green.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A defect in a test's oracle; the calibration reader behaved as specified on the input (it accepted a table of finite values with a right CRC), and no product code changed."
+      },
+      "resolution": {
+        "change": "The target decides whether the table holds a value that is not finite from the values it ends with. The input is a seed, corpus/calibration/regress-nan-overwritten, and a row of fuzz/README.md's findings.",
+        "verification": "fuzz_calibration on the input exits 0; the CI job fuzz-smoke and the release fuzzing of 0.8.0 run the target from the corpus that holds it."
+      },
+      "root_cause": {
+        "whys": [
+          "The target expected a rejection for a valid table.",
+          "Its flag recorded the history of the edits, not the state of the table that the reader saw.",
+          "A failed CI run on a review branch was not read before the branch was merged; only the main branch's runs were checked."
+        ],
+        "cause": "A test oracle computed from the operations instead of from the result they produced, and a red run on a branch that nobody read.",
+        "category": "process",
+        "escape": "The release 0.7.0 fuzzing did not reach the input; the review branch's run did, and the merge looked only at the runs on main. The CAPA-0001 check of every failed run of the period found it."
+      }
     }
   ]
 }

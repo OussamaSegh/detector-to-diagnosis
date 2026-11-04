@@ -191,7 +191,6 @@ int edit_mode(Bytes in) {
       "CP-026 version 1"};
   std::vector<CrystalCalibration> k(n);
   bool stale_crc = false;
-  bool finite = true;
   std::vector<std::pair<std::uint32_t, std::uint8_t>> overwrites;
   for (int ops = 0; ops < 64 && !in.empty(); ++ops) {
     const std::uint8_t op = in.u8() % 9U;
@@ -207,7 +206,6 @@ int edit_mode(Bytes in) {
         if ((bits & 1U) != 0U) {
           v = static_cast<float>(static_cast<std::int32_t>(bits) % 4096) / 64.0F;
         }
-        finite = finite && std::isfinite(v);
         (op == 0 ? k[i].a_kev : op == 1 ? k[i].b_kev : k[i].q_kev) = v;
         break;
       }
@@ -233,6 +231,12 @@ int edit_mode(Bytes in) {
         overwrites.emplace_back(in.u32(), in.u8());
         break;
     }
+  }
+  // Whether the table holds a value that is not finite is a property of the values it ends with: a
+  // later edit can overwrite a NaN (MDQ-PR-057).
+  bool finite = true;
+  for (const auto& c : k) {
+    finite = finite && std::isfinite(c.a_kev) && std::isfinite(c.b_kev) && std::isfinite(c.q_kev);
   }
   const std::uint32_t good = minidaq::crc32(minidaq::canonical_bytes(k));
   const std::uint32_t written = stale_crc ? good ^ 0x5a5a5a5aU : good;
