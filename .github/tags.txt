@@ -37,4 +37,5 @@ ch27 73a2b754e0e7c1ec1a10866f357d9db67f8fe6f5 Chapter 27: corrections. ci, codeq
 ch28 86edea69f17b60b3309cf8d9c81aa481a312ccd7 Chapter 28: image reconstruction. ci, codeql, gates, kdp and pages green on GitHub.
 ch29 893413de586704b9e76ed10806f0ff76a3af8ec2 Chapter 29: C++ and Python (on the first green commit after it, which also holds Chapter 30 and the hardened-build fixes). ci, codeql, gates, kdp and pages green on GitHub.
 ch30 893413de586704b9e76ed10806f0ff76a3af8ec2 Chapter 30: image quality. ci, codeql, gates, kdp and pages green on GitHub.
+ch31 21fe31e3d8a3fedbeaf38649369b81b909e4c590 Chapter 31: the scientific Python package (on the first commit after it whose ci run is green, with the fix of MDQ-PR-047). ci green on GitHub.
 book-v0.6.0 a809a51e134480d1522c9491dc46a34c45284c60 Release 0.6.0: Part VI complete. Release checks on 893413d; ci, codeql, kdp and pages green on GitHub.
