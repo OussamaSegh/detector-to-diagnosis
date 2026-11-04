@@ -29,8 +29,16 @@ SPEC = ROOT / "docs/regulatory/verification/acceptance.json"
 SCALE = {"": 1.0, "k": 1e3, "M": 1e6, "G": 1e9}
 
 
+SHORTEST = 7  # a commit prefix shorter than this names nothing (Exercise 33.2)
+
+
 class Missing(Exception):
     """The evidence is not there or cannot be read."""
+
+
+def same_commit(a, b):
+    """True when a and b name the same commit: one is a prefix of the other, both long enough."""
+    return min(len(a), len(b)) >= SHORTEST and (a.startswith(b) or b.startswith(a))
 
 
 # [snippet:rules]
@@ -154,11 +162,11 @@ def evaluate(c, out, candidate, root=ROOT):
     try:
         if c["rule"] == "repository":
             made_on = commit_of_part(out, 1)
-            if made_on is None or not made_on.startswith(candidate):
+            if made_on is None or not same_commit(made_on, candidate):
                 return "STALE", f"the release checks ran on {made_on or 'a changed tree'}"
             head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
                                   capture_output=True, text=True).stdout.strip()
-            if not head.startswith(candidate):
+            if not same_commit(head, candidate):
                 return "STALE", f"the repository is at {head[:12]}, not at the candidate"
             ok, found = repository(root, c)
             return ("PASS" if ok else "FAIL"), found
@@ -171,7 +179,7 @@ def evaluate(c, out, candidate, root=ROOT):
             if c["evidence"].endswith(".json") and c["rule"].startswith("e2e"):
                 made_on = e2e_checks(text)["commit"]
                 made_on = None if made_on.endswith("-dirty") else made_on
-            if made_on is None or not (made_on.startswith(candidate) or candidate.startswith(made_on)):
+            if made_on is None or not same_commit(made_on, candidate):
                 return "STALE", f"made on {made_on or 'a tree with changes'}"
         ok, found = RULES[c["rule"]](text, c)
         return ("PASS" if ok else "FAIL"), found
@@ -208,6 +216,10 @@ def main(argv=None):
         return 2
     spec = json.loads(args.spec.read_text())
     candidate = args.commit
+    if candidate is not None and len(candidate) < SHORTEST:
+        print(f"--commit {candidate}: give at least {SHORTEST} characters of the commit",
+              file=sys.stderr)
+        return 2
     if candidate is None:
         try:
             candidate = commit_of_part(args.out, 1)

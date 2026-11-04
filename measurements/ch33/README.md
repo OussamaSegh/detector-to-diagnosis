@@ -12,8 +12,10 @@
   Result (commit 392e4ae, 4 CPUs): PASS. QC: 912,139 singles in 5,012 packets, 135,972 prompts
   and 338 delayed, records equal to the reference, QC report PASS. Phantom: 4,466,628 singles,
   134,605 prompts and 6,453 delayed, records equal to the reference; OSEM radius at half level
-  80.25 mm, center over periphery 1.042. All 17 accounting checks of each acquisition balance;
-  end-to-end latency p99 1.85 ms and 1.67 ms.
+  80.25 mm, center over periphery 1.042. Every check passes: 17 for the QC acquisition (its last
+  is the QC report), 16 plus the two image checks for the phantom; end-to-end latency p99 1.85 ms
+  and 1.67 ms. The sorter equation in these files has no out-of-order term (MDQ-PR-059, fixed
+  after the release; the out-of-order count of both acquisitions is 0, `e2e.json`).
 
 - `e2e-damaged/`: the same with a damaged link (`--loss 0.002 --reorder 0.002 --duplicate 0.002`,
   2 MBq, no image): both runs incomplete with the loss named, every packet accounted for.

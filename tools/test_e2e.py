@@ -27,7 +27,7 @@ SENT = {"singles": 1000, "packets": 10, "lost": 0, "delayed": 0, "duplicated": 0
 STATUS = {
     "detector_counters": {"packets_delivered": 10, "packets_lost": 0, "packets_received": 10,
                           "packets_stale": 0, "words_delivered": 1000},
-    "sorter": {"singles_in": 1000, "energy_rejected": 500, "singles_alone": 370,
+    "sorter": {"singles_in": 1000, "energy_rejected": 498, "out_of_order": 2, "singles_alone": 370,
                "pair_windows": 62, "singles_in_multiples": 6, "prompts": 60,
                "geometry_rejected": 2, "delayed": 5},
     "sink_counters": {"coincidences": 65},
@@ -80,7 +80,7 @@ class Accounting(unittest.TestCase):
         status = copy.deepcopy(STATUS)
         status["detector_counters"].update(packets_delivered=9, packets_lost=1, packets_received=9,
                                            words_delivered=900)
-        status["sorter"].update(singles_in=900, energy_rejected=400)
+        status["sorter"].update(singles_in=900, energy_rejected=398)
         status["integrity"]["complete"] = False
         self.assertEqual(failed(sent=sent, status=status), [])
         status["integrity"]["complete"] = True
@@ -136,7 +136,12 @@ class EndToEnd(unittest.TestCase):
         self.assertTrue(checks["link: delivered or lost"]["ok"])
         self.assertTrue(checks["integrity: the loss is named"]["ok"])
         self.assertEqual(checks["integrity: the run says whether it is complete"]["left"], False)
-        self.assertEqual(code, 0 if result["ok"] else 1)
+        # every other check must balance too: a damaged link changes the equations, not the rule
+        # that each of them holds
+        bad = [(a["name"], c["name"]) for a in result["acquisitions"] for c in a["checks"]
+               if not c["ok"]]
+        self.assertEqual(bad, [])
+        self.assertEqual(code, 0)
 
 
 if __name__ == "__main__":

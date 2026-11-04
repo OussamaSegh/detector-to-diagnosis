@@ -164,14 +164,18 @@ The equations are of two kinds. A **hand-over** equation says that two stages ag
 the singles into the sorter equal the words delivered by the decoder, less those it found invalid;
 the coincidences written equal the prompts and delayed coincidences the sorter emitted; the records
 in the files equal what the sink wrote. A **partition** equation says that a stage lost nothing
-inside itself: every single entering the sorter was rejected by energy, left alone, in a multiple,
-or one of the two singles of a pair window; every record read by the binning was binned or set
-aside for a named reason. Together they make a closed account from the first packet sent to the
-last record binned.
+inside itself: every single entering the sorter was rejected by energy, set aside as out of
+order, left alone, in a multiple, or one of the two singles of a pair window (Chapter 10's
+partition); every record read by the binning was binned or set aside for a named reason. Together
+they make a closed account from the first packet sent to the last record binned.
 
 An equation that always holds is indistinguishable from an equation that can never fail. The test
-`Accounting.test_every_counter_off_by_one_fails_a_check` takes the counters of a clean run, changes
-each one by plus one and by minus one, and requires that at least one equation then fails. The check
+`Accounting.test_every_counter_off_by_one_fails_a_check` takes a consistent set of counters,
+changes each one by plus one and by minus one, and requires that at least one equation then fails.
+The test had a gap of its own, found in the review of this chapter (MDQ-PR-059): the first version
+of the sorter's equation left out the out-of-order singles, and the test's set of counters left
+them out too, so neither noticed. A counter that a stage reports and no equation names is a count
+that can go wrong unseen. The check
 of a check is cheap and worth its few lines: Exercise 33.1 does the same for the
 sorter's own counters, and shows the one counter that no equation over them can pin down.
 
@@ -299,9 +303,10 @@ reference within a day of its commit, not at the next release.
 
 The chain test answers "does the whole thing work?" for one run. A release asks a broader
 question: does this version meet everything we said it must? Until this chapter MiniDAQ answered it
-in prose. The release record of 0.7.0 says that the performance results were "read against
-SRS-PERF-020 and SRS-PERF-021 by hand"; the list of verifications in the development plan (SDP
-section 6) names what must be run, not what each result must show. A reviewer could check that
+in prose. The release record of 0.7.0 gives the performance results next to SRS-PERF-020 and
+SRS-PERF-021 in its notes, with the ratios to the requirements worked out by whoever wrote it; the
+list of verifications in the development plan (SDP section 6) names what must be run, not what each
+result must show. A reviewer could check that
 every verification ran. Whether each one met its target was a judgment made while reading a page of
 benchmark output, and nothing kept the judgment the same between releases.
 
@@ -352,7 +357,9 @@ There are four verdicts, and only one of them counts:
 - **STALE**: the evidence exists but was produced on another commit, or on a working tree with
   changes. Every part of the release checks records its commit (`commit.txt`, `commit-part-N.txt`)
   and the end-to-end result records its own, with `-dirty` for a changed tree. A benchmark of last
-  week's commit says nothing about this one, whatever its value.
+  week's commit says nothing about this one, whatever its value. A short and a full form of the
+  same commit match, but a prefix of fewer than seven characters names no commit and matches
+  nothing.
 
 The order matters. Freshness is checked before the target: evidence of another commit is STALE
 even when its value would fail, because a FAIL sends a reader looking for a regression in the
@@ -385,7 +392,8 @@ test.
 
 A freeze is the rule that, from a given point, a requirement changes only through change control.
 MiniDAQ's freeze is a baseline of digests, `docs/regulatory/srs-baseline.json`, taken from SRS
-version 21 at release 0.7.0, and a check that compares the SRS with it on every change:
+version 21 at release 0.7.0 (and retaken from version 23 in the review of release 0.8.0), and a
+check that compares the SRS with it on every change:
 
 ```{.python include="tools/req_baseline.py" snippet="digest"}
 ```

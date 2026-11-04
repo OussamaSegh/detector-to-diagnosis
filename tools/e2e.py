@@ -91,10 +91,11 @@ def accounting(sent, status, records, sino):
     out.append(check("decoder: every word delivered reached the sorter", s["singles_in"],
                      link["words_delivered"] - link.get("words_invalid", 0),
                      "sorter singles in = words delivered - invalid words"))
-    split = (s["energy_rejected"] + s["singles_alone"] + 2 * s["pair_windows"]
+    split = (s["energy_rejected"] + s["out_of_order"] + s["singles_alone"] + 2 * s["pair_windows"]
              + s["singles_in_multiples"])
     out.append(check("sorter: every single is accounted for", split, s["singles_in"],
-                     "energy rejected + alone + 2 x pair windows + in multiples = singles in"))
+                     "energy rejected + out of order + alone + 2 x pair windows + in multiples "
+                     "= singles in"))
     out.append(check("sorter: every pair window is a prompt or rejected by geometry",
                      s["prompts"] + s["geometry_rejected"], s["pair_windows"],
                      "prompts + geometry rejected = pair windows"))
