@@ -26,6 +26,7 @@ no LTO), timed on the same 10,000,000 entries, minimum of 5 runs, in a separate 
 | Numba, with lo, bin and bins passed as arguments (not constants) | 22 |
 
 A 64-bit integer division is the slowest instruction in the loop; LLVM, which Numba and clang use,
-tests for operands that fit in 32 bits and divides in 32 bits when they do. That explains about
-a fifth of the difference; the rest was not found. The C++ is not slower by design, but it is
+tests for operands that fit in 32 bits and divides in 32 bits when they do. That explains 6 to 8
+of the 10 to 12 ms between the g++ build and Numba; the rest was not found. (Corrected in the Part
+VII review: this sentence first said "about a fifth", which these numbers do not support.) The C++ is not slower by design, but it is
 not faster for being C++: the loop is the same loop, and the compiler decides.

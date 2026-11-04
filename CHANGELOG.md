@@ -28,6 +28,13 @@ the patch version.
   11.975%; NumPy is four to nine times slower than the compiled loops, and the C++ against Numba
   is told as the measurement found it. Exercise 31.2's test docstring: about 19 counts in each
   top bin, not 6.
+- Left by the Part VII review and fixed after its merge: the projector's wheel carries the
+  LICENSE (a license file outside `recon/python` was silently left out; it is now a symbolic
+  link, and `recon.wheel` checks it); `measurements/ch31/histogram-speed.txt` said the 32-bit
+  division explains "about a fifth" of the C++ against Numba difference, where its own numbers
+  give 6 to 8 of 10 to 12 ms; Chapter 32's reformatting costs come from a recorded measurement
+  (`measurements/ch32/format_cost.py`, 1,883 lines in 308 of 619 files; regrouping includes
+  adds 75 lines in 5 files), replacing an unrecorded "more than 2,200 lines in 387 files".
 
 ## [0.7.0] - 2026-11-04
 

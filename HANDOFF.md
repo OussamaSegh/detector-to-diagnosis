@@ -407,9 +407,12 @@ Part VII (thread started 2026-11-03).
   0.8.0-dev, SOUP list v16 (review for 0.8). The bump found MDQ-PR-054 (`cmake.consumer` asked
   for a fixed recon 0.7; it now reads VERSION). Opus Part VII review asked of the coordinator.
   Next: Part VIII (see "Start here").
-- Opus review of Part VII (2026-11-04): PR on branch claude/project-thread-6umbqv, Chapter 31
-  text fixes, the Python package versions tied to VERSION (they said 0.7.0.dev0 through release
-  0.7.0), one exercise docstring. Merge it locally.
+- Opus review of Part VII (2026-11-04): PR #5 (branch claude/project-thread-6umbqv) MERGED
+  LOCALLY (5f5611c): Chapter 31 text fixes, the Python package versions tied to VERSION, one
+  exercise docstring. Its three left items fixed after the merge: wheel LICENSE (symlink
+  recon/python/LICENSE, checked by recon.wheel), "a fifth" in histogram-speed.txt, and the
+  format-cost numbers now recorded (measurements/ch32/format-cost.txt). Its fixes go out with
+  0.8.0.
 
 Older notes follow.
 
@@ -648,7 +651,7 @@ Chapter 30 (image quality), 2026-11-03:
    API) takes the account's email as its author (d801e22, 1252200 and 3c14b67 did).
 4. **Part VII** (31 and 32): released as 0.7.0 on 2026-11-04 (checks on cfb708f, tag
    book-v0.7.0 on 3f7d720, report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw). VERSION is
-   0.8.0-dev with the SOUP review for 0.8 (SOUP list v16). Part VII review: asked 2026-11-04.
+   0.8.0-dev with the SOUP review for 0.8 (SOUP list v16). Part VII review: PR #5 merged locally on 2026-11-04 (5f5611c).
 5. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
    (the first 90 days: questions to ask, a ramp-up plan) to full depth. Release 0.8.0.
 6. **Part IX** (new, numbered after 34), three full chapters:

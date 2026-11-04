@@ -69,9 +69,9 @@ repository, on a machine set up as the CI runners are. Four questions had no ans
 - A developer reproduces a CI job with one command; a configuration without its workflow, or a CI
   matrix entry without its preset, fails a test.
 - The wheel and the build tree's module come from the same CMake code, so they cannot drift.
-- Reformatting the whole tree would have rewritten 1,881 lines in 308 of 580 C++ files
-  (`.clang-format`, measured before it was committed) and put a format commit on top of the history
-  of most lines. Checking changed lines formats the code as it is edited and leaves history intact.
+- Reformatting the whole tree would have rewritten 1,883 lines in 308 of 619 C++ files
+  (`measurements/ch32/format-cost.txt`, measured after release 0.7.0) and put a format commit on
+  top of the history of most lines. Checking changed lines formats the code as it is edited and leaves history intact.
 
 ### Negative
 

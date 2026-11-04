@@ -435,14 +435,14 @@ PointerAlignment: Left
 IncludeBlocks: Preserve
 ```
 
-`clang-format` would rewrite 1,881 lines in 308 of 580 C++ files, about 3.5% of the 53,921 lines.
-Small, but spread over half the files, and every one of those lines would show the format commit in
-`git blame` instead of the change that wrote it. The history of a line is how a regulated team
+`clang-format` would rewrite 1,883 lines in 308 of 619 C++ files, about 3.4% of the 54,616 lines
+(`measurements/ch32/format-cost.txt`, measured after release 0.7.0). Small, but spread over half
+the files, and every one of those lines would show the format commit in `git blame` instead of the
+change that wrote it. The history of a line is how a regulated team
 answers "why is this here?" (Chapter 21 used bisect to find a regression's commit); a reformatting
 commit puts a layer of noise over it. `IncludeBlocks: Preserve` was chosen for the same reason:
-Google's regrouping of includes would have moved lines in files that were otherwise untouched, and
-raised the count to more than 2,200 lines in 387 files when the short-function rules were tightened
-as well.
+Google's regrouping of includes moves lines in files that are otherwise untouched, 75 more lines in
+five more files on the same tree.
 
 So `.clang-format` is checked on changed lines only (coding standard rule 1.4, ADR 0027). Git ships
 the tool for it: `git clang-format` runs clang-format on the lines that differ between the working
@@ -664,7 +664,7 @@ SRS-BLD-005 tested; every starter of the chapter fails. Tag `ch32`.
   source 1.6 s. Includes in headers are paid by every includer; forward declarations and smaller
   headers cut the cost.
 - `.clang-format` is checked on changed lines, by a pre-commit hook and the CI job `format`;
-  reformatting the tree would have rewritten 1,881 lines in 308 files and buried their history.
+  reformatting the tree would have rewritten 1,883 lines in 308 files and buried their history.
 - A change to the build is tested in a fresh build directory (MDQ-PR-049), and a test that starts a
   thread waits for it to start (MDQ-PR-048).
 

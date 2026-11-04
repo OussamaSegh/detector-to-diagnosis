@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import unittest
+import zipfile
 
 SOURCE = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 2 else None
 WORK = pathlib.Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else None
@@ -37,6 +38,11 @@ class Wheel(unittest.TestCase):
                         str(SOURCE / "recon/python")], check=True, env=env,
                        stdout=subprocess.DEVNULL)
         (wheel,) = out.glob("minidaq_recon-*.whl")
+        # The MIT license asks that its notice go with every copy; a license file outside the
+        # pyproject's directory was silently left out (Part VII review), hence the symbolic link.
+        with zipfile.ZipFile(wheel) as z:
+            self.assertTrue(any(n.endswith(".dist-info/licenses/LICENSE") for n in z.namelist()),
+                            z.namelist())
         subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "--no-deps",
                         "--target", str(site), str(wheel)], check=True)
         installed = sorted(p.name for p in site.iterdir() if not p.name.endswith(".dist-info"))

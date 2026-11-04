@@ -23,7 +23,8 @@ cmake.build-type = "Release"
 build.targets = ["recon_cpp"]
 install.components = ["recon_python"]
 wheel.packages = []
-wheel.license-files = ["../../LICENSE"]
+# LICENSE here is a link to the repository's: a path outside this directory is not packed.
+wheel.license-files = ["LICENSE"]
 
 [tool.scikit-build.cmake.define]
 MINIDAQ_BUILD_TESTS = "OFF"
