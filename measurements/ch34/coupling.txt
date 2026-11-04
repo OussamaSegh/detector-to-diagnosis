@@ -1,0 +1,24 @@
+# Change coupling in minidaq/ (Exercise 34.1's solution, min_shared 2, max_files 20)
+
+    git log --name-only --format=@%H -- minidaq/ | python3 -c "import sys; sys.path.insert(0, 'exercises/ch34/e1_change_coupling/solution'); from coupling import coupling; [print(*r[:3], f'{r[3]:.2f}') for r in coupling(sys.stdin.read())[:20]]"
+
+minidaq/CMakeLists.txt minidaq/tests/CMakeLists.txt 20 1.00
+minidaq/tests/unit/test_acquisition_service.cpp minidaq/tests/unit/test_listmode_sink.cpp 7 0.78
+minidaq/include/minidaq/pipeline/acquisition_pipeline.hpp minidaq/src/pipeline/acquisition_pipeline.cpp 6 0.86
+minidaq/apps/CMakeLists.txt minidaq/tests/CMakeLists.txt 5 1.00
+minidaq/src/config/acquisition_config.cpp minidaq/tests/unit/test_config.cpp 5 1.00
+minidaq/include/minidaq/pipeline/acquisition_pipeline.hpp minidaq/tests/CMakeLists.txt 5 0.71
+minidaq/CMakeLists.txt minidaq/src/control/acquisition_service.cpp 5 0.62
+minidaq/src/control/acquisition_service.cpp minidaq/tests/CMakeLists.txt 5 0.62
+minidaq/src/control/acquisition_service.cpp minidaq/tests/unit/test_listmode_sink.cpp 5 0.62
+minidaq/apps/minidaq_sim.cpp minidaq/tests/CMakeLists.txt 5 0.56
+minidaq/tests/CMakeLists.txt minidaq/tests/unit/test_listmode_sink.cpp 5 0.56
+minidaq/include/minidaq/config/acquisition_config.hpp minidaq/src/config/acquisition_config.cpp 4 1.00
+minidaq/include/minidaq/config/acquisition_config.hpp minidaq/src/control/acquisition_service.cpp 4 1.00
+minidaq/include/minidaq/config/acquisition_config.hpp minidaq/tests/unit/test_config.cpp 4 1.00
+minidaq/include/minidaq/control/control_protocol.hpp minidaq/tests/unit/test_control_protocol.cpp 4 1.00
+minidaq/include/minidaq/control/ports.hpp minidaq/src/control/acquisition_service.cpp 4 1.00
+minidaq/CMakeLists.txt minidaq/apps/CMakeLists.txt 4 0.80
+minidaq/src/config/acquisition_config.cpp minidaq/src/control/acquisition_service.cpp 4 0.80
+minidaq/src/control/acquisition_service.cpp minidaq/tests/unit/test_config.cpp 4 0.67
+minidaq/tests/CMakeLists.txt minidaq/tests/unit/test_config.cpp 4 0.67

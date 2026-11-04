@@ -276,6 +276,12 @@
      "failure": "A requirement changed after its verification without change control, reported as unchanged.",
      "confidence": ["The digest covers the text, the item and the method; its tests change one word, one item and one method and require a failure for each, and a rewrapped row passes.",
                     "A proposed or rejected change request does not count."],
-     "evidence": ["tools/test_req_baseline.py"], "shown_to_fail": "tools.req_baseline"}
+     "evidence": ["tools/test_req_baseline.py"], "shown_to_fail": "tools.req_baseline"},
+    {"id": "TL-43", "name": "Codebase survey (tools/survey.py)", "kind": "own", "class": "T1",
+     "version": "the commit",
+     "use": "Puts each software item's documents (class, hazards, requirements, problem reports) beside its history (files, code lines, commits, changed lines), lists the file hotspots and checks the item map, for an engineer who takes over the codebase (Chapter 34). Run by people; its output is neither in the product nor verification evidence.",
+     "failure": "A misleading list of where to read first; a file without an owner or with an ambiguous one not reported (tools/check_items.py also checks that).",
+     "confidence": ["Its tests check the numstat parsing (renames, binary files), the longest-prefix rule and the whole report on a repository made for the test."],
+     "evidence": ["tools/test_survey.py"], "shown_to_fail": "tools.survey"}
   ]
 }

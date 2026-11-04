@@ -42,3 +42,4 @@ src/part7/ch31-scientific-python.md
 src/part7/ch32-cmake-and-dependencies.md
 src/part8/part8.md
 src/part8/ch33-capstone-end-to-end.md
+src/part8/ch34-first-90-days.md

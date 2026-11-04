@@ -1,0 +1,451 @@
+{
+ "since": "2026-10-01",
+ "items": [
+  {
+   "item": "service",
+   "class": "B",
+   "hazards": [
+    "HZ-1",
+    "HZ-2",
+    "HZ-3"
+   ],
+   "files": 11,
+   "code_lines": 873,
+   "commits": 38,
+   "changed_lines": 1370,
+   "requirements": 26,
+   "by_test": 25,
+   "tested": 25,
+   "reports": 2,
+   "open_reports": 1
+  },
+  {
+   "item": "sim",
+   "class": "B",
+   "hazards": [
+    "HZ-3"
+   ],
+   "files": 13,
+   "code_lines": 947,
+   "commits": 24,
+   "changed_lines": 1478,
+   "requirements": 26,
+   "by_test": 26,
+   "tested": 26,
+   "reports": 3,
+   "open_reports": 1
+  },
+  {
+   "item": "sorter",
+   "class": "B",
+   "hazards": [
+    "HZ-1"
+   ],
+   "files": 2,
+   "code_lines": 310,
+   "commits": 11,
+   "changed_lines": 481,
+   "requirements": 13,
+   "by_test": 13,
+   "tested": 13,
+   "reports": 4,
+   "open_reports": 1
+  },
+  {
+   "item": "hw",
+   "class": "B",
+   "hazards": [
+    "HZ-1",
+    "HZ-2"
+   ],
+   "files": 13,
+   "code_lines": 1303,
+   "commits": 34,
+   "changed_lines": 1965,
+   "requirements": 8,
+   "by_test": 8,
+   "tested": 8,
+   "reports": 2,
+   "open_reports": 0
+  },
+  {
+   "item": "pipeline",
+   "class": "B",
+   "hazards": [
+    "HZ-1",
+    "HZ-2"
+   ],
+   "files": 7,
+   "code_lines": 801,
+   "commits": 23,
+   "changed_lines": 1358,
+   "requirements": 16,
+   "by_test": 14,
+   "tested": 14,
+   "reports": 1,
+   "open_reports": 0
+  },
+  {
+   "item": "core",
+   "class": "B",
+   "hazards": [
+    "HZ-1"
+   ],
+   "files": 16,
+   "code_lines": 762,
+   "commits": 21,
+   "changed_lines": 1208,
+   "requirements": 5,
+   "by_test": 4,
+   "tested": 4,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "protocol",
+   "class": "B",
+   "hazards": [
+    "HZ-2",
+    "HZ-4"
+   ],
+   "files": 4,
+   "code_lines": 532,
+   "commits": 21,
+   "changed_lines": 1023,
+   "requirements": 13,
+   "by_test": 13,
+   "tested": 13,
+   "reports": 3,
+   "open_reports": 0
+  },
+  {
+   "item": "config",
+   "class": "B",
+   "hazards": [
+    "HZ-3"
+   ],
+   "files": 5,
+   "code_lines": 597,
+   "commits": 16,
+   "changed_lines": 1143,
+   "requirements": 9,
+   "by_test": 9,
+   "tested": 9,
+   "reports": 3,
+   "open_reports": 0
+  },
+  {
+   "item": "readout",
+   "class": "B",
+   "hazards": [
+    "HZ-1"
+   ],
+   "files": 6,
+   "code_lines": 594,
+   "commits": 16,
+   "changed_lines": 867,
+   "requirements": 10,
+   "by_test": 10,
+   "tested": 10,
+   "reports": 3,
+   "open_reports": 0
+  },
+  {
+   "item": "format",
+   "class": "B",
+   "hazards": [
+    "HZ-1"
+   ],
+   "files": 8,
+   "code_lines": 881,
+   "commits": 14,
+   "changed_lines": 1415,
+   "requirements": 14,
+   "by_test": 14,
+   "tested": 14,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "processing",
+   "class": "B",
+   "hazards": [
+    "HZ-1"
+   ],
+   "files": 9,
+   "code_lines": 748,
+   "commits": 13,
+   "changed_lines": 1173,
+   "requirements": 7,
+   "by_test": 7,
+   "tested": 7,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "output",
+   "class": "B",
+   "hazards": [
+    "HZ-1",
+    "HZ-3"
+   ],
+   "files": 4,
+   "code_lines": 579,
+   "commits": 11,
+   "changed_lines": 830,
+   "requirements": 15,
+   "by_test": 14,
+   "tested": 14,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "server",
+   "class": "B",
+   "hazards": [
+    "HZ-2"
+   ],
+   "files": 1,
+   "code_lines": 210,
+   "commits": 8,
+   "changed_lines": 333,
+   "requirements": 2,
+   "by_test": 2,
+   "tested": 2,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "rt",
+   "class": "B",
+   "hazards": [
+    "HZ-2"
+   ],
+   "files": 6,
+   "code_lines": 526,
+   "commits": 7,
+   "changed_lines": 775,
+   "requirements": 4,
+   "by_test": 4,
+   "tested": 4,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "access",
+   "class": "B",
+   "hazards": [
+    "HZ-4"
+   ],
+   "files": 4,
+   "code_lines": 474,
+   "commits": 5,
+   "changed_lines": 653,
+   "requirements": 4,
+   "by_test": 4,
+   "tested": 4,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "ctl",
+   "class": "B",
+   "hazards": [
+    "HZ-4"
+   ],
+   "files": 1,
+   "code_lines": 265,
+   "commits": 5,
+   "changed_lines": 407,
+   "requirements": 3,
+   "by_test": 3,
+   "tested": 3,
+   "reports": 1,
+   "open_reports": 0
+  },
+  {
+   "item": "update",
+   "class": "B",
+   "hazards": [
+    "HZ-2",
+    "HZ-4"
+   ],
+   "files": 5,
+   "code_lines": 810,
+   "commits": 5,
+   "changed_lines": 1057,
+   "requirements": 7,
+   "by_test": 7,
+   "tested": 7,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "audit",
+   "class": "B",
+   "hazards": [],
+   "files": 2,
+   "code_lines": 51,
+   "commits": 4,
+   "changed_lines": 132,
+   "requirements": 0,
+   "by_test": 0,
+   "tested": 0,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "metrics",
+   "class": "B",
+   "hazards": [],
+   "files": 2,
+   "code_lines": 208,
+   "commits": 3,
+   "changed_lines": 302,
+   "requirements": 1,
+   "by_test": 1,
+   "tested": 1,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "merger",
+   "class": "B",
+   "hazards": [
+    "HZ-1"
+   ],
+   "files": 2,
+   "code_lines": 166,
+   "commits": 2,
+   "changed_lines": 238,
+   "requirements": 5,
+   "by_test": 5,
+   "tested": 5,
+   "reports": 0,
+   "open_reports": 0
+  },
+  {
+   "item": "platform",
+   "class": "B",
+   "hazards": [
+    "HZ-2"
+   ],
+   "files": 2,
+   "code_lines": 144,
+   "commits": 2,
+   "changed_lines": 235,
+   "requirements": 4,
+   "by_test": 2,
+   "tested": 2,
+   "reports": 1,
+   "open_reports": 0
+  },
+  {
+   "item": "tools",
+   "class": null,
+   "hazards": [],
+   "files": 5,
+   "code_lines": 1108,
+   "commits": 18,
+   "changed_lines": 1493,
+   "requirements": 27,
+   "by_test": 25,
+   "tested": 25,
+   "reports": 12,
+   "open_reports": 0
+  }
+ ],
+ "hotspots": [
+  {
+   "file": "minidaq/src/control/acquisition_service.cpp",
+   "item": "service",
+   "commits": 13,
+   "code_lines": 500,
+   "score": 6500
+  },
+  {
+   "file": "minidaq/apps/minidaq_sim.cpp",
+   "item": "tools",
+   "commits": 9,
+   "code_lines": 476,
+   "score": 4284
+  },
+  {
+   "file": "minidaq/src/pipeline/acquisition_pipeline.cpp",
+   "item": "pipeline",
+   "commits": 8,
+   "code_lines": 429,
+   "score": 3432
+  },
+  {
+   "file": "minidaq/src/control/listmode_sink.cpp",
+   "item": "output",
+   "commits": 6,
+   "code_lines": 413,
+   "score": 2478
+  },
+  {
+   "file": "minidaq/src/hw/slow_control.cpp",
+   "item": "hw",
+   "commits": 5,
+   "code_lines": 352,
+   "score": 1760
+  },
+  {
+   "file": "minidaq/src/config/acquisition_config.cpp",
+   "item": "config",
+   "commits": 8,
+   "code_lines": 214,
+   "score": 1712
+  },
+  {
+   "file": "minidaq/apps/minidaq_server.cpp",
+   "item": "server",
+   "commits": 8,
+   "code_lines": 210,
+   "score": 1680
+  },
+  {
+   "file": "minidaq/src/processing/coincidence_sorter.cpp",
+   "item": "sorter",
+   "commits": 6,
+   "code_lines": 242,
+   "score": 1452
+  },
+  {
+   "file": "minidaq/src/control/control_server.cpp",
+   "item": "protocol",
+   "commits": 5,
+   "code_lines": 270,
+   "score": 1350
+  },
+  {
+   "file": "minidaq/apps/minidaq_ctl.cpp",
+   "item": "ctl",
+   "commits": 5,
+   "code_lines": 265,
+   "score": 1325
+  }
+ ],
+ "unowned": [],
+ "overlaps": [
+  [
+   "minidaq/include/minidaq/config/hardware_config.hpp",
+   [
+    "hw",
+    "config"
+   ],
+   false
+  ],
+  [
+   "minidaq/src/config/hardware_config.cpp",
+   [
+    "hw",
+    "config"
+   ],
+   false
+  ]
+ ],
+ "dead_prefixes": [],
+ "files": 128
+}

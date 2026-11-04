@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 22 (MiniDAQ 0.8.0-dev). Status: draft for review.
+Version 23 (MiniDAQ 0.8.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -409,6 +409,19 @@ shipped programs do not change.
 | SRS-BLD-004 | The project's formatting check shall find every added or changed C++ line, staged or between two commits, that clang-format with the project's `.clang-format` would rewrite, and leave unchanged lines unchecked. | tools | T |
 | SRS-BLD-005 | The pre-commit hook shall refuse a commit that adds a C++ line the formatting check finds, an e-mail address other than a placeholder or a no-reply address, or a whitespace error, and name the check that refused it. | tools | T |
 
+### 2.24 Codebase survey (SVY)
+
+The survey of the codebase for an engineer who takes it over (Chapter 34, ADR 0029, CR-0021): what
+the documents say about each software item set beside what the history says, the files that
+change most, and the checks of the item map. A tool of the development process; the shipped
+programs do not change.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-SVY-001 | The codebase survey shall count, for every file, the commits that changed it and the lines added and deleted since a given date, from `git log --numstat`, counting a renamed file under its new name and a binary file with its commits and no lines. | tools | T |
+| SRS-SVY-002 | The codebase survey shall give every product source file the software item whose path prefix is the longest that matches it, list the files that no item claims and the files that two items claim with prefixes of the same length, and exit with a failure status when there is one of either. | tools | T |
+| SRS-SVY-003 | The codebase survey shall report, for every software item, its safety class, its hazards, its files, code lines, commits and changed lines, its requirements with those verified by test and those a test names, and its problem reports with those still open; and list the files with the highest product of commits and code lines. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -449,3 +462,4 @@ shipped programs do not change.
 | 20 | Chapter 31: the analysis package, SRS-ANA-001 to SRS-ANA-006 (ADR 0026, CR-0017). |
 | 21 | Chapter 32: the build, SRS-BLD-001 to SRS-BLD-005 (ADR 0027, CR-0018). |
 | 22 | Chapter 33: the readout link model, SRS-SIM-024; the chain end to end, SRS-SYS-006 to SRS-SYS-008; the end-to-end latency, SRS-PERF-022, which the soak measured since Chapter 19 and no requirement stated (ADR 0028, CR-0020). The requirements are frozen against the baseline `srs-baseline.json` (version 21) from this version on. |
+| 23 | Chapter 34: the codebase survey, SRS-SVY-001 to SRS-SVY-003 (ADR 0029, CR-0021). |

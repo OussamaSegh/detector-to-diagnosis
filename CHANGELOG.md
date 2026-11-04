@@ -26,6 +26,12 @@ the patch version.
 - SRS version 22 (SRS-SIM-024, SRS-SYS-006 to SRS-SYS-008, SRS-PERF-022), development plan
   version 12, threat model version 8, CR-0020, ADR 0028; measurements in `measurements/ch33/`;
   Exercises 33.1 to 33.3; chapter text and solutions.
+- Chapter 34, the first 90 days with a data acquisition codebase: `tools/survey.py` (TL-43,
+  test `tools.survey`, SRS-SVY-001 to SRS-SVY-003 in SRS version 23) puts each software item's
+  records (class, hazards, requirements, problem reports) beside its history and lists the
+  hotspots and the problems of the item map; CR-0021, ADR 0029, threat model version 9;
+  `measurements/ch34/` (the survey and the change coupling of MiniDAQ); Exercises 34.1 to 34.3;
+  chapter text and solutions.
 
 ### Changed
 
@@ -34,6 +40,9 @@ the patch version.
 
 ### Fixed
 
+- The item map claimed two paths that hold no file (`minidaq/src/metrics/`,
+  `minidaq/src/processing/count_rates`, both components header-only); found by the first survey
+  and removed (CR-0021).
 - `minidaq_sim` printed as recorded the single it had simulated past the end of the run
   (MDQ-PR-055, found by the end-to-end accounting).
 - The test `cmake.consumer` asks for the minor version of the build it tests, read from VERSION,

@@ -5,8 +5,8 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-04: Part VIII in progress. Chapter 33 written (code, tests, measurements,
-exercises, documents, text, solutions); next: tag ch33 after green CI, then Chapter 34.
+Last updated: 2026-11-04: Part VIII in progress. Chapters 33 and 34 written; next: tags ch33 and
+ch34 after green CI, the items owed to 0.8.0, then release 0.8.0.
 
 ## Start here (next thread, Part VIII)
 
@@ -364,6 +364,10 @@ Part VIII (thread started 2026-11-04).
   `docs.baseline`), SRS v22, SDP v12, threat model v8, CR-0020 (implemented), ADR 0028,
   MDQ-PR-055, `measurements/ch33/`, Exercises 33.1 to 33.3, `book/src/part8/`,
   `book/solutions/ch33.md`.
+- Chapter 34 complete: `tools/survey.py` (TL-43, `tools.survey`, SRS-SVY-001..003, SRS v23),
+  CR-0021 (also removed two dead prefixes from software-items.json), ADR 0029, threat model v9,
+  `measurements/ch34/`, Exercises 34.1 to 34.3 (34.3 is a mutation exercise, 7 mutants),
+  `book/src/part8/ch34-first-90-days.md`, `book/solutions/ch34.md`.
 - At release 0.8.0: run `tools/acceptance.py OUT` after part 4 and keep the report as item 7 of
   the release record (SDP v12 section 8); retake the baseline with
   `tools/req_baseline.py . --write "SRS version 22, release 0.8.0"` after reviewing

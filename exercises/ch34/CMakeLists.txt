@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_change_coupling)
+minidaq_python_exercise(e2_item_map)
+minidaq_mutation_exercise(e3_characterize MUTANTS 7 MIN_TESTS 8)
