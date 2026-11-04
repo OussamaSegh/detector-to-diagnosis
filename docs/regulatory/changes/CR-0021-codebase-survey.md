@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-04, by the software lead |
 | Source | improvement: the first 90 days with a data acquisition codebase (Chapter 34) |
 | Decision | approved, 2026-11-04, software lead |
-| Commits | none yet |
+| Commits | 8b5ec90 |
 
 ## Description
 
