@@ -18,10 +18,11 @@ for every pair, `std::hypot` and a division for the field-of-view distance.
   `CoincidenceSorter`, in the same order (the baseline passes this too).
 - `FastSorter.FastEnough` (release builds without sanitizers): at least 1.9 times the
   baseline's singles per second (the goal is twice; the check leaves room for a busy
-  machine) on 20 ms of simulated 20 MBq data, and more than 30 M singles/s inside the energy
-  window (best of seven runs, the two sorters interleaved). `EX_MIN_SPEEDUP` and
-  `EX_MIN_SINGLES_PER_S` override the two limits on a machine where you have measured a
-  reason to.
+  machine) on 20 ms of simulated 20 MBq data (best of seven runs, the two sorters
+  interleaved). `EX_MIN_SPEEDUP` overrides the ratio on a machine where you have measured a
+  reason to. The 30 M singles/s target is a rate of your machine at that moment, so it is
+  checked only when you ask for it, on a quiet machine: `EX_MIN_SINGLES_PER_S=30e6`. The test
+  records both rates (`fast_singles_per_s`, `baseline_singles_per_s`) for your report.
 
 **Report** (one page, in your NOTES): the machine, compiler and flags; the profile before
 (where the time went, with numbers); each change and what it bought, measured one at a

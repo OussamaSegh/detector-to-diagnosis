@@ -848,6 +848,61 @@
         "category": "process",
         "escape": "The lock file was added in Chapter 31 with a license and version review, without a vulnerability lookup."
       }
+    },
+    {
+      "id": "MDQ-PR-052",
+      "title": "Exercise 10.4's speed test also asked for an absolute rate with no margin",
+      "found": "2026-11-04, release checks of 0.7.0, part 1, on 1572784: ch10/e4_fast_sorter/solution/FastSorter.FastEnough failed in the hardened preset with 29.2 M singles/s against 30 M",
+      "item": "exercises",
+      "status": "closed",
+      "capa": "CAPA-0001",
+      "description": "FastSorter.FastEnough checks two things: the solution is at least 1.9 times the baseline (with the margin of MDQ-PR-040) and it exceeds 30 M singles/s inside the energy window. The second is an absolute rate of the machine at the moment of the run. The reference solution reaches about 50 M alone in the hardened build and 42 to 49 M with six busy processes, but fell to 29.2 M while the release checks ran the other tests beside it. The CAPA's margin table listed only the ratio.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A test of an exercise; MiniDAQ's code and tests are unchanged."
+      },
+      "resolution": {
+        "change": "The absolute rate is checked only when EX_MIN_SINGLES_PER_S is set, on a quiet machine the reader has measured; the ratio stays the default check. The test still records both rates. README and Chapter 10's exercise text say so; CAPA-0001's table row names both criteria.",
+        "verification": "The test passes in the release and hardened builds alone and under load; with EX_MIN_SINGLES_PER_S=30e6 on the quiet machine it passes at about 50 M."
+      },
+      "root_cause": {
+        "whys": [
+          "The test failed at 29.2 M against 30 M while the machine was busy.",
+          "An absolute rate depends on the machine and its load; a ratio of two sorters measured interleaved does not.",
+          "The margin review of 0.5.0 (MDQ-PR-040) changed and tabled the ratio and did not see that the same test had a second criterion.",
+          "The table has one row per test and one criterion per row."
+        ],
+        "cause": "A speed test with two criteria was reviewed against the margin rule for one of them.",
+        "category": "test",
+        "escape": "The rate held on the quiet machine and in CI's runners; only the release checks run the hardened build's tests with other heavy tests beside them."
+      }
+    },
+    {
+      "id": "MDQ-PR-053",
+      "title": "The release checks built the starters with Unix Makefiles, under which Exercise 32.3's tests skip",
+      "found": "2026-11-04, release checks of 0.7.0, part 1: 'passes every test: ch32/e3_rebuild/starter'",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "Exercise 32.3's tests ask Ninja which files a change rebuilds (a dry run) and skip with another generator. tools/release_checks.sh configures build/starters without a generator, so CMake chose Unix Makefiles, the three tests skipped and the starter passed. The check of the starters did its job and reported it.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A release check of the exercises; MiniDAQ is unchanged."
+      },
+      "resolution": {
+        "change": "release_checks.sh configures build/starters with -G Ninja, as the presets do.",
+        "verification": "With Ninja, Exercise 32.3's starter fails one test and its solution passes; the starter check of the release checks run again."
+      },
+      "root_cause": {
+        "whys": [
+          "The starter passed because its tests skipped.",
+          "The tests need Ninja and the starter build used CMake's default generator.",
+          "Exercise 32.3 was verified in the exercise build tree, configured by a preset with Ninja, not in the release checks' own build."
+        ],
+        "cause": "A test that depends on the generator was verified in one build configuration only.",
+        "category": "tool",
+        "escape": "Chapter 32's exercises were added after the last release checks."
+      }
     }
   ]
 }

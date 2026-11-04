@@ -140,8 +140,12 @@ TEST(FastSorter, FastEnough) {
   // does not fail a correct solution (CAPA-0001, MDQ-PR-040).
   const double need = env != nullptr ? std::atof(env) : 1.9;
   EXPECT_GT(fast, need * slow) << "fast " << fast / 1e6 << " M singles/s, baseline " << slow / 1e6 << " M/s";
-  const char* target = std::getenv("EX_MIN_SINGLES_PER_S");
-  EXPECT_GT(fast, target != nullptr ? std::atof(target) : 30e6)
-      << "the chapter's target: 30 M singles/s inside the energy window, on one core";
+  // The chapter's target, 30 M singles/s inside the energy window on one core, is a rate of
+  // this machine at this moment: the reference solution reaches 50 M alone and fell to 29 M
+  // with the other tests running beside it (MDQ-PR-052). It is checked only where you set the
+  // limit, on a quiet machine you have measured; the ratio above holds on a busy one.
+  if (const char* target = std::getenv("EX_MIN_SINGLES_PER_S")) {
+    EXPECT_GT(fast, std::atof(target)) << "the chapter's target, inside the energy window";
+  }
 #endif
 }

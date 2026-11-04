@@ -880,9 +880,10 @@ field of view). *Acceptance:* `tests/test_fast_sorter.cpp` passes: for all four 
 and without the delayed window, with a 120 mm field of view and random chunks, exactly the
 coincidences of `CoincidenceSorter`; `FastSorter.FastEnough` (release builds without
 sanitizers) measures at least 1.9 times the baseline, a margin below the goal for a busy
-machine, and more than 30 M singles per second inside the energy window, best of seven
-interleaved runs (`EX_MIN_SPEEDUP` and `EX_MIN_SINGLES_PER_S` override the limits when you have
-measured a reason). The report: machine, compiler and flags, the profile before with numbers,
+machine, best of seven interleaved runs; the 30 M singles per second is checked only when you
+set `EX_MIN_SINGLES_PER_S=30e6` on a quiet machine, because an absolute rate fails a correct
+solution on a busy one (`EX_MIN_SPEEDUP` overrides the ratio when you have measured a reason).
+The report: machine, compiler and flags, the profile before with numbers,
 each change and what it bought, the result with its spread, what you would try next. *Time:* 4
 hours plus the report.
 

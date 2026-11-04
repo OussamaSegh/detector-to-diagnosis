@@ -54,6 +54,11 @@ the patch version.
 - Two packages pinned in `analysis/requirements.lock` had published vulnerabilities
   (MDQ-PR-051, CR-0019): Pillow 13.0.0 (was 12.3.0) and Pygments 2.21.0 (was 2.17.2). The new
   `tools/lock_audit.py` (TL-39) fails for a pin with an advisory, in CI's job `python`.
+- Exercise 10.4's speed test also asked for 30 M singles/s, an absolute rate with no margin that
+  failed a correct solution in the release checks (MDQ-PR-052): it is checked only when
+  `EX_MIN_SINGLES_PER_S` is set; the ratio to the baseline stays.
+- The release checks built the starters with Unix Makefiles, under which Exercise 32.3's tests
+  skip (MDQ-PR-053): they use Ninja.
 
 ### Changed
 - `tools/check_changes.py` and `tools/check_tools.py` know the analysis package's pytest names

@@ -393,6 +393,9 @@ Part VII (thread started 2026-11-03).
   advisories (MDQ-PR-051) -> 13.0.0 / 2.21.0, CR-0019, `tools/lock_audit.py` (TL-39, CI job
   python; pypi.org JSON works from here, api.osv.dev and api.github.com do not). Threat model
   v7 = the release review (done). Locally pip needs --ignore-installed for Debian packages.
+- Release checks 0.7.0 part 1 on 1572784 FAILED: MDQ-PR-052 (Ex 10.4 absolute 30 M rate, now
+  only with EX_MIN_SINGLES_PER_S) and MDQ-PR-053 (starters need -G Ninja for Ex 32.3). CAPA-0001
+  0.7.0 result written (not effective; 047, 048, 052). Part 1 restarted on the fix commit.
 - Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness result (two failures in
   the period: MDQ-PR-047, MDQ-PR-048; not effective; write the result and the next
   criterion); release 0.7.0; message the coordinator for the Opus Part VII review.

@@ -4,9 +4,9 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit finding A-4) |
-| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045; in the period to 0.7.0, MDQ-PR-047 and MDQ-PR-048 |
+| Source | MDQ-PR-010, MDQ-PR-011; at the effectiveness check, MDQ-PR-022, MDQ-PR-028, MDQ-PR-033 and MDQ-PR-034; at 0.5.0, MDQ-PR-039 and MDQ-PR-040; at 0.6.0, MDQ-PR-045; at 0.7.0, MDQ-PR-047, MDQ-PR-048 and MDQ-PR-052 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; release 0.6.0: not effective; again at release 0.7.0 |
+| Effectiveness check | release 0.4.0: not effective; release 0.5.0: not effective; release 0.6.0: not effective; release 0.7.0: not effective; again at release 0.8.0 |
 
 ## Problem
 
@@ -127,7 +127,7 @@ this release, on the slowest build and load that runs it:
 | Test | Criterion | Measured by a correct solution | Margin |
 |---|---|---|---|
 | Exercise 5.2, speed | twice the starter's speed | 2.99 times at the slowest (hardened, GitHub runner) | 33% |
-| Exercise 10.4, `FastSorter.FastEnough` | 1.9 times the baseline (MDQ-PR-040) | 2.47 to 2.55 times | 30% |
+| Exercise 10.4, `FastSorter.FastEnough` | 1.9 times the baseline (MDQ-PR-040); since 0.7.0 the 30 M singles/s only where `EX_MIN_SINGLES_PER_S` is set (MDQ-PR-052) | 2.47 to 2.55 times | 30% |
 | Exercise 12.3, `FastSink.KeepsUpWithTheSorterAndLosesNothing` | under 500 ms in `write()` | about 110 ms | 4.5 times |
 | Exercise 12.3, trickle | max_unsynced + one fsync + 100 ms (MDQ-PR-039) | passes 40 runs alone and the stress run | 100 ms of slack, not 50 |
 | Exercise 4.5, clock tests | wide bounds on the conversion, no speed | not a speed test | not applicable |
@@ -206,7 +206,32 @@ Further action in the period, ahead of the check at 0.7.0:
 - The gate self-test plants an untagged clock read (fault `clocks`) as well as an untagged
   sleep (fault `waits`).
 
+Result (2026-11-04, release checks of 0.7.0): **not effective.** Three tests failed for a timing
+reason within the criterion's period, all tests of exercises: Exercise 31.3's speed test in CI
+(MDQ-PR-047), Exercise 21.3's concurrent snapshot test in a local run (MDQ-PR-048) and, in part 1
+of these release checks, Exercise 10.4's speed test in the hardened build (MDQ-PR-052). The last
+had a second criterion, an absolute rate with no margin, that the table did not list: a row now
+names every criterion of its test, and the review of every clock read above was repeated for
+tests with more than one assertion on a time or a rate (none other found). Neither
+is MiniDAQ's own; MiniDAQ's tests passed CI in the period and the stress run of the release
+checks (`measurements/release-0.7.0/stress-tsan.txt`). Both failures share the cause that the
+results at 0.4.0 to 0.6.0 found: a rule that is checked by review only is not applied to every
+test, and a copy of a test outside the place that the search for other instances looked in
+keeps the defect, and a review of a test against a rule can stop at the first assertion it
+checks. The table above now lists every speed test and every criterion, Part VII's included.
+
+The action of this period is the first that checks the whole cause mechanically: every clock
+read and thread start in every test states why it does not depend on the machine's speed, and
+`tests.waits` refuses one that does not, in MiniDAQ's tests, in the other packages and in the
+exercises alike. Its effect can be judged only over a period that starts after it.
+
+New criterion: no test fails for a timing reason in CI, in the release checks or in the stress
+run between this result and the release of 0.8.0; every test added in Part VIII passes
+`tests.waits`, and every `speed` tag names a row of the table above. Due: release 0.8.0. If the
+criterion holds, the CAPA is closed as effective at 0.8.0; if a test fails for a timing reason
+that `tests.waits` accepted, the cause is analyzed again from the start.
+
 ## Closure
 
-Not closed: the action was not effective at releases 0.4.0, 0.5.0 and 0.6.0; the next check is
-at release 0.7.0.
+Not closed: the action was not effective at releases 0.4.0, 0.5.0, 0.6.0 and 0.7.0; the next
+check is at release 0.8.0.

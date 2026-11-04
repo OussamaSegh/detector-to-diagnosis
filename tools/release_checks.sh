@@ -75,7 +75,8 @@ check "static analysis" $?
 
 listed='^[[:space:]]*[0-9]+ - .*\(.*\)$'  # a test in ctest's lists of failed and skipped tests
 { stamp "starters: ctest -L starter (every starter fails at least one test, none hangs)"
-  cmake -S . -B build/starters -DCMAKE_BUILD_TYPE=Release -DMINIDAQ_BUILD_STARTERS=ON \
+  # Ninja, as the presets use: Exercise 32.3's tests need its dry run (MDQ-PR-053).
+  cmake -S . -B build/starters -G Ninja -DCMAKE_BUILD_TYPE=Release -DMINIDAQ_BUILD_STARTERS=ON \
     -DMINIDAQ_BUILD_EXERCISES=ON >/dev/null &&
     cmake --build build/starters -j"$(nproc)" >/dev/null &&
     ctest --test-dir build/starters -L starter --timeout 60 2>&1 |
