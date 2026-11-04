@@ -41,3 +41,5 @@ ch31 21fe31e3d8a3fedbeaf38649369b81b909e4c590 Chapter 31: the scientific Python 
 book-v0.6.0 a809a51e134480d1522c9491dc46a34c45284c60 Release 0.6.0: Part VI complete. Release checks on 893413d; ci, codeql, kdp and pages green on GitHub.
 ch32 8092b58be8f51ffa2a69757982de4ed917d10fea Chapter 32: CMake and dependency management (on the first commit after it whose ci run is green, with the fix of MDQ-PR-050). ci and gates green on GitHub.
 book-v0.7.0 3f7d720de76aa5eb112837cf7c382d7532268c41 Release 0.7.0: Part VII complete. Release checks on cfb708f; ci, codeql, kdp and pages green on GitHub.
+ch33 3eb11d24b4721fd1400a1a1bf6fa7701b6531a46 Chapter 33: the capstone, MiniDAQ end to end (on the first commit after it whose ci run is green, with the fix of MDQ-PR-056). ci and gates green on GitHub.
+ch34 3eb11d24b4721fd1400a1a1bf6fa7701b6531a46 Chapter 34: the first 90 days with a data acquisition codebase (on the same commit, the first green one after it). ci and gates green on GitHub.
