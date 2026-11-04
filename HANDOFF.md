@@ -5,8 +5,8 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-04: RELEASED 0.8.0 (tag book-v0.8.0 on 5770582); VERSION 0.9.0-dev. Next:
-the Opus review of Part VIII (PR to merge locally), then Part IX.
+Last updated: 2026-11-04: RELEASED 0.8.0 (tag book-v0.8.0 on 5770582); VERSION 0.9.0-dev. Part
+VIII review PR #6 merged locally (79187ef). Next: Part IX.
 
 ## Start here (next thread, Part IX)
 
@@ -20,7 +20,8 @@ GitHub merges put the account's email in the author).
 
 Next work, in order:
 
-1. Merge the Part VIII review PR when it comes (see above).
+1. Done: the Part VIII review, PR #6, merged locally on 2026-11-04 (79187ef; MDQ-PR-059 and 060,
+   Chapters 33 and 34 text, the 0.8.0 record's diff claim). Next free report number: 061.
 2. Part IX (section 5, "Left to do", item 6): three new chapters after 34 (DICOM and PACS; Git and
    team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
    tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
@@ -381,6 +382,11 @@ Part VIII (thread started 2026-11-04).
 - RELEASED 0.8.0 on 2026-11-04: CI green on 5770582 (ci, gates, codeql, kdp, pages), tag
   book-v0.8.0 on 5770582; the packaged files and the report are kept outside the repository. VERSION 0.9.0-dev, SOUP list v18 (review for
   0.9). Opus Part VIII review asked of the coordinator. Next: Part IX (see "Start here").
+- Opus review of Part VIII (2026-11-04): PR #6 (branch claude/project-thread-uss0ag) MERGED
+  LOCALLY (79187ef): e2e sorter partition with out_of_order and a stricter damaged-link test
+  (MDQ-PR-059), acceptance.py commit prefix of at least 7 characters (MDQ-PR-060), Chapters 33
+  and 34 text (Chapter 34 prose now over 5,000 words), the 0.8.0 record's diff claim corrected.
+  One wording adjusted at the merge. Its fixes go out with 0.9.0.
 - Lessons: a fresh clone is shallow; run `git fetch --unshallow` or docs.changes fails;
   problem-reports.json and tools.json are hand formatted (append, never json.dump the file); the
   pre-commit hook needs `git clang-format --staged -- '*.cpp' '*.hpp'` for touched C++ lines.
