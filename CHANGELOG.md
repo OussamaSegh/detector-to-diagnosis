@@ -8,6 +8,16 @@ the patch version.
 
 ## [Unreleased]
 
+### Changed
+
+- VERSION is 0.8.0-dev (Part VIII). The SOUP list is version 16, with the known-anomaly review
+  for MiniDAQ 0.8.
+
+### Fixed
+
+- The test `cmake.consumer` asks for the minor version of the build it tests, read from VERSION,
+  not a fixed `find_package(recon 0.7)` that the 0.8.0-dev build refused (MDQ-PR-054).
+
 ## [0.7.0] - 2026-11-04
 
 Part VII, Python and tooling (Chapters 31 and 32), complete. The release record is

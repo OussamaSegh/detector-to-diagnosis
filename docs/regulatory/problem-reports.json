@@ -903,6 +903,33 @@
         "category": "tool",
         "escape": "Chapter 32's exercises were added after the last release checks."
       }
+    },
+    {
+      "id": "MDQ-PR-054",
+      "title": "The test cmake.consumer asked for recon 0.7 and failed when VERSION moved to 0.8.0-dev",
+      "found": "2026-11-04, full ctest after VERSION moved to 0.8.0-dev: 'with requested version \"0.7\" ... version: 0.8.0'",
+      "item": "recon",
+      "status": "closed",
+      "capa": "",
+      "description": "recon/tests/consumer/CMakeLists.txt named a fixed version in find_package(recon 0.7). The package's version file uses SameMinorVersion, so a build of 0.8.0 refuses a request for 0.7, as Chapter 32 says it should. The package was right; the test was written for one version.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A test of the build's installed package; no shipped program changed."
+      },
+      "resolution": {
+        "change": "consumer_test.cmake reads the minor version from VERSION and passes it to the consumer as RECON_VERSION, which find_package uses.",
+        "verification": "cmake.consumer passes with VERSION 0.8.0-dev; the whole ctest passes."
+      },
+      "root_cause": {
+        "whys": [
+          "The consumer's request no longer matched the build's version.",
+          "The request was a number written in the test, and SameMinorVersion makes every minor bump refuse it.",
+          "The test was written and verified within one minor version, before any bump."
+        ],
+        "cause": "A test fixed a value that the release process changes.",
+        "category": "test",
+        "escape": "Chapter 32's test was added during 0.7.0-dev; the first VERSION bump after it was the first chance to see it fail."
+      }
     }
   ]
 }

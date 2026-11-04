@@ -8,35 +8,35 @@ log record what changed. This file records why, how, and what is left.
 Last updated: 2026-11-04: Part VII in progress. Chapter 31 written (code, tests, measurements,
 exercises, documents, text, solutions); next: tag ch31 after green CI, then Chapter 32.
 
-## Start here (next thread, Part VII)
+## Start here (next thread, Part VIII)
 
-State on 2026-11-03: Parts I to VI are released (0.1.0 to 0.6.0, tag book-v0.6.0 on a809a51;
-report https://claude.ai/artifact/KihwgqRBH9AxmEgheq5Ndy; files in the project folder
-`neurolf-book/v0.6.0/`). main is c6ae09a or later, VERSION 0.7.0-dev, SOUP list v13 has the
-review for 0.7. Tags ch00 to ch30 and book-v0.1.0 to book-v0.6.0 are on GitHub; fetch them with
-`git fetch --force origin 'refs/tags/*:refs/tags/*'`.
+State on 2026-11-04: Parts I to VII are released (0.1.0 to 0.7.0, tag book-v0.7.0 on 3f7d720;
+report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw; files in the project folder
+`neurolf-book/v0.7.0/`). VERSION is 0.8.0-dev and SOUP list v16 has the review for 0.8. Tags ch00
+to ch32 and book-v0.1.0 to book-v0.7.0 are on GitHub; fetch them with
+`git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part VII was asked of
+the coordinator on 2026-11-04: review its PR critically and merge it LOCALLY with the noreply
+identity (never on GitHub: GitHub merges put the account's email in the author).
 
 Next work, in order:
 
-1. Part VII, Chapters 31 and 32 (section 5, "Left to do", item 4): the scientific Python package,
-   and Chapter 32 (CMake and dependency management) in full depth. Same chapter recipe as Part VI:
+1. Part VIII, Chapters 33 and 34 (section 5, "Left to do", item 5): the capstone MiniDAQ 1.0
+   and day-one readiness, with Chapter 34 (the first 90 days) in full depth. Same chapter recipe:
    code, tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
    passes), SRS rows, risk and threat model review, CR, ADR, chapter text, solutions, CHANGELOG,
    then tag chNN through `.github/tags.txt` once CI is green.
-2. Owed to release 0.7.0: a fuzz target of its own for `config::parse_calibration` (release
-   0.6.0 record); CAPA-0001's check (no test may fail for a timing reason in CI, the release
-   checks or the stress run; add every timing test of Part VII to the CAPA's margin table); the
-   SOUP review at release; the threat model review of every new file or data flow (checklist
-   item 5.5, MDQ-PR-046).
-3. Release 0.7.0 as in section 4 and the 0.6.0 paragraph of section 5; then message the
-   coordinator for the Part VII review on an Opus model, and merge its PR LOCALLY with the
-   noreply identity (never on GitHub: GitHub merges put the account's email in the author).
+2. Owed to release 0.8.0: make `fuzz_calibration` faster (20 exec/s, each input writes a whole
+   table); CAPA-0001's check at 0.8.0 (new criterion: every speed test tagged `// clock:` and in
+   the margin table; no timing failure in CI, the release checks or the stress run); the SOUP
+   review and lock file audit at release; the threat model review of every new file or data flow.
+3. Release 0.8.0 as in section 4; then message the coordinator for the Part VIII review on an
+   Opus model.
 
-Rules that bit in Part VI: never build or test while part 2's benchmarks or part 3 (gate, soak)
-run; read every failed CI job, not just the first cause; a worktree gets only `.deps/*-src`
-(never `*-subbuild` or `*-build`); after adding tests regenerate the trace matrix last; repack a
-release clone (`git gc --prune=now`) before zipping it. The book threads run on an Opus model,
-never Fable.
+Rules that bit in Part VII: run the WHOLE ctest (exercises too) before every commit; test build
+changes in a FRESH build directory; a test must not fix a value that the release changes (VERSION
+bump broke `cmake.consumer`, MDQ-PR-054); the release checks build starters with Ninja. Never
+build or test while part 2's benchmarks or part 3 (gate, soak) run. The book threads run on an
+Opus model, never Fable.
 
 ## 1. The goal
 
@@ -400,9 +400,11 @@ Part VII (thread started 2026-11-03).
   passed outright). Release record docs/regulatory/releases/0.7.0.md, VERSION 0.7.0. ch32 tagged
   at 8092b58. Owed to 0.8.0: make fuzz_calibration faster (20 exec/s: each input writes a whole
   table); CAPA-0001 check at 0.8.0.
-- Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness result (two failures in
-  the period: MDQ-PR-047, MDQ-PR-048; not effective; write the result and the next
-  criterion); release 0.7.0; message the coordinator for the Opus Part VII review.
+- RELEASED 0.7.0 on 2026-11-04: tag book-v0.7.0 on 3f7d720, files in the project folder
+  `neurolf-book/v0.7.0/`, report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw. VERSION
+  0.8.0-dev, SOUP list v16 (review for 0.8). The bump found MDQ-PR-054 (`cmake.consumer` asked
+  for a fixed recon 0.7; it now reads VERSION). Opus Part VII review asked of the coordinator.
+  Next: Part VIII (see "Start here").
 
 Older notes follow.
 
@@ -639,8 +641,9 @@ Chapter 30 (image quality), 2026-11-03:
    on main (the highest sample is 5.5% low, not 5.4%). Its fixes go out with 0.7.0.
    Merge review PRs LOCALLY with the noreply identity and push; a merge made on GitHub (web or
    API) takes the account's email as its author (d801e22, 1252200 and 3c14b67 did).
-4. **Part VII** (31 and 32): the scientific Python package. Deepen Chapter 32 (CMake and
-   dependency management) to full depth. Release 0.7.0.
+4. **Part VII** (31 and 32): released as 0.7.0 on 2026-11-04 (checks on cfb708f, tag
+   book-v0.7.0 on 3f7d720, report https://claude.ai/artifact/8c2d5uiF7UkF8AZQZLMtsw). VERSION is
+   0.8.0-dev with the SOUP review for 0.8 (SOUP list v16). Part VII review: asked 2026-11-04.
 5. **Part VIII** (33 and 34): capstone MiniDAQ 1.0 and day-one readiness. Deepen Chapter 34
    (the first 90 days: questions to ask, a ramp-up plan) to full depth. Release 0.8.0.
 6. **Part IX** (new, numbered after 34), three full chapters:
