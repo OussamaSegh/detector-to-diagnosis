@@ -115,6 +115,15 @@ difference is not necessarily a problem (your machine is not the reference machi
 be able to explain it. If you cannot reproduce the release, nobody can, and that is a finding for
 the team, not a failure of yours.
 
+To explain a difference, separate the machine from the code. Build the last release and the
+current commit side by side, run their benchmarks one after the other on the same machine, twice,
+in alternating order, and compare them with each other as well as with the recorded baseline. If
+both are equally far from the record, the machine moved; if they differ from each other, the code
+did. MiniDAQ's own release 0.8.0 needed exactly this: its performance gate and its latency limit
+failed against the recorded figures, and the same measurements of release 0.7.0, made on the same
+machine on the same day, failed the same way (the release record's deviation). The method
+costs an afternoon and turns "it is slower on my machine" into a statement someone can act on.
+
 ## Reading the documents in an order that pays
 
 A regulated project has more documents than anyone reads in a week. Read them in the order of the
@@ -182,7 +191,7 @@ misunderstandings, and defects, gather, and where a newcomer should read first.
 
 On MiniDAQ at the end of the book (`measurements/ch34/survey.md`), the class B items with open
 problem reports come first: the acquisition service, the simulator and the sorter. The top hotspot
-is `acquisition_service.cpp`, 500 code lines changed in 13 commits, the file where every chapter
+is `acquisition_service.cpp`, 500 code lines that 13 commits changed, the file where every chapter
 that added a feature to a run had to touch the state machine. Second is `minidaq_sim.cpp`, a tool,
 not a product item: the simulator's application grew a feature in almost every Part. Neither is a
 surprise to someone who wrote the book. Both would be useful to someone who did not.
@@ -223,10 +232,11 @@ commits that also changed the other.
 
 On MiniDAQ's history (`measurements/ch34/coupling.txt`) the strongest pairs are the expected ones:
 the two CMake files (20 commits together, because every new source comes with its test), a header
-and its source, a source and its test. The interesting pairs cross items. Every one of the four
+and its source, a source and its test. The interesting pairs cross items. Every one of the five
 commits that changed `acquisition_config.hpp`, the configuration's interface, also changed
-`acquisition_service.cpp`: a dependency that the architecture description does not state and that
-a reviewer of the next configuration change should look for.
+`acquisition_service.cpp` (the exercise counts four of them, because the fifth touched 30 files
+and is above its size limit): a dependency that the architecture description does not state and
+that a reviewer of the next configuration change should look for.
 
 Two cautions keep coupling honest. A commit that touches many files (a rename, a reformatting, a
 version bump across the tree) makes every pair of its files look coupled; the exercise leaves out
@@ -367,9 +377,9 @@ the data. Both decide things the code implements.
 With the hardware team, learn the interface before the implementation: the readout format and its
 versions, the link's error behavior, the firmware versions in the field and the ones on the test
 bench. A defect at the boundary (a word misread, a counter that wraps) is found only when both
-sides look at the same data; Chapter 9's timestamp unwrapping and Chapter 24's register interface
-are where MiniDAQ met those boundaries. Ask for time on a test bench early: a simulator teaches the
-software, a bench teaches the system.
+sides look at the same data; Chapter 9's timestamp unwrapping, Chapter 22's register maps and
+Chapter 24's interface control document are where MiniDAQ met those boundaries. Ask for time on
+a test bench early: a simulator teaches the software, a bench teaches the system.
 
 With the physicists, learn the meaning of the numbers. An energy window, a coincidence window, a
 multiples policy, a dead-time model: each was chosen for a reason that lives in a physicist's

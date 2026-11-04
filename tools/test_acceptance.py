@@ -143,6 +143,15 @@ class Verdicts(unittest.TestCase):
         self.assertEqual(self.ev.verdict("ACC-06"), "STALE")
         self.assertEqual(self.ev.verdict("ACC-02", candidate=OTHER), "STALE")
 
+    def test_a_commit_prefix_too_short_to_name_a_commit_matches_nothing(self):
+        self.assertEqual(self.ev.verdict("ACC-01", candidate=COMMIT[:7]), "PASS")
+        self.assertEqual(self.ev.verdict("ACC-05", candidate=COMMIT[:7]), "PASS")
+        self.assertEqual(self.ev.verdict("ACC-01", candidate=COMMIT[:2]), "STALE")
+        self.assertEqual(self.ev.verdict("ACC-05", candidate=COMMIT[:2]), "STALE")
+        self.ev.write("e2e/e2e.json", e2e_result(commit="cf"))
+        self.assertEqual(self.ev.verdict("ACC-05"), "STALE")
+        self.assertEqual(acceptance.main([str(self.ev.out), "--commit", "cfb"]), 2)
+
     def test_the_report_accepts_only_when_every_criterion_passes(self):
         rows = [(c, "PASS", "x") for c in SPEC["criteria"]]
         self.assertTrue(acceptance.report(SPEC, rows, COMMIT, self.ev.out)[0])

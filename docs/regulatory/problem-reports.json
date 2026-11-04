@@ -1038,6 +1038,60 @@
         "category": "tool",
         "escape": "The step had never failed before, so the missing output had never been needed."
       }
+    },
+    {
+      "id": "MDQ-PR-059",
+      "title": "The end-to-end sorter equation left out the out-of-order singles, and a damaged short run passed with any check failed",
+      "found": "2026-11-04, the review of Part VIII: tools/e2e.py's sorter partition against Chapter 10's and Exercise 33.1's",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "tools/e2e.py checked 'energy rejected + alone + 2 x pair windows + in multiples = singles in'. The sorter's partition has a fifth term, the out-of-order singles, which the server reports in its status. A run with an out-of-order single would have failed the check as a lost count, and an out-of-order counter off by one failed no check. The test of the equations built its counters without out_of_order, so it could not see the gap. Separately, the short damaged-link test of system.e2e asserted four named checks and that the exit status matched the result, so a damaged run with any other check failed (the sorter's balance, the sink, the files) still passed it.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A verification tool, not the product. Every measured run had no out-of-order single (the readout reorders packets before the sorter), so no verdict was wrong; the gap would have shown as a false failure, not a false pass, of the partition check."
+      },
+      "resolution": {
+        "change": "The partition includes out_of_order; the test's consistent counters include it, so the off-by-one test now covers it; the damaged-link test requires every check of both acquisitions to pass and the exit status 0.",
+        "verification": "tools/test_e2e.py with the programs (system.e2e): passes; with the old equation the consistent-counter tests fail. The damaged run with --loss and --duplicate 0.005, seeds 1, 2 and 33, passes every check."
+      },
+      "root_cause": {
+        "whys": [
+          "A counter the sorter reports was in no equation.",
+          "The equation was written from the counters seen in a clean run's status, where out_of_order is always 0.",
+          "The off-by-one test changed only the counters in its own fixture, written from the same equation."
+        ],
+        "cause": "The equations and the test that checks them were derived from the same list, so they shared its omission.",
+        "category": "tool",
+        "escape": "The off-by-one test iterates over its fixture, not over the counters the server reports."
+      }
+    },
+    {
+      "id": "MDQ-PR-060",
+      "title": "The acceptance tool matched a commit by any prefix, so --commit with one or two characters made every evidence fresh",
+      "found": "2026-11-04, the review of Part VIII: tools/acceptance.py against Exercise 33.2's solution, which refuses a prefix shorter than 7 characters",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "tools/acceptance.py judged freshness with startswith in both directions and no minimum length. 'tools/acceptance.py OUT --commit d' made the evidence of every commit starting with d fresh, and an end-to-end result whose commit field was empty would have matched any candidate.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A release tool; the default candidate is the full commit of part 1, and the 0.7.0 and 0.8.0 reports were made with it, so no recorded verdict depended on a short prefix."
+      },
+      "resolution": {
+        "change": "same_commit(a, b): one is a prefix of the other and both have at least 7 characters, as in Exercise 33.2; --commit shorter than 7 characters is a usage error (exit 2).",
+        "verification": "tools.acceptance: a new test gives PASS for a 7-character candidate, STALE for a 2-character one and for an end-to-end result naming 'cf', and exit 2 for --commit cfb; it fails on the old code."
+      },
+      "root_cause": {
+        "whys": [
+          "A short candidate matched every commit with that prefix.",
+          "The tool compared prefixes without a minimum length.",
+          "The exercise of the same chapter was written with the rule after the tool, and the tool was not revisited."
+        ],
+        "cause": "A rule found while writing the exercise was not carried back to the tool it teaches.",
+        "category": "tool",
+        "escape": "The tool's tests used full and 7-character commits only."
+      }
     }
   ]
 }

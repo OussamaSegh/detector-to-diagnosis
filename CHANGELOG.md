@@ -13,6 +13,22 @@ the patch version.
 - VERSION is 0.9.0-dev (Part IX); the Python packages are 0.9.0.dev0. The SOUP list is version 18,
   with the known-anomaly review for MiniDAQ 0.9.
 
+### Fixed (review of Part VIII)
+
+- `tools/e2e.py`: the sorter's partition left out the out-of-order singles, and the test of the
+  equations built its counters without them, so an out-of-order counter off by one failed no check;
+  the short damaged-link run of `system.e2e` passed with any check failed but four (MDQ-PR-059).
+- `tools/acceptance.py` matched a commit by any prefix, so `--commit` with one character made every
+  evidence fresh; it now uses Exercise 33.2's rule, at least 7 characters (MDQ-PR-060).
+- Chapter 33: the sorter's partition names the out-of-order singles; the 0.7.0 release record is
+  described, not quoted with words it does not contain; the baseline's retaking at 0.8.0 is named.
+- Chapter 34: the top hotspot's 500 lines are its size, not lines changed; five commits changed the
+  configuration's interface (the exercise counts four); the register maps are Chapter 22's; a
+  paragraph on explaining a difference from the release record by interleaved runs, from release
+  0.8.0's own deviation (the chapter's prose was 52 words under the 5,000 minimum).
+- Release record 0.8.0: the commits after the checked one change the version string, which the
+  record's `git diff` command (with `recon`) did not show as empty.
+
 ## [0.8.0] - 2026-11-04
 
 Part VIII, the capstone (Chapters 33 and 34), complete. The release record is
