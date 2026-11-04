@@ -22,7 +22,12 @@ Next work, in order:
 
 1. Done: the Part VIII review, PR #6, merged locally on 2026-11-04 (79187ef; MDQ-PR-059 and 060,
    Chapters 33 and 34 text, the 0.8.0 record's diff claim). Next free report number: 061.
-2. Part IX (section 5, "Left to do", item 6): three new chapters after 34 (DICOM and PACS; Git and
+2. Part IX, Chapter 35 (DICOM and PACS) done 2026-11-04: commit 4387a49 (CR-0022, ADR 0030,
+   `tools/dicom`, TL-44/TL-45; pydicom 3.0.2 and pynetdicom 3.0.4 approved by the user as
+   test-only tools and pinned in the lock file; CI's job python sets
+   `MINIDAQ_DICOM_ORACLE_REQUIRED=1`). Next: Chapter 36 (Git and team workflow, CR-0023, ADR 0031,
+   TL-46) and Chapter 37 (AI-assisted coding, CR-0024, ADR 0032). Part IX (section 5, "Left to
+   do", item 6): three new chapters after 34 (DICOM and PACS; Git and
    team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
    tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
    passes), SRS rows (each SRS change needs an approved CR naming the requirement, or

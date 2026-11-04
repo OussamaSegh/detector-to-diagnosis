@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-04, by the software lead |
 | Source | improvement: DICOM and PACS integration (Chapter 35) |
 | Decision | approved, 2026-11-04, software lead |
-| Commits | none yet |
+| Commits | 4387a49 |
 
 ## Description
 
