@@ -24,12 +24,31 @@ the patch version.
   without time blur, four ways to fill a histogram). Exercises 31.1 to 31.3.
 - Chapter 31 text: Part VII's opener and the chapter "The scientific Python package: analysis you
   can defend", with its solutions.
+- Chapter 32 code (CR-0018, ADR 0027): `recon::projector` installs as the CMake package `recon`
+  (export set, configuration file with `find_dependency(Threads)`, `SameMinorVersion`, component
+  `recon_dev`), tested by `cmake.consumer`; workflow presets for every configuration, compilers
+  from `cmake/toolchains/`, checked by `docs.presets`; the wheel `minidaq-recon` built by
+  scikit-build-core from the main project, tested by `recon.wheel` in CI's job `python`;
+  `.clang-format` checked on changed lines by `tools/check_format.py` in the new CI job `format`
+  and in `tools/hooks/pre-commit` (also whitespace, e-mail addresses, ruff); gate self-test fault
+  `format`. SRS-BLD-001 to 005; tools TL-37 and TL-38; coding standard 5, development plan 11.
+  `measurements/ch32/` (configure, clean, no-op and incremental build times). Exercises 32.1 to
+  32.3 with the helper `minidaq_cmake_exercise`.
+- Chapter 32 text: "CMake and dependency management: the build as an interface", with its
+  solutions.
 
 ### Fixed
 - The analysis fit's numerical derivatives took a step of 1e-6 of the parameter with a floor of
   1e-3, 1.6e-8 ps for a timing mean near zero, and stopped one simulated run's fit with an error
   at its minimum; the step has a floor of 1e-5 of a unit, and a parameter whose error is wider
   than its bounds is an error. Regression test on that run's histogram.
+- Exercise 31.3's speed test ran in unoptimized builds from one run (MDQ-PR-047): it skips
+  without NDEBUG, takes the best of five runs and asks for 15 times, a measured margin of 94%.
+- Exercise 21.3's concurrent snapshot test could finish before its writer started (MDQ-PR-048):
+  it waits on a latch for the first event.
+- `tools/release_bundle.py` and `tools/test_report.py` could not find the compiler of a build
+  configured through a toolchain file (MDQ-PR-049); `tools/repro_check.sh` printed no logs on a
+  failed build (`tail -30` with several files).
 
 ### Changed
 - `tools/check_changes.py` and `tools/check_tools.py` know the analysis package's pytest names

@@ -368,8 +368,24 @@ Part VII (thread started 2026-11-03).
   `python3 -m mypy` and `python3 -m ruff`, not the uv tool ones. Book build needs
   fonts-texgyre and fonts-inconsolata (apt). Numerical derivatives need a step floor for a
   parameter near zero (CR-0017).
-- Next: tag ch31 once CI is green; Chapter 32 (CMake in full depth); the 0.7.0 items (CAPA-0001
-  margin table with every Part VII timing test, SOUP review, threat model review); release.
+- Chapter 31 tagged: ch31 on 21fe31e (first green ci after it; MDQ-PR-047 fixed there).
+- Chapter 32 complete (text, solutions, code): installed CMake package `recon` and
+  `cmake.consumer`; workflow presets + `cmake/toolchains/` + `docs.presets`; wheel via
+  scikit-build-core (`recon/python/pyproject.toml`, `recon.wheel`, CI job python);
+  `.clang-format` (Google, 100 cols) checked on CHANGED LINES ONLY by `tools/check_format.py`
+  (CI job `format`, gate fault `format`) and `tools/hooks/pre-commit` (install with
+  `git config core.hooksPath tools/hooks`; it also refuses e-mail addresses that are not
+  placeholders, whitespace errors, ruff in analysis/). SRS-BLD-001 to 005 (SRS v21), TL-37
+  (clang-format-18) and TL-38, coding standard v5, SDP v11, architecture v18, threat model v6,
+  CR-0018, ADR 0027, `measurements/ch32/build-times.txt`, Exercises 32.1 to 32.3
+  (`minidaq_cmake_exercise`). MDQ-PR-048 (Exercise 21.3 thread start) and MDQ-PR-049 (compiler
+  not in a fresh cache with toolchain files) fixed.
+- Lessons: test build changes in a FRESH build directory (old caches hide toolchain-file
+  changes); the hook refuses a literal address in its own test (build it at run time); the book
+  build needs latexmk and librsvg2-bin too (apt) in a fresh container.
+- Next: tag ch32 once CI is green; 0.7.0 items: CAPA-0001 effectiveness (two failures in the
+  period: MDQ-PR-047, MDQ-PR-048; not effective), SOUP review for 0.7, threat model review at
+  release; release 0.7.0; message the coordinator for the Opus Part VII review.
 
 Older notes follow.
 
