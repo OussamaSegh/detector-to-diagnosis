@@ -36,3 +36,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0027](0027-installable-packages-presets-and-changed-line-formatting.md) | Installable CMake packages, a workflow preset per configuration, a wheel from the same project, and formatting checked on changed lines | Accepted |
 | [0028](0028-end-to-end-reference-acceptance-specification-and-requirements-freeze.md) | The chain checked end to end against an offline reference, a written acceptance specification, and a requirements freeze | Accepted |
 | [0029](0029-codebase-survey-from-the-projects-own-records.md) | A codebase survey from the project's own records, with hotspots and checks of the item map | Accepted |
+| [0030](0030-dicom-export-own-encoder-content-derived-uids-and-an-outbox.md) | The DICOM export: an own encoder checked by independent peers, UIDs derived from the content, and an outbox | Accepted |

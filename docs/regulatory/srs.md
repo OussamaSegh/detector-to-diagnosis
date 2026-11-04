@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 23 (MiniDAQ 0.8.0-dev). Status: draft for review.
+Version 24 (MiniDAQ 0.9.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -422,6 +422,23 @@ programs do not change.
 | SRS-SVY-002 | The codebase survey shall give every product source file the software item whose path prefix is the longest that matches it, list the files that no item claims and the files that two items claim with prefixes of the same length, and exit with a failure status when there is one of either. | tools | T |
 | SRS-SVY-003 | The codebase survey shall report, for every software item, its safety class, its hazards, its files, code lines, commits and changed lines, its requirements with those verified by test and those a test names, and its problem reports with those still open; and list the files with the highest product of commits and code lines. | tools | T |
 
+### 2.25 DICOM export (DCM)
+
+The export of a reconstructed image to the hospital's archive (Chapter 35, ADR 0030, CR-0022): a
+series of PET Image objects in DICOM files, sent with the C-STORE service through a queue that
+keeps every instance until the archive has stored it. A tool outside the shipped programs, as the
+reconstruction is (TL-44).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-DCM-001 | The DICOM export shall write data sets in Explicit VR Little Endian with every element in ascending tag order and every value of even length, padded as its value representation requires, and files with the 128-byte preamble, the DICOM prefix and the file meta information led by its group length, with the writer refusing, never truncating, a value longer than its value representation allows or made of characters it does not allow, and the reader refusing an odd length, a length past the end of its input, elements out of order, nesting deeper than eight sequences and any other transfer syntax. | tools | T |
+| SRS-DCM-002 | The DICOM export shall make one PET Image object per slice with every attribute of `type 1` of the mandatory modules present and not empty and every attribute of `type 2` present, the same patient, study, series and frame of reference in every object, a distinct instance UID per object and consecutive image indices from one, and with a series that fails any of these checks refused before it is written. | tools | T |
+| SRS-DCM-003 | The DICOM export shall store each slice as 16-bit integers with a rescale intercept of 0 and a rescale slope of its own, unsigned when the slice has no negative value and signed otherwise, computed with the slope as written in the file, so that every stored value times the written slope is within half a slope of the image value, and with an image that has a value that is not finite refused. | tools | T |
+| SRS-DCM-004 | The DICOM export shall give every slice an image position, an image orientation and a pixel spacing that place the center of every pixel at its position in the patient coordinate system for the patient positions head first supine and feet first supine, number the slices in the order of their position along the slices' normal, and refuse any other patient position. | tools | T |
+| SRS-DCM-005 | The DICOM export shall take the patient and study attributes only from the order it is given, unchanged; refuse an order without a patient ID, without a patient name or with a study UID that is not a valid UID; refuse an acquisition time without a UTC offset; and derive the series, instance and frame of reference UIDs from the content, so that the same image and metadata give the same UIDs and any change gives different ones. | tools | T |
+| SRS-DCM-006 | The DICOM export shall send each object with C-STORE over an association whose presentation contexts it proposed and the archive accepted, cut every message into fragments that fit the archive's maximum PDU length, end the attempt with an error when the association is rejected or aborted, when the archive does not answer within the time limit, or when a PDU is longer than it accepts, and report for each object the status the archive gave. | tools | T |
+| SRS-DCM-007 | The DICOM export shall keep every object in its outbox until the archive answers with a success or warning status for it, keep it pending after a transient failure or a network error, set it apart for a person after any other failure, record every attempt in an append-only journal, and send again only what is still pending. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -463,3 +480,4 @@ programs do not change.
 | 21 | Chapter 32: the build, SRS-BLD-001 to SRS-BLD-005 (ADR 0027, CR-0018). |
 | 22 | Chapter 33: the readout link model, SRS-SIM-024; the chain end to end, SRS-SYS-006 to SRS-SYS-008; the end-to-end latency, SRS-PERF-022, which the soak measured since Chapter 19 and no requirement stated (ADR 0028, CR-0020). The requirements are frozen against the baseline `srs-baseline.json` (version 21) from this version on. |
 | 23 | Chapter 34: the codebase survey, SRS-SVY-001 to SRS-SVY-003 (ADR 0029, CR-0021). |
+| 24 | Chapter 35: the DICOM export, SRS-DCM-001 to SRS-DCM-007 (ADR 0030, CR-0022). |

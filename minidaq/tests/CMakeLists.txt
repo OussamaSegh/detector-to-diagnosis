@@ -162,6 +162,11 @@ if(Python3_Interpreter_FOUND)
            ${PROJECT_SOURCE_DIR} --check)
   set_tests_properties(tools.acceptance tools.req_baseline tools.survey docs.baseline PROPERTIES
     LABELS "unit")
+  # Chapter 35: the export of images to an archive (DICOM files, C-STORE, the outbox). Its
+  # independent checks need pydicom and pynetdicom (analysis/requirements.lock); CI's job python
+  # sets MINIDAQ_DICOM_ORACLE_REQUIRED=1 so that they cannot be skipped there.
+  add_test(NAME tools.dicom COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_dicom.py)
+  set_tests_properties(tools.dicom PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77 TIMEOUT 120)
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update

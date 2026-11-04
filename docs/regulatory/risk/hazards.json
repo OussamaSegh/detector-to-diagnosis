@@ -274,6 +274,115 @@
       "probability_after": "P2",
       "residual": "The limits of the default protocol are the book's, set from the simulator's resolutions (assumption: confirm with team the scanner's QC limits and their frequency). The package checks one run against fixed limits; a slow drift within the limits is found by trending the reports over time, which is not part of this tool.",
       "status": "closed"
+    },
+    {
+      "id": "H-15",
+      "preliminary": "HZ-5",
+      "hazard": "An image filed under another patient or another study",
+      "sequence": "The export takes a patient or study attribute from somewhere other than the order the hospital gave (a default, the previous study, a field the operator typed), changes it on the way (truncates an ID, drops a character it cannot encode), writes a series whose instances do not all carry the same patient and study, or gives two different reconstructions the same UIDs.",
+      "hazardous_situation": "The archive files the series under another patient, merges it into another study, or replaces one patient's images with another's; the reader opens it from that patient's record.",
+      "harm": "A diagnosis or a treatment decision made on another patient's images.",
+      "severity": "S3",
+      "probability_before": "P3",
+      "controls": [
+        {
+          "id": "RC-47",
+          "type": "protective",
+          "description": "The export copies the patient and study attributes from the order unchanged, refuses an order without a patient ID or name or with an invalid study UID, refuses a value it would have to truncate or cannot encode, and refuses a series whose instances disagree on patient, study, series or frame of reference.",
+          "requirements": [
+            "SRS-DCM-001",
+            "SRS-DCM-002",
+            "SRS-DCM-005"
+          ],
+          "effectiveness": {
+            "method": "test",
+            "evidence": "test_an_order_that_cannot_file_the_series_is_refused"
+          }
+        },
+        {
+          "id": "RC-48",
+          "type": "protective",
+          "description": "The series, instance and frame of reference UIDs are derived from the image and all its metadata: the same content gives the same UIDs, so a repeated send replaces and does not duplicate, and any other content gives other UIDs, so a new reconstruction never replaces an old one.",
+          "requirements": [
+            "SRS-DCM-005"
+          ],
+          "effectiveness": {
+            "method": "test",
+            "evidence": "test_uids_are_valid_and_derived_from_the_content"
+          }
+        }
+      ],
+      "probability_after": "P2",
+      "residual": "The order itself can be wrong (the wrong patient selected on the worklist); the export cannot know. The technologist's check of the patient at the scanner and the archive's reconciliation of unmatched studies are controls outside this software (assumption: confirm with team). In a scanner's software the export is part of the product, and a serious hazard makes its item class C unless such a control outside the software is credited (Chapter 14).",
+      "status": "closed"
+    },
+    {
+      "id": "H-16",
+      "preliminary": "HZ-5",
+      "hazard": "Image values or positions that a reader takes differently from what the reconstruction made",
+      "sequence": "The pixel values are scaled with a slope that differs from the one written, a slope is rounded to fewer digits than it needs, a negative value wraps in an unsigned pixel, the intercept is not zero, a value that is not finite is written, the rows are written bottom up while the orientation says top down, the patient position is mapped wrong, or the slices are numbered against their positions.",
+      "hazardous_situation": "The viewer shows activity values (and standardized uptake values computed from them) that are wrong by a factor, or shows a lesion on the wrong side or in the wrong slice, and the image looks plausible.",
+      "harm": "Quantitative values or a wrong side in the image contribute to an incorrect diagnosis or to treatment planned on the wrong side.",
+      "severity": "S3",
+      "probability_before": "P3",
+      "controls": [
+        {
+          "id": "RC-49",
+          "type": "protective",
+          "description": "Each slice is stored with its own slope, an intercept of 0, signed pixels when it has a negative value, and stored values computed with the slope as written; every value comes back within half a slope; values that are not finite are refused.",
+          "requirements": [
+            "SRS-DCM-003"
+          ],
+          "effectiveness": {
+            "method": "test",
+            "evidence": "test_each_value_comes_back_within_half_a_slope"
+          }
+        },
+        {
+          "id": "RC-50",
+          "type": "protective",
+          "description": "The image position and orientation place every pixel at its position in the patient for the two supported patient positions, checked with a point off the axis in both; any other position is refused; the slices are numbered along their normal; the files are read back by an independent reader (pydicom) in the tests.",
+          "requirements": [
+            "SRS-DCM-001",
+            "SRS-DCM-004"
+          ],
+          "effectiveness": {
+            "method": "test",
+            "evidence": "test_a_pixel_lands_at_its_position_in_the_patient"
+          }
+        }
+      ],
+      "probability_after": "P2",
+      "residual": "The mapping from the gantry frame to the patient assumes the gantry frame of the book's scanner model (assumption: confirm with team); a scanner's frame is checked with a phantom with a marker on one side at installation. Values in Bq/mL need a dose calibration MiniDAQ does not make; its series are in proportional counts (PROPCNTS), which no viewer turns into a standardized uptake value.",
+      "status": "closed"
+    },
+    {
+      "id": "H-17",
+      "preliminary": "HZ-5",
+      "hazard": "A series that does not reach the archive, or reaches it in part",
+      "sequence": "The export reports a series as sent when the archive answered with a failure, or did not answer; drops the instances that were in flight when the association was aborted; deletes the files after the attempt and not after the archive's success status; or retries forever an instance the archive refuses for good, without anyone seeing it.",
+      "hazardous_situation": "The reader reads a series with slices missing as if it were whole, or the study has no images and nobody knows until the patient's next visit.",
+      "harm": "A delayed diagnosis, or a scan repeated with its additional dose.",
+      "severity": "S2",
+      "probability_before": "P3",
+      "controls": [
+        {
+          "id": "RC-51",
+          "type": "protective",
+          "description": "Only the archive's success or warning status for an instance takes it out of the outbox; a transient failure, a timeout or an abort keeps it pending, any other failure sets it apart for a person; every attempt is journaled; a resend after an interruption sends only what is pending and gives the archive one copy of each instance.",
+          "requirements": [
+            "SRS-DCM-006",
+            "SRS-DCM-007"
+          ],
+          "effectiveness": {
+            "method": "test",
+            "evidence": "test_an_interrupted_send_resumes_without_a_second_copy"
+          }
+        }
+      ],
+      "probability_after": "P2",
+      "residual": "The outbox tells a person that something is pending or failed only through its counts and its journal; a scanner shows them on the console and alarms after a time (assumption: confirm with team the time the department accepts). A series is complete when the archive holds every instance; the export does not ask the archive (storage commitment, part 4) whether it has kept them.",
+      "status": "closed"
     }
   ]
 }

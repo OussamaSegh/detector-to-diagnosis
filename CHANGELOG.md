@@ -8,6 +8,16 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+
+- Part IX opener and Chapter 35, DICOM and PACS (CR-0022, ADR 0030): `tools/dicom` (TL-44), the
+  encoding in Explicit and Implicit VR Little Endian with a strict reader, UIDs derived from the
+  content, a PET Image series with its checks, the upper layer with C-ECHO and C-STORE, a test
+  archive with faults and a store-and-forward outbox; `tools/pacs.py`; the test `tools.dicom`,
+  checked by pydicom 3.0.2 and pynetdicom 3.0.4 as test-only tools (TL-45, required in CI's job
+  python); SRS-DCM-001 to SRS-DCM-007 (SRS version 24); H-15 to H-17 with RC-47 to RC-51 and HZ-5;
+  threat model version 10, SOUP list version 19; `measurements/ch35/`; Exercises 35.1 to 35.3.
+
 ### Changed
 
 - VERSION is 0.9.0-dev (Part IX); the Python packages are 0.9.0.dev0. The SOUP list is version 18,

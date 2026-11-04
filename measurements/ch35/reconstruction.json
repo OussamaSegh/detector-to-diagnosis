@@ -1,0 +1,4 @@
+{"units": "PROPCNTS", "pixel_mm": 2.0, "slice_mm": 3.2, "z0_mm": 0.0,
+ "corrections": ["NORM", "ATTN", "RAN"], "decay_correction": "NONE",
+ "method": "OSEM 4 iterations 8 subsets", "series_number": 1,
+ "description": "MiniDAQ phantom, Chapter 33"}

@@ -1,0 +1,3 @@
+{"start": "2026-11-04T07:42:15.759+00:00", "duration_s": 14.8, "run": "20261104T074215742Z",
+ "radionuclide": "F18", "patient_position": "HFS",
+ "scanner": {"manufacturer": "MiniDAQ project", "model": "MiniDAQ", "software": "0.9.0-dev"}}

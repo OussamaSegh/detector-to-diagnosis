@@ -35,3 +35,6 @@ ruff==0.17.3
 scikit_build_core==1.1.2
 build==1.6.1
 pyproject_hooks==1.3.3
+# Test only: independent checks of the DICOM export (Chapter 35, tools/test_dicom.py)
+pydicom==3.0.2
+pynetdicom==3.0.4

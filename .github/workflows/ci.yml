@@ -108,11 +108,12 @@ jobs:
           cmake --preset release -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF \
             -DPython3_EXECUTABLE="$RUNNER_TEMP/venv/bin/python"
           cmake --build --preset release --target minidaq_sim
-      - name: Tests, types and lint of the analysis package; the wheel of recon_cpp
+      - name: Tests, types and lint of the analysis package; the wheel of recon_cpp; the DICOM export
         env:
           MINIDAQ_ANALYSIS_REQUIRED: "1"
+          MINIDAQ_DICOM_ORACLE_REQUIRED: "1"
         run: |
-          ctest --test-dir build/release -R '^(analysis\.|recon\.wheel$)' --output-on-failure \
+          ctest --test-dir build/release -R '^(analysis\.|recon\.wheel$|tools\.dicom$)' --output-on-failure \
             --no-tests=error
 
   reproducible-build:

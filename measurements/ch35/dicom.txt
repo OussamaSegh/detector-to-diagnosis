@@ -1,0 +1,44 @@
+Chapter 35: the DICOM export of the phantom image of Chapter 33
+image: measurements/ch33/e2e/image.npy, 128 x 128, max 0.00939496, min 4.92e-17 (proportional counts)
+pydicom 3.0.2, pynetdicom 3.0.4, numpy 2.5.3
+
+1. The series
+instances: 1; file size 34480 bytes, of which pixel data 32768 and everything else 1712 (60 elements, preamble and meta included)
+check_series: no problem
+SeriesInstanceUID 2.25.275788085215706092159158001525453726616 (44 characters)
+pydicom reads: PatientName MINIDAQ^PHANTOM, Units PROPCNTS, RescaleSlope 1.4335787264e-07, ImagePositionPatient ['-127', '-127', '0']
+pydicom's pixel values times its slope equal this package's: True
+
+2. Quantization
+one slice: slope 1.4335787264e-07, largest error 7.167e-08 = 0.4999 slope, 7.63e-06 of the maximum
+volume of 47 slices, slice 23 ten times hotter: median relative error inside the object (above 10% of the slice's maximum)
+  slope per slice:  cold slices 1.78e-05, hot slice 1.78e-05
+  one slope (16 bits for the volume): cold slices 0.000244, hot slice 1.78e-05
+
+3. The decimal string
+slope 1.4335787263766564e-07: format_ds gives '1.4335787264e-07'; six decimals give '0.000000', which a reader takes as 0.0: every pixel would read as 0
+
+4. Geometry
+the cylinder's centroid in patient coordinates (LPS, mm): (0.123, -0.296, 0.000); pixel 2 mm
+
+5. Sending (loopback, a 47-slice series; median of 5 sends; TCP_NODELAY on both sides
+   unless the line says otherwise)
+data sets: 1604688 bytes in all
+  test archive max PDU   4096:    66.4 ms (60.7 to 75.7), 9 PDU(s) per data set, all statuses 0x0000: True
+  test archive max PDU  16384:    57.6 ms (54.4 to 61.6), 3 PDU(s) per data set, all statuses 0x0000: True
+  test archive max PDU  65536:    60.3 ms (55.1 to 64.1), 1 PDU(s) per data set, all statuses 0x0000: True
+  test archive max PDU   none:    64.9 ms (60.2 to 89.5), 1 PDU(s) per data set, all statuses 0x0000: True
+  test archive max PDU  16384, sender WITHOUT TCP_NODELAY:  2072.1 ms (2068.8 to 2079.7), 3 PDU(s) per data set, all statuses 0x0000: True
+  pynetdicom   max PDU   4096:   171.0 ms (168.4 to 176.5), 9 PDU(s) per data set, all statuses 0x0000: True
+  pynetdicom   max PDU  16384:   158.2 ms (155.5 to 170.7), 3 PDU(s) per data set, all statuses 0x0000: True
+  pynetdicom   max PDU  65536:   159.0 ms (153.6 to 164.2), 1 PDU(s) per data set, all statuses 0x0000: True
+  pynetdicom   max PDU   none:   163.6 ms (157.3 to 180.2), 1 PDU(s) per data set, all statuses 0x0000: True
+
+6. Faults
+aborted after 20: sent 20, pending 27, error: series 2.25.115352542888969714319266543428754574976: the peer aborted the association
+exported again and resent: sent 47, pending 0, failed 0; the archive holds 47 instances
+journal: 68 lines
+
+7. The independent reader is not strict
+item tag written as one 32-bit integer (bytes 00 E0 FE FF instead of FE FF 00 E0): pydicom reads CodeValue 77004003 with 0 warning(s)
+this package's reader: refused (expected an item at byte 0, found E000FFFE)
