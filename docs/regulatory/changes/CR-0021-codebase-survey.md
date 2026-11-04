@@ -76,7 +76,12 @@ where to look, and decides nothing (assumption: confirm with team).
 ## Verification
 
 `tools/test_survey.py` (the test `tools.survey`), on strings for the numstat parsing and the
-ownership rule and on a repository made for the test for the whole report; `docs.trace`;
+ownership rule (Churn.test_a_renamed_file_counts_under_its_new_name,
+Owners.test_the_longest_prefix_owns_a_file,
+Owners.test_two_prefixes_of_the_same_length_are_ambiguous)
+and on a repository made for the test for the whole report
+(Survey.test_each_item_gets_its_documents_and_its_history,
+Survey.test_a_product_file_no_item_claims_fails); `docs.trace`;
 `docs.baseline`; the whole ctest. The survey of the repository at the chapter's commit is kept in
 `measurements/ch34/`.
 
