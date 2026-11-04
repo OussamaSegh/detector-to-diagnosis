@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-04, by the software lead |
 | Source | problem report MDQ-PR-051, found by the SOUP review for release 0.7.0 |
 | Decision | approved, 2026-11-04, software lead |
-| Commits | none yet |
+| Commits | 58367cb |
 
 ## Description
 
