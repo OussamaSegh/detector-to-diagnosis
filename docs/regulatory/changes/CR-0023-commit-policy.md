@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-04, by the software lead |
 | Source | improvement: Git and the workflow of a regulated team (Chapter 36) |
 | Decision | approved, 2026-11-04, software lead |
-| Commits | none yet |
+| Commits | 4c04619 |
 
 ## Description
 
