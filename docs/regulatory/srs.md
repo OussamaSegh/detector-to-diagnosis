@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 20 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 21 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -389,6 +389,18 @@ memory map, fits of histograms with uncertainties, and the acquisition quality c
 | SRS-ANA-005 | The analysis package's QC report shall check every limit of its protocol file (photopeak position and resolution, time resolution and offset, fit quality, constancy, no dip, prompts in the files equal to the prompts the run record states, time order), write the result as JSON and Markdown with figures and the provenance of every input, exit with status `0` when every check passes, `1` when one fails and `2` when the run cannot be analyzed, and write no report for a damaged run. | tools | T |
 | SRS-ANA-006 | The analysis package shall record every input of a report by path, size and SHA-256 in a manifest whose own SHA-256 does not depend on the order of the inputs, and report every file of a manifest that is missing or whose size or SHA-256 differs. | tools | T |
 
+### 2.23 Build (BLD)
+
+How the project is built, installed and packaged (Chapter 32, ADR 0027, CR-0018): the CMake
+package of the projector library, the presets, the wheel of the projector's Python module. These
+are properties of the build system, a tool; the shipped programs do not change.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-BLD-001 | The build shall install the projector library with a CMake package (targets, configuration and version files) under any prefix, such that no installed CMake file names a path of the build or the source tree, and a project that calls `find_package(recon)` with only that prefix on its search path builds against `recon::projector` and runs. | tools | T |
+| SRS-BLD-002 | The build's presets shall give every configuration that is not hidden a build preset, a test preset and a workflow preset of its name that configures, builds and tests with those three in that order, and allow in the CI workflow's matrix only configurations that exist. | tools | T |
+| SRS-BLD-003 | The build shall produce, from the same CMake project and with scikit-build-core, a wheel of the projector's Python module that installs into an empty directory as that one module and passes the module's tests with nothing of the build tree on the Python path. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -425,3 +437,4 @@ memory map, fits of histograms with uncertainties, and the acquisition quality c
 | 18 | Chapter 29: the reconstruction tool's C++ projector and its Python module, SRS-REC-004 to SRS-REC-006 (ADR 0024, CR-0015). |
 | 19 | Chapter 30: image quality, SRS-IQ-001 to SRS-IQ-004 (ADR 0025, CR-0016). |
 | 20 | Chapter 31: the analysis package, SRS-ANA-001 to SRS-ANA-006 (ADR 0026, CR-0017). |
+| 21 | Chapter 32: the build, SRS-BLD-001 to SRS-BLD-003 (ADR 0027, CR-0018). |

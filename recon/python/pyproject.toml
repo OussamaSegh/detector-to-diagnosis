@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: MIT
+# A wheel of the reconstruction's C++ projector module, recon_cpp (Chapter 32). scikit-build-core
+# runs MiniDAQ's own CMake project with everything but the module switched off, builds the one
+# target and installs its one component into the wheel: the same CMake code that builds the
+# module for CTest builds it for pip, so the two cannot drift apart.
+[build-system]
+requires = ["scikit-build-core==1.1.2"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "minidaq-recon"
+version = "0.7.0.dev0"
+description = "The C++ Joseph projector of MiniDAQ's reconstruction, as a Python module (Detector to Diagnosis, Chapters 29 and 32)"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26"]
+
+# [snippet:skbuild]
+[tool.scikit-build]
+cmake.version = ">=3.28"
+cmake.source-dir = "../.."
+cmake.build-type = "Release"
+build.targets = ["recon_cpp"]
+install.components = ["recon_python"]
+wheel.packages = []
+wheel.license-files = ["../../LICENSE"]
+
+[tool.scikit-build.cmake.define]
+MINIDAQ_BUILD_TESTS = "OFF"
+MINIDAQ_BUILD_BENCHMARKS = "OFF"
+MINIDAQ_BUILD_EXERCISES = "OFF"
+MINIDAQ_BUILD_RECON_PYTHON = "ON"
+# [/snippet:skbuild]

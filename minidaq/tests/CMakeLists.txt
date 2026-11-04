@@ -141,6 +141,10 @@ if(Python3_Interpreter_FOUND)
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_postmortem.py
                    $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl>)
   set_tests_properties(docs.version tools.check_version tools.postmortem PROPERTIES LABELS "unit")
+  # Chapter 32: every configuration has its build, test and workflow presets.
+  add_test(NAME docs.presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_presets.py ${PROJECT_SOURCE_DIR})
+  add_test(NAME tools.check_presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_check_presets.py)
+  set_tests_properties(docs.presets tools.check_presets PROPERTIES LABELS "unit")
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update
