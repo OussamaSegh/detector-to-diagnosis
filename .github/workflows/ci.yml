@@ -41,6 +41,30 @@ jobs:
         # The output of a failed test is the only record of why it failed (MDQ-PR-020).
         run: ctest --preset ${{ matrix.preset }} -LE starter --output-on-failure
 
+  format:
+    # Chapter 32: the C++ lines this push or pull request touches are formatted as .clang-format
+    # says (tools/check_format.py, ADR 0027). Lines it does not touch are not checked.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+          sudo ln -sf /usr/bin/git-clang-format-18 /usr/local/bin/git-clang-format
+      - name: Formatting of the touched lines
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          # A new branch or tag has no "before"; then the last commit alone is checked.
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            BASE=HEAD~1
+          fi
+          python3 tools/check_format.py "$BASE" HEAD
+
   static-analysis:
     runs-on: ubuntu-24.04
     steps:
@@ -48,7 +72,7 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libssl-dev python3-numpy python3-dev
+          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 clang-format-18 cppcheck libssl-dev python3-numpy python3-dev
       - name: Configure (for compile_commands.json)
         run: cmake --preset clang-release
       - name: clang-tidy and cppcheck

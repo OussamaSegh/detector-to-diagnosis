@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 4 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
+Version 5 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -22,6 +22,14 @@ their text. MiniDAQ does not claim conformance to any of them.
    -Wold-style-cast -Wshadow -Wformat=2`. *Enforced:* `-Werror`.
 3. Shipped builds use the hardened preset (ADR 0008). *Enforced:*
    `build.hardening` test reads the binaries.
+4. C++ is formatted as `.clang-format` says (Google's style at 100 columns),
+   so that a diff shows what changed and not how its author indents. A line a
+   change adds or edits is formatted; lines it does not touch are left as they
+   are, because reformatting every file at once would make every line's history
+   point at the format change (ADR 0027). Format the staged lines with
+   `git clang-format`. *Enforced:* the pre-commit hook (`tools/hooks/pre-commit`,
+   installed with `git config core.hooksPath tools/hooks`) and the CI job
+   `format` (`tools/check_format.py`).
 
 ## 2. Errors
 
@@ -139,3 +147,4 @@ must report nothing before a change is merged.
 | 2 | Rule 5.5 on waiting in tests (CAPA-0001), and this history (Chapter 16). |
 | 3 | Rule 3.5 on reading untrusted JSON (CAPA-0003, problem report MDQ-PR-013). |
 | 4 | Rule 5.6 on tests that start threads (CAPA-0001, problem report MDQ-PR-028). |
+| 5 | Rule 1.4 on formatting, checked on changed lines (Chapter 32, ADR 0027, CR-0018). |

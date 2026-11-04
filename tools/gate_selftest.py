@@ -85,6 +85,9 @@ FAULTS = [
           [("docs/regulatory/verification/stp.md", "This plan says how", "This plan, changed, says how")],
           ["python3", "tools/design_file.py", ".", "--check", "--since", "HEAD"],
           r"stp\.md: changed since HEAD but still version"),
+    Fault("format", "formatting of the touched lines", "a changed line that clang-format would rewrite",
+          [(CRC, CRC_ANON, "int   badly_formatted( ){return 0;}\n\n" + CRC_ANON)],
+          ["python3", "tools/check_format.py", "HEAD"], r"touched lines need formatting"),
     Fault("waits", "test waits (CAPA-0001)", "a test that sleeps without a reason",
           [("minidaq/tests/unit/test_config.cpp", "TEST(Config, MinimalDocumentGetsDefaults) {",
             "TEST(Config, Sleeps) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }\n\n"

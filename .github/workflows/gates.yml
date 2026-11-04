@@ -26,7 +26,9 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libclang-rt-18-dev libssl-dev python3-numpy python3-dev
+          sudo apt-get install -y ninja-build clang-18 clang-tidy-18 cppcheck libclang-rt-18-dev libssl-dev python3-numpy python3-dev clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+          sudo ln -sf /usr/bin/git-clang-format-18 /usr/local/bin/git-clang-format
           sudo sysctl -w net.core.rmem_max=4194304
       - name: Plant each fault and run its gate
         run: python3 tools/gate_selftest.py selftest/gate-selftest.md

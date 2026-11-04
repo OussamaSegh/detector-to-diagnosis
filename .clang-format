@@ -1,0 +1,11 @@
+# MiniDAQ's formatting (Chapter 32, ADR 0027, coding standard rule 1.4).
+# Google's style at 100 columns, the width the code was written to. Checked on changed lines only
+# (tools/check_format.py): the code written before this file is not reformatted in one commit,
+# which would touch 308 of 580 files and hide every line's history behind a format change.
+BasedOnStyle: Google
+ColumnLimit: 100
+DerivePointerAlignment: false
+PointerAlignment: Left
+# The include groups are the authors' (own header, standard library, third party); Google's
+# regrouping would reorder them in files that are otherwise untouched.
+IncludeBlocks: Preserve

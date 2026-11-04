@@ -233,6 +233,20 @@
      "use": "Compiles a Python histogram loop in the measurement of Chapter 31 (measurements/ch31), to compare with numpy and C++. No result of the product or of its verification depends on it.",
      "failure": "A wrong time in a comparison in the book.",
      "confidence": [],
-     "evidence": [], "shown_to_fail": ""}
+     "evidence": [], "shown_to_fail": ""},
+    {"id": "TL-37", "name": "clang-format and git-clang-format", "kind": "off-the-shelf", "class": "T1",
+     "version": "18.1.3 (Ubuntu 24.04's clang-format-18)",
+     "version_check": {"command": ["clang-format-18", "--version"], "pattern": "\\b18\\.1\\.3\\b"},
+     "use": "Formats C++ as .clang-format says, on the lines a change touches: tools/check_format.py in the pre-commit hook and the CI job format (Chapter 32, ADR 0027).",
+     "failure": "A line left unformatted or formatted differently: a matter of style. A source change it makes is reviewed, compiled and tested like any other edit, so it cannot reach the product unseen.",
+     "confidence": [],
+     "evidence": ["tools/test_check_format.py", "tools/test_pre_commit.py"], "shown_to_fail": "format"},
+    {"id": "TL-38", "name": "scikit-build-core", "kind": "off-the-shelf", "class": "T3",
+     "version": "1.1.2 (pinned in analysis/requirements.lock)",
+     "use": "Builds the wheel of the reconstruction tool's module recon_cpp from the main CMake project (recon/python/pyproject.toml, Chapter 32).",
+     "failure": "A wheel that holds another build of the module than the project's (other flags, another source), or that does not hold it: images reconstructed with the wrong projector, as for TL-32 (H-13).",
+     "confidence": ["The wheel is built by the same CMake project and targets as the build tree's module; recon.wheel installs it alone into an empty directory and runs the projector's tests against it, with nothing of the build tree on the path, in the CI job python.",
+                    "Increased confidence from use: the build backend that the pybind11 and scikit-build projects recommend for CMake extensions."],
+     "evidence": ["recon/tests/test_wheel.py", "recon/python/pyproject.toml"], "shown_to_fail": "recon.wheel"}
   ]
 }

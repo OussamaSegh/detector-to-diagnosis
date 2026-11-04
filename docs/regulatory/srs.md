@@ -392,14 +392,17 @@ memory map, fits of histograms with uncertainties, and the acquisition quality c
 ### 2.23 Build (BLD)
 
 How the project is built, installed and packaged (Chapter 32, ADR 0027, CR-0018): the CMake
-package of the projector library, the presets, the wheel of the projector's Python module. These
-are properties of the build system, a tool; the shipped programs do not change.
+package of the projector library, the presets, the wheel of the projector's Python module, the
+formatting check and the pre-commit hook. These are properties of the build system, a tool; the
+shipped programs do not change.
 
 | ID | Requirement | Item | Method |
 |---|---|---|---|
 | SRS-BLD-001 | The build shall install the projector library with a CMake package (targets, configuration and version files) under any prefix, such that no installed CMake file names a path of the build or the source tree, and a project that calls `find_package(recon)` with only that prefix on its search path builds against `recon::projector` and runs. | tools | T |
 | SRS-BLD-002 | The build's presets shall give every configuration that is not hidden a build preset, a test preset and a workflow preset of its name that configures, builds and tests with those three in that order, and allow in the CI workflow's matrix only configurations that exist. | tools | T |
 | SRS-BLD-003 | The build shall produce, from the same CMake project and with scikit-build-core, a wheel of the projector's Python module that installs into an empty directory as that one module and passes the module's tests with nothing of the build tree on the Python path. | tools | T |
+| SRS-BLD-004 | The project's formatting check shall find every added or changed C++ line, staged or between two commits, that clang-format with the project's `.clang-format` would rewrite, and leave unchanged lines unchecked. | tools | T |
+| SRS-BLD-005 | The pre-commit hook shall refuse a commit that adds a C++ line the formatting check finds, an e-mail address other than a placeholder or a no-reply address, or a whitespace error, and name the check that refused it. | tools | T |
 
 ## 3. Verification other than test
 
@@ -437,4 +440,4 @@ are properties of the build system, a tool; the shipped programs do not change.
 | 18 | Chapter 29: the reconstruction tool's C++ projector and its Python module, SRS-REC-004 to SRS-REC-006 (ADR 0024, CR-0015). |
 | 19 | Chapter 30: image quality, SRS-IQ-001 to SRS-IQ-004 (ADR 0025, CR-0016). |
 | 20 | Chapter 31: the analysis package, SRS-ANA-001 to SRS-ANA-006 (ADR 0026, CR-0017). |
-| 21 | Chapter 32: the build, SRS-BLD-001 to SRS-BLD-003 (ADR 0027, CR-0018). |
+| 21 | Chapter 32: the build, SRS-BLD-001 to SRS-BLD-005 (ADR 0027, CR-0018). |

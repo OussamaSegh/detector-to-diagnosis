@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 10 (MiniDAQ 0.6.0). Status: draft for review.
+Version 11 (MiniDAQ 0.7.0-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -119,6 +119,7 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Build with warnings as errors | every change, every preset | no warning |
 | Unit, integration, system and documentation tests (`ctest`; the system tests as the [system test plan](verification/stp.md) says) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
 | Static analysis | every change | zero findings |
+| Formatting | every change: the pre-commit hook on the staged lines, the CI job `format` on the lines a push or pull request touches (`tools/check_format.py`) | no touched C++ line that clang-format with `.clang-format` would rewrite (coding standard, rule 1.4) |
 | Tool versions | every change (`tools/check_tools.py --environment`) | every tool with a version check matches the tool list |
 | Reproducible build | every change, `tools/repro_check.sh` (GitHub Actions) | two builds of the shipped programs from two checkouts in different directories give the same product archive |
 | Gate self-test | when the tools, the CI or the regulatory files change, every week and for each release tag (`tools/gate_selftest.py`, workflow `gates`) | every gate passes on the unchanged commit and catches its planted fault for the planted reason |
@@ -231,3 +232,4 @@ of Chapter 13.
 | 8 | Chapter 21: the code review checklist in section 5; root cause analysis of problem reports and the diagnostic evidence in section 7. |
 | 9 | Release 0.5.0: the release checks run in four parts when the machine cannot hold the whole run (MDQ-PR-041). |
 | 10 | Release 0.6.0: a failed CI run is investigated job by job (section 7, MDQ-PR-045, CAPA-0001). |
+| 11 | The formatting check of changed lines in section 6 (Chapter 32, ADR 0027, CR-0018). |

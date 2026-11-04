@@ -145,6 +145,10 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_presets.py ${PROJECT_SOURCE_DIR})
   add_test(NAME tools.check_presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_check_presets.py)
   set_tests_properties(docs.presets tools.check_presets PROPERTIES LABELS "unit")
+  # Chapter 32: the formatting check of changed lines and the pre-commit hook (ADR 0027).
+  add_test(NAME tools.check_format COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_check_format.py)
+  add_test(NAME tools.pre_commit COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_pre_commit.py)
+  set_tests_properties(tools.check_format tools.pre_commit PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77)
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update
