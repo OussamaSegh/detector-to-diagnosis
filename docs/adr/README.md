@@ -37,3 +37,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0028](0028-end-to-end-reference-acceptance-specification-and-requirements-freeze.md) | The chain checked end to end against an offline reference, a written acceptance specification, and a requirements freeze | Accepted |
 | [0029](0029-codebase-survey-from-the-projects-own-records.md) | A codebase survey from the project's own records, with hotspots and checks of the item map | Accepted |
 | [0030](0030-dicom-export-own-encoder-content-derived-uids-and-an-outbox.md) | The DICOM export: an own encoder checked by independent peers, UIDs derived from the content, and an outbox | Accepted |
+| [0031](0031-a-commit-policy-checked-in-ci-from-its-first-commit.md) | A commit policy checked in CI from its first commit, with git's own trailer rule and a trace at the level of a requirement | Accepted |

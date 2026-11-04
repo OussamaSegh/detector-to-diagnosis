@@ -215,7 +215,8 @@ jobs:
             minidaq.vex.json
 
   document-control:
-    # Chapter 16: a controlled document that changed since the last release has a new version.
+    # Chapter 16: a controlled document that changed since the last release has a new version;
+    # Chapter 36: every commit since the commit policy began follows it.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -233,6 +234,13 @@ jobs:
           fi
           test -n "$last" && git cat-file -e "$last^{commit}"
           python3 tools/design_file.py . --check --since "$last"
+      - name: Commit policy from its first commit (Chapter 36, ADR 0031)
+        run: |
+          # A pull request is checked out as a merge that GitHub makes; the policy applies to
+          # the branch's own commits, so the range ends at the branch's head.
+          head="${{ github.event.pull_request.head.sha || github.sha }}"
+          since="$(python3 -c 'import json; print(json.load(open("tools/commit_policy.json"))["since"])')"
+          python3 tools/check_commits.py . "$since..$head"
 
   release-package:
     # Chapter 20: for a release tag, the product archive of tools/release_bundle.py. Its SHA-256

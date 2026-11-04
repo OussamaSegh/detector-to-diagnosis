@@ -35,3 +35,4 @@ solutions/ch32.md
 solutions/ch33.md
 solutions/ch34.md
 solutions/ch35.md
+solutions/ch36.md

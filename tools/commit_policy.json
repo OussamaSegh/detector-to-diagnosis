@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "since": "34cf130",
+  "rules": [
+    "identity",
+    "subject",
+    "layout",
+    "review",
+    "reference",
+    "merge"
+  ],
+  "identity_domains": [
+    "users.noreply.github.com",
+    "example.com",
+    "example.org",
+    "example.invalid"
+  ],
+  "identity_local_parts": [
+    "noreply@",
+    "no-reply@"
+  ],
+  "subject_max": 72,
+  "body_max": 72,
+  "review_trailer": "Review",
+  "references": "CR-\\d{4}|MDQ-PR-\\d{3}",
+  "controlled": {
+    "requirements": "docs/regulatory/srs.md",
+    "files": [
+      "docs/regulatory/risk/hazards.json",
+      "docs/architecture/software-items.json"
+    ]
+  },
+  "accepted": []
+}

@@ -167,6 +167,10 @@ if(Python3_Interpreter_FOUND)
   # sets MINIDAQ_DICOM_ORACLE_REQUIRED=1 so that they cannot be skipped there.
   add_test(NAME tools.dicom COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_dicom.py)
   set_tests_properties(tools.dicom PROPERTIES LABELS "unit" SKIP_RETURN_CODE 77 TIMEOUT 120)
+  # Chapter 36: the commit policy (tools/commit_policy.json), and this repository's history
+  # from the policy's first commit when the clone has it.
+  add_test(NAME tools.commits COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_check_commits.py)
+  set_tests_properties(tools.commits PROPERTIES LABELS "unit")
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update

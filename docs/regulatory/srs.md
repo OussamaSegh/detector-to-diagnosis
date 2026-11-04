@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 24 (MiniDAQ 0.9.0-dev). Status: draft for review.
+Version 25 (MiniDAQ 0.9.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -439,6 +439,24 @@ reconstruction is (TL-44).
 | SRS-DCM-006 | The DICOM export shall send each object with C-STORE over an association whose presentation contexts it proposed and the archive accepted, cut every message into fragments that fit the archive's maximum PDU length, end the attempt with an error when the association is rejected or aborted, when the archive does not answer within the time limit, or when a PDU is longer than it accepts, and report for each object the status the archive gave. | tools | T |
 | SRS-DCM-007 | The DICOM export shall keep every object in its outbox until the archive answers with a success or warning status for it, keep it pending after a transient failure or a network error, set it apart for a person after any other failure, record every attempt in an append-only journal, and send again only what is still pending. | tools | T |
 
+### 2.26 Commit policy (GIT)
+
+The checks of the team's history (Chapter 36, ADR 0031, CR-0023): every commit since the policy
+began has a no-reply identity, a message git and people can read, a review trailer that git
+parses, and a trace to a change request or a problem report when it changes a requirement, a
+hazard or a software item. A tool of the development process; the shipped programs do not
+change (TL-46).
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-GIT-001 | The commit policy check shall find the trailers of a commit message as git does: in the last paragraph and never in the subject's, when every line of that paragraph is a trailer or a continuation, or when it has a line that git generates and at least a quarter of its lines are trailers. | tools | T |
+| SRS-GIT-002 | The commit policy check shall report every commit, merges included, whose author or committer address is neither a no-reply address nor a placeholder address of the policy, without repeating the address in its report. | tools | T |
+| SRS-GIT-003 | The commit policy check shall report a subject that is empty, longer than the policy allows, ends with a period or marks a fixup, squash or work in progress; a second line that is not blank; a body line longer than the policy allows that is not a trailer, an indented line or a URL; and a merge with more than two parents or a subject that does not say what it merges. | tools | T |
+| SRS-GIT-004 | The commit policy check shall report every commit other than a merge that has no review trailer in the trailer block that git parses, and say when the review line is present outside that block. | tools | T |
+| SRS-GIT-005 | The commit policy check shall report every commit other than a merge that changes the text, item or methods of a requirement of the SRS, adds or removes one, or changes the hazards or the software items, and neither names a change request or problem report that exists in the repository nor is listed in the commits of a change request. | tools | T |
+| SRS-GIT-006 | The commit policy check shall check the commits from the policy's first commit to the head unless given another range, skip an exception only for the commit and the rule the policy names, and exit with the status `1` when a commit breaks a rule and `2` when git cannot resolve the range. | tools | T |
+| SRS-GIT-007 | The commit-msg hook shall refuse a commit whose message, author or committer breaks the rules identity, subject, layout or review, after removing the comment lines that git removes. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -481,3 +499,4 @@ reconstruction is (TL-44).
 | 22 | Chapter 33: the readout link model, SRS-SIM-024; the chain end to end, SRS-SYS-006 to SRS-SYS-008; the end-to-end latency, SRS-PERF-022, which the soak measured since Chapter 19 and no requirement stated (ADR 0028, CR-0020). The requirements are frozen against the baseline `srs-baseline.json` (version 21) from this version on. |
 | 23 | Chapter 34: the codebase survey, SRS-SVY-001 to SRS-SVY-003 (ADR 0029, CR-0021). |
 | 24 | Chapter 35: the DICOM export, SRS-DCM-001 to SRS-DCM-007 (ADR 0030, CR-0022). |
+| 25 | Chapter 36: the commit policy, SRS-GIT-001 to SRS-GIT-007 (ADR 0031, CR-0023). |

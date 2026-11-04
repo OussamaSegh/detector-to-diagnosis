@@ -143,16 +143,20 @@ Commits and pushing:
   written; Parts I to IV and the build were retrofitted in PR #2 (merged 2026-10-26); Chapter 34
   must be written generic. KDP asks at upload whether the content is AI-generated; the copyright
   page says the book was written with AI help.
-- Every commit message ends with these lines:
+- Every commit message follows the commit policy (Chapter 36, `tools/commit_policy.json`,
+  checked in CI from its `since` commit and by the commit-msg hook): a subject of at most 72
+  characters without a final period, a blank line, a body wrapped at 72, and ends with ONE
+  paragraph of trailers, the review line inside it (no blank line between them):
 
   ```
   Review: change control checklist, items 1 to 6.
-
-  Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+  Co-Authored-By: <as the session's attribution instructions give it>
   Claude-Session: <the session's link, as the session's attribution instructions give it>
   ```
 
-  A new session uses its own Claude-Session line.
+  A commit that changes a requirement, a hazard or a software item names its CR-NNNN or
+  MDQ-PR-NNN (or a CR lists it in Commits). A PR branch's commits must follow it too (CI checks
+  them). A new session uses its own Claude-Session line.
 - "Always push, don't wait": run `git push -q origin main` after every commit. Commit in small
   steps within a chapter.
 - Tag pushes are refused from cloud sessions (HTTP 403). The GitHub API is no way around it:

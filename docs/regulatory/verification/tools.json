@@ -298,6 +298,14 @@
      "confidence": ["Increased confidence from use: the most used DICOM implementations in Python, with their own test suites.",
                     "Diverse redundancy: the export's own strict reader checks the same files; a sequence with its item tag in the wrong byte order, which pydicom 3.0.2 reads without a warning, is refused by the export's reader (measurements/ch35), so the two are not relied on alone.",
                     "In CI's job python the tests that use them cannot be skipped (MINIDAQ_DICOM_ORACLE_REQUIRED=1); tools/lock_audit.py checks them for published vulnerabilities, and found one in pydicom 3.0.1 the day it was pinned (3.0.2 is pinned)."],
-     "evidence": ["tools/test_dicom.py", "analysis/requirements.lock"], "shown_to_fail": "Encoding.test_independent_pydicom_reads_every_attribute_as_written"}
+     "evidence": ["tools/test_dicom.py", "analysis/requirements.lock"], "shown_to_fail": "Encoding.test_independent_pydicom_reads_every_attribute_as_written"},
+    {"id": "TL-46", "name": "Commit policy check (tools/check_commits.py, tools/hooks/commit-msg)", "kind": "in-house", "class": "T2",
+     "version": "the commit; git 2.34 or later and Python 3.12 or later",
+     "use": "Checks every commit since the commit policy began against its rules: no-reply identities, the form of the message, a review trailer that git parses, and a trace to a change request or problem report for a commit that changes a requirement, a hazard or a software item (Chapter 36). The commit-msg hook checks the rules that need no history at commit time.",
+     "failure": "A commit without its record of review, without its trace to a change request, or with a personal address is merged and published without a report; or a commit that the procedure allows is refused.",
+     "confidence": ["tools/test_check_commits.py checks each rule on commits that break it and on commits that do not, the trailer parser against git's own on messages at the edges of git's rule, the trace at the level of a requirement on a repository made for the test, the exceptions, the exit status on a shallow clone, and the hook on a message with comments.",
+                    "The check was run on MiniDAQ's own history (measurements/ch36): it reports the review line that git never parsed in 191 commits and the three merges with a personal address, both known from the measurement, and nothing after the policy's first commit.",
+                    "A reviewer reads every commit's message and the change request it names; an audit can repeat the check from the policy and the tool at any commit."],
+     "evidence": ["tools/test_check_commits.py", "measurements/ch36/README.md"], "shown_to_fail": "Range.test_a_requirement_changed_without_a_request_fails_its_verification_does_not"}
   ]
 }

@@ -1,0 +1,32 @@
+Chapter 36: MiniDAQ's history at 34cf130 under commit policy 1
+git 2.43.0
+
+1. The history
+commits 260, merges 6, on the first-parent line 249
+distinct identities (author or committer): 4
+tags 43, annotated 43
+commits since the first change request (CR-0001): 194
+
+2. The policy, commits that break each rule (accepted exceptions not applied)
+  whole history  (260 commits): identity 3, subject 91, layout 151, review 254, reference 3, merge 0
+  since CR-0001  (194 commits): identity 3, subject 75, layout 130, review 188, reference 0, merge 0
+  merges whose identity is not a no-reply address: 3 of 6
+
+3. The rule reference: what is under control
+  whole history : five documents as whole files 15 commits without a reference; requirements, hazards and items 3
+  since CR-0001 : five documents as whole files 11 commits without a reference; requirements, hazards and items 0
+
+4. The review line
+commits with a line 'Review:' 191 of 260; in the trailer block, by this tool 0, by git log %(trailers) 0
+
+5. Widths
+subject: median 66, longest 105, over 72 91
+longest body line per commit: median 91, over 72 151 of 191 commits with a body
+
+6. Content addressing
+VERSION: sha1('blob 10\0' + content) = c70836ca5cf3, git hash-object c70836ca5cf3, equal: True
+one bit changed: b57588e592f8, 20 of 20 bytes of the name differ
+object format of this repository: sha1
+
+7. Time
+check_commits.py over the whole history (260 commits): median 1.03 s of 3

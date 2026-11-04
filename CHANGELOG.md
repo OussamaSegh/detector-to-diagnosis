@@ -17,9 +17,18 @@ the patch version.
   checked by pydicom 3.0.2 and pynetdicom 3.0.4 as test-only tools (TL-45, required in CI's job
   python); SRS-DCM-001 to SRS-DCM-007 (SRS version 24); H-15 to H-17 with RC-47 to RC-51 and HZ-5;
   threat model version 10, SOUP list version 19; `measurements/ch35/`; Exercises 35.1 to 35.3.
+- Chapter 36, Git and the workflow of a regulated team (CR-0023, ADR 0031): the commit policy
+  `tools/commit_policy.json`, checked by `tools/check_commits.py` (TL-46) in CI's job
+  document-control from the policy's first commit and by the commit-msg hook; git's own rule for
+  trailers; the trace to a change request at the level of a requirement, a hazard and an item;
+  the test `tools.commits`; SRS-GIT-001 to SRS-GIT-007 (SRS version 25); threat model version 11;
+  `measurements/ch36/`; Exercises 36.1 to 36.3.
 
 ### Changed
 
+- Commit messages: the review line is in the trailer block, with the co-author lines, so that git
+  parses it (it was a trailer in none of the 191 commits that carried it); subjects and bodies at
+  most 72 characters.
 - VERSION is 0.9.0-dev (Part IX); the Python packages are 0.9.0.dev0. The SOUP list is version 18,
   with the known-anomaly review for MiniDAQ 0.9.
 

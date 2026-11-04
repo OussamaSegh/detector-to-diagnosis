@@ -31,7 +31,8 @@ class PreCommit(unittest.TestCase):
                                *args], cwd=self.dir, capture_output=True, text=True)
 
     def commit(self):
-        return self.git("commit", "-q", "-m", "change")
+        # A message the commit-msg hook (Chapter 36) accepts, so that only pre-commit can refuse.
+        return self.git("commit", "-q", "-m", "Change\n\nReview: change control checklist.")
 
     def add(self, name, text):
         (self.dir / name).write_text(text)
