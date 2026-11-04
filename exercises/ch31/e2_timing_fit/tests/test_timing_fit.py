@@ -24,8 +24,9 @@ class TimingFit(unittest.TestCase):
             self.assertLess(abs(value - true), 4 * error, name)
 
     def test_a_weak_peak_is_not_biased(self):
-        """300 coincidences in the peak on a background of 0.01 per ps: about 6 counts in the top
-        bin and fewer than one in most. The mean area of 300 fits is within 3% of the truth."""
+        """300 coincidences in the peak on a background of 0.01 per ps: about 19 counts in each of
+        the two top bins and fewer than one in most. The mean area of 300 fits is within 3% of
+        the truth."""
         rng = np.random.default_rng(2)
         areas = [fit_timing(histogram(rng, 300, 0.01), EDGES)["area"][0] for _ in range(300)]
         self.assertLess(abs(np.mean(areas) / 300.0 - 1.0), 0.03, np.mean(areas))
