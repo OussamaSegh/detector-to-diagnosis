@@ -38,3 +38,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0029](0029-codebase-survey-from-the-projects-own-records.md) | A codebase survey from the project's own records, with hotspots and checks of the item map | Accepted |
 | [0030](0030-dicom-export-own-encoder-content-derived-uids-and-an-outbox.md) | The DICOM export: an own encoder checked by independent peers, UIDs derived from the content, and an outbox | Accepted |
 | [0031](0031-a-commit-policy-checked-in-ci-from-its-first-commit.md) | A commit policy checked in CI from its first commit, with git's own trailer rule and a trace at the level of a requirement | Accepted |
+| [0032](0032-ai-assisted-changes-recorded-in-trailers-and-verified-like-any-other.md) | AI-assisted changes: recorded in trailers, verified like any other change, with a test for each change of product code | Accepted |

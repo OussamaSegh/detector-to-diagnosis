@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 12 (MiniDAQ 0.8.0-dev). Status: draft for review.
+Version 13 (MiniDAQ 0.9.0-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -85,6 +85,15 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   by `tools/gate_selftest.py` or their own tests. `tools/check_tools.py` checks the list, and the
   installed versions against it in every CI run. The SOUP list's section 2 names the pinned test
   frameworks.
+- **AI-assisted development** (Chapter 37, ADR 0032): an AI coding assistant may write code,
+  tests and documents, under the same review, tests and change control as any change; it is a
+  tool of class T3 in the tool list (TL-48), because what it writes becomes part of the product.
+  Every commit it helped make names it in a `Co-Authored-By:` trailer; an assisted change of a
+  product item's code changes a test or names in a `Tests:` trailer the tests that cover it (the
+  commit policy's rule `assisted`); `tools/ai_provenance.py` lists the assisted changes per item
+  for each release record. No patient data, credentials or confidential documents go into an
+  assistant's context; the repository holds synthetic data only. The person who commits is
+  responsible for the change, whoever wrote it.
 
 ## 5. Configuration management and change control
 
@@ -108,6 +117,11 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   how your scanner's reviews are recorded). A change that touches a risk control, the safety class
   of an item or a SOUP item also updates the risk file (Chapter 15) and, for SOUP, repeats the
   known-anomaly review.
+- **Commit policy** (Chapter 36, ADR 0031): every commit since the policy's first commit has a
+  no-reply identity, a message of the form the policy gives, a `Review:` trailer that git parses
+  and, when it changes a requirement, a hazard or a software item, a trace to its change request
+  or problem report (`tools/commit_policy.json`, checked by `tools/check_commits.py` in CI and by
+  the commit-msg hook). A published history is not rewritten without a change request.
 - **What a real quality system adds:** a change control board for changes after release,
   the regulatory assessment of each change (Chapter 13, Exercise 13.2), and approval
   records with signatures.
@@ -239,3 +253,4 @@ of Chapter 13.
 | 10 | Release 0.6.0: a failed CI run is investigated job by job (section 7, MDQ-PR-045, CAPA-0001). |
 | 11 | The formatting check of changed lines in section 6 (Chapter 32, ADR 0027, CR-0018). |
 | 12 | Chapter 33: the end-to-end run and the requirements freeze in section 6, the acceptance report in section 8 (ADR 0028, CR-0020). |
+| 13 | Chapter 36: the commit policy in section 5 (ADR 0031, CR-0023); Chapter 37: AI-assisted development in section 4 (ADR 0032, CR-0024). |

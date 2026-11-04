@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 25 (MiniDAQ 0.9.0-dev). Status: draft for review.
+Version 26 (MiniDAQ 0.9.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -457,6 +457,20 @@ change (TL-46).
 | SRS-GIT-006 | The commit policy check shall check the commits from the policy's first commit to the head unless given another range, skip an exception only for the commit and the rule the policy names, and exit with the status `1` when a commit breaks a rule and `2` when git cannot resolve the range. | tools | T |
 | SRS-GIT-007 | The commit-msg hook shall refuse a commit whose message, author or committer breaks the rules identity, subject, layout or review, after removing the comment lines that git removes. | tools | T |
 
+### 2.27 AI-assisted changes (AI)
+
+The record of which changes an AI assistant helped make (Chapter 37, ADR 0032, CR-0024): the
+commits that name one, the items and classes they changed, and whether a test came with each
+change of product code. A tool of the development process (TL-47); the shipped programs do not
+change.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-AI-001 | The provenance report shall count a commit as assisted when a `Co-Authored-By`, `Assisted-by` or `Generated-by` trailer in the trailer block that git parses, with its key compared without regard to case, has a value that matches one of the policy's assistant patterns, and in no other case. | tools | T |
+| SRS-AI-002 | The provenance report shall give each changed source file that is not a test the software item whose path prefix is the longest that matches it, with that item's safety class, and take as a test every file under a directory named `tests` and every Python file whose name starts with `test_`. | tools | T |
+| SRS-AI-003 | The provenance report shall give the number of commits, merges and assisted commits of a range, the assisted commits per item, the assisted commits with a review trailer git parses, and the list of assisted commits that change product code without changing a test, as text and as JSON. | tools | T |
+| SRS-AI-004 | The commit policy check shall report every assisted commit other than a merge that changes the code of an item with a safety class and neither changes a test nor has a `Tests` trailer that names the tests covering the change. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -500,3 +514,4 @@ change (TL-46).
 | 23 | Chapter 34: the codebase survey, SRS-SVY-001 to SRS-SVY-003 (ADR 0029, CR-0021). |
 | 24 | Chapter 35: the DICOM export, SRS-DCM-001 to SRS-DCM-007 (ADR 0030, CR-0022). |
 | 25 | Chapter 36: the commit policy, SRS-GIT-001 to SRS-GIT-007 (ADR 0031, CR-0023). |
+| 26 | Chapter 37: AI-assisted changes, SRS-AI-001 to SRS-AI-004 (ADR 0032, CR-0024). |

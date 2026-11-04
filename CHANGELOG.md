@@ -23,6 +23,13 @@ the patch version.
   trailers; the trace to a change request at the level of a requirement, a hazard and an item;
   the test `tools.commits`; SRS-GIT-001 to SRS-GIT-007 (SRS version 25); threat model version 11;
   `measurements/ch36/`; Exercises 36.1 to 36.3.
+- Chapter 37, AI-assisted coding for medical-device software (CR-0024, ADR 0032): the report of
+  assisted changes `tools/ai_provenance.py` (TL-47); the commit policy, version 2, with the rule
+  `assisted` (an assisted change of product code changes a test or names its tests in a `Tests:`
+  trailer); the assistant in the tool list (TL-48, class T3); the test `tools.ai_provenance`;
+  SRS-AI-001 to SRS-AI-004 (SRS version 26); the development plan, version 13 (the commit policy
+  and AI-assisted development); threat model version 12; `measurements/ch37/`; Exercises 37.1 to
+  37.3.
 
 ### Changed
 

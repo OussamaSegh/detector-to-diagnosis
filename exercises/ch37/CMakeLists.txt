@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_deidentify)
+minidaq_python_exercise(e2_context_file)
+minidaq_mutation_exercise(e3_review_by_tests MUTANTS 7 MIN_TESTS 8)

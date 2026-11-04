@@ -22,7 +22,10 @@ The rules (the policy names them):
   its verification), a hazard or risk control, or a software item names a change request (CR-NNNN) or a
   problem report (MDQ-PR-NNN) that exists in the repository, or a change request names it in
   its field Commits (the trace in either direction);
-- merge: a merge commit has two parents and names what it merges.
+- merge: a merge commit has two parents and names what it merges;
+- assisted (policy version 2, Chapter 37): a commit whose trailers name an AI assistant and that
+  changes the code of a product item changes a test too, or names in a trailer `Tests:` the tests
+  that cover the change.
 
 Exit status: 0 if no commit breaks a rule, 1 if one does, 2 for a usage error or a range that
 git cannot resolve (a shallow clone, for example).
@@ -37,7 +40,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from trace_matrix import parse_srs  # noqa: E402
 
 POLICY = pathlib.Path("tools/commit_policy.json")
-RULES = ("identity", "subject", "layout", "review", "reference", "merge")
+RULES = ("identity", "subject", "layout", "review", "reference", "merge", "assisted")
 
 
 # [snippet:trailers]
@@ -211,6 +214,21 @@ def merge(commit, policy):
 # [/snippet:rules]
 
 
+# [snippet:assisted_rule]
+def assisted(commit, policy, known):
+    import ai_provenance  # noqa: PLC0415 (it imports this module)
+    if len(commit["parents"]) > 1 or not ai_provenance.assistant_of(commit["message"], policy):
+        return []
+    product = ai_provenance.touched(commit, known.get("items", []))
+    if not product or any(ai_provenance.is_test(f) for f in commit["files"]):
+        return []
+    if any(k.lower() == "tests" and v for k, v in trailers(commit["message"])):
+        return []
+    return [f"an assisted change of {', '.join(sorted(product))} with no test changed and no "
+            "'Tests:' trailer naming the tests that cover it"]
+# [/snippet:assisted_rule]
+
+
 def known_references(root):
     """{"names": the change requests and problem reports the repository has, "commits": the
     abbreviated hashes that change requests list in their field Commits}."""
@@ -225,7 +243,9 @@ def known_references(root):
     reports = root / "docs/regulatory/problem-reports.json"
     if reports.exists():
         names |= set(re.findall(r"MDQ-PR-\d{3}", reports.read_text()))
-    return {"names": names, "commits": listed}
+    items = root / "docs/architecture/software-items.json"
+    items = json.loads(items.read_text())["items"] if items.exists() else []
+    return {"names": names, "commits": listed, "items": items}
 
 
 def check(commit, policy, known, rules=RULES):
@@ -233,7 +253,8 @@ def check(commit, policy, known, rules=RULES):
     found = []
     for rule in rules:
         fn = globals()[rule]
-        problems = fn(commit, policy, known) if rule == "reference" else fn(commit, policy)
+        needs = rule in ("reference", "assisted")
+        problems = fn(commit, policy, known) if needs else fn(commit, policy)
         found += [(rule, p) for p in problems]
     return found
 

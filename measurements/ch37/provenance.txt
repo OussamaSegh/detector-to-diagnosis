@@ -1,0 +1,39 @@
+Chapter 37: provenance of MiniDAQ's history at 10e93f5, commit policy 2
+
+1. Provenance (tools/ai_provenance.py)
+commits 262, merges 6; an assistant is named in 256 of the 256 that are not merges
+assisted commits that change product code: 52, without a test changed in the same commit: 9
+  ac435fb6020b: pipeline; 2 product lines changed
+  1fdd2955f158: sorter; 4 product lines changed
+  08061ea4f480: sim; 17 product lines changed
+  3970a1a0f037: output; 4 product lines changed
+  35b942976971: output; 15 product lines changed
+  852dec1fee18: core, output, sim; 8 product lines changed
+  418a3bbafd13: readout; 3 product lines changed
+  6d077f865f57: server; 8 product lines changed
+  73a2b754e0e7: processing; 2 product lines changed
+assisted commits with a review trailer git parses: 2 (the trailer moved into the block in Chapter 36)
+
+2. The rule assisted over the whole history
+commits that break it: 9 in the whole history, 0 since the policy began
+
+3. Problem reports
+60 reports; found by:
+  independent review of a Part: 2
+  internal audit: 1
+  fuzzing: 5
+  release checks and their reviews: 20
+  CI runs: 14
+  the author's own tests and runs: 12
+  design, development and measurement: 6
+root cause categories: code 8, environment 1, none recorded 18, process 11, test 12, tool 10
+evaluated as safety relevant: 10
+
+4. Independent reviews
+merges of an independent review's branch: 5
+  d801e22: 1 commit(s) on the branch, 4 files changed by the merge, 4 of them in the book, 0 elsewhere
+  3c14b67: 1 commit(s) on the branch, 5 files changed by the merge, 4 of them in the book, 1 elsewhere
+  b68a371: 1 commit(s) on the branch, 9 files changed by the merge, 6 of them in the book, 3 elsewhere
+  5f5611c: 1 commit(s) on the branch, 9 files changed by the merge, 1 of them in the book, 8 elsewhere
+  79187ef: 1 commit(s) on the branch, 10 files changed by the merge, 2 of them in the book, 8 elsewhere
+problem reports opened from them: 2 (MDQ-PR-059, MDQ-PR-060)

@@ -306,6 +306,22 @@
      "confidence": ["tools/test_check_commits.py checks each rule on commits that break it and on commits that do not, the trailer parser against git's own on messages at the edges of git's rule, the trace at the level of a requirement on a repository made for the test, the exceptions, the exit status on a shallow clone, and the hook on a message with comments.",
                     "The check was run on MiniDAQ's own history (measurements/ch36): it reports the review line that git never parsed in 191 commits and the three merges with a personal address, both known from the measurement, and nothing after the policy's first commit.",
                     "A reviewer reads every commit's message and the change request it names; an audit can repeat the check from the policy and the tool at any commit."],
-     "evidence": ["tools/test_check_commits.py", "measurements/ch36/README.md"], "shown_to_fail": "Range.test_a_requirement_changed_without_a_request_fails_its_verification_does_not"}
+     "evidence": ["tools/test_check_commits.py", "measurements/ch36/README.md"], "shown_to_fail": "Range.test_a_requirement_changed_without_a_request_fails_its_verification_does_not"},
+    {"id": "TL-47", "name": "Provenance of assisted changes (tools/ai_provenance.py)", "kind": "in-house", "class": "T2",
+     "version": "the commit; git 2.34 or later and Python 3.12 or later",
+     "use": "Lists the commits that name an AI assistant in their trailers, the software items and classes they changed, and the assisted changes of product code that came without a test (Chapter 37); its JSON output goes into the release record.",
+     "failure": "An assisted change of a class B item is not listed, so the release's reviewer does not look at it first; or a change is attributed to an assistant that did not take part.",
+     "confidence": ["tools/test_ai_provenance.py checks the trailers that count and those that do not (a co-author who is a person, a line outside the trailer block, an address in another trailer), the items by longest prefix, the test files, and the report and the policy rule on a repository made for the test.",
+                    "The report on MiniDAQ's own history (measurements/ch37) lists the nine assisted changes of product code without a test, each of which was read: six comment, assertion and warning fixes, an optimization of the simulator's replay loop, a change of behavior that an existing system test had caught, and a robustness fix whose message names no test."],
+     "evidence": ["tools/test_ai_provenance.py", "measurements/ch37/README.md"], "shown_to_fail": "Report.test_counts_and_lists_the_assisted_product_changes_without_a_test"},
+    {"id": "TL-48", "name": "AI coding assistant (Claude Code)", "kind": "off-the-shelf", "class": "T3",
+     "version": "the version and model recorded in each session; not pinned (a service)",
+     "use": "Writes code, tests, documents and measurements of MiniDAQ and of this book with its author, who directs, reviews and commits the work (Chapter 37). Every commit it helped make names it in a Co-Authored-By trailer.",
+     "failure": "Code, a test, a number or a claim that is plausible and wrong: a defect in a product item, a test that cannot fail, a measurement misreported, a requirement misread; or an action in the repository other than the one asked for.",
+     "confidence": ["Its output is never trusted as such: every change passes the same review, tests, static analysis, sanitizers and CI as any other, and the commit policy's rule assisted asks for a test or the tests that cover each assisted change of product code.",
+                    "Diverse redundancy: each Part is reviewed after its release by a separate session that did not write it, whose fixes are reviewed again before they are merged (measurements/ch37: five reviews, problem reports MDQ-PR-059 and MDQ-PR-060).",
+                    "Numbers in the book come from recorded measurements made by the code, and listings are included from the tested repository, so a wrong number or listing is a difference a check can find.",
+                    "Not validated as a tool: its output varies between runs and versions, so the process around it, not the tool, is what is validated (ADR 0032)."],
+     "evidence": ["tools/check_commits.py", "measurements/ch37/README.md"], "shown_to_fail": "Report.test_the_policy_rule_wants_a_test_or_a_tests_trailer"}
   ]
 }
