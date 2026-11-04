@@ -1,0 +1,456 @@
+{
+ "format": "MiniDAQ end-to-end result",
+ "version": 1,
+ "time": "2026-11-04T07:42:32Z",
+ "commit": "392e4ae",
+ "machine": "x86_64, 4 CPUs",
+ "command": "tools/e2e.py build/release/minidaq/apps measurements/ch33/e2e-damaged --loss 0.002 --reorder 0.002 --duplicate 0.002 --activity 2e6 --no-image",
+ "ok": true,
+ "acquisitions": [
+  {
+   "name": "qc",
+   "source": "point",
+   "directory": "qc",
+   "record": "20261104T074233864Z",
+   "sent": {
+    "singles": 912139,
+    "packets": 5012,
+    "lost": 7,
+    "delayed": 10,
+    "duplicated": 10,
+    "both": 0
+   },
+   "sorter": {
+    "delayed": 335,
+    "energy_rejected": 287682,
+    "geometry_rejected": 8,
+    "multiple_windows": 235,
+    "out_of_order": 0,
+    "pair_windows": 135577,
+    "prompts": 135569,
+    "prompts_from_multiples": 0,
+    "singles_alone": 350008,
+    "singles_in": 909591,
+    "singles_in_multiples": 747
+   },
+   "link": {
+    "datagrams": 5015,
+    "host_softnet_dropped": 0,
+    "host_softnet_time_squeeze": 0,
+    "host_udp_in_csum_errors": 0,
+    "host_udp_in_datagrams": 5015,
+    "host_udp_in_errors": 0,
+    "host_udp_no_ports": 0,
+    "host_udp_rcvbuf_errors": 0,
+    "nic_rx_dropped": 0,
+    "nic_rx_fifo_errors": 0,
+    "nic_rx_missed_errors": 0,
+    "nic_rx_packets": 5075,
+    "other_source": 0,
+    "packets_delivered": 4998,
+    "packets_lost": 14,
+    "packets_received": 5015,
+    "packets_reordered": 3,
+    "packets_stale": 17,
+    "receive_batches": 4942,
+    "receive_buffer_bytes": 4194304,
+    "rejected_bad_flags": 0,
+    "rejected_bad_length": 0,
+    "rejected_bad_magic": 0,
+    "rejected_bad_reserved": 0,
+    "rejected_bad_version": 0,
+    "rejected_bad_word_count": 0,
+    "rejected_too_short": 0,
+    "sequence_resyncs": 0,
+    "socket_drops": 0,
+    "socket_queue_bytes": 0,
+    "words_delivered": 909591
+   },
+   "sink": {
+    "blocks": 464,
+    "blocks_dropped": 0,
+    "buffer_wait_ns": 0,
+    "buffer_waits": 0,
+    "bytes": 2190856,
+    "coincidences": 135904,
+    "energies_clamped": 0,
+    "files": 1,
+    "fsyncs": 2,
+    "invalid": 0,
+    "max_fsync_ns": 4537798,
+    "max_write_ns": 228101,
+    "time_resets": 0
+   },
+   "records": {
+    "prompts": 135569,
+    "delayed": 335
+   },
+   "reference": {
+    "prompts": 135972,
+    "delayed": 338
+   },
+   "sinogram": {
+    "prompts": 135477,
+    "delayeds": 207,
+    "outside_fov": 220,
+    "above_mrd": 0,
+    "tof_outside": 0,
+    "no_angle": 0,
+    "invalid": 0
+   },
+   "latency_ms": {
+    "p50": 0.815103,
+    "p99": 3.047423,
+    "max": 15.833574
+   },
+   "checks": [
+    {
+     "name": "server: exit status",
+     "equation": "exit status = 0",
+     "left": 0,
+     "right": 0,
+     "ok": true
+    },
+    {
+     "name": "server: no fault",
+     "equation": "fault = none",
+     "left": null,
+     "right": null,
+     "ok": true
+    },
+    {
+     "name": "server: no stage dropped a batch",
+     "equation": "dropped batches = 0",
+     "left": 0,
+     "right": 0,
+     "ok": true
+    },
+    {
+     "name": "server: no late single",
+     "equation": "late singles = 0",
+     "left": 0,
+     "right": 0,
+     "ok": true
+    },
+    {
+     "name": "link: delivered or lost",
+     "equation": "delivered + lost = packets sent",
+     "left": 5012,
+     "right": 5012,
+     "ok": true
+    },
+    {
+     "name": "link: received is delivered or stale",
+     "equation": "received = delivered + stale",
+     "left": 5015,
+     "right": 5015,
+     "ok": true
+    },
+    {
+     "name": "decoder: every word delivered reached the sorter",
+     "equation": "sorter singles in = words delivered - invalid words",
+     "left": 909591,
+     "right": 909591,
+     "ok": true
+    },
+    {
+     "name": "sorter: every single is accounted for",
+     "equation": "energy rejected + alone + 2 x pair windows + in multiples = singles in",
+     "left": 909591,
+     "right": 909591,
+     "ok": true
+    },
+    {
+     "name": "sorter: every pair window is a prompt or rejected by geometry",
+     "equation": "prompts + geometry rejected = pair windows",
+     "left": 135577,
+     "right": 135577,
+     "ok": true
+    },
+    {
+     "name": "sink: every coincidence was written",
+     "equation": "written = prompts + delayed",
+     "left": 135904,
+     "right": 135904,
+     "ok": true
+    },
+    {
+     "name": "files: the records are the prompts and delayed counted",
+     "equation": "(prompts, delayed) in the files = (prompts, delayed) of the sorter",
+     "left": [
+      135569,
+      335
+     ],
+     "right": [
+      135569,
+      335
+     ],
+     "ok": true
+    },
+    {
+     "name": "sinograms: every record binned or set aside",
+     "equation": "binned + outside FOV + above ring difference + outside TOF + no angle + invalid = records",
+     "left": 135904,
+     "right": 135904,
+     "ok": true
+    },
+    {
+     "name": "integrity: the run says whether it is complete",
+     "equation": "complete = no damage injected",
+     "left": false,
+     "right": false,
+     "ok": true
+    },
+    {
+     "name": "integrity: the loss is named",
+     "equation": "packets_lost in the losses",
+     "left": "/detector_counters/packets_lost",
+     "right": [
+      "/detector_counters/packets_lost"
+     ],
+     "ok": true
+    },
+    {
+     "name": "QC: the daily QC report passes",
+     "equation": "QC result = PASS (exit status 0)",
+     "left": "PASS",
+     "right": "PASS",
+     "ok": true
+    }
+   ],
+   "seconds": {
+    "reference": 1.3222746080000434,
+    "acquisition": 2.933186717999888,
+    "verify": 0.37760654699968654,
+    "sinograms": 0.22247011900026337,
+    "qc": 2.116921032999926
+   },
+   "qc": {
+    "result": "PASS",
+    "checks": {
+     "photopeak position": 511.19633165172,
+     "energy resolution (FWHM/E)": 0.1196585071404632,
+     "photopeak fit, deviance per degree of freedom": 0.9921183850152524,
+     "coincidence time resolution (FWHM)": 303.77326893404603,
+     "timing offset": 2.286010547744045,
+     "timing fit, deviance per degree of freedom": 1.1329935154789792,
+     "prompt rate constant (p)": 0.2878958781364993,
+     "no dip in the prompt rate (p)": 1.0,
+     "prompts in the files minus prompts recorded": 0,
+     "coincidences out of time order": 0
+    }
+   }
+  },
+  {
+   "name": "phantom",
+   "source": "phantom",
+   "directory": "phantom",
+   "record": "20261104T074245448Z",
+   "sent": {
+    "singles": 1786818,
+    "packets": 9818,
+    "lost": 11,
+    "delayed": 18,
+    "duplicated": 22,
+    "both": 0
+   },
+   "sorter": {
+    "delayed": 1042,
+    "energy_rejected": 980669,
+    "geometry_rejected": 48,
+    "multiple_windows": 158,
+    "out_of_order": 0,
+    "pair_windows": 52760,
+    "prompts": 52712,
+    "prompts_from_multiples": 0,
+    "singles_alone": 697784,
+    "singles_in": 1784452,
+    "singles_in_multiples": 479
+   },
+   "link": {
+    "datagrams": 9829,
+    "host_softnet_dropped": 0,
+    "host_softnet_time_squeeze": 0,
+    "host_udp_in_csum_errors": 0,
+    "host_udp_in_datagrams": 9829,
+    "host_udp_in_errors": 0,
+    "host_udp_no_ports": 0,
+    "host_udp_rcvbuf_errors": 0,
+    "nic_rx_dropped": 0,
+    "nic_rx_fifo_errors": 0,
+    "nic_rx_missed_errors": 0,
+    "nic_rx_packets": 9889,
+    "other_source": 0,
+    "packets_delivered": 9805,
+    "packets_lost": 13,
+    "packets_received": 9829,
+    "packets_reordered": 16,
+    "packets_stale": 24,
+    "receive_batches": 9639,
+    "receive_buffer_bytes": 4194304,
+    "rejected_bad_flags": 0,
+    "rejected_bad_length": 0,
+    "rejected_bad_magic": 0,
+    "rejected_bad_reserved": 0,
+    "rejected_bad_version": 0,
+    "rejected_bad_word_count": 0,
+    "rejected_too_short": 0,
+    "sequence_resyncs": 0,
+    "socket_drops": 0,
+    "socket_queue_bytes": 0,
+    "words_delivered": 1784452
+   },
+   "sink": {
+    "blocks": 462,
+    "blocks_dropped": 0,
+    "buffer_wait_ns": 0,
+    "buffer_waits": 0,
+    "bytes": 876400,
+    "coincidences": 53754,
+    "energies_clamped": 0,
+    "files": 1,
+    "fsyncs": 2,
+    "invalid": 0,
+    "max_fsync_ns": 2558012,
+    "max_write_ns": 295490,
+    "time_resets": 0
+   },
+   "records": {
+    "prompts": 52712,
+    "delayed": 1042
+   },
+   "reference": {
+    "prompts": 52797,
+    "delayed": 1043
+   },
+   "sinogram": {
+    "prompts": 52343,
+    "delayeds": 627,
+    "outside_fov": 784,
+    "above_mrd": 0,
+    "tof_outside": 0,
+    "no_angle": 0,
+    "invalid": 0
+   },
+   "latency_ms": {
+    "p50": 0.782335,
+    "p99": 1.728511,
+    "max": 4.85667
+   },
+   "checks": [
+    {
+     "name": "server: exit status",
+     "equation": "exit status = 0",
+     "left": 0,
+     "right": 0,
+     "ok": true
+    },
+    {
+     "name": "server: no fault",
+     "equation": "fault = none",
+     "left": null,
+     "right": null,
+     "ok": true
+    },
+    {
+     "name": "server: no stage dropped a batch",
+     "equation": "dropped batches = 0",
+     "left": 0,
+     "right": 0,
+     "ok": true
+    },
+    {
+     "name": "server: no late single",
+     "equation": "late singles = 0",
+     "left": 0,
+     "right": 0,
+     "ok": true
+    },
+    {
+     "name": "link: delivered or lost",
+     "equation": "delivered + lost = packets sent",
+     "left": 9818,
+     "right": 9818,
+     "ok": true
+    },
+    {
+     "name": "link: received is delivered or stale",
+     "equation": "received = delivered + stale",
+     "left": 9829,
+     "right": 9829,
+     "ok": true
+    },
+    {
+     "name": "decoder: every word delivered reached the sorter",
+     "equation": "sorter singles in = words delivered - invalid words",
+     "left": 1784452,
+     "right": 1784452,
+     "ok": true
+    },
+    {
+     "name": "sorter: every single is accounted for",
+     "equation": "energy rejected + alone + 2 x pair windows + in multiples = singles in",
+     "left": 1784452,
+     "right": 1784452,
+     "ok": true
+    },
+    {
+     "name": "sorter: every pair window is a prompt or rejected by geometry",
+     "equation": "prompts + geometry rejected = pair windows",
+     "left": 52760,
+     "right": 52760,
+     "ok": true
+    },
+    {
+     "name": "sink: every coincidence was written",
+     "equation": "written = prompts + delayed",
+     "left": 53754,
+     "right": 53754,
+     "ok": true
+    },
+    {
+     "name": "files: the records are the prompts and delayed counted",
+     "equation": "(prompts, delayed) in the files = (prompts, delayed) of the sorter",
+     "left": [
+      52712,
+      1042
+     ],
+     "right": [
+      52712,
+      1042
+     ],
+     "ok": true
+    },
+    {
+     "name": "sinograms: every record binned or set aside",
+     "equation": "binned + outside FOV + above ring difference + outside TOF + no angle + invalid = records",
+     "left": 53754,
+     "right": 53754,
+     "ok": true
+    },
+    {
+     "name": "integrity: the run says whether it is complete",
+     "equation": "complete = no damage injected",
+     "left": false,
+     "right": false,
+     "ok": true
+    },
+    {
+     "name": "integrity: the loss is named",
+     "equation": "packets_lost in the losses",
+     "left": "/detector_counters/packets_lost",
+     "right": [
+      "/detector_counters/packets_lost"
+     ],
+     "ok": true
+    }
+   ],
+   "seconds": {
+    "reference": 5.93046580400005,
+    "acquisition": 7.141641508999783,
+    "verify": 0.1473893410002347,
+    "sinograms": 0.2523334329998761
+   }
+  }
+ ]
+}

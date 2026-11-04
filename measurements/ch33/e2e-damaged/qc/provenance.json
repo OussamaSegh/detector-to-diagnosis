@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "format": "minidaq-analysis manifest 1",
+    "files": [
+      {
+        "path": "qc-20261104T074233864Z-0000.mdql",
+        "bytes": 2190856,
+        "sha256": "2d6a3c15d7976101ebb27882bb70faa6947cf156a939a7e7bca50fd89121dfb0"
+      },
+      {
+        "path": "qc-20261104T074233864Z.run.json",
+        "bytes": 236628,
+        "sha256": "dff479b3f8b1e7dac9692126e41a9b80f9d52a06ed23dabd7794eb621c1f72c0"
+      }
+    ]
+  },
+  "inputs_id": "79f4156bd57d300aea277f1ffeca11a6e8fa5a55f252b7c92a07b101f8b1419f",
+  "environment": {
+    "package": "minidaq-analysis",
+    "version": "0.8.0.dev0",
+    "code_commit": "392e4ae9d5a290ae371394b2858172f8a07cfd1e",
+    "python": "3.13.18",
+    "libraries": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2"
+    },
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39",
+    "command": [
+      "minidaq-qc",
+      "/tmp/minidaq-e2e-k_bo8cnr/qc/qc-20261104T074233864Z.run.json",
+      "/home/claude/detector-to-diagnosis/measurements/ch33/e2e-damaged/qc"
+    ],
+    "created_utc": "2026-11-04T07:42:38Z"
+  }
+}

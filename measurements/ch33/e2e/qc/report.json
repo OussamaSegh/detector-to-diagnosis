@@ -1,0 +1,151 @@
+{
+  "format": "minidaq-analysis QC report 1",
+  "protocol": {
+    "name": "MiniDAQ acquisition QC, point source at the center",
+    "version": 1
+  },
+  "run": {
+    "name": "20261104T074155596Z",
+    "record": "qc-20261104T074155596Z.run.json",
+    "files": [
+      "qc-20261104T074155596Z-0000.mdql"
+    ],
+    "duration_s": 1.99996689618,
+    "prompts": 135972,
+    "delayeds": 338,
+    "tags": 0,
+    "crystals_hit": 18432,
+    "pairs_hit": 45943
+  },
+  "fits": {
+    "photopeak": {
+      "method": "poisson",
+      "parameters": {
+        "area": 271822.87516622664,
+        "mean": 511.2010489513673,
+        "sigma": 25.981898316615627,
+        "b_low": 0.0,
+        "b_high": 8.596018365036247
+      },
+      "errors": {
+        "area": 945.7875474041324,
+        "mean": 0.0685745752468613,
+        "sigma": 0.07978884231949623,
+        "b_low": 5.76061847794742,
+        "b_high": 6.948952062611902
+      },
+      "statistic": 132.71284239995256,
+      "ndf": 135,
+      "p_value": 0.539566633939218
+    },
+    "timing": {
+      "method": "poisson",
+      "parameters": {
+        "area": 135743.0326938481,
+        "mean": 2.280799849742547,
+        "sigma": 128.99756458369336,
+        "background": 0.025322435384542517
+      },
+      "errors": {
+        "area": 368.49613828791564,
+        "mean": 0.35071964497868885,
+        "sigma": 0.24922772293537257,
+        "background": 0.0036868918409214634
+      },
+      "statistic": 166.73621165778064,
+      "ndf": 146,
+      "p_value": 0.11527088484425078
+    }
+  },
+  "rate": {
+    "bin_ms": 10.0,
+    "bins": 199,
+    "mean_per_s": 67987.43718592965,
+    "dispersion": 192.01467903470194,
+    "lowest": 618
+  },
+  "checks": [
+    {
+      "name": "photopeak position",
+      "value": 511.2010489513673,
+      "error": 0.0685745752468613,
+      "unit": "keV",
+      "limit": "505.9 to 516.1",
+      "passed": true
+    },
+    {
+      "name": "energy resolution (FWHM/E)",
+      "value": 0.11968421248240226,
+      "error": 0.00036671804450743705,
+      "unit": "",
+      "limit": "<= 0.14",
+      "passed": true
+    },
+    {
+      "name": "photopeak fit, deviance per degree of freedom",
+      "value": 0.9830580918515005,
+      "error": null,
+      "unit": "",
+      "limit": "<= 2.0",
+      "passed": true
+    },
+    {
+      "name": "coincidence time resolution (FWHM)",
+      "value": 303.7660508418556,
+      "error": 0.5868864377470129,
+      "unit": "ps",
+      "limit": "<= 400.0",
+      "passed": true
+    },
+    {
+      "name": "timing offset",
+      "value": 2.280799849742547,
+      "error": 0.35071964497868885,
+      "unit": "ps",
+      "limit": "|x| <= 25.0",
+      "passed": true
+    },
+    {
+      "name": "timing fit, deviance per degree of freedom",
+      "value": 1.1420288469711002,
+      "error": null,
+      "unit": "",
+      "limit": "<= 2.0",
+      "passed": true
+    },
+    {
+      "name": "prompt rate constant (p)",
+      "value": 0.6065216142521784,
+      "error": null,
+      "unit": "",
+      "limit": ">= 0.001",
+      "passed": true
+    },
+    {
+      "name": "no dip in the prompt rate (p)",
+      "value": 1.0,
+      "error": null,
+      "unit": "",
+      "limit": ">= 0.001",
+      "passed": true
+    },
+    {
+      "name": "prompts in the files minus prompts recorded",
+      "value": 0,
+      "error": null,
+      "unit": "",
+      "limit": "= 0",
+      "passed": true
+    },
+    {
+      "name": "coincidences out of time order",
+      "value": 0,
+      "error": null,
+      "unit": "",
+      "limit": "= 0",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "inputs_id": "214414a1eb3597b232086f63fa1e5f4a40dc407ce633e408376a07e258095000"
+}
