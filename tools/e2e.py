@@ -270,7 +270,14 @@ def daily_qc(acq, out):
     p = subprocess.run([sys.executable, "-m", "minidaq_analysis", str(record), str(out / "qc")],
                        capture_output=True, text=True, env=env, timeout=600)
     acq["seconds"]["qc"] = time.monotonic() - t
-    report = json.loads((out / "qc" / "report.json").read_text())
+    path = out / "qc" / "report.json"
+    if not path.exists():  # the QC tool did not get as far as a report: its error is the evidence
+        acq["qc"] = {"result": "ERROR", "stderr": p.stderr[-2000:]}
+        acq["checks"].append(check("QC: the daily QC report passes", "no report", "PASS",
+                                   f"QC result = PASS (exit status {p.returncode}: "
+                                   f"{(p.stderr.strip().splitlines() or ['no output'])[-1]})"))
+        return
+    report = json.loads(path.read_text())
     result = "PASS" if report["passed"] else "FAIL"
     acq["qc"] = {"result": result, "checks": {c["name"]: c["value"] for c in report["checks"]}}
     acq["checks"].append(check("QC: the daily QC report passes", result, "PASS",

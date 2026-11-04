@@ -957,6 +957,33 @@
         "category": "code",
         "escape": "No test reads minidaq_sim's printed summary; the simulator's tests check the singles it returns. The end-to-end accounting of Chapter 33 is the first check that compares counts across programs."
       }
+    },
+    {
+      "id": "MDQ-PR-056",
+      "title": "system.e2e failed in every CI build job: the daily QC step could not import SciPy",
+      "found": "2026-11-04, the CI runs of Chapter 33's commits: system.e2e failed in the six build-test jobs (FileNotFoundError on qc/report.json) and passed on the development machine",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "tools/e2e.py runs the daily QC of Chapter 31 (python -m minidaq_analysis) on the point-source acquisition. The CI build-test jobs install NumPy but not SciPy or Matplotlib, which the analysis package needs, so the QC process stopped at its imports without writing a report, and e2e.py read the missing report and raised an exception instead of failing a check. The development machine has both packages, so the release checks passed there.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A verification tool and the CI environment; no product code, no shipped program and no recorded measurement changed. The test failed loudly, so no result was taken from it."
+      },
+      "resolution": {
+        "change": "The build-test jobs of ci.yml install python3-scipy and python3-matplotlib (the versions Ubuntu 24.04 ships meet analysis/pyproject.toml's minimums). tools/e2e.py records a QC run that writes no report as a failed check whose equation carries the QC tool's exit status and last error line.",
+        "verification": "system.e2e passes in the six CI build-test jobs; daily_qc on a run record the QC tool rejects gives the failed check 'QC: the daily QC report passes' with the tool's message, and no exception."
+      },
+      "root_cause": {
+        "whys": [
+          "The QC process wrote no report in CI.",
+          "It could not import SciPy, which the CI build jobs do not install.",
+          "The analysis package's own tests skip in those jobs when their tools are missing, and the end-to-end test was the first build-job test to run the package; it was written and run where the packages were present."
+        ],
+        "cause": "A test that runs a second program assumed that program's dependencies were in the environment, and treated its missing output as impossible.",
+        "category": "process",
+        "escape": "The release checks run on the development machine, which has every package; a new system test was not run in a CI-like environment before it was pushed. The CI failure was seen on the next look at the runs, before the release."
+      }
     }
   ]
 }

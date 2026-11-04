@@ -28,7 +28,9 @@ jobs:
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev python3-numpy python3-dev
+          # Chapter 33: system.e2e runs the daily QC of Chapter 31, which needs SciPy and Matplotlib.
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev python3-numpy python3-dev \
+            python3-scipy python3-matplotlib
       - name: Tune the network stack as the acquisition PC is installed (ADR 0009)
         # The system test plan's environment (section 3): Ubuntu's default rmem_max is too small
         # for a burst of readout packets, and the kernel would drop them (MDQ-PR-020).
