@@ -33,7 +33,7 @@ for dir in "$a" "$b"; do
       -DMINIDAQ_BUILD_EXERCISES=OFF >"$work/$(basename "$dir").configure.log" 2>&1 &&
     cmake --build --preset hardened --target minidaq_server minidaq_ctl >"$work/$(basename "$dir").build.log" 2>&1 &&
     python3 tools/release_bundle.py make build/hardened "$dir/out") ||
-    { tail -30 "$work"/*.log; echo "build in $dir failed" >&2; exit 1; }
+    { tail -n 30 "$work"/*.log; echo "build in $dir failed" >&2; exit 1; }
 done
 # [/snippet:twice]
 pa=$(ls "$a"/out/*.tar)

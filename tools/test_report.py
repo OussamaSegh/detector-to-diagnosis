@@ -77,7 +77,15 @@ def git(*args):
 def cache_value(build, key):
     cache = (build / "CMakeCache.txt").read_text()
     m = re.search(rf"^{key}:[A-Z]+=(.*)$", cache, re.M)
-    return m.group(1) if m else "?"
+    if m:
+        return m.group(1)
+    # A variable that a toolchain file sets, such as the compiler (Chapter 32), is not a cache
+    # entry; the build tree records the value CMake used.
+    for f in sorted((build / "CMakeFiles").glob("*/CMake*Compiler.cmake")):
+        m = re.search(rf'^set\({key} "([^"]+)"\)', f.read_text(), re.M)
+        if m:
+            return m.group(1)
+    return "?"
 
 
 def main():

@@ -69,7 +69,15 @@ def sha256(path):
 
 def cache(build):
     text = (build / "CMakeCache.txt").read_text()
-    return dict(re.findall(r"^([A-Za-z_0-9]+):[A-Z]+=(.*)$", text, re.M))
+    c = dict(re.findall(r"^([A-Za-z_0-9]+):[A-Z]+=(.*)$", text, re.M))
+    if "CMAKE_CXX_COMPILER" not in c:
+        # A toolchain file sets the compiler as a variable, not a cache entry (Chapter 32): the
+        # compiler CMake found is recorded in the build tree's CMakeCXXCompiler.cmake.
+        for f in sorted((build / "CMakeFiles").glob("*/CMakeCXXCompiler.cmake")):
+            m = re.search(r'^set\(CMAKE_CXX_COMPILER "([^"]+)"\)', f.read_text(), re.M)
+            if m:
+                c["CMAKE_CXX_COMPILER"] = m.group(1)
+    return c
 
 
 def build_id(path):

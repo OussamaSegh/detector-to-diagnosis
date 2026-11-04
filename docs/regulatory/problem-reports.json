@@ -766,6 +766,34 @@
         "category": "test",
         "escape": "The test passes on an idle machine; CI's jobs run tests with fewer parallel jobs than CPUs, and the stress run does not select exercise tests."
       }
+    },
+    {
+      "id": "MDQ-PR-049",
+      "title": "The release bundle could not name the compiler of a build configured through a toolchain file",
+      "found": "2026-11-04, CI run of ci.yml on 83f2e4c, job reproducible-build: tools/release_bundle.py make stopped with KeyError: 'CMAKE_CXX_COMPILER'",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "Chapter 32 moved the choice of compiler from a cache variable of the presets to toolchain files. A toolchain file sets CMAKE_CXX_COMPILER as a variable, so a fresh build tree's CMakeCache.txt has no entry for it, and release_bundle.py, which reads the compiler's version for the bundle's toolchain record from the cache, failed. tools/test_report.py read the same entry and would have written '?' in the system test report. The job's error path also lost the build logs: 'tail -30' with several files is refused by tail.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A release tool failed loudly before any release; the product is unchanged."
+      },
+      "resolution": {
+        "change": "Both tools fall back to the value that CMake records in the build tree (CMakeFiles/<version>/CMakeCXXCompiler.cmake) when the cache has no entry; repro_check.sh uses 'tail -n 30'.",
+        "verification": "Both tools name /usr/bin/g++ for a fresh hardened build tree; tools/repro_check.sh on the fixed commit; CI's reproducible-build job."
+      },
+      "root_cause": {
+        "whys": [
+          "The bundle step found no CMAKE_CXX_COMPILER in the cache.",
+          "Since the toolchain files, CMake no longer caches the compiler.",
+          "The change was tested in build trees configured before it, whose caches still held the entry from the earlier presets, so every local tool run passed.",
+          "No local check configures a fresh build tree; CI's jobs do, and found it."
+        ],
+        "cause": "A change to how the build is configured was verified only in build trees that predated it.",
+        "category": "tool",
+        "escape": "Local runs reused build directories whose caches kept the old entry."
+      }
     }
   ]
 }
