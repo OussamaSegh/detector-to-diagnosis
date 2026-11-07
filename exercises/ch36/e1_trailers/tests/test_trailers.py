@@ -25,11 +25,22 @@ def git(message):
     return [tuple(x.strip() for x in line.split(":", 1)) for line in out.splitlines()]
 
 
+URL = "Fix\n\nhttps://example.org/a\n"
+
+
 class Trailers(unittest.TestCase):
     def test_agrees_with_git(self):
+        # Git changed its rule: 2.43 took the scheme of a URL for a key, 2.56 does not. The
+        # exercise follows the newer git; on an older one that case is checked by the next test.
+        old_git = bool(git(URL))
         for message in MESSAGES:
+            if old_git and message == URL:
+                continue
             with self.subTest(message=message):
                 self.assertEqual(trailers(message), git(message))
+
+    def test_a_url_is_not_a_trailer(self):
+        self.assertEqual(trailers(URL), [])
 
     def test_review_above_a_blank_line_is_not_a_trailer(self):
         self.assertEqual(trailers(MESSAGES[1]), [("Co-Authored-By", "B <b@example.org>")])

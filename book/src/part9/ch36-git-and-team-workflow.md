@@ -269,6 +269,10 @@ Co-Authored-By: ...
 Exercise 36.1 writes the simpler half of Git's rule and tests it against `git interpret-trailers`.
 Its starter takes any line of the form `Key: value`, and so finds a "trailer" in a subject such as
 `Fix: the sorter`, in a URL (the key `https`) and in a sentence that starts with `Note:`.
+The URL is also a lesson about oracles: git 2.43 takes `https` for a key, and git 2.56, on CI's
+runners, does not. MiniDAQ's parser and the exercise follow the newer rule, and their tests leave
+that one case out of the comparison when the installed git is older. CI failed on exactly this line
+before the tests knew it; the oracle has a version, like any tool.
 
 ## A policy the history is checked against
 

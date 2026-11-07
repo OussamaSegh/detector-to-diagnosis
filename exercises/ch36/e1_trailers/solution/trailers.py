@@ -3,6 +3,7 @@
 import re
 
 LINE = re.compile(r"^([A-Za-z0-9][A-Za-z0-9-]*)\s*:\s?(.*)$")
+URL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]*://")  # a scheme is not a key
 
 
 def trailers(message):
@@ -21,7 +22,7 @@ def trailers(message):
         if line[:1].isspace() and found:
             key, val = found[-1]
             found[-1] = (key, f"{val} {line.strip()}")
-        elif m := LINE.match(line):
+        elif not URL.match(line) and (m := LINE.match(line)):
             found.append((m.group(1), m.group(2).strip()))
         else:
             return []  # one line of prose and the paragraph is not a trailer block

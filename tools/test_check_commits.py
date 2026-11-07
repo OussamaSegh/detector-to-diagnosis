@@ -57,8 +57,14 @@ KNOWN = {"names": {"CR-0001", "MDQ-PR-007"}, "commits": {"abcdef1"}}
 class Trailers(unittest.TestCase):
     def test_agrees_with_git_at_the_edges_of_its_rule(self):
         # REQ: SRS-GIT-001
+        # Git changed its rule: 2.43 took the scheme of a URL for a key, 2.56 does not. The check
+        # follows the newer git; on an older one the URL case is checked without the oracle.
+        old_git = bool(git_trailers(MESSAGES["a URL is not a key"]))
         for name, message in MESSAGES.items():
             with self.subTest(name):
+                if old_git and name == "a URL is not a key":
+                    self.assertEqual(check_commits.trailers(message), [])
+                    continue
                 self.assertEqual(check_commits.trailers(message), git_trailers(message))
 
     def test_a_review_line_above_a_blank_line_is_not_a_trailer(self):

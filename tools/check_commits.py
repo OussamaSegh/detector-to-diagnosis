@@ -46,6 +46,7 @@ RULES = ("identity", "subject", "layout", "review", "reference", "merge", "assis
 # [snippet:trailers]
 TOKEN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9-]*)\s*:\s?(.*)$")
 GIT_GENERATED = ("Signed-off-by: ", "(cherry picked from commit ")
+URL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]*://")  # a scheme is not a key (git 2.56; 2.43 took it)
 
 
 def trailers(message):
@@ -67,7 +68,7 @@ def trailers(message):
     block = lines[start:]
     found, others, generated = [], 0, False
     for line in block:
-        m = TOKEN.match(line)
+        m = None if URL.match(line) else TOKEN.match(line)
         if line[:1].isspace() and found:
             key, value = found[-1]
             found[-1] = (key, value + " " + line.strip())
