@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 18 (MiniDAQ 0.7.0-dev, Chapter 32). Status: draft for review.
+Version 19 (MiniDAQ 0.9.0-dev, Appendix A). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -205,6 +205,7 @@ The software system is class B: its highest item.
 | Service monitor | 1 | `AcquisitionService` | No | Every 20 ms: port faults, late singles, end of run, latency snapshots |
 | List-mode I/O | 1 per run | `ListModeSink` | No | Writes blocks, calls fsync by policy, rotates and renames files, returns buffers to the writer |
 | Control server | 1 | `ControlServer::start` | No | `poll()` over up to 8 clients |
+| Slow control | 1 with front-end boards | `SlowControl::start` | No | Every cycle: reads each board's sensors and status, sets its bias for the temperature, switches it off on a fault (Chapter 22) |
 | Watchdog | 1 under systemd with `WatchdogSec=` | `Watchdog` | No | Every half watchdog interval: pings systemd if every heartbeat is recent, reports changes of health (Chapter 25) |
 | Main | 1 | process | No | Waits for SIGINT/SIGTERM, then shuts down in order |
 
@@ -328,7 +329,7 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 
 ## 12. Decisions and open issues
 
-Decisions: [ADR 0001 to 0020](../adr/README.md). Known anomalies, with their evaluation:
+Decisions: [the ADR index](../adr/README.md) (ADR 0001 to 0032 at version 19). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
@@ -367,3 +368,4 @@ Open issues:
 | 16 | Chapter 30: FBP and the image quality figures of merit in `tools/recon` (ADR 0025, CR-0016). |
 | 17 | Chapter 31: the analysis package `analysis/` as tool TL-33, its libraries as TL-34 to TL-36 (ADR 0026, CR-0017). |
 | 18 | Chapter 32: the installed CMake package of the projector, its wheel, the workflow presets and the formatting check (ADR 0027, CR-0018). |
+| 19 | The architecture appendix of the book: corrects what earlier versions left stale, the range of decisions in section 12 (ADR 0001 to 0032, not 0020) and the slow-control thread missing from section 6 since Chapter 22. Chapters 33 to 37 added no item, layer or interface to the server (Chapter 35 added the preliminary hazard HZ-5, which no server item carries); their tools are in the tool list. |

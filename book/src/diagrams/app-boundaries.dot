@@ -1,0 +1,42 @@
+// The boundaries of MiniDAQ's architecture (Appendix A): processes, layers, software items
+// and SOUP. A box with a thick border is a process; a dashed box inside it is a layer, and a
+// dashed box outside is not shipped. Arrows point from a user to what it uses; a dashed arrow crosses a process boundary
+// through an interface that validates its input.
+digraph boundaries {
+  rankdir=TB; nodesep=0.3; ranksep=0.4; compound=true;
+  node [fontname="Helvetica", fontsize=10, shape=box];
+  edge [fontname="Helvetica", fontsize=9];
+
+  subgraph cluster_server {
+    label="minidaq_server process: every item class B"; fontname="Helvetica"; fontsize=11;
+    penwidth=2;
+    subgraph cluster_apps { label="apps"; style=dashed; penwidth=1; server [label="server\n(wiring, signals)"]; }
+    subgraph cluster_adapters {
+      label="adapters"; style=dashed; penwidth=1;
+      adapters [label="readout, output, protocol, access,\naudit, platform, slow control"];
+    }
+    subgraph cluster_app {
+      label="application"; style=dashed; penwidth=1;
+      service [label="service, config\n(ports, state machine)"];
+    }
+    subgraph cluster_core {
+      label="core: no JSON, no sockets,\nno allocation after start"; style=dashed; penwidth=1;
+      core [label="core, format, pipeline, rt,\nmetrics, processing, sorter,\nmerger, sim, registers (hw)"];
+    }
+    server -> adapters; server -> service; adapters -> service; adapters -> core; service -> core;
+  }
+
+  ctl [label="minidaq_ctl process\nitem ctl, class B", penwidth=2];
+  update [label="minidaq_update process (root)\nitem update, class B", penwidth=2];
+  offline [label="offline chain: recon, analysis,\nDICOM export (tools TL-30 to TL-44)", style=dashed];
+
+  json [label="nlohmann/json", shape=component];
+  ssl [label="OpenSSL 3 (platform)", shape=component];
+  platform [label="C++ and C libraries, kernel,\nsystemd, tar (platform-1)", shape=component];
+
+  ctl -> adapters [style=dashed, label="control API 2.4\nTLS 1.3, tokens", lhead=cluster_adapters];
+  update -> server [style=dashed, label="signed bundle,\nA/B slots", lhead=cluster_apps];
+  adapters -> offline [style=dashed, label="MDQ-L1 files,\nrun record"];
+  adapters -> json; service -> json; adapters -> ssl; update -> ssl;
+  core -> platform; update -> platform;
+}

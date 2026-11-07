@@ -30,8 +30,11 @@ Next work, in order:
    message rules in section 2). Chapter 37 (AI-assisted coding) done: commit df01679 (CR-0024,
    ADR 0032, TL-47 and TL-48, commit policy version 2 with the rule `assisted`: an assisted commit
    that changes product code changes a test or carries a `Tests:` trailer; SDP version 13).
-   Next: the architecture appendix, then release 0.9.0 (the edition table still says Part IX is
-   1.0.0: change it to 0.9.0 at the release). Part IX (section 5, "Left to
+   Architecture appendix done: `book/src/appendix/architecture.md` (Appendix A, after Chapter 37
+   in book.txt, opened by a raw LaTeX `\appendix`; diagram `book/src/diagrams/app-boundaries.dot`;
+   architecture.md version 19). The book is 679 pages in PDF. CI's git is 2.56 (local 2.43): an
+   oracle test against git must allow for both (commit 4ba0996). Next: release 0.9.0 (the edition
+   table still says Part IX is 1.0.0: change it to 0.9.0 at the release). Part IX (section 5, "Left to
    do", item 6): three new chapters after 34 (DICOM and PACS; Git and
    team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
    tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
@@ -39,7 +42,7 @@ Next work, in order:
    docs.baseline fails), risk and threat model review, CR, ADR, chapter text, solutions,
    CHANGELOG, then tag chNN through `.github/tags.txt` once CI is green. Ask the user before any
    new dependency (a DICOM library would be one).
-3. The architecture appendix (item 7), then release 0.9.0 as in section 4 and message the
+3. Release 0.9.0 as in section 4 and message the
    coordinator for the review. If part 3 fails the gate and ACC-04 again the way 0.8.0 did, a CR
    for the gate's baseline and the latency margin is due (see the 0.8.0 status bullet).
 

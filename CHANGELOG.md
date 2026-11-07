@@ -30,14 +30,30 @@ the patch version.
   SRS-AI-001 to SRS-AI-004 (SRS version 26); the development plan, version 13 (the commit policy
   and AI-assisted development); threat model version 12; `measurements/ch37/`; Exercises 37.1 to
   37.3.
+- Appendix A, Software architecture and design: what IEC 62304 asks of an architecture and where
+  MiniDAQ meets it, the software items and their boundaries (processes, layers, segregation, what
+  class C would add), the interfaces and their versions, the concurrency architecture, the SOUP
+  boundaries, the patterns with their decision records and costs, a table of tradeoffs, the
+  checks that keep the description true, designing for change and a review checklist; a diagram
+  of the boundaries. The book's first appendix (`book/src/appendix/`).
 
 ### Changed
 
 - Commit messages: the review line is in the trailer block, with the co-author lines, so that git
   parses it (it was a trailer in none of the 191 commits that carried it); subjects and bodies at
   most 72 characters.
+- The architecture description, version 19: the range of decisions in section 12 (ADR 0001 to
+  0032, it said 0020) and the slow-control thread in section 6, both found stale while writing
+  Appendix A.
 - VERSION is 0.9.0-dev (Part IX); the Python packages are 0.9.0.dev0. The SOUP list is version 18,
   with the known-anomaly review for MiniDAQ 0.9.
+
+### Fixed
+
+- The trailer parser of `tools/check_commits.py` and Exercise 36.1: git 2.56, on CI's runners,
+  does not take the scheme of a URL for a trailer key, and git 2.43 does; both follow the newer
+  rule, and the oracle tests leave that case out of the comparison with an older git (CI failed
+  on it at df01679 and 0d9b90c).
 
 ### Fixed (review of Part VIII)
 
