@@ -8,7 +8,7 @@ log record what changed. This file records why, how, and what is left.
 Last updated: 2026-11-04: RELEASED 0.8.0 (tag book-v0.8.0 on 5770582); VERSION 0.9.0-dev. Part
 VIII review PR #6 merged locally (79187ef). Next: Part IX.
 
-## Start here (next thread: the Part IX review, then 1.0.0)
+## Start here (next thread: CR-0025, then release 1.0.0)
 
 State on 2026-11-08: Parts I to IX and Appendix A are released (0.1.0 to 0.9.0, tag book-v0.9.0
 on 8d34971, with a deviation for ACC-04 and ACC-08 the user approved; release report and files
@@ -16,10 +16,11 @@ kept outside the repository). VERSION is 1.0.0-dev and SOUP list v20 has the rev
 carries the 0.9 review: read the trackers and advisories again before 1.0.0). Tags ch00 to ch37
 and book-v0.1.0 to book-v0.9.0 are on GitHub; fetch them with
 `git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part IX and Appendix A
-was asked of the coordinator on 2026-11-08: read ALL of its branch's CI runs first (MDQ-PR-057
-hid in an unread run), review its PR critically and merge it LOCALLY with the noreply identity
-(never on GitHub: GitHub merges put the account's email in the author). Next free report
-number: 062. A commit message has ONE trailer block: `Review:` directly above
+was merged locally on 2026-11-08 (PR #7, c5bc604; MDQ-PR-062: TL-23 removed, the assistant is
+TL-48 only). A PR opened by a session starts no ci or gates run: verify a review branch locally
+(docs and tools tests, `tools/check_commits.py . BASE..HEAD`, the book build) before merging, and
+merge LOCALLY with the noreply identity. Next free report number: 063.
+A commit message has ONE trailer block: `Review:` directly above
 `Co-Authored-By:`, no blank line between (the commit-msg hook refuses otherwise).
 
 Next work, in order:
@@ -48,8 +49,8 @@ Next work, in order:
    docs.baseline fails), risk and threat model review, CR, ADR, chapter text, solutions,
    CHANGELOG, then tag chNN through `.github/tags.txt` once CI is green. Ask the user before any
    new dependency (a DICOM library would be one).
-3. Done: release 0.9.0 on 2026-11-08 (tag book-v0.9.0 on 8d34971). Next: merge the Part IX
-   review, decide CR-0025 (the gate's baseline and the latency limit; both 0.8.0 and 0.9.0 needed
+3. Done: release 0.9.0 on 2026-11-08 (tag book-v0.9.0 on 8d34971) and its review (c5bc604).
+   Next: decide CR-0025 (the gate's baseline and the latency limit; both 0.8.0 and 0.9.0 needed
    the deviation), then release 1.0.0, the packaged release.
 
 Rules that bit in Parts VII and VIII: run the WHOLE ctest (exercises too) before every commit;
