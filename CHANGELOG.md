@@ -8,7 +8,12 @@ the patch version.
 
 ## [Unreleased]
 
-## [0.9.0] - 2026-11-07
+### Changed
+
+- VERSION is 1.0.0-dev (the packaged release); the Python packages are 1.0.0.dev0. The SOUP
+  list is version 20, with the known-anomaly review for MiniDAQ 1.0 development.
+
+## [0.9.0] - 2026-11-08
 
 Part IX and Appendix A. Release record `docs/regulatory/releases/0.9.0.md`, evidence
 `measurements/release-0.9.0/`; released with a recorded deviation for ACC-04 and ACC-08, as

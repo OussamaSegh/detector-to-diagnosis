@@ -8,15 +8,19 @@ log record what changed. This file records why, how, and what is left.
 Last updated: 2026-11-04: RELEASED 0.8.0 (tag book-v0.8.0 on 5770582); VERSION 0.9.0-dev. Part
 VIII review PR #6 merged locally (79187ef). Next: Part IX.
 
-## Start here (next thread, Part IX)
+## Start here (next thread: the Part IX review, then 1.0.0)
 
-State on 2026-11-04: Parts I to VIII are released (0.1.0 to 0.8.0, tag book-v0.8.0 on 5770582;
-release report and files kept outside the repository). VERSION is 0.9.0-dev and SOUP list v18 has the review for 0.9. Tags ch00
-to ch34 and book-v0.1.0 to book-v0.8.0 are on GitHub; fetch them with
-`git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part VIII was asked of
-the coordinator on 2026-11-04: read ALL of its branch's CI runs first (MDQ-PR-057 hid in an unread
-run), review its PR critically and merge it LOCALLY with the noreply identity (never on GitHub:
-GitHub merges put the account's email in the author).
+State on 2026-11-08: Parts I to IX and Appendix A are released (0.1.0 to 0.9.0, tag book-v0.9.0
+on 8d34971, with a deviation for ACC-04 and ACC-08 the user approved; release report and files
+kept outside the repository). VERSION is 1.0.0-dev and SOUP list v20 has the review for 1.0 (it
+carries the 0.9 review: read the trackers and advisories again before 1.0.0). Tags ch00 to ch37
+and book-v0.1.0 to book-v0.9.0 are on GitHub; fetch them with
+`git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part IX and Appendix A
+was asked of the coordinator on 2026-11-08: read ALL of its branch's CI runs first (MDQ-PR-057
+hid in an unread run), review its PR critically and merge it LOCALLY with the noreply identity
+(never on GitHub: GitHub merges put the account's email in the author). Next free report
+number: 062. A commit message has ONE trailer block: `Review:` directly above
+`Co-Authored-By:`, no blank line between (the commit-msg hook refuses otherwise).
 
 Next work, in order:
 
@@ -44,9 +48,9 @@ Next work, in order:
    docs.baseline fails), risk and threat model review, CR, ADR, chapter text, solutions,
    CHANGELOG, then tag chNN through `.github/tags.txt` once CI is green. Ask the user before any
    new dependency (a DICOM library would be one).
-3. Release 0.9.0 as in section 4 and message the
-   coordinator for the review. If part 3 fails the gate and ACC-04 again the way 0.8.0 did, a CR
-   for the gate's baseline and the latency margin is due (see the 0.8.0 status bullet).
+3. Done: release 0.9.0 on 2026-11-08 (tag book-v0.9.0 on 8d34971). Next: merge the Part IX
+   review, decide CR-0025 (the gate's baseline and the latency limit; both 0.8.0 and 0.9.0 needed
+   the deviation), then release 1.0.0, the packaged release.
 
 Rules that bit in Parts VII and VIII: run the WHOLE ctest (exercises too) before every commit;
 after a VERSION bump re-run cmake in the build directory before ctest (cmake.consumer reads
@@ -401,6 +405,9 @@ Part VIII (thread started 2026-11-04).
 - RELEASED 0.8.0 on 2026-11-04: CI green on 5770582 (ci, gates, codeql, kdp, pages), tag
   book-v0.8.0 on 5770582; the packaged files and the report are kept outside the repository. VERSION 0.9.0-dev, SOUP list v18 (review for
   0.9). Opus Part VIII review asked of the coordinator. Next: Part IX (see "Start here").
+- RELEASED 0.9.0 on 2026-11-08: CI green on 8d34971 (ci, gates, codeql, kdp, pages), tag
+  book-v0.9.0 on 8d34971; deviation for ACC-04 and ACC-08 approved; CR-0025 proposed. VERSION
+  1.0.0-dev, SOUP list v20. Opus review of Part IX and Appendix A asked of the coordinator.
 - Opus review of Part VIII (2026-11-04): PR #6 (branch claude/project-thread-uss0ag) MERGED
   LOCALLY (79187ef): e2e sorter partition with out_of_order and a stricter damaged-link test
   (MDQ-PR-059), acceptance.py commit prefix of at least 7 characters (MDQ-PR-060), Chapters 33
