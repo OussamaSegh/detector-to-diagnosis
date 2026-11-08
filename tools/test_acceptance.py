@@ -29,6 +29,7 @@ WRITER = "".join(f"writer fsync=close ...: 200003584 coincidences, 3201.6 MB in 
 SOAK = ("soak: 1e+06 singles/s for {} min, 181 samples every 10 s\n"
         "singles in: 1800030235 (1000017/s); losses 0; fault None; complete True\n"
         "end-to-end latency over each interval: p99 max {} ms, max 12.91 ms\n"
+        "intervals with p99 above 10 ms: {} of 180\n"
         "result: {}\n")
 REPORT = "## 2. Results\n\n34 test cases: {} passed, {} failed, 0 skipped.\n"
 CHECKS = "".join(f"## part {n}\npass  something\nall release checks passed (part {n})\n"
@@ -58,7 +59,7 @@ class Evidence:
             self.write(name, f"commit {COMMIT}\n")
         self.write("perf-pipeline.txt", PIPELINE.format("37.4753"))
         self.write("perf-writer.txt", WRITER.format("15.77"))
-        self.write("soak.txt", SOAK.format("30.0", "4.42", "PASS"))
+        self.write("soak.txt", SOAK.format("30.0", "4.42", 0, "PASS"))
         self.write("system-test-report.md", REPORT.format(34, 0))
         self.write("release-checks.txt", CHECKS)
         (self.out / "e2e").mkdir()
@@ -92,7 +93,7 @@ class Verdicts(unittest.TestCase):
         self.assertEqual(self.ev.verdict("ACC-01"), "FAIL")
         self.ev.write("perf-writer.txt", WRITER.format("2.99"))
         self.assertEqual(self.ev.verdict("ACC-02"), "FAIL")
-        self.ev.write("soak.txt", SOAK.format("29.5", "10.01", "PASS"))
+        self.ev.write("soak.txt", SOAK.format("29.5", "10.01", 2, "PASS"))
         self.assertEqual(self.ev.verdict("ACC-03"), "FAIL", "a soak shorter than 30 minutes")
         self.assertEqual(self.ev.verdict("ACC-04"), "FAIL")
         self.ev.write("system-test-report.md", REPORT.format(33, 1))
@@ -113,8 +114,27 @@ class Verdicts(unittest.TestCase):
         self.assertEqual(self.ev.verdict("ACC-08"), "PASS", "one run of all four parts")
 
     def test_a_soak_that_failed_fails_whatever_its_length(self):
-        self.ev.write("soak.txt", SOAK.format("30.0", "4.42", "FAIL: 3 singles lost"))
+        self.ev.write("soak.txt", SOAK.format("30.0", "4.42", 0, "FAIL: 3 singles lost"))
         self.assertEqual(self.ev.verdict("ACC-03"), "FAIL")
+
+    def test_the_latency_holds_in_99_percent_of_the_intervals(self):
+        # CR-0025: one interval of 180 above the limit passes (release 0.9.0's soak), two fail
+        # (178 of 180 is less than 99%), fifteen fail (release 0.8.0's soak).
+        for above, verdict in ((0, "PASS"), (1, "PASS"), (2, "FAIL"), (15, "FAIL")):
+            with self.subTest(above=above):
+                self.ev.write("soak.txt", SOAK.format("30.0", "17.96", above, "PASS"))
+                self.assertEqual(self.ev.verdict("ACC-04"), verdict)
+
+    def test_a_soak_summary_without_the_count_per_interval_is_missing(self):
+        # A summary written before CR-0025 gives only the highest 99th percentile, and one that
+        # counted against another limit says nothing about this one.
+        text = SOAK.format("30.0", "4.42", 0, "PASS")
+        self.ev.write("soak.txt", text.replace("intervals with p99 above 10 ms: 0 of 180\n", ""))
+        self.assertEqual(self.ev.verdict("ACC-04"), "MISSING")
+        self.ev.write("soak.txt", text.replace("above 10 ms", "above 20 ms"))
+        self.assertEqual(self.ev.verdict("ACC-04"), "MISSING")
+        self.ev.write("soak.txt", text.replace("0 of 180", "0 of 0"))
+        self.assertEqual(self.ev.verdict("ACC-04"), "MISSING")
 
     def test_missing_or_unreadable_evidence_is_never_a_pass(self):
         (self.ev.out / "perf-pipeline.txt").unlink()

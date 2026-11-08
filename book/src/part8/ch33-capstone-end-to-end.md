@@ -320,7 +320,7 @@ of the release checks that produces it, and the rule that reads it:
 | ACC-01 | pipeline throughput, hardened | SRS-PERF-020 | median of 5 at least 20 M singles/s |
 | ACC-02 | list-mode writer, fsync at close | SRS-PERF-021 | slowest of 3 at least 3 M coinc./s |
 | ACC-03 | a long acquisition | SRS-SYS-003 | 30 min at 1 M singles/s, no loss, complete |
-| ACC-04 | end-to-end latency | SRS-PERF-022 | p99 of every 10 s interval at most 10 ms |
+| ACC-04 | end-to-end latency | SRS-PERF-022 | p99 at most 10 ms in 99% of 10 s intervals |
 | ACC-05 | the chain end to end | SRS-SYS-006, 007, SRS-ANA-005 | all checks pass, records equal |
 | ACC-06 | the image | SRS-SYS-008 | radius and flatness within their limits |
 | ACC-07 | the system test plan | SRS-SYS-001, 002, 004, 005 | every case passed, none skipped |
@@ -331,7 +331,15 @@ ACC-04 needed a requirement that did not exist. The soak has measured the end-to
 Chapter 19, and every release record quoted it, but no requirement said what it must be. A target
 without a requirement is a number someone liked; SRS-PERF-022 now states it (at most 10 ms for the
 99th percentile of every 10 s interval at 1 M singles/s, about twice the 4.42 ms measured at 0.7.0),
-and CR-0020 names it as an addition.
+and CR-0020 names it as an addition. "Every interval" did not survive contact with the reference
+machine: releases 0.8.0 and 0.9.0 each had intervals above the limit with no change to the code,
+the programs of the previous release did the same on the same day, and both releases needed a
+deviation. CR-0025 changed the definition before release 1.0.0, not after a failure: the limit
+holds in at least 99% of the intervals (one of the soak's 180 may be above), and the soak records
+the machine's steal time with each interval, so that a peak can be told from a machine that was
+busy with other guests. Applied to the evidence already recorded, the new rule passes 0.7.0 and
+0.9.0 and still fails 0.8.0, whose soak had 15 intervals above: a rule changed to make a failure
+disappear would pass all three.
 
 `tools/acceptance.py` (TL-41) evaluates the specification from one output directory of the release
 checks. Each rule reads one kind of evidence and returns whether the target is met and what was
@@ -421,6 +429,13 @@ change" names SRS-SYS-001. Closing it without parsing English means a structured
 request (a table of requirements with "added", "changed" or "withdrawn"), or recording in the
 request the digest it expects after the change. MiniDAQ keeps the simple rule and relies on the
 change control review to read what a request says; a team with many requests a week might not.
+
+The rule had a second hole, which nobody asked about and the release of 1.0.0 found
+(MDQ-PR-063): a request accepted long ago still named its requirements. CR-0020 named
+SRS-PERF-022 when it added it, so when CR-0025 later changed the requirement's text, the check
+passed while CR-0025 was still only proposed. A baseline now lists the requests that were already
+accepted when it was taken, and the check counts only the others: a request authorizes the change
+it describes once, not every later one to the same requirement.
 
 The baseline is retaken at a release, after the review of every difference, by a person
 (`tools/req_baseline.py --write NAME`). A tool that retook the baseline when the check failed would

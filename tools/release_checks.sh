@@ -148,12 +148,33 @@ if in_part 3; then
 
 # The regression gate. It used to run only in perf.yml, on a runner that did not exist
 # (MDQ-PR-014); here it runs on the reference machine, and a failure fails the release checks.
-# The build's own output stays in perf-suite.txt: a build that fails says why (MDQ-PR-058).
-{ cmake --preset release && cmake --build --preset release -j"$(nproc)" &&
-  tools/perf_suite.sh "$out/perf-current.json" build/release 2; } > "$out/perf-suite.txt" 2>&1 &&
-  python3 tools/perf_gate.py benchmarks/baseline/book-vm.json "$out/perf-current.json" --strict \
-    > "$out/perf-gate.txt" 2>&1
-check "performance regression gate" $?
+# Since CR-0025 it compares the candidate with the previous release, both built here and run
+# interleaved on this machine in this session (tools/perf_ab.sh): the reference machine's speed
+# drifts from day to day by more than the gate's threshold, and a baseline recorded on another
+# day failed releases 0.8.0 and 0.9.0 with no change to the code. The comparison with the
+# recorded baseline (benchmarks/baseline/book-vm.json) is kept as the trend, perf-trend.txt, and
+# judged by the release record, not by this script; the drift a release-to-release gate cannot see
+# is bounded by SRS-PERF-020 and SRS-PERF-021, which part 2 measures against fixed limits.
+# The builds' own output stays in perf-suite.txt: a build that fails says why (MDQ-PR-058).
+# PERF_BASE names the previous release (default: the newest book-v* tag before this commit).
+perf_base=${PERF_BASE:-$(git describe --tags --abbrev=0 --match 'book-v*' HEAD 2>/dev/null)}
+{ stamp "perf: release build of $(git rev-parse --short HEAD) and of $perf_base, interleaved"
+  [ -n "$perf_base" ] && git rev-parse --verify -q "$perf_base^{commit}" >/dev/null &&
+  cmake --preset release && cmake --build --preset release -j"$(nproc)" &&
+  git worktree add --detach "$work/perf-base" "$perf_base" &&
+  (cd "$work/perf-base" && cmake --preset release -DMINIDAQ_BUILD_EXERCISES=OFF &&
+    cmake --build --preset release -j"$(nproc)") &&
+  echo "base $perf_base = $(git rev-parse "$perf_base^{commit}")" &&
+  tools/perf_ab.sh "$work/perf-base/build/release" build/release "$out/perf-ab" 5 2
+} > "$out/perf-suite.txt" 2>&1
+status=$?
+cp "$out/perf-ab/gate.txt" "$out/perf-gate.txt" 2>/dev/null || echo "the gate did not run" > "$out/perf-gate.txt"
+git worktree remove --force "$work/perf-base" 2>/dev/null
+check "performance regression gate, against $perf_base interleaved" $status
+python3 tools/perf_gate.py benchmarks/baseline/book-vm.json "$out/perf-ab/head.json" \
+  > "$out/perf-trend.txt" 2>&1
+echo "trend against benchmarks/baseline/book-vm.json (not a check, CR-0025): status $?" \
+  >> "$out/perf-trend.txt"
 
 # Chapter 19: the system test report of the release build (system test plan, section 8), and the
 # soak of SRS-SYS-003 on the same programs.

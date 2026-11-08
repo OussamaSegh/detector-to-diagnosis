@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | proposed |
+| Status | approved |
 | Requested | 2026-11-07, by the software lead |
 | Source | release records of 0.8.0 and 0.9.0 (deviations for ACC-04 and ACC-08) |
-| Decision | pending |
+| Decision | approved, 2026-11-08, software lead |
 | Commits | none yet |
 
 ## Description
@@ -17,7 +17,7 @@ release run interleaved on the same machine the same day; and whether the latenc
 SRS-PERF-022 (10 ms at the 99th percentile of every 10 s interval) keeps its value, its margin or
 its definition (every interval, or a share of intervals).
 
-The change recommended to the software lead (the decision is pending):
+The change, as decided:
 
 1. **The gate** of `tools/release_checks.sh` part 3 builds the previous release (the newest
    `book-v*` tag before the candidate, or `PERF_BASE`) next to the candidate and compares the two
@@ -105,4 +105,7 @@ new gate and soak (`measurements/release-1.0.0/`).
 
 ## Decision
 
-Pending.
+Approved on 2026-11-08 by the software lead, from the three options put to them (this change; the
+gate only, with the latency in every interval; no change and a third deviation), after reading
+the comparison above. The criteria apply from release 1.0.0 on and were decided before its
+release checks ran.

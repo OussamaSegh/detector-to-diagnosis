@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 13 (MiniDAQ 0.9.0-dev). Status: draft for review.
+Version 14 (MiniDAQ 1.0.0-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -146,7 +146,7 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Soak | each release, `tools/soak.py`, 30 minutes at 1 M singles/s on the reference machine (`tools/release_checks.sh`) | the criteria of SRS-SYS-003 over 30 minutes: no loss, no fault, the run complete, resident memory growing by no more than 1 MiB per hour after a 10-minute warm-up (the 8-hour run belongs to the system test on the acquisition PC, SRS section 3) |
 | End to end | every change, without the image (test `system.e2e`); each release, with the image (`tools/e2e.py`, `tools/release_checks.sh` part 3) | the server's records equal the offline reference's over a clean link, every count balances between the stages, the daily QC report passes, the phantom's image meets SRS-SYS-008 (Chapter 33) |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
-| Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020, SRS-PERF-021 and SRS-PERF-022 met (acceptance criteria ACC-01, ACC-02 and ACC-04); `tools/perf_gate.py` finds no row of the budget slower than the baseline, or the baseline and the budget were updated with a reason (CAPA-0004) |
+| Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020, SRS-PERF-021 and SRS-PERF-022 met (acceptance criteria ACC-01, ACC-02 and ACC-04); `tools/perf_gate.py` finds no gated benchmark slower than in the previous release, both built on the reference machine and run interleaved in the same session (`tools/perf_ab.sh`, five rounds; CR-0025), or the budget was updated with a reason (CAPA-0004); the comparison with the recorded baseline `benchmarks/baseline/book-vm.json` is kept as the trend and explained in the release record, not judged by the script |
 | Stress run of the threaded tests | each release, `tools/stress_tests.sh` on the `tsan` build, 100 repetitions | no failure, result in `measurements/` (CAPA-0001) |
 | Code review | every change; every Part | the author's review against the change control checklist; a Part review of all changes of the Part (section 5) |
 | Change requests and CAPA | every change (`docs.changes`, `docs.capa`) | every request complete and consistent; every implemented one names its commits and tests |
@@ -254,3 +254,4 @@ of Chapter 13.
 | 11 | The formatting check of changed lines in section 6 (Chapter 32, ADR 0027, CR-0018). |
 | 12 | Chapter 33: the end-to-end run and the requirements freeze in section 6, the acceptance report in section 8 (ADR 0028, CR-0020). |
 | 13 | Chapter 36: the commit policy in section 5 (ADR 0031, CR-0023); Chapter 37: AI-assisted development in section 4 (ADR 0032, CR-0024). |
+| 14 | Release 1.0.0: the release checks' regression gate compares the candidate with the previous release run interleaved on the reference machine, and the recorded baseline becomes the trend (CR-0025). |

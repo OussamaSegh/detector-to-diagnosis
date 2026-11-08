@@ -121,8 +121,11 @@ in alternating order, and compare them with each other as well as with the recor
 both are equally far from the record, the machine moved; if they differ from each other, the code
 did. MiniDAQ's own release 0.8.0 needed exactly this: its performance gate and its latency limit
 failed against the recorded figures, and the same measurements of release 0.7.0, made on the same
-machine on the same day, failed the same way (the release record's deviation). The method
-costs an afternoon and turns "it is slower on my machine" into a statement someone can act on.
+machine on the same day, failed the same way (the release record's deviation). Release 0.9.0
+needed the same deviation, and a criterion that fails for the machine at every release stops
+telling anyone anything: change request CR-0025 made the side-by-side comparison the gate of the
+release checks itself, and kept the recorded baseline as a trend to explain. The method costs an
+afternoon and turns "it is slower on my machine" into a statement someone can act on.
 
 ## Reading the documents in an order that pays
 

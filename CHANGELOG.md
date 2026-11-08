@@ -12,9 +12,22 @@ the patch version.
 
 - VERSION is 1.0.0-dev (the packaged release); the Python packages are 1.0.0.dev0. The SOUP
   list is version 20, with the known-anomaly review for MiniDAQ 1.0 development.
+- CR-0025, the performance gate and the latency limit: the release checks' gate compares the
+  candidate with the previous release, both built and run interleaved on the reference machine
+  (`tools/perf_ab.sh`, five rounds), and the recorded baseline `book-vm.json` becomes the trend
+  (`perf-trend.txt`, not judged); SRS-PERF-022 holds in at least 99% of the 10 s intervals, not
+  in every one (SRS version 27, acceptance specification version 2, ACC-04); the soak counts the
+  intervals above the limit and records the steal time of each interval; SDP version 14.
+  `measurements/cr-0025/` applies both criteria to releases 0.7.0 to 0.9.0. Chapters 33 and 34
+  follow.
+- SOUP list version 21: the known-anomaly review for release 1.0.0, trackers and advisories read
+  again (no change).
 
 ### Fixed
 
+- The requirements freeze let a change request accepted before the baseline authorize a later
+  change of a requirement it named (MDQ-PR-063): a baseline lists the requests accepted when it
+  was taken, and the check leaves them out. Chapter 33 says so.
 - The independent review of Part IX: the tool list had the AI assistant twice, as TL-23 of class
   T1 and TL-48 of class T3; TL-23 is removed (MDQ-PR-062, Chapter 20's text follows). Chapter 35:
   the resend after an abort sends all 47 instances again, and the archive replaces the 20 it had;

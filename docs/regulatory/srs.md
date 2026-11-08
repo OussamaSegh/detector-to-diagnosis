@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 26 (MiniDAQ 0.9.0-dev). Status: draft for review.
+Version 27 (MiniDAQ 1.0.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -96,7 +96,7 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-PERF-010 | The latency histogram shall report every percentile within a relative error of 1/128 of the value, and never below the exact value. | metrics | T |
 | SRS-PERF-020 | The acquisition pipeline shall sustain 10,000,000 singles/s with a margin of at least 2 times on the reference machine with the `hardened` preset. | pipeline | M |
 | SRS-PERF-021 | The list-mode sink shall sustain at least 3,000,000 coincidences/s with the `close` fsync policy on the reference machine. | output | M |
-| SRS-PERF-022 | When it acquires 1,000,000 singles/s, the acquisition pipeline shall keep the 99th percentile of the end-to-end latency of every 10 s interval of an acquisition at or below 10 ms on the reference machine. | pipeline | M |
+| SRS-PERF-022 | When it acquires 1,000,000 singles/s, the acquisition pipeline shall keep the 99th percentile of the end-to-end latency at or below 10 ms in at least 99% of the 10 s intervals of an acquisition on the reference machine. | pipeline | M |
 
 ### 2.7 Processing (PROC, SRT, MRG, SNO, CNT)
 
@@ -483,7 +483,7 @@ change.
 | SRS-IQ-004 | M | `measurements/ch30/quality.txt`, section 4: over six independent realizations of the phantom, a contrast recovery of 0.976 (SD 0.027, lowest 0.951) for the 12 mm rod and 0.877 (SD 0.040, lowest 0.809) for the 8 mm rod, and a background variability of 3.2% (SD 0.9%, highest 4.1%). The limits are book-level numbers (assumption: confirm with team the acceptance values of the scanner's image quality specification). Re-measure after every change to the reconstruction, its corrections or the protocol. |
 | SRS-SYS-003 | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`): no loss, no fault, resident memory growth within the limit. The 8-hour run is part of the system test on the acquisition PC (assumption: confirm with team the duration the scanner's system requirements set). |
 | SRS-SYS-008 | D | `tools/e2e.py`, run by the release checks (part 3) on the release build: its phantom acquisition, reconstructed by OSEM with 4 iterations of 8 subsets and 2 mm pixels, and the two image checks in `e2e/e2e.json` (`measurements/ch33/e2e/`: radius 80.25 mm, center over periphery 1.042). Without the attenuation correction the same data give 0.86 (`measurements/ch33/README.md`). The limits are book-level numbers (assumption: confirm with team the scanner's acceptance tests). |
-| SRS-PERF-022 | M | The soak of SRS-SYS-003 samples the end-to-end latency of every 10 s interval (`tools/soak.py`, `soak.txt` of each release): release 0.7.0 measured a highest 99th percentile of 4.42 ms over 30 minutes (`measurements/release-0.7.0/soak.txt`). The limit of 10 ms is a book-level number, about twice the measured value (assumption: confirm with team what the scanner's real-time display and the gating need). Evaluated by `tools/acceptance.py`, criterion ACC-04. |
+| SRS-PERF-022 | M | The soak of SRS-SYS-003 samples the end-to-end latency of every 10 s interval (`tools/soak.py`, `soak.txt` of each release): release 0.7.0 measured a highest 99th percentile of 4.42 ms over 30 minutes (`measurements/release-0.7.0/soak.txt`). The limit of 10 ms is a book-level number, about twice the measured value (assumption: confirm with team what the scanner's real-time display and the gating need). Until version 27 every interval had to meet it; the share of 99%, one interval in a 30-minute soak, and the steal time the soak records with each interval are CR-0025's (`measurements/cr-0025/`). Evaluated by `tools/acceptance.py`, criterion ACC-04. |
 
 ## 4. Changes
 
@@ -515,3 +515,4 @@ change.
 | 24 | Chapter 35: the DICOM export, SRS-DCM-001 to SRS-DCM-007 (ADR 0030, CR-0022). |
 | 25 | Chapter 36: the commit policy, SRS-GIT-001 to SRS-GIT-007 (ADR 0031, CR-0023). |
 | 26 | Chapter 37: AI-assisted changes, SRS-AI-001 to SRS-AI-004 (ADR 0032, CR-0024). |
+| 27 | Release 1.0.0: SRS-PERF-022 holds in at least 99% of the 10 s intervals, not in every one; the reference machine's tail latency varies from day to day (CR-0025). |

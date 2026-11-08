@@ -13,6 +13,12 @@ Writes OUT/samples.csv and OUT/summary.txt, and exits with 1 if the run had a lo
 or if its memory grew faster than --max-growth MiB per hour after the warm-up (--warmup minutes,
 default 10). The growth is the slope of a least-squares line through the samples after the
 warm-up, with its standard error, so a single page faulted in late does not count as a leak.
+
+The latency is reported, not judged here: the summary counts the intervals whose 99th percentile
+is above --latency-limit ms (default 10, SRS-PERF-022), and tools/acceptance.py judges the count
+(ACC-04). Each sample also records the share of the machine's CPU time that the hypervisor took
+for other guests in the interval (steal, from /proc/stat), so that a latency peak can be told
+from a machine that was not running the server (CR-0025).
 """
 import argparse
 import csv
@@ -47,6 +53,19 @@ def slope(xs, ys):
 # [/snippet:slope]
 
 
+def cpu_ticks():
+    """The machine's CPU time so far, in ticks: (total, steal), from the first line of /proc/stat."""
+    fields = [int(x) for x in pathlib.Path("/proc/stat").read_text().split("\n", 1)[0].split()[1:]]
+    # user nice system idle iowait irq softirq steal [guest guest_nice]: guest time is already
+    # counted in user and nice, so the total is the first eight fields.
+    return sum(fields[:8]), (fields[7] if len(fields) > 7 else 0)
+
+
+def steal_pct(before, after):
+    total, steal = after[0] - before[0], after[1] - before[1]
+    return round(100.0 * steal / total, 2) if total > 0 else 0.0
+
+
 def losses(status):
     stages = sum(s["dropped"] for s in status["stages"])
     return stages + status["late_singles"] + status["sink_counters"].get("blocks_dropped", 0)
@@ -61,6 +80,8 @@ def main():
     ap.add_argument("--interval", type=float, default=10.0)
     ap.add_argument("--warmup", type=float, default=10.0, help="minutes before the memory trend counts")
     ap.add_argument("--max-growth", type=float, default=1.0, help="MiB per hour")
+    ap.add_argument("--latency-limit", type=float, default=10.0,
+                    help="the 99th percentile an interval may reach, in ms (reported, not judged)")
     args = ap.parse_args()
     systest.APPS = args.apps.resolve()
     args.out.mkdir(parents=True, exist_ok=True)
@@ -76,16 +97,19 @@ def main():
             ctl.ok("configure", str(cfg))
             ctl.ok("start")
             t0 = time.monotonic()
+            ticks = cpu_ticks()
             end = t0 + args.minutes * 60
             while True:
                 now = time.monotonic()
                 st = ctl.status()
                 # The recent window is missing until the run has completed its first interval.
                 e2e = (st.get("recent_latency_ns") or {}).get("end_to_end") or {"p99": 0, "max": 0}
+                ticks, before = cpu_ticks(), ticks
                 rows.append({"t_s": round(now - t0, 1), "rss_kib": rss_kib(server.proc.pid),
                              "singles_in": st["sorter"]["singles_in"], "losses": losses(st),
                              "state": st["state"], "fault": st["fault"] or "",
-                             "p99_ms": round(e2e["p99"] / 1e6, 3), "max_ms": round(e2e["max"] / 1e6, 3)})
+                             "p99_ms": round(e2e["p99"] / 1e6, 3), "max_ms": round(e2e["max"] / 1e6, 3),
+                             "steal_pct": steal_pct(before, ticks)})
                 if st["state"] != "running" or now >= end:
                     break
                 time.sleep(max(0.0, args.interval - (time.monotonic() - now)))  # sleep: device
@@ -118,6 +142,10 @@ def main():
     if code != 0:
         problems.append(f"server exit status {code}")
     elapsed = rows[-1]["t_s"]
+    # The first sample comes before the first interval has ended: it has no latency window.
+    intervals = [r for r in rows if r["t_s"] >= args.interval]
+    above = [r for r in intervals if r["p99_ms"] > args.latency_limit]
+    steal = [r["steal_pct"] for r in intervals] or [0.0]
     singles = final["sorter"]["singles_in"]
     lines = [
         f"soak: {args.rate:g} singles/s for {elapsed / 60:.1f} min, {len(rows)} samples every {args.interval:g} s",
@@ -128,6 +156,11 @@ def main():
         f"max {max(r['rss_kib'] for r in rows) / 1024:.1f} MiB; trend {growth}",
         f"end-to-end latency over each interval: p99 max {max(r['p99_ms'] for r in rows):.2f} ms, "
         f"max {max(r['max_ms'] for r in rows):.2f} ms",
+        f"intervals with p99 above {args.latency_limit:g} ms: {len(above)} of {len(intervals)}"
+        + (" (at " + ", ".join(f"{r['t_s']:g} s" for r in above) + ")" if above else ""),
+        f"steal time over each interval: max {max(steal):.2f}%, mean {sum(steal) / len(steal):.2f}%"
+        + (", in the intervals above the limit: " + ", ".join(f"{r['steal_pct']:g}%" for r in above)
+           if above else ""),
         "result: " + ("PASS" if not problems else "FAIL: " + "; ".join(problems)),
     ]
     (args.out / "summary.txt").write_text("\n".join(lines) + "\n")

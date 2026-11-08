@@ -68,11 +68,24 @@ def soak(text, c):
 
 
 def soak_latency(text, c):
+    """The share of the soak's intervals whose 99th percentile stayed within the limit (CR-0025).
+
+    Until release 0.9.0 every interval had to (share 1); a summary that counts no intervals, or
+    counts them against another limit, says nothing about this criterion."""
     m = re.search(r"p99 max ([\d.]+) ms", text)
-    if not m:
-        raise Missing("no latency in the soak summary")
-    v = float(m.group(1))
-    return v <= c["limit"], f"p99 at most {v:g} ms"
+    n = re.search(r"^intervals with p99 above ([\d.]+) ms: (\d+) of (\d+)", text, re.M)
+    if not m or not n:
+        raise Missing("no latency per interval in the soak summary")
+    if float(n.group(1)) != c["limit"]:
+        raise Missing(f"the soak counted intervals above {n.group(1)} ms, not {c['limit']:g} ms")
+    highest, above, total = float(m.group(1)), int(n.group(2)), int(n.group(3))
+    if total == 0:
+        raise Missing("the soak had no complete interval")
+    within = total - above
+    ok = within >= c["share"] * total
+    return ok, (f"p99 at most {c['limit']:g} ms in {within} of {total} intervals "
+                f"({100.0 * within / total:.1f}%, {100.0 * c['share']:g}% required); "
+                f"highest {highest:g} ms")
 
 
 def e2e_checks(text):
