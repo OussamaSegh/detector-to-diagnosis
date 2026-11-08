@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 20 (MiniDAQ 1.0.0-dev). Status: draft for review.
+Version 21 (MiniDAQ 1.0.0-dev). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -36,7 +36,7 @@ MiniDAQ minor version.
 | How MiniDAQ verifies its use | Unit tests of the configuration reader and protocol (`test_config.cpp`, `test_control_protocol.cpp`); the `fuzz_config` and `fuzz_protocol` fuzz targets under AddressSanitizer and UndefinedBehaviorSanitizer (Chapter 7). |
 | Anomalies found by MiniDAQ | Numbers outside the range of `double`, such as `6e688`, raise `json::out_of_range` (406), not `json::parse_error`. MiniDAQ's reader caught only `parse_error`, and the configuration fuzzer found the resulting crash within seconds. This is documented library behavior, not a library defect; the reader now catches `json::exception` (test `Config.NumberOverflowIsAnErrorNotACrash`). |
 | Known-anomaly review | Before each release: read the library's issue tracker and release notes for the pinned version and any later ones, and evaluate each reported defect against the requirements above. Record the result below. |
-| Last review | 2026-11-08, for MiniDAQ 1.0, carrying the review of 2026-11-04 for MiniDAQ 0.9, which release 0.9.0 used: 3.12.0 was then the latest release (record in [section 4](#4-known-anomaly-reviews)). Result: no change since the review for MiniDAQ 0.3; none of the known defects affects a requirement above. |
+| Last review | 2026-11-08, for MiniDAQ 1.0, at release 1.0.0: 3.12.0 is still the latest release (record in [section 4](#4-known-anomaly-reviews)). Result: no change since the review for MiniDAQ 0.3; none of the known defects affects a requirement above. |
 
 | Field | OpenSSL (platform library) |
 |---|---|
@@ -55,7 +55,7 @@ MiniDAQ minor version.
 | How MiniDAQ verifies its use | `test_security.cpp`: TLS 1.3 only (a TLS 1.2 client is refused), a client that trusts another CA or connects by another name is refused, an eavesdropper sees no token; the whole suite under AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer (the sanitizers instrument MiniDAQ's code, not the prebuilt library). |
 | Anomalies found by MiniDAQ | None. A write to a connection that the peer had closed raised `SIGPIPE` and ended the process; this is the documented behavior of `write(2)` on a socket, not an OpenSSL defect, and MiniDAQ blocks or ignores the signal (Chapter 17). |
 | Known-anomaly review | Before each release: read the security advisories of OpenSSL 3.0 and the changelog of the platform's package, and evaluate each fix against the features used above. Record the result below. Between releases: the vulnerability scan of the SBOM (CI job `vulnerability-scan`). |
-| Last review | 2026-11-08, for MiniDAQ 1.0, carrying the review of 2026-11-04 for MiniDAQ 0.9, which release 0.9.0 used: the Ubuntu package `3.0.13-0ubuntu3.16`, unchanged since the review for MiniDAQ 0.3, fixes every advisory of OpenSSL 3.0 up to 2026-09-29, and the project lists none after that date (record in [section 4](#4-known-anomaly-reviews)). Result: as for 0.5; MiniDAQ 1.0 needs that package version or later. |
+| Last review | 2026-11-08, for MiniDAQ 1.0, at release 1.0.0: the Ubuntu package `3.0.13-0ubuntu3.16`, unchanged since the review for MiniDAQ 0.3, fixes every advisory of OpenSSL 3.0 up to 2026-09-29, and the project lists none after that date (record in [section 4](#4-known-anomaly-reviews)). Result: as for 0.5; MiniDAQ 1.0 needs that package version or later. |
 
 The rest of the platform that the shipped programs run on (C++ standard library, C
 library, Linux kernel interfaces, systemd, GNU tar, which `minidaq_update` runs) is also
@@ -94,6 +94,25 @@ the license, the requirements above against the new version's release notes,
 and the known-anomaly review.
 
 ## 4. Known-anomaly reviews
+
+### 2026-11-08: every item, for release 1.0.0
+
+Reviewer: the book's author. Why now: release 1.0.0. The change since release 0.9.0 is in the
+release checks' tools (CR-0025, Python's standard library); no SOUP item is added and no feature
+of an item is used that 0.9 did not use.
+
+- nlohmann/json: the project's release page on GitHub, read on 2026-11-08, still marks v3.12.0 of
+  2025-04-11 as the latest release. No change to the review of 3.12.0.
+- OpenSSL: the project's page of vulnerabilities in OpenSSL 3.0, read on 2026-11-08, lists the six
+  advisories of 2026-09-29 as its newest and none after; the build machine still has
+  `3.0.13-0ubuntu3.16` (`dpkg -l`), which patches them (the review at release 0.5.0).
+- pybind11: the Python Package Index, read on 2026-11-08, names 3.1.0 as the latest release, the
+  version pinned, with no published vulnerability.
+- The Python packages of `analysis/requirements.lock`, pydicom and pynetdicom among them:
+  `tools/lock_audit.py` on 2026-11-08 reports 30 packages and none with a known vulnerability.
+
+Decision: keep nlohmann/json 3.12.0, OpenSSL (package `3.0.13-0ubuntu3.16` or later), pybind11
+3.1.0 and the lock file as it is for MiniDAQ 1.0.0.
 
 ### 2026-11-08: every item, for MiniDAQ 1.0
 
@@ -394,3 +413,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 18 | The known-anomaly review for MiniDAQ 0.9 (start of Part IX, after release 0.8.0). |
 | 19 | pydicom and pynetdicom, test-only tools of the DICOM export (CR-0022, Chapter 35). |
 | 20 | The review for MiniDAQ 1.0 development, after release 0.9.0; the row of pydicom names the vulnerability of 3.0.1 (the review of Part IX). |
+| 21 | The review for release 1.0.0: the trackers and advisories read again. |

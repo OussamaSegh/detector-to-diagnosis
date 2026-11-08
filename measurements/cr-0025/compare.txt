@@ -1,0 +1,29 @@
+== gate: 0.8.0 candidate (d262ff0) against 0.7.0, 2026-11-04, 2 rounds of 10
+  BM_DecodePacked/65536                    speed  1.005  p 0.5373  ok
+  BM_EnergyFilter/1/50/0/4096              speed  0.974  p 0.0132  ok
+  BM_EnergyFilter/3/50/0/4096              speed  1.033  p 0.8789  ok
+  BM_HistogramRecord                       speed  0.993  p 0.7932  ok
+  BM_Pipeline/4096/64/real_time            speed  1.021  p 0.9041  ok
+  BM_SortFunctor/4096/0                    speed  1.024  p 0.9041  ok
+  verdict: pass
+
+== gate: 0.9.0 candidate (c8d0800) against 0.8.0, 2026-11-07, 2 rounds of 10
+  BM_DecodePacked/65536                    speed  1.068  p 0.9595  ok
+  BM_EnergyFilter/1/50/0/4096              speed  0.952  p 0.1267  ok
+  BM_EnergyFilter/3/50/0/4096              speed  0.991  p 0.2645  ok
+  BM_HistogramRecord                       speed  1.016  p 0.5690  ok
+  BM_Pipeline/4096/64/real_time            speed  1.018  p 0.9363  ok
+  BM_SortFunctor/4096/0                    speed  0.960  p 0.5373  ok
+  verdict: pass
+
+== latency: intervals whose 99th percentile is at or below 10 ms (at least 99% required)
+  0.7.0 release soak               180 of 180 (100.0%), highest 4.42 ms: pass (every interval: pass)
+  0.8.0 release soak               165 of 180 (91.7%), highest 55.58 ms: FAIL (every interval: FAIL)
+  0.7.0 programs on 0.8.0's day    167 of 180 (92.8%), highest 206.57 ms: FAIL (every interval: FAIL)
+  0.9.0 release soak               179 of 180 (99.4%), highest 17.96 ms: pass (every interval: FAIL)
+
+== power: release 0.9.0's pooled samples made slower by a factor, against 0.8.0's
+  slower by  3.0%: 0 of 6 flagged
+  slower by  7.0%: 2 of 6 flagged (BM_EnergyFilter/1/50/0/4096, BM_EnergyFilter/3/50/0/4096)
+  slower by 10.0%: 5 of 6 flagged (BM_EnergyFilter/1/50/0/4096, BM_EnergyFilter/3/50/0/4096, BM_HistogramRecord, BM_Pipeline/4096/64/real_time, BM_SortFunctor/4096/0)
+  slower by 15.0%: 6 of 6 flagged (BM_DecodePacked/65536, BM_EnergyFilter/1/50/0/4096, BM_EnergyFilter/3/50/0/4096, BM_HistogramRecord, BM_Pipeline/4096/64/real_time, BM_SortFunctor/4096/0)
