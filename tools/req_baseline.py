@@ -13,7 +13,9 @@ requirement changes only through change control, never as a side effect of an ed
 
 The baseline is docs/regulatory/srs-baseline.json; the change requests are
 docs/regulatory/changes/CR-*.md, and a request names a requirement when its ID appears anywhere in
-its text.
+its text. A request that was already approved or implemented when the baseline was taken is
+listed in the baseline ("requests") and no longer counts: its changes are in the baseline, and
+naming a requirement once must not let it change again at every later release (MDQ-PR-063).
 """
 import argparse
 import hashlib
@@ -54,16 +56,26 @@ def differences(baseline, current):
     return sorted(out)
 
 
-def change_requests(root):
-    """{requirement id: [CR names that are approved or implemented and name it]}."""
-    named = {}
+def accepted(root):
+    """{CR name: text} of the change requests that are approved or implemented."""
+    out = {}
     for cr in sorted((root / CHANGES).glob("CR-*.md")):
         text = cr.read_text()
         m = STATUS.search(text)
-        if not m or m.group(1) not in ACCEPTED:
+        if m and m.group(1) in ACCEPTED:
+            out["-".join(cr.name.split("-")[:2])] = text
+    return out
+
+
+def change_requests(root, before=()):
+    """{requirement id: [CR names that are approved or implemented and name it]}, leaving out the
+    requests in `before`, those the baseline already holds."""
+    named = {}
+    for name, text in accepted(root).items():
+        if name in before:
             continue
         for rid in set(ID.findall(text)):
-            named.setdefault(rid, []).append("-".join(cr.name.split("-")[:2]))
+            named.setdefault(rid, []).append(name)
     return named
 
 
@@ -72,7 +84,7 @@ def check(root):
     """(problems, rows): a problem for every difference that no accepted change request names."""
     base = json.loads((root / BASELINE).read_text())
     current = requirements((root / SRS).read_text())
-    named = change_requests(root)
+    named = change_requests(root, set(base.get("requests", [])))
     rows, problems = [], []
     for rid, how in differences(base["requirements"], current):
         crs = named.get(rid, [])
@@ -99,8 +111,10 @@ def main(argv=None):
         data = {"comment": "The requirements freeze (Chapter 33): a digest of every SRS requirement "
                            "when the baseline was taken. tools/req_baseline.py --check fails for "
                            "every requirement added, changed or removed since, that no approved or "
-                           "implemented change request names.",
+                           "implemented change request names, other than the requests listed "
+                           "here, which were accepted when the baseline was taken.",
                 "name": args.write, "srs_version": int(version.group(1)) if version else None,
+                "requests": sorted(accepted(root)),
                 "requirements": requirements(srs)}
         (root / BASELINE).write_text(json.dumps(data, indent=1, sort_keys=False) + "\n")
         print(f"baseline {args.write}: {len(data['requirements'])} requirements")

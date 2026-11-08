@@ -1146,6 +1146,33 @@
         "category": "process",
         "escape": "No check compares tool names; the reviews of Chapters 20 and 37 read each entry on its own."
       }
+    },
+    {
+      "id": "MDQ-PR-063",
+      "title": "The requirements freeze let a change request accepted before the baseline authorize a later change",
+      "found": "2026-11-08, implementing CR-0025: docs.baseline passed with SRS-PERF-022 changed while CR-0025 was still proposed",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "tools/req_baseline.py accepted a difference from the baseline when any approved or implemented change request named the requirement. CR-0020, implemented in Chapter 33 before the baseline of release 0.9.0 was taken, names SRS-PERF-022, so the change of SRS-PERF-022 for CR-0025 passed docs.baseline although CR-0025 was not approved. Every requirement that any accepted request ever named could change again with no new request.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A check of the change process; no requirement changed under it without a request: the SRS history names a request for every version, and the only difference since the baseline is CR-0025's, found by this report."
+      },
+      "resolution": {
+        "change": "A baseline lists the change requests accepted when it was taken (requests), and those no longer count for later differences. The baseline of release 0.9.0 gets the list of the requests accepted then, CR-0001 to CR-0024; its digests are unchanged.",
+        "verification": "tools.req_baseline (Freeze.test_a_request_accepted_before_the_baseline_does_not_count_again); docs.baseline fails for SRS-PERF-022 until CR-0025 is approved."
+      },
+      "root_cause": {
+        "whys": [
+          "The check asked whether a request names the requirement, not whether a request made after the freeze does.",
+          "The baseline recorded the requirements but not the state of change control when it was taken.",
+          "The tests of Chapter 33 made each request in the same tree as the change, so an old request never existed in them."
+        ],
+        "cause": "The freeze recorded only half of what it compares: the requirements, not the requests already spent.",
+        "category": "tool",
+        "escape": "Every difference until now came with its own new request, so the old ones were never the only ones naming a change."
+      }
     }
   ]
 }

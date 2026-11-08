@@ -93,6 +93,18 @@ class Freeze(unittest.TestCase):
         rows = rb.check(self.root)[1]
         self.assertEqual(rows, [("SRS-ABC-002", "changed", ["CR-0004"])])
 
+    def test_a_request_accepted_before_the_baseline_does_not_count_again(self):
+        # MDQ-PR-063: CR-0020 added SRS-PERF-022 before the baseline of release 0.9.0, and still
+        # let the requirement change after it without a new request.
+        self.cr("0001", "implemented", "Adds SRS-ABC-002.")
+        rb.main([str(self.root), "--write", "after CR-0001"])
+        self.assertEqual(json.loads((self.root / rb.BASELINE).read_text())["requests"], ["CR-0001"])
+        self.srs(SRS.replace("write 3 files", "write 4 files"))
+        self.assertEqual(len(self.problems()), 1)
+        self.cr("0002", "approved", "Changes SRS-ABC-002 to four files.")
+        self.assertEqual(rb.check(self.root)[1], [("SRS-ABC-002", "changed", ["CR-0002"])])
+        self.assertEqual(self.problems(), [])
+
     def test_a_new_baseline_clears_the_differences(self):
         self.srs(SRS + "| SRS-ABC-004 | The thing shall stop. | core | T |\n")
         self.assertEqual(len(self.problems()), 1)
