@@ -1,0 +1,35 @@
+# 2026-11-08T20:14:57Z commit 517cd49 property-based tests, MINIDAQ_PROP_CASES=100
+Running main() from /tmp/claude-0/-home-user-detector-to-diagnosis/644a8998-0eec-5556-826b-4d3c34984615/scratchpad/rel100/.deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = Properties.*
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from Properties
+[ RUN      ] Properties.TheUnwrapperRestoresEveryTime
+[       OK ] Properties.TheUnwrapperRestoresEveryTime (144 ms)
+[ RUN      ] Properties.PackAndUnpackAreInverse
+[       OK ] Properties.PackAndUnpackAreInverse (21 ms)
+[ RUN      ] Properties.TheSorterFindsWhatTheReferenceFinds
+[       OK ] Properties.TheSorterFindsWhatTheReferenceFinds (385 ms)
+[ RUN      ] Properties.TheOrderOfTiesDoesNotMatter
+[       OK ] Properties.TheOrderOfTiesDoesNotMatter (408 ms)
+[ RUN      ] Properties.LongStreamsGiveTheSameResult
+[       OK ] Properties.LongStreamsGiveTheSameResult (1979 ms)
+[ RUN      ] Properties.EveryCoincidenceIsInItsWindow
+[       OK ] Properties.EveryCoincidenceIsInItsWindow (102 ms)
+[ RUN      ] Properties.FixedWindowsUseEachSingleOnce
+[       OK ] Properties.FixedWindowsUseEachSingleOnce (102 ms)
+[ RUN      ] Properties.BatchSizesDoNotMatter
+[       OK ] Properties.BatchSizesDoNotMatter (118 ms)
+[ RUN      ] Properties.EverySingleIsAccountedFor
+[       OK ] Properties.EverySingleIsAccountedFor (102 ms)
+[ RUN      ] Properties.TheTrackerRestoresOrderAndCountsEveryPacket
+[       OK ] Properties.TheTrackerRestoresOrderAndCountsEveryPacket (438 ms)
+[ RUN      ] Properties.TheMergerOutputIsOrderedAndComplete
+[       OK ] Properties.TheMergerOutputIsOrderedAndComplete (124 ms)
+[ RUN      ] Properties.TheHarnessShrinksACounterexample
+[       OK ] Properties.TheHarnessShrinksACounterexample (0 ms)
+[----------] 12 tests from Properties (3929 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 1 test suite ran. (3929 ms total)
+[  PASSED  ] 12 tests.

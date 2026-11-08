@@ -1,0 +1,15 @@
+# 2026-11-08T21:36:59Z commit 517cd49 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 585754024
+#5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+#6	NEW    cov: 86 ft: 193 corp: 5/2397b lim: 1601 exec/s: 0 rss: 33Mb L: 129/1601 MS: 1 CMP- DE: "\000\000\000\000\000\000\000\001"-
+#41	NEW    cov: 87 ft: 307 corp: 19/6275b lim: 1601 exec/s: 0 rss: 34Mb L: 15/1601 MS: 2 ShuffleBytes-EraseBytes-
+#74	NEW    cov: 88 ft: 332 corp: 29/10744b lim: 1601 exec/s: 0 rss: 35Mb L: 73/1601 MS: 1 ShuffleBytes-
+#332	NEW    cov: 89 ft: 391 corp: 48/17Kb lim: 1601 exec/s: 0 rss: 37Mb L: 13/1601 MS: 1 EraseBytes-
+#1332	NEW    cov: 99 ft: 431 corp: 64/25Kb lim: 1601 exec/s: 0 rss: 41Mb L: 1284/1601 MS: 4 CMP-ChangeBit-CrossOver-InsertRepeatedBytes- DE: "\000\000\020\020"-
+#20220141	DONE   cov: 101 ft: 460 corp: 83/28Kb lim: 4096 exec/s: 33644 rss: 469Mb
+stat::number_of_executed_units: 20220141
+stat::average_exec_per_sec:     33644
+stat::new_units_added:          801
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              469
+crash files: 0

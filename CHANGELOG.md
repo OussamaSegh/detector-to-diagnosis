@@ -8,10 +8,18 @@ the patch version.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-08
+
+The complete, packaged book: Parts I to IX and Appendix A, with MiniDAQ and its regulatory file
+verified together. Release record `docs/regulatory/releases/1.0.0.md`, evidence
+`measurements/release-1.0.0/`: every part of the release checks passed, the new performance gate
+against release 0.9.0 among them; released with a recorded deviation for ACC-04 (the latency
+held in 178 of 180 intervals, 179 required), and MDQ-PR-064 opened for its cause.
+
 ### Changed
 
-- VERSION is 1.0.0-dev (the packaged release); the Python packages are 1.0.0.dev0. The SOUP
-  list is version 20, with the known-anomaly review for MiniDAQ 1.0 development.
+- VERSION is 1.0.0; the Python packages are 1.0.0. The requirements baseline is retaken at SRS
+  version 27. The edition page lists the complete book.
 - CR-0025, the performance gate and the latency limit: the release checks' gate compares the
   candidate with the previous release, both built and run interleaved on the reference machine
   (`tools/perf_ab.sh`, five rounds), and the recorded baseline `book-vm.json` becomes the trend

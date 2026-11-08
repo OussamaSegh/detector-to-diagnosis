@@ -1,0 +1,26 @@
+# 2026-11-08T21:57:01Z commit 517cd49 fuzz_sorter 600 s on CPU 3 from fuzz/corpus/sorter
+INFO: Seed: 763766782
+#6	INITED cov: 292 ft: 491 corp: 5/1300b exec/s: 0 rss: 34Mb
+#9	NEW    cov: 292 ft: 492 corp: 6/1560b lim: 260 exec/s: 0 rss: 35Mb L: 260/260 MS: 3 ChangeBinInt-ChangeByte-ShuffleBytes-
+#36	NEW    cov: 293 ft: 576 corp: 18/4514b lim: 260 exec/s: 0 rss: 38Mb L: 250/260 MS: 1 InsertRepeatedBytes-
+#47	NEW    cov: 294 ft: 613 corp: 24/5968b lim: 260 exec/s: 0 rss: 39Mb L: 240/260 MS: 1 ShuffleBytes-
+#57	NEW    cov: 307 ft: 639 corp: 25/5975b lim: 260 exec/s: 0 rss: 40Mb L: 7/260 MS: 5 ChangeBinInt-ChangeByte-CopyPart-ChangeBit-CrossOver-
+#89	NEW    cov: 309 ft: 767 corp: 35/7515b lim: 260 exec/s: 0 rss: 44Mb L: 260/260 MS: 1 CMP- DE: "\000\000\000\000\000\000\000\010"-
+#92	NEW    cov: 310 ft: 786 corp: 36/7765b lim: 260 exec/s: 0 rss: 44Mb L: 250/260 MS: 3 ChangeByte-ChangeBit-CopyPart-
+#119	NEW    cov: 313 ft: 846 corp: 46/9751b lim: 260 exec/s: 0 rss: 47Mb L: 219/260 MS: 1 InsertRepeatedBytes-
+#340	NEW    cov: 314 ft: 1092 corp: 88/16Kb lim: 260 exec/s: 0 rss: 72Mb L: 254/260 MS: 5 CMP-PersAutoDict-InsertByte-PersAutoDict-InsertRepeatedBytes- DE: "\001\000\000\000"-"$\000\000\000\000\000\000\000"-"\025\000"-
+#500	NEW    cov: 315 ft: 1181 corp: 105/18Kb lim: 260 exec/s: 0 rss: 89Mb L: 260/260 MS: 2 ChangeBinInt-CrossOver-
+#756	NEW    cov: 318 ft: 1230 corp: 120/19Kb lim: 260 exec/s: 0 rss: 107Mb L: 151/260 MS: 5 ChangeByte-CopyPart-ChangeBit-ChangeByte-InsertRepeatedBytes-
+#903	NEW    cov: 319 ft: 1242 corp: 128/20Kb lim: 260 exec/s: 0 rss: 107Mb L: 226/260 MS: 1 InsertRepeatedBytes-
+#1197	NEW    cov: 320 ft: 1257 corp: 136/21Kb lim: 260 exec/s: 0 rss: 108Mb L: 214/260 MS: 4 PersAutoDict-EraseBytes-InsertRepeatedBytes-InsertRepeatedBytes- DE: "\013\000\000\000"-
+#1864	NEW    cov: 321 ft: 1278 corp: 152/22Kb lim: 260 exec/s: 0 rss: 109Mb L: 164/260 MS: 4 ShuffleBytes-ChangeBinInt-InsertByte-CrossOver-
+#4323	NEW    cov: 322 ft: 1306 corp: 175/25Kb lim: 260 exec/s: 0 rss: 109Mb L: 150/260 MS: 2 EraseBytes-PersAutoDict- DE: "\230|\012\000`P\000\000"-
+#6593	NEW    cov: 323 ft: 1324 corp: 188/27Kb lim: 260 exec/s: 6593 rss: 110Mb L: 259/260 MS: 1 InsertByte-
+#13591	NEW    cov: 324 ft: 1354 corp: 209/28Kb lim: 260 exec/s: 6795 rss: 113Mb L: 192/260 MS: 1 InsertRepeatedBytes-
+#3615269	DONE   cov: 324 ft: 1608 corp: 356/81Kb lim: 4096 exec/s: 6015 rss: 130Mb
+stat::number_of_executed_units: 3615269
+stat::average_exec_per_sec:     6015
+stat::new_units_added:          2471
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              130
+crash files: 0

@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "format": "minidaq-analysis manifest 1",
+    "files": [
+      {
+        "path": "qc-20261108T205853785Z-0000.mdql",
+        "bytes": 2197384,
+        "sha256": "644003f36b304006a44d8a41c49cbafcb529bff743756f62f3a071deb83b8497"
+      },
+      {
+        "path": "qc-20261108T205853785Z.run.json",
+        "bytes": 236501,
+        "sha256": "11bcfb4c4a50ff253da6938876c9c7863ebf5a613e9f2c26eded5c8246a806df"
+      }
+    ]
+  },
+  "inputs_id": "fb393a43c1be6563c5eba6555393638cc587acd9f277df1248f06f71123e72d2",
+  "environment": {
+    "package": "minidaq-analysis",
+    "version": "1.0.0.dev0",
+    "code_commit": "517cd49456fa598028b3de70bacd8a28568b5f02",
+    "python": "3.13.18",
+    "libraries": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2"
+    },
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39",
+    "command": [
+      "minidaq-qc",
+      "/tmp/minidaq-e2e-_obnob3_/qc/qc-20261108T205853785Z.run.json",
+      "/tmp/claude-0/-home-user-detector-to-diagnosis/644a8998-0eec-5556-826b-4d3c34984615/scratchpad/out100/e2e/qc"
+    ],
+    "created_utc": "2026-11-08T20:58:58Z"
+  }
+}

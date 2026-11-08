@@ -1,0 +1,1 @@
+/tmp/claude-0/-home-user-detector-to-diagnosis/644a8998-0eec-5556-826b-4d3c34984615/scratchpad/out100/system-test-report.md: 34 test cases, 0 failed

@@ -1,0 +1,7 @@
+# 2026-11-08 GitHub Actions runs, read with the GitHub API
+candidate 517cd49456fa598028b3de70bacd8a28568b5f02 (CR-0025 implemented):
+  ci run 198 (42512155295): success; gates run 103 (42512155332): success; codeql run 153:
+  success; kdp run 67: success; pages run 141: success
+the commits before it since release 0.9.0, 4381880 (MDQ-PR-063) and 96360f0 (CR-0025 analysis,
+SOUP review): ci runs 196 and 197, gates, codeql and pages: success (df19e58 was pushed together
+with the candidate and has no runs of its own)

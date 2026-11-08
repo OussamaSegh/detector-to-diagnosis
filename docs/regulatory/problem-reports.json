@@ -1173,6 +1173,20 @@
         "category": "tool",
         "escape": "Every difference until now came with its own new request, so the old ones were never the only ones naming a change."
       }
+    },
+    {
+      "id": "MDQ-PR-064",
+      "title": "The end-to-end latency's 99th percentile exceeds 10 ms in about one interval in a hundred, with no change to the code",
+      "found": "2026-11-08, release checks of 1.0.0, part 3: ACC-04 failed with 178 of 180 intervals within 10 ms",
+      "item": "pipeline",
+      "status": "open",
+      "capa": "",
+      "description": "The soak of release 1.0.0 had two 10 s intervals whose 99th percentile was above 10 ms (32.2 ms at 350 s, 23.2 ms at 880 s); the programs of release 0.9.0 on the same machine the same evening had two as well (up to 38.8 ms), and releases 0.8.0 and 0.9.0 had 15 and 1. No source of the product changed since 0.8.0. The steal time the soak records (CR-0025) was 0.5% to 0.9% in those intervals, like the others; averaged over 10 s and four CPUs it cannot show a stall of 30 ms, so the machine is neither shown nor ruled out as the cause.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "No single was lost or arrived after the sorter's window in those intervals (the soak counts no loss), the latency is not a risk control of a hazard, and the delay before a fault is noticed is MDQ-PR-006, which does not depend on it."
+      },
+      "decision": "Release 1.0.0 with a recorded deviation for ACC-04. Find the cause with a finer measure of the machine during the soak (the steal and run-queue time of the pipeline's threads per second, from /proc/self/task/*/schedstat) before the latency limit is judged again."
     }
   ]
 }
