@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-07, by the software lead |
 | Source | release records of 0.8.0 and 0.9.0 (deviations for ACC-04 and ACC-08) |
 | Decision | approved, 2026-11-08, software lead |
-| Commits | none yet |
+| Commits | df19e58 |
 
 ## Description
 
