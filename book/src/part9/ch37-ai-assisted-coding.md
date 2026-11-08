@@ -84,7 +84,7 @@ It is strongest at **completeness**, the work that people skip because it is ted
 every row of a requirements table, every requirement tagged and the trace matrix regenerated,
 every hazard's controls checked against their tests, every exercise with a starter, a solution,
 notes and a solutions chapter. Chapter 36's commit policy, its tests against Git's own parser and
-the measurement of 262 commits took one session. It is strong at **reading failures**: a CI log of
+the measurement of 260 commits took one session. It is strong at **reading failures**: a CI log of
 thousands of lines, a sanitizer report, a core file's backtrace (Chapter 21), and at proposing the
 smallest change that explains them. It is strong at **mechanical refactoring under tests**, where
 the test suite says whether the change preserved behavior, and at **writing the measurement
@@ -151,9 +151,10 @@ the repository, not from a memory of what was half done.
 
 **Run everything, every time.** The assistant runs the whole `ctest` before each commit, not the
 tests it thinks are affected. In this book's history that rule found failures the change was not
-about: the lint of the SRS refusing a new requirement with three "shall"s in one row, a timing
-test that fails under load, a test of Chapter 32's pre-commit hook that the commit-msg hook of
-Chapter 36 broke the moment it was installed. The assistant's guess of what a change affects is the guess that is wrong.
+about: the lint of the SRS refusing a new requirement with three "shall"s in one row, a timing test
+that fails under load, a test of Chapter 32's pre-commit hook that the commit-msg hook of Chapter 36
+broke the moment it was installed. The assistant's guess of what a change affects is the guess that
+is wrong.
 
 **Numbers come from measurements.** Every number in this book's text comes from a file in
 `measurements/`, written by a script in the same directory from the code it describes; the text
@@ -193,12 +194,11 @@ report:
 |---|---|
 | The release checks and their reviews (coverage, documents, SOUP) | 20 |
 | CI runs | 14 |
-| The author's own tests and runs | 11 |
+| The author's own tests and runs | 12 |
 | Design, development and measurement | 6 |
 | Fuzzing | 5 |
 | The independent review of a Part | 2 |
 | An internal audit | 1 |
-| Other | 1 |
 
 The classes come from keyword rules on a text field, not from reading each report, so read the
 table as a shape, not a statistic. The shape is clear enough: almost everything was found by
@@ -216,8 +216,8 @@ finds, because the assistant's own checks shared the mistake.
   one 32-bit integer, so its bytes came out in the wrong order. The independent reader, pydicom,
   read the file without a warning; the export's own strict reader refused it. An implementation
   checked only by a lenient peer would have shipped it (Chapter 35).
-- **A dependency with advisories.** The first pin of pydicom had two published advisories on the
-  day it was added; the lock file's audit (Chapter 31) refused it before the first commit. An
+- **A dependency with an advisory.** The first pin of pydicom had a published vulnerability on
+  the day it was added; the lock file's audit (Chapter 31) refused it before the first commit. An
   assistant chooses the version it knows, and the version it knows is old by the time it is used.
 - **A record no tool could read.** The review line that Git never parsed, in 191 commits, written
   by the same assistant following the same instruction (Chapter 36). Only asking Git found it.

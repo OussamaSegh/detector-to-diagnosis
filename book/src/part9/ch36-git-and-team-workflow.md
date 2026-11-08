@@ -104,10 +104,10 @@ four places:
 
 - **Change requests** (Chapter 16) list, in their field `Commits`, the commits that implemented
   them. `tools/check_changes.py` checks that those commits exist.
-- **Release records** (Chapter 20) name the commit the release was built from, and the annotated
-  tag `book-v0.8.0` names the same one. Every chapter and release tag in MiniDAQ's repository is an
-  annotated tag (43 of 43), which carries its own message and tagger; a lightweight tag is only a
-  name.
+- **Release records** (Chapter 20) name the commit the release was built from, and the annotated tag
+  `book-v0.8.0` names the same one. Every chapter and release tag in MiniDAQ's repository is an
+  annotated tag (43 of 43 when measured), which carries its own message and tagger; a lightweight
+  tag is only a name.
 - **The review record.** MiniDAQ's procedure asks that every change be reviewed against the change
   control checklist, and every commit message has carried the line
   `Review: change control checklist, items 1 to 6.` as the record that it was.
@@ -119,9 +119,10 @@ history makes new commits with new names, and every change request, release reco
 named the old ones now names nothing. MiniDAQ's own history was rewritten once, early, to remove
 personal data from it, and 188 commit names cited in its documents had to be remapped in the same
 operation, with a script, a review and a check from a fresh clone that every cited name resolved.
-That is what a rewrite costs a project with a few hundred commits and no customers. It is sometimes necessary (a secret or personal data
-committed by mistake), and then it is a change with a change request, an impact analysis that
-lists every record that names a commit, and a decision by someone who can make it.
+That is what a rewrite costs a project with a few hundred commits and no customers. It is sometimes
+necessary (a secret or personal data committed by mistake), and then it is a change with a change
+request, an impact analysis that lists every record that names a commit, and a decision by someone
+who can make it.
 
 Short of that, a mistake in a published commit is corrected by another commit. `git revert`
 makes a commit that undoes an earlier one and names it in its message; the earlier commit stays,
@@ -153,7 +154,7 @@ branch do without it. Which model your team uses matters less than that it is wr
 development plan and that the history can be checked against it.
 
 MiniDAQ is the simplest case: one main branch and no maintained release, since every release so
-far was the next development step. Each Part's independent review (Chapter 34) was a branch with a
+far was the next development step. Each Part's independent review (Chapter 37) was a branch with a
 pull request, merged into `main` with `git merge --no-ff`, so that the merge commit marks where
 the review's work entered. The measurement counts 260 commits, 6 merges, and 249 commits on the
 first-parent line of `main`: the line you get by following only the first parent of each merge,
@@ -209,10 +210,11 @@ own diff; resolving a conflict is writing code.
 
 A commit message has two readers. A person reads it in `git log`, in a review, in a bisection
 three years later, and wants to know what changed and why. A tool reads it to find the change
-request, the reviewer, the co-authors. Both are served by the same form:
+request, the reviewer, the co-authors. Both are served by the same form (an invented example; the
+number and the test are placeholders):
 
 ```
-Sorter: drop a pair whose second single is late, do not keep it (MDQ-PR-031)
+Sorter: drop a pair whose second single is late (MDQ-PR-nnn)
 
 The coincidence sorter kept a pair when its second single arrived after
 the window had closed, because the comparison used the first single's
@@ -315,8 +317,8 @@ The second decision is **where the check runs.** In two places:
   history, after removing the comment lines Git removes. It answers at the moment a mistake is
   cheapest to fix.
 - **CI**, in the job that already checks document control, with the whole history fetched
-  (`fetch-depth: 0`). A hook is the developer's: `git commit --no-verify` skips it, and a commit made
-  on a hosting service's web page never runs it. CI is the gate.
+  (`fetch-depth: 0`). A hook is the developer's: `git commit --no-verify` skips it, and a commit
+  made on a hosting service's web page never runs it. CI is the gate.
 
 One detail of the CI step is worth knowing. For a pull request, GitHub checks out a merge of the
 branch into the main branch, made by GitHub for the run; that commit will never be part of the
@@ -381,11 +383,11 @@ The finding shows what the author field is: text. `git -c user.name=... -c user.
 writes whatever it is given, and so does a script, a bot, or an assistant. The author of a commit is
 a claim. To make it more than a claim you sign the commit. Git can sign commits and tags with GPG,
 with X.509 certificates, or, since version 2.34, with SSH keys (`gpg.format = ssh`, a key in
-`user.signingkey`, `commit.gpgSign = true`), and `git log --show-signature` or
-`git verify-commit` checks a signature against keys the verifier trusts (`gpg.ssh.allowedSignersFile`
-for SSH). A signature proves that someone holding that key made the commit. It does not prove they
-reviewed it, and it is worth only as much as the team's management of its keys: who has them, how
-they are revoked when someone leaves, where the list of allowed signers lives.
+`user.signingkey`, `commit.gpgSign = true`), and `git log --show-signature` or `git verify-commit`
+checks a signature against keys the verifier trusts (`gpg.ssh.allowedSignersFile` for SSH). A
+signature proves that someone holding that key made the commit. It does not prove they reviewed it,
+and it is worth only as much as the team's management of its keys: who has them, how they are
+revoked when someone leaves, where the list of allowed signers lives.
 
 The hosting service adds the controls that a repository alone cannot have: **protected branches**
 on which nobody pushes directly, **required reviews** before a merge (one or two approvals, and
@@ -412,13 +414,13 @@ lives in the hosting service's database, not in the repository; it moves when th
 services, and it is gone when the service deletes the project. The squash merge in this chapter's
 day in the life kept nothing of it.
 
-So the outcome of the review goes where the history goes. The review trailer in each commit says
-the checklist was applied. The change request records the decision and lists the commits. A
-finding that the review makes and the change does not fix becomes a problem report with a number.
-A merge commit says what it merged (`Merge the Part VIII review (PR #6, branch ...)`), so the pull
-request can still be found by number. And a pull request template (`.github/pull_request_template.md`
-on GitHub) can ask for the change request, the items and classes touched, and the checklist, so
-that the description is written while the author still knows.
+So the outcome of the review goes where the history goes. The review trailer in each commit says the
+checklist was applied. The change request records the decision and lists the commits. A finding that
+the review makes and the change does not fix becomes a problem report with a number. A merge commit
+says what it merged (`Merge the Part VIII review (PR #6, branch ...)`), so the pull request can
+still be found by number. And a pull request template (`.github/pull_request_template.md` on GitHub)
+can ask for the change request, the items and classes touched, and the checklist, so that the
+description is written while the author still knows.
 
 MiniDAQ's own reviews show the workflow and its value. After each Part's release, an independent
 reviewer read the whole Part, opened a branch with its fixes and a pull request; the fixes were
@@ -446,8 +448,9 @@ release. Three details make the tag trustworthy:
   name the release record gives, and Chapter 33's acceptance tool already refuses evidence from
   release checks that ran on another commit than the candidate.
 
-`git describe` names any commit relative to the nearest tag (`book-v0.8.0-23-g34cf130`: 23 commits
-after the tag, at commit `34cf130`). MiniDAQ's version string comes from the file `VERSION` instead,
+`git describe` names any commit relative to the nearest tag
+(`git describe --match 'book-v*' 34cf130` prints `book-v0.8.0-7-g34cf130`: 7 commits after the
+release tag, at commit `34cf130`). MiniDAQ's version string comes from the file `VERSION` instead,
 so that a build from a source archive without a `.git` directory still knows its version; a product
 that also embeds the commit's name in its binaries can say exactly what a running program was built
 from. And a release can be rebuilt from its tag: Chapter 20 showed the shipped build reproducible
@@ -478,10 +481,10 @@ Large binary files and Git LFS (MiniDAQ keeps its measurement data small enough 
 submodules and the alternatives for vendored code (Chapter 32 pins third-party sources by hash);
 monorepositories with many products and their tools; partial and sparse clones; server-side hooks
 and review systems such as Gerrit, which make the review a precondition of the push; the signing of
-release artifacts with Sigstore or similar; and the electronic records rules of some markets, such as
-the FDA's 21 CFR Part 11, which can apply to records kept in such systems (assumption: confirm with
-team which records your quality system treats as electronic records). S. Chacon and B. Straub's *Pro
-Git* covers the Git side of all of these.
+release artifacts with Sigstore or similar; and the electronic records rules of some markets, such
+as the FDA's 21 CFR Part 11, which can apply to records kept in such systems (assumption: confirm
+with team which records your quality system treats as electronic records). S. Chacon and B. Straub's
+*Pro Git* covers the Git side of all of these.
 
 ::: box-regulated
 - **Configuration management.** IEC 62304 clause 8: the repository identifies every configuration
@@ -524,7 +527,8 @@ does, and the values of one key without regard to case. *Starter:*
 `Key: value`. *Acceptance:* `tests/test_trailers.py` passes: for every message of the tests the
 result equals `git interpret-trailers --parse` (a block of trailers, a review line above a blank
 line, a subject that looks like a trailer, a block with a line of prose, a continuation, trailing
-blank lines, a URL, `Note:` in the body); `value` finds `review:` and `Review:` alike. *Time:* 1 hour.
+blank lines, a URL, `Note:` in the body); `value` finds `review:` and `Review:` alike. *Time:* 1
+hour.
 
 **Exercise 36.2 (M): The name of an object.** *Goal:* compute the names of a blob, a tree and a
 commit, and of a directory on disk. *Starter:* `exercises/ch36/e2_object_names/starter/objects.py`,
@@ -553,8 +557,9 @@ that does not. **Start:** tag `ch35`. **End:** tag `ch36`.
 
 1. Write change request CR-0023 and ADR 0031; add SRS-GIT-001 to SRS-GIT-007 (SRS version 25) and
    TL-46; review the threat model (version 11).
-2. Add `tools/commit_policy.json` with `since` at the last commit before it, `tools/check_commits.py`,
-   the commit-msg hook and the test `tools.commits`; add the step to CI's job document-control.
+2. Add `tools/commit_policy.json` with `since` at the last commit before it,
+   `tools/check_commits.py`, the commit-msg hook and the test `tools.commits`; add the step to CI's
+   job document-control.
 3. Measure the history (`measurements/ch36/`), and move the review line into the trailer block in
    your own commits.
 4. Add Exercises 36.1 to 36.3.

@@ -102,14 +102,16 @@ another.
 
 Three of MiniDAQ's boundaries show the rule at work.
 
-- **The sorter, the merger and the energy filter are three items, although all three live in
+- **The sorter, the merger and the energy filter are in three items, although all three live in
   `processing/`.** Each decides something different about the data: which singles pair into a
   coincidence, in which order many boards' singles go downstream, and which singles have an energy
-  worth keeping. Each has its own requirements (SRS-SORT, SRS-MERGE, the energy window rows), its
-  own ground-truth tests and its own failure. Folding them into one `processing` item would make
-  every change to the energy filter a change to the item that decides every coincidence. The item
-  map draws them by path prefix (`processing/coincidence_sorter`, `processing/stream_merger`), and
-  the longest prefix wins, so the rest of `processing/` falls to the `processing` item.
+  worth keeping. The sorter and the merger are items of their own (`sorter`, `merger`); the energy
+  filter belongs to the item `processing`, with the calibration and the singles counter. Each has
+  its own requirements (SRS-SRT, SRS-MRG, the energy window rows), its own ground-truth tests and
+  its own failure. Folding them into one `processing` item would make every change to the energy
+  filter a change to the item that decides every coincidence. The item map draws them by path
+  prefix (`processing/coincidence_sorter`, `processing/stream_merger`,
+  `processing/energy_filter`), and the longest prefix wins.
 - **The item `hw` spans three layers.** The typed registers and the bus interface (`hw/`) are in
   the core layer; the reader of the hardware description (`config/hardware_config`) is in the
   application layer; the adapter that reports the slow control to the service (`control/hardware`)
@@ -160,8 +162,9 @@ comes in.
   updater is installed by the platform image outside the two slots, so a defective update cannot
   replace the program that rolls it back (Chapter 25).
 - **The offline chain** (corrections, reconstruction, analysis, DICOM export) runs after the
-  acquisition, in other processes, from files. In this book it is a set of tools of class T3
-  (TL-30 to TL-44), not items of the device, because MiniDAQ is a teaching DAQ and the images are
+  acquisition, in other processes, from files. In this book it is a set of tools (the corrections
+  and reconstruction TL-30 and TL-31 and the DICOM export TL-44 of class T3, the analysis package
+  TL-33 of class T2), not items of the device, because MiniDAQ is a teaching DAQ and the images are
   never used for a diagnosis. In a scanner the same code is software of the device. Chapter 35's
   hazard HZ-5 (an image filed under the wrong patient) is serious, which would make the export a
   class C item unless a control outside the software is credited (assumption: confirm with team).
@@ -172,10 +175,10 @@ No MiniDAQ item is class C, and the classification rules in `check_items.py` wou
 the server process without raising every item there to C. If a risk analysis found a hazard that
 only a class C item could carry, the architecture would have two choices.
 
-1. **Raise the process.** Every item in `minidaq_server` becomes class C: a detailed design of
-   every unit and every interface between units, its verification, and the other activities the
-   standard reserves for that class. For a server of about 18,000 lines of C++ that is a large and
-   permanent cost, paid by code that has nothing to do with the hazard.
+1. **Raise the process.** Every item in `minidaq_server` becomes class C: a detailed design of every
+   unit and every interface between units, its verification, and the other activities the standard
+   reserves for that class. For a server of about 10,700 lines of code in its items (Chapter 34's
+   survey) that is a large and permanent cost, paid by code that has nothing to do with the hazard.
 2. **Segregate the item.** Move the class C responsibility into a process of its own, with an
    interface that validates everything it receives and a failure mode that the rest cannot
    corrupt. The bias control of the boards is the natural candidate in MiniDAQ: the slow control
@@ -284,10 +287,11 @@ the ring looks full or empty. Nothing in the hot path needs sequential consisten
 system call. A full pipeline appears as *no empty batch available* at the producer, which is the
 one place where the drop policy acts and counts.
 
-This architecture made three things checkable that would otherwise be arguments. ThreadSanitizer
+This architecture made two things checkable that would otherwise be arguments. ThreadSanitizer
 runs every test with these threads (the `tsan` preset), and the stress run repeats the concurrent
-tests a hundred times under it for each release; it found the lock-order inversion of Chapter 6,
-between the state machine's two mutexes, before any test had hung. And the
+tests a hundred times under it for each release; an ordinary run of the unit tests under it found
+the lock-order inversion of Chapter 6, between the state machine's two mutexes, before any test
+had hung. And the
 watchdog can tell a hung server from a slow one because each loop that matters stamps a heartbeat:
 the watchdog asks the threads whether they are alive instead of assuming it.
 
@@ -302,7 +306,7 @@ boundary decides what a defect in it can reach.
 | SOUP | Allowed in | Forbidden in | Why the boundary is there |
 |---|---|---|---|
 | nlohmann/json 3.12.0 | application, adapters, apps | core (`layers.json`) | Allocates and throws; parses untrusted input. Kept off the hot path, so a parser defect cannot alter a coincidence |
-| OpenSSL 3 (platform) | `access`, `tls`, `update` (linked privately) | core and application, and every public header | Large and security critical; reaches the network. Confined to the items that need TLS and signatures |
+| OpenSSL 3 (platform) | `access` (`control/access`, `control/tls`) and `update` (linked privately) | core and application, and every public header | Large and security critical; reaches the network. Confined to the items that need TLS and signatures |
 | C++ and C libraries, kernel, systemd, GNU tar | everywhere; tar only in `update` | nowhere | The platform. Pinned as one definition (`platform/platform.json`) and checked at installation |
 | GoogleTest, Google Benchmark | tests and benchmarks | the shipped programs | Never shipped; qualified as tools |
 | pybind11 3.1.0 | the projector's Python module | the server | The offline chain only |
@@ -316,11 +320,12 @@ the core includes `nlohmann/`, `openssl/` or a socket header:
 ```
 
 Two consequences of drawing the boundaries this way show up in the records. A defect in the JSON
-library can misread a configuration (HZ-3) or crash the control plane, but it cannot change the
-data of a run in progress, which is why the SOUP entry for nlohmann/json names no hot-path
-requirement. And a security advisory in OpenSSL concerns two items and the three programs that link
-them, not the whole server; the vulnerability triage (threat model, section 8) can say which features the advisory touches
-and whether MiniDAQ uses them, because the SOUP entry lists the features used and those not used.
+library can misread a configuration (HZ-3) or crash the control plane, but it cannot change the data
+of a run in progress, which is why the SOUP entry for nlohmann/json names no hot-path requirement.
+And a security advisory in OpenSSL concerns two items and the three programs that link them, not the
+whole server; the vulnerability triage (threat model, section 8) can say which features the advisory
+touches and whether MiniDAQ uses them, because the SOUP entry lists the features used and those not
+used.
 
 The last boundary is the test oracle. A SOUP item used only by the tests, such as pydicom checking
 the DICOM export's files, is not in the product but is part of the product's verification. Its
@@ -403,9 +408,9 @@ never. A DAQ that loses data silently is the hazard HZ-1.
 ### Generate from one specification
 
 The register map, the design file index and the SBOM are generated from one source each, and the
-schema document of the configuration and the state diagram are compared with the code; either way
-a test fails while a copy differs from its source. The typed registers (ADR 0017) are the strongest case: the compiler
-refuses an access the specification forbids.
+schema document of the configuration and the state diagram are compared with the code; either way a
+test fails while a copy differs from its source. The typed registers (ADR 0017) are the strongest
+case: the compiler refuses an access the specification forbids.
 
 *Cost:* a generator is a tool to qualify (TL-25), and generated code has to be readable enough to
 review. *Revisit when:* the firmware team already has a register tool; then generate from its
@@ -494,12 +499,12 @@ that a machine can check a test, and to leave to reviewers only the claims that 
 | A change of a requirement, a hazard or the item map names a change request | `tools/check_commits.py` (Chapter 36) | CI, from the policy's first commit |
 | Where the changes concentrate; no file without an owner, no prefix without a file | `tools/survey.py` (Chapter 34) | On demand, at a release |
 
-The last row is the one that looks forward. The survey of Chapter 34 counts the commits and changed lines per
-item from the history, finds the file hotspots and checks the item map itself: product files that
-no item claims, files two items claim, and prefixes that claim no file. Two items whose changes
-always come together are a sign that the boundary between them is in the wrong place; an item
-that never changes is either finished or unused. Neither is a
-failure of a test, but both are inputs to the next architecture review.
+The last row is the one that looks forward. The survey of Chapter 34 counts the commits and changed
+lines per item from the history, finds the file hotspots and checks the item map itself: product
+files that no item claims, files two items claim, and prefixes that claim no file. Two items whose
+changes always come together are a sign that the boundary between them is in the wrong place; an
+item that never changes is either finished or unused. Neither is a failure of a test, but both are
+inputs to the next architecture review.
 
 What no check can do is decide whether the architecture is still the right one. That is the
 review's job, and it has two triggers in MiniDAQ's process. Every ADR is reviewed with the code

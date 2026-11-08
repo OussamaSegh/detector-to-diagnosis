@@ -8,6 +8,20 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed
+
+- The independent review of Part IX: the tool list had the AI assistant twice, as TL-23 of class
+  T1 and TL-48 of class T3; TL-23 is removed (MDQ-PR-062, Chapter 20's text follows). Chapter 35:
+  the resend after an abort sends all 47 instances again, and the archive replaces the 20 it had;
+  pydicom 3.0.1 had one vulnerability under two advisory identifiers (also in the SOUP list and
+  Chapter 37). Chapter 36: the `git describe` example (7 commits after book-v0.8.0, not 23), the
+  example commit subject within 72 characters and no longer citing an unrelated report, the
+  independent reviews are Chapter 37's. Chapter 37: the problem report table matches
+  `measurements/ch37` (12 by the author's own tests, no "other"), 260 commits in Chapter 36's
+  measurement. Appendix A: the energy filter is in the item `processing`, the requirement prefixes
+  SRS-SRT and SRS-MRG, the offline tools' classes, the server's size from Chapter 34's survey,
+  which run found the lock-order inversion. Lines over 100 characters rewrapped.
+
 ## [0.9.0] - 2026-11-07
 
 Part IX and Appendix A. Release record `docs/regulatory/releases/0.9.0.md`, evidence
