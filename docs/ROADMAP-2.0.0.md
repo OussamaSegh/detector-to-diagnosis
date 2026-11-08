@@ -1,6 +1,7 @@
 # Roadmap for release 2.0.0
 
-Status: proposal, for the author's decision. Written on 2026-11-08, while release 1.0.0 (the
+Status: proposal; the open questions of section 7 were answered by the author on 2026-11-08
+(section 8). Written on 2026-11-08, while release 1.0.0 (the
 complete first edition) is being prepared. Nothing here changes 1.0.0. No chapter is written
 from this document until its open questions (section 7) are answered.
 
@@ -178,3 +179,25 @@ rewritten once.
    two volumes?
 6. Should scope wait for reader feedback on 1.0.0 (for example a few weeks of errata) before
    Theme C starts?
+
+## 8. Answers (author, 2026-11-08)
+
+1. **Second edition.** 2.0.0 is published on KDP as the Second Edition, as a new title with its
+   own ISBN if KDP's rule on new editions requires it (verify: before publishing). The PDF and
+   EPUB stay free on the download page. Errata for 1.0.0 ship free as 1.0.x.
+2. **Part X: clock distribution, then time of flight, then maintenance and post-market.** Clock
+   distribution goes with the time markers of 1.2.0, time of flight builds on it, and maintenance
+   comes last because its worked example is MiniDAQ's 1.0 to 2.0 history. Scaling the
+   acquisition and GPU reconstruction are out of scope for 2.0.0.
+3. **Breaking changes are wanted**, grouped in the one 2.0.0-dev milestone: control API 3.0,
+   configuration schema 2.0, a product build without the simulator (MDQ-PR-009), with a
+   migration note and a test that 2.x requests are refused clearly.
+4. **C++23 becomes the baseline, limited to what GCC 13 supports** (the compiler of Ubuntu
+   24.04 and of the Mac VM set-up): for example `std::expected` and explicit object parameters,
+   not `std::print` or modules. The text says what each feature replaces, for readers still on
+   C++17 or C++20.
+5. **Over 828 pages: a denser layout first, then Appendix A moved online, two volumes only as a
+   last resort.** The solutions are already a separate book.
+6. **Partly wait for feedback.** Themes D and A start right after 1.0.0. Theme C starts after
+   about four to six weeks of errata from readers of 1.0.0, so that feedback can still change
+   the Part X list.
