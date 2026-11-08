@@ -47,3 +47,4 @@ book-v0.8.0 5770582103b97f2ea4f09afce9fa00e37f814ab1 Release 0.8.0: Part VIII co
 ch35 34cf1307977694ac4ba8257cb2bc6fc4b4f24876 Chapter 35: DICOM and PACS (on the commit that records it, the first green one after it). ci and gates green on GitHub.
 ch36 4ba099641a680d833039062de0c4b31055714d82 Chapter 36: Git and the workflow of a regulated team (on the first commit after it whose ci run is green: CI's git 2.56 reads a URL line differently, fixed there). ci and gates green on GitHub.
 ch37 4ba099641a680d833039062de0c4b31055714d82 Chapter 37: AI-assisted coding for medical-device software (on the same commit, the first green one after it). ci and gates green on GitHub.
+book-v0.9.0 8d349716537359c14f24202f54a8e55c115b4f9d Release 0.9.0: Part IX and Appendix A, with a deviation for ACC-04 and ACC-08 the software lead approved. ci and gates green on GitHub.
