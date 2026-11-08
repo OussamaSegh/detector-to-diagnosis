@@ -1119,6 +1119,33 @@
         "category": "tool",
         "escape": "The local run used git 2.43 only; the difference appeared only in CI."
       }
+    },
+    {
+      "id": "MDQ-PR-062",
+      "title": "The tool list had the AI assistant twice, as TL-23 of class T1 and as TL-48 of class T3",
+      "found": "2026-11-08, the review of Part IX: Chapter 37's TL-48 against the tool list and Chapter 20's text",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "Chapter 20 listed the AI coding assistant as TL-23, class T1 (a source of changes, not a tool whose output is trusted). Chapter 37 and ADR 0032 added it again as TL-48, class T3, and decided between leaving it out of the list and listing it, without the earlier entry. The list then gave one tool two identities and two classes, and tools.md showed both; tools/check_tools.py checks that an id is not used twice, not that a tool is not listed twice.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A record of the tool list; the controls that Chapter 37 relies on (the trailers, the rule assisted, review and CI) apply whatever the class, and no verification evidence depended on TL-23."
+      },
+      "resolution": {
+        "change": "TL-23 is removed; TL-48 says it replaces it. Chapter 20 says that Chapter 37 reclassifies the assistant as T3.",
+        "verification": "docs.tools passes and tools.md lists the assistant once, as TL-48 of class T3."
+      },
+      "root_cause": {
+        "whys": [
+          "Chapter 37 added a tool entry without searching the list for the same tool.",
+          "The ADR's options were written from the question (in the list or not), not from the list as it was.",
+          "The checker compares ids, not names or uses."
+        ],
+        "cause": "A new record was written from the question instead of from the existing records it changes.",
+        "category": "process",
+        "escape": "No check compares tool names; the reviews of Chapters 20 and 37 read each entry on its own."
+      }
     }
   ]
 }

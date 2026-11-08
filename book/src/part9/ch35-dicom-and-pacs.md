@@ -361,14 +361,14 @@ later; any other failure (0xA9xx, the data set does not match the SOP class; 0xC
 cannot understand it) will fail again the same way.
 
 The first version of the export took 2.07 s to send the 47 slices of the measurement's volume on
-loopback, 44 ms per instance, whatever the PDU length (section 5). The time was not in the
-encoding. The sender wrote the command and the data set in separate small writes, the operating
-system held the last small segment back until the previous one was acknowledged (Nagle's
-algorithm), and the receiver delayed its acknowledgment for up to 40 ms hoping to combine it with
-an answer. With TCP_NODELAY set on the socket, the same series takes 58 to 66 ms, 36 times less;
-pynetdicom's own archive takes 158 to 171 ms for it. The test of the association now checks that
-the option is set. On a hospital network, where the archive is a server across a switch, the
-ratio would differ; the waiting would not.
+loopback, 44 ms per instance (section 5, which repeats it with a maximum PDU of 16 KiB). The time
+was not in the encoding. The sender wrote the command and the data set in separate small writes, the
+operating system held the last small segment back until the previous one was acknowledged (Nagle's
+algorithm), and the receiver delayed its acknowledgment for up to 40 ms hoping to combine it with an
+answer. With TCP_NODELAY set on the socket, the same series takes 58 to 66 ms, 36 times less;
+pynetdicom's own archive takes 158 to 171 ms for it. The test of the association now checks that the
+option is set. On a hospital network, where the archive is a server across a switch, the ratio would
+differ; the waiting would not.
 
 ## An outbox, not a send
 
@@ -391,8 +391,11 @@ radiologist asks on Monday why the series arrived at 07:12 and not on Friday, th
 
 The measurement aborts the association after 20 of 47 instances. The outbox keeps 27 pending and
 reports the error. The console then exports the same image again, as the technologist in the day
-in the life did, and sends: the archive ends with 47 instances, not 67, because the second export
-carried the same UIDs and the outbox sent only what was still pending (section 6).
+in the life did, and sends. The second export puts all 47 instances back in `pending/`, and the
+outbox sends all 47; the archive ends with 47 instances, not 67, because the second export carried
+the same UIDs and the archive replaced the 20 it already had. The journal holds 68 lines: 20
+stores, the abort, and 47 stores (section 6). Sending again what was already stored costs time,
+not correctness; an outbox that skipped instances already in `sent/` would save the time.
 
 What the outbox does not do is ask the archive whether it still has the images tomorrow. A
 success status says the archive accepted the instance; DICOM's Storage Commitment service asks it
@@ -419,10 +422,11 @@ IOD, such as D. Clunie's dciodvfy, checks still more; the export does not run on
 would.
 
 The second came from the lock file's audit (Chapter 31's `tools/lock_audit.py`). The first pin,
-pydicom 3.0.1, had two published advisories, a path traversal through a crafted DICOMDIR, on the
-day it was added. The tests do not read DICOMDIRs, and the audit refused the pin anyway: 3.0.2,
-which fixes it, is the one in the lock file. A test-only dependency is still code that runs on
-the developers' machines and in CI with their rights.
+pydicom 3.0.1, had a published vulnerability on the day it was added, a path traversal through a
+crafted DICOMDIR (CVE-2026-32711, listed under two advisory identifiers). The tests do not read
+DICOMDIRs, and the audit refused the pin anyway: 3.0.2, which fixes it, is the one in the lock file.
+A test-only dependency is still code that runs on the developers' machines and in CI with their
+rights.
 
 The independent checks have a limit worth stating plainly: two implementations that agree are
 evidence that both read the standard the same way, not that the archive at your hospital will. A

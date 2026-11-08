@@ -19,7 +19,7 @@ What it shows:
    rule `assisted` would have asked each of them to name its tests in a `Tests:` trailer.
 2. The rule over the whole history: the same nine; none since the policy began.
 3. The 60 problem reports by what found them: the release checks and their reviews found the
-   most (20), then CI runs (14), the author's own tests and runs (11), design and measurement (6),
+   most (20), then CI runs (14), the author's own tests and runs (12), design and measurement (6),
    fuzzing (5), the independent reviews of the Parts (2), an internal audit (1). The classes are
    keyword rules on the field `found` of each report (`SOURCES` in the script), not a judgment of
    each report.
