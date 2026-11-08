@@ -1,7 +1,7 @@
 {
  "comment": "The requirements freeze (Chapter 33): a digest of every SRS requirement when the baseline was taken. tools/req_baseline.py --check fails for every requirement added, changed or removed since, that no approved or implemented change request names.",
- "name": "SRS version 23, release 0.8.0",
- "srs_version": 23,
+ "name": "SRS version 26, release 0.9.0",
+ "srs_version": 26,
  "requirements": {
   "SRS-CORE-001": "eb26536bfb030254",
   "SRS-FMT-001": "5eeee035cc2f9e6d",
@@ -221,6 +221,24 @@
   "SRS-BLD-005": "d0238ec2dcdb020d",
   "SRS-SVY-001": "5b2751570b4a5e00",
   "SRS-SVY-002": "b0941dd14b5b4256",
-  "SRS-SVY-003": "c9347dfb8557fea9"
+  "SRS-SVY-003": "c9347dfb8557fea9",
+  "SRS-DCM-001": "481cb67ee4520f28",
+  "SRS-DCM-002": "51e9547ef28e063e",
+  "SRS-DCM-003": "d0effb1c711eb154",
+  "SRS-DCM-004": "dda5bc3313acc6cb",
+  "SRS-DCM-005": "344e876feaa980c7",
+  "SRS-DCM-006": "36d4e438cc7e5699",
+  "SRS-DCM-007": "40412b3f1dca8219",
+  "SRS-GIT-001": "964f06c16751aa62",
+  "SRS-GIT-002": "033db0ee51ff0606",
+  "SRS-GIT-003": "7d8511b223c8cf25",
+  "SRS-GIT-004": "05376bf9cb227bd0",
+  "SRS-GIT-005": "fe9709297cf9fb12",
+  "SRS-GIT-006": "ebda119e25db81d4",
+  "SRS-GIT-007": "d3e55f5f2138111f",
+  "SRS-AI-001": "18a83c266cdacf51",
+  "SRS-AI-002": "3755af9068220a5b",
+  "SRS-AI-003": "34c089cb1725a30f",
+  "SRS-AI-004": "84982bef3914ae3e"
  }
 }

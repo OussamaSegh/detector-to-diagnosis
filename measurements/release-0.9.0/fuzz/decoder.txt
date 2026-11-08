@@ -1,0 +1,17 @@
+# 2026-11-07T21:52:48Z commit c8d0800 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 2999664645
+#5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+#8	NEW    cov: 85 ft: 192 corp: 5/3869b lim: 1601 exec/s: 0 rss: 34Mb L: 1601/1601 MS: 3 ChangeBit-ChangeByte-ShuffleBytes-
+#9	NEW    cov: 86 ft: 195 corp: 6/4382b lim: 1601 exec/s: 0 rss: 34Mb L: 513/1601 MS: 1 CMP- DE: "\001\000\000\000\000\000\000\000"-
+#38	NEW    cov: 87 ft: 239 corp: 17/8401b lim: 1601 exec/s: 0 rss: 35Mb L: 27/1601 MS: 3 ChangeBit-CMP-InsertByte- DE: " \221\000\000\000\000\000\000"-
+#49	NEW    cov: 88 ft: 281 corp: 23/11456b lim: 1601 exec/s: 0 rss: 35Mb L: 163/1601 MS: 4 ChangeBinInt-PersAutoDict-ChangeBit-CrossOver- DE: "\377\377\002\324\277@\000\012"-
+#120	NEW    cov: 89 ft: 344 corp: 40/16Kb lim: 1601 exec/s: 0 rss: 36Mb L: 14/1601 MS: 3 CopyPart-ChangeBit-EraseBytes-
+#3728	NEW    cov: 99 ft: 434 corp: 75/33Kb lim: 1601 exec/s: 0 rss: 54Mb L: 7/1601 MS: 3 ChangeBit-EraseBytes-EraseBytes-
+#9585	NEW    cov: 101 ft: 446 corp: 85/36Kb lim: 1601 exec/s: 0 rss: 78Mb L: 1120/1601 MS: 5 ChangeBit-ShuffleBytes-ChangeBinInt-PersAutoDict-PersAutoDict- DE: "\377\377\377\377\377\377\377\377"-"\377\377\377\377\377\377\377\377"-
+#20993485	DONE   cov: 101 ft: 459 corp: 94/25Kb lim: 4096 exec/s: 34930 rss: 461Mb
+stat::number_of_executed_units: 20993485
+stat::average_exec_per_sec:     34930
+stat::new_units_added:          882
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              461
+crash files: 0

@@ -1092,6 +1092,33 @@
         "category": "tool",
         "escape": "The tool's tests used full and 7-character commits only."
       }
+    },
+    {
+      "id": "MDQ-PR-061",
+      "title": "The trailer parser followed git 2.43, and CI's git 2.56 does not take the scheme of a URL for a trailer key",
+      "found": "2026-11-07, CI runs 182 and 183 on Chapter 37's commits: tools.commits and ch36/e1_trailers/solution failed in every build-test job",
+      "item": "tools",
+      "status": "closed",
+      "capa": "",
+      "description": "tools/check_commits.py and Exercise 36.1's solution took 'https' in a last paragraph such as 'https://example.org/a' for a trailer key, as git 2.43 does on the development machine. The runners' git 2.56.0 does not, so the oracle tests, which compare with the installed git, failed in CI and passed locally.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A development tool of the commit policy; no commit of the history ends with a URL alone in its last paragraph, so no recorded result of the check depended on the difference."
+      },
+      "resolution": {
+        "change": "A line that starts with a scheme and '://' is not a trailer, as in git 2.56, in both parsers (4ba0996). The oracle tests leave the URL case out of the comparison when the installed git still takes it, and check it against the expected answer instead.",
+        "verification": "tools.commits and the exercise's solution pass with git 2.43 locally and git 2.56 in CI (ci run 184); the exercise's starter still fails all five tests."
+      },
+      "root_cause": {
+        "whys": [
+          "The oracle's answer changed with its version.",
+          "The tests compared with whatever git was installed and recorded no version.",
+          "The development machine and the runners have different git versions, and only the runners had the newer one."
+        ],
+        "cause": "An oracle that is itself a tool with versions was used without recording or bounding its version.",
+        "category": "tool",
+        "escape": "The local run used git 2.43 only; the difference appeared only in CI."
+      }
     }
   ]
 }

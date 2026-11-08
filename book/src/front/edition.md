@@ -18,7 +18,8 @@ version of this file is printed on the title page and in every output file name.
 | VI. Calibration, corrections and reconstruction | 26 to 30 | 0.6.0 | complete |
 | VII. Python and tooling | 31 to 32 | 0.7.0 | complete |
 | VIII. Capstone | 33 to 34 | 0.8.0 | complete |
-| IX. Imaging IT, team workflow and AI-assisted coding | 35 to 37 | 1.0.0 | planned |
+| IX. Imaging IT, team workflow and AI-assisted coding | 35 to 37 | 0.9.0 | complete |
+| Appendix A. Software architecture and design | | 0.9.0 | complete |
 
 The companion repository (`minidaq-vX.Y.Z.zip`) contains MiniDAQ with one git tag per
 chapter written so far (`ch00` is the empty starting point, then `ch01`, `ch02` and so on),

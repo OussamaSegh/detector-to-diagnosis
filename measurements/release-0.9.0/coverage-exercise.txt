@@ -1,0 +1,29 @@
+# 2026-11-07T21:13:03Z commit c8d0800 Exercise 18.3 in the coverage build
+Internal ctest changing into directory: /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage
+Test project /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage
+    Start 1057: ch18/e3_branch_coverage/solution/coverage
+1/1 Test #1057: ch18/e3_branch_coverage/solution/coverage ...   Passed    0.49 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+solution    =   0.49 sec*proc (1 test)
+
+Total Test time (real) =   0.53 sec
+Internal ctest changing into directory: /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage
+Test project /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage
+    Start 1058: ch18/e3_branch_coverage/starter/coverage
+1/1 Test #1058: ch18/e3_branch_coverage/starter/coverage ...***Failed    0.14 sec
+
+0% tests passed, 1 tests failed out of 1
+
+Label Time Summary:
+starter    =   0.14 sec*proc (1 test)
+
+Total Test time (real) =   0.19 sec
+
+The following tests FAILED:
+	1058 - ch18/e3_branch_coverage/starter/coverage (Failed)
+Errors while running CTest
+Output from these tests are in: /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.

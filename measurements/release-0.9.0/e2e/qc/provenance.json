@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "format": "minidaq-analysis manifest 1",
+    "files": [
+      {
+        "path": "qc-20261107T214738844Z-0000.mdql",
+        "bytes": 2197384,
+        "sha256": "1e42e20eaa9f599e61cf8295f01cf50e28589cef1adb4f40bde1246246e68439"
+      },
+      {
+        "path": "qc-20261107T214738844Z.run.json",
+        "bytes": 236513,
+        "sha256": "56a6843fdf8bec18de65dba916db2fed2dcfc0b3afeca99d7b003fbf0da0728f"
+      }
+    ]
+  },
+  "inputs_id": "fd539c59a9430ba91bb1bf1052e6e8c381fff89f8a4fbd7aeb6143baba6fc663",
+  "environment": {
+    "package": "minidaq-analysis",
+    "version": "0.9.0.dev0",
+    "code_commit": "c8d0800160fe972f9b287784b33a0af2b97f5b4f",
+    "python": "3.13.18",
+    "libraries": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2"
+    },
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39",
+    "command": [
+      "minidaq-qc",
+      "/tmp/minidaq-e2e-3m8bm9ah/qc/qc-20261107T214738844Z.run.json",
+      "/tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/out090/e2e/qc"
+    ],
+    "created_utc": "2026-11-07T21:47:42Z"
+  }
+}

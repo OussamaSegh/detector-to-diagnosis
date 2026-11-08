@@ -33,8 +33,10 @@ Next work, in order:
    Architecture appendix done: `book/src/appendix/architecture.md` (Appendix A, after Chapter 37
    in book.txt, opened by a raw LaTeX `\appendix`; diagram `book/src/diagrams/app-boundaries.dot`;
    architecture.md version 19). The book is 679 pages in PDF. CI's git is 2.56 (local 2.43): an
-   oracle test against git must allow for both (commit 4ba0996). Next: release 0.9.0 (the edition
-   table still says Part IX is 1.0.0: change it to 0.9.0 at the release). Part IX (section 5, "Left to
+   oracle test against git must allow for both (commit 4ba0996). Release 0.9.0: checks in four parts on c8d0800
+   (measurements/release-0.9.0), released 2026-11-08 with a deviation for ACC-04 and ACC-08 that
+   the user approved, as at 0.8.0; CR-0025 (proposed) decides the gate's baseline and the latency
+   limit before 1.0.0. Next: the Part IX review, then 1.0.0. Part IX (section 5, "Left to
    do", item 6): three new chapters after 34 (DICOM and PACS; Git and
    team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
    tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution

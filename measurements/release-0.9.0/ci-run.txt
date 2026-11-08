@@ -1,0 +1,12 @@
+# 2026-11-07 GitHub Actions runs, read with the GitHub API
+candidate c8d0800160fe972f9b287784b33a0af2b97f5b4f (Appendix A):
+  ci run 185 (42400141061): success; codeql run 144: success; pages run 132: success;
+  kdp run 64: success
+the commit before it, 4ba099641a680d833039062de0c4b31055714d82 (git 2.56's trailer rule):
+  ci run 184 (42400124294): success; gates run 96 (42400124245): success; codeql run 143:
+  success; kdp run 63: success; pages run 131: cancelled by the next push
+df0167977b52a0d2f917986e1ca77babf62c8f8d and 0d9b90cec354af3c29f365cb23ae9f5833a0dffa (Chapter 37):
+  ci runs 182 and 183: failure; every build-test job failed only tools.commits and
+  ch36/e1_trailers/solution, whose oracle is the runner's git, 2.56.0, which no longer takes the
+  scheme of a URL for a trailer key (fixed in 4ba0996); every other job passed; gates success;
+  pages run 130 failed on a stalled apt mirror (the install step's 30 minutes ran out)

@@ -8,6 +8,12 @@ the patch version.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-07
+
+Part IX and Appendix A. Release record `docs/regulatory/releases/0.9.0.md`, evidence
+`measurements/release-0.9.0/`; released with a recorded deviation for ACC-04 and ACC-08, as
+0.8.0, and CR-0025 opened for the gate's baseline and the latency limit.
+
 ### Added
 
 - Part IX opener and Chapter 35, DICOM and PACS (CR-0022, ADR 0030): `tools/dicom` (TL-44), the
@@ -50,7 +56,7 @@ the patch version.
 
 ### Fixed
 
-- The trailer parser of `tools/check_commits.py` and Exercise 36.1: git 2.56, on CI's runners,
+- The trailer parser of `tools/check_commits.py` and Exercise 36.1 (MDQ-PR-061): git 2.56, on CI's runners,
   does not take the scheme of a URL for a trailer key, and git 2.43 does; both follow the newer
   rule, and the oracle tests leave that case out of the comparison with an older git (CI failed
   on it at df01679 and 0d9b90c).

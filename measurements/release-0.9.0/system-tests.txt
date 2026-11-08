@@ -1,0 +1,1 @@
+/tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/out090/system-test-report.md: 34 test cases, 0 failed
