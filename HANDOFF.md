@@ -5,53 +5,52 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-04: RELEASED 0.8.0 (tag book-v0.8.0 on 5770582); VERSION 0.9.0-dev. Part
-VIII review PR #6 merged locally (79187ef). Next: Part IX.
+Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba), the complete book.
 
-## Start here (next thread: CR-0025, then release 1.0.0)
+## Start here (after release 1.0.0)
 
-State on 2026-11-08: Parts I to IX and Appendix A are released (0.1.0 to 0.9.0, tag book-v0.9.0
-on 8d34971, with a deviation for ACC-04 and ACC-08 the user approved; release report and files
-kept outside the repository). VERSION is 1.0.0-dev and SOUP list v20 has the review for 1.0 (it
-carries the 0.9 review: read the trackers and advisories again before 1.0.0). Tags ch00 to ch37
-and book-v0.1.0 to book-v0.9.0 are on GitHub; fetch them with
-`git fetch --force origin 'refs/tags/*:refs/tags/*'`. The Opus review of Part IX and Appendix A
-was merged locally on 2026-11-08 (PR #7, c5bc604; MDQ-PR-062: TL-23 removed, the assistant is
-TL-48 only). A PR opened by a session starts no ci or gates run: verify a review branch locally
-(docs and tools tests, `tools/check_commits.py . BASE..HEAD`, the book build) before merging, and
-merge LOCALLY with the noreply identity. Next free report number: 063.
-A commit message has ONE trailer block: `Review:` directly above
-`Co-Authored-By:`, no blank line between (the commit-msg hook refuses otherwise).
+State on 2026-11-09: the book is complete. Release 1.0.0 (the packaged book, Parts I to IX and
+Appendix A) was released on 2026-11-08: release record `docs/regulatory/releases/1.0.0.md` on
+33aa5ba, release checks in four parts on 517cd49 (`measurements/release-1.0.0/`), tag
+book-v1.0.0 on 33aa5ba through `.github/tags.txt`. The packaged files (book and solutions PDF
+and EPUB, KDP interiors and covers, the zip, the SBOM, the record, the CHANGELOG) are kept
+outside the repository, in the project's release folder for v1.0.0. Tags ch00 to ch37 and
+book-v0.1.0 to book-v1.0.0 are on GitHub; fetch them with
+`git fetch --force origin 'refs/tags/*:refs/tags/*'`.
 
-Next work, in order:
+What 1.0.0 decided and found:
 
-1. Done: the Part VIII review, PR #6, merged locally on 2026-11-04 (79187ef; MDQ-PR-059 and 060,
-   Chapters 33 and 34 text, the 0.8.0 record's diff claim). Next free report number: 061.
-2. Part IX, Chapter 35 (DICOM and PACS) done 2026-11-04: commit 4387a49 (CR-0022, ADR 0030,
-   `tools/dicom`, TL-44/TL-45; pydicom 3.0.2 and pynetdicom 3.0.4 approved by the user as
-   test-only tools and pinned in the lock file; CI's job python sets
-   `MINIDAQ_DICOM_ORACLE_REQUIRED=1`). Chapter 36 (Git and team workflow) done: commit 4c04619
-   (CR-0023, ADR 0031, TL-46, the commit policy checked in CI from 34cf130; see the commit
-   message rules in section 2). Chapter 37 (AI-assisted coding) done: commit df01679 (CR-0024,
-   ADR 0032, TL-47 and TL-48, commit policy version 2 with the rule `assisted`: an assisted commit
-   that changes product code changes a test or carries a `Tests:` trailer; SDP version 13).
-   Architecture appendix done: `book/src/appendix/architecture.md` (Appendix A, after Chapter 37
-   in book.txt, opened by a raw LaTeX `\appendix`; diagram `book/src/diagrams/app-boundaries.dot`;
-   architecture.md version 19). The book is 679 pages in PDF. CI's git is 2.56 (local 2.43): an
-   oracle test against git must allow for both (commit 4ba0996). Release 0.9.0: checks in four parts on c8d0800
-   (measurements/release-0.9.0), released 2026-11-08 with a deviation for ACC-04 and ACC-08 that
-   the user approved, as at 0.8.0; CR-0025 (proposed) decides the gate's baseline and the latency
-   limit before 1.0.0. Next: the Part IX review, then 1.0.0. Part IX (section 5, "Left to
-   do", item 6): three new chapters after 34 (DICOM and PACS; Git and
-   team workflow; AI-assisted coding for medical-device software). Same chapter recipe: code,
-   tests with `// REQ:` or `# REQ:` tags, measurements, exercises (starter fails, solution
-   passes), SRS rows (each SRS change needs an approved CR naming the requirement, or
-   docs.baseline fails), risk and threat model review, CR, ADR, chapter text, solutions,
-   CHANGELOG, then tag chNN through `.github/tags.txt` once CI is green. Ask the user before any
-   new dependency (a DICOM library would be one).
-3. Done: release 0.9.0 on 2026-11-08 (tag book-v0.9.0 on 8d34971) and its review (c5bc604).
-   Next: decide CR-0025 (the gate's baseline and the latency limit; both 0.8.0 and 0.9.0 needed
-   the deviation), then release 1.0.0, the packaged release.
+- CR-0025 (approved by the user, implemented in df19e58): the release checks' performance gate
+  compares the candidate with the previous release, both built on the reference machine and run
+  interleaved (`tools/perf_ab.sh`, five rounds, in part 3; the base is the newest `book-v*` tag,
+  or `PERF_BASE`); `benchmarks/baseline/book-vm.json` is kept as the trend (`perf-trend.txt`, not
+  judged). SRS-PERF-022 holds in at least 99% of the 10 s intervals (SRS version 27, ACC-04 with
+  `share` 0.99); `tools/soak.py` counts the intervals above the limit and records the steal time.
+- MDQ-PR-063 (closed): `tools/req_baseline.py` let a change request accepted before the
+  baseline authorize later changes; a baseline now lists the requests already accepted
+  (`requests`). The baseline is at SRS version 27, release 1.0.0.
+- ACC-04 failed at 1.0.0 (178 of 180 intervals within 10 ms, 179 needed); the programs of 0.9.0
+  gave the same that evening. The user approved releasing with a recorded deviation, and
+  MDQ-PR-064 (open) is to find the cause with a finer measure (per-thread schedstat) before the
+  limit is judged again. Every other check passed, the gate against 0.9.0 among them.
+- SOUP list version 21: the review for release 1.0.0. The next minor version needs a new review
+  dated for it (`docs.soup`).
+
+Next work: none is asked. The next thread starts VERSION 1.1.0-dev (or 2.0.0-dev, see the roadmap
+work in other threads), bumps the Python package versions with it, adds a dated SOUP review for
+the new minor version, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
+run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
+Next free numbers: MDQ-PR-065, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
+block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
+refuses otherwise).
+
+Fresh container: install the apt packages of `ci.yml` and `pages.yml`, then
+`python3 -m pip install --ignore-installed --no-deps -r analysis/requirements.lock` (python3 is
+3.13 in /usr/local; without it `system.e2e` fails), `git fetch --unshallow`,
+`git config core.hooksPath tools/hooks`, `sysctl -w net.core.rmem_max=4194304`. EPUBCheck for
+`book/build.sh kdp`: github.com is blocked; take `epubcheck-5.1.0.jar` and its `pom.xml` from
+repo1.maven.org, `mvn dependency:copy-dependencies -DoutputDirectory=lib`, and set
+`EPUBCHECK_JAR` to the jar next to `lib/`.
 
 Rules that bit in Parts VII and VIII: run the WHOLE ctest (exercises too) before every commit;
 after a VERSION bump re-run cmake in the build directory before ctest (cmake.consumer reads
@@ -83,7 +82,7 @@ The book is released one Part at a time:
 | 0.6.0 | Part VI, Chapters 26 to 30 |
 | 0.7.0 | Part VII, Chapters 31 and 32 |
 | 0.8.0 | Part VIII, Chapters 33 and 34 |
-| (before 1.0.0) | Part IX and the architecture appendix |
+| 0.9.0 | Part IX, Chapters 35 to 37, and Appendix A |
 | 1.0.0 | The complete, packaged book |
 
 The chapter-by-chapter outline (scope, sections, exercises and milestone of every chapter) is
@@ -409,6 +408,9 @@ Part VIII (thread started 2026-11-04).
 - RELEASED 0.9.0 on 2026-11-08: CI green on 8d34971 (ci, gates, codeql, kdp, pages), tag
   book-v0.9.0 on 8d34971; deviation for ACC-04 and ACC-08 approved; CR-0025 proposed. VERSION
   1.0.0-dev, SOUP list v20. Opus review of Part IX and Appendix A asked of the coordinator.
+- RELEASED 1.0.0 on 2026-11-08: checks on 517cd49, record on 33aa5ba, tag book-v1.0.0 on
+  33aa5ba; CR-0025 implemented, MDQ-PR-063 closed, MDQ-PR-064 open, deviation for ACC-04
+  approved (see "Start here").
 - Opus review of Part VIII (2026-11-04): PR #6 (branch claude/project-thread-uss0ag) MERGED
   LOCALLY (79187ef): e2e sorter partition with out_of_order and a stricter damaged-link test
   (MDQ-PR-059), acceptance.py commit prefix of at least 7 characters (MDQ-PR-060), Chapters 33
