@@ -1,0 +1,17 @@
+% Chapter 15: the controls for H-01, silent data loss. Losses are counted where they happen and
+% combined into one verdict that travels with the data.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \n/\t/\y in {l/{link: lost, rejected, resynced}/1.2, d/{decoder: invalid words}/0.6, s/{source: dropped under overload}/0, o/{sorter: out of order}/-0.6, k/{sink: blocks after a fault}/-1.2} {
+    \node[draw=d2dcat3,fill=d2dcat3!10!white,line width=0.8pt,rounded corners=2pt,font=\sffamily\scriptsize,minimum width=3.9cm,anchor=east] (\n) at (0,\y) {\t};
+    \draw[d2dcat0,line width=0.8pt,->] (\n.east) -- (1.0,0);}
+  \node[note,text=d2dcat0,anchor=south] at (-1.95,1.45) {RC-03: every loss counted where it happens};
+  \node[hot,minimum width=2.4cm,align=center] (v) at (2.6,0) {integrity verdict\\[-1pt]\scriptsize RC-01};
+  \draw[flow] (1.0,0) -- (v.west);
+  \node[box,minimum width=2.4cm] (rr) at (5.9,0.75) {status and run record\\[-1pt]\scriptsize next to the data};
+  \node[box,minimum width=2.4cm] (au) at (5.9,-0.75) {audit trail\\[-1pt]\scriptsize RC-02};
+  \draw[flow] (v.east) -- ++(0.35,0) |- (rr.west); \draw[flow] (v.east) -- ++(0.35,0) |- (au.west);
+  \node[box=d2dcat1,minimum width=2.2cm,align=center] (u) at (9.1,0.75) {consumer checks\\[-1pt]\scriptsize RC-05};
+  \draw[flow] (rr) -- (u);
+  \node[box=partcolor,minimum width=3.9cm,anchor=east,align=center] (bp) at (0,-2.1) {disk slow: backpressure, no drop\\[-1pt]\scriptsize RC-04, inherent};
+  \node[note,text=d2dink,anchor=west,align=left] at (0.3,-2.1) {a fault alone makes the run incomplete;\\a missing counter counts as zero, a wrongly typed one as a loss};
+\end{tikzpicture}

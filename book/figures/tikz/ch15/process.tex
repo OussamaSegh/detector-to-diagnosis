@@ -1,0 +1,17 @@
+% Chapter 15: the ISO 14971 process, clauses 5 to 10, in this book's words. Clause 4 (plan,
+% policy, people, file) frames all of it; production information feeds analysis again.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.42cm]
+  \tikzset{st/.style={draw=partcolor,fill=partcolor!10!white,line width=1pt,rounded corners=2pt,minimum width=2.15cm,minimum height=1.0cm,font=\sffamily\small,align=center}}
+  \node[st] (a) {analysis\\[-1pt]\scriptsize 5};
+  \node[st,right=of a] (e) {evaluation\\[-1pt]\scriptsize 6};
+  \node[st,right=of e] (c) {control\\[-1pt]\scriptsize 7};
+  \node[st,right=of c] (o) {overall residual\\[-1pt]\scriptsize 8};
+  \node[st,right=of o,fill=partcolor,text=white] (r) {review, report\\[-1pt]\scriptsize 9};
+  \node[st=d2dcat0,below=0.9cm of c,draw=d2dcat0,fill=d2dcat0!10!white,minimum width=4.2cm] (p) {production and post-production\\[-1pt]\scriptsize 10};
+  \foreach \x/\y in {a/e,e/c,c/o,o/r} {\draw[flow] (\x) -- (\y);}
+  \draw[flow] (r.south) |- (p.east);
+  \draw[flow] (p.west) -| node[pos=0.25,below,note,text=d2dink] {new hazards, new estimates} (a.south);
+  \draw[flow,d2dmuted] (c.north) -- ++(0,0.35) -| node[pos=0.25,above,note,text=d2dink] {risks from the controls} (e.north);
+  \draw[d2drule,line width=0.8pt,rounded corners=5pt,dashed] ([xshift=-0.3cm,yshift=0.85cm]a.north west) rectangle ([xshift=0.3cm,yshift=-0.35cm]p.south -| r.east);
+  \node[note,text=d2dink,anchor=north east] at ([xshift=0.2cm,yshift=0.8cm]r.north east) {clause 4: plan, criteria, competent people, the risk file};
+\end{tikzpicture}

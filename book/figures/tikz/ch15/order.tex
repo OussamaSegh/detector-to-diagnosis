@@ -1,0 +1,10 @@
+% Chapter 15: the order of preference for risk controls, with MiniDAQ examples. Each step relies
+% more on people than the one before.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{lv/.style={draw=#1,fill=#1!14!white,line width=1pt,minimum height=0.95cm,align=left,font=\sffamily\small,anchor=west,text width=8.6cm,inner sep=6pt}}
+  \node[lv=partcolor] (i) at (0,0) {\textbf{1 inherent safety by design}\\[-1pt]\scriptsize the sink waits instead of dropping (RC-04); no final name before durable (RC-09); no patient identity};
+  \node[lv=d2dcat0] (p) at (0,-1.75) {\textbf{2 protective measures}\\[-1pt]\scriptsize the integrity verdict (RC-01); fault on out-of-order singles (RC-07); a CRC on every block (RC-08)};
+  \node[lv=d2dcat1] (n) at (0,-3.5) {\textbf{3 information for safety}\\[-1pt]\scriptsize check the verdict (RC-05); the "simulated" flag in every file (RC-15)};
+  \draw[->,d2dmuted,line width=1.4pt] (-0.4,0.4) -- node[sloped,above,note,text=d2dink] {consider first} (-0.4,-3.9);
+  \draw[->,d2dcat3,line width=1.4pt] (9.5,0.4) -- node[sloped,below,note,text=d2dink] {relies more on people} (9.5,-3.9);
+\end{tikzpicture}
