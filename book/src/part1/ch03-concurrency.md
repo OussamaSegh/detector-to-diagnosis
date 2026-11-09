@@ -154,7 +154,7 @@ race for exactly this kind of reason.
 
 ### Happens-before, in one picture
 
-[Happens-before]{.idx} is the ordering relation that the model guarantees. Within one thread,
+[Happens-before]{.idx key="happens-before"} is the ordering relation that the model guarantees. Within one thread,
 statements are ordered by program order ("sequenced-before"). Between threads, the main way
 to create order is a **release** operation in one thread that is observed by an **acquire**
 operation in another. If thread P writes data and then stores a flag with

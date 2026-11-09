@@ -22,11 +22,19 @@ the patch version.
   records of 0.9.0 and 1.0.0 get a correction; SDP version 15 holds an internal audit before
   each minor release (MDQ-PR-065). MDQ-PR-066 (open): fifteen controlled documents are released
   with the status "draft for review".
+- The book and the solutions print no *verify:* marker any more (133 in 1.0.0): each claim is
+  stated with its source (citations completed from PubMed, IEEE and JACoW records; clause
+  numbers of the standards), worded "at the time of writing" where it may change, or says in
+  the sentence what the book did not check. How to use this book explains the wording.
 - README quick start installs the same packages as How to use this book (OpenSSL, NumPy and
   the Python headers were missing, so the first configure failed).
 
 ### Added
 
+- A real index: about 400 main entries and 90 subentries over every chapter and the appendix,
+  where 1.0.0 had 32 from Chapters 1 to 8. `book/index-terms.txt` lists the terms and
+  `book/filters/index-terms.lua` indexes the first use of each in every chapter (running text
+  only); the test `book.index` (`book/tools/index_terms.py`) refuses a malformed or dead entry.
 - How to use this book explains the *verify:* and *assumption: confirm with team* markers.
 - A PDF for 10.3 inch 4:3 color E Ink tablets (Onyx Boox Air 5C): `book/build.sh boox`
   sets the book and the solutions manual on a 6.18 x 8.24 in page with narrow margins, so a

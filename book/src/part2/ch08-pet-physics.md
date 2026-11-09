@@ -77,7 +77,7 @@ that is a map of neuronal activity. For dementia, tracers that bind to amyloid p
 hallmark proteins of Alzheimer's disease directly. All of these are labeled with
 fluorine-18.
 
-[Activity]{.idx} is the number of decays per second, in becquerel (1 Bq = 1 decay/s). The
+[Activity]{.idx key="activity"} is the number of decays per second, in becquerel (1 Bq = 1 decay/s). The
 older unit, the curie, is still common in the United States: 1 mCi = 37 MBq. Activity
 falls exponentially with the [half-life]{.idx} T½:
 

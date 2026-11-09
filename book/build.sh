@@ -54,6 +54,7 @@ common=(
   --lua-filter "$here/filters/include-code.lua"
   --lua-filter "$here/filters/diagrams.lua"
   --lua-filter "$here/filters/boxes.lua"
+  --lua-filter "$here/filters/index-terms.lua"
   --metadata "version=$version" --metadata "date=$date_str" --metadata "author=$author"
   --metadata "rights=Copyright © ${date_str:0:4} $author. All rights reserved. Code: MIT License."
   --lua-filter "$here/filters/vars.lua"

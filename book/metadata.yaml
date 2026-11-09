@@ -19,3 +19,4 @@ urlcolor: "nlfblue"
 toccolor: "black"
 links-as-notes: false
 secnumdepth: 2
+index-terms: "book/index-terms.txt"

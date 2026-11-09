@@ -138,7 +138,7 @@ it is now a test in Exercise 4.2: **never put two busy `SCHED_FIFO` threads on o
 each one its own CPU, and leave everything else under the normal scheduler.
 
 **The real-time throttle.** Linux protects itself against runaway real-time threads with [real-time
-throttling]{.idx key="RT throttling"}: by default, real-time threads may use at most
+throttling]{.idx key="real-time throttling"}: by default, real-time threads may use at most
 `sched_rt_runtime_us` = 950,000 µs out of every `sched_rt_period_us` = 1,000,000 µs, leaving 5% for
 normal threads (both are in `/proc/sys/kernel/`). A `SCHED_FIFO` source stage that is busy more than
 95% of the time is stopped for up to 50 ms each second. The kernel log says so once: `sched: RT
@@ -442,7 +442,7 @@ timestamp singles with it, you timestamp batches.
 
 ### The time-stamp counter
 
-The [TSC]{.idx key="TSC"} is a 64-bit counter in every x86 core, read with the `rdtsc`
+The [TSC]{.idx key="time-stamp counter (TSC)"} is a 64-bit counter in every x86 core, read with the `rdtsc`
 instruction in a few nanoseconds. On modern CPUs it is *invariant*: it ticks at a constant rate
 regardless of frequency scaling (the `constant_tsc` flag in `/proc/cpuinfo`) and keeps ticking
 in deep idle states (`nonstop_tsc`). The book's VM reports both, plus `tsc_known_freq`.

@@ -1,0 +1,599 @@
+# Index terms of the book (book/filters/index-terms.lua).
+#
+# One entry per line: PHRASE | KEY. The filter adds \index{KEY} at the first place in each
+# chapter where PHRASE appears in running text (not in headings, code blocks or captions).
+# PHRASE is matched word by word, ignoring case and the punctuation around a word; the last
+# word may take a plural "s" or "es". A PHRASE in backticks matches inline code exactly.
+# KEY defaults to PHRASE; "!" separates a main entry from a subentry, as in makeindex.
+# Spans written as [text]{.idx} in the chapters add entries too.
+
+# C++ language and library
+move semantics | move semantics
+value semantics | value semantics
+Rule of 0 | Rule of 0
+smart pointer | smart pointers
+`std::unique_ptr` | unique_ptr@\texttt{std::unique\_ptr}
+`std::shared_ptr` | shared_ptr@\texttt{std::shared\_ptr}
+`std::span` | span@\texttt{std::span}
+`std::string_view` | string_view@\texttt{std::string\_view}
+strong type | strong types
+`[[nodiscard]]` | nodiscard@\texttt{[[nodiscard]]}
+enum class | enum class
+`std::expected` | expected@\texttt{std::expected}
+noexcept | noexcept
+constexpr | constexpr
+lookup table | lookup tables
+AddressSanitizer | AddressSanitizer (ASan)
+UndefinedBehaviorSanitizer | UndefinedBehaviorSanitizer (UBSan)
+sanitizer | sanitizers
+signed overflow | undefined behavior!signed overflow
+strict aliasing | undefined behavior!strict aliasing
+alignas | alignas
+`std::bit_cast` | bit_cast@\texttt{std::bit\_cast}
+byte order | byte order
+bit-field | bit-fields
+C++23 | C++23
+pybind11 | pybind11
+nanobind | nanobind
+GIL | global interpreter lock (GIL)
+global interpreter lock | global interpreter lock (GIL)
+
+# Memory and performance
+memory hierarchy | memory hierarchy
+cache line | cache line
+cache miss | cache miss
+prefetching | prefetching
+huge page | huge pages
+transparent huge pages | huge pages!transparent
+AoS | array of structures (AoS)
+array of structures | array of structures (AoS)
+SoA | structure of arrays (SoA)
+structure of arrays | structure of arrays (SoA)
+hot/cold splitting | hot/cold splitting
+data-oriented design | data-oriented design
+arena | arena allocator
+false sharing | false sharing
+`std::hardware_destructive_interference_size` | hardware_destructive_interference_size@\texttt{std::hardware\_destructive\_interference\_size}
+Google Benchmark | Google Benchmark
+perf stat | perf
+perf record | perf
+flame graph | flame graph
+VTune | VTune
+inlining | inlining
+link-time optimization | link-time optimization (LTO)
+LTO | link-time optimization (LTO)
+PGO | profile-guided optimization (PGO)
+profile-guided optimization | profile-guided optimization (PGO)
+branch prediction | branch prediction
+branchless | branchless code
+SIMD | SIMD
+AVX2 | AVX2
+AVX-512 | AVX-512
+vectorization | vectorization
+performance budget | performance budget
+regression gate | performance regression gate
+coordinated omission | coordinated omission
+tail latency | latency!tail
+
+# Concurrency
+`std::jthread` | jthread
+stop token | stop token
+condition variable | condition variable
+thread pool | thread pool
+memory model | memory model
+memory order | memory orders
+seq_cst | memory orders!sequentially consistent
+happens-before | happens-before
+data race | data race
+deadlock | deadlock
+lock-order inversion | deadlock!lock-order inversion
+mutex | mutex
+ring buffer | ring buffer
+SPSC | SPSC queue
+MPMC | MPMC queue
+lock-free | lock-free
+back-pressure | back-pressure
+backpressure | back-pressure
+drop policy | drop policy
+ThreadSanitizer | ThreadSanitizer (TSan)
+TSan | ThreadSanitizer (TSan)
+stress test | stress tests
+`std::latch` | latch
+`std::barrier` | barrier
+
+# Real-time Linux
+SCHED_FIFO | SCHED\_FIFO
+SCHED_RR | SCHED\_RR
+`SCHED_FIFO` | SCHED\_FIFO
+PREEMPT_RT | PREEMPT\_RT
+`PREEMPT_RT` | PREEMPT\_RT
+CFS | completely fair scheduler (CFS)
+EEVDF | EEVDF scheduler
+priority inversion | priority inversion
+throttling | real-time throttling
+CPU isolation | CPU isolation
+isolcpus | isolcpus
+nohz_full | nohz\_full
+`isolcpus` | isolcpus
+cgroup | cgroups
+page fault | page fault
+mlockall | mlockall
+`mlockall` | mlockall
+TSC | time-stamp counter (TSC)
+time-stamp counter | time-stamp counter (TSC)
+CLOCK_MONOTONIC | CLOCK\_MONOTONIC
+`CLOCK_MONOTONIC` | CLOCK\_MONOTONIC
+PTP | Precision Time Protocol (PTP)
+Precision Time Protocol | Precision Time Protocol (PTP)
+NTP | NTP
+timer slack | timer slack
+cyclictest | cyclictest
+jitter | jitter
+
+# PET physics and detectors
+positron | positron
+annihilation | annihilation
+fluorine-18 | fluorine-18
+FDG | FDG
+tracer | tracers
+half-life | half-life
+becquerel | becquerel
+Compton scattering | Compton scattering
+photoelectric | photoelectric effect
+attenuation coefficient | attenuation!coefficient
+scintillator | scintillator
+LYSO | LYSO
+BGO | BGO
+light yield | light yield
+decay time | decay time
+intrinsic radioactivity | intrinsic radioactivity
+SiPM | silicon photomultiplier (SiPM)
+silicon photomultiplier | silicon photomultiplier (SiPM)
+photomultiplier | photomultiplier tube
+ASIC | ASIC
+TOFPET2 | TOFPET2
+FPGA | FPGA
+singles | singles
+coincidence | coincidences
+trues | trues
+true coincidence | trues
+scatters | scatter
+randoms | randoms
+random coincidence | randoms
+multiples | multiples
+prompts | prompts
+delayed window | randoms!delayed window
+energy resolution | energy resolution
+photopeak | photopeak
+energy window | energy window
+coincidence time resolution | coincidence time resolution (CTR)
+time of flight | time of flight (TOF)
+time-of-flight | time of flight (TOF)
+TOF | time of flight (TOF)
+spatial resolution | spatial resolution
+positron range | positron range
+non-collinearity | non-collinearity
+depth of interaction | depth of interaction
+parallax | depth of interaction
+line of response | line of response (LOR)
+LOR | line of response (LOR)
+field of view | field of view
+detector simulator | MiniDAQ!detector simulator
+brain PET | brain PET
+amyloid | amyloid
+GATE | GATE
+
+# Readout and electronics
+leading edge | leading-edge discrimination
+time walk | time walk
+constant fraction | constant fraction discriminator
+charge integration | charge integration
+time over threshold | time over threshold (ToT)
+ToT | time over threshold (ToT)
+TDC | time-to-digital converter (TDC)
+time-to-digital converter | time-to-digital converter (TDC)
+coarse counter | time stamp!coarse counter
+fine time | time stamp!fine time
+time stamp | time stamp
+rollover | rollover
+clock distribution | clock distribution
+White Rabbit | White Rabbit
+event word | event word
+readout packet | readout packet
+MDQ-R1 | MDQ-R1 readout packet
+MDQ-P1 | MDQ-P1 packed single
+UDP | UDP
+jumbo frame | jumbo frames
+MTU | MTU
+sequence number | sequence numbers
+serial number arithmetic | serial number arithmetic
+fault injector | fault injection
+fault injection | fault injection
+
+# Sorting and count rates
+coincidence sorter | coincidence sorter
+sorter | coincidence sorter
+coincidence window | coincidence window
+fixed window | coincidence window!fixed
+multiples policy | multiples!policies
+kill all | multiples!kill all
+k-way merge | k-way merge
+watermark | watermark
+singles-rate estimate | randoms!singles-rate estimate
+dead time | dead time
+paralyzable | dead time!paralyzable
+non-paralyzable | dead time!non-paralyzable
+pile-up | pile-up
+count rate | count rate
+NECR | noise-equivalent count rate (NECR)
+noise-equivalent count rate | noise-equivalent count rate (NECR)
+scatter fraction | scatter fraction
+NEMA NU 2 | NEMA NU 2
+NU 2 | NEMA NU 2
+IEC 61675-1 | IEC 61675-1
+
+# Data, formats and reconstruction
+list mode | list mode
+list-mode | list mode
+MDQ-L1 | MDQ-L1 list-mode format
+sinogram | sinogram
+Michelogram | Michelogram
+SSRB | single-slice rebinning (SSRB)
+single-slice rebinning | single-slice rebinning (SSRB)
+histogrammer | histogrammer
+HDF5 | HDF5
+Interfile | Interfile
+CASToR | CASToR
+STIR | STIR
+CRC-32 | CRC-32
+slicing-by-8 | CRC!slicing-by-8
+fsync | fsync
+`fsync` | fsync
+page cache | page cache
+crash safety | crash safety
+write cache | write cache
+run record | run record
+calibration | calibration
+energy calibration | calibration!energy
+timing calibration | calibration!timing
+calibration table | calibration!table
+least squares | least squares
+normalization | normalization
+scatter correction | scatter!correction
+attenuation correction | attenuation!correction
+decay correction | decay correction
+dead-time correction | dead time!correction
+randoms correction | randoms!correction
+fan sum | fan sum
+reconstruction | image reconstruction
+filtered backprojection | filtered backprojection (FBP)
+FBP | filtered backprojection (FBP)
+MLEM | MLEM
+OSEM | OSEM
+projector | projector
+Joseph's method | projector!Joseph's method
+adjoint | adjoint
+dot-product test | adjoint!dot-product test
+system matrix | system matrix
+FWHM | full width at half maximum (FWHM)
+full width at half maximum | full width at half maximum (FWHM)
+FWTM | full width at tenth maximum (FWTM)
+contrast recovery | contrast recovery
+background variability | background variability
+ROI | region of interest (ROI)
+partial volume | partial volume effect
+SUV | standardized uptake value (SUV)
+standardized uptake value | standardized uptake value (SUV)
+Poisson | Poisson statistics
+maximum likelihood | maximum likelihood
+Fisher information | Fisher information
+chi-square | chi-square
+NumPy | NumPy
+SciPy | SciPy
+memory map | memory map
+structured dtype | NumPy!structured dtype
+provenance | provenance
+QC | quality control (QC)
+quality control | quality control (QC)
+run rules | quality control (QC)!run rules
+
+# Architecture and design
+ports and adapters | ports and adapters
+dependency inversion | dependency inversion
+state machine | state machine
+JSON Schema | JSON Schema
+control API | control API
+API version | control API!versioning
+framing | framing
+audit trail | audit trail
+architecture decision record | architecture decision record (ADR)
+ADR | architecture decision record (ADR)
+architecture description | architecture description
+software item | software item
+segregation | segregation
+interface control document | interface control document (ICD)
+ICD | interface control document (ICD)
+register map | register map
+memory-mapped I/O | memory-mapped I/O
+`mmap` | mmap
+`volatile` | volatile@\texttt{volatile}
+posted write | posted writes
+slow control | slow control
+hysteresis | hysteresis
+fail-safe | fail-safe state
+watchdog | watchdog
+systemd | systemd
+heartbeat | heartbeat
+least privilege | least privilege
+rollback | software update!rollback
+A/B slots | software update!two slots
+signed bundle | software update!signed bundle
+flight recorder | flight recorder
+core dump | core dump
+crash report | crash report
+signal handler | signal handler
+gdb | gdb
+rr | rr (record and replay)
+git bisect | git!bisect
+
+# Hardware interfaces
+PCIe | PCI Express
+PCI Express | PCI Express
+sysfs | sysfs
+UIO | UIO
+VFIO | VFIO
+I2C | I2C
+SPI | SPI
+metastability | metastability
+clock domain | clock domain crossing
+clock domain crossing | clock domain crossing
+valid and ready | handshake!valid and ready
+handshake | handshake
+AXI4-Stream | AXI4-Stream
+Verilog | Verilog
+VHDL | VHDL
+Verilator | Verilator
+bitstream | bitstream
+softirq | softirq
+NAPI | NAPI
+socket buffer | socket buffer
+`SO_RCVBUF` | SO\_RCVBUF
+`rmem_max` | rmem\_max
+receive side scaling | receive side scaling (RSS)
+RSS | receive side scaling (RSS)
+interrupt coalescing | interrupt coalescing
+`recvmmsg` | recvmmsg
+kernel bypass | kernel bypass
+DPDK | DPDK
+AF_XDP | AF\_XDP
+
+# Safe and secure C++
+coding standard | coding standard
+MISRA | MISRA C++
+C++ Core Guidelines | C++ Core Guidelines
+static analysis | static analysis
+clang-tidy | clang-tidy
+cppcheck | cppcheck
+CodeQL | CodeQL
+suppression | static analysis!suppressions
+fuzzing | fuzzing
+libFuzzer | libFuzzer
+fuzz target | fuzzing!fuzz target
+seed corpus | fuzzing!seed corpus
+hardening | hardening
+`_FORTIFY_SOURCE` | FORTIFY\_SOURCE
+stack protector | stack protector
+RELRO | RELRO
+SBOM | software bill of materials (SBOM)
+software bill of materials | software bill of materials (SBOM)
+CycloneDX | CycloneDX
+Grype | Grype
+vulnerability | vulnerabilities
+threat model | threat model
+STRIDE | STRIDE
+attack tree | attack tree
+data flow diagram | data flow diagram
+TLS 1.3 | TLS 1.3
+authentication | authentication
+authorization | authorization
+secure default | secure defaults
+penetration test | penetration testing
+coordinated disclosure | coordinated vulnerability disclosure
+
+# Testing
+unit test | unit tests
+GoogleTest | GoogleTest
+table-driven | unit tests!table-driven
+test double | test doubles
+property-based | property-based tests
+property-based test | property-based tests
+branch coverage | coverage!branch
+MC/DC | coverage!MC/DC
+mutation testing | mutation testing
+mutant | mutation testing!mutant
+integration test | integration tests
+system test | system tests
+golden data | golden data
+soak test | soak test
+hardware in the loop | hardware in the loop (HIL)
+HIL | hardware in the loop (HIL)
+test plan | test plan
+test report | test report
+characterization test | characterization tests
+acceptance specification | acceptance specification
+acceptance criteria | acceptance criteria
+
+# Build, CI and tools
+CMake | CMake
+CMakePresets | CMake!presets
+toolchain file | CMake!toolchain files
+generator expression | CMake!generator expressions
+FetchContent | CMake!FetchContent
+find_package | CMake!find\_package
+`find_package` | CMake!find\_package
+usage requirements | CMake!usage requirements
+Ninja | Ninja
+ccache | ccache
+clang-format | clang-format
+scikit-build-core | scikit-build-core
+continuous integration | continuous integration (CI)
+gate self-test | gate self-test
+reproducible build | reproducible builds
+SOURCE_DATE_EPOCH | SOURCE\_DATE\_EPOCH
+`SOURCE_DATE_EPOCH` | SOURCE\_DATE\_EPOCH
+tool list | tool validation!tool list
+tool qualification | tool validation
+release package | release!package
+release checks | release!checks
+release record | release!record
+evidence archive | release!evidence archive
+lock file | lock file
+
+# Git and workflow
+rebase | git!rebase
+squash | git!squash
+trunk-based development | trunk-based development
+commit message | git!commit message
+commit policy | commit policy
+protected branch | git!protected branch
+pull request | pull request
+code review | code review
+review checklist | code review!checklist
+release branch | git!release branch
+AI assistant | AI-assisted coding
+AI-assisted | AI-assisted coding
+prompt injection | prompt injection
+
+# DICOM and PACS
+DICOM | DICOM
+PACS | PACS
+transfer syntax | DICOM!transfer syntax
+SOP class | DICOM!SOP class
+SOP instance | DICOM!SOP instance
+C-STORE | DICOM!C-STORE
+PET Image | DICOM!PET Image object
+Enhanced PET | DICOM!Enhanced PET
+rescale slope | DICOM!rescale slope
+Image Position | DICOM!image position
+patient coordinate | DICOM!patient coordinates
+pydicom | pydicom
+outbox | outbox
+
+# Regulation, standards and quality
+medical device | medical device
+MDR | Medical Device Regulation (MDR)
+Medical Device Regulation | Medical Device Regulation (MDR)
+Annex I | Medical Device Regulation (MDR)!Annex I
+Annex IX | Medical Device Regulation (MDR)!Annex IX
+Rule 11 | Medical Device Regulation (MDR)!Rule 11
+MDCG | MDCG guidance
+notified body | notified body
+CE marking | CE marking
+technical documentation | technical documentation
+UDI | unique device identification (UDI)
+unique device identification | unique device identification (UDI)
+EUDAMED | EUDAMED
+harmonised standard | harmonised standards
+FDA | FDA
+510(k) | FDA!510(k)
+De Novo | FDA!De Novo
+QMSR | Quality Management System Regulation (QMSR)
+Quality Management System Regulation | Quality Management System Regulation (QMSR)
+21 CFR 820 | Quality Management System Regulation (QMSR)
+Part 11 | 21 CFR Part 11
+section 524B | FDA!section 524B
+524B | FDA!section 524B
+cyber device | FDA!cyber device
+Swissmedic | Swissmedic
+MedDO | Swiss Medical Devices Ordinance (MedDO)
+post-market surveillance | post-market surveillance
+vigilance | vigilance
+serious incident | vigilance!serious incident
+field safety corrective action | vigilance!field safety corrective action
+IEC 62304 | IEC 62304
+software safety class | software safety class
+safety class | software safety class
+class A | software safety class!A
+class B | software safety class!B
+class C | software safety class!C
+software development plan | software development plan (SDP)
+SDP | software development plan (SDP)
+software requirements specification | software requirements specification (SRS)
+SRS | software requirements specification (SRS)
+traceability | traceability
+trace matrix | traceability!trace matrix
+unit verification | IEC 62304!unit verification
+software system testing | IEC 62304!software system testing
+software release | IEC 62304!software release
+SOUP | SOUP
+known anomaly | known anomalies
+known anomalies | known anomalies
+problem report | problem reports
+problem resolution | problem resolution
+configuration management | configuration management
+ISO 14971 | ISO 14971
+risk management | risk management
+hazardous situation | hazardous situation
+risk control | risk control
+residual risk | residual risk
+benefit-risk | benefit-risk analysis
+risk management file | risk management file
+FMEA | FMEA
+fault tree | fault tree analysis
+IEC/TR 80002-1 | IEC/TR 80002-1
+ISO 13485 | ISO 13485
+quality management system | quality management system (QMS)
+QMS | quality management system (QMS)
+design controls | design controls
+design and development file | design and development file
+design history file | design and development file
+design input | design input
+design output | design output
+design review | design review
+document control | document control
+change control | change control
+change request | change control!change request
+impact analysis | change control!impact analysis
+CAPA | CAPA
+corrective action | CAPA!corrective action
+preventive action | CAPA!preventive action
+effectiveness check | CAPA!effectiveness check
+root cause | root cause analysis
+root cause analysis | root cause analysis
+five whys | root cause analysis!five whys
+internal audit | audit!internal
+nonconformity | nonconformity
+MDSAP | MDSAP
+IEC 81001-5-1 | IEC 81001-5-1
+cybersecurity | cybersecurity
+IEC 60601-1 | IEC 60601-1
+IEC 62366-1 | IEC 62366-1
+usability | usability engineering
+intended use | intended use
+software validation | tool validation
+Computer Software Assurance | Computer Software Assurance
+requirements freeze | requirements freeze
+legacy code | legacy code
+
+# Single words kept after review: their first use in a chapter is in the indexed sense.
+hazard | hazards
+audit | audit
+coverage | coverage
+git | git
+attenuation | attenuation
+phantom | phantoms
+histogram | histograms
+benchmark | benchmarks
+soak | soak test
+replay | replay
+reproducibility | reproducibility
+CRC | CRC
+FIFO | FIFO
+TCP | TCP
+TLS | TLS
+harmonised | harmonised standards
+mock | test doubles!mock
+trailer | git!trailers
+telemetry | telemetry
+logging | logging
+atomic | atomics

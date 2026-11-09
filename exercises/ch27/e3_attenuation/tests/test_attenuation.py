@@ -55,7 +55,7 @@ class Factors(unittest.TestCase):
         self.assertEqual(float(at.acf(0.0)), 1.0)
 
     def test_decay_of_a_frame(self):
-        half = 6586.2  # fluorine-18, 109.77 min (verify: NIST and DDEP give 109.77 min)
+        half = 6586.2  # fluorine-18, 109.77 min (NIST)
         self.assertAlmostEqual(at.decay_factor(0.0, 1e-6, half), 1.0, places=6)
         self.assertAlmostEqual(at.decay_factor(half, 1e-6, half), 2.0, places=6)
         # A frame one half-life long: the mean activity is 1/(2 ln 2) of the start's.
