@@ -87,7 +87,10 @@ Three kinds of document make up the frame, and they bind in different ways.
   needs a reason that convinces a reviewer.
 
 A fourth kind lives inside the company: the quality management system's procedures, which turn
-all of this into "how we do it here". That is what you follow day to day (Chapter 16).
+all of this into "how we do it here". That is what you follow day to day (Chapter 16). Figure [](#fig-ch13-frame) puts the four together.
+
+```{.figure #fig-ch13-frame src="book/figures/tikz/ch13/frame.tex" caption="The regulatory frame. Standards and guidance explain how to meet the law; the company's procedures say how it is done here; engineering records are the evidence." alt="Four stacked levels: regulations at the top, standards below them, QMS procedures, and engineering records at the bottom, each pointing up to the level it serves. Guidance sits beside the standards and points to the regulations." width="80%"}
+```
 
 ### What the manufacturer owns
 
@@ -185,7 +188,10 @@ code: the same sorter would be IIa in one product and IIb in another. Second, th
 not the IEC 62304 software safety class (A, B or C), which comes from the risk analysis of each
 software item (Chapter 14). A class IIa scanner can contain class C software, and engineers who
 confuse the two systems make mistakes in both directions. Exercise 13.3 turns these rules into a
-small model and tests it on these cases.
+small model and tests it on these cases. Figure [](#fig-ch13-classes) draws the three cases.
+
+```{.figure #fig-ch13-classes src="book/figures/tikz/ch13/classes.tex" caption="The worked classification example. The class follows the device: the same DAQ software is class IIa in a PET scanner and IIb in a PET/CT." alt="Two rows. A brain PET scanner goes through Rule 10 to class IIa, and its DAQ software inherits IIa by implementing rule 3.3. A PET/CT scanner gets IIa for the PET part and IIb for the CT part, rule 3.5 takes the stricter IIb, and its DAQ software inherits IIb." width="100%"}
+```
 
 Standalone software is different. Reconstruction or quantification software sold on its own,
 for scanners from several manufacturers, is classified by Rule 11: class IIa if it provides
@@ -282,7 +288,10 @@ PET scanners are "emission computed tomography systems" under 21 CFR 892.1200, c
 the product code KPS, and reach the market by 510(k). FDA's public 510(k) database lists many
 such clearances, often for PET/CT systems with a second product code for the CT. Dedicated
 brain PET scanners are cleared the same way, under product code KPS; the database entry of your
-own device names its predicate and its indications for use, and is worth reading early.
+own device names its predicate and its indications for use, and is worth reading early. Figure [](#fig-ch13-routes) puts the two routes side by side.
+
+```{.figure #fig-ch13-routes src="book/figures/tikz/ch13/routes.tex" caption="Routes to market for a PET scanner: the EU's Annex IX conformity assessment and the US 510(k)." alt="Two horizontal flows. EU: quality management system, technical documentation, notified body audit, declaration of conformity, CE marking with the notified body number, with a loop back for surveillance audits. US: QMSR, a predicate device, the 510(k), FDA review and clearance; a note names De Novo and PMA." width="95%"}
+```
 
 ### What a submission says about software
 
@@ -409,7 +418,10 @@ edition, which would extend its scope to health software in general and replace 
 safety classes with two levels of process rigor, has been in preparation for years; the IEC
 currently expects publication in late 2028, and a transition period would follow (verify).
 Until then, the 2006+A1:2015 edition is the one auditors expect. Who in your organization
-watches for new editions, and decides when to move, is one of the questions to ask.
+watches for new editions, and decides when to move, is one of the questions to ask. Figure [](#fig-ch13-timeline) collects the dates of this chapter on one line.
+
+```{.figure #fig-ch13-timeline src="book/figures/tikz/ch13/timeline.tex" caption="Dates a software lead works with. Hollow markers are expected, not yet in force; verify each before you rely on it." alt="A timeline from 2006 to 2029 with labelled markers: IEC 62304 in 2006 and its amendment in 2015, ISO 13485 in 2016, the MDR adopted in 2017 and applying in 2021, ISO 14971 in 2019, FDA software guidance and section 524B in 2023, QMSR, EUDAMED and swissdamed in 2026, and an expected MRA update and second edition of IEC 62304 later." width="100%"}
+```
 
 ## Switzerland
 
@@ -498,6 +510,11 @@ as normal. Walk through what happens.
 
 Exercise 13.4 turns the clocks into code and asks you to write this plan.
 
+Figure [](#fig-ch13-clocks) shows the three clocks together.
+
+```{.figure #fig-ch13-clocks src="book/figures/tikz/ch13/clocks.tex" caption="The missing quarter as reporting clocks. All of them start at awareness, not when the investigation ends." alt="Timeline from 7 January to 6 February 2027 with three bars from the day of awareness: the EU 15-day serious-incident report due 22 January, the US five-work-day report due 14 January if remedial action is needed, and the US 30-day report due 6 February." width="100%"}
+```
+
 ### CAPA and the way back to the code
 
 Problems found after release, and serious ones before, go into the *corrective and preventive
@@ -507,7 +524,10 @@ in a software change goes through the software maintenance process of IEC 62304 
 control of the quality system, with its own impact analysis, verification and, if the change
 is significant, regulatory notification. Chapter 16 shows how to write one. What matters here
 is the loop: field data comes back to the design, and the design's records must be good enough
-to find the cause.
+to find the cause. Figure [](#fig-ch13-loop) draws the loop.
+
+```{.figure #fig-ch13-loop src="book/figures/tikz/ch13/loop.tex" caption="The post-market loop. Field data returns to the design through vigilance, CAPA and a maintenance release." alt="A cycle of five boxes: device in the field, post-market surveillance, vigilance, CAPA, and maintenance release back to the field, around a central box for the risk file, clinical evaluation and design." width="70%"}
+```
 
 ### What the DAQ gives post-market surveillance
 

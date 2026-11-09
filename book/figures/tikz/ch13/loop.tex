@@ -1,0 +1,15 @@
+% Chapter 13: the post-market loop. Field data comes back to the design through CAPA and the
+% software maintenance process.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \a/\n/\t/\c in {90/f/{device in the field}/partcolor, 18/p/{post-market surveillance\\\scriptsize complaints, service, literature}/d2dcat0,
+                          -54/v/{vigilance\\\scriptsize serious incidents, trends}/d2dcat3, -126/c/{CAPA\\\scriptsize root cause, correction, check}/d2dcat1,
+                          162/m/{maintenance release\\\scriptsize IEC 62304, change control}/d2dcat2} {
+    \node[draw=\c,fill=\c!12!white,line width=1pt,rounded corners=3pt,align=center,font=\sffamily\small,minimum width=3.2cm,minimum height=0.95cm] (\n) at (\a:4.1 and 2.35) {\t};}
+  \draw[flow] (f) to[bend left=12] (p);
+  \draw[flow] (p) to[bend left=12] (v);
+  \draw[flow] (v) to[bend left=12] (c);
+  \draw[flow] (c) to[bend left=12] (m);
+  \draw[flow] (m) to[bend left=12] (f);
+  \node[box=d2dmuted,align=center,font=\sffamily\scriptsize] at (0,0) {risk file, clinical\\evaluation, design};
+  \node[note,text=d2dink,align=center] at (0,-3.25) {the DAQ's records (configuration, run record, audit trail) feed every step};
+\end{tikzpicture}

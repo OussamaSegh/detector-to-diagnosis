@@ -1,0 +1,22 @@
+% Chapter 13: dates a software lead works with, from the chapter. Hollow markers are expected,
+% not yet in force.
+\begin{tikzpicture}[x=0.64cm,y=1cm]
+  \draw[d2drule,line width=1.4pt] (2005.5-2005,0) -- (2029-2005,0);
+  \foreach \yr in {2006,2010,2014,2018,2022,2026} {\draw[d2dmuted] (\yr-2005,-0.08) -- (\yr-2005,0.08); \node[note,text=d2dmuted,anchor=north] at (\yr-2005,-0.12) {\yr};}
+  \newcommand\ev[5]{% x, level, color, label, filled?
+    \draw[#3,line width=0.6pt] (#1-2005,0) -- (#1-2005,#2);
+    \ifnum#5=1 \fill[#3] (#1-2005,0) circle (0.07); \else \draw[#3,fill=white,line width=0.8pt] (#1-2005,0) circle (0.07); \fi
+    \node[note,text=d2dink,anchor=\ifdim#2pt>0pt south\else north\fi,align=center] at (#1-2005,#2) {#4};}
+  \ev{2006.0}{0.9}{d2dcat0}{IEC 62304}{1}
+  \ev{2015.5}{0.9}{d2dcat0}{62304 A1}{1}
+  \ev{2016.2}{-0.75}{d2dcat2}{ISO 13485:2016}{1}
+  \ev{2017.4}{1.7}{partcolor}{MDR adopted}{1}
+  \ev{2019.9}{0.9}{d2dcat2}{ISO 14971:2019}{1}
+  \ev{2021.4}{1.7}{partcolor}{MDR applies;\\EU-CH MRA lapses}{1}
+  \ev{2023.4}{-0.75}{d2dcat1}{FDA software guidance;\\524B cyber devices}{1}
+  \ev{2025.95}{0.9}{partcolor}{MDR reform\\proposal}{1}
+  \ev{2026.1}{-1.75}{d2dcat1}{QMSR}{1}
+  \ev{2026.4}{2.5}{partcolor}{EUDAMED, swissdamed\\mandatory}{1}
+  \ev{2027.8}{1.7}{d2dmuted}{MRA update?}{0}
+  \ev{2028.8}{-0.75}{d2dcat0}{62304 ed.\,2\\expected}{0}
+\end{tikzpicture}

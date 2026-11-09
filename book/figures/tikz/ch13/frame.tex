@@ -1,0 +1,18 @@
+% Chapter 13: the regulatory frame. Law at the top, the company's procedures and the engineers'
+% records at the bottom; each level answers to the one above.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{lvl/.style={draw=#1,fill=#1!12!white,line width=1pt,rounded corners=3pt,minimum height=0.9cm,minimum width=4.4cm,align=center,font=\sffamily\small}}
+  \node[lvl=partcolor] (reg) at (0,0) {\textbf{regulations}\\[-1pt]\scriptsize EU MDR, 21 CFR, MedDO};
+  \node[lvl=d2dcat0] (std) at (0,-1.45) {\textbf{standards}\\[-1pt]\scriptsize ISO 13485, ISO 14971, IEC 62304};
+  \node[lvl=d2dcat1] (gui) at (5.6,-1.45) {\textbf{guidance}\\[-1pt]\scriptsize FDA guidance, MDCG documents};
+  \node[lvl=d2dcat2] (qms) at (0,-2.9) {\textbf{QMS procedures}\\[-1pt]\scriptsize "how we do it here"};
+  \node[lvl=d2dmuted] (rec) at (0,-4.35) {\textbf{engineering records}\\[-1pt]\scriptsize requirements, tests, problem reports};
+  \draw[flow] (std) -- node[right,note,text=d2dink,align=left] {harmonised: presumption of conformity\\recognized: declared in a submission} (reg);
+  \draw[flow] (gui.north) |- node[pos=0.25,right,note,text=d2dink,align=left] {how the regulator\\reads the law} (reg.east);
+  \draw[flow] (qms) -- (std);
+  \draw[flow] (rec) -- node[right,note,text=d2dink] {the evidence an auditor samples} (qms);
+  \node[note,text=d2dink,anchor=east,align=right] at (-2.5,0) {law: binding};
+  \node[note,text=d2dink,anchor=east,align=right] at (-2.5,-1.45) {voluntary in principle,\\expected in practice};
+  \node[note,text=d2dink,anchor=east,align=right] at (-2.5,-2.9) {Chapter 16};
+  \node[note,text=d2dink,anchor=east,align=right] at (-2.5,-4.35) {what you write};
+\end{tikzpicture}

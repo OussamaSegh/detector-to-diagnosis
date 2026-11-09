@@ -1,0 +1,24 @@
+% Chapter 13: the worked classification example. The class belongs to the device: the same DAQ
+% software is IIa in a PET scanner and IIb in a PET/CT.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{cls/.style={draw=#1,fill=#1,text=white,font=\sffamily\small\bfseries,rounded corners=2pt,minimum width=1.0cm,minimum height=0.6cm}}
+  \node[box,minimum width=3.0cm] (pet) at (0,0) {brain PET scanner};
+  \node[box,minimum width=3.0cm] (petct) at (0,-1.9) {PET/CT scanner};
+  \node[note,text=d2dink,anchor=west] (r1) at (2.0,0) {Rule 10: images radiopharmaceuticals};
+  \node[note,text=d2dink,anchor=west,align=left] (r2) at (2.0,-1.6) {Rule 10, PET part: IIa};
+  \node[note,text=d2dink,anchor=west,align=left] (r3) at (2.0,-2.2) {Rule 10, CT part (ionizing): IIb};
+  \node[cls=d2dcat0] (c1) at (8.1,0) {IIa};
+  \node[cls=d2dcat3] (c2) at (8.1,-1.9) {IIb};
+  \draw[flow] (pet) -- (r1); \draw[flow] (r1) -- (c1);
+  \draw[flow] (petct.east) -- ++(0.3,0) |- (r2.west); \draw[flow] (petct.east) -- ++(0.3,0) |- (r3.west);
+  \draw[flow] (r2.east) -| ([xshift=-0.35cm]c2.west) -- (c2.west);
+  \draw[flow] (r3.east) -| ([xshift=-0.35cm]c2.west);
+  \node[note,text=d2dink,anchor=south] at ([xshift=-0.9cm]c2.north west) {rule 3.5: the stricter};
+  \node[box,minimum width=2.6cm] (s1) at (11.2,0) {its DAQ software};
+  \node[box,minimum width=2.6cm] (s2) at (11.2,-1.9) {its DAQ software};
+  \node[cls=d2dcat0] at (13.2,0) {IIa};
+  \node[cls=d2dcat3] at (13.2,-1.9) {IIb};
+  \draw[flow] (c1) -- node[above,note,text=d2dink] {rule 3.3} (s1);
+  \draw[flow] (c2) -- node[above,note,text=d2dink] {rule 3.3} (s2);
+  \node[note,text=d2dink,align=center,anchor=north] at (11.8,-2.5) {the same code, two classes;\\the IEC 62304 class (A, B, C) is separate};
+\end{tikzpicture}

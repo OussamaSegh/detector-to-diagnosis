@@ -1,0 +1,22 @@
+% Chapter 13: the routes to market for a PET scanner in the EU (class IIa, Annex IX) and the US
+% (class II, 510(k)).
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.45cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.2,0.85) {EU: MDR, class IIa};
+  \node[box,minimum width=2.4cm] (e1) at (1.0,0) {QMS\\[-1pt]\scriptsize ISO 13485};
+  \node[box,right=of e1,minimum width=2.4cm] (e2) {technical\\[-1pt]\scriptsize documentation};
+  \node[box=d2dcat0,right=of e2,minimum width=2.6cm] (e3) {notified body\\[-1pt]\scriptsize Annex IX audit};
+  \node[box,right=of e3,minimum width=2.4cm] (e4) {declaration\\[-1pt]\scriptsize of conformity};
+  \node[hot,right=of e4,minimum width=1.8cm] (e5) {CE + NB no.};
+  \foreach \a/\b in {e1/e2,e2/e3,e3/e4,e4/e5} {\draw[flow] (\a) -- (\b);}
+  \draw[flow,d2dcat0] (e5.south) -- ++(0,-0.45) -| node[pos=0.25,below,note,text=d2dink] {surveillance audits; approval of significant changes} (e3.south);
+  \begin{scope}[yshift=-2.7cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.2,0.85) {US: FD\&C Act, class II, 21 CFR 892.1200 (KPS)};
+  \node[box,minimum width=2.4cm] (u1) at (1.0,0) {QMSR\\[-1pt]\scriptsize ISO 13485 by reference};
+  \node[box,right=of u1,minimum width=2.4cm] (u2) {predicate\\[-1pt]\scriptsize same intended use};
+  \node[box=d2dcat0,right=of u2,minimum width=2.6cm] (u3) {510(k)\\[-1pt]\scriptsize substantial equivalence};
+  \node[box,right=of u3,minimum width=2.4cm] (u4) {FDA review};
+  \node[hot,right=of u4,minimum width=1.8cm] (u5) {cleared};
+  \foreach \a/\b in {u1/u2,u2/u3,u3/u4,u4/u5} {\draw[flow] (\a) -- (\b);}
+  \node[note,text=d2dink,align=left,anchor=north west] at ([yshift=-0.25cm]u1.south west) {no predicate, low or moderate risk: De Novo (granted). Class III: PMA (approved). FDA inspects; it does not certify.};
+  \end{scope}
+\end{tikzpicture}
