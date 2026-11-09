@@ -97,6 +97,11 @@ centered between two samples is 5.5% below the true maximum at that sampling, wh
 by about 4%; the parabola's vertex is within 1.2%. Exercise 30.1 has you write both, against tests
 with known answers.
 
+Figure [](#fig-ch30-width) shows both steps on a sampled peak.
+
+```{.figure #fig-ch30-width src="book/figures/plots/ch30/width.py" caption="Measuring a width the way NEMA NU 2 does, with the chapter's own functions, on a Gaussian of 3.5 samples FWHM centred between two samples. The parabola recovers the maximum the samples miss; the interpolated crossings give a FWHM of 3.60 samples for a true 3.5." alt="Samples of a Gaussian profile as stems, the true profile dotted, and a parabola through the three highest samples whose vertex at 0.988 is above the highest sample at 0.945. Horizontal lines mark the FWHM at half the maximum, 3.60 samples, and the FWTM at a tenth, 6.60 samples." width="75%" inputs="tools/recon/quality.py"}
+```
+
 `width` refuses a profile that does not fall below the level on both sides, which happens when
 the profile is cut too short or a neighboring object is too close. A function that returned a
 number there would return the profile's length.
@@ -157,6 +162,11 @@ width, 2.45 mm / 2 = 1.23 mm, from where in its crystal the photon interacted, a
 non-collinearity of the two photons, about 0.0022 times the ring's diameter for the 0.5 degrees
 FWHM the simulator draws, 0.69 mm at 312 mm, added in quadrature: about 1.4 mm. The simulator has
 no positron range and no error in finding the crystal, which add to a real scanner's width.
+
+Figure [](#fig-ch30-resolution) draws section 1 against the point's position and section 2 against the iterations.
+
+```{.figure #fig-ch30-resolution src="book/figures/plots/ch30/resolution.py" caption="Point sources in air. Left, FBP: the radial width grows with the distance from the axis (parallax), the tangential one barely, and 2 mm pixels hide both. Right, OSEM: the widths settle within an iteration or two and differ from FBP's (hollow markers)." alt="Left: FWHM in mm against the point's distance from the axis, 10, 50 and 100 mm. With 0.25 mm pixels the radial width rises from 0.76 to 4.8 mm and the tangential from 1.65 to 2.3 mm; with 2 mm pixels both start near 3.7 mm. Right: OSEM widths against iterations 1 to 32 for points at 10, 50 and 100 mm, nearly flat at about 1.5, 1.7 and 2.6, and 2.0 and 5.3 mm, with FBP's values as hollow markers." width="100%" inputs="measurements/ch30/quality.txt"}
+```
 
 ### The pixel and the bins
 
@@ -258,6 +268,11 @@ that do not fit twelve regions are refused (SRS-IQ-003). The smaller regions use
 as NEMA's concentric regions do. In MiniDAQ's phantom, with no slice free of rods, the twelve
 12 mm regions overlap by up to 2 mm; a 3D phantom has room for more.
 
+Figure [](#fig-ch30-rois) shows where the rule put them.
+
+```{.figure #fig-ch30-rois src="book/figures/plots/ch30/rois.py" caption="The phantom's regions of interest: the three rods, and the twelve background regions at each of the three sizes, placed by rule inside 70 mm of the axis and away from the rods." alt="A water disc of 90 mm radius with activity to 80 mm and a dotted circle at 70 mm. Three filled rods of radius 12, 8 and 5 mm. Twelve sets of three concentric circles, radii 12, 8 and 5 mm, spread over the background away from the rods; some of the largest touch." width="50%" inputs="measurements/ch30/quality.txt measurements/ch28/reconstruct.py"}
+```
+
 ### Iterations and filters
 
 The phantom's first realization, reconstructed by OSEM with all the corrections in the model at
@@ -289,6 +304,11 @@ protocol is OSEM with 4 iterations of 8 subsets and a 4 mm Gaussian: the 12 mm r
 about 1, the 8 mm rod's above 0.9, and variability of a few percent. A clinical protocol is chosen
 by the people who read the images, from measurements like these and from patient images
 (assumption: confirm with team who decides a reconstruction protocol and on what evidence).
+
+Figure [](#fig-ch30-tradeoff) plots each rod's choices.
+
+```{.figure #fig-ch30-tradeoff src="book/figures/plots/ch30/tradeoff.py" caption="Contrast against background variability for each rod, at 2, 4, 8 and 16 iterations, without a filter and with Gaussian filters of 4 and 6 mm. More iterations move an image up and to the right; a filter moves it down and to the left." alt="Three panels for the 12, 8 and 5 mm rods. Each shows contrast recovery against variability in percent for three series: no filter, 4 mm filter and 6 mm filter, each through iterations 2, 4, 8 and 16. The 5 mm rod's unfiltered series rises from 0.43 at 4.5% to 0.87 at 16.9%; the filtered series lie lower and further left." width="100%" inputs="measurements/ch30/quality.txt"}
+```
 
 ## Is the number repeatable?
 
@@ -342,6 +362,11 @@ repeatable: over the six realizations its SD was 0.032, 0.076 and 0.055 for the 
 against 0.027, 0.040 and 0.024 for the mean over the rod. None of these is wrong. Each is a
 different figure of merit, and a specification that says "contrast recovery" without the region
 says nothing that can be checked. MiniDAQ's region is the whole rod, placed at its known position.
+
+Figure [](#fig-ch30-repeat) puts the realizations and the regions side by side.
+
+```{.figure #fig-ch30-repeat src="book/figures/plots/ch30/repeat.py" caption="Two sources of variation in one figure of merit. Left, the protocol on six realizations of the same phantom, with their mean and SD. Right, one image measured with five definitions of the region: the choice moves the number more than the noise does." alt="Left: dots for six realizations of each rod's contrast recovery, around 0.98 for 12 mm, 0.88 for 8 mm and 0.60 for 5 mm, with error bars of 0.027, 0.040 and 0.024. Right: grouped bars for the three rods and five regions: the rod, its inner half, the rod 2 mm off, 4 mm off, and its hottest pixel; the inner half and the hottest pixel read highest, 4 mm off lowest." width="100%" inputs="measurements/ch30/quality.txt"}
+```
 
 ## From figures to a specification
 
