@@ -370,16 +370,15 @@ noise:
    operation even when there is only one producer.
 
 One question is **not** answered by this machine: the value of cached indices. The uncached
-acquire/release ring varied from 36 to 140 M/s between runs, while the cached ring stayed
-between 40 and 64 M/s. In a heap-allocated rerun, the cached ring once reached 363 M/s. Per-item
-hand-off between two threads in lockstep is extremely sensitive to the hypervisor's scheduling
-and to whether the ring happens to settle nearly empty, nearly full or in between. Only in the
-last case do cached indices save anything. verify: repeat this comparison on bare metal with
-isolated cores (Chapter 4) before drawing conclusions about cached indices. Rigtorp's
-`SPSCQueue` documentation presents them as its key optimization (verify: its benchmark
-section and hardware). The honest summary for this book is the one Chapter 5 will make a
-rule: a result that changes by 4x between repetitions is not a result, and you report the
-spread along with the median.
+acquire/release ring varied from 36 to 140 M/s between runs, while the cached ring stayed between 40
+and 64 M/s. In a heap-allocated rerun, the cached ring once reached 363 M/s. Per-item hand-off
+between two threads in lockstep is extremely sensitive to the hypervisor's scheduling and to whether
+the ring happens to settle nearly empty, nearly full or in between. Only in the last case do cached
+indices save anything. Repeat this comparison on bare metal with isolated cores (Chapter 4) before
+you draw conclusions about cached indices. Rigtorp's `SPSCQueue` documentation presents them as its
+key optimization, backed by benchmarks on its author's own machine. The honest summary for this book
+is the one Chapter 5 will make a rule: a result that changes by 4x between repetitions is not a
+result, and you report the spread along with the median.
 
 Exercise 3.1 asks for 50 M singles per second between two pinned threads. With 16-byte
 `Single` values, the reference solution's per-item median was 33 M/s on this VM and batches of
@@ -650,15 +649,15 @@ ten runs, so the race was real and happening. Investigation showed the following
 | on the heap | reported 4/4 | not measured | reported 4/4 | not measured |
 | static | not measured | not measured | reported 4/4 | not measured |
 
-In the optimized builds the reader's two `float` loads from the stack object were not
-instrumented at all (visible in the LLVM IR: no `__tsan_read` call before them), although the
-object's address had been handed to the other thread through a lambda capture. verify: the
-exact cause inside LLVM's TSan instrumentation pass, which skips some accesses to stack
-objects it considers thread-local. The consequences for MiniDAQ are concrete. The `tsan`
-preset now builds at -O0, the exercise test keeps the shared object on the heap, and the lesson
-goes into the review checklist: **a clean TSan run is evidence, not proof**. TSan also cannot
-see races in code that does not run, and it says nothing about atomicity violations built from
-individually atomic operations, such as check-then-act on two atomics.
+In the optimized builds the reader's two `float` loads from the stack object were not instrumented
+at all (visible in the LLVM IR: no `__tsan_read` call before them), although the object's address
+had been handed to the other thread through a lambda capture. The book did not trace the cause
+inside LLVM's TSan instrumentation pass, which skips accesses to stack objects that its escape
+analysis considers local to one thread; this object was evidently judged so. The consequences for
+MiniDAQ are concrete. The `tsan` preset now builds at -O0, the exercise test keeps the shared object
+on the heap, and the lesson goes into the review checklist: **a clean TSan run is evidence, not
+proof**. TSan also cannot see races in code that does not run, and it says nothing about atomicity
+violations built from individually atomic operations, such as check-then-act on two atomics.
 
 ### Stress tests that find bugs
 

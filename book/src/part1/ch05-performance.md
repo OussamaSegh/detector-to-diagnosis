@@ -272,10 +272,10 @@ perf report --no-children --sort symbol
   anything it called). `perf annotate <function>` shows the samples per instruction, which is
   how you find the one load or branch that costs the time.
 
-Standard libraries are usually built without frame pointers, so stacks through `libstdc++`
-may be cut short; the flame graphs below show this as frames whose parent is the library
-itself. Ubuntu 24.04 and Fedora 38 and later build their own packages with frame pointers
-(verify: for your distribution).
+Standard libraries are usually built without frame pointers, so stacks through `libstdc++` may be
+cut short; the flame graphs below show this as frames whose parent is the library itself. Ubuntu
+24.04 and Fedora 38 and later build their own packages with frame pointers; for another
+distribution, check the compiler flags its packages are built with.
 
 ### A flame graph of MiniDAQ
 
@@ -382,16 +382,16 @@ acquisition PC uses before you install either.
 
 ### The intuition
 
-The compiler is the largest performance tool you have, and its options are measurable inputs
-like any other. `-O2` is the default for release builds in this book: it enables nearly all
-optimizations that do not trade code size for speed. `-O3` adds more aggressive inlining, loop
-unrolling and vectorization with a more generous cost model (since GCC 12, `-O2` already
-vectorizes loops whose cost model says the gain is certain; verify: GCC 12 release notes).
+The compiler is the largest performance tool you have, and its options are measurable inputs like
+any other. `-O2` is the default for release builds in this book: it enables nearly all optimizations
+that do not trade code size for speed. `-O3` adds more aggressive inlining, loop unrolling and
+vectorization with a more generous cost model (since GCC 12, `-O2` already vectorizes loops whose
+cost model says the gain is certain, the "very cheap" cost model of the GCC 12 release notes).
 `-march=<cpu>` allows the compiler to use every instruction that CPU has, AVX-512 included.
-Link-time optimization (LTO) lets the compiler optimize across translation units, for example
-inline a function from `decoder.cpp` into a loop in `pipeline.cpp`. Profile-guided optimization
-(PGO) compiles twice: once instrumented, then you run a representative workload, then again with
-the recorded branch and call frequencies, so the compiler knows which paths are hot.
+Link-time optimization (LTO) lets the compiler optimize across translation units, for example inline
+a function from `decoder.cpp` into a loop in `pipeline.cpp`. Profile-guided optimization (PGO)
+compiles twice: once instrumented, then you run a representative workload, then again with the
+recorded branch and call frequencies, so the compiler knows which paths are hot.
 
 None of these is guaranteed to help. Each can make a given loop slower, and the only way to know
 is to measure.
@@ -420,19 +420,20 @@ What the table says, and what it does not:
 - **There is no best setting.** Every option made something faster and something else slower.
   `-O3` made the decoder 32% faster and the whole pipeline 8% slower. `-march=native` and LTO
   made the lambda sort 23% slower, in both rounds.
-- **The function-pointer sort is the instructive row.** `-O3`, LTO and PGO all made it about
-  3.2 times faster, close to the speed of the lambda: each of them found a way to inline the
-  comparator. The likely mechanisms are constant propagation of the pointer into a clone of the
-  sort at `-O3` and with LTO, and, with PGO, indirect-call promotion: the profile shows that the
-  call always goes to `time_order`, so GCC turns it into a direct, inlinable call (verify: with
-  `-fopt-info-ipa` and `-fopt-info-inline`). The source-code fix of the previous section gets the
-  same result at `-O2`, without depending on the optimizer's heuristics.
+- **The function-pointer sort is the instructive row.** `-O3`, LTO and PGO all made it about 3.2
+  times faster, close to the speed of the lambda: each of them found a way to inline the comparator.
+  The likely mechanisms are constant propagation of the pointer into a clone of the sort at `-O3`
+  and with LTO, and, with PGO, indirect-call promotion: the profile shows that the call always goes
+  to `time_order`, so GCC turns it into a direct, inlinable call. That is GCC's documented
+  mechanism, not something the book confirmed in this build; `-fopt-info-ipa` and
+  `-fopt-info-inline` show what GCC did. The source-code fix of the previous section gets the same
+  result at `-O2`, without depending on the optimizer's heuristics.
 - **Unexplained gains are not gains yet.** The decoder got 1.3 to 1.5 times faster with every
   option. Its loop is in one translation unit with everything it calls inlined from headers, so
   LTO's usual benefit (inlining across files) does not explain it. Plausible causes are loop
-  alignment and unrolling, but without hardware counters on this VM that is a hypothesis
-  (verify: `perf annotate` and `perf stat` on bare metal). A gain you cannot explain may
-  disappear with the next unrelated change.
+  alignment and unrolling, but without hardware counters on this VM that is a hypothesis, to be
+  tested with `perf annotate` and `perf stat` on bare metal. A gain you cannot explain may disappear
+  with the next unrelated change.
 - **PGO's training matters.** The PGO build was trained on exactly the benchmarks it was then
   measured on, which is the best case. On the real program, train on a recorded acquisition.
 
@@ -487,13 +488,13 @@ reports inlining decisions.
 
 ### Branch prediction
 
-A modern core fetches and executes instructions far ahead of the one that is finishing, so it
-must guess the direction of every conditional branch long before the condition is known. The
-predictor guesses from the branch's history and from the history of recent branches. When it is
-right, the branch costs almost nothing. When it is wrong, all the work done along the wrong path
-is thrown away, and the core restarts from the branch: a penalty of roughly 15 to 20 cycles on
-recent x86 cores (verify: Agner Fog, *The microarchitecture of Intel, AMD and VIA CPUs*, for
-your CPU).
+A modern core fetches and executes instructions far ahead of the one that is finishing, so it must
+guess the direction of every conditional branch long before the condition is known. The predictor
+guesses from the branch's history and from the history of recent branches. When it is right, the
+branch costs almost nothing. When it is wrong, all the work done along the wrong path is thrown
+away, and the core restarts from the branch: a penalty of roughly 15 to 20 cycles on recent x86
+cores (Agner Fog, *The microarchitecture of Intel, AMD and VIA CPUs*, gives the figure for each
+CPU).
 
 A branch on random data is wrong as often as the less likely outcome occurs. The branchy filter
 has two branches, `e < lo` and `e > hi`, and with uniform energies the expected number of
@@ -583,10 +584,10 @@ identical output. A SIMD kernel without such a test
 is a bug waiting for an unusual input.
 
 Intrinsics are not the only option. `std::experimental::simd` (the Parallelism TS 2, shipped in
-libstdc++ since GCC 11) gives portable types such as `native_simd<float>` with masks and
-`where` expressions, and a `std::simd` based on it is part of C++26 (verify: P1928 and your
-compiler's status page). It is excellent for arithmetic on arrays of floats. It has no portable
-compress operation, which is what this filter needs.
+libstdc++ since GCC 11) gives portable types such as `native_simd<float>` with masks and `where`
+expressions, and a `std::simd` based on it is part of C++26 (proposal P1928; your compiler's status
+page says when it supports it). It is excellent for arithmetic on arrays of floats. It has no
+portable compress operation, which is what this filter needs.
 
 ### When SIMD does not help
 
@@ -603,9 +604,9 @@ reasons, which together answer one of this chapter's check-yourself questions:
    energies (structure of arrays, Chapter 2) it would compare 16 energies per instruction.
 3. **The work per element is too small** to pay for the shuffles and mask manipulation that
    compaction needs.
-4. **Wide registers can cost frequency.** On some Intel server CPUs, sustained AVX-512 lowers
-   the core's clock frequency for all code on that core for a while afterwards (verify: for the
-   acquisition PC's CPU; recent generations reduce or remove the effect).
+4. **Wide registers can cost frequency.** On some Intel server CPUs, sustained AVX-512 lowers the
+   core's clock frequency for all code on that core for a while afterwards. Recent generations
+   reduce or remove the effect; measure it on the acquisition PC's CPU.
 
 SIMD helps when the data is contiguous and of one type, the work per element is several
 operations, and the loop is long. It does not help for short loops, gathers and scatters,

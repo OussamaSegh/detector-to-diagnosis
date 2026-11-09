@@ -137,18 +137,18 @@ service time reached 192 ms and the source dropped 53% of the input. The rule th
 it is now a test in Exercise 4.2: **never put two busy `SCHED_FIFO` threads on one CPU**. Give
 each one its own CPU, and leave everything else under the normal scheduler.
 
-**The real-time throttle.** Linux protects itself against runaway real-time threads with
-[real-time throttling]{.idx key="RT throttling"}: by default, real-time threads may use at most
-`sched_rt_runtime_us` = 950,000 µs out of every `sched_rt_period_us` = 1,000,000 µs, leaving
-5% for normal threads (both are in `/proc/sys/kernel/`). A `SCHED_FIFO` source stage that is
-busy more than 95% of the time is stopped for up to 50 ms each second. The kernel log says so
-once: `sched: RT throttling activated`. In the measurements of Section 4.5, this shows up as a
-p99 of 44 ms in a run that is otherwise sub-millisecond. Recent kernels implement the reserve
-with a "deadline server" for normal threads instead of throttling all real-time threads, but
-the default budget is still about 50 ms per second (verify: `Documentation/scheduler/` for
-your kernel version). Turning the throttle off (`sched_rt_runtime_us = -1`) is possible and is
-done on dedicated real-time systems, but only together with isolated CPUs, so that the
-starved "normal threads" are only ones you chose to starve. On a shared CPU it turns a latency
+**The real-time throttle.** Linux protects itself against runaway real-time threads with [real-time
+throttling]{.idx key="RT throttling"}: by default, real-time threads may use at most
+`sched_rt_runtime_us` = 950,000 µs out of every `sched_rt_period_us` = 1,000,000 µs, leaving 5% for
+normal threads (both are in `/proc/sys/kernel/`). A `SCHED_FIFO` source stage that is busy more than
+95% of the time is stopped for up to 50 ms each second. The kernel log says so once: `sched: RT
+throttling activated`. In the measurements of Section 4.5, this shows up as a p99 of 44 ms in a run
+that is otherwise sub-millisecond. Recent kernels implement the reserve with a "deadline server" for
+normal threads instead of throttling all real-time threads, but the default budget is still 50 ms
+per second (the kernel's `Documentation/scheduler/sched-rt-group.rst` and `sched-deadline.rst`
+describe both for your kernel version). Turning the throttle off (`sched_rt_runtime_us = -1`) is
+possible and is done on dedicated real-time systems, but only together with isolated CPUs, so that
+the starved "normal threads" are only ones you chose to starve. On a shared CPU it turns a latency
 problem into a hung machine.
 
 ### PREEMPT_RT
@@ -374,14 +374,14 @@ translations, far more than any TLB holds; with 2 MiB pages it needs 512. For th
 DAQ keeps (the receive rings and the batch pools), huge pages are usually worth it. Linux
 offers two mechanisms:
 
-- **Transparent huge pages** (THP). The kernel backs suitably aligned anonymous memory with
-  2 MiB pages when it can. The mode in `/sys/kernel/mm/transparent_hugepage/enabled` is
-  `always`, `madvise` (only regions marked with `madvise(MADV_HUGEPAGE)`) or `never`. THP is
-  convenient, but the kernel's background `khugepaged` thread may later collapse small pages
-  into huge ones, and memory compaction to find free 2 MiB blocks can stall an allocation;
-  both are latency sources to keep away from the acquisition (verify: the kernel's
-  `transhuge` documentation). The book's VM runs THP in `always` mode, which is why Exercise
-  4.4's test disables it for its baseline.
+- **Transparent huge pages** (THP). The kernel backs suitably aligned anonymous memory with 2 MiB
+  pages when it can. The mode in `/sys/kernel/mm/transparent_hugepage/enabled` is `always`,
+  `madvise` (only regions marked with `madvise(MADV_HUGEPAGE)`) or `never`. THP is convenient, but
+  the kernel's background `khugepaged` thread may later collapse small pages into huge ones, and
+  memory compaction to find free 2 MiB blocks can stall an allocation; both are latency sources to
+  keep away from the acquisition (the kernel's `admin-guide/mm/transhuge.rst` describes the `defrag`
+  settings). The book's VM runs THP in `always` mode, which is why Exercise 4.4's test disables it
+  for its baseline.
 - **Explicit huge pages** (hugetlbfs). You reserve a number of huge pages at boot
   (`hugepages=` on the kernel command line) or early at run time (`/proc/sys/vm/nr_hugepages`),
   and map them with `mmap(..., MAP_HUGETLB, ...)` or from a file on a hugetlbfs mount. The
