@@ -1,0 +1,14 @@
+% Chapter 6: the life of an architecture decision record. Records are never rewritten; a
+% changed decision gets a new record that supersedes the old one.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=1.7cm]
+  \node[box=d2dcat1,minimum width=1.9cm] (pr) {Proposed};
+  \node[hot,right=of pr,minimum width=1.9cm] (ac) {Accepted};
+  \node[dim,right=of ac,minimum width=2.2cm] (su) {Superseded\\[-1pt]\scriptsize by ADR n+k};
+  \node[dim,below=0.9cm of pr,minimum width=1.9cm] (re) {Rejected};
+  \draw[flow] (pr) -- node[above,note,text=d2dink] {review} (ac);
+  \draw[flow] (ac) -- node[above,note,text=d2dink] {context changed} (su);
+  \draw[flow] (pr) -- (re);
+  \node[box,right=1.4cm of su,minimum width=2.6cm,align=left,font=\sffamily\scriptsize] (doc) {context\\\textbf{options} (more than one)\\decision\\\textbf{negative consequences}};
+  \node[note,text=d2dink,anchor=south] at (doc.north) {each record};
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.2cm]ac.south |- re.south) {numbered, never rewritten;\\ADR 0007 stays Proposed on purpose};
+\end{tikzpicture}

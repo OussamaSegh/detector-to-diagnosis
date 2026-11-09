@@ -1,0 +1,16 @@
+% Chapter 6: telemetry off the hot path. Stages only increment counters and record into
+% histograms; the monitor thread turns them into events, status and audit records.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.45cm]
+  \foreach \n/\x in {source/0, decode/2.2, sort/4.4, pair/6.6, write/8.8} {
+    \node[box,minimum width=1.8cm] (\n) at (\x,0) {\n};
+    \node[draw=d2drule,fill=d2drule!25!white,font=\sffamily\tiny,inner sep=2pt,align=center] (c\n) at (\x,-0.95) {counters\\histogram};
+    \draw[d2dmuted,line width=0.6pt] (\n) -- (c\n);}
+  \foreach \a/\b in {source/decode,decode/sort,sort/pair,pair/write} {\draw[flow] (\a) -- (\b);}
+  \node[hot,minimum width=2.4cm] (mon) at (4.4,-2.6) {monitor thread\\[-1pt]\scriptsize every 20 ms};
+  \foreach \n in {source,decode,sort,pair,write} {\draw[->,d2dcat0,dashed,line width=0.7pt] (c\n.south) -- (mon.north);}
+  \node[box=d2dcat2,minimum width=1.7cm] (st) at (0.6,-3.9) {\texttt{status}};
+  \node[box=d2dcat3,minimum width=1.7cm] (ev) at (4.4,-3.9) {events: error,\\drained};
+  \node[box=d2dcat1,minimum width=1.7cm] (au) at (8.2,-3.9) {audit file\\[-1pt]\scriptsize appended, flushed};
+  \draw[flow] (mon) -- (st); \draw[flow] (mon) -- (ev); \draw[flow] (mon) -- (au);
+  \node[note,text=d2dink,anchor=west,align=left] at (10.0,-0.95) {relaxed increments and\\single-writer records:\\no text, no lock,\\no system call};
+\end{tikzpicture}

@@ -1,0 +1,15 @@
+% Chapter 6: from a configuration file to a validated object. Every error is collected, with
+% its JSON Pointer path, before anything starts.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.7cm]
+  \node[dim,minimum width=2.0cm] (f) {\texttt{run.json}\\[-1pt]\scriptsize comments allowed};
+  \node[box,right=of f,minimum width=1.6cm] (p) {parse};
+  \node[box,right=of p,minimum width=2.5cm] (r) {read every key\\[-1pt]\scriptsize presence, type, range};
+  \node[box,right=of r,minimum width=2.2cm] (u) {unknown keys\\[-1pt]\scriptsize "did you mean"};
+  \node[hot,right=of u,minimum width=2.2cm] (o) {\texttt{Config}\\[-1pt]\scriptsize valid by construction};
+  \foreach \a/\b in {f/p,p/r,r/u,u/o} {\draw[flow] (\a) -- (\b);}
+  \node[box=d2dcat3,below=0.9cm of r,minimum width=6.4cm,align=left,font=\ttfamily\scriptsize,anchor=north west] (e) at ([xshift=-1.3cm]r.south west)
+    {/source/rate\_hz: must be between 1.0 and 1000000000.0\\/source/pair\_fracton: unknown key (did you mean "pair\_fraction"?)\\/pipeline/overflow: must be one of "block", "drop"};
+  \draw[->,d2dcat3,line width=0.9pt] (r.south) -- (r.south |- e.north);
+  \draw[->,d2dcat3,line width=0.9pt] (u.south) -- (u.south |- e.north);
+  \node[note,text=d2dink,anchor=west,align=left] at (e.east) {all errors at once, each\\with its path; nothing\\starts until there are none};
+\end{tikzpicture}

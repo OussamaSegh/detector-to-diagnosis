@@ -119,7 +119,10 @@ Why virtual functions here, after Chapter 5 removed an indirect call from the so
 the cost is paid once per *read* of up to a whole batch of words, not once per single. At the
 boundary to hardware, the ability to swap implementations at run time is worth an indirect
 branch per batch. Inside the per-event loops, concepts and templates remain the tool, as
-Chapter 1 recommended.
+Chapter 1 recommended. Figure [](#fig-ch06-ports) shows the whole arrangement.
+
+```{.figure #fig-ch06-ports src="book/figures/tikz/ch06/ports.tex" caption="Ports and adapters. The acquisition service owns three ports; replay, UDP, simulator and test fake all implement the same detector port, and every dependency points inward." alt="Hexagon labelled acquisition service with DetectorPort, ControlPort and SinkPort on its edge. Four adapters on the left (replay file, UDP receiver, simulator, test fake) point to DetectorPort; a TCP server points to ControlPort and a list-mode writer to SinkPort." width="95%"}
+```
 
 ### Worked example: testing the sorter without hardware
 
@@ -313,7 +316,10 @@ bad.json`:
 
 All five at once, each with its path, so the operator fixes the file in one pass. The same
 errors come back over the control API as a `details` array of `{path, message}` objects, so a
-GUI can highlight the fields.
+GUI can highlight the fields. Figure [](#fig-ch06-config) summarises the path from file to object.
+
+```{.figure #fig-ch06-config src="book/figures/tikz/ch06/config.tex" caption="Configuration validation. Every key is read and checked, unknown keys are reported with suggestions, and a Config object exists only when there are no errors." alt="Pipeline from run.json through parse, read every key and unknown keys to a Config object. Arrows from the two checking stages lead down to a red box listing three path-prefixed error messages." width="95%"}
+```
 
 ### Versioning the format
 
@@ -456,6 +462,11 @@ connection drops", because connections drop for harmless reasons. It is an expli
 client holds the run by sending a heartbeat, and the service stops when the lease expires,
 which is visible, configurable and testable.
 
+Figure [](#fig-ch06-session) traces the default behaviour: the run belongs to the service, not to the connection that started it.
+
+```{.figure #fig-ch06-session src="book/figures/tikz/ch06/session.tex" caption="A control session. Client A configures and starts a run, then disconnects; the run continues and client B stops it." alt="Sequence diagram with lifelines for client A, service and client B. Client A sends hello, start (rejected as illegal in idle), configure and start; the service replies running. Client A disconnects, the service audits it and keeps running, then client B asks status and sends stop." width="85%"}
+```
+
 ::: box-mistakes
 - **Tying the run to the session.** A sleeping laptop stops a patient scan.
 - **No version in the messages.** The first incompatible change then needs a flag day.
@@ -500,7 +511,10 @@ interval.
 
 The interval percentiles are what Exercise 4.3 built, now part of the library: two snapshots
 of the bucket counts, subtracted. The cumulative histogram is never reset, because a reset would
-race with its single writer.
+race with its single writer. Figure [](#fig-ch06-telemetry) shows who writes and who reads.
+
+```{.figure #fig-ch06-telemetry src="book/figures/tikz/ch06/telemetry.tex" caption="Telemetry off the hot path. Stages only bump counters and record into histograms; the monitor thread turns them into status, events and audit records." alt="Five pipeline stages, each with a small counters-and-histogram box beneath it. Dashed arrows run from every box to a monitor thread polling every 20 ms, which feeds the status reply, error and drained events, and the audit file." width="95%"}
+```
 
 ```{.cpp include="minidaq/include/minidaq/metrics/histogram_interval.hpp" snippet="interval"}
 ```
@@ -575,7 +589,10 @@ tests everything in C++23 with `std::expected`, beside the C++20 presets that us
 
 Exercise 6.3 writes a linter for the format; MiniDAQ's own records pass it in every CI run.
 Record 0007 is *Proposed* on purpose: writing down an undecided question with its options is
-how you keep it from being decided by whoever writes the first line of a file writer.
+how you keep it from being decided by whoever writes the first line of a file writer. Figure [](#fig-ch06-adr) shows the life cycle.
+
+```{.figure #fig-ch06-adr src="book/figures/tikz/ch06/adr.tex" caption="The life of an architecture decision record. A record is never rewritten; a changed decision gets a new record that supersedes it." alt="State diagram: Proposed leads to Accepted by review or down to Rejected; Accepted leads to Superseded when the context changes. A side box lists what each record contains: context, options, decision and negative consequences." width="90%"}
+```
 
 ### The architecture description
 

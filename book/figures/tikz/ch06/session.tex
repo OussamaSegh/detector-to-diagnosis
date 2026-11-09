@@ -1,0 +1,23 @@
+% Chapter 6: a control session as a sequence diagram. The run belongs to the service; a client
+% that disconnects leaves it running, and another client can stop it.
+\begin{tikzpicture}[x=1cm,y=-0.62cm]
+  \foreach \x/\n in {0/client A, 5/service, 10/client B} {
+    \node[box,minimum width=2.0cm] at (\x,-0.9) {\n};
+    \draw[d2drule,line width=1pt] (\x,-0.3) -- (\x,11.2);}
+  \fill[partcolor!15!white] (4.85,4.5) rectangle (5.15,10.2);
+  \newcommand\msg[5]{\draw[->,#4,line width=0.9pt] (#1,#3) -- node[above,font=\ttfamily\scriptsize,text=d2dink,inner sep=1pt] {#5} (#2,#3);}
+  \msg{0}{5}{0.6}{d2dmuted}{hello}
+  \msg{5}{0}{1.4}{d2dcat2}{ok, commands, api 1.0}
+  \msg{0}{5}{2.4}{d2dmuted}{start}
+  \msg{5}{0}{3.2}{d2dcat3}{illegal\_transition (idle)}
+  \msg{0}{5}{4.0}{d2dmuted}{configure \{...\}}
+  \msg{0}{5}{4.6}{d2dmuted}{start}
+  \msg{5}{0}{5.4}{d2dcat2}{ok, running}
+  \draw[d2dcat3,line width=1.2pt] (-0.2,6.4) -- (0.2,6.8) (-0.2,6.8) -- (0.2,6.4);
+  \node[note,text=d2dink,anchor=east] at (-0.3,6.6) {disconnects};
+  \node[note,text=d2dink,anchor=west,align=left] at (5.25,6.5) {audit: disconnect;\\the run continues};
+  \msg{10}{5}{8.0}{d2dmuted}{status}
+  \msg{5}{10}{8.8}{d2dcat2}{running}
+  \msg{10}{5}{9.6}{d2dmuted}{stop}
+  \msg{5}{10}{10.4}{d2dcat2}{ok, stopping}
+\end{tikzpicture}
