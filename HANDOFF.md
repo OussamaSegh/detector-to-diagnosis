@@ -40,7 +40,7 @@ Independent review of 1.0.0 (2026-11-09, review branch claude/project-thread-p48
 VERSION 1.0.1-dev (main was red on `docs.version` after the release: the commit after a release
 must set the next -dev version), corrected two stale listing ranges in solutions Chapter 1 and
 the benchmark names in the 0.9.0 and 1.0.0 records, and explained the *verify:* marker in How
-to use this book. Its open findings (the private repository the book links to, the index,
+to use this book. Its open findings (the repository the book links to, private at the time and public again, the index,
 CAPA-0002's overdue check) are in the review report.
 
 Next work: none is asked. The next thread starts VERSION 1.1.0-dev (or 2.0.0-dev, see the roadmap
@@ -235,7 +235,7 @@ Dependencies and process:
 | `tools/` | Checkers and generators: `trace_matrix.py`, `design_file.py`, `anomalies.py`, `check_layers.py`, `check_risk.py`, `coverage.py`, `mutation_test.py`, `perf_gate.py`, `make_sbom.py`, `static_analysis.sh`, `release_checks.sh`, and more. |
 | `measurements/` | Raw evidence behind every number in the book, one folder per chapter, plus `release-X.Y.Z/`. |
 | `ci/run_all.sh` | The six CI presets locally: debug, clang-release, gcc-cxx23, hardened, asan-ubsan and tsan. |
-| `.github/workflows/` | `ci.yml` (presets, static analysis, fuzz smoke, SBOM, Grype, document control), `gates.yml` (gate self-test), `codeql.yml`, `kdp.yml`, `pages.yml`, `tags.yml` and `perf.yml`. `perf.yml` never runs because there is no self-hosted runner; `pages.yml` and the CodeQL upload fail while the repository is private (since 2026-11-08). |
+| `.github/workflows/` | `ci.yml` (presets, static analysis, fuzz smoke, SBOM, Grype, document control), `gates.yml` (gate self-test), `codeql.yml`, `kdp.yml`, `pages.yml`, `tags.yml` and `perf.yml`. `perf.yml` never runs because there is no self-hosted runner; `pages.yml` and the CodeQL upload need a public repository (it was private on 2026-11-08 and 09, public again since 2026-11-09). |
 
 Other presets: release, profile, fuzz, and coverage (Clang source-based coverage with MC/DC,
 which builds the exercises).
