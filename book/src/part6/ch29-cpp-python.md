@@ -122,6 +122,11 @@ bits for repeated runs, and 1e-12 between one thread and four for the backprojec
 the test every time. The second fails it on some runs only; ThreadSanitizer reports it on every
 run, which is why CI runs the library's tests under the `tsan` preset.
 
+Figure [](#fig-ch29-threads) shows both schemes.
+
+```{.figure #fig-ch29-threads src="book/figures/tikz/ch29/threads.tex" caption="Threads in the projector. The forward projection gives each thread a contiguous chunk of lines; the backprojection gives each thread an image of its own and sums the images in thread order." alt="Left, a bar split into four chunks for threads 0 to 3, with the chunk bounds k times count over threads, so no remainder is lost and each output has one writer. Right, four small images for threads 0 to 3 summed into one, with no lock and the same bits for the same thread count." width="85%"}
+```
+
 ### Tests in C++
 
 `recon/tests/test_joseph.cpp` tests the library on a geometry small enough to know the answers:
@@ -153,6 +158,11 @@ have their columns one after the other; `a[::2, ::3]` skips elements. Code that 
 pointer and indexes it as `row * cols + col` reads the right elements only from a C-ordered
 array. That is the mistake of the day in the life, and the starter of Exercise 29.1.
 
+Figure [](#fig-ch29-strides) shows the same six values in the two layouts.
+
+```{.figure #fig-ch29-strides src="book/figures/tikz/ch29/strides.tex" caption="Two arrays with the same values and different strides. Indexing the data pointer as row times columns plus column reads the right element only from the C-ordered one." alt="A 2 by 3 array with values a to f. Below it, its memory in C order, a b c d e f, strides 24 and 8, where element 3 is d, right; and in Fortran order, a d b e c f, strides 8 and 16, where element 3 is e, wrong." width="80%"}
+```
+
 The module asks pybind11 for exactly what the C++ reads, and checks the rest itself:
 
 ```{.cpp include="recon/python/recon_cpp.cpp" snippet="check"}
@@ -181,6 +191,11 @@ it reads stay alive, because the call holds references to them. What the C++ may
 the lock is touch any Python object: create one, change one, raise a Python exception. The output
 array is allocated before the lock is released and returned after it is taken back.
 
+Figure [](#fig-ch29-boundary) follows one array across the boundary.
+
+```{.figure #fig-ch29-boundary src="book/figures/tikz/ch29/boundary.tex" caption="The binding boundary. pybind11 hands the C++ a C-contiguous float64 array, converting a copy when it must; the module checks the shape, releases the GIL and computes without touching a Python object." alt="Left in a Python band, a NumPy array with dtype, shape and strides, then array_t with c_style and forcecast, which makes a converted copy for another dtype or layout. Right in a C++ band, check ndim and shape, release the GIL, project on threads without Python objects. An arrow back from the shape check says a wrong shape raises a ValueError naming both shapes." width="100%"}
+```
+
 ## One set of tests for both sides
 
 ### The same interface
@@ -206,6 +221,11 @@ adjoint, the chords, the sinusoid, the likelihood, noiseless data, unmeasured bi
 Each test class of `test_recon.py` builds its projector with `cls.make`, the numpy `Projector` by
 default; the subclasses replace it, and unittest runs every inherited test on the C++ projector.
 A requirement verified on one implementation is now verified on both, with the same code.
+
+Figure [](#fig-ch29-tests) shows how the three kinds of tests fit together.
+
+```{.figure #fig-ch29-tests src="book/figures/tikz/ch29/tests.tex" caption="One set of tests for both sides. Chapter 28's tests run on each projector, a comparison on random data holds them to the same numbers, and the C++ library has tests of its own under the sanitizers." alt="Chapter 28's projector tests at the top, with arrows to the numpy Projector, the reference, and the CppProjector of the recon_cpp module. A double arrow between them is the comparison on random data with differences of 4.1e-08 forward, 4.9e-09 back and 1.0e-08 for an OSEM image. C++ tests under ASan, UBSan and TSan point to the C++ projector." width="75%"}
+```
 
 ### The same numbers
 
@@ -258,6 +278,11 @@ divisions. The position across the line is linear in the step, `f_k = f_0 + k df
 computing it that way halved the time. The lesson is the order of the work: the move to C++ made
 the threads and the memory possible, and a measurement found the arithmetic that mattered. A
 claim that C++ is faster is a measurement, not a property of the language.
+
+Figure [](#fig-ch29-speed) puts both versions side by side.
+
+```{.figure #fig-ch29-speed src="book/figures/plots/ch29/speed.py" caption="One projection of MiniDAQ's 2D sinogram, numpy against the C++ projector on 1, 2 and 4 threads. The first C++ version (grey) was slower than numpy on one thread; computing the position as f_0 + k df made it faster." alt="Two panels of horizontal bars, forward and back projection, in milliseconds. Current: numpy 57 and 49, C++ one thread 34 and 36, two threads 21 and 27, four threads 14 and 15. First C++ version in grey: one thread 66 and 66, two threads 34 and 39, four threads 21 and 24." width="100%" inputs="measurements/ch29/projector.txt measurements/ch29/first-version.txt"}
+```
 
 ## What the boundary costs
 

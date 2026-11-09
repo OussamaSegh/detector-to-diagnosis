@@ -1,0 +1,18 @@
+% Chapter 29: the binding boundary. pybind11 hands the C++ a C-contiguous float64 array (the
+% caller's own, or a converted copy); the module checks the shape, releases the GIL and computes.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.4cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.2cm,minimum height=1.0cm,font=\sffamily\scriptsize,align=center}}
+  \fill[d2dcat0!6!white] (-1.4,-1.6) rectangle (3.75,1.55);
+  \fill[partcolor!6!white] (3.75,-1.6) rectangle (12.6,1.55);
+  \node[font=\sffamily\small\bfseries,text=d2dcat0,anchor=south west] at (-1.35,-1.55) {Python};
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=south east] at (12.55,-1.55) {C++};
+  \node[st=d2dcat0] (np) at (0,-0.2) {NumPy array\\dtype, shape,\\strides};
+  \node[st=d2dcat0] (pb) at (2.5,-0.2) {array\_t: c\_style\\| forcecast};
+  \node[st=partcolor] (ck) at (5.1,-0.2) {check ndim\\and shape};
+  \node[st=partcolor] (gil) at (7.6,-0.2) {release\\the GIL};
+  \node[st=partcolor] (cp) at (10.4,-0.2) {project on\\threads, no\\Python objects};
+  \draw[flow] (np) -- (pb); \draw[flow] (pb) -- (ck); \draw[flow] (ck) -- (gil); \draw[flow] (gil) -- (cp);
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.08cm]pb.south) {another dtype or layout:\\a converted copy};
+  \draw[->,d2dcat3,line width=0.8pt] (ck.north) -- ++(0,0.75) -| node[pos=0.25,above,note,text=d2dcat3]{wrong shape: ValueError names both shapes} (np.north);
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.08cm]gil.south) {output allocated\\before, returned after};
+\end{tikzpicture}

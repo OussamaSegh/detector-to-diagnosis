@@ -1,0 +1,13 @@
+% Chapter 29: one set of tests for both sides. The two projectors share an interface; the tests
+% are parametrized over both, and a comparison test holds them to the same numbers.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.4cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.6cm,minimum height=0.9cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dcat2,minimum width=4.2cm] (t) at (0,1.4) {Chapter 28's projector tests\\adjoint, chords, sinusoid, gaps};
+  \node[st=d2dcat0] (np) at (-2.0,0) {Projector\\numpy, the reference};
+  \node[st=partcolor] (cp) at (2.0,0) {CppProjector\\recon\_cpp module};
+  \draw[flow] (t.south) -- (np.north); \draw[flow] (t.south) -- (cp.north);
+  \draw[<->,d2dink,line width=0.9pt] (np) -- (cp);
+  \node[note,text=d2dink,align=center,anchor=north] at (0,-0.6) {comparison on random data, largest difference:\\forward 4.1e-08, back 4.9e-09, OSEM image 1.0e-08};
+  \node[st=d2dmuted] (ct) at (6.0,0) {C++ tests\\under ASan, UBSan\\and TSan};
+  \draw[flow] (ct) -- (cp);
+\end{tikzpicture}

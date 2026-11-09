@@ -1,0 +1,16 @@
+% Chapter 29: two arrays with the same values and different strides. Indexing the data pointer as
+% row * cols + col reads the right elements only from the C-ordered one.
+\begin{tikzpicture}[x=0.75cm,y=0.75cm]
+  \tikzset{c/.style={draw=d2drule,minimum size=0.75cm,font=\ttfamily\small,inner sep=0pt}}
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.5,1.3) {the values};
+  \foreach \v [count=\k from 0] in {a,b,c,d,e,f} {\pgfmathtruncatemacro{\r}{\k/3}\pgfmathtruncatemacro{\cc}{mod(\k,3)}
+    \node[c,fill=d2dcat\cc!25!white] at (\cc,-\r+0.5) {\v};}
+  \begin{scope}[xshift=4.2cm]
+  \node[font=\sffamily\small\bfseries,text=d2dcat2,anchor=west] at (-0.5,1.3) {C order in memory: strides (24, 8)};
+  \foreach \v/\cc [count=\k from 0] in {a/0,b/1,c/2,d/0,e/1,f/2} {\node[c,fill=d2dcat\cc!25!white] at (\k,0.5) {\v};}
+  \node[note,text=d2dcat2,anchor=west] at (6.0,0.5) {data[1*3+0] is d: right};
+  \node[font=\sffamily\small\bfseries,text=d2dcat3,anchor=west] at (-0.5,-0.55) {Fortran order (a.T, asfortranarray): strides (8, 16)};
+  \foreach \v/\cc [count=\k from 0] in {a/0,d/0,b/1,e/1,c/2,f/2} {\node[c,fill=d2dcat\cc!25!white] at (\k,-1.35) {\v};}
+  \node[note,text=d2dcat3,anchor=west] at (6.0,-1.35) {data[1*3+0] is e: wrong};
+  \end{scope}
+\end{tikzpicture}
