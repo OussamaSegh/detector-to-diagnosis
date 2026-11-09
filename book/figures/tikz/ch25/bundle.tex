@@ -1,0 +1,18 @@
+% Chapter 25: the checks an update bundle passes before anything is written, and the one after
+% extraction. Each refusal leaves the installed system unchanged.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.35cm]
+  \tikzset{ck/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.2cm,minimum height=1.0cm,font=\sffamily\scriptsize,align=center}}
+  \node[ck=partcolor] (sig) at (0,0) {Ed25519 signature\\of update.json};
+  \node[ck=d2dcat0,right=of sig] (pp) {product and\\platform id};
+  \node[ck=d2dcat0,right=of pp] (ver) {version newer\\than confirmed};
+  \node[ck=d2dcat0,right=of ver] (dig) {archive size\\and SHA-256};
+  \node[ck=d2dcat2,right=of dig] (ext) {extract, then\\MANIFEST.sha256};
+  \foreach \a/\b in {sig/pp,pp/ver,ver/dig,dig/ext} {\draw[flow] (\a) -- (\b);}
+  \draw[->,d2dcat3,line width=0.8pt] (sig.south) -- ++(0,-0.45) node[below,note,text=d2dcat3,align=center] {not signed by a key\\in update-keys/};
+  \draw[->,d2dcat3,line width=0.8pt] (pp.south) -- ++(0,-0.45) node[below,note,text=d2dcat3,align=center] {another product\\or platform};
+  \draw[->,d2dcat3,line width=0.8pt] (ver.south) -- ++(0,-0.45) node[below,note,text=d2dcat3,align=center] {older, unless a\\downgrade is asked};
+  \draw[->,d2dcat3,line width=0.8pt] (dig.south) -- ++(0,-0.45) node[below,note,text=d2dcat3,align=center] {damaged\\in transit};
+  \draw[->,d2dcat3,line width=0.8pt] (ext.south) -- ++(0,-0.45) node[below,note,text=d2dcat3,align=center] {missing, extra,\\link or wrong digest};
+  \draw[d2drule,line width=0.8pt,densely dashed] ([xshift=0.175cm]dig.north east) -- ++(0,0.35) node[above,note,text=d2dink] {first write};
+  \node[note,text=d2dink,anchor=south] at ([yshift=0.1cm]sig.north) {before a byte is parsed};
+\end{tikzpicture}

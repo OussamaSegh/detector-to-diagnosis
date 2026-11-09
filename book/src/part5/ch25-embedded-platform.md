@@ -74,6 +74,11 @@ The consequence is easy to state and easy to miss: two acquisition PCs that run 
 version on different C libraries or kernels are, for verification purposes, two different systems.
 Every test you run is evidence about the combination it ran on.
 
+Figure [](#fig-ch25-stack) draws the two halves of that combination.
+
+```{.figure #fig-ch25-stack src="book/figures/tikz/ch25/stack.tex" caption="What is below MiniDAQ. The product SBOM covers only the top layer; the platform definition names everything under it, and a test run verifies the whole stack it ran on." alt="Six stacked layers: MiniDAQ's three programs; the C and C++ libraries and OpenSSL; systemd and tar; the settings files for sysctl, udev, the user and the units; the kernel with its command line; the PC and boards. A bracket marks the top layer as the product SBOM, another the four below as the platform definition with its own SBOM." width="80%"}
+```
+
 ### Two ways to a controlled platform
 
 There are two common ways to make the platform a defined thing.
@@ -268,6 +273,11 @@ A shorter interval detects sooner and raises the risk of killing a server that w
 scanner, where a restart ends the scan in progress, 10 s is a reasonable start (assumption: confirm
 with team).
 
+Figure [](#fig-ch25-watchdog) puts the measured times on one axis.
+
+```{.figure #fig-ch25-watchdog src="book/figures/tikz/ch25/watchdog.tex" caption="The measured run with the hung_bus fault. The slow control never beats; the first check after its 3 s limit withholds the ping, and systemd acts 10 s after the last ping it received." alt="Time line from 0 to 16 seconds. The slow-control row is hung from the start. A dashed line at 3 s marks it unhealthy. The watchdog thread pings at 0.01 s, and at 5.01 s it sends an unhealthy status and no ping. A line at 10.01 s marks systemd acting. Arrows show WatchdogSec as 10 s and the worst case for any hang as 15 s." width="95%"}
+```
+
 ### After the watchdog fires
 
 What follows is the crash path you already have. systemd sends `SIGABRT`; the handler of Chapter 21
@@ -277,6 +287,11 @@ the server again 2 s later. If the board is still hung, the slow control will no
 process either, the watchdog fires again, and after the third failure within five minutes the unit
 fails and stays failed: an endless restart loop would hide the problem and fill the disk with core
 dumps.
+
+Figure [](#fig-ch25-service) puts readiness, restarts, the limit and the rollback in one picture.
+
+```{.figure #fig-ch25-service src="book/figures/tikz/ch25/service.tex" caption="The service's life under systemd. READY=1 makes it active and the confirmation follows; a missed ping or a crash restarts it; the third failure in five minutes fails the unit and starts the rollback." alt="State diagram. Starting goes to active on READY=1, then to version confirmed by ExecStartPost. From active, no watchdog ping within 10 s or a crash leads to killed with a crash report, which restarts after 2 s. The third kill in five minutes leads to unit failed, OnFailure starts the rollback unit, which starts the good version, or exits with 3 and waits for a person." width="85%"}
+```
 
 The service-level watchdog has a limit of its own: it cannot catch a hung systemd or a hung kernel.
 For those, systemd can feed the PC's hardware watchdog (`RuntimeWatchdogSec=` in `system.conf`),
@@ -393,7 +408,10 @@ one (Exercise 25.2 is the comparison done fully by the rules of Semantic Version
 archive's size and digest with the manifest's. Only then is anything written. Several keys are
 accepted so that a new key can be installed before the old one is retired; the private key belongs
 to the release process, in a hardware security module or on an offline machine, never in the
-repository or on a PC (assumption: confirm with team how the key is held and who may sign).
+repository or on a PC (assumption: confirm with team how the key is held and who may sign). Figure [](#fig-ch25-bundle) shows the order.
+
+```{.figure #fig-ch25-bundle src="book/figures/tikz/ch25/bundle.tex" caption="The checks a bundle passes, in order. The signature is checked before any byte of the manifest is parsed, nothing is written before the archive's digest matches, and every refusal leaves the installed system as it was." alt="Five boxes in a row: the Ed25519 signature, product and platform id, a version newer than the confirmed one, archive size and SHA-256, then extraction checked against MANIFEST.sha256. Under each, a red arrow names what it refuses: an unknown key, another product or platform, an older version, damage in transit, and missing, extra or altered files." width="95%"}
+```
 
 ### Two slots and a link
 
@@ -442,7 +460,10 @@ a later design decision that ADR 0020 records as open.
 The measured cost is small: installing a bundle of the three programs (0.7 MB, 1.7 MB unpacked) took
 46 to 62 ms, a rollback 5 ms and a confirmation 4 ms. The time a site cares about is the server's
 restart, a few milliseconds to `READY`, and the minutes of the service engineer's procedure around
-it.
+it. Figure [](#fig-ch25-measured) shows these times next to the unit's exposure score.
+
+```{.figure #fig-ch25-measured src="book/figures/plots/ch25/measured.py" caption="Measured on the development machine. Left, the updater's commands, one run each; the second rollback has nothing to do and exits with 3. Right, the exposure score of the unit with and without its hardening lines." alt="Horizontal bars: install into an empty root 57 ms, install as a trial 46 ms, rollback 5 ms, a second rollback 2 ms with exit 3, install again 62 ms, confirm 4 ms. Vertical bars: exposure 9.4, rated UNSAFE, without hardening, and 1.7, rated OK, as shipped." width="100%" inputs="measurements/ch25/service_and_update.txt"}
+```
 
 ### Surviving a power cut
 
@@ -468,6 +489,11 @@ called after each step and throws, simulating the power failure there; it does t
 of an install and a rollback, opens the store again and checks that `current` names a slot whose
 files verify (SRS-PLT-007). Exercise 25.3 asks you to find the orders yourself, on a model of the
 disk small enough to cut after every single write.
+
+Figure [](#fig-ch25-slots) collects the orders and what each cut leaves behind.
+
+```{.figure #fig-ch25-slots src="book/figures/tikz/ch25/slots.tex" caption="Two slots and a link, and the order of the writes in each command. A power cut between any two steps leaves a state that the next start completes or discards, never a version that was not checked." alt="Top: /opt/minidaq with the link current pointing to slots/b, the trial 0.5.1, and a dashed line to slots/a, the confirmed 0.5.0; a state file records which is which. Bottom: install runs verify, extract, check, record trial, switch, with marks for a cut before and after the record; rollback runs switch, then record; confirm is one atomic write." width="70%"}
+```
 
 ### Extracting without trusting the archive
 

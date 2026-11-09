@@ -1,0 +1,21 @@
+% Chapter 25: the measured watchdog run with the hung_bus fault. The slow control never beats;
+% after its 3 s limit the next check withholds the ping, and systemd acts 10 s after the last one.
+\begin{tikzpicture}[x=0.85cm,y=1cm]
+  \draw[d2drule,line width=1pt] (0,0) -- (16,0);
+  \foreach \t in {0,2,...,16} {\draw[d2dmuted] (\t,-0.08) -- (\t,0.08); \node[note,text=d2dmuted,anchor=north] at (\t,-0.1) {\t\,s};}
+  \node[note,text=d2dink,anchor=east] at (-0.2,1.9) {slow control};
+  \fill[d2dcat3!55!white] (0,1.75) rectangle (16,2.05);
+  \node[font=\sffamily\scriptsize\bfseries,text=white,anchor=west] at (0.1,1.9) {hung in the first register read (hung\_bus)};
+  \draw[d2dcat3,line width=1pt,densely dashed] (3,1.6) -- (3,0.1);
+  \node[note,text=d2dcat3,anchor=west] at (3.05,1.45) {silent for 3 s: unhealthy};
+  \node[note,text=d2dink,anchor=east] at (-0.2,1.0) {watchdog thread};
+  \foreach \t in {0.01} {\fill[d2dcat2] (\t,1.0) circle (0.11);}
+  \node[note,text=d2dcat2,anchor=south] at (0.3,1.12) {ping};
+  \fill[d2dcat3] (5.01,1.0) circle (0.11);
+  \node[note,text=d2dcat3,anchor=west,align=left] at (5.2,1.0) {check at 5.01 s: no ping,\\STATUS=unhealthy, audit record};
+  \fill[d2dmuted] (10.01,1.0) circle (0.07); \fill[d2dmuted] (15.01,1.0) circle (0.07);
+  \draw[partcolor,line width=1.4pt] (10.01,2.25) -- (10.01,0.1);
+  \node[note,text=partcolor,anchor=south,align=center] at (10.01,2.25) {systemd acts: last ping + WatchdogSec};
+  \draw[<->,d2dink,line width=0.7pt] (0.01,0.45) -- node[fill=white,note,text=d2dink,inner sep=1pt]{WatchdogSec = 10 s} (10.01,0.45);
+  \draw[<->,d2dmuted,line width=0.7pt] (0.01,-0.7) -- node[fill=white,note,text=d2dmuted,inner sep=1pt]{worst case for any hang: 10 s + the longest silence limit = 15 s} (15,-0.7);
+\end{tikzpicture}

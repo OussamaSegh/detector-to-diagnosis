@@ -1,0 +1,18 @@
+% Chapter 25: what is below MiniDAQ. The product SBOM covers the top layer; the platform
+% definition covers the rest, and both together are the system that was verified.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{ly/.style={draw=#1,fill=#1!14!white,line width=0.9pt,rounded corners=2pt,minimum width=7.6cm,minimum height=0.72cm,font=\sffamily\scriptsize,align=center}}
+  \node[ly=partcolor] (app) at (0,2.4) {\textbf{MiniDAQ}: minidaq\_server, minidaq\_ctl, minidaq\_update};
+  \node[ly=d2dcat0] (lib) at (0,1.6) {C library, C++ standard library, OpenSSL libssl and libcrypto};
+  \node[ly=d2dcat0] (svc) at (0,0.8) {systemd (starts and supervises), tar (used by the updater)};
+  \node[ly=d2dcat2] (cfg) at (0,0.0) {settings: sysctl, udev rules, the user minidaq, the unit files};
+  \node[ly=d2dcat2] (ker) at (0,-0.8) {kernel and its command line (isolcpus=1-3 nohz\_full=1-3)};
+  \node[ly=d2dmuted] (hw) at (0,-1.6) {acquisition PC and the front-end boards};
+  \draw[partcolor,line width=1.2pt] (4.05,2.75) -- (4.2,2.75) -- (4.2,2.05) -- (4.05,2.05);
+  \node[note,text=partcolor,anchor=west,align=left] at (4.3,2.4) {product SBOM\\(Chapter 7)};
+  \draw[d2dcat2,line width=1.2pt] (4.05,1.95) -- (4.2,1.95) -- (4.2,-1.15) -- (4.05,-1.15);
+  \node[note,text=d2dcat2,anchor=west,align=left] at (4.3,0.4) {platform definition\\platform/platform.json,\\checked by\\platform\_check.py;\\its own SBOM};
+  \draw[d2dink,line width=1.2pt] (-4.05,2.75) -- (-4.2,2.75) -- (-4.2,-1.15) -- (-4.05,-1.15);
+  \node[note,text=d2dink,anchor=east,align=right] at (-4.3,0.8) {what one\\test run\\verified};
+  \node[note,text=d2dmuted,anchor=north] at (0,-2.0) {everything below MiniDAQ is SOUP: identified, versioned, its anomalies evaluated};
+\end{tikzpicture}

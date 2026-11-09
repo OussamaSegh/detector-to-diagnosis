@@ -1,0 +1,20 @@
+% Chapter 25: the service's life under systemd. READY=1 makes it active; a watchdog miss or a
+% crash restarts it; the third failure in five minutes fails the unit and starts the rollback.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.5cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.3cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (start) at (0,0) {starting\\(process exists)};
+  \node[st=d2dcat2] (act) at (4.4,0) {active\\API listens};
+  \node[st=d2dcat2] (conf) at (8.6,0) {version\\confirmed};
+  \node[st=d2dcat3] (kill) at (4.4,-2.0) {killed (SIGABRT)\\crash report};
+  \node[st=d2dcat3] (fail) at (0,-2.0) {unit failed};
+  \node[st=d2dcat0] (rb) at (0,-4.0) {minidaq-rollback\\last confirmed slot};
+  \node[st=d2dmuted] (wait) at (4.4,-4.0) {nothing to roll back:\\wait for a person};
+  \draw[flow] (start) -- node[above,note,text=d2dink]{READY=1} (act);
+  \draw[flow] (act) -- node[above,note,text=d2dink]{ExecStartPost} node[below,note,text=d2dink]{confirm} (conf);
+  \draw[flow] (act) -- node[right,note,text=d2dcat3,align=left]{no WATCHDOG=1\\within 10 s, or a crash} (kill);
+  \draw[flow] (kill.north west) -- node[midway,fill=white,inner sep=1pt,note,text=d2dink,align=center]{Restart=on-failure\\after 2 s} (start.south east);
+  \draw[flow] (kill) -- node[below,note,text=d2dcat3]{3rd in 5 min} (fail);
+  \draw[flow] (fail) -- node[left,note,text=d2dink]{OnFailure=} (rb);
+  \draw[flow] (rb.west) -- ++(-0.4,0) |- node[pos=0.25,left,note,text=d2dink,align=right]{start the\\good version} (start.west);
+  \draw[flow] (rb) -- node[above,note,text=d2dink]{exit 3} (wait);
+\end{tikzpicture}
