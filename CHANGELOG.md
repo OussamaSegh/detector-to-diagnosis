@@ -15,6 +15,13 @@ the patch version.
 - Release records 0.9.0 and 1.0.0: a correction names the energy filter benchmarks by their
   kernel (branchless, AVX-512), not by a number of channels.
 - VERSION 1.0.1-dev after release 1.0.0, so `docs.version` passes on main again.
+- CAPA-0002's effectiveness check, due at release 0.4.0 and never made, is made and recorded
+  (not effective; next check at 1.1.0), from an internal audit of releases 0.4.0 to 1.0.0
+  (`docs/regulatory/qms/internal-audit-2026-11-09.md`). `tools/check_capa.py` now fails on an
+  overdue check and on a newest release record that leaves out a CAPA that is not closed; the
+  records of 0.9.0 and 1.0.0 get a correction; SDP version 15 holds an internal audit before
+  each minor release (MDQ-PR-065). MDQ-PR-066 (open): fifteen controlled documents are released
+  with the status "draft for review".
 - README quick start installs the same packages as How to use this book (OpenSSL, NumPy and
   the Python headers were missing, so the first configure failed).
 

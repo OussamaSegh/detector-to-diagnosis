@@ -18,7 +18,7 @@
     {"clause": "7.4", "topic": "Purchasing (SOUP)", "evidence": ["docs/regulatory/soup-list.md", "cmake/Dependencies.cmake"], "note": "Every SOUP item identified by its pin, with its requirements and its known-anomaly review."},
     {"clause": "7.5.3", "topic": "Installation activities", "evidence": ["docs/platform/installation.md", "platform/platform.json", "tools/platform_check.py", "packaging/"], "note": "Chapter 25: the platform the software is installed on, how it is installed and updated, and the installation qualification whose records (facts, platform SBOM, exposure score) are kept with each installation."},
     {"clause": "8.2.1", "topic": "Feedback", "evidence": ["docs/regulatory/problem-reports.json"], "note": "In MiniDAQ, problems found by tests, fuzzing, measurements and reviews; at the scanner, complaints and service reports as well. From MDQ-PR-019 on, each closed report records its root cause analysis (Chapter 21)."},
-    {"clause": "8.2.4", "topic": "Internal audit", "evidence": ["docs/regulatory/qms/internal-audit-2026-10-25.md"], "note": "The audit of Chapter 16, by the author (no independent auditor in a teaching project)."},
+    {"clause": "8.2.4", "topic": "Internal audit", "evidence": ["docs/regulatory/qms/internal-audit-2026-10-25.md", "docs/regulatory/qms/internal-audit-2026-11-09.md"], "note": "The audit of Chapter 16 and the audit after release 1.0.0 (MDQ-PR-065), by the author (no independent auditor in a teaching project)."},
     {"clause": "8.3", "topic": "Control of nonconforming product", "evidence": ["docs/regulatory/problem-reports.json", "docs/regulatory/known-anomalies.md"], "note": "Every problem evaluated for safety; the open ones are stated by each release."},
     {"clause": "8.5.2", "topic": "Corrective action", "evidence": ["docs/regulatory/capa/", "tools/check_capa.py"], "note": "CAPA records with investigation, actions and effectiveness check (Chapter 16)."},
     {"clause": "8.5.3", "topic": "Preventive action", "evidence": ["docs/regulatory/capa/", "docs/coding-standard.md"], "note": "Preventive actions become rules of the coding standard or checks in CI."}
@@ -37,6 +37,7 @@
     "docs/regulatory/changes/README.md",
     "docs/regulatory/capa/README.md",
     "docs/regulatory/qms/internal-audit-2026-10-25.md",
+    "docs/regulatory/qms/internal-audit-2026-11-09.md",
     "docs/regulatory/security/threat-model.md",
     "docs/regulatory/verification/stp.md",
     "docs/code-review-checklist.md",

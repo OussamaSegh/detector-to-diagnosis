@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 14 (MiniDAQ 1.0.0-dev). Status: draft for review.
+Version 15 (MiniDAQ 1.0.1-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -211,7 +211,11 @@ release record shows:
 8. where the release is archived: the product archive and the evidence archive with their
    SHA-256, the source zip with its git history, the book files and the SBOM, kept for the
    lifetime of the product plus the retention period of the quality system (assumption: confirm
-   with team).
+   with team);
+9. the internal audit held for this minor release, before its release checks (a report in
+   `docs/regulatory/qms/`), and every CAPA that is not closed with the state of its
+   effectiveness check (test `docs.capa` fails on a check that is overdue, and on a newest
+   record that leaves out a CAPA that is not closed; MDQ-PR-065, CAPA-0002).
 
 The release record is committed with the release, and that commit adds files the checks of
 section 6 have not seen. The tag is set and the release is packaged only after CI on the release
@@ -255,3 +259,4 @@ of Chapter 13.
 | 12 | Chapter 33: the end-to-end run and the requirements freeze in section 6, the acceptance report in section 8 (ADR 0028, CR-0020). |
 | 13 | Chapter 36: the commit policy in section 5 (ADR 0031, CR-0023); Chapter 37: AI-assisted development in section 4 (ADR 0032, CR-0024). |
 | 14 | Release 1.0.0: the release checks' regression gate compares the candidate with the previous release run interleaved on the reference machine, and the recorded baseline becomes the trend (CR-0025). |
+| 15 | After release 1.0.0: section 8, item 9, the internal audit before each minor release and the state of every CAPA that is not closed (internal audit of 2026-11-09, MDQ-PR-065, CAPA-0002). |

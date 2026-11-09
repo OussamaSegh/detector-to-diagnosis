@@ -4,9 +4,9 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-10-25, by the software lead (internal audit findings A-1 and A-2) |
-| Source | internal audit 2026-10-25, findings A-1 and A-2 |
+| Source | internal audit 2026-10-25, findings A-1 and A-2; at the effectiveness check, MDQ-PR-065 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0 |
+| Effectiveness check | release 0.4.0: not made when due; made late on 2026-11-09: not effective; next at release 1.1.0 |
 
 ## Problem
 
@@ -65,8 +65,42 @@ Criterion: the internal audit of Part IV finds no controlled document changed wi
 version, and every change since this CAPA either reviewed against the checklist (the commit says
 so) or covered by a change request.
 Due: release 0.4.0.
-Result: filled in at the check.
+
+Result (2026-11-09, made late at the [internal audit of 2026-11-09](../qms/internal-audit-2026-11-09.md),
+after release 1.0.0): **not effective.** The check was not made at 0.4.0 or at any release
+after it, and the audit of Part IV that the criterion names was never held: the preventive
+action's audit once per Part was not done for Parts IV to IX (MDQ-PR-065). The release records
+of 0.9.0 and 1.0.0 then said that no CAPA was open. Made now on the history, the criterion's
+two measures give:
+
+- Controlled documents: `tools/design_file.py --since` at each release tag against the one
+  before, from 0.3.0 to 1.0.0, and from 1.0.0 to 785456b, finds no document changed without a
+  new version. Between this CAPA (c957527) and 0.3.0 two gaps: the audit report of 2026-10-25
+  changed without a new version, and release record 0.3.0 was indexed in no clause. Both were
+  corrected at 0.4.0, when the check started to run in CI against the last release.
+- Review of each change: 209 of the 210 commits since c957527 carry "Review: ..." in their
+  message; the one without is 66d72e8, the Part VI review itself, made before the commit policy
+  (34cf130) put the rule into `tools/check_commits.py` and the commit-msg hook.
+
+So the two corrective actions that a tool enforces worked, from the commit at which the tool
+started to enforce them; the action that rested on a person (the audit per Part, the check at
+0.4.0) was not done. That is this CAPA's root cause acting on the CAPA itself: a plan that nothing
+compares with the practice is not followed.
+
+Further action (MDQ-PR-065):
+
+- `tools/check_capa.py` (test `docs.capa`) fails when a CAPA that is not closed has a due
+  release with a release record and no result after its due date, and when the newest release
+  record does not name every CAPA that is not closed.
+- The internal audit is held before each minor release instead of each Part (the book's Parts
+  are complete), and the release record cites it (SDP version 15, section 8, item 9).
+- Corrections in the release records of 0.9.0 and 1.0.0.
+
+New criterion: at release 1.1.0, the internal audit made before it finds no controlled document
+changed without a new version and no commit without its review line since this result, the
+release record cites that audit, and `docs.capa` passes on the release commit.
+Due: release 1.1.0.
 
 ## Closure
 
-Not closed: the effectiveness check is due at release 0.4.0.
+Not closed: the effectiveness check is due at release 1.1.0.
