@@ -1,0 +1,12 @@
+% Chapter 4: which clock for what. CLOCK_REALTIME jumps when it is set or corrected; the
+% monotonic clocks never jump.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[->,d2dmuted,line width=0.8pt] (0,0) -- (9.4,0) node[right,note] {true time};
+  \draw[->,d2dmuted,line width=0.8pt] (0,0) -- (0,4.2) node[above,note] {clock reading};
+  \draw[partcolor,line width=1.5pt] (0,0.2) -- (9,3.9) node[above right,lab,text=partcolor,align=left] {\texttt{MONOTONIC}: never jumps;\\rate slewed by NTP};
+  \draw[d2dcat0,line width=1.2pt,dashed] (0,0.0) -- (9,3.45) node[below right,lab,text=d2dcat0,align=left] {\texttt{MONOTONIC\_RAW}:\\not slewed};
+  \draw[d2dcat3,line width=1.3pt] (0,0.9) -- (4.5,2.75); \draw[d2dcat3,line width=1.3pt,dotted] (4.5,2.75) -- (4.5,2.1);
+  \draw[d2dcat3,line width=1.3pt] (4.5,2.1) -- (8.6,3.8);
+  \node[lab,text=d2dcat3,anchor=south east,align=right] at (4.4,2.8) {\texttt{REALTIME}: steps back\\when it is corrected};
+  \node[note,text=d2dink,anchor=north west,align=left] at (4.7,1.4) {intervals and latency: \texttt{MONOTONIC} (\texttt{steady\_clock})\\log time stamps: \texttt{REALTIME} (\texttt{system\_clock})\\one read: 28 ns here, via the vDSO and the TSC};
+\end{tikzpicture}

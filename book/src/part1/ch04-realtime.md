@@ -120,7 +120,10 @@ loop now competes with four CPU hogs for its share; with `SCHED_FIFO` the p99 st
 a factor of 150. And even idle, the normal policy's *median* is 60 µs against 10 µs for
 `SCHED_FIFO`. That second effect is not scheduling at all; it is timer slack, and Section 4.4
 explains it. The idle `SCHED_FIFO` p99.99 of 8 ms is the VM: the hypervisor occasionally
-deschedules the whole virtual CPU, and no setting inside the guest can prevent that.
+deschedules the whole virtual CPU, and no setting inside the guest can prevent that. Figure [](#fig-ch04-jitter) plots the four rows.
+
+```{.figure #fig-ch04-jitter src="book/figures/plots/ch04/jitter.py" caption="Wake-up latency of minidaq_jitter, pinned and locked, idle and under load. Under load the real-time policy keeps p99 at 52 µs where the normal one reaches 7.7 ms; the millisecond tails of every row are the VM." alt="Four lines across the percentiles p50, p99, p99.9, p99.99 and max, on a log scale of microseconds. Idle normal: 60, 109, 1,040, 2,007, 2,465. Idle SCHED_FIFO: 10, 29, 774, 8,389, 9,623. Load normal: 67, 7,668, 13,238, 24,642, 25,790. Load SCHED_FIFO: 17, 52, 2,720, 12,255, 13,411. An arrow marks p99 under load: 7.7 ms against 52 microseconds." width="70%"}
+```
 
 ### Starvation, and the throttle that prevents it
 
@@ -328,7 +331,10 @@ the cost of decoding a batch of singles per page touched, and it arrives in burs
 buffer of 4,096 singles (64 KiB) faults 16 times in a row on first use. Huge pages cut the
 number of faults by 512, but each one zeroes 2 MiB, so a single huge-page fault on the hot path
 is a 50 µs stall. The lesson is not "use huge pages" or "do not". It is: **take every fault at
-start-up**.
+start-up**. Figure [](#fig-ch04-faults) shows the difference on a timeline.
+
+```{.figure #fig-ch04-faults src="book/figures/tikz/ch04/faults.tex" caption="Page faults on the hot path and at start-up. Touched for the first time in the loop, every new buffer costs a burst of faults; locked and prefaulted at start-up, the loop has none left." alt="Two timelines. First touch on the hot path: three batches of work, each starting with a burst of thin fault marks, because a new 64 KiB buffer takes 16 faults in a row of about 1.5 microseconds each. mlockall and prefault at start-up: one block of faults at start-up, then three clean batches with no fault left in the loop." width="95%"}
+```
 
 ### Lock everything, then touch it
 
@@ -438,7 +444,10 @@ MiniDAQ's `monotonic_ns()` is `steady_clock`, which libstdc++ implements with
 reads the time-stamp counter and converts it in user space. On the book's VM, one read costs
 28.3 ns (`BM_MonotonicClock` in `bm_histogram`); about 20 ns is typical on bare metal (verify on
 the acquisition PC). That is cheap, but not free: at 50 M singles per second you do not
-timestamp singles with it, you timestamp batches.
+timestamp singles with it, you timestamp batches. Figure [](#fig-ch04-clocks) shows why the choice matters.
+
+```{.figure #fig-ch04-clocks src="book/figures/tikz/ch04/clocks.tex" caption="Which clock for what. CLOCK_REALTIME steps when it is set or corrected; the monotonic clocks never jump, and only MONOTONIC is slewed by NTP." alt="Clock reading against true time. MONOTONIC is a straight line that never jumps and whose rate NTP adjusts. MONOTONIC_RAW is a dashed line with a slightly different slope, not adjusted. REALTIME runs parallel above them and then steps back at one point when it is corrected. A note: use MONOTONIC (steady_clock) for intervals and latency, REALTIME (system_clock) for log time stamps; one read costs 28 ns here through the vDSO and the TSC." width="80%"}
+```
 
 ### The time-stamp counter
 
@@ -573,6 +582,11 @@ each while a new one is due every 1 ms, so the k-th of them waits about 200 − 
 100th worst of the 10,000 (k = 99) about 110 ms. The standard correction, when you can only work
 with the naive samples and know the intended interval, adds the samples the generator omitted:
 
+Figure [](#fig-ch04-omission) shows the two measurements around the stall.
+
+```{.figure #fig-ch04-omission src="book/figures/plots/ch04/omission.py" caption="Coordinated omission in Exercise 4.6's simulation. Measured from when each request was sent, the 200 ms stall is one slow sample and p99 is 0.1 ms; measured from when each request was due, every request queued behind the stall is slow, and p99 is 110 ms." alt="Latency on a log scale against request number from 4,950 to 5,260. The naive measurement stays at 0.1 ms except for a single spike at request 5,000. The corrected measurement jumps to 200 ms at request 5,000 and decays slowly back to 0.1 ms by about request 5,222, as the queued requests drain. Labels give p99: naive 0.1 ms, corrected 110 ms." width="80%"}
+```
+
 ```{.cpp include="exercises/ch04/e6_coordinated_omission/solution/omission.cpp" snippet="corrected"}
 ```
 
@@ -618,7 +632,10 @@ with `PREEMPT_RT` and isolated CPUs, published cyclictest maxima are in the tens
 (verify on the acquisition PC, Exercise 4.1). Exercise 4.1 also found a detail of cyclictest's
 output that matters for every parser: the `# Total:` line counts only samples inside the
 histogram range, and the overflows are reported separately. A percentile computed over
-`Total` alone ignores the samples you care about most.
+`Total` alone ignores the samples you care about most. Figure [](#fig-ch04-cyclictest) shows the whole distributions.
+
+```{.figure #fig-ch04-cyclictest src="book/figures/plots/ch04/cyclictest.py" caption="cyclictest on the book's VM: the share of wake-ups later than each latency, for the normal and the real-time policy, idle and under load. The real-time curves fall off ten times earlier; every curve keeps a tail into the milliseconds, the hypervisor." alt="Four falling step curves on log-log axes: the share of wake-ups later than a latency from 5 to 20,000 microseconds. The SCHED_FIFO curves drop steeply between 10 and 30 microseconds; the normal-policy curves drop near 60 microseconds, the timer slack. Under load the normal policy keeps about 1 percent of wake-ups beyond 1 ms. All four curves have thin tails reaching several milliseconds." width="85%" inputs="measurements/ch04/cyclictest"}
+```
 
 ### MiniDAQ's end-to-end latency
 
@@ -689,7 +706,10 @@ the coordinated-omission fix. It reported, for the loaded default profile, a med
 a maximum of 124 ms: bad, but survivable. The truth was seconds. The same run had already printed
 the drop count that should have raised the alarm, and the backlog was not printed at all. That is
 why `minidaq_latency` now reports both next to the percentiles, and why a latency number without
-its drop and backlog counts is not a result.
+its drop and backlog counts is not a result. Figure [](#fig-ch04-endtoend) shows the latency table as curves.
+
+```{.figure #fig-ch04-endtoend src="book/figures/plots/ch04/endtoend.py" caption="MiniDAQ's end-to-end latency by profile, idle and under load (medians of three runs). Idle, the rt-fifo profile's tail is the real-time throttle; under load only rt-fifo keeps up, and the other two fall seconds behind." alt="Two panels of latency in ms on a log scale across p50, p99, p99.9 and max. Idle: default and rt-pin rise from 0.8 to about 12 ms; rt-fifo jumps from 0.7 to about 44 to 53 ms. Under load: default and rt-pin are at 3 to 7 seconds at every percentile, falling behind and dropping data; rt-fifo stays between 5.6 and 69 ms." width="100%"}
+```
 
 ### Reading a latency report
 

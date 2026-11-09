@@ -1,0 +1,20 @@
+% Chapter 4: page faults. First touch of a new page costs a fault on the hot path; locked and
+% prefaulted memory takes every fault at start-up.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \row/\y/\title in {0/1.6/{first touch on the hot path}, 1/0/{\texttt{mlockall} and prefault at start-up}} {
+    \node[lab,anchor=west,font=\sffamily\footnotesize\bfseries] at (1.2,\y+0.62) {\title};
+    \draw[->,d2dmuted,line width=0.7pt] (0,\y) -- (13.2,\y) node[right,note] {time};
+  }
+  % row 1: batches with bursts of faults
+  \foreach \b in {0,1,2} {
+    \fill[partcolor!25!white] (1.2+\b*4,1.6) rectangle +(3.0,0.35);
+    \foreach \k in {0,...,7} {\fill[d2dcat3] (1.2+\b*4+\k*0.11,1.6) rectangle +(0.07,0.35);}
+  }
+  \node[note,text=d2dink,anchor=north,align=center] at (2.7,1.55) {a new 64 KiB buffer: 16 faults in a row,\\about 1.5 µs each, mostly zeroing};
+  % row 2: start-up then clean batches
+  \fill[d2dcat3!70!white] (0,0) rectangle (1.0,0.35); \node[note,text=d2dink,anchor=north] at (0.5,-0.05) {start-up};
+  \foreach \b in {0,1,2} {\fill[partcolor!25!white] (1.2+\b*4,0) rectangle +(3.0,0.35);}
+  \node[note,text=d2dink,anchor=north] at (7.2,-0.05) {no fault left in the loop};
+  \fill[d2dcat3] (10.3,2.5) rectangle +(0.07,0.25); \node[note,text=d2dink,anchor=west] at (10.45,2.62) {page fault};
+  \fill[partcolor!25!white] (10.3,2.15) rectangle +(0.25,0.25); \node[note,text=d2dink,anchor=west] at (10.6,2.27) {batch work};
+\end{tikzpicture}
