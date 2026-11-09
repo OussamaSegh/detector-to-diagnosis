@@ -1,0 +1,20 @@
+% Chapter 19: test levels as nested scopes. Test a defect at the lowest level that can show it.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{lvl/.style={draw=#1,fill=#1!7!white,line width=1pt,rounded corners=5pt}}
+  \draw[lvl=d2dcat1] (0,0) rectangle (12.6,5.0);
+  \draw[lvl=d2dcat2] (0.25,0.25) rectangle (9.4,4.45);
+  \draw[lvl=d2dcat0] (0.5,0.5) rectangle (5.6,3.9);
+  \draw[lvl=partcolor] (0.75,0.75) rectangle (3.0,3.2);
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=north west] at (0.8,3.15) {unit};
+  \node[note,text=d2dink,anchor=north west,align=left] at (0.8,2.7) {one unit,\\the rest replaced;\\finds which line};
+  \node[font=\sffamily\small\bfseries,text=d2dcat0,anchor=north west] at (3.1,3.85) {integration};
+  \node[note,text=d2dink,anchor=north west,align=left] at (3.1,3.4) {units in one process:\\pipeline, service,\\control server};
+  \node[font=\sffamily\small\bfseries,text=d2dcat2,anchor=north west] at (5.7,4.4) {system};
+  \node[note,text=d2dink,anchor=north west,align=left] at (5.7,3.95) {the shipped programs,\\real interfaces: options,\\signals, TLS, UDP, files,\\exit status; and the soak};
+  \node[font=\sffamily\small\bfseries,text=d2dcat1,anchor=north west] at (9.5,4.95) {hardware in the loop};
+  \node[note,text=d2dink,anchor=north west,align=left] at (9.5,4.5) {a real readout board\\on a bench: link timing,\\firmware, NIC buffers};
+  \node[note,text=d2dmuted,anchor=south west] at (0.8,0.8) {every change};
+  \node[note,text=d2dmuted,anchor=south west] at (3.1,0.55) {every change};
+  \node[note,text=d2dmuted,anchor=south west] at (5.7,0.3) {every change; soak each release};
+  \node[note,text=d2dmuted,anchor=south west] at (9.5,0.05) {each product release};
+\end{tikzpicture}

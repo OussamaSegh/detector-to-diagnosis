@@ -1,0 +1,18 @@
+% Chapter 19: a hardware-in-the-loop bench, and how a capture from it becomes a replay test that
+% runs on every commit.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=1.15cm]
+  \node[box=d2dcat1,minimum width=2.0cm,align=center] (src) {pulser or\\source};
+  \node[box,right=of src,minimum width=2.2cm,align=center] (b) {readout board\\[-1pt]\scriptsize or dev kit};
+  \node[box,right=of b,minimum width=2.0cm,align=center] (nic) {dedicated\\NIC};
+  \node[hot,right=of nic,minimum width=2.6cm,align=center] (pc) {acquisition PC\\[-1pt]\scriptsize\texttt{minidaq\_server}};
+  \draw[flow] (src) -- node[below,note,text=d2dink] {known rate} (b);
+  \draw[flow] (b) -- node[above,note,text=d2dink] {UDP} (nic);
+  \draw[flow] (nic) -- (pc);
+  \draw[d2drule,dashed,rounded corners=4pt,line width=0.8pt] ([xshift=-0.25cm,yshift=0.65cm]src.north west) rectangle ([xshift=0.25cm,yshift=-0.3cm]pc.south east);
+  \node[note,text=d2dink,anchor=south west] at ([xshift=-0.2cm,yshift=0.68cm]src.north west) {the bench: each release, each change to the readout path};
+  \node[box=d2dcat2,below=1.1cm of nic,minimum width=2.2cm,align=center] (cap) {capture\\[-1pt]\scriptsize Exercise 19.5};
+  \node[box=d2dcat2,right=of cap,minimum width=2.6cm,align=center] (rep) {replay test\\[-1pt]\scriptsize every commit, in CI};
+  \draw[flow,d2dcat2] (nic.south) -- (cap.north);
+  \draw[flow,d2dcat2] (cap) -- (rep);
+  \node[note,text=d2dink,anchor=north west,align=left] at ([yshift=-0.12cm]src.south west |- cap.south) {the same system tests at both levels:\\the board's own counters replace the sender's};
+\end{tikzpicture}

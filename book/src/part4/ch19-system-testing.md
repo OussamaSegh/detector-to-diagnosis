@@ -82,7 +82,10 @@ is: test a defect at the lowest level that can show it. A system test that fails
 something is wrong somewhere in a million lines of behavior; a unit test that fails tells you
 which line. When a system test finds a defect that a unit test or a property could show, add that
 test too, so that the next regression is found in seconds instead of minutes. The levels above
-the unit are there for the defects that the units cannot show.
+the unit are there for the defects that the units cannot show. Figure [](#fig-ch19-levels) nests them.
+
+```{.figure #fig-ch19-levels src="book/figures/tikz/ch19/levels.tex" caption="Test levels as nested scopes, with what each reaches and how often MiniDAQ runs it." alt="Four nested rounded boxes: unit inside integration inside system inside hardware in the loop. Each is labelled with what it exercises, from one unit with the rest replaced to a real readout board on a bench, and with its cadence: every change for the inner three, each product release for the outermost." width="85%"}
+```
 
 ### MiniDAQ's levels
 
@@ -235,7 +238,10 @@ An **exact comparison** is right where the output must be reproducible: the same
 and the same seed must give the same records (SRS-SYS-004). That is not a nicety. A regression
 test against golden data can only tell a real change from noise if there is no noise; and a
 problem seen at a site can only be investigated on a developer's machine if the same input gives
-the same output there.
+the same output there. Figure [](#fig-ch19-golden) shows both comparisons, including the statistical one of the next sections.
+
+```{.figure #fig-ch19-golden src="book/figures/tikz/ch19/golden.tex" caption="Golden data. The same seed must give the same records; another seed must not differ by more than chance; only a person, on purpose, writes the golden file." alt="A run with seed 1 is compared exactly with golden/seed1.json, which holds counts, a SHA-256 of the records and two histograms. A run with seed 2 is compared statistically, with p at least 0.001, using a binomial test of rates and a chi-square test of histograms. An update-golden box, run by a person with a change request, writes the file." width="85%"}
+```
 
 ### The defect that two correct units made
 
@@ -517,6 +523,11 @@ handle leak in the writer. MiniDAQ's soak writes nothing (`output` is `none`) so
 does not decide the rate; the writer's own long run is the throughput measurement of Chapter 12.
 State the configuration with the result.
 
+Figure [](#fig-ch19-soak) shows the samples behind the table.
+
+```{.figure #fig-ch19-soak src="book/figures/plots/ch19/soak.py" caption="The 30-minute soak. Resident memory is flat after the warm-up, and its fitted trend is far below the limit; the latency outliers come from the machine, not the server." alt="Two stacked time series over 30 minutes. Top: resident memory rises to about 30.3 MiB in the first seconds and stays flat; a dashed fitted line after the 10-minute warm-up has a trend of minus 0.006 MiB per hour. Bottom: p99 latency per 10 s on a log scale, mostly near 1.3 ms with a few spikes up to 16 ms." width="90%" inputs="measurements/ch19/soak"}
+```
+
 ## Hardware in the loop
 
 Everything so far runs on one machine with a simulated board. A **hardware-in-the-loop** bench
@@ -540,7 +551,10 @@ A bench is slow to set up and shared, so HIL tests run per release and per chang
 path, not per commit. Two practices make them affordable. Keep the system tests the same at both
 levels, with the board or the simulator behind one interface, so that a bench run is the CI run
 with another sender. And record what the bench sends: a capture from the bench (Exercise 19.5)
-becomes a replay test that runs on every commit.
+becomes a replay test that runs on every commit. Figure [](#fig-ch19-hil) puts the bench and its capture together.
+
+```{.figure #fig-ch19-hil src="book/figures/tikz/ch19/hil.tex" caption="A hardware-in-the-loop bench, and how a capture from it becomes a replay test that runs on every commit." alt="A dashed frame labelled the bench holds a pulser or source feeding a readout board, which sends UDP through a dedicated network interface to the acquisition PC running minidaq_server. From the interface, a capture leads to a replay test that runs in CI on every commit." width="85%"}
+```
 
 ## Test protocols and reports
 

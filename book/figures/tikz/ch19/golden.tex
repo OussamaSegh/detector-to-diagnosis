@@ -1,0 +1,14 @@
+% Chapter 19: golden data. The same seed must give the same records; another seed must not differ by
+% more than chance. Only a person, on purpose, writes golden data.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.5cm]
+  \node[box,minimum width=2.4cm] (r1) {run, seed 1};
+  \node[box,below=0.9cm of r1,minimum width=2.4cm] (r2) {run, seed 2};
+  \node[hot,right=2.6cm of r1,yshift=-0.7cm,minimum width=2.6cm,minimum height=2.0cm,align=center] (g) {\texttt{golden/seed1.json}\\[-1pt]\scriptsize counts, SHA-256 of records,\\[-2pt]\scriptsize two histograms};
+  \draw[flow] (r1.east) -- node[above,note,text=d2dink] {exact: equal digest} (g.west |- r1.east);
+  \draw[flow] (r2.east) -- node[below,note,text=d2dink,align=center] {statistical: p $\geq$ 0.001} (g.west |- r2.east);
+  \node[box=d2dcat0,right=0.9cm of g,minimum width=3.4cm,align=left,font=\sffamily\scriptsize] (st) {rates: exact binomial test\\of two Poisson means\\histograms: chi-square of\\homogeneity, sparse bins merged};
+  \draw[d2dcat0,line width=0.8pt] (st.west) -- (g.east);
+  \node[box=d2dcat1,below=0.75cm of g,minimum width=2.6cm,align=center] (up) {\texttt{--update-golden}\\[-1pt]\scriptsize by a person, with a CR};
+  \draw[flow,d2dcat1] (up) -- (g);
+  \node[note,text=d2dink,anchor=west,align=left] at ([xshift=0.2cm]up.east) {the diff is reviewed:\\only what should change did};
+\end{tikzpicture}
