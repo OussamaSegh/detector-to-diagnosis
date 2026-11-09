@@ -1,0 +1,18 @@
+% Chapter 1: strong types. Which expressions on times and energies compile.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \newcommand\ok[3]{\node[lab,anchor=west] at (0,#1) {\texttt{#2}};
+    \fill[d2dcat2] (6.0,#1) circle (0.2); \draw[white,line width=1.3pt] (5.9,#1) -- (5.98,#1-0.09) -- (6.12,#1+0.1);
+    \node[note,anchor=west,text=d2dink] at (6.45,#1) {#3};}
+  \newcommand\no[3]{\node[lab,anchor=west] at (0,#1) {\texttt{#2}};
+    \fill[d2dcat3] (6.0,#1) circle (0.2); \draw[white,line width=1.3pt] (5.9,#1-0.09) -- (6.1,#1+0.09) (5.9,#1+0.09) -- (6.1,#1-0.09);
+    \node[note,anchor=west,text=d2dink] at (6.45,#1) {#3};}
+  \node[title,anchor=west] at (0,3.3) {expression};
+  \node[title,anchor=west] at (5.6,3.3) {compiles?};
+  \ok{2.6}{t1 + 4\_ns}{same unit: a time}
+  \ok{1.95}{(t2 - t1) / tick}{a ratio of two times is a plain number}
+  \ok{1.3}{e * 0.5}{scaling by a number}
+  \no{0.65}{t1 + e}{\texttt{Picoseconds + KeV}: no such operator}
+  \no{0.0}{Picoseconds t = 4000;}{the constructor is explicit: say \texttt{Picoseconds\{4000\}} or \texttt{4\_ns}}
+  \no{-0.65}{std::int64\_t n = t1;}{no conversion back; \texttt{t1.count()} is greppable}
+  \draw[d2drule] (-0.1,2.95) -- (13.6,2.95);
+\end{tikzpicture}

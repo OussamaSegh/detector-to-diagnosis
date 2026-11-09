@@ -74,7 +74,10 @@ local variables. Views travel through function parameters.** A function that tak
 `std::span<const Single>` promises to look at the singles during the call and forget them
 afterwards. A function that takes `std::vector<Single>` by value, or
 `std::unique_ptr<Buffer>`, takes ownership. If you can tell which one a function does by
-reading its signature, the API is well designed.
+reading its signature, the API is well designed. Figure [](#fig-ch01-ownership) shows the rule on MiniDAQ's pipeline.
+
+```{.figure #fig-ch01-ownership src="book/figures/tikz/ch01/ownership.tex" caption="Owners and views on MiniDAQ's pipeline. A buffer moves from stage to stage with one owner at a time; a stage that only reads it during a call receives a span and keeps nothing." alt="Four boxes in a row, network receiver, decoder, sorter and writer, joined by arrows labeled move. Below the decoder, the buffer it owns, held by a std::unique_ptr, one owner at a time. Two gray boxes, a histogram and a monitor, point at the buffer with dashed arrows: they receive a std::span and only look during a call. A note says owners live in members and locals, views travel through parameters and are forgotten after the call." width="100%"}
+```
 
 ### Value semantics and the Rule of 0
 
@@ -178,7 +181,7 @@ const std::string& first = names.front();
 names.push_back("x");  // may reallocate; `first` now refers to freed memory
 ```
 
-How experts avoid these:
+Figure [](#fig-ch01-dangling) shows the container case step by step. How experts avoid these:
 
 - **Never return a view to a local or to a temporary.** Return an owning type instead.
 - **Never store a view in a data member** unless the class is explicitly a view itself
@@ -194,6 +197,9 @@ How experts avoid these:
 - **Run tests under AddressSanitizer**, which reports `stack-use-after-return` and
   `heap-use-after-free` at the exact line. The container case is invisible to the
   compiler but obvious to ASan.
+
+```{.figure #fig-ch01-dangling src="book/figures/tikz/ch01/dangling.tex" caption="How a reference into a vector dangles. The vector is full, so push_back allocates new storage, moves the elements and frees the old storage; the reference still points at it." alt="Before: a vector of capacity 4 holding a, b, c, d, with a reference named first pointing at a. An arrow labeled push_back x leads to after: the old storage is shaded and labeled freed, and first still points at it and dangles; below, new storage of capacity 8 holds a, b, c, d, x. A note says the compiler cannot see it and AddressSanitizer reports heap-use-after-free at the first use of first." width="100%"}
+```
 
 ::: box-mistakes
 - Writing a destructor "for safety" in a class whose members already clean up. It
@@ -218,7 +224,7 @@ compile error.
 
 MiniDAQ's time and energy types are instances of one small template. The tag type is
 never instantiated; it only makes `Quantity<PicosecondsTag, int64_t>` and
-`Quantity<KeVTag, float>` different types.
+`Quantity<KeVTag, float>` different types. Figure [](#fig-ch01-units) lists which expressions compile.
 
 ```{.cpp include="minidaq/include/minidaq/core/quantity.hpp"}
 ```
@@ -237,6 +243,9 @@ The design decisions are worth reading slowly, because each one closes a class o
   for "how many ticks fit in the window".
 - **Comparisons are defaulted** with `operator<=>`, so `<`, `<=`, `==` and friends all
   exist and agree with each other.
+
+```{.figure #fig-ch01-units src="book/figures/tikz/ch01/units.tex" caption="What the strong types allow. Arithmetic within a unit and scaling by a number compile; mixing units, implicit construction from a raw number and implicit conversion back do not." alt="A table of six expressions with a check or a cross. Compile: t1 plus 4_ns, a time; t2 minus t1 divided by tick, a plain number; e times 0.5, scaling. Do not compile: t1 plus e, because there is no operator for picoseconds plus keV; Picoseconds t equals 4000, because the constructor is explicit; and assigning t1 to a std::int64_t, because there is no conversion back and count() is the greppable way out." width="90%"}
+```
 
 The units header defines the concrete types and user-defined literals:
 
@@ -357,7 +366,10 @@ in them by coding rule.
 MiniDAQ's rule is the middle ground most medical-device teams use: **exceptions are
 allowed in start-up and control code** (parsing a configuration file, opening a socket)
 where a failure aborts an operation that a human started; **the per-event data path
-never throws** and reports per-event problems through return values and counters.
+never throws** and reports per-event problems through return values and counters. Figure [](#fig-ch01-errors) turns the rule into three questions.
+
+```{.figure #fig-ch01-errors src="book/figures/tikz/ch01/errors.tex" caption="Which error mechanism, as MiniDAQ decides it. A bug is an assertion; a failure in start-up or control code is an exception; on the data path, a failure the caller must handle is a std::expected, and anything else is counted and the event dropped." alt="A decision tree. First question: can it happen if the code is correct? No, it is a bug: assertion or contract. Yes: is it on the per-event data path? No, it is start-up or control: exception, which aborts an operation a human started. Yes: must the caller act on it, event by event? Yes, as for parsing and validation: std::expected. No: a counter, and the event is dropped, never throwing and never logging per event." width="90%"}
+```
 
 ### std::expected and MiniDAQ's shim
 
@@ -432,7 +444,7 @@ MiniDAQ processes the same events through different stages: an energy filter, a 
 filter, a histogrammer, a writer. Templates let you write `feed(events, filter, sink)` once
 and have the compiler generate a specialized, fully inlined loop for each combination.
 Before C++20, the price was error messages pages long when somebody passed the wrong
-type. [Concepts]{.idx} fix that by stating, in code, what a template requires.
+type. [Concepts]{.idx} fix that by stating, in code, what a template requires. Figure [](#fig-ch01-concepts) shows what the check looks like at a call.
 
 ### Writing a concept
 
@@ -469,6 +481,9 @@ Three habits make concepts work for you:
    implementations at run time. MiniDAQ uses virtual interfaces where hardware meets
    software (a real network receiver vs a replay file, Chapter 6) and concepts inside the
    per-event loops.
+
+```{.figure #fig-ch01-concepts src="book/figures/tikz/ch01/concepts.tex" caption="A concept checks a type at the call. A filter whose accept returns bool satisfies SingleFilter and gives one inlined loop; one that returns int is rejected with a one-line message at the call, not pages of errors from the template's body." alt="Left, the concept SingleFilter: f.accept(s) must return exactly bool. Right, two structs. EnergyWindow's accept returns bool, and a green arrow says it satisfies the concept. CountingFilter's accept returns int, and an orange arrow says int is not bool. Below: feed with EnergyWindow compiles to one inlined loop; feed with CountingFilter gives one line of error at the call, constraints not satisfied." width="85%"}
+```
 
 ### Ranges, briefly
 
@@ -590,7 +605,7 @@ model. Defined behavior is necessary, not sufficient.
 
 **5. Data races.** Two threads access the same memory location, at least one writes, and
 there is no synchronization: UB. Caught by ThreadSanitizer, which is the subject of
-Chapter 3.
+Chapter 3. Figure [](#fig-ch01-ub) maps the five classes onto the tools.
 
 ### The tools
 
@@ -602,6 +617,9 @@ Chapter 3.
 | ThreadSanitizer (TSan) | Data races, some deadlocks | 5x to 15x | `tsan` preset from Chapter 3 |
 | MemorySanitizer (MSan) | Reads of uninitialized memory | about 3x | not used: needs every library rebuilt with it |
 | Valgrind memcheck | Lifetime, uninitialized reads | 20x to 50x | occasional, for binaries you cannot rebuild |
+
+```{.figure #fig-ch01-ub src="book/figures/tikz/ch01/ub.tex" caption="The five classes of undefined behavior in a DAQ and the tools that find them. No single tool covers every class, which is why MiniDAQ runs warnings everywhere and the sanitizers in separate builds." alt="A grid with five rows, lifetime errors, bounds errors, aliasing and alignment, arithmetic, and data races, and four columns, warnings, ASan, UBSan and TSan. ASan finds lifetime and bounds errors; UBSan finds alignment and arithmetic errors; TSan finds data races; warnings catch some lifetime and arithmetic cases. A note gives the slowdowns: none, about 2x, small, and 5 to 15x." width="80%"}
+```
 
 Two practical points that trip up teams:
 

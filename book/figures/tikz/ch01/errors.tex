@@ -1,0 +1,20 @@
+% Chapter 1: which error mechanism, as a decision tree (MiniDAQ's rule).
+\begin{tikzpicture}[x=1cm,y=1cm,
+    q/.style={draw=d2dmuted,fill=white,rounded corners=2pt,line width=0.7pt,align=center,inner sep=4pt,font=\sffamily\footnotesize},
+    a/.style={hot,font=\sffamily\footnotesize\bfseries,minimum height=0.7cm}]
+  \node[q] (q1) at (0,0) {Can it happen if\\the code is correct?};
+  \node[a=d2dcat3] (as) at (0,-2.0) {assertion /\\contract};
+  \node[q] (q2) at (4.6,0) {On the per-event\\data path?};
+  \node[q] (q3) at (4.6,-2.0) {Must the caller act\\on it, event by event?};
+  \node[a=d2dcat0] (ex) at (9.4,0) {exception};
+  \node[a] (expd) at (4.6,-4.0) {\texttt{std::expected}};
+  \node[a=d2dcat2] (cnt) at (9.4,-2.0) {counter, and\\drop the event};
+  \draw[flow] (q1) -- node[left,note,text=d2dink] {no: a bug} (as);
+  \draw[flow] (q1) -- node[above,note,text=d2dink] {yes} (q2);
+  \draw[flow] (q2) -- node[above,note,text=d2dink] {no: start-up, control} (ex);
+  \draw[flow] (q2) -- node[left,note,text=d2dink] {yes} (q3);
+  \draw[flow] (q3) -- node[left,note,text=d2dink] {yes: parse, validate} (expd);
+  \draw[flow] (q3) -- node[above,note,text=d2dink] {no} (cnt);
+  \node[note,text=d2dink,anchor=north,align=center] at (ex.south) {aborts an operation\\a human started};
+  \node[note,text=d2dink,anchor=north,align=center] at (cnt.south) {never throws, never logs\\per event; bounded latency};
+\end{tikzpicture}

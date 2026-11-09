@@ -1,0 +1,23 @@
+% Chapter 1: owners and views along MiniDAQ's pipeline. A buffer moves from owner to owner
+% (std::unique_ptr); a stage that only looks at it during a call gets a span.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=1.1cm]
+  \node[box,minimum width=2.3cm] (rx) {network\\receiver};
+  \node[box,right=of rx,minimum width=2.3cm] (dec) {decoder};
+  \node[box,right=of dec,minimum width=2.3cm] (sort) {sorter};
+  \node[box,right=of sort,minimum width=2.3cm] (wr) {writer};
+  \foreach \a/\b in {rx/dec,dec/sort,sort/wr} {
+    \draw[flowp] (\a) -- node[above,note,text=partcolor,font=\sffamily\scriptsize\bfseries] {move} (\b);}
+  % the buffer, owned by the decoder now
+  \node[hot,minimum width=2.0cm,minimum height=0.55cm,font=\sffamily\scriptsize\bfseries,below=0.55cm of dec] (buf) {buffer};
+  \draw[partcolor,line width=1.2pt] (dec.south) -- (buf.north) node[midway,right,note,text=d2dink] {owns};
+  \node[note,text=d2dink,anchor=west,align=left] at ([xshift=4pt]buf.east) {\texttt{std::unique\_ptr<Buffer>}:\\one owner at a time};
+  % views
+  \node[dim,minimum width=2.2cm,below=2.4cm of rx] (hist) {histogram};
+  \node[dim,minimum width=2.2cm,below=2.4cm of sort] (mon) {monitor};
+  \draw[->,d2dcat0,line width=1pt,dashed] (hist.east) -- (buf.south west);
+  \draw[->,d2dcat0,line width=1pt,dashed] (mon.west) -- (buf.south east);
+  \node[lab,text=d2dcat0,anchor=north,align=center] at ([yshift=-0.9cm]buf.south) {views: they look\\during a call};
+  \node[note,text=d2dink,anchor=north] at (hist.south) {\texttt{std::span<const Single>}};
+  \node[note,text=d2dink,anchor=north] at (mon.south) {\texttt{std::span<const Single>}};
+  \node[lab,anchor=west,align=left] at (11.5,-1.3) {\textbf{owners} live in members\\and locals;\\\textbf{views} travel through\\parameters and are\\forgotten after the call};
+\end{tikzpicture}

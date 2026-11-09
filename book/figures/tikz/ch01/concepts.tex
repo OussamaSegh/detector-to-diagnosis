@@ -1,0 +1,12 @@
+% Chapter 1: a concept checks a type against the expressions the algorithm uses, at the call.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[box,minimum width=5.4cm,minimum height=1.7cm,align=left,anchor=north west,font=\ttfamily\footnotesize] (c) at (0,0)
+    {concept SingleFilter:\\\ \ f.accept(s) -> same\_as<bool>};
+  \node[box=d2dcat2,minimum width=4.2cm,align=left,anchor=north west,font=\ttfamily\footnotesize] (good) at (8.0,0.45)
+    {struct EnergyWindow \{\\\ \ bool accept(const Single\&) const;\};};
+  \node[box=d2dcat3,minimum width=4.2cm,align=left,anchor=north west,font=\ttfamily\footnotesize] (bad) at (8.0,-1.35)
+    {struct CountingFilter \{\\\ \ int accept(const Single\&) const;\};};
+  \draw[flow,draw=d2dcat2] (good.west) -- ([yshift=12pt]c.east) node[pos=0.5,above,note,text=d2dink] {satisfies};
+  \draw[flow,draw=d2dcat3] (bad.west) -- ([yshift=-12pt]c.east) node[pos=0.5,below,note,text=d2dink] {\texttt{int} is not \texttt{bool}};
+  \node[lab,anchor=north west,align=left] at (0,-2.3) {\textcolor{d2dcat2}{\textbf{feed(in, EnergyWindow\{\}, sink)}}: one inlined loop\\\textcolor{d2dcat3}{\textbf{feed(in, CountingFilter\{\}, sink)}}: one line of error,\\\ \ at the call: "constraints not satisfied"};
+\end{tikzpicture}

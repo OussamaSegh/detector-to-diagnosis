@@ -1,0 +1,15 @@
+% Chapter 1: the five classes of undefined behavior in a DAQ, and which tool finds each.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\cols{{"warnings","ASan","UBSan","TSan"}}
+  \foreach \c/\n in {0/warnings,1/ASan,2/UBSan,3/TSan} {\node[lab,font=\sffamily\footnotesize\bfseries] at (5.2+\c*1.9,0.55) {\n};}
+  \foreach \r/\n/\cells in {0/lifetime: use after free/{1,2,0,0}, 1/bounds: past the end/{0,2,0,0}, 2/aliasing and alignment/{0,0,2,0}, 3/arithmetic: overflow\comma\ shifts/{1,0,2,0}, 4/data races/{0,0,0,2}} {
+    \def\comma{,}
+    \node[lab,anchor=west] at (0,-\r*0.62) {\n};
+    \foreach \v [count=\c from 0] in \cells {
+      \ifnum\v=2 \fill[partcolor] (5.2+\c*1.9-0.8,-\r*0.62-0.25) rectangle +(1.6,0.5); \node[note,text=white,font=\sffamily\scriptsize\bfseries] at (5.2+\c*1.9,-\r*0.62) {finds it};
+      \else\ifnum\v=1 \fill[partcolor!25!white] (5.2+\c*1.9-0.8,-\r*0.62-0.25) rectangle +(1.6,0.5); \node[note,text=d2dink] at (5.2+\c*1.9,-\r*0.62) {some cases};
+      \else \draw[d2drule,line width=0.5pt] (5.2+\c*1.9-0.8,-\r*0.62-0.25) rectangle +(1.6,0.5); \fi\fi
+    }
+  }
+  \node[note,anchor=north west,text=d2dink] at (4.4,-3.0) {slowdown: none, about 2x, small, 5 to 15x};
+\end{tikzpicture}

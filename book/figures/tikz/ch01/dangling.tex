@@ -1,0 +1,24 @@
+% Chapter 1: how a reference into a vector dangles. push_back reallocates; the old storage is
+% freed and the reference still points at it.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \newcommand\cells[4]{% x, y, n filled, total
+    \foreach \i in {1,...,#4} {\pgfmathtruncatemacro{\f}{\i<=#3}
+      \ifnum\f=1 \draw[partcolor,fill=partcolor!18!white,line width=0.7pt] (#1+\i*0.7-0.7,#2) rectangle +(0.7,0.6);
+      \else \draw[d2drule,fill=white,line width=0.7pt] (#1+\i*0.7-0.7,#2) rectangle +(0.7,0.6); \fi}}
+  \node[title,anchor=west] at (0,3.1) {before};
+  \cells{0}{1.2}{4}{4}
+  \foreach \i/\t in {1/a,2/b,3/c,4/d} {\node[lab] at (\i*0.7-0.35,1.5) {\t};}
+  \node[note,anchor=north] at (1.4,1.15) {capacity 4, full};
+  \draw[<-,d2dcat0,line width=1.2pt] (0.35,1.85) -- (0.35,2.25) node[above,lab,text=d2dink] {\texttt{first}};
+  \draw[->,d2dmuted,line width=1pt] (3.2,1.5) -- (4.6,1.5) node[midway,above,note,text=d2dink] {\texttt{push\_back("x")}};
+  % after
+  \node[title,anchor=west] at (5,3.1) {after};
+  \fill[d2dcat3!12!white] (5,1.2) rectangle +(2.8,0.6);
+  \draw[d2dcat3,line width=0.8pt,dashed] (5,1.2) rectangle +(2.8,0.6);
+  \node[lab,text=d2dcat3] at (6.4,1.5) {freed};
+  \draw[<-,d2dcat3,line width=1.2pt] (5.35,1.85) -- (5.35,2.25) node[above,lab,text=d2dcat3] {\texttt{first}: dangles};
+  \cells{5}{-0.1}{5}{8}
+  \foreach \i/\t in {1/a,2/b,3/c,4/d,5/x} {\node[lab] at (5+\i*0.7-0.35,0.2) {\t};}
+  \node[note,anchor=north] at (7.8,-0.15) {new storage, capacity 8: the elements moved};
+  \node[lab,anchor=west,align=left] at (11.2,1.1) {the compiler cannot see it;\\AddressSanitizer reports\\\texttt{heap-use-after-free}\\at the first use of \texttt{first}};
+\end{tikzpicture}
