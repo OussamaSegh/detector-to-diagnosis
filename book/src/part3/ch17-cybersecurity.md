@@ -105,6 +105,11 @@ of ISO 14971. The technical report AAMI TIR57 describes how; in MiniDAQ the link
 threat model's mitigations are risk controls of H-08, and the threats that rely on the site appear
 as information for safety (RC-25).
 
+Figure [](#fig-ch17-lifecycle) shows where the activities attach.
+
+```{.figure #fig-ch17-lifecycle src="book/figures/tikz/ch17/lifecycle.tex" caption="IEC 81001-5-1 adds security activities to each stage of the life cycle that IEC 62304 already defines; its security risk feeds the safety risk file." alt="A row of six life cycle stages (planning, requirements, design, code and test, release, maintenance), each with a box above it naming the security activities the standard adds, such as threat-model requirements, trust boundaries, fuzzing and pen tests, the SBOM, and vulnerability monitoring. A note says security risk feeds ISO 14971." width="100%"}
+```
+
 ### The FDA and the EU
 
 The FDA's guidance *Cybersecurity in Medical Devices: Quality System Considerations and Content of
@@ -222,6 +227,11 @@ or not applicable threat says why:
 The check cannot tell whether a threat is missing, or whether a mitigation is good enough. Those are
 the questions of the review, and the check frees the review to ask them instead of counting
 categories.
+
+Figure [](#fig-ch17-stride) draws the threat list as a grid, as it stands at the end of the book. A cell with no square is a category that was analyzed and produced no threat; a crossed cell is one that does not apply.
+
+```{.figure #fig-ch17-stride src="book/figures/plots/ch17/stride.py" caption="STRIDE per element in the current threat model: one square per threat, colored by status. Crossed cells are categories that do not apply to the element's kind. The model has grown since this chapter; the counts are the current ones." alt="Grid with the six STRIDE letters across and fifteen elements down, from client and detector to updater and calibration store. Cells that do not apply are cross-hatched. Each applicable cell holds small squares for its threats, mostly green for mitigated, some blue for environment, orange for accepted, and gray for not applicable." width="80%" inputs="docs/regulatory/security/threats.json"}
+```
 
 ### A worked example: the threats that changed the design
 
@@ -404,6 +414,11 @@ uses TLS on non-blocking sockets in its single `poll()` loop, which means that a
 socket write (and the reverse) during the handshake; the details are in `control_server.cpp`, and
 the test `ControlServer.ServesOnlyTls13Clients` sends three requests in one TLS record and offers a
 TLS 1.2 handshake to check them.
+
+Figure [](#fig-ch17-auth) puts the pieces of this section in the order they happen on the wire.
+
+```{.figure #fig-ch17-auth src="book/figures/tikz/ch17/auth.tex" caption="An authenticated control session. The client verifies the server before it sends the token; the server checks a hash in constant time and a role for every command." alt="Sequence diagram between a client and minidaq_server. A shaded TLS 1.3 handshake comes first, after which the client verifies the certificate chain and name. The client then sends auth with its token; the server hashes it, compares in constant time, audits the token's name and answers ok with role observer. A status request succeeds; a stop is refused because it needs the operator role." width="85%"}
+```
 
 ### Secure defaults
 
@@ -642,6 +657,11 @@ past it fails, and a high or critical finding may not stay in triage. A decision
 matches any more (the component was updated) is reported as stale. The tool also writes the
 decisions as a CycloneDX VEX document, which is the form in which a manufacturer can tell a hospital
 which reported vulnerabilities affect the device.
+
+Figure [](#fig-ch17-vuln) shows the whole job, including the control described next.
+
+```{.figure #fig-ch17-vuln src="book/figures/tikz/ch17/vuln.tex" caption="Vulnerability management in CI. Every finding needs a recorded decision, and a negative control shows that the scanner can find something." alt="Flow from the SBOM to a Grype scan with a fresh database, then to vuln_triage.py, which also reads the recorded VEX decisions and either lets CI pass or fails, and writes a VEX document for hospitals. A negative control with an old OpenSSL version feeds the scanner and must be found." width="85%"}
+```
 
 The first run on GitHub reported no vulnerabilities at all. That is the result you want, and the one
 to distrust most, because a scanner that cannot match a component also reports nothing: a misspelled

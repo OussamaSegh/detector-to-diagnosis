@@ -1,0 +1,22 @@
+% Chapter 17: an authenticated control session. The token travels only after the client has
+% verified the server; the server compares hashes in constant time and checks a role per command.
+\begin{tikzpicture}[x=1cm,y=-0.6cm]
+  \node[box,minimum width=2.0cm] at (0,-1) {client};
+  \node[box,minimum width=2.0cm] at (7,-1) {minidaq\_server};
+  \draw[d2drule,line width=1pt] (0,-0.4) -- (0,11.4) (7,-0.4) -- (7,11.4);
+  \newcommand\msg[5]{\draw[->,#4,line width=0.9pt] (#1,#3) -- node[above,font=\sffamily\scriptsize,text=d2dink,inner sep=1pt] {#5} (#2,#3);}
+  \fill[d2dcat0!12!white] (-0.15,0.2) rectangle (7.15,3.3);
+  \node[note,text=d2dcat0,anchor=west] at (-2.9,1.75) {TLS 1.3 only};
+  \msg{0}{7}{0.8}{d2dmuted}{ClientHello (SNI only for a host name)}
+  \msg{7}{0}{1.8}{d2dmuted}{ServerHello, certificate}
+  \node[note,text=d2dink,anchor=east,align=right] at (-0.15,2.75) {verify chain and name;\\fail: nothing secret sent};
+  \msg{0}{7}{4.4}{partcolor}{\{"cmd": "auth", "token": "mdq\_..."\}}
+  \node[note,text=d2dink,anchor=west,align=left] at (7.15,5.2) {SHA-256, then\\\texttt{CRYPTO\_memcmp} with every\\entry, no early exit};
+  \node[note,text=d2dink,anchor=west,align=left] at (7.15,6.7) {audit: the token's name, never the token};
+  \msg{7}{0}{6.6}{d2dcat2}{ok, role: observer}
+  \msg{0}{7}{8.0}{d2dmuted}{status}
+  \msg{7}{0}{8.8}{d2dcat2}{ok}
+  \msg{0}{7}{10.0}{d2dmuted}{stop}
+  \msg{7}{0}{10.8}{d2dcat3}{forbidden: needs operator}
+  \node[note,text=d2dink,anchor=west,align=left] at (7.15,10.4) {role per command;\\an unknown command\\needs operator};
+\end{tikzpicture}

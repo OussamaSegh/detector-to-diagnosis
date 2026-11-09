@@ -1,0 +1,14 @@
+% Chapter 17: IEC 81001-5-1 adds security activities to the life cycle IEC 62304 already defines;
+% no second process.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.18cm]
+  \tikzset{lc/.style={draw=d2dmuted,fill=d2drule!35!white,line width=0.8pt,minimum width=2.6cm,minimum height=0.75cm,font=\sffamily\small,align=center},
+           sec/.style={draw=partcolor,fill=partcolor!10!white,line width=0.9pt,rounded corners=2pt,text width=2.4cm,minimum height=1.5cm,font=\sffamily\scriptsize,align=center}}
+  \foreach \i/\n/\s in {0/planning/{security activities, people, training},1/requirements/{from the threat model: SRS-SEC},2/design/{trust boundaries, least privilege, secure defaults},3/{code and test}/{secure coding,\\analysis, fuzzing,\\pen tests},4/release/{secure installation guide, SBOM},5/maintenance/{vulnerability\\monitoring,\\disclosure}} {
+    \node[lc] (l\i) at (2.8*\i,0) {\n};
+    \node[sec,anchor=south] (s\i) at (2.8*\i,0.6) {\s};
+    \draw[partcolor,line width=0.9pt,->] (s\i.south) -- (l\i.north);}
+  \foreach \i/\j in {0/1,1/2,2/3,3/4,4/5} {\draw[flow] (l\i) -- (l\j);}
+  \node[note,text=d2dink,anchor=north west] at ([yshift=-0.12cm]l0.south west) {IEC 62304 life cycle (Chapter 14)};
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=south west] at ([yshift=0.08cm]s0.north west) {IEC 81001-5-1 adds};
+  \node[box=d2dcat3,anchor=north east,align=center] at ([yshift=-0.12cm]l5.south east) {security risk feeds ISO 14971 (H-08)};
+\end{tikzpicture}

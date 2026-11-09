@@ -1,0 +1,15 @@
+% Chapter 17: vulnerability management. Every finding needs a recorded decision; a negative
+% control shows the scanner can find something at all.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.5cm]
+  \node[box,minimum width=2.1cm] (sb) {SBOM\\[-1pt]\scriptsize exact versions, purls};
+  \node[box=d2dcat0,right=of sb,minimum width=2.1cm] (sc) {Grype scan\\[-1pt]\scriptsize fresh database};
+  \node[box,right=0.9cm of sc,minimum width=2.6cm] (tr) {\texttt{vuln\_triage.py}};
+  \node[hot,right=of tr,minimum width=1.8cm] (ok) {CI passes};
+  \node[box=d2dcat1,above=0.45cm of tr,minimum width=3.2cm,align=center] (dec) {decisions (VEX states)\\[-1pt]\scriptsize not\_affected + justification, exploitable + fix date};
+  \node[box=d2dcat2,below=0.45cm of tr,minimum width=2.6cm] (vex) {VEX document\\[-1pt]\scriptsize for hospitals};
+  \draw[flow] (sb) -- (sc); \draw[flow] (sc) -- node[above,note,text=d2dink] {findings} (tr); \draw[flow] (dec) -- (tr); \draw[flow] (tr) -- (ok); \draw[flow] (tr) -- (vex);
+  \node[box=d2dcat3,below=0.9cm of sc,minimum width=2.6cm,align=center] (nc) {negative control\\[-1pt]\scriptsize old OpenSSL must be found};
+  \draw[flow,d2dcat3] (nc) -- (sc);
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.12cm]nc.south) {a clean scan means "matched and fixed",\\not "never matched"};
+  \node[note,text=d2dink,anchor=north,align=left] at ([yshift=-0.12cm]ok.south) {fails: no decision; exploitable\\high without a date; high left\\in triage};
+\end{tikzpicture}
