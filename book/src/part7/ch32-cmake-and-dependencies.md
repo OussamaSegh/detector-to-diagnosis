@@ -87,6 +87,11 @@ every target in the directory and below, including the third-party code that Fet
 GoogleTest does not compile without warnings under MiniDAQ's `-Wconversion`, and it does not have
 to: the warnings never reach it.
 
+Figure [](#fig-ch32-targets) draws the call as a graph.
+
+```{.figure #fig-ch32-targets src="book/figures/tikz/ch32/targets.tex" caption="What minidaq_control passes on. Its public dependencies reach every program that links it; its private ones stay with its own sources, except that a static library's private libraries must still be linked." alt="minidaq_control in the middle with solid arrows labelled PUBLIC to minidaq::core and nlohmann_json, and dashed arrows labelled PRIVATE to OpenSSL::SSL and minidaq::warnings. Below, a program that links it gets core's and json's include directories and links, OpenSSL linked but not its headers, and none of the warnings." width="90%"}
+```
+
 The rule that follows is short. State each requirement on the target that has it, with the narrowest
 scope that is true: private unless a header needs it. A requirement that is public when it should be
 private is not an error the compiler reports. It is a dependency that every user silently takes on,
@@ -173,6 +178,11 @@ project's presets and is not committed. Exercise 32.2 writes the presets of a sm
 `asan` configuration must find a read past an array that no test sees in a normal build. Its starter
 compiles with `-fsanitize=address` but does not link with it, and the build fails: a sanitizer is a
 runtime library as well as an instrumentation, and both halves must be in the preset.
+
+Figure [](#fig-ch32-presets) shows the whole set.
+
+```{.figure #fig-ch32-presets src="book/figures/tikz/ch32/presets.tex" caption="MiniDAQ's configure presets, from CMakePresets.json. Three hidden presets carry the shared settings and the two compilers; the ten visible ones each inherit base and one compiler and have a workflow of their own." alt="A tree. The hidden preset base, with Ninja, the shared deps directory and C++20, above the hidden presets gcc and clang. Under gcc: debug, release, profile, gcc-cxx23 and hardened. Under clang: clang-release, asan-ubsan, tsan, fuzz and coverage. A note says each visible preset has a workflow that configures, builds and tests." width="85%"}
+```
 
 ## Installing a library as a package
 
@@ -264,6 +274,11 @@ instrumented (a sanitizer's flags would have to be the consumer's too). Exercise
 further for its library: it copies the installation to another directory before using it, which is
 what a relocatable package must survive.
 
+Figure [](#fig-ch32-package) puts the installed files next to what each one does.
+
+```{.figure #fig-ch32-package src="book/figures/tikz/ch32/package.tex" caption="An installed CMake package and what find_package does with it: the version file decides, the configuration file finds the package's public dependencies, and the export set creates the imported target." alt="Left, the installed tree: include/recon/projector.hpp, lib/librecon_projector.a, and lib/cmake/recon with reconConfig.cmake, reconConfigVersion.cmake and reconTargets.cmake. Right, a chain: find_package(recon 0.7), version SameMinorVersion, find_dependency(Threads), imported recon::projector, each linked by a dotted line to the file that provides it. A note says the cmake.consumer test builds someone else's project against the installation." width="85%"}
+```
+
 ## Dependencies: pinned, found, reviewed
 
 MiniDAQ has had the same dependency policy since Chapter 1, and this chapter keeps it after looking
@@ -304,6 +319,11 @@ them is reviewed as SOUP; a second system that resolves versions would add a too
 place where a version can change without the SOUP list. Conan was proposed when Chapter 31 chose its
 tools and was not approved. The decision is recorded in ADR 0027, with the condition that would
 change it: dependencies that need prebuilt binaries for several platforms.
+
+Figure [](#fig-ch32-deps) sorts them by who owns their updates.
+
+```{.figure #fig-ch32-deps src="book/figures/tikz/ch32/deps.tex" caption="MiniDAQ's dependencies, from cmake/Dependencies.cmake. Four are fetched at an exact pin and built with the project's flags; two are found on the platform, whose image owns their updates." alt="Two rows. Fetched at a commit or hash: nlohmann_json 3.12.0 in the product, pybind11 3.1.0 for the projector module, GoogleTest 1.15.2 for tests only, Google Benchmark 1.9.1 for benchmarks only. Found on the platform: OpenSSL 3.0 for TLS and signatures, Python 3 for the module's headers. A note says each is on the SOUP list and in the SBOM." width="95%"}
+```
 
 ::: box-mistakes
 - **A dependency pinned by tag or branch.** It names a moving reference, not bytes. Pin a commit or
@@ -414,6 +434,11 @@ builds and branches, precompiled headers and unity builds compile shared headers
 such as mold shortens the links. Each changes how the product is built, which for a shipped build is
 a change with a tool review and a reproducibility check (Chapter 20). MiniDAQ uses none of them yet;
 the measurements are the baseline against which one would be judged.
+
+Figure [](#fig-ch32-buildtime) draws the measurement.
+
+```{.figure #fig-ch32-buildtime src="book/figures/plots/ch32/buildtime.py" caption="Where the build time goes. Touching expected.hpp rebuilds more than half of the clean build; touching one source of the core library compiles one file and relinks 128 executables." alt="Horizontal bars in seconds: clean build 156.6 s with 453 commands, nothing to do 2.1 s with 2, touch core/expected.hpp 84.5 s with 253, touch core/crc32.hpp 12.7 s with 141, touch core/crc32.cpp 2.9 s with 129, touch minidaq_send.cpp 1.6 s with 2." width="85%" inputs="measurements/ch32/build-times.txt"}
+```
 
 ## Formatting, checked on the lines you touch
 

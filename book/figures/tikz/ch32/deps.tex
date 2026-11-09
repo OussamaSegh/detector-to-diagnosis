@@ -1,0 +1,14 @@
+% Chapter 32: MiniDAQ's dependencies, from cmake/Dependencies.cmake. Libraries fetched at an exact
+% pin, and platform libraries found, whose updates the operating system image owns.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{d/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.7cm,minimum height=0.8cm,font=\sffamily\scriptsize,align=center}}
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-1.4,1.3) {fetched at a commit or a hash (FetchContent, SYSTEM)};
+  \node[d=d2dcat0] at (0,0.4) {nlohmann\_json 3.12.0\\in the product};
+  \node[d=d2dcat0] at (3.0,0.4) {pybind11 3.1.0\\the projector module};
+  \node[d=d2dmuted] at (6.0,0.4) {GoogleTest 1.15.2\\tests only};
+  \node[d=d2dmuted] at (9.0,0.4) {Google Benchmark 1.9.1\\benchmarks only};
+  \node[font=\sffamily\small\bfseries,text=d2dcat2,anchor=west] at (-1.4,-0.6) {found on the platform (find\_package), updated with its image};
+  \node[d=d2dcat2] at (0,-1.5) {OpenSSL 3.0\\TLS, signatures};
+  \node[d=d2dcat2] at (3.0,-1.5) {Python 3\\the module's headers};
+  \node[note,text=d2dink,anchor=west,align=left] at (4.6,-1.5) {each one is on the SOUP list, in the SBOM,\\and reviewed when its pin or version changes;\\a tag is not a pin: it can move};
+\end{tikzpicture}

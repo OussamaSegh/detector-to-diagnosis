@@ -1,0 +1,24 @@
+% Chapter 32: an installed CMake package. find_package(recon) reads the configuration file, which
+% finds the package's public dependencies and creates the imported target from the export set.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{f/.style={font=\ttfamily\scriptsize,anchor=west,text=d2dink,inner sep=1pt}}
+  \node[f,text=partcolor,font=\ttfamily\small\bfseries] at (0,2.4) {<prefix>/};
+  \node[f] at (0.3,1.95) {include/recon/projector.hpp};
+  \node[f] at (0.3,1.5) {lib/librecon\_projector.a};
+  \node[f] at (0.3,1.05) {lib/cmake/recon/};
+  \node[f,text=d2dcat0] (cfg) at (0.7,0.6) {reconConfig.cmake};
+  \node[f,text=d2dcat0] (ver) at (0.7,0.15) {reconConfigVersion.cmake};
+  \node[f,text=d2dcat0] (tg) at (0.7,-0.3) {reconTargets.cmake};
+  \begin{scope}[xshift=5.6cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=3.1cm,minimum height=0.6cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dcat2] (fp) at (1.5,2.0) {find\_package(recon 0.7)};
+  \node[st=d2dcat0] (v) at (1.5,1.15) {version: SameMinorVersion};
+  \node[st=d2dcat0] (d) at (1.5,0.35) {find\_dependency(Threads)};
+  \node[st=partcolor] (t) at (1.5,-0.45) {imported recon::projector};
+  \draw[flow] (fp) -- (v); \draw[flow] (v) -- (d); \draw[flow] (d) -- (t);
+  \end{scope}
+  \draw[d2dmuted,line width=0.6pt,densely dotted] (ver.east) -- (v.west);
+  \draw[d2dmuted,line width=0.6pt,densely dotted] (cfg.east) -- (d.west);
+  \draw[d2dmuted,line width=0.6pt,densely dotted] (tg.east) -- (t.west);
+  \node[note,text=d2dink,anchor=north,align=center] at (3.6,-0.95) {tested by cmake.consumer: install into an empty prefix, build someone else's project against it, run it};
+\end{tikzpicture}

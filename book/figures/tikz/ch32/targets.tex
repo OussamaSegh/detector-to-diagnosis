@@ -1,0 +1,18 @@
+% Chapter 32: what a target passes on. minidaq_control's public dependencies reach every program that
+% links it; its private ones stay with its own sources (OpenSSL is still linked, not included).
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{t/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.6cm,minimum height=0.75cm,font=\ttfamily\scriptsize,align=center}}
+  \node[t=partcolor] (ctl) at (0,0) {minidaq\_control};
+  \node[t=d2dcat0] (core) at (-4.5,1.6) {minidaq::core};
+  \node[t=d2dcat0] (json) at (-1.5,1.6) {nlohmann\_json};
+  \node[t=d2dmuted] (ssl) at (1.5,1.6) {OpenSSL::SSL};
+  \node[t=d2dmuted] (warn) at (4.5,1.6) {minidaq::warnings};
+  \draw[->,d2dcat0,line width=1pt] (ctl) -- node[pos=0.55,fill=white,inner sep=1pt,note,text=d2dcat0]{PUBLIC} (core);
+  \draw[->,d2dcat0,line width=1pt] (ctl) -- node[pos=0.55,fill=white,inner sep=1pt,note,text=d2dcat0]{PUBLIC} (json);
+  \draw[->,d2dmuted,line width=1pt,densely dashed] (ctl) -- node[pos=0.55,fill=white,inner sep=1pt,note,text=d2dmuted]{PRIVATE} (ssl);
+  \draw[->,d2dmuted,line width=1pt,densely dashed] (ctl) -- node[pos=0.55,fill=white,inner sep=1pt,note,text=d2dmuted]{PRIVATE} (warn);
+  \node[t=d2dcat2] (app) at (0,-1.6) {a program that links it};
+  \draw[->,partcolor,line width=1pt] (app) -- (ctl);
+  \node[note,text=d2dink,anchor=west,align=left] at (1.6,-1.6) {gets: core's and json's include directories and links;\\OpenSSL linked (a static library's objects need it),\\but not its headers; none of the warnings};
+  \node[note,font=\sffamily\scriptsize\bfseries,text=d2dink,anchor=east,align=right] at (-1.6,-1.6) {private unless a\\header needs it};
+\end{tikzpicture}
