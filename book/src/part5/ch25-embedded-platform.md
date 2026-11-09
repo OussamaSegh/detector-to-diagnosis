@@ -518,8 +518,8 @@ it, which is why its own updater only touches `/opt/minidaq`.
   the submission to describe how software is updated and how the updates are authenticated. The EU's
   MDR, in Annex I section 17, requires software to be developed and manufactured according to the
   state of the art, taking into account information security among other principles. A device
-  without an authenticated update path is hard to defend in either market (verify: the current
-  guidance text before you cite it).
+  without an authenticated update path is hard to defend in either market; cite the guidance text
+  current when you submit.
 - **The signing key is part of the design.** Who holds it, how it is protected and how it is
   replaced belong in the security risk management file and the threat model (T-39 to T-53 in
   MiniDAQ's), not only in an operations note.

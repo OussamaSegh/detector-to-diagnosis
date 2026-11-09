@@ -225,12 +225,12 @@ Taking each crystal's prompt coincidences off its singles before the product lea
 ```
 
 The same reasoning has a name in the literature, a correction of the singles estimate for the
-singles that are in coincidence (verify: the published method and its derivation before you rely
-on it; see Further reading). What matters for you is the lesson: an estimator that is correct in a
+singles that are in coincidence (Stearns and others, 2003, in Further reading; read their derivation
+before you rely on it). What matters for you is the lesson: an estimator that is correct in a
 textbook is wrong for a sorter whose rules it ignores, by an amount that depends on the count rate.
 The delayed window, which goes through the same sorter, is 7.1% high, the kill-all bias that Chapter
-10 measured: a random that the kill-all rule discards from a prompt window, because the window
-also held the true partner, is still counted in the delayed window of the same opener.
+10 measured: a random that the kill-all rule discards from a prompt window, because the window also
+held the true partner, is still counted in the delayed window of the same opener.
 
 ### Noise
 
@@ -304,12 +304,11 @@ possible (RC-39).
 ### Wherever along the line
 
 Both photons of a pair must leave the body. If one travels a and the other b through tissue of
-attenuation coefficient mu, the pair survives with probability exp(-mu a) exp(-mu b) =
-exp(-mu (a + b)), and a + b is the whole chord through the body, wherever on the line the
-annihilation was. That is why attenuation correction in PET is a factor per line,
-exp(mu (a + b)) for a uniform medium, and why it is large: water at 511 keV has mu = 0.096 per cm
-(verify: NIST XCOM), so a line through the center of a head of 18 cm is corrected by
-exp(1.73) = 5.6.
+attenuation coefficient mu, the pair survives with probability exp(-mu a) exp(-mu b) = exp(-mu (a +
+b)), and a + b is the whole chord through the body, wherever on the line the annihilation was. That
+is why attenuation correction in PET is a factor per line, exp(mu (a + b)) for a uniform medium, and
+why it is large: water at 511 keV has mu = 0.096 per cm (NIST XCOM), so a line through the center of
+a head of 18 cm is corrected by exp(1.73) = 5.6.
 
 MiniDAQ's tool models the phantom as what it is, a water cylinder, and averages over the ring
 pairs of each slice, whose oblique lines cross more water:
@@ -421,7 +420,7 @@ the decay before the frame, times lambda T / (1 - exp(-lambda T)) for the decay 
 ```{.python include="tools/recon/corrections.py" snippet="decay"}
 ```
 
-For fluorine-18, half-life 109.77 minutes (verify: NIST and DDEP), a frame of 10 minutes starting
+For fluorine-18, half-life 109.77 minutes (NIST's value), a frame of 10 minutes starting
 60 minutes after the reference gets 1.5072. Correcting to the frame's start alone gives 1.4606,
 3.1% low. `expm1` keeps the digits for a frame much shorter than the half-life, where
 1 - exp(-lambda T) is a difference of two numbers close to 1.
@@ -627,12 +626,13 @@ fails. Tag `ch27`.
 - C. C. Watson, D. Newport and M. E. Casey, "A single scatter simulation technique for scatter
   correction in 3D PET", in *Three-Dimensional Image Reconstruction in Radiology and Nuclear
   Medicine*, Kluwer, 1996: the scatter model that most tail-scaled corrections use.
-- C. W. Stearns and others, "Random coincidence estimation from single event rates on the Discovery
-  ST PET/CT scanner", IEEE Nuclear Science Symposium Conference Record, 2003: a singles estimate
-  corrected for the singles in coincidence (verify: the authors and pages before you cite it).
+- C. W. Stearns, D. L. McDaniel, S. G. Kohlmyer, P. R. Arul, B. P. Geiser and V. Shanmugam, "Random
+  coincidence estimation from single event rates on the Discovery ST PET/CT scanner", IEEE Nuclear
+  Science Symposium Conference Record, 2003, vol. 5, 3067–3069: a singles estimate corrected for the
+  singles in coincidence.
 - The NIST XCOM database, for the attenuation coefficients of water and tissue at 511 keV, and the
-  NIST or DDEP tables of half-lives (verify: the current values).
+  NIST or DDEP tables of half-lives.
 - The documentation of open-source reconstruction software, for example STIR and CASToR, for how
-  each correction enters a reconstruction (verify: what each project currently documents).
+  each correction enters a reconstruction in its current release.
 - ADR 0022, CR-0013 and the MDQ-L1 specification in the repository: the decision, the change
   record and the run record's `corrections` object.

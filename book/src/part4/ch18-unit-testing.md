@@ -64,13 +64,12 @@ fail?" and "when it fails, will the message say what broke?"
 
 In a regulated project a unit test has a second job: it is evidence. IEC 62304 clause 5.5 asks the
 manufacturer of class B and C software to establish a unit verification process, to define
-acceptance criteria for the software units, and to verify each unit against them (verify: the
-clause numbering against your copy; 5.5.4 adds criteria for class C). The standard does not say
-what the criteria are. MiniDAQ's development plan (`docs/regulatory/sdp.md`, section 6) does: a
-unit is accepted when its tests pass under every preset, static analysis reports nothing, its
-interface is documented in its header and every requirement it implements is traced. That makes
-the tests' quality a question of process, not of taste: a weak test suite is a weak acceptance
-criterion.
+acceptance criteria for the software units, and to verify each unit against them (clauses 5.5.2 and
+5.5.3; 5.5.4 adds criteria for class C). The standard does not say what the criteria are. MiniDAQ's
+development plan (`docs/regulatory/sdp.md`, section 6) does: a unit is accepted when its tests pass
+under every preset, static analysis reports nothing, its interface is documented in its header and
+every requirement it implements is traced. That makes the tests' quality a question of process, not
+of taste: a weak test suite is a weak acceptance criterion.
 
 ### Anatomy of a good test
 
@@ -358,15 +357,15 @@ if (!(e >= cfg_.energy_low_kev && e <= cfg_.energy_high_kev)) {
 - **Condition coverage**: each condition (`e >= low`, `e <= high`) was both true and false.
 - **MC/DC (modified condition/decision coverage)**: each condition was shown to affect the decision
   on its own, with the other conditions held fixed. For `a && b` that takes three tests: (true,
-  true), (false, true) and (true, false). It is required for the most critical software in
-  aviation (DO-178C, level A) and recommended for the highest safety level in automotive (ISO
-  26262-6, ASIL D) (verify: the tables of the editions you work with).
+  true), (false, true) and (true, false). It is required for the most critical software in aviation
+  (DO-178C, level A) and recommended for the highest safety level in automotive (ISO 26262-6, ASIL
+  D).
 
 Clang measures all of these from the source: `-fprofile-instr-generate -fcoverage-mapping`
-instruments the code, and Clang 18 adds `-fcoverage-mcdc` for MC/DC (verify: Clang 18 limits a
-decision to six conditions for MC/DC; later versions raise it). MiniDAQ's `coverage` preset uses
-them, and `tools/coverage.py` runs the unit tests, merges the profiles of every process they start
-(the Python tests start the applications), and reports each software item of
+instruments the code, and Clang 18 adds `-fcoverage-mcdc` for MC/DC (Clang 18 limits a decision to
+six conditions for MC/DC; Clang 19 raises the limit). MiniDAQ's `coverage` preset uses them, and
+`tools/coverage.py` runs the unit tests, merges the profiles of every process they start (the Python
+tests start the applications), and reports each software item of
 `docs/architecture/software-items.json`:
 
 ```text
@@ -469,7 +468,7 @@ counter, two threads at once) were among those that ran it.
 What auditors expect follows from that. IEC 62304 asks for no coverage number. The FDA's *General
 Principles of Software Validation* (2002) lists structural coverage measures (statement, decision,
 condition, multi-condition, loop, path and data flow coverage) as part of the developer's testing
-and expects the rigor to follow the risk (verify: section 5.2.5 of the guidance). What a reviewer
+and expects the rigor to follow the risk (section 5.2.5 of the guidance). What a reviewer
 of a class B item usually wants to see is a coverage report from the released commit, a stated
 target, and a review of what is not covered: each uncovered branch either reached by a new test or
 accepted with a reason. MiniDAQ's development plan (version 5) states its rule as a ratchet: no

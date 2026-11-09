@@ -636,10 +636,10 @@ truth, and the point source is refused; every starter of the chapter fails. Tag 
   the eigenvalue of the Laplacian that says how nearly a graph falls apart, which is what the point
   source did.
 - D. R. Schaart, "Physics and technology of time-of-flight PET detectors", *Physics in Medicine and
-  Biology* 66(9), 2021: what sets a detector's timing and why its calibration matters (verify: the
-  volume and issue before you cite it).
+  Biology* 66(9), 2021: what sets a detector's timing and why its calibration matters (article
+  09TR01).
 - The documentation of open-source PET calibration and reconstruction software, for example the
   calibration procedures of PETsys's TOFPET2 evaluation kit and the normalization and timing
-  calibration in STIR and CASToR (verify: what each project currently documents).
+  calibration in STIR and CASToR, as each project documents them for its current release.
 - `docs/formats/calibration.md`, ADR 0021 and CR-0012 in the repository: the format, the decision
   and the change record of this chapter.
