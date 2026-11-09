@@ -1,0 +1,20 @@
+% Chapter 20: MiniDAQ's gates at their three rates. Nothing merges or ships until every gate of its
+% rate is green, and the self-test shows that each gate can fail.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{g/.style={draw=#1,fill=#1!12!white,line width=0.8pt,rounded corners=2pt,font=\sffamily\scriptsize,align=center,minimum height=0.62cm,inner sep=2pt}}
+  \foreach \y/\l in {0/{each push},-1.25/{when it matters},-2.5/{each release}} {
+    \node[font=\sffamily\small\bfseries,text=partcolor,anchor=east] at (-0.2,\y) {\l};
+    \draw[d2drule,line width=0.6pt] (0,\y-0.55) -- (14.0,\y-0.55);}
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (b) at (0,0) {build,\\six presets};
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (t) at (2.0,0) {tests,\\six presets};
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (s) at (4.0,0) {static\\analysis};
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (v) at (6.0,0) {tool\\versions};
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (r) at (8.0,0) {reproducible\\build};
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (f) at (10.0,0) {fuzz, SBOM,\\scan};
+  \node[g=partcolor,anchor=west,minimum width=1.85cm] (d) at (12.0,0) {documents,\\trace};
+  \node[g=d2dcat1,anchor=west,minimum width=3.8cm] at (0,-1.25) {performance A/B: code changes};
+  \node[g=d2dcat1,anchor=west,minimum width=3.8cm] at (4.0,-1.25) {gate self-test: each gate can fail};
+  \node[g=d2dcat2,anchor=west,minimum width=5.8cm] at (0,-2.5) {release checks: coverage, soak, system test,\\fuzzing, stress, speed (reference machine)};
+  \node[g=d2dcat2,anchor=west,minimum width=3.8cm] at (6.0,-2.5) {release package:\\two archives, one hash};
+  \node[hot,anchor=west,minimum width=2.6cm,align=center] at (11.2,-1.9) {tag only when\\CI is green};
+\end{tikzpicture}

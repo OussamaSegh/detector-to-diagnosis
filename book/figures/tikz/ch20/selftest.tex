@@ -1,0 +1,17 @@
+% Chapter 20: one fault of the gate self-test. A gate is shown to work only if it passes on the
+% unchanged code and fails, for the planted reason, with the fault.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.55cm]
+  \node[box,minimum width=2.2cm] (w) {worktree\\[-1pt]\scriptsize of the commit};
+  \node[box=d2dcat2,right=of w,yshift=0.6cm,minimum width=2.2cm] (c) {run the gate};
+  \node[box=d2dcat3,right=of w,yshift=-0.6cm,minimum width=2.2cm] (f) {plant the fault\\[-1pt]\scriptsize anchored edit, once};
+  \node[box=d2dcat3,right=of f,minimum width=2.2cm] (g) {run the gate};
+  \node[note,text=d2dink,anchor=west] (cr) at ([xshift=0.3cm]c.east) {control: must pass};
+  \node[note,text=d2dink,anchor=west,align=left] (fr) at ([xshift=0.3cm]g.east) {must fail, and its output\\must match the reason};
+  \draw[flow] (w.east) -- ++(0.25,0) |- (c.west);
+  \draw[flow] (w.east) -- ++(0.25,0) |- (f.west);
+  \draw[flow] (f) -- (g);
+  \node[hot,minimum width=1.6cm] (v) at (11.2,0) {caught};
+  \draw[flow] (cr.east) -| (v.north);
+  \draw[flow] (fr.east) -| (v.south);
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.2cm]v.south) {otherwise: missed,\\or broken control};
+\end{tikzpicture}

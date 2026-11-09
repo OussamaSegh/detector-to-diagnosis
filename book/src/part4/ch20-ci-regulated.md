@@ -109,6 +109,11 @@ required checks, so a red or missing gate blocks the merge. MiniDAQ is pushed st
 `main` by one developer, so the rule is the development plan's instead: nothing is tagged until
 CI on the tagged commit is green (MDQ-PR-016).
 
+Figure [](#fig-ch20-gates) lays the table out by rate.
+
+```{.figure #fig-ch20-gates src="book/figures/tikz/ch20/gates.tex" caption="MiniDAQ's gates at their three rates: each push, when the protected files change, and each release." alt="Three horizontal lanes. Each push: build and tests in six presets, static analysis, tool versions, reproducible build, fuzz with SBOM and scan, documents and trace. When it matters: the performance A/B gate and the gate self-test. Each release: the release checks on the reference machine and the release package. A box on the right says tag only when CI is green." width="100%"}
+```
+
 ### The environment is part of the test
 
 The day-in-the-life failure is MiniDAQ's problem report MDQ-PR-020, and its lesson reaches
@@ -194,6 +199,11 @@ occur exactly once, so a fault cannot silently stop applying when the code moves
 restores the checkout and decides:
 
 ```{.python include="tools/gate_selftest.py" snippet="verdict"}
+```
+
+Figure [](#fig-ch20-selftest) shows the experiment for one fault.
+
+```{.figure #fig-ch20-selftest src="book/figures/tikz/ch20/selftest.tex" caption="One fault of the gate self-test. The gate must pass on the unchanged code and fail, for the planted reason, with the fault." alt="From a worktree of the commit, two paths: running the gate as a control, which must pass, and planting an anchored fault and running the gate, which must fail with output matching the reason. Both lead to a verdict box, caught; otherwise the fault was missed or the control is broken." width="85%"}
 ```
 
 The faults are data. Here are four of the fifteen:
@@ -451,6 +461,11 @@ times and the order in which you add files, so the tool sets all three:
 The archive is not compressed: two machines with different zlib versions compress the same
 bytes differently, and the identity of a release should not depend on that.
 
+Figure [](#fig-ch20-package) puts the two archives and the check together.
+
+```{.figure #fig-ch20-package src="book/figures/tikz/ch20/package.tex" caption="The release package. Two builds from two checkouts are equal byte for byte; the product archive's SHA-256 is the release's identity, and the evidence archive points at it." alt="Two checkouts are built separately and compared equal byte for byte. The product archive lists bin with two programs of 1.1 MB, debug files of 23.1 MB, the SBOM, BUILDINFO.json and MANIFEST.sha256, with bars showing their sizes. Its SHA-256 is the release's identity; the evidence archive records one run of the release checks and names that hash in PRODUCT.sha256." width="85%"}
+```
+
 ### Verification
 
 `release_bundle.py verify` checks a product archive against itself and, given the evidence
@@ -599,6 +614,11 @@ evidence was too weak (`measurements/ch20/aa-local.txt`). One alarm in 15 jobs i
 0.2% and 32%, the exact interval of Exercise 20.5: too few jobs to say more than "not rare
 enough to ignore". The reference machine is itself a virtual machine, with the caveats of
 Chapter 5.
+
+Figure [](#fig-ch20-aa) shows all ninety comparisons of those jobs, with the gate's two conditions as lines.
+
+```{.figure #fig-ch20-aa src="book/figures/plots/ch20/aa.py" caption="Fifteen A/A jobs of a build against itself on the reference machine, every benchmark of every job. Only a point that is both slower than 0.95 and above the p line raises an alarm; one did." alt="Scatter plot of median speed ratio against minus log10 of the p-value for 90 comparisons of a build with itself. Most points cluster between 0.96 and 1.05 with small p-value scores. A dashed line at 0.95 and a dotted line at p equals 0.01 bound the alarm region; one histogram point at 0.946 and p 0.0045 is in it, another at 0.865 has p 0.026 and is not." width="75%" inputs="measurements/ch20/aa-local.txt"}
+```
 
 On GitHub's runners (2 vCPUs each), three A/A jobs started by hand with the head
 as base, and one A/B job of a push that changed no benchmarked code, raised no alarm. Their 23
