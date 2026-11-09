@@ -83,26 +83,25 @@ falls exponentially with the [half-life]{.idx} T½:
 
 A(t) = A~0~ · 2^(−t / T½)
 
-| Isotope | Half-life | Typical use (verify: for your clinic) |
+| Isotope | Half-life | Typical use (varies by clinic) |
 |---|---|---|
 | Fluorine-18 | 109.8 min | FDG, amyloid and tau tracers |
 | Carbon-11 | 20.4 min | Research tracers (needs an on-site cyclotron) |
 | Gallium-68 | 67.7 min | Oncology tracers, from a generator |
 | Oxygen-15 | 2.04 min | Blood flow (water) |
 
-Not every decay emits a positron: fluorine-18 does so in about 97% of decays (verify: the
-nuclear data table you cite). In this book, "activity" means positron decays per second,
-which is what the scanner can see.
+Not every decay emits a positron: fluorine-18 does so in about 97% of decays (the nuclear data
+tables of NNDC or DDEP give the exact branching). In this book, "activity" means positron decays per
+second, which is what the scanner can see.
 
-**Worked example: why the DAQ sees a falling rate.** A brain FDG scan typically starts 30
-to 60 minutes after an injection of a few hundred megabecquerels (verify: the EANM
-procedure guideline for brain FDG PET, Guedj et al. 2022, for the actual ranges). During a
-20-minute acquisition the activity falls by a factor of 2^(20/109.8) = 1.135, to 88% of
-its value at the start. Rates of trues fall by the same factor; rates of randoms, which
-grow with the square of activity (later in this chapter), fall by 1.135² = 1.29, to 78%. Every count-rate
-dependent setting of the DAQ, and every dead-time correction, has to hold across that
-range within one scan. For a carbon-11 scan of the same length the factor is
-2^(20/20.4) = 1.97: the rate halves.
+**Worked example: why the DAQ sees a falling rate.** A brain FDG scan typically starts 30 to 60
+minutes after an injection of at most a few hundred megabecquerels (the EANM procedure guideline for
+brain FDG PET, Guedj et al. 2022, gives the recommended ranges). During a 20-minute acquisition the
+activity falls by a factor of 2^(20/109.8) = 1.135, to 88% of its value at the start. Rates of trues
+fall by the same factor; rates of randoms, which grow with the square of activity (later in this
+chapter), fall by 1.135² = 1.29, to 78%. Every count-rate dependent setting of the DAQ, and every
+dead-time correction, has to hold across that range within one scan. For a carbon-11 scan of the
+same length the factor is 2^(20/20.4) = 1.97: the rate halves.
 
 Decay correction is the inverse: a number of counts measured between t~1~ and t~2~ is
 scaled to what it would have been at a reference time. That correction is applied in
@@ -199,7 +198,7 @@ The simulator models the crystal with an attenuation coefficient (0.087 per mm f
 511 keV, used for all energies: a simplification) and a *photofraction*, more exactly the
 full-energy or photopeak fraction: the probability that an interacting photon deposits its full
 energy in the crystal. It is larger than the photoelectric fraction (about a third for LYSO at
-511 keV, verify against the attenuation tables of NIST XCOM) because a photon that Compton
+511 keV, from the attenuation tables of NIST XCOM) because a photon that Compton
 scatters first and is then absorbed in the same crystal also lands in the photopeak. The rest
 deposit the recoil energy of one Compton scatter. That is two numbers instead of a transport
 code, and enough to produce a realistic-looking spectrum (the figure below). The photofraction
@@ -241,13 +240,13 @@ noise to the time and to the energy, and each step has a maximum rate.
 | Intrinsic radioactivity | yes (lutetium-176) | none |
 | Typical use | time-of-flight PET | high-sensitivity, non-TOF PET |
 
-The values are typical; light yield in particular depends on the growth and the
-co-doping (verify: your crystal supplier's data sheet). Two consequences reach the DAQ
-directly. The *decay time* sets how long a crystal is busy with one photon, and so the
-dead time and pile-up at high rates (Chapter 11). The *intrinsic radioactivity* of
-lutetium means that an LYSO scanner sees singles even with no patient in it: a background
-that the DAQ records, a few hundred becquerels per cubic centimeter of crystal (verify:
-supplier data), which is useful for calibration and must not be mistaken for a fault.
+The values are typical; light yield in particular depends on the growth and the co-doping, so take
+your crystals' values from the supplier's data sheet. Two consequences reach the DAQ directly. The
+*decay time* sets how long a crystal is busy with one photon, and so the dead time and pile-up at
+high rates (Chapter 11). The *intrinsic radioactivity* of lutetium means that an LYSO scanner sees
+singles even with no patient in it: a background that the DAQ records, a few hundred becquerels per
+cubic centimeter of crystal (the supplier's data gives the value for its crystals), which is useful
+for calibration and must not be mistaken for a fault.
 
 ### Photodetectors
 
@@ -369,11 +368,10 @@ show, and has physical limits that no software can remove.
 
 ### Energy resolution
 
-Energy resolution is the full width at half maximum (FWHM) of the photopeak divided by
-its energy. LYSO detectors reach about 10 to 12% at 511 keV (verify: for your scanner's
-detectors). The photopeak's standard deviation is σ = FWHM / 2.355, so 12% at 511 keV is
-σ = 26 keV. The simulator assumes the resolution scales as 1/√E, as photon counting
-statistics would give:
+Energy resolution is the full width at half maximum (FWHM) of the photopeak divided by its energy.
+LYSO detectors reach about 10 to 12% at 511 keV; your scanner's detectors have their own measured
+value. The photopeak's standard deviation is σ = FWHM / 2.355, so 12% at 511 keV is σ = 26 keV. The
+simulator assumes the resolution scales as 1/√E, as photon counting statistics would give:
 
 σ(E) = R~511~ · √(511 keV · E) / 2.355
 
@@ -382,10 +380,10 @@ asymmetric around 511 keV.
 
 ### Coincidence time resolution and time of flight
 
-The *coincidence time resolution* (CTR) is the FWHM of the distribution of measured
-t~1~ − t~2~ for true coincidences from a point source at the center. Modern clinical
-time-of-flight scanners reach a few hundred picoseconds (verify: the vendor's NEMA
-results for the scanners you compare with).
+The *coincidence time resolution* (CTR) is the FWHM of the distribution of measured t~1~ − t~2~ for
+true coincidences from a point source at the center. Modern clinical time-of-flight scanners reach a
+few hundred picoseconds (Schaart 2021 reviews 200 to 400 ps; each vendor's NEMA results give its
+scanner's value).
 
 Time of flight uses the time difference to locate the decay along the LOR. A decay at
 distance x from the midpoint arrives Δt = 2x / c earlier at the nearer crystal, so
@@ -411,9 +409,9 @@ difference of a true pair has the configured CTR as its FWHM. The test
 Four effects limit spatial resolution, each independent of the others, so they add in
 quadrature (Moses 2011):
 
-- **Positron range.** The positron travels before it annihilates. For fluorine-18 the
-  effect is small, a fraction of a millimeter (verify: Levin and Hoffman 1999 give the
-  distribution); for higher-energy positron emitters it is millimeters.
+- **Positron range.** The positron travels before it annihilates. For fluorine-18 the effect is
+  small, a fraction of a millimeter (Levin and Hoffman 1999 give the distribution); for
+  higher-energy positron emitters it is millimeters.
 - **Non-collinearity.** The two photons are not exactly back to back, because the
   positron and electron are not at rest when they annihilate. The deviation is about
   0.5° FWHM, which blurs the position at the center by about 0.0022 × D, where D is the
@@ -556,13 +554,13 @@ possible to place one where a whole-body PET/CT would not fit or pay off. The pr
 parallax: in a small ring, more lines of response cross crystals at steep angles, so
 depth of interaction matters more.
 
-The clinical case is dementia. FDG shows the patterns of reduced metabolism that
-distinguish types of dementia; amyloid and tau tracers show the proteins of Alzheimer's
-disease. With treatments that target amyloid now approved in some markets, the number of
-patients who need a brain PET to confirm amyloid before treatment is growing (verify:
-current approvals and guidelines in your markets). Compact, brain-dedicated PET
-scanners are designed for that use. This book does not describe any product's internal
-design; read your manufacturer's own publications and ask your team which to read first.
+The clinical case is dementia. FDG shows the patterns of reduced metabolism that distinguish types
+of dementia; amyloid and tau tracers show the proteins of Alzheimer's disease. With treatments that
+target amyloid now approved in some markets, the number of patients who need a brain PET to confirm
+amyloid before treatment is growing; which treatments are approved, and where, changes from year to
+year. Compact, brain-dedicated PET scanners are designed for that use. This book does not describe
+any product's internal design; read your manufacturer's own publications and ask your team which to
+read first.
 
 ### What it means for the DAQ
 

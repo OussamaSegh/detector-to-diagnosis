@@ -140,10 +140,10 @@ In a **per-single window**, every single opens its own window and is paired with
 singles up to τ after it. A single can then be part of several windows: its own, and those
 of the singles up to τ before it.
 
-The GATE simulation toolkit offers both, and its documentation describes the same
-distinction (verify: the GATE version in use, where the options are named in the
-coincidence sorter's settings). Hardware sorters often implement the fixed window, because
-it maps to a simple state machine; software sorters can do either.
+The GATE simulation toolkit offers both, and its documentation describes the same distinction in the
+coincidence sorter's settings, whose option names differ between GATE versions. Hardware sorters
+often implement the fixed window, because it maps to a simple state machine; software sorters can do
+either.
 
 ### A worked timeline
 
@@ -178,12 +178,11 @@ sorter had this bug; a unit test with three singles 1 ns apart now pins it down.
 
 ### Multiples
 
-A window with three or more singles is a **multiple**. With three singles there are three
-possible pairs, and at most one of them is a true, because one annihilation makes at most
-two photons. The other singles came from other decays: the window holds at least one
-random pair, usually two. The sorter must decide what to do, and the GATE documentation
-lists the common policies (verify: names and the full list in the GATE version in use;
-GATE has more variants than the four here):
+A window with three or more singles is a **multiple**. With three singles there are three possible
+pairs, and at most one of them is a true, because one annihilation makes at most two photons. The
+other singles came from other decays: the window holds at least one random pair, usually two. The
+sorter must decide what to do, and the GATE documentation lists the common policies (the names
+differ between GATE versions, and GATE has more variants than the four here):
 
 - **Kill all**: discard the whole window. Simple, and it loses the true pair that some
   multiples contain.
@@ -264,10 +263,9 @@ Chapter 1 rather than computing cosines:
 ```{.cpp include="minidaq/src/processing/coincidence_sorter.cpp" snippet="good"}
 ```
 
-Two crystals at the same transaxial position, in different rings, have no transaxial line
-at all (|q − p| = 0); the function rejects them, which a real scanner would decide with the
-axial geometry (verify: how your scanner's sorter treats pairs in the same transaxial
-position).
+Two crystals at the same transaxial position, in different rings, have no transaxial line at all (|q
+− p| = 0); the function rejects them, which a real scanner would decide with the axial geometry; ask
+how your scanner's sorter treats pairs in the same transaxial position.
 
 ## What the policy does: measurements
 
@@ -332,15 +330,14 @@ detector 2 fired first are found from the other side. Exercise 10.6 derives the 
 checks it on simulated streams, and has a starter with exactly this mistake, made twice so
 that the two halves agree with each other and are both wrong.
 
-For a whole scanner, summing over pairs of crystals and dividing by two for the double
-count gives about τS² for a total singles rate S. At 20 MBq, S = 4.0 M/s and τ = 4 ns give
-64,000 randoms per second, against 63,200 measured with take all goods and no geometry
-cut. The estimate needs the singles rate per crystal, which the DAQ counts anyway, and its
-statistical noise is small because singles are many. Its weakness is that the singles
-include the singles of trues, and that dead time and multiples policies change what the
-sorter actually keeps; Oliver and Rafecas compare corrected forms of this estimate that use
-both the singles and the prompts (verify: the exact method and the conditions under which
-they found it accurate, in their 2016 paper).
+For a whole scanner, summing over pairs of crystals and dividing by two for the double count gives
+about τS² for a total singles rate S. At 20 MBq, S = 4.0 M/s and τ = 4 ns give 64,000 randoms per
+second, against 63,200 measured with take all goods and no geometry cut. The estimate needs the
+singles rate per crystal, which the DAQ counts anyway, and its statistical noise is small because
+singles are many. Its weakness is that the singles include the singles of trues, and that dead time
+and multiples policies change what the sorter actually keeps; Oliver and Rafecas compare corrected
+forms of this estimate that use both the singles and the prompts; their 2016 paper gives the exact
+method and the conditions under which they found it accurate.
 
 ### The delayed window
 
@@ -691,12 +688,11 @@ The campaign runs again whenever the sorter changes.
 
 ### The target
 
-How fast must the sorter be? A clinical PET scanner can produce tens of millions of singles
-per second at high activity (verify: your scanner's expected peak singles rate, which
-depends on its geometry and the activities used). This chapter sets a target of
-30 M singles per second on one core, with bounded latency, and the measurements are taken
-against it. As always, the target comes from the system, and Chapter 11's count-rate curves
-are where the real number is derived.
+How fast must the sorter be? A clinical PET scanner can produce tens of millions of singles per
+second at high activity; your scanner's peak singles rate depends on its geometry and the activities
+used (assumption: confirm with team). This chapter sets a target of 30 M singles per second on one
+core, with bounded latency, and the measurements are taken against it. As always, the target comes
+from the system, and Chapter 11's count-rate curves are where the real number is derived.
 
 ### The measurements
 
@@ -811,11 +807,10 @@ behavior is part of the device's intended performance.
 - **The configuration belongs to the data.** The policy, the window, the gates and the
   delay must be recorded with every acquisition (the list-mode header of Chapter 12), because
   the randoms correction and any later analysis depend on them.
-- **Validation against a simulator is evidence only if the simulator is fit for it.**
-  The ground truth comes from a tool, and the argument that the tool is right for the
-  purpose belongs in the verification records (verify: your quality system's procedure for
-  validating software tools, for example under ISO 13485 clause 4.1.6 for software used in
-  the quality system).
+- **Validation against a simulator is evidence only if the simulator is fit for it.** The ground
+  truth comes from a tool, and the argument that the tool is right for the purpose belongs in the
+  verification records, under your quality system's procedure for validating software tools (ISO
+  13485 clause 4.1.6 for software used in the quality system).
 - **Counters are risk controls.** Late, out-of-order and energy-rejected singles are
   counted, reported and, above a threshold, can fault a run. Whether lost coincidences can
   affect a clinical result is a hazard for the risk file (ISO 14971, Chapter 15).
@@ -1000,8 +995,7 @@ window on; the fuzz campaign finds nothing in ten minutes. Tag `ch10`.
 - D. L. Bailey, D. W. Townsend, P. E. Valk and M. N. Maisey (eds.), *Positron Emission
   Tomography: Basic Sciences*, Springer, 2005.
 - D. Brasse et al., "Correction methods for random coincidences in fully 3D whole-body PET:
-  impact on data and image quality", *Journal of Nuclear Medicine* 46(5) (2005) 859–867
-  (verify: the citation details).
+  impact on data and image quality", *Journal of Nuclear Medicine* 46(5) (2005) 859–867.
 - T. Merlin et al., "CASToR: a generic data organization and processing code framework for
   multi-modal and multi-dimensional tomographic reconstruction", *Physics in Medicine and
   Biology* 63 (2018) 185005; and K. Thielemans et al., "STIR: software for tomographic image
