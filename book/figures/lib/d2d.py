@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""The book's plotting style (docs/PLAN-interior-design.md, sections 3 and 4).
+"""The book's plotting style (book/docs/PLAN-interior-design.md, sections 3 and 4).
 
 A figure script imports this module, draws, and calls save():
 
@@ -114,7 +114,7 @@ plt.rcParams.update({
     "patch.linewidth": 0.6,
     "text.color": INK,
     "figure.dpi": 150,
-    "savefig.dpi": 300,
+    "savefig.dpi": 450,  # raster parts (images) at 300 ppi or more after scaling
     "savefig.bbox": "tight",
     "savefig.pad_inches": 0.03,
     "svg.fonttype": "path",

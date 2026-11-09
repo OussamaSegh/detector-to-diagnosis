@@ -184,9 +184,10 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
   if [[ "$what" == epub || "$what" == all || "$what" == kdp ]]; then
     # The copyright page follows the EPUB's title page.
     python3 "$here/tools/figures.py" all screen >/dev/null
+    python3 "$here/tools/palette.py" css "$build/palette.css"
     BOOK_PROFILE=screen pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --split-level=1 --mathml \
-      --css "$here/templates/epub.css" \
+      --css "$here/templates/epub.css" --css "$build/palette.css" \
       --epub-cover-image "$build/cover/cover-$vol.png" \
       -o "$out/$stem-v$version.epub" "$here/src/front/copyright.md" "${files[@]}"
     python3 "$here/tools/fix_epub.py" "$out/$stem-v$version.epub"
@@ -229,7 +230,7 @@ build_pdf() {
   shift 6
   local files=("$@") job="$stem-$mode"
   local tex="$build/tex/$job.tex" extra=() profile
-  # The colors (book/tools/palette.json) for the medium: docs/PLAN-interior-design.md, 3.4.
+  # The colors (book/tools/palette.json) for the medium: book/docs/PLAN-interior-design.md, 3.4.
   case "$mode" in
     screen) profile=screen ;;
     boox) profile=boox ;;

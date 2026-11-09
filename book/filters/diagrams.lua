@@ -12,7 +12,7 @@ end
 
 local counter = 0
 
--- The book's style (docs/PLAN-interior-design.md, 3.3): the book's sans font, borders in the
+-- The book's style (book/docs/PLAN-interior-design.md, 3.3): the book's sans font, borders in the
 -- Part's color (design.lua sets the block's part), gray edges. Attributes a diagram sets itself
 -- win, because these defaults come first.
 local part_colors = {}

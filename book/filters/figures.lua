@@ -1,4 +1,4 @@
--- figures.lua: the book's figures (docs/PLAN-interior-design.md, section 4). Runs after
+-- figures.lua: the book's figures (book/docs/PLAN-interior-design.md, section 4). Runs after
 -- design.lua (which sets each block's Part) and diagrams.lua.
 --
 --   ```{.figure #fig-ch08-annihilation src="book/figures/tikz/ch08-annihilation.tex"

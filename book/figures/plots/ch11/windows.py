@@ -34,11 +34,11 @@ def read_table():
 def main(dst):
     rows = read_table()
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.6))
-    for mbq, color in COLORS.items():
+    for (mbq, color), m, ls in zip(COLORS.items(), ("o", "s"), ("-", "--")):
         for ax, kind in ((ax1, "time"), (ax2, "energy")):
             pts = rows[(mbq, kind)]
-            ax.plot([p[0] for p in pts], [p[1] / 1e3 for p in pts], marker="o", markersize=3, color=color,
-                    linewidth=1.0, label=f"{mbq} MBq")
+            ax.plot([p[0] for p in pts], [p[1] / 1e3 for p in pts], marker=m, markersize=3.2, color=color,
+                    linestyle=ls, linewidth=1.0, label=f"{mbq} MBq")
     ax1.axvline(4, color=d2d.MUTED, linewidth=0.6, linestyle=":")
     ax2.axvline(435, color=d2d.MUTED, linewidth=0.6, linestyle=":")
     ax1.set_xlabel("time window (ns)")

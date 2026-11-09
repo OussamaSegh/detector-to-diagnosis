@@ -20,6 +20,14 @@ the patch version.
 
 ### Added
 
+- Interior design (book/docs/PLAN-interior-design.md): one color per Part from a single palette
+  for the PDFs, the EPUB and the figures, with a black-and-white profile for the paperback;
+  chapter heads with an emblem, Part openers with the MiniDAQ pipeline map, call-out cards with
+  icons, tinted tables and code, and thumb tabs in the color PDFs.
+- A figure pipeline (`book/tools/figures.py`): TikZ and matplotlib figures built per profile,
+  cached, numbered and referenced in the PDF and the EPUB, each with alt text, checked by the
+  ctest `book.figures`. Part II has 51 figures (Chapters 8 to 12); plots read the measurement
+  files they show.
 - How to use this book explains the *verify:* and *assumption: confirm with team* markers.
 - A PDF for 10.3 inch 4:3 color E Ink tablets (Onyx Boox Air 5C): `book/build.sh boox`
   sets the book and the solutions manual on a 6.18 x 8.24 in page with narrow margins, so a

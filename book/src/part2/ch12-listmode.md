@@ -245,7 +245,7 @@ sinogram is a sum of sinusoids, and reconstruction (Chapter 28) inverts that sum
 mathematical terms the sinogram is a sampled Radon transform of the activity, attenuated
 and blurred by the detector. Figure [](#fig-ch12-lor) shows the construction.
 
-```{.figure #fig-ch12-lor src="book/figures/tikz/ch12/lor.tex" caption="From lines of response to the sinogram. Every line through a point has s = x₀ cos θ + y₀ sin θ, so the point draws one sinusoid; three of its lines are marked in both views." alt="Left, a ring of crystals with a point source off center and three lines of response through it at different angles; for one line, an arrow from the center marks its distance s and the angle theta of its normal. Right, axes of theta from 0 to 180 degrees and s, with one sinusoid, the formula s equals x0 cos theta plus y0 sin theta, and three dots on it at the angles of the three lines." width="85%"}
+```{.figure #fig-ch12-lor src="book/figures/tikz/ch12/lor.tex" caption="From lines of response to the sinogram. Every line through a point has s = x~0~ cos θ + y~0~ sin θ, so the point draws one sinusoid; three of its lines are marked in both views." alt="Left, a ring of crystals with a point source off center and three lines of response through it at different angles; for one line, an arrow from the center marks its distance s and the angle theta of its normal. Right, axes of theta from 0 to 180 degrees and s, with one sinusoid, the formula s equals x0 cos theta plus y0 sin theta, and three dots on it at the angles of the three lines." width="85%"}
 ```
 
 ### Indexing a ring

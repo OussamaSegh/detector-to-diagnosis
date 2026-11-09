@@ -1,4 +1,4 @@
--- design.lua: the book's page design (docs/PLAN-interior-design.md, section 3). Runs before
+-- design.lua: the book's page design (book/docs/PLAN-interior-design.md, section 3). Runs before
 -- boxes.lua and diagrams.lua.
 --
 -- * A Part header (# Part II: Title {.part}) becomes \dpart, the Part opener page with the

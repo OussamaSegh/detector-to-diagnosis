@@ -93,6 +93,8 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME docs.threats COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_threats.py ${PROJECT_SOURCE_DIR})
   # Chapter 20: the tool list is complete and its table current.
   add_test(NAME docs.tools COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_tools.py ${PROJECT_SOURCE_DIR} --check)
+  # The book's figures: id, caption, alt text, sources, references, palette contrast.
+  add_test(NAME book.figures COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/figures.py check)
   # Chapter 22: the register map header and its document are generated from hw/feb.toml.
   add_test(NAME docs.regmap COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/regmap_gen.py
                                     ${PROJECT_SOURCE_DIR}/hw/feb.toml --source-name hw/feb.toml --check

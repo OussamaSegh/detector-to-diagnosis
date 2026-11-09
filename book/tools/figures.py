@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Builds the book's figures (docs/PLAN-interior-design.md, section 4).
+"""Builds the book's figures (book/docs/PLAN-interior-design.md, section 4).
 
 A figure is a block in a chapter:
 
