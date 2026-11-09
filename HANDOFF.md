@@ -108,7 +108,9 @@ Quality:
 Accuracy:
 
 - Never invent a reference or a number.
-- Mark an uncertain claim with "verify:".
+- Do not print "verify:" markers (resolved after the 1.0.0 review, 2026-11-09): give the
+  source, write "at the time of writing" for what may change, or say in the sentence what the
+  book did not check.
 - Mark a product-specific number with "assumption: confirm with team".
 - Never reproduce ISO or IEC text.
 

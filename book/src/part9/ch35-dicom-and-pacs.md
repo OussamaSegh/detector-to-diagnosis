@@ -178,11 +178,10 @@ write in two lists, and its check of a series uses the same lists:
 A few of these carry the meaning of the image, and each is a decision someone must make with the
 physicists:
 
-- **Units** (0054,1001). Bq/mL (`BQML`) for an image calibrated to activity concentration;
-  MiniDAQ has no dose calibration, so its images are proportional counts, `PROPCNTS` (verify:
-  the defined terms of the PET Series module in the current edition). A viewer computes a
-  standardized uptake value only from `BQML`; writing it for an uncalibrated image would let it
-  compute a wrong one.
+- **Units** (0054,1001). Bq/mL (`BQML`) for an image calibrated to activity concentration; MiniDAQ
+  has no dose calibration, so its images are proportional counts, `PROPCNTS`, one of the defined
+  terms of the PET Series module. A viewer computes a standardized uptake value only from `BQML`;
+  writing it for an uncalibrated image would let it compute a wrong one.
 - **Corrected Image** (0028,0051). Which corrections were applied: `NORM`, `ATTN`, `SCAT`, `RAN`,
   `DECY` and others. Chapter 33's phantom has normalization, attenuation and randoms, and no
   scatter correction; the attribute says so.
@@ -198,9 +197,9 @@ physicists:
   long as one half-life, 2 ln 2, about 1.386, which the tests check.
 - **The radiopharmaceutical.** A sequence with the radionuclide as a coded entry, fluorine-18 as
   code 77004003 in SNOMED CT (scheme `SCT`, meaning `^18^Fluorine`), its half-life (6586.2 s), its
-  positron fraction (0.9686), and, when the console knows them, the injected activity and the
-  injection time (verify: both physical values against the scanner's own table, which the dose
-  calibrator and the decay correction share).
+  positron fraction (0.9686, the DDEP value; NNDC gives 0.9673), and, when the console knows them,
+  the injected activity and the injection time. Both physical values must match the scanner's own
+  table, which the dose calibrator and the decay correction share.
 - **Times.** DICOM dates and times carry no time zone unless the object says it: a TM of
   093000 is half past nine where the scanner is. The export takes the acquisition's start only
   with a UTC offset, and writes Timezone Offset From UTC (0008,0201). A series acquired the

@@ -403,15 +403,14 @@ was rewritten or squashed, or whose commits mix unrelated changes, tells less.
 
 ::: box-regulated
 - **Competence and training.** ISO 13485 expects the competence of personnel who affect product
-  quality to be determined, and training to be provided and recorded (verify: the standard's
-  clause on human resources; assumption: confirm with team). The first 90 days are part of that:
-  record what was learned and how competence was confirmed, for instance by the first change and
-  problem report taken through the process.
+  quality to be determined, and training to be provided and recorded (clause 6.2; how your company
+  records it is an assumption: confirm with team). The first 90 days are part of that: record what
+  was learned and how competence was confirmed, for instance by the first change and problem report
+  taken through the process.
 - **Maintenance.** IEC 62304's maintenance process expects modifications to be analyzed for their
-  effect on the existing software, the risk controls and the documents before they are made
-  (verify: the standard's clauses on software maintenance and problem resolution). The survey, the
-  coupling and the characterization tests are ways to do that analysis honestly when you do not
-  yet know the code.
+  effect on the existing software, the risk controls and the documents before they are made (IEC
+  62304 clauses 6 and 9). The survey, the coupling and the characterization tests are ways to do
+  that analysis honestly when you do not yet know the code.
 - **Behavior is a contract.** A change of observable behavior, even a fix, goes through change
   control with an impact analysis on everything that reads the output; a characterization test
   makes the change visible.

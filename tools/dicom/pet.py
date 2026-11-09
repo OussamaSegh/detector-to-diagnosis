@@ -46,8 +46,9 @@ GANTRY_RELATION = {"HFS": ("102540008", "SCT", "headfirst"),
 RECUMBENT = ("102538003", "SCT", "recumbent")
 SUPINE = ("40199007", "SCT", "supine")
 
-# Physical data of the radionuclides the export knows (verify: against the scanner's own table,
-# which the dose calibrator and the decay correction share).
+# Physical data of the radionuclides the export knows (F-18: NIST half-life, DDEP positron
+# fraction). They must match the scanner's own table, which the dose calibrator and the decay
+# correction share.
 RADIONUCLIDES = {"F18": {"half_life_s": 6586.2, "positron_fraction": 0.9686,
                          "code": ("77004003", "SCT", "^18^Fluorine")}}
 RADIOPHARMACEUTICALS = {"FDG": ("35321007", "SCT", "Fluorodeoxyglucose F^18^")}

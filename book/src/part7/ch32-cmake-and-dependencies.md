@@ -523,8 +523,8 @@ reasonable next step with a cost the chapter names. And formatting is one tool o
 - **The build is part of the software's configuration.** IEC 62304 expects the tools and the
   environment that build the software to be identified and controlled. Pinned dependencies, a SOUP
   list that a test keeps in agreement with the pins, toolchain files and presets under version
-  control, and a reproducibility check are how MiniDAQ meets that (verify: the standard's clauses on
-  configuration management and software release; assumption: confirm with team).
+  control, and a reproducibility check are how MiniDAQ meets that (IEC 62304 clauses 8 and 5.8; how
+  your team meets them is an assumption: confirm with team).
 - **Tools in the tool list.** clang-format (TL-37) touches source code and scikit-build-core (TL-38)
   builds a module whose output becomes images; each has a class, a version check where it has one,
   and a test that shows it can fail. A formatting tool's change is reviewed, compiled and tested
@@ -673,8 +673,7 @@ SRS-BLD-005 tested; every starter of the chapter fails. Tag `ch32`.
 - The CMake documentation: `cmake-buildsystem(7)` for targets and usage requirements,
   `cmake-generator-expressions(7)`, `cmake-presets(7)`, `cmake-toolchains(7)`, `cmake-packages(7)`,
   and the modules `CMakePackageConfigHelpers`, `CMakeFindDependencyMacro` and `FetchContent`.
-- C. Scott, *Professional CMake: A Practical Guide*, Crascit, updated with each CMake release
-  (verify the current edition).
+- C. Scott, *Professional CMake: A Practical Guide*, Crascit, updated with each CMake release.
 - J. Lakos, *Large-Scale C++ Software Design*, Addison-Wesley, 1996, on physical design: the
   dependencies between files and what they cost a build.
 - The scikit-build-core documentation, on the `[tool.scikit-build]` settings, and the Python

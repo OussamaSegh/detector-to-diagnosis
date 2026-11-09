@@ -19,13 +19,13 @@ Every chapter has the same shape:
 4. **A MiniDAQ milestone** with a definition of done.
 5. **Check yourself** questions, a summary, and the references.
 
-Two markers in the text tell you how far to trust a statement. *verify:* follows a claim that
-comes from a source this book could not check line by line, such as the exact wording of a
-clause, the current edition of a standard, a material constant or the pages of a reference:
-look it up in the source named before you rely on it. *assumption: confirm with team* marks a
-number or a practice that is typical but differs between scanners and companies, such as a
-hardware rate or who approves a change: ask the people who own it for the value that applies
-to your system.
+Two kinds of statement need care. Where a claim depends on a source that changes, such as the
+current edition of a standard or the revision of a guidance, the text says "at the time of
+writing" or names the source to cite; where the book could not check something, such as a
+result on bare metal, it says so in the sentence. The marker *assumption: confirm with team*
+marks a number or a practice that is typical but differs between scanners and companies, such
+as a hardware rate or who approves a change: ask the people who own it for the value that
+applies to your system.
 
 ## Choosing your path {.unnumbered}
 

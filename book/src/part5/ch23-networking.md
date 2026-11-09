@@ -332,7 +332,7 @@ second at 10 M singles per second; at 300 ns each, the receiving thread spends 1
 under 2% of one core. The receive stage that Chapter 5 left unmeasured is not the pipeline's
 bottleneck. Batching stays, because it costs nothing and helps where system calls are expensive:
 on CPUs whose security mitigations flush state on every entry to the kernel, a system call can
-cost several times what it costs here (verify on the target PC with `bm_udp_receive`).
+cost several times what it costs here (measure it on the target PC with `bm_udp_receive`).
 
 ## Tuning a receive host
 
@@ -394,7 +394,7 @@ copy. Two forms are common on Linux:
   kernel's.
 
 What they give is packet rate: millions of packets per second per core, where the kernel's stack
-manages perhaps one to a few million with careful tuning (verify on the target). What they cost
+manages perhaps one to a few million with careful tuning (measure it on the target). What they cost
 is everything this chapter relied on: the kernel's counters, `tcpdump`, the socket's accounting,
 and a stack that every Linux distribution maintains and patches. In a regulated product they also
 move the receive path from platform SOUP into code and SOUP that you maintain, verify and keep

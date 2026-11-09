@@ -39,7 +39,7 @@ def randoms_from_singles(singles_per_crystal, window_ps, seconds, header, max_ri
     random pair: its window becomes a multiple, which the sorter discards (kill all), or it is
     inside its partner's window and opens none. Without the subtraction the estimate counts randoms
     the sorter could never have recorded (measurements/ch27: 31% too many at 20 MBq; the same idea
-    as the correction of Stearns et al. 2003, verify: the paper before you cite it)."""
+    as the correction of Stearns et al., IEEE NSS 2003)."""
     mrd = header.max_ring_difference if max_ring_difference is None else max_ring_difference
     s = np.asarray(singles_per_crystal, dtype=np.float64)
     if in_coincidence is not None:

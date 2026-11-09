@@ -705,11 +705,10 @@ every starter of the chapter fails. Tag `ch31`.
 ## Further reading {.unnumbered}
 
 - W. Cash, "Parameter estimation in astronomy through application of the likelihood ratio", *The
-  Astrophysical Journal* 228 (1979) 939 to 947, for the Poisson likelihood statistic (verify).
+  Astrophysical Journal* 228 (1979) 939 to 947, for the Poisson likelihood statistic.
 - S. Baker and R. D. Cousins, "Clarification of the use of chi-square and likelihood functions in
   fits to histograms", *Nuclear Instruments and Methods in Physics Research* 221 (1984) 437 to 442,
-  for the bias of Neyman's and Pearson's chi-square and the likelihood ratio for histograms
-  (verify).
+  for the bias of Neyman's and Pearson's chi-square and the likelihood ratio for histograms.
 - G. Cowan, *Statistical Data Analysis*, Oxford University Press, 1998: maximum likelihood, the
   Fisher information, and error propagation.
 - F. James, *Statistical Methods in Experimental Physics*, 2nd edition, World Scientific, 2006.
