@@ -1,0 +1,27 @@
+% Chapter 2: three ways to keep the heap out of the hot path.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % 1 reuse
+  \node[title,anchor=west] at (0,2.5) {pre-allocate and reuse};
+  \draw[partcolor,line width=0.8pt] (0,0.9) rectangle (4.4,1.5);
+  \fill[partcolor!25!white] (0,0.9) rectangle (2.6,1.5); \draw[partcolor,line width=0.8pt] (0,0.9) rectangle (4.4,1.5);
+  \node[lab] at (1.3,1.2) {this batch};
+  \node[note,anchor=north,align=center,text=d2dink] at (2.2,0.85) {\texttt{clear()} keeps the capacity;\\\texttt{reserve()} once at start-up};
+  % 2 pool
+  \begin{scope}[xshift=5.4cm]
+    \node[title,anchor=west] at (0,2.5) {object pool};
+    \foreach \i/\f in {0/1,1/1,2/0,3/1,4/0,5/0} {
+      \ifnum\f=1 \fill[partcolor!25!white] (\i*0.62,0.9) rectangle +(0.56,0.6);\fi
+      \draw[partcolor,line width=0.8pt] (\i*0.62,0.9) rectangle +(0.56,0.6);}
+    \draw[->,d2dmuted,line width=0.8pt] (0.28,1.55) to[out=50,in=130] (1.52,1.55); \node[note,text=d2dink,anchor=north] at (0.6,0.82) {in use};
+    \draw[->,d2dcat2,line width=0.8pt] (3.38,0.85) to[out=-60,in=-120] node[below,note,text=d2dink] {back to the free list} (2.14,0.85);
+  \end{scope}
+  % 3 arena
+  \begin{scope}[xshift=10.0cm]
+    \node[title,anchor=west] at (0,2.5) {arena (\texttt{pmr})};
+    \fill[partcolor!25!white] (0,0.9) rectangle (0.8,1.5); \fill[partcolor!40!white] (0.8,0.9) rectangle (1.3,1.5);
+    \fill[partcolor!25!white] (1.3,0.9) rectangle (2.4,1.5);
+    \draw[partcolor,line width=0.8pt] (0,0.9) rectangle (4.0,1.5);
+    \draw[<-,partcolor,line width=1.2pt] (2.4,1.55) -- (2.4,1.95) node[right,note,text=d2dink] {bump pointer};
+    \node[note,anchor=north,align=center,text=d2dink] at (2.0,0.85) {allocate: move the pointer;\\free: reset all at the end of the batch};
+  \end{scope}
+\end{tikzpicture}

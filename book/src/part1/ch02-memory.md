@@ -79,7 +79,10 @@ A loop that misses to DRAM on every event can process at most about five million
 per second on one core, whatever its arithmetic does. Second, the L3 on this large server
 part is slow (tens of nanoseconds), because it is a big mesh shared by many cores; on a
 desktop CPU with a small L3, expect 10 to 15 ns. Your acquisition PC's numbers will differ;
-run the benchmark on it before you rely on these.
+run the benchmark on it before you rely on these. Figure [](#fig-ch02-ladder) draws the table on a log scale.
+
+```{.figure #fig-ch02-ladder src="book/figures/plots/ch02/ladder.py" caption="Load latency by working set on the book's VM (pointer chase, mean of three runs). Each level is several times slower than the one above; from L1 to DRAM the ratio is over 100." alt="Horizontal bars on a log scale of latency per dependent load. 16 KiB in L1: 1.7 ns, about 4 cycles. 512 KiB in L2: 5.9 ns, about 13 cycles. 8 MiB in L3: 36 ns, about 83 cycles. 64 MiB in far L3 and DRAM: 138 ns, about 320 cycles. 1 GiB in DRAM with TLB misses: 204 ns, about 470 cycles." width="85%"}
+```
 
 ### Bandwidth, prefetching and why sequential access is cheap
 
@@ -194,6 +197,11 @@ Read the table the way you would read it in a design review:
   measure it with `perf stat` on real hardware. Check an explanation with a tool before
   you write it in a report.
 
+Figure [](#fig-ch02-layout) shows the two DRAM rows side by side.
+
+```{.figure #fig-ch02-layout src="book/figures/plots/ch02/layout.py" caption="AoS against SoA over 100 M singles read from DRAM: reading only the energies, SoA is 2.3 times faster; gating on every field, the gap shrinks." alt="Grouped bars of million singles per second. Summing energies: AoS 508, SoA 1,190. Gating on all fields: AoS 362, SoA 625." width="60%"}
+```
+
 ### Hot/cold splitting
 
 Real event records carry fields of very different importance. A sorter needs time, crystal
@@ -262,6 +270,11 @@ let standard containers allocate from a resource you choose:
   fixed-size blocks, for many small objects with individual lifetimes.
 - `std::pmr::null_memory_resource()` throws on every allocation. As the upstream of an
   arena, it turns "the arena was too small" into an error instead of a silent `malloc`.
+
+Figure [](#fig-ch02-alloc) sketches the three patterns.
+
+```{.figure #fig-ch02-alloc src="book/figures/tikz/ch02/alloc.tex" caption="Three ways to keep the heap out of the hot path: a buffer reused batch after batch, a pool whose buffers cycle from receiver to writer and back, and an arena that allocates by moving a pointer and frees everything at once." alt="Three small diagrams. Pre-allocate and reuse: one long buffer, partly filled by this batch; clear keeps the capacity and reserve is called once at start-up. Object pool: six slots, some in use, with an arrow from one slot to the next and another returning a slot to the free list. Arena: a buffer filled from the left with a bump pointer at the end of the used part; allocating moves the pointer and freeing resets everything at the end of the batch." width="100%"}
+```
 
 ```{.cpp include="benchmarks/bm_alloc.cpp" snippet="pmr"}
 ```
@@ -391,7 +404,10 @@ jump of more than 0.69 s is a wrap, a smaller one is a slightly late word.
 The unit tests drive this through twenty wraps and through the nasty case of a word stamped
 just before a wrap that arrives just after it. Chapter 9 adds explicit time markers from
 the hardware, which make the reconstruction robust against long gaps (a lost burst of
-packets longer than half a period would otherwise silently shift time by 1.374 s).
+packets longer than half a period would otherwise silently shift time by 1.374 s). Figure [](#fig-ch02-rollover) shows the counter and the reconstruction.
+
+```{.figure #fig-ch02-rollover src="book/figures/tikz/ch02/rollover.tex" caption="A 38-bit time counter wraps every 1.374 s. Counting wraps gives absolute time back; a backwards jump of less than half a period is a late word, not a wrap." alt="A sawtooth: the 38-bit counter rises to 2 to the 38 and drops to zero at wrap 1, wrap 2 and wrap 3, every 1.374 seconds. A straight rising line through the teeth is the absolute time, wraps times 2 to the 38 plus the counter. A dot just before wrap 2 marks a word stamped before the wrap that arrives after it; a note says a backwards jump of less than 0.69 seconds is late, not a wrap." width="100%"}
+```
 
 ### The zero-allocation decoder
 
@@ -437,7 +453,10 @@ times, once with the two counters adjacent (same line) and once padded to separa
 | Padded to separate lines | 5.9 ms | 5.9 ms |
 
 Same work per thread, six times slower, with no data shared at all. With more threads and
-cores on different sockets the penalty grows.
+cores on different sockets the penalty grows. Figure [](#fig-ch02-falsesharing) shows why.
+
+```{.figure #fig-ch02-falsesharing src="book/figures/tikz/ch02/falsesharing.tex" caption="False sharing. Two cores write two different counters that share one cache line, so the line moves between their caches on every write; padded to separate lines, each line stays in one cache." alt="Left, same line, 36.1 ms: core 0 writes counter a and core 1 writes counter b, both in one 64-byte line, and a double arrow between the cores says the line moves on every write. Right, padded, 5.9 ms: counter a and counter b each sit at the start of their own line, aligned to 64 bytes, and each line stays in one cache." width="100%"}
+```
 
 ### Why std::hardware_destructive_interference_size exists, and why MiniDAQ does not use it
 

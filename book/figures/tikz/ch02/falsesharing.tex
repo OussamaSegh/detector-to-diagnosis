@@ -1,0 +1,26 @@
+% Chapter 2: false sharing. Two cores write two different counters in one cache line, and the
+% line moves between their caches on every write; padding gives each counter its own line.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \newcommand\dcline[3]{% x, y, label slots
+    \foreach \i in {0,...,7} {\draw[d2drule,fill=white,line width=0.5pt] (#1+\i*0.45,#2) rectangle +(0.45,0.45);}}
+  \node[title,anchor=west] at (0,4.15) {same line: 36.1 ms};
+  \node[box,minimum width=1.7cm] (c0) at (0.9,2.3) {core 0}; \node[box,minimum width=1.7cm] (c1) at (5.1,2.3) {core 1};
+  \dcline{1.2}{0.4}{}
+  \fill[d2dcat0!60!white] (1.2,0.4) rectangle +(0.45,0.45); \fill[d2dcat3!60!white] (1.65,0.4) rectangle +(0.45,0.45);
+  \node[lab,font=\sffamily\scriptsize] at (1.425,0.625) {a}; \node[lab,font=\sffamily\scriptsize] at (1.875,0.625) {b};
+  \node[note,anchor=north,text=d2dink] at (3.0,0.35) {one 64-byte line};
+  \draw[<->,d2dcat3,line width=1.3pt] (c0.north east) to[out=30,in=150] node[above,lab,text=d2dcat3] {the line moves on every write} (c1.north west);
+  \draw[->,d2dcat0,line width=0.9pt] (c0.south) -- (1.42,0.88);
+  \draw[->,d2dcat3,line width=0.9pt] (c1.south) -- (1.9,0.88);
+  % padded
+  \begin{scope}[xshift=8.0cm]
+    \node[title,anchor=west] at (0,4.15) {padded: 5.9 ms};
+    \node[box,minimum width=1.7cm] (d0) at (0.9,2.3) {core 0}; \node[box,minimum width=1.7cm] (d1) at (5.1,2.3) {core 1};
+    \dcline{0}{0.4}{} \dcline{3.7}{0.4}{}
+    \fill[d2dcat0!60!white] (0,0.4) rectangle +(0.45,0.45); \fill[d2dcat3!60!white] (3.7,0.4) rectangle +(0.45,0.45);
+    \node[lab,font=\sffamily\scriptsize] at (0.225,0.625) {a}; \node[lab,font=\sffamily\scriptsize] at (3.925,0.625) {b};
+    \draw[->,d2dcat0,line width=0.9pt] (d0.south) -- (0.3,0.88);
+    \draw[->,d2dcat3,line width=0.9pt] (d1.south) -- (4.0,0.88);
+    \node[note,anchor=north,text=d2dink] at (3.4,0.35) {\texttt{alignas(64)}: each counter in its own line, each line stays in one cache};
+  \end{scope}
+\end{tikzpicture}

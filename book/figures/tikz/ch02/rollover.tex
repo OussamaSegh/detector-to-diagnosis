@@ -1,0 +1,16 @@
+% Chapter 2: a 38-bit time counter wraps every 1.374 s; counting wraps gives absolute time back.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[->,d2dmuted,line width=0.8pt] (0,0) -- (12.6,0) node[right,note] {true time};
+  \draw[->,d2dmuted,line width=0.8pt] (0,0) -- (0,3.4);
+  \draw[d2drule,dashed] (0,1.5) -- (12.2,1.5) node[right,note,text=d2dink] {$2^{38}$};
+  \foreach \k in {0,1,2} {\draw[d2dcat0,line width=1.3pt] (\k*3.6,0) -- (\k*3.6+3.6,1.5);
+    \draw[d2dcat0,line width=0.6pt,dotted] (\k*3.6+3.6,1.5) -- (\k*3.6+3.6,0);}
+  \draw[d2dcat0,line width=1.3pt] (10.8,0) -- (12,0.5);
+  \draw[partcolor,line width=1.6pt] (0,0) -- (12,3.33) node[above left,lab,text=partcolor,font=\sffamily\footnotesize\bfseries] {absolute time = wraps $\times\,2^{38}$ + counter};
+  \node[lab,text=d2dcat0,anchor=west] at (0.3,1.0) {counter, 38 bits};
+  \foreach \k in {1,2,3} {\node[note,anchor=north,text=d2dink] at (\k*3.6,-0.05) {wrap \k};}
+  \node[note,anchor=north,text=d2dink] at (1.8,-0.05) {1.374 s};
+  % a late word
+  \fill[d2dcat3] (7.0,1.42) circle (0.08);
+  \draw[->,d2dcat3,line width=0.8pt] (7.0,1.42) .. controls (7.3,0.8) and (7.6,-0.6) .. (8.2,-0.9) node[right,lab,text=d2dink,align=left] {a word stamped just before a wrap that\\arrives after it: a backwards jump of less\\than half a period, 0.69 s, is \textbf{late, not a wrap}};
+\end{tikzpicture}
