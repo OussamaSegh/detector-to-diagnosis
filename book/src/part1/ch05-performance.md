@@ -281,7 +281,7 @@ itself. Ubuntu 24.04 and Fedora 38 and later build their own packages with frame
 
 A report is a list; a flame graph is a picture of all the stacks at once. Each box is a
 function; its width is the fraction of samples in which it was on the stack; boxes above it are
-the functions it called. Colors carry no meaning. You read it by looking for wide boxes, and for
+the functions it called. In the usual rendering colors carry no meaning; in this book's figures the sort stage's path is highlighted, and frames narrower than 0.3% of the samples are left out. You read it by looking for wide boxes, and for
 wide *plateaus*: a box with nothing on top of it is a function spending time in its own code.
 The script `tools/flamegraph.sh` records with `perf` and renders the graph with Brendan Gregg's
 FlameGraph scripts (pinned to a commit):
@@ -290,9 +290,10 @@ FlameGraph scripts (pinned to a commit):
 tools/flamegraph.sh before.svg build/profile/minidaq/apps/minidaq_latency --rate 10e6 --seconds 8
 ```
 
-![MiniDAQ at 10 M singles/s with the default profile, before the fix (cpu-clock, 999 Hz, 8 seconds, all threads). The source thread and its synthetic generator take about half of all samples; the widest box in the product's own code is `time_order` under the sort stage. The interactive SVG is in `measurements/ch05/flame/`.](src/img/ch05-flame-before.png){width=100%}
+```{.figure #fig-ch05-flame-before src="book/figures/plots/ch05/flame_before.py" caption="MiniDAQ at 10 M singles/s with the default profile, before the fix (cpu-clock, 999 Hz, 8 seconds, all threads). The source thread and its synthetic generator take about half of all samples; the widest box in the product's own code is `time_order` under the sort stage. The interactive SVG is in `measurements/ch05/flame/`." alt="A flame graph, the share of samples from 0 to 100 percent across, stacks growing upward. The bottom row splits by thread: decode, pair, sort, the source with about half of all samples, and write. Inside the source, the synthetic generator's random number functions are wide. Under the sort thread, a highlighted tower of std::sort and introsort frames ends in time_order, the widest box in the product's own code." width="100%" inputs="measurements/ch05/flame book/figures/plots/ch05/flamelib.py"}
+```
 
-Reading it from the bottom, the samples divide by thread:
+Reading Figure [](#fig-ch05-flame-before) from the bottom, the samples divide by thread:
 
 - **The source thread, 52%.** Most of that is the *synthetic* data generator (27%), and within
   it the standard library's normal and exponential distributions and the Mersenne Twister. The
@@ -349,11 +350,12 @@ The pipeline benchmark, before and after one changed line:
 
 Chapter 3 found that batches of 4,096 were the slowest because the sort stage was the
 bottleneck. With the comparison inlined, they are 2.5 times faster, and the bottleneck moved:
-the flame graph afterwards shows the sort stage at 11.4% inclusive, and batches of 512 are now
+the flame graph afterwards (Figure [](#fig-ch05-flame-after)) shows the sort stage at 11.4% inclusive, and batches of 512 are now
 fastest. This is the normal course of optimization: fix the top item, profile again, and the
 picture changes.
 
-![The same run after the fix. `time_order` is gone as a separate frame (inlined); the sort stage shrank from 18% to 11% of samples.](src/img/ch05-flame-after.png){width=100%}
+```{.figure #fig-ch05-flame-after src="book/figures/plots/ch05/flame_after.py" caption="The same run after the fix. `time_order` is gone as a separate frame (inlined); the sort stage shrank from 18% to 11% of samples." alt="The same flame graph after the fix. The highlighted sort path under the sort thread is narrower, about 11 percent of the samples instead of 18, and time_order no longer appears as a frame of its own because the comparison is inlined. The source thread is now the widest part." width="100%" inputs="measurements/ch05/flame book/figures/plots/ch05/flamelib.py"}
+```
 
 ### VTune and uProf
 
@@ -437,7 +439,10 @@ What the table says, and what it does not:
   measured on, which is the best case. On the real program, train on a recorded acquisition.
 
 MiniDAQ stays at `-O2` without `-march`. The flags are an input to measure again on the
-acquisition PC's CPU, not a conclusion to copy.
+acquisition PC's CPU, not a conclusion to copy. Figure [](#fig-ch05-flags) shows the ratios as a map.
+
+```{.figure #fig-ch05-flags src="book/figures/plots/ch05/flags.py" caption="Five builds of the same code, as speed ratios to -O2 (medians of ten interleaved runs). Every option speeds something up and slows something else down." alt="A grid of speed ratios, rows decode, filter branchy, filter branchless, sort with a function pointer, sort with a lambda and the pipeline, columns -O3, -march=native, LTO and PGO. The function-pointer sort is 3.28, 0.98, 3.07 and 3.19 times faster. Decode is 1.32 to 1.52 times faster with every option. The lambda sort is slower with native, LTO and PGO, 0.77 to 0.88. The filters are all within 3 percent of 1, and the pipeline from 0.92 to 1.07." width="70%" inputs="measurements/ch05/flags/summary.md"}
+```
 
 ### Reading the assembly
 
@@ -514,7 +519,10 @@ predictor's uncertainty about which singles pass.
 
 When the input is sorted by energy, the outcomes come in long runs, the predictor is almost
 always right, and the branchy loop is the fastest of all (1,121 M singles/s at 10%), because it
-also does the least work. Real data is not sorted by energy.
+also does the least work. Real data is not sorted by energy. Figure [](#fig-ch05-filters) compares all four kernels on random input.
+
+```{.figure #fig-ch05-filters src="book/figures/plots/ch05/filters.py" caption="The energy filter kernels against the share of singles that pass, on random input (medians, batches of 4,096). The branchy kernel is fast only when the predictor can guess; the branchless and SIMD kernels do not care. The cross is the repeated-batch trap." alt="Million singles per second against the share inside the window, 10, 50 and 90 percent. Branchy: 161, 193 and 535. Branchless: 891, 915 and 940. AVX2 and AVX-512: about 835 at every share. A cross at 50 percent marks the branchy kernel on the same batch every iteration, 1,028, faster than every honest measurement." width="62%" inputs="measurements/ch05/bm_energy_filter.json"}
+```
 
 ### Branchless code
 
@@ -683,7 +691,10 @@ row. The binding row is the whole pipeline: under 3x margin at the high rate on 
 
 The budget table is a living document: each row has an owner benchmark, and the regression gate
 re-measures the benchmarks on every merge request. When a row's margin shrinks below a factor of
-two, that is a design discussion, not a surprise during a clinical acquisition.
+two, that is a design discussion, not a surprise during a clinical acquisition. Figure [](#fig-ch05-budget) shows the margins on a log scale.
+
+```{.figure #fig-ch05-budget src="book/figures/plots/ch05/budget.py" caption="The performance budget: measured nanoseconds per single for each stage, against the 100 ns that 10 M singles per second allow each stage and the 33 ns at 30 M. The whole pipeline is the binding row." alt="Horizontal bars on a log scale of nanoseconds per single: energy spectrum 0.44, energy window 1.1, decode 3, sort 7.4 to 8.5, whole pipeline 11.6. A dashed line at 100 ns marks the budget at 10 million singles per second, and a dotted line at 33 ns the budget at 30 million; the whole pipeline is the closest to it, under three times below." width="80%"}
+```
 
 ### How do you prove a speedup is real?
 
@@ -743,7 +754,10 @@ became the real coincidence sorter, and the budget kept quoting 86 M words/s unt
 checks of 0.3.0 ran the gate by hand and it failed at once. That was recorded as a problem
 report with a corrective action, in the form Chapter 16 describes (MDQ-PR-014, CAPA-0004), and
 since then `tools/release_checks.sh` runs the gate before every release. For any check that
-depends on infrastructure, look for its last run, not for its configuration.
+depends on infrastructure, look for its last run, not for its configuration. Figure [](#fig-ch05-gate) shows the gate's two conditions.
+
+```{.figure #fig-ch05-gate src="book/figures/tikz/ch05/gate.tex" caption="The performance regression gate. A benchmark fails only when its median is more than 5% slower than the baseline and the difference is significant." alt="A flow: perf_suite.sh, pinned with 10 repetitions, and the baseline from the same runner feed a first question, more than 5 percent slower in medians? No leads to ok. Yes leads to a second question, significant by an exact Mann-Whitney test with p below 0.05? Yes leads to REGRESSION; no, it is noise, leads to ok. A note says a threshold alone fails at random and a test alone flags 0.5 percent that do not matter." width="95%"}
+```
 
 On the book's VM, a second run of the suite against the baseline gave speed ratios from 0.952
 to 1.025, and the gate passed. The sort came out 4.8% slower: just inside the threshold, and

@@ -1,0 +1,17 @@
+% Chapter 5: the performance regression gate. A benchmark fails only when it is both slower
+% than the threshold and significantly different from the baseline.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.7cm,
+    q/.style={draw=d2dmuted,fill=white,rounded corners=2pt,line width=0.7pt,align=center,inner sep=4pt,font=\sffamily\footnotesize}]
+  \node[box,minimum width=2.6cm] (suite) {\texttt{perf\_suite.sh}\\[-1pt]\scriptsize pinned, 10 repetitions};
+  \node[dim,below=0.5cm of suite,minimum width=2.6cm] (base) {baseline\\[-1pt]\scriptsize same runner};
+  \node[q,right=1.1cm of suite] (q1) {more than 5\%\\slower (medians)?};
+  \node[q,right=of q1] (q2) {significant?\\[-1pt]\scriptsize exact Mann-Whitney, $p < 0.05$};
+  \node[hot=d2dcat3,right=of q2,minimum width=2.0cm] (fail) {REGRESSION};
+  \node[hot=d2dcat2,below=1.0cm of q2,minimum width=2.0cm] (ok) {ok};
+  \draw[flow] (suite) -- (q1); \draw[flow] (base.east) -| ([xshift=-0.5cm]q1.west) -- (q1.west);
+  \draw[flow] (q1) -- node[above,note,text=d2dink] {yes} (q2);
+  \draw[flow] (q2) -- node[above,note,text=d2dink] {yes} (fail);
+  \draw[flow] (q1.south) |- node[pos=0.25,left,note,text=d2dink] {no} (ok.west);
+  \draw[flow] (q2) -- node[right,note,text=d2dink] {no: noise} (ok);
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.2cm]fail.south) {a threshold alone fails at random;\\a test alone flags 0.5\% that do not matter};
+\end{tikzpicture}
