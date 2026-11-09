@@ -82,6 +82,11 @@ saturates with an E_sat of 1500 keV, and every channel gets its own delay (500 p
 4 ns). `--crystal-truth FILE.csv` writes what a calibration should find: each crystal's gain, its
 delay and the saturation energy, which no real detector would tell you.
 
+Figure [](#fig-ch26-saturation) draws the curve, and the next section comes back to its inverse.
+
+```{.figure #fig-ch26-saturation src="book/figures/plots/ch26/saturation.py" caption="The SiPM's saturation with E_sat = 1500 keV (left), and how far a quadratic fitted to its inverse is from the exact inverse (right). Fitted on 200 to 700 keV it stays within 0.44% there; fitted down to 100 keV it is 1.5% off at the low end." alt="Left: response against deposited energy, a straight dashed line for a linear detector and a curve bending below it, with 511 keV reading as 433, 15% low. Right: the error of the quadratic in percent against energy, a solid curve for a fit on 200 to 700 keV within about plus or minus 0.4%, and a dashed curve for a fit on 100 to 700 keV reaching 1.5% at 100 keV; the energy window is shaded." width="100%"}
+```
+
 ### What it does to the data
 
 On the simulated detector, the summed energy spectrum of all crystals has its photopeak at 435 keV
@@ -92,6 +97,11 @@ each crystal's events that depends on that crystal's gain: a crystal with a high
 its photopeak, one with a low gain keeps half. The image gets the pattern of the gains, which a
 normalization (Chapter 27) can partly correct, and the scatter fraction becomes position-dependent,
 which it cannot.
+
+Figure [](#fig-ch26-spectra) shows the effect crystal by crystal and summed.
+
+```{.figure #fig-ch26-spectra src="book/figures/plots/ch26/spectra.py" caption="Energy spectra from the simulator's model, drawn with a fixed seed. Each crystal's photopeak sits where its gain puts it, and the energy window keeps a different share of each; the summed spectrum is wide and low until the calibration puts every photopeak at 511 keV." alt="Left: four crystals' spectra as reported, with gains 0.85, 0.95, 1.08 and 1.20, photopeaks between about 370 and 520 keV, against the shaded window from 435 to 585 keV. Right: the summed spectrum of 2,000 crystals, uncalibrated with a broad peak at 435 keV and 23% FWHM, and calibrated with a narrow peak at 511 keV and 12% FWHM." width="100%"}
+```
 
 The delays do the same to time. Two crystals whose delays differ by 1 ns see their true
 coincidences 1 ns off center in the coincidence window; with a narrow window some of them fall
@@ -155,6 +165,11 @@ and a CRC-32. The reader is strict in the way Chapter 17 asked of every input: e
 required, an unknown key is an error, every number must fit its type (a coefficient beyond the
 range of a float or an offset beyond 32 bits is refused, not rounded), and the first five bad
 values of each array are named with their index.
+
+Figure [](#fig-ch26-table) puts the parts of the file together.
+
+```{.figure #fig-ch26-table src="book/figures/tikz/ch26/table.tex" caption="The calibration table: a header that says what the table is for and until when, four numbers per crystal (the entries shown are examples), and what makes the server refuse the whole table." alt="Left, the header with id CAL-0002 version 2, scanner MDQ-REF-0001, made 2026-11-03 and valid until 2027-02-01, procedure CP-026, 25 degrees, and the CRC-32; below it a table with columns crystal, a, b, q and offset in ps for crystals 0, 1 and 18431, and the two formulas. Right, five reasons the server refuses a table: a CRC that does not match, another scanner, expired, an entry outside the limits, a missing or unknown key." width="85%"}
+```
 
 The CRC covers the coefficients as the reader converted them: 16 bytes per crystal, three floats
 and an integer, little-endian:
@@ -231,6 +246,11 @@ The bound is the spread of the offsets: a single can come out at most (largest o
 offset) earlier than one already seen. The sort stage holds back the singles that are within that
 spread of the newest one, and sends them with the next batch:
 
+Figure [](#fig-ch26-reorder) shows the two singles of the example and the hold-back.
+
+```{.figure #fig-ch26-reorder src="book/figures/tikz/ch26/reorder.tex" caption="A time correction reorders the singles. A arrives first and is corrected to later; B arrives later and is corrected to earlier. The sort stage holds back every single within the offsets' spread of the newest corrected time." alt="Two time axes from 600 to 1400 ps. On the reported axis, A at 1000 ps with offset minus 300 and B at 1100 ps with offset plus 400. Arrows take A to 1300 and B to 700 on the corrected axis. Below, a bar shows the singles older than the newest corrected time minus the spread of the offsets as free to go, and those within the spread as held for the next batch." width="90%"}
+```
+
 ```{.cpp include="minidaq/src/pipeline/acquisition_pipeline.cpp" snippet="sort-hold"}
 ```
 
@@ -264,6 +284,11 @@ minutes; the number of singles per crystal is what matters.
 Why a cylinder? The energy calibration needs any source of 511 keV photons that reaches every
 crystal. The timing calibration needs more, as the section on delays shows. The procedure has four
 steps: each crystal's photopeak, its energy curve, the delays, and the acceptance criteria.
+
+Figure [](#fig-ch26-procedure) is the order of the steps.
+
+```{.figure #fig-ch26-procedure src="book/figures/tikz/ch26/procedure.tex" caption="The calibration procedure. The energy comes first, because the pairs for the delays are chosen in the calibrated window; the acceptance criteria decide whether a table is written at all." alt="Flow: acquisition of a centred cylinder at 20 MBq for 3 s, photopeak per crystal, energy curve, isolated pairs in the calibrated window, delays by least squares with outliers trimmed, acceptance criteria per crystal. If all pass, a table with id, version and CRC is written; if one fails, no table, and a report names each crystal. A note lists the criteria: counts, fit, curve error, gain limits, pairs and at least 40 partners." width="65%"}
+```
 
 ### Photopeaks
 
@@ -408,6 +433,11 @@ to each other and badly relative to every other group's; the solver needed 740 i
 54, the sign of a nearly disconnected graph, and the residual cannot see the error, because a
 constant per group explains the data equally well. The cylinder pairs each crystal with a fan of
 crystals across the ring, and the groups cannot form.
+
+Figure [](#fig-ch26-graph) draws the two graphs.
+
+```{.figure #fig-ch26-graph src="book/figures/tikz/ch26/graph.tex" caption="The graph of pairs for three crystals of a 24-crystal ring. A centred cylinder gives each crystal a fan of partners across the ring, which ties every delay to every other; a point source at the centre gives each crystal only the crystals opposite, and the graph falls into groups." alt="Two rings of 24 crystals. Left, uniform cylinder: three crystals each joined by lines to nine crystals across the ring, forming a dense web. Right, point source: the same three crystals each joined only to the three crystals directly opposite. Notes give the measured numbers: least partners 178 and delays right to 21 ps for the cylinder; at most 13 partners, 740 iterations and delays 130 ps wrong for the point source." width="70%"}
+```
 
 The criterion that catches it counts each crystal's distinct partners: at least 40. The cylinder
 gave at least 178, the point source at most 13. It is a criterion on the input, not on the result,

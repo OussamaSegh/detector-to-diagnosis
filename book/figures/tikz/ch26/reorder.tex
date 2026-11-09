@@ -1,0 +1,26 @@
+% Chapter 26: a per-crystal time correction reorders the singles. A arrives first and is corrected
+% later; B arrives later and is corrected earlier. The sort stage holds back by the offsets' spread.
+\begin{tikzpicture}[x=0.75cm,y=1cm]
+  \foreach \y/\lab in {0/reported (arrival order),-1.5/corrected (t minus the offset)} {
+    \draw[d2drule,line width=1pt] (6,\y) -- (14.5,\y);
+    \node[note,text=d2dink,anchor=east] at (5.8,\y) {\lab};
+    \foreach \t in {6,8,10,12,14} {\draw[d2dmuted] (\t,\y-0.07) -- (\t,\y+0.07);}}
+  \foreach \t in {6,8,10,12,14} {\node[note,text=d2dmuted,anchor=north] at (\t,-1.6) {\t00\,ps};}
+  \fill[d2dcat0] (10,0) circle (0.13); \node[note,text=d2dcat0,anchor=south east] at (10.1,0.12) {A, offset $-300$\,ps};
+  \fill[partcolor] (11,0) circle (0.13); \node[note,text=partcolor,anchor=south west] at (11,0.12) {B, offset $+400$\,ps};
+  \fill[d2dcat0] (13,-1.5) circle (0.13); \node[note,text=d2dcat0,anchor=south] at (13,-1.38) {A at 1300};
+  \fill[partcolor] (7,-1.5) circle (0.13); \node[note,text=partcolor,anchor=south] at (7,-1.38) {B at 700};
+  \draw[->,d2dcat0,line width=0.8pt,shorten >=4pt,shorten <=4pt] (10,0) -- (13,-1.5);
+  \draw[->,partcolor,line width=0.8pt,shorten >=4pt,shorten <=4pt] (11,0) -- (7,-1.5);
+  \node[note,text=d2dink,anchor=west,align=left] at (15,-0.75) {B arrives later and\\belongs earlier: if A left\\in an earlier batch,\\B is late};
+  \begin{scope}[yshift=-3.0cm]
+  \draw[d2drule,line width=1pt] (6,0) -- (14.5,0);
+  \node[note,text=d2dink,anchor=east] at (5.8,0) {the sort stage's hold-back};
+  \fill[d2dcat2!25!white] (8.5,-0.18) rectangle (14,0.18);
+  \fill[d2dcat2!65!white] (6,-0.18) rectangle (8.5,0.18);
+  \node[font=\sffamily\scriptsize,text=white,anchor=center] at (7.25,0) {may go};
+  \node[font=\sffamily\scriptsize,text=d2dink,anchor=center] at (11.25,0) {held for the next batch};
+  \draw[d2dink,line width=1pt] (14,-0.35) -- (14,0.35) node[above,note,text=d2dink] {newest corrected time};
+  \draw[<->,d2dink,line width=0.7pt] (8.5,-0.45) -- node[below,note,text=d2dink]{the spread of the offsets (4,077 ps on the simulated detector)} (14,-0.45);
+  \end{scope}
+\end{tikzpicture}

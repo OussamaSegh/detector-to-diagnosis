@@ -1,0 +1,19 @@
+% Chapter 26: the graph of pairs. A centred cylinder pairs each crystal with a fan across the ring;
+% a point source pairs it only with the crystals opposite, and the graph falls into small groups.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\R{1.6}
+  \foreach \cx/\title in {0/uniform cylinder,5.2/point source at the centre} {
+    \node[font=\sffamily\small\bfseries,text=partcolor] at (\cx,2.25) {\title};
+    \draw[d2drule,line width=0.6pt] (\cx,0) circle (\R);}
+  % cylinder: fans from three crystals
+  \foreach \i/\c in {0/d2dcat0,5/d2dcat2,11/partcolor} {
+    \foreach \d in {-4,...,4} {\pgfmathtruncatemacro{\j}{mod(\i+12+\d+24,24)}
+      \draw[\c,line width=0.5pt,opacity=0.8] ({\R*cos(15*\i)},{\R*sin(15*\i)}) -- ({\R*cos(15*\j)},{\R*sin(15*\j)});}}
+  % point source: only the opposite crystal and its neighbours
+  \foreach \i/\c in {0/d2dcat0,5/d2dcat2,11/partcolor} {
+    \foreach \d in {-1,0,1} {\pgfmathtruncatemacro{\j}{mod(\i+12+\d+24,24)}
+      \draw[\c,line width=0.6pt] ({5.2+\R*cos(15*\i)},{\R*sin(15*\i)}) -- ({5.2+\R*cos(15*\j)},{\R*sin(15*\j)});}}
+  \foreach \cx in {0,5.2} {\foreach \k in {0,...,23} {\fill[d2dink] ({\cx+\R*cos(15*\k)},{\R*sin(15*\k)}) circle (0.05);}}
+  \node[note,text=d2dink,align=center,anchor=north] at (0,-1.85) {each crystal pairs with a fan:\\least partners 178; delays right\\to 21 ps rms in 54 iterations};
+  \node[note,text=d2dink,align=center,anchor=north] at (5.2,-1.85) {only the crystals opposite:\\at most 13 partners; 740 iterations,\\a better residual, delays 130 ps wrong};
+\end{tikzpicture}

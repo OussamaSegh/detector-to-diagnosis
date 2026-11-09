@@ -1,0 +1,22 @@
+% Chapter 26: the calibration table. A header that says what it is for, four numbers per crystal,
+% and the checks the server makes before it applies a single entry.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{cell/.style={draw=d2drule,minimum height=0.42cm,font=\ttfamily\scriptsize,inner sep=2pt}}
+  \node[draw=partcolor,fill=partcolor!10!white,line width=0.9pt,rounded corners=2pt,font=\sffamily\scriptsize,align=left,anchor=north west,text width=5.6cm] (hd) at (0,0)
+    {\textbf{header}\\id CAL-0002, version 2\\scanner MDQ-REF-0001\\made 2026-11-03, valid until 2027-02-01\\procedure CP-026 version 1, 25\,\textdegree C\\CRC-32 e0c8b806 over the values};
+  \foreach \c/\w/\x in {crystal/1.2/0,a/1.1/1.2,b/1.1/2.3,q/1.1/3.4,offset\_ps/1.2/4.5} {
+    \node[cell,fill=d2dcat0!18!white,minimum width=\w cm,anchor=north west] at (\x,-2.0) {\c};}
+  \foreach \r/\vals in {0/{0,1.2,0.53,2.1e-5,-212},1/{1,0.8,0.48,1.9e-5,+87},2/{\dots,,,,},3/{18431,1.1,0.55,2.2e-5,+340}} {
+    \foreach \v [count=\k] in \vals {
+      \pgfmathsetmacro{\x}{{0,0,1.2,2.3,3.4,4.5}[\k]}
+      \pgfmathsetmacro{\w}{{0,1.2,1.1,1.1,1.1,1.2}[\k]}
+      \node[cell,minimum width=\w cm,anchor=north west] at (\x,-2.42-0.42*\r) {\v};}}
+  \node[note,text=d2dink,anchor=north west] at (0,-4.2) {E = a + b c + q c\textsuperscript{2};\quad t = reported t $-$ offset};
+  \begin{scope}[xshift=6.6cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=north west] at (0,0) {the server refuses a table};
+  \foreach \t [count=\k] in {whose CRC does not match,made for another scanner,that has expired,with an entry outside the limits,with a missing or unknown key} {
+    \fill[d2dcat3] (0.15,-0.25-0.55*\k) circle (0.06);
+    \node[note,text=d2dink,anchor=west] at (0.3,-0.25-0.55*\k) {\t};}
+  \node[note,text=d2dmuted,anchor=north west,align=left] at (0,-3.4) {and the run records which\\table it used};
+  \end{scope}
+\end{tikzpicture}

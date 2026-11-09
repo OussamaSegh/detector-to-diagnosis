@@ -1,0 +1,17 @@
+% Chapter 26: the calibration procedure. Energy first, because the pairs for the delays are chosen
+% in the calibrated energy window; acceptance criteria decide whether a table is written at all.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.35cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.3cm,minimum height=0.9cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (acq) at (0,0) {acquisition:\\centred cylinder,\\20 MBq, 3 s};
+  \node[st=d2dcat0,right=of acq] (pk) {photopeak per\\crystal (fit)};
+  \node[st=d2dcat0,right=of pk] (cv) {energy curve\\a + b c + q c\textsuperscript{2}};
+  \node[st=d2dcat2,below=0.6cm of cv] (pr) {isolated pairs in\\the calibrated window};
+  \node[st=d2dcat2,left=of pr] (ls) {delays by least\\squares, trim outliers};
+  \node[st=partcolor,left=of ls] (ac) {acceptance criteria\\per crystal};
+  \foreach \a/\b in {acq/pk,pk/cv,cv/pr,pr/ls,ls/ac} {\draw[flow] (\a) -- (\b);}
+  \node[st=d2dcat2,below=0.6cm of ac] (ok) {table written:\\id, version, CRC};
+  \node[st=d2dcat3,right=0.8cm of ok] (no) {no table: a report\\names each crystal};
+  \draw[flow] (ac) -- node[left,note,text=d2dink]{all pass} (ok);
+  \draw[flow] (ac.south east) -- (no.north west); \node[note,text=d2dcat3,anchor=south west] at ([xshift=0.1cm]no.north) {one fails};
+  \node[note,text=d2dink,anchor=west,align=left] at ([xshift=0.3cm]no.east) {counts, fit, curve error,\\gain limits, pairs and\\at least 40 partners};
+\end{tikzpicture}
