@@ -1,0 +1,20 @@
+% Chapter 33: the end-to-end run. The simulator's singles go to the server over the link and,
+% separately, through an offline reference of the same stages; the records must be equal, and every
+% count must balance between each pair of stages.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.35cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=1.9cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (sim) at (0,0) {minidaq\_sim\\decays, a phantom};
+  \node[st=d2dcat0] (link) at (2.6,0) {UDP link\\(damage if asked)};
+  \node[st=partcolor] (srv) at (5.2,0) {minidaq\_server\\decode, sort, write};
+  \node[st=d2dcat0] (files) at (7.8,0) {list-mode files\\and run record};
+  \node[st=d2dcat2] (sino) at (10.4,0.65) {sinograms\\OSEM image};
+  \node[st=d2dcat2] (qc) at (10.4,-0.65) {daily QC\\report};
+  \node[st=d2dmuted] (ref) at (3.4,-1.7) {offline reference:\\the same stages in one process};
+  \draw[flow] (sim) -- (link); \draw[flow] (link) -- (srv); \draw[flow] (srv) -- (files);
+  \draw[flow] (files) -- (sino); \draw[flow] (files) -- (qc);
+  \draw[flow] (sim.south) |- (ref.west);
+  \draw[<->,d2dcat3,line width=1pt] (ref.east) -| node[pos=0.35,below,note,text=d2dcat3]{SHA-256 of the records equal} (files.south);
+  \foreach \a/\b in {link/srv,srv/files} {\node[note,text=d2dink,anchor=south] at ($(\a.north)!0.5!(\b.north)+(0,0.05)$) {$\Sigma$ = $\Sigma$};}
+  \node[note,text=d2dink,anchor=south] at ($(sim.north)!0.5!(link.north)+(0,0.05)$) {$\Sigma$ = $\Sigma$};
+  \node[note,text=d2dink,anchor=south] at ([yshift=0.5cm]srv.north) {every count balanced between every pair of stages};
+\end{tikzpicture}

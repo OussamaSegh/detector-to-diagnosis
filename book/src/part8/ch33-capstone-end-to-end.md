@@ -133,6 +133,11 @@ chapter: the daily QC acquisition (a point source, 912,139 singles, 135,972 prom
 coincidences) and the phantom acquisition (4,466,628 singles, 134,605 prompts and 6,453 delayed),
 with equal SHA-256 digests of the records.
 
+Figure [](#fig-ch33-chain) shows the two paths and where they meet.
+
+```{.figure #fig-ch33-chain src="book/figures/tikz/ch33/chain.tex" caption="The end-to-end run. The simulator's singles go through the link and the server, and separately through an offline reference of the same stages; the records must be equal, and every count must balance between each pair of stages." alt="A row of boxes: minidaq_sim, the UDP link with optional damage, minidaq_server decoding, sorting and writing, list-mode files and run record, then sinograms with an OSEM image and the daily QC report. Sigma equals sigma marks between the stages. Below, an offline reference of the same stages fed by the simulator, joined to the files by an arrow labelled SHA-256 of the records equal." width="100%"}
+```
+
 The reference has one weakness, and the decision record (ADR 0028) states it: the offline sorter
 and the server's sorter are the same class. A defect in `CoincidenceSorter` is in both, and the
 comparison cannot see it. That is acceptable only because the sorter has its own independent
@@ -168,6 +173,11 @@ inside itself: every single entering the sorter was rejected by energy, set asid
 order, left alone, in a multiple, or one of the two singles of a pair window (Chapter 10's
 partition); every record read by the binning was binned or set aside for a named reason. Together
 they make a closed account from the first packet sent to the last record binned.
+
+Figure [](#fig-ch33-accounting) draws the account of the phantom run.
+
+```{.figure #fig-ch33-accounting src="book/figures/plots/ch33/accounting.py" caption="Every count of the phantom acquisition, from the run's e2e.json. Each bar is a total split into the parts an equation says it must be made of; the parts too small to label are listed below." alt="Five horizontal bars, each split to 100%. Singles sent, 4,466,628, all delivered. Singles at the sorter: 2,456,782 energy rejected, 1,737,361 alone, 269,672 in pair windows, 2,813 in multiples. Pair windows, 134,836: 134,605 prompts and 231 rejected by geometry. Coincidences written, 141,058: prompts and 6,453 delayed. Sinogram: 132,417 binned prompts, 3,948 binned delayeds, 4,693 outside the field of view." width="100%" inputs="measurements/ch33/e2e/e2e.json"}
+```
 
 An equation that always holds is indistinguishable from an equation that can never fail. The test
 `Accounting.test_every_counter_off_by_one_fails_a_check` takes a consistent set of counters,
@@ -241,6 +251,11 @@ The phantom's sinograms go through the corrections and the reconstruction of Par
 estimated from the singles, attenuation computed for the water cylinder, and OSEM with 4 iterations
 of 8 subsets on 2 mm pixels.
 
+Figure [](#fig-ch33-image) shows the image the checks are run on.
+
+```{.figure #fig-ch33-image src="book/figures/plots/ch33/image.py" caption="The image at the end of the chain, from the run's own image.npy: the phantom reconstructed with the C++ projector, and its profiles through the centre. The edge is where it should be and the inside is flat within the noise." alt="Left, a reconstructed disc of about 80 mm radius, grainy, with a dotted circle at 80 mm. Right, horizontal and vertical profiles through the centre over 8 mm bands, scaled to the mean inside 60 mm: both rise at minus 80 mm, stay around 1 with noise up to about 2, and fall at plus 80 mm." width="100%" inputs="measurements/ch33/e2e/image.npy"}
+```
+
 ```{.python include="tools/e2e.py" snippet="image"}
 ```
 
@@ -270,6 +285,11 @@ the ratio from 0.937 to 1.042; without it the radius is 82.64 to 82.76 mm and th
 one run is a guess; a limit chosen from the spread of runs that should pass and runs that should
 fail is a measurement. The run itself uses one fixed seed, so its numbers are the same on every
 run of the same code, and a change in them is a change in the code.
+
+Figure [](#fig-ch33-flatness) shows the two populations and the limits.
+
+```{.figure #fig-ch33-flatness src="book/figures/plots/ch33/flatness.py" caption="The end-to-end image checks over five seeds, with and without attenuation correction. The limits (shaded) sit between the two populations with a margin on both sides." alt="Left: radius at half level for seeds 33 to 37, near 80.2 to 80.5 mm with correction and 82.6 to 82.8 without, against a shaded band from 78 to 82. Right: centre over periphery, 0.94 to 1.04 with correction and 0.76 to 0.86 without, against a shaded band from 0.9 to 1.1." width="100%" inputs="measurements/ch33/flatness.txt"}
+```
 
 ### Two speeds
 
@@ -389,6 +409,11 @@ criteria come from the scanner's system requirements and from design validation,
 who know what the clinical use needs (assumption: confirm with team). What a software team owns is
 the mechanism: that each criterion is written down with its requirements and its evidence, that a
 tool reads the evidence the same way every time, and that nothing becomes a pass by being absent.
+
+Figure [](#fig-ch33-acceptance) shows the specification's verdicts from the first candidate to 1.0.0.
+
+```{.figure #fig-ch33-acceptance src="book/figures/plots/ch33/acceptance.py" caption="The acceptance specification's verdicts at each release candidate, from the acceptance records. Releases 0.8.0 to 1.0.0 were made with ACC-04 failing under an approved deviation in their release records (Chapter 34), not as a pass." alt="A grid of nine criteria by four releases. ACC-01 to ACC-03 and ACC-07 pass in all four. ACC-04 end-to-end latency passes in 0.7.0 and fails in 0.8.0, 0.9.0 and 1.0.0. ACC-05 and ACC-06 are missing in 0.7.0 and pass after. ACC-08 release checks pass in 0.7.0, fail in 0.8.0 and 0.9.0, and pass in 1.0.0. ACC-09 is stale in 0.7.0 and passes after." width="75%" inputs="measurements/ch33/acceptance-0.7.0.md measurements/release-0.8.0/acceptance.md measurements/release-0.9.0/acceptance.md measurements/release-1.0.0/acceptance.md"}
+```
 
 ## The requirements freeze
 
