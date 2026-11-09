@@ -1,0 +1,17 @@
+% Chapter 21: diagnosing from data. A slow writer slows the stages before it one after another; at
+% 55 s every stage is slow and the source, which did nothing wrong, is losing data.
+\begin{tikzpicture}[x=0.38cm,y=1cm]
+  \draw[d2drule,line width=1pt] (28,0.3) -- (57,0.3);
+  \foreach \t in {30,35,40,45,50,55} {\draw[d2dmuted] (\t,0.22) -- (\t,0.38); \node[note,text=d2dmuted,anchor=south] at (\t,0.38) {\t\,s};}
+  \foreach \n/\t/\y in {writer/31/-0.2, pair/37/-0.7, sort/42/-1.2, decode/48/-1.7, source/53/-2.2} {
+    \node[note,text=d2dink,anchor=east] at (27.6,\y) {\n};
+    \fill[d2dcat2!30!white] (28,\y-0.15) rectangle (\t,\y+0.15);
+    \fill[d2dcat3!60!white] (\t,\y-0.15) rectangle (57,\y+0.15);
+    \node[font=\sffamily\scriptsize\bfseries,text=white,anchor=west] at (\t+0.1,\y) {\t\,s};}
+  \draw[d2dcat0,line width=1.2pt] (30,0.15) -- (30,-2.5);
+  \node[note,text=d2dcat0,anchor=north,align=center] at (30,-2.5) {writer slowed\\to 30\%};
+  \draw[partcolor,line width=1.2pt,densely dashed] (55,0.15) -- (55,-2.5);
+  \node[note,text=partcolor,anchor=north,align=center] at (55,-2.5) {someone\\looks};
+  \node[box=d2dcat3,font=\sffamily\scriptsize] at (52,-3.0) {source drops data from 52 s};
+  \node[note,text=d2dink,anchor=west,align=left] at (57.5,-1.2) {the order of the onsets\\is the evidence};
+\end{tikzpicture}

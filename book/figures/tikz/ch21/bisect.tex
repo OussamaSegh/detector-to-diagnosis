@@ -1,0 +1,17 @@
+% Chapter 21: git bisect as a binary search. Exit 125 skips a commit that cannot be tested; skipped
+% commits next to the defect leave a list of candidates, not one answer.
+\begin{tikzpicture}[x=0.5cm,y=1cm]
+  \foreach \i in {0,...,23} {
+    \pgfmathsetmacro\c{\i<14 ? "d2dcat2" : "d2dcat3"}
+    \fill[\c!25!white,draw=white] (\i,0) rectangle ++(0.9,0.5);}
+  \foreach \i in {12,13} {\fill[d2dmuted!40!white,draw=white] (\i,0) rectangle ++(0.9,0.5); \node[font=\sffamily\tiny,text=d2dink] at (\i+0.45,0.25) {125};}
+  \node[note,text=d2dink,anchor=north] at (0.45,-0.05) {good};
+  \node[note,text=d2dink,anchor=north] at (23.45,-0.05) {bad};
+  \foreach \s/\x/\y in {1/11.5/1.05, 2/17.5/1.45, 3/14.5/1.85, 4/12.5/2.25} {
+    \draw[->,d2dink,line width=0.7pt] (\x+0.45,\y) -- (\x+0.45,0.55);
+    \node[circle,fill=partcolor,text=white,font=\sffamily\tiny\bfseries,inner sep=1pt,minimum size=0.36cm] at (\x+0.45,\y+0.12) {\s};}
+  \node[note,text=d2dink,anchor=west,align=left] at (24.5,1.65) {about $\log_2 n$ tests:\\seven for a hundred commits};
+  \draw[decorate,decoration={brace,mirror,amplitude=3pt},d2dcat3,line width=0.8pt] (12,-0.35) -- (14.9,-0.35);
+  \node[note,text=d2dink,anchor=north,align=center] at (13.45,-0.5) {possible first bad commits:\\read these diffs};
+  \node[note,text=d2dink,anchor=north west,align=left] at (0,-1.25) {exit 0 good, 1 to 127 bad, 125 skip: a commit that does not build is skipped, not blamed};
+\end{tikzpicture}

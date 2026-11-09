@@ -409,6 +409,11 @@ the newest event overall is the newest head of some ring:
 It allocates nothing (the cursors are arrays on the stack), so a signal handler can call it, and
 it costs at most `out.size()` × 32 slot reads.
 
+Figure [](#fig-ch21-ring) puts the rings, the slot and the snapshot together.
+
+```{.figure #fig-ch21-ring src="book/figures/tikz/ch21/ring.tex" caption="The flight recorder. Each recording thread owns a ring; each slot is a seqlock; a snapshot merges the rings from their newest events backwards." alt="Three rows of sixteen cells for the rings of the source, sort and control threads, each with an arrow at its newest slot and shading that fades with age. A snapshot arrow leads to a detail of one slot, a sequence word followed by time, code and two numbers, with the writer and reader rules of the seqlock." width="90%"}
+```
+
 ### What it costs
 
 SRS-DIAG-005 asks for at most 100 ns per event, without a lock, also with four threads recording.
@@ -430,7 +435,10 @@ the record about 5 ns. A first version counted every event in one shared atomic 
 213 ns with four: every record wrote the same cache line from four cores. Summing the rings' own
 `next` counters when someone asks, and `alignas(64)` on each ring, brought four threads to
 40.9 ns. The lesson of Chapter 3 again, found by measuring and not by reading: a counter that
-every thread writes is a lock in disguise.
+every thread writes is a lock in disguise. Figure [](#fig-ch21-recorder) shows the two versions side by side.
+
+```{.figure #fig-ch21-recorder src="book/figures/plots/ch21/recorder.py" caption="Cost per recorded event before and after removing the shared counter. With four threads, one shared cache line cost five times the whole budget of the clock read." alt="Grouped bar chart of nanoseconds per event for one thread, four threads, and one thread while another reads. With one shared counter: 38.1, 213 and 63 ns. With per-ring counters and aligned rings: 32.7, 40.9 and 32.5 ns. A dashed line marks the 100 ns requirement and a dotted line the 27.8 ns clock read." width="70%" inputs="measurements/ch21/bm_flight_recorder.txt"}
+```
 
 ### What it records, and what not
 
@@ -633,7 +641,10 @@ for both faults to meet.
 
 The fourth answer points at a class of tests, not one test: for every counter with a definition
 of the form "A and B", a test that has A without B. The review checklist now asks for it (item
-4.5). That is what acting on the cause looks like: a change to how the next counter is reviewed.
+4.5). That is what acting on the cause looks like: a change to how the next counter is reviewed. Figure [](#fig-ch21-whys) draws the chain.
+
+```{.figure #fig-ch21-whys src="book/figures/tikz/ch21/whys.tex" caption="The root cause analysis of MDQ-PR-019. The chain ends where the organization can act: on the class of test that was missing, not on the one defect." alt="A row of four boxes: symptom, why 1, why 2 and why 3, from a counter too high under load to only half of the counter's definition implemented. Below, the escape (unit tests injected one fault at a time) and the action on the class: for every counter of the form A and B, a test with A without B." width="95%"}
+```
 
 Since this chapter, every closed problem report from MDQ-PR-019 on has a root cause with at least
 two whys, a cause, a category from the list above and an escape, and `tools/anomalies.py` fails
@@ -662,7 +673,10 @@ When something worked in one version and fails in a later one, and you have a te
 failure, `git bisect` finds the first commit that fails by testing the commit halfway between a good
 and a bad one, again and again: about the base-2 logarithm of the number of commits, seven tests for
 a hundred commits. `git bisect run CHECK` automates it. The check's exit status is the verdict: 0
-good, 1 to 127 bad, except 125, which means "this commit cannot be tested, skip it".
+good, 1 to 127 bad, except 125, which means "this commit cannot be tested, skip it". Figure [](#fig-ch21-bisect) shows a search with two commits that do not build.
+
+```{.figure #fig-ch21-bisect src="book/figures/tikz/ch21/bisect.tex" caption="git bisect as a binary search. Each test halves the range; exit 125 skips a commit that cannot be tested, and skipped commits next to the defect leave a list of candidates." alt="A row of 24 commits, green from good on the left to red bad on the right, with two gray commits marked 125 just before the first red one. Numbered arrows show four test points narrowing the range. A brace under the gray commits and the first red one says possible first bad commits, read these diffs." width="95%"}
+```
 
 The 125 matters more than it looks. A history has commits that do not build: a refactoring split
 over two commits, a dependency that is no longer available, a test that was broken for an
@@ -711,6 +725,11 @@ source's at 53 s, and the source begins to drop data at 52 s. Someone who looks 
 stage slow and data lost, and the stage that is losing data, the source, is the one that did
 nothing wrong. The order of the onsets is the evidence, and to read it you need rates computed
 from the real time between snapshots, a baseline from before the incident, and the queue depths.
+
+Figure [](#fig-ch21-cascade) draws the onsets of the exercise's model in order.
+
+```{.figure #fig-ch21-cascade src="book/figures/tikz/ch21/cascade.tex" caption="Diagnosing from data: Exercise 21.4's model. The writer slows at 30 s and each stage before it slows in turn; at 55 s every stage is slow, and the source, which did nothing wrong, is the one losing data." alt="Five horizontal bars for writer, pair, sort, decode and source from 28 to 57 seconds, green before and orange after their onset of slowing at 31, 37, 42, 48 and 53 seconds. A blue line at 30 s marks the writer slowing to 30 percent; a dashed line at 55 s marks when someone looks. A note says the source drops data from 52 s." width="95%"}
+```
 
 A first version of the exercise's solution broke ties the wrong way. When two stages slowed in the
 same interval, it blamed the one downstream. With snapshots one second apart the case never arose,

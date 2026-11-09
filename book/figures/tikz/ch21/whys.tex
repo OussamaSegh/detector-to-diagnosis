@@ -1,0 +1,15 @@
+% Chapter 21: the root cause analysis of MDQ-PR-019 as a chain of whys, ending in a cause, a
+% category and an escape that the organization can act on.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{why/.style={draw=partcolor,fill=partcolor!#1!white,line width=0.9pt,rounded corners=2pt,text width=3.0cm,minimum height=1.3cm,font=\sffamily\scriptsize,align=left,inner sep=4pt}}
+  \node[why=6,anchor=north west] (w1) at (0,0) {\textbf{symptom}\\counter one or two too high under load};
+  \node[why=12,anchor=north west] (w2) at (3.45,0) {\textbf{why 1}\\a late copy of a held\\packet counted as\\reordered};
+  \node[why=20,anchor=north west] (w3) at (6.9,0) {\textbf{why 2}\\decided from the\\sequence number alone};
+  \node[why=30,anchor=north west] (w4) at (10.35,0) {\textbf{why 3}\\only half of the counter's\\definition implemented};
+  \foreach \a/\b in {w1/w2,w2/w3,w3/w4} {\draw[flow] (\a) -- (\b);}
+  \node[box=d2dcat1,anchor=north west,text width=6.1cm,align=left,font=\sffamily\scriptsize] (esc) at (0,-1.75) {\textbf{escape (why 4):} the unit tests injected one fault at a time; delay and duplication never met while a packet was held};
+  \node[hot,anchor=north west,text width=6.3cm,align=left,font=\sffamily\scriptsize] (act) at (6.9,-1.75) {\textbf{act on the class:} for every counter "A and B", a test with A without B (checklist item 4.5)};
+  \draw[flow] (w4.south) |- (act.east);
+  \draw[flow] (esc) -- (act);
+  \node[note,text=d2dink,anchor=north west] at (0,-2.9) {category: code. Never "the developer made a mistake": the cause you can act on is in the process.};
+\end{tikzpicture}

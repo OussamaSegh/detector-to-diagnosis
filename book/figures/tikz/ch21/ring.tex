@@ -1,0 +1,24 @@
+% Chapter 21: the flight recorder. One ring of 256 slots per recording thread, each slot a
+% seqlock; a snapshot merges the rings from their newest events backwards.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \r/\name/\y in {0/{source thread}/0, 1/{sort thread}/-0.75, 2/{control thread}/-1.5} {
+    \node[note,text=d2dink,anchor=east] at (-0.15,\y) {\name};
+    \foreach \i in {0,...,15} {
+      \pgfmathsetmacro\age{mod(\i+16-(5+3*\r),16)}
+      \pgfmathsetmacro\shade{\age<1 ? 70 : (\age<6 ? 35 : 12)}
+      \fill[partcolor!\shade!white,draw=white,line width=0.6pt] (\i*0.34,\y-0.25) rectangle ++(0.34,0.5);}
+    \draw[partcolor,line width=0.8pt] (0,\y-0.25) rectangle (16*0.34,\y+0.25);
+    \pgfmathsetmacro\head{(5+3*\r)*0.34+0.17}
+    \draw[->,d2dcat1,line width=1pt] (\head,\y+0.55) -- (\head,\y+0.27);}
+  \node[note,text=d2dcat1,anchor=south] at (5*0.34+0.17,0.55) {newest};
+  \node[note,text=d2dmuted,anchor=west] at (0,-1.95) {\dots\ up to 32 rings of 256 slots, in static memory};
+  % one slot
+  \begin{scope}[shift={(7.6,0.25)}]
+    \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (0,0) {one slot: a seqlock};
+    \node[draw=partcolor,fill=white,font=\ttfamily\scriptsize,minimum width=1.4cm,anchor=north west] (sq) at (0,-0.35) {seq};
+    \node[draw=d2drule,fill=white,font=\ttfamily\scriptsize,minimum width=2.6cm,anchor=north west] at (sq.north east) {time, code, a, b};
+    \node[note,text=d2dink,anchor=north west,align=left] at (0,-1.0) {writer: \texttt{2n+1}, fields, \texttt{2n+2}\\reader: keep only if both loads\\of \texttt{seq} say \texttt{2n+2}};
+  \end{scope}
+  \draw[->,d2dcat0,line width=1pt] (5.6,-0.75) -- node[above,note,text=d2dcat0] {snapshot} (7.3,-0.75);
+  \node[note,text=d2dink,anchor=north west,align=left] at (0,-2.25) {one writer per ring: no lock, no read-modify-write;\\the snapshot allocates nothing, so a signal handler can call it};
+\end{tikzpicture}
