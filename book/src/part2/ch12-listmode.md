@@ -112,7 +112,10 @@ Every width is a decision with an argument:
   bits reach 2047.97 keV. The writer clamps anything outside and counts each clamp.
 
 Sixteen bytes is also a power of two, so a record's offset is a shift, and a block of 4,096
-records is exactly 64 KiB of payload.
+records is exactly 64 KiB of payload. Figure [](#fig-ch12-record) shows the record and its block.
+
+```{.figure #fig-ch12-record src="book/figures/tikz/ch12/record.tex" caption="The 16-byte MDQ-L1 record, byte by byte, and the block that holds up to 4,096 of them behind a 32-byte header." alt="A row of 16 byte cells grouped into fields: bytes 0 to 3 the time offset in picoseconds after the block's base time, 4 and 5 crystal a with 15 bits and a delayed flag, 6 and 7 crystal b, 8 to 11 the signed time difference, 12 and 13 energy a and 14 and 15 energy b in units of 1/32 keV. A note says the top bit of crystal a marks a delayed coincidence and 0x7FFF a tag. Below, a block: a 32-byte header with base time, count and CRCs, followed by up to 4,096 records, 64 KiB, closed early when the next offset would pass 4.29 ms." width="100%"}
+```
 
 ### Blocks, headers and versions
 
@@ -132,7 +135,10 @@ Each **block** has a 32-byte header: the magic `MDQB`, a sequence number that st
 every file, the record count, flags, the 64-bit base time, a CRC-32 of the records and a
 CRC-32 of the block header itself. A file ends with an empty *closing block*. Its flags say
 whether the run ends here or continues in the next file, so a reader can tell a complete
-file from a truncated one without trusting its name.
+file from a truncated one without trusting its name. Figure [](#fig-ch12-file) shows the layout.
+
+```{.figure #fig-ch12-file src="book/figures/tikz/ch12/file.tex" caption="An MDQ-L1 file: a header, numbered blocks, and an empty closing block whose presence says the file is complete." alt="A row of boxes: the file header with magic, version, JSON metadata and CRC; block 0; block 1; dots; block n; and a closing block, empty, with flags. A zoom under block 1 shows its 32-byte header: the magic MDQB, the sequence number, the record count, flags, the base time and the CRCs. Notes say the reader checks the version before the sizes, and that a closing block means the file is complete rather than truncated." width="100%"}
+```
 
 The constants are in one place in the code:
 
@@ -237,7 +243,10 @@ a sinusoid whose amplitude is the source's distance from the axis and whose phas
 direction. That curve gives the sinogram its name. An object is a sum of points, so its
 sinogram is a sum of sinusoids, and reconstruction (Chapter 28) inverts that sum. In
 mathematical terms the sinogram is a sampled Radon transform of the activity, attenuated
-and blurred by the detector.
+and blurred by the detector. Figure [](#fig-ch12-lor) shows the construction.
+
+```{.figure #fig-ch12-lor src="book/figures/tikz/ch12/lor.tex" caption="From lines of response to the sinogram. Every line through a point has s = x₀ cos θ + y₀ sin θ, so the point draws one sinusoid; three of its lines are marked in both views." alt="Left, a ring of crystals with a point source off center and three lines of response through it at different angles; for one line, an arrow from the center marks its distance s and the angle theta of its normal. Right, axes of theta from 0 to 180 degrees and s, with one sinusoid, the formula s equals x0 cos theta plus y0 sin theta, and three dots on it at the angles of the three lines." width="85%"}
+```
 
 ### Indexing a ring
 
@@ -287,7 +296,10 @@ Fourier rebinning, belong to reconstruction (Chapter 28).
 
 MiniDAQ's histogrammer does SSRB with a configurable maximum ring difference. It keeps the
 full Michelogram as a separate table, counted before the ring-difference cut, so that a
-reader can see what the cut removed.
+reader can see what the cut removed. Figure [](#fig-ch12-michelogram) shows both on eight rings.
+
+```{.figure #fig-ch12-michelogram src="book/figures/tikz/ch12/michelogram.tex" caption="A Michelogram of 8 rings (MiniDAQ has 48), a maximum ring difference of 3, and single-slice rebinning: every line between rings a and b goes to slice a + b, the direct plane halfway between them." alt="Left, an 8 by 8 grid of ring a against ring b. The diagonal, the direct planes, is darkest; cells with a ring difference up to 3 are shaded lighter the more oblique they are; the corners beyond a difference of 3 are hatched as cut. Four cells on the anti-diagonal where a plus b equals 5 are outlined, and a note says SSRB puts them all into slice 5. Right, a side view of the eight rings with an oblique line from ring 1 to ring 4 and a dashed vertical line halfway between them, at slice 5." width="100%"}
+```
 
 ### Time of flight
 
@@ -313,7 +325,7 @@ at random points along random lines and checks that each lands in the bin of its
 
 ### A point source and a cylinder
 
-Figure 12.1 shows two sinograms that MiniDAQ produced end to end: `minidaq_sim --listmode`
+Figure [](#fig-ch12-sinogram) shows two sinograms that MiniDAQ produced end to end: `minidaq_sim --listmode`
 wrote list-mode files, and `minidaq_listmode sino` histogrammed them. The point source at
 (40, −25) mm draws one sinusoid with an amplitude of 47 mm. The cylinder fills a band whose
 width is its diameter, with a background of scattered and random coincidences outside it.
@@ -321,11 +333,8 @@ Its Michelogram is darker in two corners: the source is 100 mm long and the scan
 so the direct planes of the end rings see no activity, while the oblique lines between the
 two ends cross the middle of the cylinder.
 
-![Sinograms histogrammed from MiniDAQ list-mode files (`measurements/ch12/sinogram.py`). Left:
-1 s of a 2 MBq point source at (40, −25) mm in air, one sinusoid. Middle: 2 s of 20 MBq in a
-uniform cylinder of radius 80 mm inside a water cylinder of radius 100 mm. The radial axis is
-labeled in millimeters because the bins are not evenly spaced. Right: the cylinder's
-Michelogram, prompts by the rings of the two crystals, on a log scale.](src/img/ch12-sinogram.png){width=100%}
+```{.figure #fig-ch12-sinogram src="book/figures/plots/ch12/sinogram.py" caption="Sinograms histogrammed from MiniDAQ list-mode files (`measurements/ch12/sinogram.py`). Left: 1 s of a 2 MBq point source at (40, −25) mm in air, one sinusoid. Middle: 2 s of 20 MBq in a uniform cylinder of radius 80 mm inside a water cylinder of radius 100 mm. The radial axis is labeled in millimeters because the bins are not evenly spaced. Right: the cylinder's Michelogram, prompts by the rings of the two crystals, on a log scale." alt="Three panels. Left, the sinogram of a point source: a single thin sinusoid over view angles from 0 to 180 degrees, swinging between about minus 47 and plus 47 mm. Middle, the sinogram of the water cylinder: a bright vertical band about 160 mm wide, with a faint background of scatters and randoms outside it. Right, the cylinder's Michelogram, 48 by 48 ring pairs on a log color scale, nearly uniform except for two darker corners where both rings are at the same end of the scanner." width="100%" inputs="measurements/ch12/sino"}
+```
 
 Fitting the sinusoid of a point source gives back its position, and that is how MiniDAQ found
 a bias in its own geometry. A point at 100 mm comes back at 96.6 mm, and points at 20, 47 and
@@ -563,7 +572,10 @@ them with an in-memory disk that records the order of every call and fails on de
 `rename_no_replace` uses `renameat2` with `RENAME_NOREPLACE`. Where that is not available, it
 falls back to `link` followed by `unlink`. Either way an existing complete file is never
 overwritten. The test `MakesEachFileDurableBeforeItsFinalName` checks the order of the calls
-for each fsync policy (SRS-OUT-003).
+for each fsync policy (SRS-OUT-003). Figure [](#fig-ch12-durable) shows what a crash at each step leaves behind.
+
+```{.figure #fig-ch12-durable src="book/figures/tikz/ch12/durable.tex" caption="The sink's write path and what a power loss at each step leaves: a .part file before the file's fsync, durable data under either name between the fsync and the directory's fsync, and a complete .mdql file after it." alt="A row of steps joined by arrows: write blocks to run.mdql.part, closing block, fsync of the file, close, rename without replacing, fsync of the directory, next file. Braces under the row say what a power loss leaves: before the file's fsync, a .part file whose last blocks may be missing or damaged; between that fsync and the directory's, durable data whose name may still be .part; after, a complete run.mdql. Above: the rule, a file whose name ends in .mdql is complete." width="100%"}
+```
 
 ### The sink: two threads and a pool
 
@@ -609,12 +621,10 @@ offers three policies:
 
 The right policy is a measured choice, so `writer_throughput` measures it. It feeds the real
 sink with synthetic coincidences on the real disk and reports the rate, the fsyncs and the
-waits (`measurements/ch12/writer.py`). Figure 12.2 shows the medians on the book's VM.
+waits (`measurements/ch12/writer.py`). Figure [](#fig-ch12-writer) shows the medians on the book's VM.
 
-![List-mode writer throughput per fsync policy on the book's VM: short runs of 320 MB, which
-the page cache absorbs, and long runs of 3.2 GB, more than the kernel lets stay dirty. The
-red line is the sorter's output at its own limit. Data:
-`measurements/ch12/writer.txt`.](src/img/ch12-writer.png){width=100%}
+```{.figure #fig-ch12-writer src="book/figures/plots/ch12/writer.py" caption="List-mode writer throughput per fsync policy on the book's VM: short runs of 320 MB, which the page cache absorbs, and long runs of 3.2 GB, more than the kernel lets stay dirty. The dashed line is the sorter's output at its own limit." alt="Grouped bars of million coincidences per second for seven fsync policies. Short runs reach 38 without fsync, 24 with one fsync at close, and 23 to 37 with interval policies. Long runs reach 29 without fsync and 18.6 to 20.5 with every policy that calls fsync. A dashed horizontal line at 2.7 million, the sorter at its limit, lies far below every bar." width="100%" inputs="measurements/ch12/writer.txt"}
+```
 
 The short runs measure the page cache more than the disk. Without fsync the sink writes
 38 M coincidences per second, 609 MB/s, which is the encoder's speed plus a memory copy. With
@@ -747,7 +757,10 @@ the back door: no patient name in a file name, a comment field or a free-text de
 (assumption: confirm with team what your scanner's configuration descriptions may contain).
 Second, simulated data must never pass for measured data. MDQ-L1's metadata has a `simulated`
 flag, which is true for MiniDAQ's synthetic source and for `minidaq_sim`, so a simulated file
-cannot be mistaken for a patient's.
+cannot be mistaken for a patient's. Figure [](#fig-ch12-boundary) draws the boundary.
+
+```{.figure #fig-ch12-boundary src="book/figures/tikz/ch12/boundary.tex" caption="The patient-data boundary. Raw data carry a run ID and no identity, and may leave for analysis and testing; the link from run to patient and the DICOM images stay inside, protected and audited." alt="Two zones separated by a dashed line labeled the boundary. On the left, raw data with no patient identity: list-mode files with run ID, configuration and a simulated flag, and sinograms, with arrows to a physicist's workstation and to a bug report or test reconstruction. On the right, patient data, protected and audited: the modality worklist feeding the one protected place that links a run to a patient, and DICOM images with name, ID and birth date going to the PACS. A curved arrow labeled reconstruction crosses the boundary from the sinograms to the DICOM images." width="100%"}
+```
 
 ::: box-regulated
 The list-mode file is where the DAQ's requirements become evidence.

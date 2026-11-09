@@ -1,0 +1,34 @@
+% Chapter 12: from lines of response to the sinogram. Every line through a point source has
+% s = x0 cos(theta) + y0 sin(theta); the point draws one sinusoid in the (theta, s) plane.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\R{2.0}\def\px{0.8}\def\py{0.5}
+  % the ring
+  \foreach \a in {0,7.5,...,352.5} {\fill[d2drule,rotate=\a] (\R+0.05,-0.1) rectangle (\R+0.3,0.1);}
+  \draw[d2dmuted,line width=0.4pt] (-0.15,0) -- (0.15,0) (0,-0.15) -- (0,0.15);
+  \foreach \t/\c/\m in {20/d2dcat0/0, 80/d2dcat2/1, 140/d2dcat3/2} {
+    \pgfmathsetmacro{\s}{\px*cos(\t)+\py*sin(\t)}
+    \pgfmathsetmacro{\h}{sqrt(\R*\R-\s*\s)}
+    \draw[\c,line width=1.1pt] ({\s*cos(\t)+\h*sin(\t)},{\s*sin(\t)-\h*cos(\t)}) -- ({\s*cos(\t)-\h*sin(\t)},{\s*sin(\t)+\h*cos(\t)});
+  }
+  % the normal of one line
+  \pgfmathsetmacro{\s}{\px*cos(20)+\py*sin(20)}
+  \draw[->,d2dink,line width=0.7pt] (0,0) -- ({\s*cos(20)},{\s*sin(20)});
+  \node[note,text=d2dink,anchor=north] at ({\s*cos(20)/2+0.1},{\s*sin(20)/2-0.02}) {$s$};
+  \draw[d2dink,line width=0.5pt] (0.45,0) arc (0:20:0.45); \node[note,text=d2dink] at (0.62,0.1) {$\theta$};
+  \fill[partcolor] (\px,\py) circle (0.09);
+  \node[lab,text=partcolor,anchor=south west,font=\sffamily\footnotesize\bfseries] at (\px+0.05,\py+0.05) {source};
+  \node[note,anchor=north] at (0,-\R-0.4) {lines of response through one point};
+  % the sinogram
+  \begin{scope}[xshift=4.0cm,yshift=-1.9cm]
+    \def\W{6.0}\def\S{0.95} % width for 180 degrees, cm per cm of s
+    \fill[d2drule!20!white] (0,0) rectangle (\W,3.8);
+    \draw[->,d2dmuted,line width=0.7pt] (0,1.9) -- (\W+0.3,1.9) node[right,note] {$\theta$};
+    \draw[->,d2dmuted,line width=0.7pt] (0,0) -- (0,4.0) node[above,note] {$s$};
+    \foreach \t in {0,45,90,135,180} {\node[note,anchor=north] at (\t/180*\W,0) {\t°};}
+    \draw[partcolor,line width=1.5pt,domain=0:180,samples=90] plot ({\x/180*\W},{1.9+\S*(\px*cos(\x)+\py*sin(\x))});
+    \foreach \t/\c/\m in {20/d2dcat0/0, 80/d2dcat2/1, 140/d2dcat3/2} {
+      \fill[\c] ({\t/180*\W},{1.9+\S*(\px*cos(\t)+\py*sin(\t))}) circle (0.11);}
+    \node[lab,text=partcolor,anchor=west,align=left] at (\W*0.52,3.45) {$s = x_0\cos\theta + y_0\sin\theta$};
+    \node[note,anchor=north] at (\W/2,-0.4) {the sinogram: one sinusoid per point};
+  \end{scope}
+\end{tikzpicture}

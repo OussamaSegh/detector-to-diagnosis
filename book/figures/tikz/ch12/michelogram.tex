@@ -1,0 +1,32 @@
+% Chapter 12: a Michelogram of 8 rings (MiniDAQ has 48), a maximum ring difference, and
+% single-slice rebinning: a line between rings a and b goes to slice a + b.
+\begin{tikzpicture}[x=0.5cm,y=0.5cm]
+  \def\N{8}\def\D{3}
+  \foreach \a in {0,...,7} { \foreach \b in {0,...,7} {
+    \pgfmathtruncatemacro{\d}{abs(\a-\b)}
+    \ifnum\d>\D \fill[d2drule!30!white] (\a,\b) rectangle +(1,1); \fill[pattern=north east lines,pattern color=d2dmuted!60!white] (\a,\b) rectangle +(1,1);
+    \else\ifnum\d=0 \fill[partcolor] (\a,\b) rectangle +(1,1);
+    \else \fill[partcolor!\the\numexpr 52-12*\d\relax!white] (\a,\b) rectangle +(1,1); \fi\fi
+  }}
+  \draw[white,line width=0.6pt] (0,0) grid (8,8);
+  \draw[d2dmuted,line width=0.7pt] (0,0) rectangle (8,8);
+  % one slice: a + b = 5
+  \foreach \a/\b in {1/4,2/3,3/2,4/1} {\draw[d2dcat3,line width=1.3pt] (\a+0.18,\b+0.18) rectangle +(0.64,0.64);}
+  \draw[d2dcat3,line width=0.8pt,dashed] (0.5,5.5) -- (5.5,0.5);
+  \node[note,anchor=north] at (4,-0.2) {ring $a$};
+  \node[note,anchor=south,rotate=90] at (-0.2,4) {ring $b$};
+  \foreach \i in {0,...,7} {\node[note,font=\sffamily\tiny] at (\i+0.5,8.35) {\i}; \node[note,font=\sffamily\tiny] at (8.35,\i+0.5) {\i};}
+  \node[lab,anchor=west,align=left] at (9.2,7.2) {\textbf{diagonal}: direct planes, $a = b$};
+  \node[lab,anchor=west,align=left] at (9.2,5.8) {shaded: ring difference up to 3};
+  \node[lab,anchor=west,align=left,text=d2dmuted] at (9.2,4.4) {hatched: too oblique, cut};
+  \node[lab,anchor=west,align=left,text=d2dcat3] at (9.2,2.6) {outlined: the ring pairs with $a + b = 5$,\\all rebinned into slice 5 by SSRB};
+  % side view of the rings
+  \begin{scope}[xshift=10.9cm,yshift=-0.2cm]
+    \foreach \i in {0,...,7} {\fill[partcolor!70!white] (\i*0.9,7.6) rectangle +(0.75,0.45); \fill[partcolor!70!white] (\i*0.9,0) rectangle +(0.75,0.45);
+      \node[note,font=\sffamily\tiny] at (\i*0.9+0.375,8.4) {\i};}
+    \draw[d2dmuted,dash pattern=on 3pt off 2pt] (-0.3,4.02) -- (7.4,4.02);
+    \draw[d2dcat3,line width=1.3pt] (1*0.9+0.375,0.45) -- (4*0.9+0.375,7.6);
+    \draw[partcolor,line width=1.3pt,dashed] (2.5*0.9+0.375,0.45) -- (2.5*0.9+0.375,7.6);
+    \node[lab,anchor=north,align=center] at (3.5,-0.2) {a line between rings 1 and 4 goes to\\the direct plane halfway, slice 5};
+  \end{scope}
+\end{tikzpicture}

@@ -1,0 +1,23 @@
+% Chapter 12: the sink's write path. A file is written as .mdql.part, made durable, renamed and
+% its directory made durable; a crash at any point leaves either a .part file or a complete one.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.32cm]
+  \node[box,minimum width=2.1cm] (w) {write blocks\\[-1pt]\scriptsize to \texttt{run.mdql.part}};
+  \node[box,right=of w,minimum width=1.7cm] (c) {closing\\block};
+  \node[hot,right=of c,minimum width=1.6cm] (f) {fsync\\file};
+  \node[box,right=of f,minimum width=1.3cm] (cl) {close};
+  \node[hot,right=of cl,minimum width=1.9cm] (r) {rename\\[-1pt]\scriptsize no replace};
+  \node[hot,right=of r,minimum width=1.6cm] (d) {fsync\\directory};
+  \node[dim,right=of d,minimum width=1.4cm] (n) {next\\file};
+  \foreach \a/\b in {w/c,c/f,f/cl,cl/r,r/d,d/n} {\draw[flow] (\a) -- (\b);}
+  % what a crash leaves
+  \draw[decorate,decoration={brace,mirror,amplitude=5pt},d2dcat3,line width=0.8pt]
+    ([yshift=-4pt]w.south west) -- ([yshift=-4pt]f.south west) node[midway,below=7pt,lab,text=d2dink,align=center]
+    {power lost here: a \texttt{.part} file, possibly\\with its last blocks missing or damaged};
+  \draw[decorate,decoration={brace,mirror,amplitude=5pt},d2dcat2,line width=0.8pt]
+    ([yshift=-4pt]f.south east) -- ([yshift=-4pt]d.south west) node[midway,below=7pt,lab,text=d2dink,align=center]
+    {here: the data are durable;\\the name may still be \texttt{.part}};
+  \draw[decorate,decoration={brace,mirror,amplitude=5pt},partcolor,line width=0.8pt]
+    ([yshift=-4pt]d.south east) -- ([yshift=-4pt]n.south east) node[midway,below=7pt,lab,text=d2dink,align=center]
+    {after: \texttt{run.mdql}\\is complete};
+  \node[lab,anchor=south,text=partcolor] at ($(w.north west)!0.5!(n.north east)+(0,0.25)$) {\textbf{the rule}: a file whose name ends in \texttt{.mdql} is complete};
+\end{tikzpicture}

@@ -1,0 +1,25 @@
+% Chapter 12: the patient-data boundary. Raw data hold no identity; the link from run to patient
+% and the DICOM images live inside the boundary, protected and audited.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % zones
+  \fill[d2dcat2!8!white,rounded corners=4pt] (-0.3,-2.6) rectangle (6.9,2.3);
+  \fill[d2dcat3!8!white,rounded corners=4pt] (7.5,-2.6) rectangle (15.6,2.3);
+  \draw[d2dcat3,line width=1.6pt,dash pattern=on 6pt off 3pt] (7.2,-2.75) -- (7.2,2.45);
+  \node[title,anchor=north west] at (-0.15,2.2) {raw data: no patient identity};
+  \node[title,anchor=north west] at (7.65,2.2) {patient data: protected, audited};
+  \node[lab,text=d2dcat3,anchor=south,font=\sffamily\footnotesize\bfseries] at (7.2,2.45) {the boundary};
+  % outside
+  \node[box,minimum width=2.6cm] (lm) at (1.4,0.7) {list-mode files\\[-1pt]\scriptsize run ID, configuration,\\[-3pt]\scriptsize \texttt{simulated} flag};
+  \node[box,minimum width=2.4cm] (sg) at (1.4,-1.2) {sinograms};
+  \node[dim,minimum width=2.6cm] (ws) at (5.0,0.7) {physicist's\\workstation};
+  \node[dim,minimum width=2.6cm] (bug) at (5.0,-1.2) {bug report,\\test reconstruction};
+  \draw[flow] (lm) -- (ws); \draw[flow] (sg) -- (bug);
+  % inside
+  \node[box=d2dcat3,minimum width=2.6cm] (wl) at (9.0,0.7) {modality\\worklist};
+  \node[hot=d2dcat3,minimum width=2.6cm] (link) at (12.2,0.7) {run $\rightarrow$ patient\\[-1pt]\scriptsize one protected place};
+  \node[box=d2dcat3,minimum width=2.6cm] (img) at (9.0,-1.2) {DICOM images\\[-1pt]\scriptsize name, ID, birth date};
+  \node[box=d2dcat3,minimum width=2.2cm] (pacs) at (12.2,-1.2) {PACS};
+  \draw[flow] (wl) -- (link); \draw[flow] (img) -- (pacs);
+  \draw[flowp] (sg.east) ++(0,-0.15) .. controls (4.0,-2.25) and (6.5,-2.25) .. (img.south west)
+    node[pos=0.55,below,note,text=d2dink] {reconstruction};
+\end{tikzpicture}

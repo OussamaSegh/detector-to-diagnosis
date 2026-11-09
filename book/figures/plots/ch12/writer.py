@@ -43,9 +43,10 @@ def main(dst):
         for run, dx, color in (("short", -w / 2, SHORT), ("long", w / 2, LONG)):
             if run in data[label]:
                 v = data[label][run]
-                ax.bar(i + dx, v, w, color=color, label=f"{run} runs" if i == 0 else None)
+                ax.bar(i + dx, v, w, color=color, hatch="///" if run == "long" else "", edgecolor=d2d.INK,
+                       linewidth=0.5, label=f"{run} runs" if i == 0 else None)
                 ax.text(i + dx, v + 0.5, f"{v:.2f}", ha="center")
-    ax.axhline(SORTER_LIMIT, color=d2d.CAT[3], linewidth=0.9, label="sorter at its limit, 2.7 M/s")
+    ax.axhline(SORTER_LIMIT, color=d2d.CAT[3], linewidth=1.1, linestyle="--", label="sorter at its limit, 2.7 M/s")
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels)
     ax.set_ylabel("M coincidences per second")

@@ -1,0 +1,28 @@
+% Chapter 12: the 16-byte MDQ-L1 record, byte by byte, and the block that holds 4,096 of them.
+\begin{tikzpicture}[x=0.9cm,y=1cm]
+  \foreach \i in {0,...,15} {\node[note] at (\i+0.5,1.25) {\i};}
+  \newcommand\field[5]{% from, to (exclusive), color, name, detail
+    \fill[#3!16!white] (#1,0) rectangle (#2,1);
+    \foreach \k in {#1,...,#2} {\draw[#3!45!white,line width=0.4pt] (\k,0) -- (\k,1);}
+    \draw[#3,line width=1pt,rounded corners=1.5pt] (#1,0) rectangle (#2,1);
+    \node[lab,font=\sffamily\footnotesize\bfseries,text=d2dink] at ({(#1+#2)/2},0.62) {#4};
+    \node[note,text=d2dink] at ({(#1+#2)/2},0.3) {#5};}
+  \field{0}{4}{partcolor}{time offset}{u32, ps after base}
+  \field{4}{6}{d2dcat0}{crystal a}{15 bits + flag}
+  \field{6}{8}{d2dcat0}{crystal b}{u16}
+  \field{8}{12}{d2dcat2}{dt}{i32 ps, ±2.1 ms}
+  \field{12}{14}{d2dcat3}{energy a}{1/32 keV}
+  \field{14}{16}{d2dcat3}{energy b}{1/32 keV}
+  \draw[->,d2dmuted,line width=0.7pt] (5.85,-0.05) to[out=-90,in=90] (5.85,-0.55) node[below,note,text=d2dink,align=center] {top bit: delayed;\\0x7FFF: a tag};
+  \node[note,anchor=south east] at (16,1.45) {byte offsets; every field little endian};
+  % the block
+  \begin{scope}[yshift=-2.75cm]
+    \node[lab,anchor=south west,font=\sffamily\footnotesize\bfseries] at (0,0.75) {a block};
+    \fill[partcolor] (0,0) rectangle (2,0.7);
+    \node[lab,text=white,font=\sffamily\footnotesize\bfseries] at (1,0.35) {header};
+    \foreach \k in {0,...,27} {\fill[partcolor!16!white] (2+\k*0.5,0) rectangle (2.46+\k*0.5,0.7);}
+    \node[lab,fill=white,inner sep=2pt] at (9,0.35) {up to 4,096 records = 64 KiB};
+    \node[note,anchor=north] at (1,-0.05) {32 bytes: base time, count, CRCs};
+    \node[note,anchor=north] at (9,-0.05) {closes at 4,096 records or when the next offset would pass 4.29 ms};
+  \end{scope}
+\end{tikzpicture}
