@@ -1,0 +1,17 @@
+% Chapter 35: two data elements in Explicit VR Little Endian, byte by byte. Most VRs have a 2-byte
+% length; OB, OW, SQ, UN, UT and a few others have two reserved bytes and a 4-byte length.
+\begin{tikzpicture}[x=0.52cm,y=1cm]
+  \tikzset{b/.style={draw=d2drule,minimum width=0.52cm,minimum height=0.5cm,font=\ttfamily\scriptsize,inner sep=0pt,fill=#1}}
+  \def\row#1#2{\foreach \v/\c [count=\k from 0] in {#2} {\node[b=\c] at (\k,#1) {\v};}}
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.5,0.75) {Patient Name (0010,0010), PN: a 2-byte length};
+  \row{0}{10/d2dcat0!25!white,00/d2dcat0!25!white,10/d2dcat0!25!white,00/d2dcat0!25!white,50/d2dcat2!25!white,4E/d2dcat2!25!white,10/d2dcat3!25!white,00/d2dcat3!25!white,4D/partcolor!15!white,49/partcolor!15!white,4E/partcolor!15!white,49/partcolor!15!white,44/partcolor!15!white,41/partcolor!15!white,51/partcolor!15!white,5E/partcolor!15!white,50/partcolor!15!white,48/partcolor!15!white,41/partcolor!15!white,4E/partcolor!15!white,54/partcolor!15!white,4F/partcolor!15!white,4D/partcolor!15!white,20/partcolor!15!white}
+  \foreach \x/\t/\c/\yy in {1.5/{group 0010, element 0010}/d2dcat0/-0.3,4.5/{VR "PN"}/d2dcat2/-0.62,6.5/{length 16}/d2dcat3/-0.3,15.5/{"MINIDAQ\textasciicircum PHANTOM" and a space: even length}/partcolor/-0.3}
+    {\node[note,text=\c,anchor=north] at (\x,\yy) {\t};}
+  \begin{scope}[yshift=-1.95cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.5,0.75) {Pixel Data (7FE0,0010), OW: reserved bytes and a 4-byte length};
+  \row{0}{E0/d2dcat0!25!white,7F/d2dcat0!25!white,10/d2dcat0!25!white,00/d2dcat0!25!white,4F/d2dcat2!25!white,57/d2dcat2!25!white,00/d2dmuted!25!white,00/d2dmuted!25!white,00/d2dcat3!25!white,80/d2dcat3!25!white,00/d2dcat3!25!white,00/d2dcat3!25!white,\dots/partcolor!15!white,\dots/partcolor!15!white,\dots/partcolor!15!white,\dots/partcolor!15!white}
+  \foreach \x/\t/\c/\yy in {1.5/{group 7FE0, element 0010}/d2dcat0/-0.3,4.5/{VR "OW"}/d2dcat2/-0.62,6.5/{reserved}/d2dmuted/-0.3,9.5/{length 32,768}/d2dcat3/-0.62,13.5/{128 x 128 x 2 bytes}/partcolor/-0.3}
+    {\node[note,text=\c,anchor=north] at (\x,\yy) {\t};}
+  \end{scope}
+  \node[note,text=d2dink,anchor=north west] at (-0.5,-3.0) {little-endian numbers: the group 0x0010 is written 10 00, the length 0x8000 is written 00 80 00 00};
+\end{tikzpicture}

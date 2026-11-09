@@ -1,0 +1,29 @@
+% Chapter 35: where the pixel is. The gantry frame of the reconstruction and the patient's LPS frame
+% for a patient on their back, head first: gantry (x, y, z) is LPS (x, -y, z). The rows are written
+% top down, so the first pixel is at the left of the top row.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+  \node[font=\sffamily\small\bfseries,text=d2dcat0] at (0,2.2) {gantry, seen from the front};
+  \draw[d2drule,line width=0.8pt] (0,0) circle (1.6);
+  \draw[->,d2dcat0,line width=1.2pt] (0,0) -- (1.2,0) node[right,note,text=d2dcat0] {x};
+  \draw[->,d2dcat0,line width=1.2pt] (0,0) -- (0,1.2) node[above,note,text=d2dcat0] {y up};
+  \node[note,text=d2dcat0,anchor=north east] at (-0.1,-0.1) {z into the gantry};
+  \end{scope}
+  \begin{scope}[xshift=5.2cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor] at (0,2.2) {patient, HFS: LPS};
+  \draw[d2drule,line width=0.8pt] (0,0) ellipse (1.5 and 1.0);
+  \node[note,text=d2dink] at (0,0.75) {anterior};
+  \draw[->,partcolor,line width=1.2pt] (0,0) -- (1.2,0) node[right,note,text=partcolor] {x: patient's left};
+  \draw[->,partcolor,line width=1.2pt] (0,0) -- (0,-1.2) node[below,note,text=partcolor] {y: posterior};
+  \node[note,text=partcolor,anchor=north east] at (-0.1,-0.1) {z: head};
+  \end{scope}
+  \begin{scope}[xshift=10.2cm,yshift=-0.9cm]
+  \node[font=\sffamily\small\bfseries,text=d2dcat2] at (1,3.1) {the slice as written};
+  \foreach \i in {0,...,3} {\foreach \j in {0,...,3} {\draw[d2drule] (\i*0.5,\j*0.5) rectangle ++(0.5,0.5);}}
+  \fill[d2dcat2] (0.25,1.75) circle (0.08);
+  \node[note,text=d2dcat2,anchor=south,align=center] at (0.25,2.05) {Image Position:\\the first pixel's centre};
+  \draw[->,d2dcat2,line width=1pt] (0.25,1.75) -- (1.9,1.75) node[right,note,text=d2dcat2] {row (1, 0, 0)};
+  \draw[->,d2dcat2,line width=1pt] (0.25,1.75) -- (0.25,0.1) node[below,note,text=d2dcat2] {column (0, 1, 0)};
+  \draw[<->,d2dink,line width=0.6pt] (2.15,0) -- node[right,note,text=d2dink]{2 mm} (2.15,0.5);
+  \end{scope}
+\end{tikzpicture}

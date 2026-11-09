@@ -1,0 +1,20 @@
+% Chapter 35: an association and one C-STORE. The protocol's headers are big-endian, the data
+% sets little-endian; the command is in Implicit VR; the data set travels in PDV fragments.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor] (scu) at (0,0.4) {export (SCU)};
+  \node[font=\sffamily\small\bfseries,text=d2dcat2] (scp) at (7,0.4) {archive (SCP)};
+  \draw[d2dmuted,line width=0.8pt] (0,0.1) -- (0,-5.6); \draw[d2dmuted,line width=0.8pt] (7,0.1) -- (7,-5.6);
+  \foreach \y/\d/\t/\c in {-0.3/r/{A-ASSOCIATE-RQ: AE titles, presentation contexts}/d2dcat0,
+                         -0.95/l/{A-ASSOCIATE-AC: contexts accepted, syntax, max PDU}/d2dcat2,
+                         -1.6/r/{P-DATA-TF: C-STORE-RQ command (Implicit VR)}/partcolor,
+                         -2.25/r/{P-DATA-TF: data set, fragment 1 of 3}/partcolor,
+                         -2.75/r/{P-DATA-TF: fragment 2 of 3}/partcolor,
+                         -3.25/r/{P-DATA-TF: fragment 3, last bit set}/partcolor,
+                         -3.9/l/{C-STORE-RSP: status 0x0000 success}/d2dcat2,
+                         -4.6/r/{A-RELEASE-RQ}/d2dmuted,
+                         -5.2/l/{A-RELEASE-RP}/d2dmuted} {
+    \if r\d \draw[->,\c,line width=1pt] (0,\y) -- (7,\y-0.15); \else \draw[->,\c,line width=1pt] (7,\y) -- (0,\y-0.15); \fi
+    \node[note,text=\c,anchor=south,fill=white,inner sep=1pt] at (3.5,\y-0.05) {\t};}
+  \node[note,text=d2dink,anchor=west,align=left] at (7.3,-2.75) {one more C-STORE\\per instance on the\\same association};
+  \node[note,text=d2dink,anchor=west,align=left] at (7.3,-3.9) {only this status\\says it is stored};
+\end{tikzpicture}

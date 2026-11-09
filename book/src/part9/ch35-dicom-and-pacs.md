@@ -88,6 +88,11 @@ TL-44, SRS-DCM-001 to SRS-DCM-007, CR-0022, ADR 0030). It is a tool outside Mini
 the reconstruction is: in a scanner it belongs to the console's software, which is where it would
 be classified (the box at the end of the chapter comes back to that).
 
+Figure [](#fig-ch35-flow) shows the path this chapter builds.
+
+```{.figure #fig-ch35-flow src="book/figures/tikz/ch35/flow.tex" caption="What leaves the scanner and where it goes. The order comes in through the worklist; the series goes out through an outbox to the archive, which serves it to the viewers." alt="The RIS feeds the modality worklist, which the console queries with C-FIND for the patient and study. The console passes them to the reconstruction, then the DICOM export makes a PET Image series, the outbox holds it in pending, sent and failed with a journal, and C-STORE sends it to the PACS archive, which serves viewers that fuse it with CT. A note says patient and study come from the order unchanged." width="100%"}
+```
+
 ## A data set, byte by byte
 
 A **data element** is a tag, a value representation, a length and a value. The tag is a pair of
@@ -112,6 +117,11 @@ two reserved bytes and a 4-byte length. Implicit VR Little Endian, the default s
 standard and the one DIMSE commands always use, writes no VR at all; a reader takes it from its
 dictionary, which is why a reader of an implicit data set with a private or unknown tag cannot
 tell a string from a number.
+
+Figure [](#fig-ch35-element) shows one element of each form.
+
+```{.figure #fig-ch35-element src="book/figures/tikz/ch35/element.tex" caption="Two data elements in Explicit VR Little Endian, byte by byte: a person name with a 2-byte length, and the pixel data with two reserved bytes and a 4-byte length." alt="Two rows of hexadecimal bytes. Patient Name: 10 00 10 00 for the tag, 50 4E for PN, 10 00 for a length of 16, then the 16 bytes of MINIDAQ caret PHANTOM and a space. Pixel Data: E0 7F 10 00 for the tag, 4F 57 for OW, 00 00 reserved, 00 80 00 00 for a length of 32,768, then the pixels. A note explains the little-endian order." width="100%"}
+```
 
 Three rules apply to every value, and the writer enforces them rather than leaving them to the
 caller:
@@ -281,6 +291,11 @@ in the position; square pixels hide the order of Pixel Spacing, which is rows fi
 patient position hides the mapping. The tests use an off-axis point, both positions and, in
 Exercise 35.2, pixels that are not square.
 
+Figure [](#fig-ch35-coords) draws the three frames side by side.
+
+```{.figure #fig-ch35-coords src="book/figures/tikz/ch35/coords.tex" caption="Where the pixel is. The reconstruction's gantry frame, the patient's LPS frame for a patient on their back, head first, and the slice as written, with the first pixel's position and the row and column directions." alt="Left, the gantry seen from the front with x to the right, y up and z into the gantry. Middle, a patient lying supine with x to the patient's left, y posterior and z toward the head. Right, a 4 by 4 grid with a dot at the top-left pixel's centre, labelled Image Position, an arrow along the row (1, 0, 0), an arrow down the column (0, 1, 0), and a 2 mm spacing." width="100%"}
+```
+
 ## Identifiers: which patient, which study, which object
 
 Every object carries identifiers at four levels: the patient (Patient ID, with the name and birth
@@ -313,6 +328,11 @@ what the day in the life lacked. A series sent again after a failure is the same
 archive replaces each instance it already has instead of adding a second series; a new
 reconstruction of the same scan is a new series and never replaces the old one.
 
+Figure [](#fig-ch35-hierarchy) shows the four levels and where each identifier comes from.
+
+```{.figure #fig-ch35-hierarchy src="book/figures/tikz/ch35/hierarchy.tex" caption="The identifiers of an object. Patient and study come from the order unchanged; the series and instance UIDs are derived from the study, the image and its metadata." alt="A tree: patient with ID, name and birth date; study with Study Instance UID and accession; series with Series Instance UID; and instances for slices 0, 1, 2 and so on to 47. Notes say the top two come from the order and are never invented or edited, the lower ones are derived as 2.25 and a digest, and that the same image sent again is the same series." width="75%"}
+```
+
 ## Sending: associations and C-STORE
 
 DICOM's network protocol (part 8) runs on TCP. Before any service, the two sides make an
@@ -344,6 +364,11 @@ Each fragment is a PDV item: its length, the presentation context, and a control
 says command or data set and bit 1 says last fragment. A receiver reassembles them, which is
 Exercise 35.3, and the harder half of the protocol to get right.
 
+Figure [](#fig-ch35-association) puts the exchange in order.
+
+```{.figure #fig-ch35-association src="book/figures/tikz/ch35/association.tex" caption="An association and one C-STORE. The data set travels in fragments after its command, and only the C-STORE-RSP's status says the instance is stored." alt="A sequence diagram between the export and the archive: A-ASSOCIATE-RQ with AE titles and presentation contexts; A-ASSOCIATE-AC with the accepted contexts and max PDU; P-DATA-TF with the C-STORE-RQ command; three P-DATA-TF fragments of the data set, the last with its last bit set; C-STORE-RSP with status 0x0000; A-RELEASE-RQ and A-RELEASE-RP." width="75%"}
+```
+
 ```{.python include="tools/dicom/net.py" snippet="store"}
 ```
 
@@ -369,6 +394,11 @@ answer. With TCP_NODELAY set on the socket, the same series takes 58 to 66 ms, 3
 pynetdicom's own archive takes 158 to 171 ms for it. The test of the association now checks that the
 option is set. On a hospital network, where the archive is a server across a switch, the ratio would
 differ; the waiting would not.
+
+Figure [](#fig-ch35-send) shows every configuration of the measurement.
+
+```{.figure #fig-ch35-send src="book/figures/plots/ch35/send.py" caption="Sending the 47-slice series over loopback. The maximum PDU length hardly matters; leaving TCP_NODELAY off costs 36 times the time, because Nagle's algorithm and the delayed acknowledgment wait for each other." alt="A dot plot on a log time axis. The test archive takes 58 to 66 ms at PDU lengths of 4,096, 16,384, 65,536 and none; pynetdicom takes 158 to 171 ms; the test archive at 16,384 without TCP_NODELAY takes 2,072 ms." width="90%" inputs="measurements/ch35/dicom.txt"}
+```
 
 ## An outbox, not a send
 
@@ -401,6 +431,11 @@ What the outbox does not do is ask the archive whether it still has the images t
 success status says the archive accepted the instance; DICOM's Storage Commitment service asks it
 to take responsibility for keeping it, and a scanner that deletes its local copies relies on it.
 The export does not implement it, and the risk file says so.
+
+Figure [](#fig-ch35-outbox) draws the three directories as states.
+
+```{.figure #fig-ch35-outbox src="book/figures/tikz/ch35/outbox.tex" caption="The outbox's states. An instance moves to sent only on a success or warning status; a transient failure leaves it pending; any other failure moves it to failed for a person to look at." alt="A series written and checked enters pending. From pending, 0x0000 or a warning leads to sent; any other failure leads to failed, for a person; a loop on pending says timeout, abort or 0xA7xx stays and is retried. A journal box records one line per attempt. A note gives the measurement: aborted after 20 of 47, exported again, all 47 sent, and the archive holds 47." width="70%"}
+```
 
 ## Checking against someone else
 

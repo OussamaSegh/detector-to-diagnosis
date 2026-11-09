@@ -1,0 +1,15 @@
+% Chapter 35: the outbox's states. An instance moves to sent only on a success or warning status;
+% a transient failure leaves it pending; any other failure moves it to failed for a person.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.2cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (ex) at (0,0) {series written\\and checked};
+  \node[st=d2dcat0] (pe) at (3.3,0) {pending/};
+  \node[st=d2dcat2] (se) at (7.2,0.9) {sent/};
+  \node[st=d2dcat3] (fa) at (7.2,-0.9) {failed/\\for a person};
+  \draw[flow] (ex) -- (pe);
+  \draw[flow] (pe) -- node[pos=0.55,above left,note,text=d2dcat2]{0x0000 or a warning} (se);
+  \draw[flow] (pe) -- node[pos=0.55,below left,note,text=d2dcat3]{any other failure} (fa);
+  \draw[flow] (pe.south west) .. controls (2.6,-1.4) and (4.0,-1.4) .. node[below,note,text=d2dink,align=center]{timeout, abort, 0xA7xx:\\stays, retried} (pe.south east);
+  \node[draw=d2dink,line width=0.6pt,font=\ttfamily\scriptsize,align=left,fill=white] at (3.3,1.4) {journal.jsonl: one line per attempt};
+  \node[note,text=d2dink,anchor=north,align=center] at (3.3,-2.1) {measured: aborted after 20 of 47, exported again, all 47 sent;\\the archive holds 47, because the UIDs were the same};
+\end{tikzpicture}
