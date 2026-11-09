@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Builds Detector to Diagnosis (EPUB + PDF) and the solutions manual.
 # Usage: book/build.sh [epub|pdf|all|kdp|boox] [book|solutions|both]
-#   all  the EPUB and the screen PDF (front cover on page 1), for the download page:
+#   all  the EPUB and the screen PDF (front cover on page 1), for the download page, and the
+#        covers: the front as a JPEG and the paperback's full wrap as a PDF:
 #        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>.{epub,pdf}
+#        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>-cover.{jpg,pdf}
 #   kdp  the files for an Amazon KDP paperback and Kindle eBook, checked against KDP's rules:
 #        book/build/kdp/detector-to-diagnosis[-solutions]-v<VERSION>-{interior,cover}.pdf
 #        and the EPUB. The interior has no cover, black links and an inside margin sized for
@@ -61,19 +63,22 @@ common=(
   --number-sections
 )
 
-# The front cover (book/assets/cover.tex): a PDF of the trim size that becomes page 1 of the screen PDF,
-# and a PNG of it for the EPUB. $1 = book or solutions. The author is part of the cover, so a
+# The front cover (book/assets/cover.tex, with the artwork book/assets/cover-*.jpg that
+# book/tools/cover_art.py draws): a PDF of the trim size that becomes page 1 of the screen PDF,
+# and a JPEG of it for the EPUB. $1 = book or solutions. The author is part of the cover, so a
 # change of BOOK_AUTHOR rebuilds it.
 build_cover() {
   local vol="$1" dir="$build/cover" c="cover-$1$cover_tag"
   mkdir -p "$dir"
-  if [[ ! -f "$dir/$c.png" || "$here/assets/cover.tex" -nt "$dir/$c.png" \
+  if [[ ! -f "$dir/$c.jpg" || "$here/assets/cover.tex" -nt "$dir/$c.jpg" \
+        || "$here/assets/cover-front-$vol.jpg" -nt "$dir/$c.jpg" \
         || "$(cat "$dir/$c.author" 2>/dev/null)" != "$author" ]]; then
     (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="$c" \
-      "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
+      "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfauthor{$(cover_author)}\def\nlfassets{$here/assets}\input{$here/assets/cover.tex}" \
       >"$c.xelatex.log" 2>&1) \
       || { echo "cover failed, see $dir/$c.log"; grep -n -A3 "^!" "$dir/$c.log" | head -20; exit 1; }
-    pdftoppm -png -r 240 -singlefile "$dir/$c.pdf" "$dir/$c"
+    # 200 dpi; a JPEG keeps the EPUB small (the artwork is a photo-like raster).
+    pdftoppm -jpeg -jpegopt quality=90 -r 200 -singlefile "$dir/$c.pdf" "$dir/$c"
     printf '%s' "$author" > "$dir/$c.author"
   fi
 }
@@ -143,7 +148,7 @@ build_wrap_cover() {
   spine="$(awk -v n="$pages" -v p="$perpage" 'BEGIN { printf "%.4f", n * p }')"
   mkdir -p "$dir"
   (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="wrap-$vol" \
-    "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfwrap{1}\def\nlfspine{$spine}\def\nlfpages{$pages}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
+    "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfwrap{1}\def\nlfspine{$spine}\def\nlfpages{$pages}\def\nlfauthor{$(cover_author)}\def\nlfassets{$here/assets}\input{$here/assets/cover.tex}" \
     >"wrap-$vol.xelatex.log" 2>&1) \
     || { echo "wrap cover failed, see $dir/wrap-$vol.log"; grep -n -A3 "^!" "$dir/wrap-$vol.log" | head -20; exit 1; }
   cp "$dir/wrap-$vol.pdf" "$pdf"
@@ -180,7 +185,7 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
     pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --split-level=1 --mathml \
       --css "$here/templates/epub.css" \
-      --epub-cover-image "$build/cover/cover-$vol.png" \
+      --epub-cover-image "$build/cover/cover-$vol.jpg" \
       -o "$out/$stem-v$version.epub" "$here/src/front/copyright.md" "${files[@]}"
     python3 "$here/tools/fix_epub.py" "$out/$stem-v$version.epub"
     echo "built $out/$stem-v$version.epub"
@@ -189,6 +194,15 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
   if [[ "$what" == pdf || "$what" == all ]]; then
     # The screen PDF: the cover is page 1, links are colored.
     build_pdf "$stem" "$meta" "$vol" screen "$margin_inner" "$out/$stem-v$version.pdf" "${files[@]}"
+  fi
+  if [[ "$what" == all ]]; then
+    # The covers for the download page: the front as a 300 dpi JPEG, and the paperback's full
+    # wrap with the spine for the screen PDF's pages less its cover page. Below 829 pages the
+    # KDP interior has the same inside margin, so the same count; `kdp` counts the interior.
+    pdftoppm -jpeg -jpegopt quality=92 -r 300 -singlefile "$build/cover/cover-$vol.pdf" \
+      "$out/$stem-v$version-cover"
+    build_wrap_cover "$vol" "$(( $(pdf_pages "$out/$stem-v$version.pdf") - 1 ))" \
+      "$out/$stem-v$version-cover.pdf"
   fi
   if [[ "$what" == boox ]]; then
     # The same screen PDF on the Boox page: its own cover of that size, equal side margins.

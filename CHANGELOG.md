@@ -26,6 +26,16 @@ the patch version.
   page fills the screen without zoom; links, bookmarks and colors are kept. The download page
   lists it next to the EPUB and the PDF.
 
+### Changed
+
+- New covers for the book and the solutions manual, front and full-wrap KDP paperback. The
+  artwork is a PET scan simulated end to end by `book/tools/cover_art.py` (a brain phantom,
+  its sinogram with Poisson noise and an MLEM image): the front shows the image forming inside
+  the detector ring out of the lines of response, the back the four steps singles,
+  coincidences, sinogram and image under the blurb. The EPUB cover is now a JPEG.
+- The download page offers the covers of both volumes: the front as a 300 dpi JPEG and the
+  paperback's full-wrap print cover as a PDF (`book/build.sh all` builds them).
+
 ## [1.0.0] - 2026-11-08
 
 The complete, packaged book: Parts I to IX and Appendix A, with MiniDAQ and its regulatory file
