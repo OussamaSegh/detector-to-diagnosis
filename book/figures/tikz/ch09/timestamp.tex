@@ -1,0 +1,20 @@
+% Chapter 9: a time stamp = coarse count of clock ticks + fine interpolation within the tick.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % clock
+  \node[lab,anchor=east] at (-0.2,1.3) {clock (5.12 ns tick)};
+  \draw[d2dmuted,line width=0.9pt] (0,1.0) \foreach \i in {0,...,5} {-- ++(0,0.6) -- ++(1.3,0) -- ++(0,-0.6) -- ++(1.3,0)} -- ++(0,0);
+  \foreach \i in {0,...,6} {\node[note] at (\i*2.6,0.75) {\i};}
+  \node[lab,anchor=east] at (-0.2,0.75) {coarse counter};
+  % the pulse edge
+  \node[lab,anchor=east] at (-0.2,-0.4) {detector pulse};
+  \draw[partcolor,line width=1.4pt] (0,-0.7) -- (9.55,-0.7) -- (9.65,0.0) .. controls (10.0,0.2) .. (11,-0.1) -- (15.5,-0.6);
+  \draw[partcolor,dashed,line width=0.6pt] (9.6,-0.9) -- (9.6,1.7);
+  \node[lab,text=partcolor,anchor=south] at (9.6,1.75) {\textbf{the edge}};
+  % fine
+  \fill[partcolor!18!white] (7.8,-1.6) rectangle (10.4,-1.25);
+  \foreach \k in {0,...,16} {\draw[partcolor!50!white,line width=0.4pt] (7.8+\k*0.1625,-1.6) -- ++(0,0.35);}
+  \fill[partcolor] (7.8,-1.6) rectangle (9.6,-1.25);
+  \draw[dimline] (7.8,-1.85) -- (9.6,-1.85) node[midway,below,lab] {fine code: where in the tick};
+  \node[note,anchor=west,align=left] at (10.6,-1.42) {1,024 bins of 5 ps in MDQ-P1;\\real TDC bins are uneven and calibrated};
+  \node[lab,anchor=north] at (6.5,-2.45) {\textbf{time} = coarse $\times$ tick + calibrated\_fine(code) \quad = 3 $\times$ 5.12 ns + 3.55 ns = 18.91 ns};
+\end{tikzpicture}

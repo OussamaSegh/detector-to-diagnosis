@@ -1,0 +1,33 @@
+% Shared TikZ styles of the book's figures (docs/PLAN-interior-design.md, section 4).
+% book/tools/figures.py compiles each figure as a standalone document with the palette of the
+% profile (palette-<profile>.tex), partcolor set to its Part, and this file.
+\usetikzlibrary{calc,positioning,arrows.meta,shapes.geometric,shapes.misc,shapes.arrows,
+  decorations.pathreplacing,decorations.pathmorphing,decorations.markings,patterns,fit,backgrounds,
+  matrix,shadows,fadings}
+\tikzset{
+  every picture/.style={font=\sffamily\small,line cap=round,line join=round,text=d2dink},
+  >={Stealth[length=2.4mm]},
+  % A box, filled with a tint of a color (default partcolor).
+  box/.style={draw=#1,fill=#1!12!white,rounded corners=2.5pt,line width=0.8pt,
+    minimum height=0.8cm,inner sep=4pt,align=center},
+  box/.default=partcolor,
+  % A box in solid color, white text: the thing a figure is about.
+  hot/.style={draw=#1,fill=#1,text=white,rounded corners=2.5pt,line width=0.8pt,
+    minimum height=0.8cm,inner sep=4pt,align=center,font=\sffamily\small\bfseries},
+  hot/.default=partcolor,
+  % Something outside the system, or not used: gray.
+  dim/.style={draw=d2drule,fill=d2drule!25!white,text=d2dmuted,rounded corners=2.5pt,
+    line width=0.6pt,minimum height=0.8cm,inner sep=4pt,align=center},
+  flow/.style={->,line width=1pt,draw=d2dmuted},
+  flowp/.style={->,line width=1.3pt,draw=partcolor},
+  note/.style={font=\sffamily\scriptsize,text=d2dmuted,align=center},
+  lab/.style={font=\sffamily\footnotesize,align=center},
+  title/.style={font=\sffamily\small\bfseries,text=d2dink},
+  photon/.style={decorate,decoration={snake,amplitude=1.1pt,segment length=5pt,post length=2.6mm},->,line width=0.9pt},
+  dimline/.style={<->,line width=0.6pt,draw=d2dmuted},
+  c0/.style={draw=d2dcat0,fill=d2dcat0}, c1/.style={draw=d2dcat1,fill=d2dcat1},
+  c2/.style={draw=d2dcat2,fill=d2dcat2}, c3/.style={draw=d2dcat3,fill=d2dcat3},
+  c4/.style={draw=d2dcat4,fill=d2dcat4}, c5/.style={draw=d2dcat5,fill=d2dcat5},
+}
+% \dfigicon: the icons of the call-outs, usable in figures.
+\colorlet{d2dcatrule}{d2drule}

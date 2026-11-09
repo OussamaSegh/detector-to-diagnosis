@@ -1,0 +1,22 @@
+% Chapter 8: time of flight. A decay x from the midpoint of the LOR reaches the nearer crystal
+% 2x/c earlier; with a CTR of 300 ps the decay is located to 45 mm FWHM along the LOR.
+\begin{tikzpicture}[x=0.06cm,y=1cm]
+  % 1 unit in x = 1 mm; the head is 180 mm, the ring 300 mm
+  \fill[partcolor] (-157,-0.25) rectangle (-150,0.25); \fill[partcolor] (150,-0.25) rectangle (157,0.25);
+  \fill[d2dcat4!16!white,draw=d2dcat4,line width=0.6pt] (-90,-0.55) rectangle (90,0.55);
+  \node[note,anchor=north] at (0,-0.6) {18 cm of head along the LOR};
+  \draw[partcolor,dashed,line width=0.8pt] (-150,0) -- (150,0);
+  \draw[d2dmuted,line width=0.5pt] (0,-0.2) -- (0,0.2);
+  \node[note,anchor=north] at (0,-1.0) {midpoint};
+  \fill[d2dcat1] (40,0) circle[radius=0.11cm];
+  \draw[dimline] (0,-1.55) -- (40,-1.55) node[midway,below,lab] {$x = c\,\Delta t/2$};
+  % the TOF kernel: a Gaussian, 45 mm FWHM (sigma = 19.1 mm)
+  \fill[partcolor!25!white,draw=partcolor,line width=1.1pt,domain=-30:110,samples=80]
+    plot (\x,{0.75+1.6*exp(-((\x-40)^2)/(2*19.1^2))}) -- (110,0.75) -- (-30,0.75) -- cycle;
+  \draw[dimline] (17.5,1.55) -- (62.5,1.55);
+  \node[lab,anchor=south] at (40,2.4) {\textbf{45 mm FWHM} for a CTR of 300 ps};
+  \node[lab,anchor=west,align=left] at (115,1.5) {without time of flight:\\equally likely anywhere\\on the 18 cm of the line};
+  \draw[d2dcat3,line width=1pt,dashed] (-90,1.05) -- (90,1.05);
+  \node[lab,anchor=east,align=right] at (-157,0) {crystal 1};
+  \node[lab,anchor=west,align=left] at (157,0) {crystal 2};
+\end{tikzpicture}

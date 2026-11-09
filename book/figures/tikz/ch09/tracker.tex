@@ -1,0 +1,31 @@
+% Chapter 9: the SequenceTracker restores sequence order. It holds early packets until the gap
+% before them fills, gives up on a gap when the window (64) is full or after max_hold_ns (1 ms),
+% counts the gap as lost, and drops packets that arrive after their gap was given up (stale).
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \newcommand{\pk}[4][]{\node[draw=#3,fill=#3!18!white,line width=0.7pt,minimum width=0.72cm,minimum height=0.55cm,
+     inner sep=0pt,font=\sffamily\bfseries\scriptsize,#1] at (#2) {#4};}
+  % arriving
+  \node[title,anchor=west] at (-0.4,1.5) {Arriving};
+  \foreach \i/\n in {0/48,1/46,2/45} {\pk{\i*0.9+0.2,0.85}{d2dcat0}{\n}}
+  \draw[flow] (2.4,0.85) -- (3.4,0.85);
+  % the window
+  \node[title,anchor=west] at (3.6,1.5) {Held in the window (64 slots, indexed by sequence mod 64)};
+  \foreach \i in {0,...,9} {\draw[d2drule,line width=0.6pt] (3.6+\i*0.8,0.55) rectangle ++(0.8,0.6);}
+  \node[draw=d2dcat3,dashed,line width=1pt,minimum width=0.72cm,minimum height=0.55cm,font=\sffamily\bfseries\scriptsize,text=d2dcat3] at (4.0,0.85) {44};
+  \pk{4.8,0.85}{d2dcat0}{47}
+  \pk{6.4,0.85}{d2dcat0}{49}
+  \node[note,anchor=north,align=center,text=d2dcat3] at (4.0,0.5) {the gap};
+  \node[note,anchor=west] at (11.7,0.85) {$\cdots$};
+  % delivered
+  \node[title,anchor=west] at (-0.4,-0.4) {Delivered in order};
+  \foreach \i/\n in {0/40,1/41,2/42,3/43} {\pk{\i*0.9+0.2,-1.05}{partcolor}{\n}}
+  \draw[flowp] (3.6,0.5) .. controls (3.2,-0.4) .. (3.4,-1.05) -- (3.3,-1.05);
+  % rules
+  \node[box=d2dcat3,anchor=north west,text width=10.2cm,align=left,font=\sffamily\scriptsize] at (4.5,-0.15) {%
+    \textbf{Gap 44 is given up} when the window is full or it has waited 1 ms: it counts as \textbf{lost},
+    and 45, 46, \dots\ are delivered.\\[2pt]
+    \textbf{If 44 arrives after that}, it is \textbf{stale}: counted and dropped, because its words
+    would now be out of time order. A duplicate is counted the same way.\\[2pt]
+    \textbf{More stale packets in a row than the window holds}: the board restarted. The tracker
+    flushes, counts a resync and follows the new numbers.};
+\end{tikzpicture}

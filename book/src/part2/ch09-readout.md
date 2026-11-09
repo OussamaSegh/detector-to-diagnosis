@@ -63,11 +63,12 @@ time of the whole scanner, and it decides which errors your software has to corr
 The simplest timing circuit is a comparator with a fixed threshold: the time stamp is the
 moment the pulse crosses it, the *leading edge*. It is fast and cheap, and it has a
 systematic error called *time walk*. A small pulse rises more slowly in volts per
-nanosecond than a large one, so it crosses the same threshold later. The figure shows it
+nanosecond than a large one, so it crosses the same threshold later. Figure [](#fig-ch09-time-walk) shows it
 on the pulse model of Exercise 9.4, a difference of exponentials with a 0.5 ns rise and a
 40 ns decay.
 
-![Leading-edge timing walks with amplitude; constant-fraction timing does not (pulse model of Exercise 9.4, threshold exaggerated).](src/img/ch09-time-walk.png){width=100%}
+```{.figure #fig-ch09-time-walk src="book/figures/plots/ch09/time_walk.py" caption="Leading-edge timing walks with amplitude; constant-fraction timing does not. Pulse model of Exercise 9.4 (a 0.5 ns rise, a 40 ns decay), threshold exaggerated to 10% so that the walk is visible." alt="Two line charts of pulse amplitude against time from 0 to 3 ns for pulses of 150, 300 and 511 keV. Left: with a fixed threshold drawn as a dashed line, the three pulses cross it at visibly different times, the smallest pulse last. Right: with a constant-fraction trigger at 20% of each pulse's peak, all three trigger points line up at the same time." width="100%"}
+```
 
 With a threshold at 2% of a 511 keV pulse, a 100 keV pulse crosses 44 ps later than a
 511 keV pulse in this model. That is a large fraction of a 300 ps coincidence time
@@ -95,7 +96,10 @@ time stamp. Its price is nonlinearity. On the exponential tail of the pulse, the
 fall to a threshold grows with the logarithm of the amplitude, so doubling the energy adds
 the same τ_decay · ln 2 (27.7 ns for a 40 ns decay) whether you start at 30 or at 300 keV.
 A ToT energy is compressed at high energies and needs a calibration curve per channel before
-an energy window means anything. Exercise 9.4 measures both effects.
+an energy window means anything. Exercise 9.4 measures both effects. Figure [](#fig-ch09-tot) shows the compression.
+
+```{.figure #fig-ch09-tot src="book/figures/plots/ch09/tot.py" caption="Time over threshold on the same pulse model, with a threshold at 2% of a 511 keV pulse. Left: how long three pulses stay above it. Right: ToT against energy is logarithmic, so a ToT energy needs a calibration curve per channel." alt="Left: three exponentially decaying pulses of 100, 250 and 511 keV above a low dashed threshold, with double arrows below marking how long each stays above it, from about 91 ns to about 156 ns. Right: a curve of time over threshold against deposited energy from 0 to 700 keV that rises steeply and then flattens, with marked points at 100 keV 91 ns, 200 keV 119 ns and 400 keV 147 ns." width="100%"}
+```
 
 ### Front-end ASICs
 
@@ -150,7 +154,10 @@ turns the fine code into a time through a table. The decoder in software then co
 MDQ-P1, MiniDAQ's word from Chapter 2, uses an idealized version: a 28-bit coarse counter
 with a 5.12 ns tick and a 10-bit fine part with 1,024 equal bins of 5 ps. Exercise 9.1
 decodes a different, made-up word with a 40-bit coarse and a 10-bit fine part, close to
-what a real TDC word looks like.
+what a real TDC word looks like. Figure [](#fig-ch09-timestamp) puts the two parts together.
+
+```{.figure #fig-ch09-timestamp src="book/figures/tikz/ch09/timestamp.tex" caption="A time stamp in two parts: the coarse counter says in which clock tick the pulse's edge arrived, the fine code where in that tick." alt="A square-wave clock with ticks numbered 0 to 6 above a detector pulse whose rising edge falls between ticks 3 and 4. Below, a bar spanning tick 3 is filled up to the edge and labeled fine code, where in the tick, with the note 1,024 bins of 5 ps in MDQ-P1. The formula below reads time equals coarse times tick plus calibrated fine of code, 3 times 5.12 ns plus 3.55 ns equals 18.91 ns." width="100%"}
+```
 
 ### Rollover
 
@@ -175,7 +182,10 @@ from Chapter 2:
 
 The rule holds as long as the stream is ordered to within half a wrap period, 0.69 s for
 MDQ-P1, a margin no real readout comes near. It also survives the loss of packets, as long
-as less than half a wrap period of data is missing at once.
+as less than half a wrap period of data is missing at once. Figure [](#fig-ch09-halfrange) draws the rule; the sequence numbers of the next section use the same one.
+
+```{.figure #fig-ch09-halfrange src="book/figures/tikz/ch09/halfrange.tex" caption="The half-range rule for any counter that wraps: the difference, taken modulo the range and read as a signed number, says ahead or behind. It holds while the data are in order to within half the range." alt="A circle stands for the whole range of a wrapping counter, with the last value seen at the top. The right half is shaded green and labeled ahead, a forward step of less than half the range. The left half is shaded orange and labeled behind, a backward step of less than half the range, such as a late word or a reordered packet. A dashed vertical line through the circle marks the limit at half the range." width="85%"}
+```
 
 ### Clocks across boards
 
@@ -208,7 +218,10 @@ t~B~ − t~A~ for pairs between two boards sits at their relative offset. If one
 the peak moves. A histogram of t~B~ − t~A~ per one-second slice shows a drift of 1 ns per
 second (1 part per billion) at once: the peak, a few hundred picoseconds wide, moves by
 its own width within a second. That is a monitoring check the DAQ can run on every
-acquisition, from data it already has.
+acquisition, from data it already has. Figure [](#fig-ch09-drift) shows what it looks like.
+
+```{.figure #fig-ch09-drift src="book/figures/plots/ch09/drift.py" caption="A drifting board seen in the data: the peak of t~B~ − t~A~ for coincidences between two boards, one histogram per second, for a drift of 1 ns per second. An illustration (Gaussian peaks of 300 ps FWHM on a flat background), not a measurement." alt="Four histograms of the time difference between two boards, each a narrow peak about 300 ps wide on a flat background, labeled 1 to 4 for the first four seconds of a run. The peaks sit at about minus 600, 400, 1,400 and 2,400 picoseconds: each second the peak moves by 1 ns, much more than its own width." width="85%"}
+```
 
 ::: box-mistakes
 - **"The counter went backwards, so it wrapped."** True only for perfectly ordered data.
@@ -294,7 +307,13 @@ is 1,020 keV and almost saturated, and the low 38 bits are time code 0x3E8 = 1,0
 5,000 ps after the counter's last wrap. (These bytes were produced by `encode_packet`, not
 typed by hand; the first attempt at typing them was wrong, which is the point of the
 exercise.) Doing this once by hand, against the specification, is the fastest way
-to find out whether you and the firmware engineer read the table the same way.
+to find out whether you and the firmware engineer read the table the same way. Figures [](#fig-ch09-packet) and [](#fig-ch09-word) show the same bytes as fields.
+
+```{.figure #fig-ch09-packet src="book/figures/tikz/ch09/packet.tex" caption="The worked example's datagram: the 16-byte MDQ-R1 header and its two words. The parser checks the fields from left to right and never reads past the end." alt="A row of boxes for the bytes of an MDQ-R1 datagram with byte offsets above them: magic MDQR at 0 to 3, version 1 at 4, flags 0 at 5, source 2 at 6 and 7, sequence 0xFFFFFFF0 at 8 to 11, count 2 at 12 and 13, reserved 0 at 14 and 15, then word 0 from byte 16 and word 1 from byte 24. A brace marks the 16-byte little-endian header, another the count times 8 bytes of words, with the note that the length must be exactly 16 plus 8 times count." width="100%"}
+```
+
+```{.figure #fig-ch09-word src="book/figures/tikz/ch09/word.tex" caption="The first word of the worked example as an MDQ-P1 single: 15 bits of crystal, 11 of energy and 38 of time code, bit 63 on the left." alt="A 64-bit word drawn as a bar with bit 63 on the left and bit 0 on the right, split into three fields: crystal, 15 bits, from bit 63 to 49; energy, 11 bits, from bit 48 to 38; and time code, 38 bits in 5 ps units, from bit 37 to 0. Below, the example value 0x0701FE00000003E8 decodes to crystal 896, energy 2,040 which is 1,020 keV, and time code 1,000 which is 5,000 ps after the last wrap." width="100%"}
+```
 
 ::: box-mistakes
 - **C++ bit-fields for a wire format.** Their layout, order and padding are
@@ -360,7 +379,10 @@ little margin for the high-activity end of a count-rate test. A scanner of that 
 detector (verify: your scanner's link type and count). The packet rate matters as much as the
 byte rate: a receiving CPU pays a cost per packet, so small packets cost more than their
 bytes suggest. With jumbo frames (a 9,000-byte MTU) a packet can hold over a thousand words,
-which is why MDQ-R1 allows up to 1,024.
+which is why MDQ-R1 allows up to 1,024. Figure [](#fig-ch09-wire) shows where the 1,538 bytes go.
+
+```{.figure #fig-ch09-wire src="book/figures/tikz/ch09/wire.tex" caption="One full MDQ-R1 packet on the Ethernet wire, to scale, with the overhead enlarged above it. The overhead is small per packet; the packet rate is what costs the receiving CPU." alt="A long bar to scale shows a 1,538-byte Ethernet frame almost filled by 182 MDQ-P1 words, 1,456 bytes of singles. An enlarged strip above shows the thin slices at its edges: preamble 8 bytes, Ethernet header 14, IPv4 header 20, UDP 8 and MDQ-R1 header 16 at the start, and the frame checksum 4 and inter-frame gap 12 at the end. The total works out to 8.45 bytes of wire time per single." width="100%"}
+```
 
 ### Sequence numbers and serial arithmetic
 
@@ -399,7 +421,10 @@ counter:
 ### What can go wrong
 
 Each failure has a signature in the data. Learn to recognize them, because the first report
-of each will come from someone who sees only its effect on an image.
+of each will come from someone who sees only its effect on an image. Figure [](#fig-ch09-failures) shows the signatures in the sequence numbers.
+
+```{.figure #fig-ch09-failures src="book/figures/tikz/ch09/failures.tex" caption="The signature of each link failure in the sequence numbers, packets in order of arrival. Loss at the end leaves no gap at all." alt="Six rows of numbered packet boxes in order of arrival. Normal: 41 to 48 in order. Loss: 43 is followed by 45, and 44 never comes. Reordering: 44 arrives before 43. Duplication: 43 appears twice. Board reset: after 43 the numbers restart at 0, 1, 2. Loss at the end: 41 to 44 arrive, followed by empty dashed boxes and nothing else." width="100%"}
+```
 
 - **Loss.** A packet never arrives: a full socket buffer on the PC (the most common cause),
   a full buffer in a switch, a bit error that fails the Ethernet checksum. Signature: a gap
@@ -464,7 +489,10 @@ limits is reached: the *window* (64 packets by default) is full, or the gap has 
 `max_hold_ns` (1 ms by default). Then it counts the missing sequence number as lost and
 delivers what follows. A packet that arrives after its gap was given up is *stale*: it is
 counted and dropped, because delivering it would put its words out of time order. The same
-counter catches duplicates.
+counter catches duplicates. Figure [](#fig-ch09-tracker) shows the tracker at work.
+
+```{.figure #fig-ch09-tracker src="book/figures/tikz/ch09/tracker.tex" caption="The sequence tracker. Early packets wait in the window until the gap before them fills; a gap that waits too long is counted as lost, and a packet that arrives after that is stale." alt="Packets 48, 46 and 45 arrive on the left and go into a window of slots. In the window, a dashed slot marks the gap where packet 44 is missing, and packets 47 and 49 are held. Packets 40 to 43 have been delivered in order below. A text box explains that the gap is given up when the window is full or after 1 ms and counted as lost, that a packet arriving afterwards is stale and dropped, and that many stale packets in a row mean the board restarted." width="100%"}
+```
 
 ```{.cpp include="minidaq/include/minidaq/format/readout_packet.hpp" snippet="offer"}
 ```

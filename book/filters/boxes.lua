@@ -3,7 +3,8 @@
 --   ::: {.box-regulated title="In a regulated product"}
 --   ...
 --   :::
--- Box classes: box-why, box-regulated, box-askteam, box-mistakes, box-note, box-milestone.
+-- Box classes: box-why, box-regulated, box-askteam, box-mistakes, box-note, box-milestone,
+-- and from design.lua box-exercise, box-objectives, box-prereq, box-check, box-summary.
 -- In LaTeX they become tcolorbox environments defined in templates/book-header.tex;
 -- in EPUB they stay <div class="box-..."> styled by templates/epub.css with a heading.
 --
@@ -17,6 +18,12 @@ local box_titles = {
   ["box-mistakes"] = "Common mistakes",
   ["box-note"] = "Note",
   ["box-milestone"] = "MiniDAQ milestone",
+  -- Added by design.lua: an exercise (titled by its own heading) and untitled cards.
+  ["box-exercise"] = "Exercise",
+  ["box-objectives"] = "",
+  ["box-prereq"] = "",
+  ["box-check"] = "",
+  ["box-summary"] = "",
 }
 
 local latex_map = {
@@ -28,6 +35,17 @@ local function latex_escape(s)
 end
 
 function Div(el)
+  -- The caption of an included listing (include-code.lua): in LaTeX a small colored marker
+  -- and the caption, kept with the listing (\dlistingcap in templates/book-header.tex).
+  if el.classes:includes("listing-caption") and FORMAT:match("latex")
+      and #el.content == 1 and el.content[1].t == "Para" then
+    local inl = el.content[1].content
+    if #inl == 1 and inl[1].t == "Emph" then inl = inl[1].content end
+    local para = pandoc.List({ pandoc.RawInline("latex", "\\dlistingcap{") })
+    para:extend(inl)
+    para:insert(pandoc.RawInline("latex", "}"))
+    return pandoc.Plain(para)
+  end
   for cls, default_title in pairs(box_titles) do
     if el.classes:includes(cls) then
       local title = el.attributes["title"] or default_title
@@ -38,8 +56,10 @@ function Div(el)
         table.insert(blocks, pandoc.RawBlock("latex", "\\end{" .. env .. "}"))
         return blocks
       else
-        local head = pandoc.Div({ pandoc.Para({ pandoc.Strong(pandoc.Str(title)) }) }, pandoc.Attr("", { "box-title" }))
-        table.insert(el.content, 1, head)
+        if title ~= "" then
+          local head = pandoc.Div({ pandoc.Para({ pandoc.Strong(pandoc.Str(title)) }) }, pandoc.Attr("", { "box-title" }))
+          table.insert(el.content, 1, head)
+        end
         el.attributes["title"] = nil
         return el
       end

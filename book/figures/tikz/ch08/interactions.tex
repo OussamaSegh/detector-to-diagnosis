@@ -1,0 +1,34 @@
+% Chapter 8: what a 511 keV photon can do on its way out of the head and into a crystal.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \i/\t/\s in {0/{It passes}/{no interaction at all:\\the scanner never sees it},
+                        1/{It is absorbed}/{photoelectric effect in the crystal: all\\511 keV go to one electron (the photopeak)},
+                        2/{It scatters}/{Compton effect: part of its energy\\goes to an electron, and it turns}} {
+    \begin{scope}[shift={(\i*5.75,0)}]
+      \fill[d2dcat4!18!white,rounded corners=6pt] (0,-1.1) rectangle (3.0,1.1);
+      \node[note,anchor=north west] at (0.08,1.08) {tissue (water)};
+      \fill[partcolor!22!white,draw=partcolor,line width=0.6pt] (4.15,-1.1) rectangle (4.85,1.1);
+      \node[note,anchor=north] at (4.5,-1.15) {crystal};
+      \node[title,anchor=south west] at (0,1.25) {\t};
+      \node[note,anchor=north west,align=left] at (0,-1.6) {\s};
+    \end{scope}}
+  % passes
+  \draw[photon,partcolor] (-0.4,0) -- (5.4,0);
+  % absorbed in the tissue
+  \begin{scope}[shift={(5.75,0)}]
+    \draw[photon,partcolor,-] (-0.4,0) -- (4.5,0);
+    \fill[d2dcat1] (4.5,0) circle (0.1);
+    \foreach \a in {0,45,...,315} {\draw[d2dcat1,line width=0.7pt] (4.5,0) ++(\a:0.16) -- ++(\a:0.14);}
+  \end{scope}
+  % Compton
+  \begin{scope}[shift={(11.5,0)}]
+    \draw[photon,partcolor,-] (-0.4,-0.3) -- (1.2,-0.3);
+    \fill[d2dcat1] (1.2,-0.3) circle (0.08);
+    \draw[photon,d2dcat3] (1.2,-0.3) -- (4.5,0.75);
+    \draw[d2dmuted,dashed,line width=0.5pt] (1.2,-0.3) -- (2.6,-0.3);
+    \draw[d2dmuted,line width=0.6pt] (2.2,-0.3) arc (0:17.6:1.0);
+    \node[lab,anchor=west] at (2.25,-0.12) {$\theta$};
+    \draw[d2dcat0,->,line width=0.8pt] (1.2,-0.3) -- (1.55,-0.85);
+    \node[note,anchor=north] at (1.55,-0.85) {electron};
+    \node[lab,anchor=south west,text=d2dcat3,fill=white,inner sep=1pt] at (2.3,1.15) {$E' = \dfrac{511\,\mathrm{keV}}{2-\cos\theta}$};
+  \end{scope}
+\end{tikzpicture}

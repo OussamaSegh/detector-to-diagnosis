@@ -12,10 +12,31 @@ end
 
 local counter = 0
 
+-- The book's style (docs/PLAN-interior-design.md, 3.3): the book's sans font, borders in the
+-- Part's color (design.lua sets the block's part), gray edges. Attributes a diagram sets itself
+-- win, because these defaults come first.
+local part_colors = {}
+do
+  local root = os.getenv("BOOK_REPO_ROOT") or "."
+  local f = io.open(root .. "/book/tools/palette.json")
+  if f then
+    local pal = pandoc.json.decode(f:read("a"))
+    f:close()
+    for k, v in pairs(pal.parts) do part_colors[k] = "#" .. v[2] end
+  end
+end
+local function restyle(src, part)
+  local c = part_colors[part or "0"] or "#0F766E"
+  local defaults = string.format('graph [fontname="TeX Gyre Heros"]; node [fontname="TeX Gyre Heros", color="%s", penwidth=1.1]; ' ..
+    'edge [fontname="TeX Gyre Heros", color="#4B5563", fontcolor="#1F2937"]; ', c)
+  src = src:gsub('fontname="Helvetica"', 'fontname="TeX Gyre Heros"'):gsub("fontname=Helvetica", 'fontname="TeX Gyre Heros"')
+  return (src:gsub("^(.-{)", "%1 " .. defaults:gsub("%%", "%%%%"), 1))
+end
+
 function CodeBlock(el)
   if not el.classes:includes("dot") then return nil end
   counter = counter + 1
-  local src = el.text
+  local src = restyle(el.text, el.attributes["part"])
   local hash = pandoc.utils.sha1(src)
   os.execute("mkdir -p " .. outdir)
   local svg = outdir .. "/" .. hash .. ".svg"

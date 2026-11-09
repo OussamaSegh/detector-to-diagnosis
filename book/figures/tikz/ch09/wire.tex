@@ -1,0 +1,23 @@
+% Chapter 9: what one full MDQ-R1 packet (182 words) costs on the Ethernet wire: 1,538 bytes.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % the whole frame, to scale (1,538 bytes = 15.38 cm)
+  \begin{scope}[x=0.01cm]
+    \foreach \x/\w/\c in {0/8/rule, 8/14/4, 22/20/1, 42/8/5, 50/16/2, 66/1456/0, 1522/4/4, 1526/12/rule} {
+      \fill[d2dcat\c!55!white] (\x,0) rectangle ++(\w,0.7);}
+    \draw[d2dink,line width=0.6pt] (0,0) rectangle (1538,0.7);
+    \node[font=\sffamily\bfseries\small] at (794,0.35) {182 MDQ-P1 words: 1,456 bytes of singles};
+    \draw[dimline] (0,-0.2) -- (1538,-0.2) node[midway,below,lab] {1,538 bytes of wire time per packet: 8.45 bytes per single (the words are 8)};
+    \draw[d2dmuted,line width=0.4pt] (0,0.7) -- (0,1.25); \draw[d2dmuted,line width=0.4pt] (66,0.7) -- (726,1.25);
+    \draw[d2dmuted,line width=0.4pt] (1522,0.7) -- (1320,1.25); \draw[d2dmuted,line width=0.4pt] (1538,0.7) -- (1496,1.25);
+  \end{scope}
+  % zoom on the overhead, 1 byte = 0.08 cm
+  \begin{scope}[shift={(0,1.25)},x=0.11cm]
+    \foreach \x/\w/\t/\c in {0/8/{pre-\\amble 8}/rule, 8/14/{Ethernet\\header 14}/4, 22/20/{IPv4\\header 20}/1, 42/8/{UDP\\8}/5, 50/16/{MDQ-R1\\header 16}/2} {
+      \fill[d2dcat\c!55!white] (\x,0) rectangle ++(\w,0.8); \draw[d2dink,line width=0.5pt] (\x,0) rectangle ++(\w,0.8);
+      \node[font=\sffamily\scriptsize,align=center] at (\x+\w/2,0.4) {\t};}
+    \node[note] at (93,0.4) {$\cdots$ words $\cdots$};
+    \foreach \x/\w/\t/\c in {120/4/{FCS\\4}/4, 124/12/{inter-frame\\gap 12}/rule} {
+      \fill[d2dcat\c!55!white] (\x,0) rectangle ++(\w,0.8); \draw[d2dink,line width=0.5pt] (\x,0) rectangle ++(\w,0.8);
+      \node[font=\sffamily\scriptsize,align=center] at (\x+\w/2,0.4) {\t};}
+  \end{scope}
+\end{tikzpicture}

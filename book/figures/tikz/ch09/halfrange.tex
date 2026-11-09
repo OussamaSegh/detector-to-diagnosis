@@ -1,0 +1,17 @@
+% Chapter 9: comparing two counter values that wrap. The difference modulo the range, read as a
+% signed number: less than half the range forward is ahead, less than half backward is behind.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[d2dcat2!22!white] (0,0) -- (90:2.0) arc (90:-90:2.0) -- cycle;
+  \fill[d2dcat1!25!white] (0,0) -- (90:2.0) arc (90:270:2.0) -- cycle;
+  \draw[d2dmuted,line width=0.8pt] (0,0) circle (2.0);
+  \fill[d2dink] (90:2.0) circle (0.1);
+  \node[lab,anchor=south] at (90:2.1) {\textbf{last value seen}};
+  \draw[partcolor,dashed,line width=1pt] (90:2.25) -- (270:2.25);
+  \node[lab,anchor=north,text=partcolor] at (270:2.3) {half the range away: the limit};
+  \draw[->,d2dcat2,line width=1.4pt] (80:2.35) arc (80:10:2.35);
+  \draw[->,d2dcat1,line width=1.4pt] (100:2.35) arc (100:170:2.35);
+  \node[lab,anchor=west,align=left] at (2.7,0.9) {\textbf{ahead}: a forward step of less\\than half the range (new data;\\a counter that wrapped forward)};
+  \node[lab,anchor=east,align=right] at (-2.7,0.9) {\textbf{behind}: a backward step of\\less than half the range\\(a late word, a reordered packet)};
+  \node[note,align=center,fill=white,fill opacity=0.85,text opacity=1,rounded corners=2pt] at (0,0) {the counter's\\whole range\\($2^{38}$ time codes,\\$2^{32}$ sequence\\numbers, ...)};
+  \node[note,anchor=north,align=center] at (0,-2.95) {A step back of more than half the range is really a step forward across the wrap;\\the rule holds while the data are in order to within half the range.};
+\end{tikzpicture}

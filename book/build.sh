@@ -17,6 +17,9 @@
 #   BOOK_DATE      the edition date (default: today)
 #   BOOK_PAPER     white (default) or cream: the KDP paper, which sets the spine width
 #   EPUBCHECK_JAR  path of epubcheck.jar (default /usr/share/java/epubcheck.jar)
+#   BOOK_INK       bw (default) or color: the colors of the KDP interior. bw replaces every color
+#                  with the gray of the same lightness (black ink printing); the screen PDF and
+#                  the EPUB are always in color, the Boox PDF in its own stronger tints.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/.." && pwd)"
@@ -26,6 +29,7 @@ version="$(tr -d '[:space:]' < "$repo/VERSION")"
 date_str="${BOOK_DATE:-$(date +%Y-%m-%d)}"
 author="${BOOK_AUTHOR:-Oussama Seghaier}"
 paper="${BOOK_PAPER:-white}"
+ink="${BOOK_INK:-bw}"
 # The trim size (user decision, 2026-10-26: 8.5 x 11 in, one volume) and the page margins in
 # inches. The inside margin of the KDP interior grows with the page count (kdp_gutter).
 trim_w=8.5 trim_h=11
@@ -49,15 +53,17 @@ export BOOK_STRICT=1
 
 common=(
   --from markdown+smart+fenced_divs+bracketed_spans+pipe_tables+grid_tables+tex_math_dollars+implicit_figures
+  --lua-filter "$here/filters/design.lua"
   --lua-filter "$here/filters/include-code.lua"
   --lua-filter "$here/filters/diagrams.lua"
+  --lua-filter "$here/filters/figures.lua"
   --lua-filter "$here/filters/boxes.lua"
   --metadata "version=$version" --metadata "date=$date_str" --metadata "author=$author"
   --metadata "rights=Copyright © ${date_str:0:4} $author. All rights reserved. Code: MIT License."
   --lua-filter "$here/filters/vars.lua"
   --lua-filter "$here/filters/breakable-code.lua"
   --resource-path "$here:$here/assets:$build"
-  --highlight-style tango
+  --highlight-style "$here/templates/d2d.theme"
   --number-sections
 )
 
@@ -177,7 +183,8 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
   done < "$list"
   if [[ "$what" == epub || "$what" == all || "$what" == kdp ]]; then
     # The copyright page follows the EPUB's title page.
-    pandoc "${common[@]}" --metadata-file "$meta" \
+    python3 "$here/tools/figures.py" all screen >/dev/null
+    BOOK_PROFILE=screen pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --split-level=1 --mathml \
       --css "$here/templates/epub.css" \
       --epub-cover-image "$build/cover/cover-$vol.png" \
@@ -221,7 +228,17 @@ build_pdf() {
   local stem="$1" meta="$2" vol="$3" mode="$4" inner="$5" pdfout="$6"
   shift 6
   local files=("$@") job="$stem-$mode"
-  local tex="$build/tex/$job.tex" extra=()
+  local tex="$build/tex/$job.tex" extra=() profile
+  # The colors (book/tools/palette.json) for the medium: docs/PLAN-interior-design.md, 3.4.
+  case "$mode" in
+    screen) profile=screen ;;
+    boox) profile=boox ;;
+    *) [[ "$ink" == color ]] && profile=screen || profile=bw ;;
+  esac
+  python3 "$here/tools/palette.py" tex "$profile" "$build/tex/$job-palette.tex"
+  # Every figure of the profile, in parallel, before Pandoc asks for them one by one.
+  python3 "$here/tools/figures.py" all "$profile" >/dev/null
+  extra+=(--include-in-header "$build/tex/$job-palette.tex")
   if [[ "$mode" == boox ]]; then
     # The header and footer inside the narrow margins, close to the text. The page number sits
     # 24 pt below the text, so a code block that runs a line past the text (framed splits them
@@ -246,7 +263,7 @@ build_pdf() {
     extra+=(--include-in-header "$build/tex/$job-cover.tex" -M colorlinks=false)
   fi
   copyright_tex "$meta" "$build/tex/$job-copyright.tex"
-  pandoc "${common[@]}" --metadata-file "$meta" \
+  BOOK_PROFILE="$profile" pandoc "${common[@]}" --metadata-file "$meta" \
       --toc --toc-depth=2 --top-level-division=chapter \
       "${extra[@]}" \
       --pdf-engine=xelatex \
@@ -261,13 +278,15 @@ build_pdf() {
   # Images are referenced relative to book/ (src/img/...); LaTeX runs in
   # build/tex, so give it the same view.
   ln -sfn "$here/src" "$build/tex/src"
+  # Every table's head row is tinted in the Part color (dtablehead, templates/book-header.tex).
+  sed -i 's/^\\toprule\\noalign{}$/\\toprule\\noalign{}\\rowcolor{dtablehead}/' "$tex"
   # A fenced block whose attributes Pandoc cannot parse (for example "[[" or
   # leading spaces in a from/to value) silently becomes paragraph text: fail
   # instead. breakable-code.lua may put \allowbreak{} after the dot.
   if grep -nE '\\\{\.(\\allowbreak\{\})?(cpp|python|cmake|yaml|text|dot)' "$tex" | head -5 | grep . ; then
     echo "unprocessed code-block attributes in $tex (see lines above)"; exit 1
   fi
-  (cd "$build/tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$job.tex" >"$job.latexmk.log" 2>&1) \
+  (cd "$build/tex" && TEXINPUTS="$here/figures/tikz:$build/figures:" latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$job.tex" >"$job.latexmk.log" 2>&1) \
     || { echo "LaTeX failed, see $build/tex/$job.log"; grep -n -A3 "^!" "$build/tex/$job.log" | head -30; exit 1; }
   cp "$build/tex/$job.pdf" "$pdfout"
   # A glyph the font does not have is silently left out of the PDF.

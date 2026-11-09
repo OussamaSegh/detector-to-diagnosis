@@ -1,0 +1,17 @@
+% Chapter 9: the MDQ-P1 single, 64 bits, with the worked example 0x0701FE00000003E8.
+\begin{tikzpicture}[x=0.255cm,y=1cm]
+  % bit 63 on the left
+  \fill[d2dcat0!35!white] (0,0) rectangle (15,1);  \fill[d2dcat1!40!white] (15,0) rectangle (26,1);  \fill[d2dcat2!35!white] (26,0) rectangle (64,1);
+  \foreach \b in {0,...,64} {\draw[d2dink,line width=0.3pt] (\b,0) -- (\b,0.12);}
+  \draw[d2dink,line width=0.8pt] (0,0) rectangle (64,1); \draw[d2dink,line width=0.8pt] (15,0) -- (15,1); \draw[d2dink,line width=0.8pt] (26,0) -- (26,1);
+  \node[font=\sffamily\bfseries\small] at (7.5,0.5) {crystal (15 bits)};
+  \node[font=\sffamily\bfseries\small] at (20.5,0.5) {energy (11)};
+  \node[font=\sffamily\bfseries\small] at (45,0.5) {time code (38 bits, 5 ps units)};
+  \foreach \b/\l in {0/63,15/48,26/37,64/0} {\node[note,anchor=south] at (\b,1.02) {bit \l};}
+  % example
+  \node[lab,anchor=north west] at (0,-0.15) {\ttfamily 0x0701FE00000003E8};
+  \node[lab,anchor=north] at (7.5,-0.6) {\textbf{896}};
+  \node[lab,anchor=north] at (20.5,-0.6) {\textbf{2,040} = 1,020 keV};
+  \node[lab,anchor=north] at (45,-0.6) {\textbf{1,000} = 5,000 ps after the last wrap};
+  \node[note,anchor=north] at (32,-1.15) {stored little-endian: byte 0 holds bits 0 to 7, byte 7 holds bits 56 to 63};
+\end{tikzpicture}

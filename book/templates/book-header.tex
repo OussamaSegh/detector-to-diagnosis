@@ -1,34 +1,205 @@
 % Detector to Diagnosis: LaTeX preamble additions (used with pandoc's default template).
+% The design is in docs/PLAN-interior-design.md, section 3. The colors come from
+% build/tex/palette-<profile>.tex (book/tools/palette.py), included before this file.
 \usepackage[most]{tcolorbox}
+\usetikzlibrary{calc,positioning,arrows.meta,shapes.geometric,shapes.misc,decorations.pathreplacing,fadings,shadows}
 \usepackage{makeidx}
 \makeindex
 \usepackage{fvextra}
 % Break long code lines instead of overflowing the margin.
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\},fontsize=\small}
 \fvset{breaklines=true,breakanywhere=true}
+\usepackage{microtype}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\setlength{\emergencystretch}{3em}
+
+% ---------------------------------------------------------------- the current Part
+% \dsetpart{n} makes Part n's color the current one (partcolor): Part openers, chapter
+% heads, running heads, section numbers, table heads, code rules and thumb tabs use it.
+\newcommand{\dcurpart}{0}
+\newcommand{\dtabpos}{0}
+\newcommand{\dsetpart}[1]{\renewcommand{\dcurpart}{#1}\colorlet{partcolor}{d2dpart#1}%
+  \ifstrequal{#1}{A}{\renewcommand{\dtabpos}{10}}{\ifstrequal{#1}{S}{\renewcommand{\dtabpos}{0}}{\renewcommand{\dtabpos}{#1}}}}
+\newcommand{\dpartroman}[1]{\ifcase#1 \or I\or II\or III\or IV\or V\or VI\or VII\or VIII\or IX\fi}
+% Bleed: on screen the Part band runs to the page edge; in the black ink interior (bw) it
+% stays inside KDP's 0.125 in safety margin, since that interior has no bleed.
+\newlength{\dbleed}
+\ifdefstring{\dprofile}{bw}{\setlength{\dbleed}{0.3in}}{\setlength{\dbleed}{0pt}}
+
+% ---------------------------------------------------------------- icons
+% Small icons drawn in TikZ (no icon font), 1em high, in the current color.
+\newcommand{\dicon}[1]{\begin{tikzpicture}[baseline=-0.32em,x=1em,y=1em,line width=0.08em,line cap=round,line join=round]\csname dicon@#1\endcsname\end{tikzpicture}}
+\expandafter\def\csname dicon@why\endcsname{% a light bulb
+  \draw (0,0.08) circle (0.32); \draw (-0.13,-0.22) -- (-0.13,-0.38) -- (0.13,-0.38) -- (0.13,-0.22);
+  \draw (-0.1,-0.47) -- (0.1,-0.47); \draw (0,0.08) +(-0.12,0) .. controls +(0.06,0.14) .. +(0.12,0);}
+\expandafter\def\csname dicon@regulated\endcsname{% a section sign in a shield
+  \draw (-0.34,0.4) -- (0.34,0.4) -- (0.34,0.02) .. controls (0.34,-0.28) .. (0,-0.48) .. controls (-0.34,-0.28) .. (-0.34,0.02) -- cycle;
+  \node[inner sep=0pt,font=\sffamily\bfseries\scriptsize] at (0,0.0) {\S};}
+\expandafter\def\csname dicon@mistakes\endcsname{% a warning triangle
+  \draw (0,0.44) -- (0.44,-0.4) -- (-0.44,-0.4) -- cycle; \draw[line width=0.1em] (0,0.18) -- (0,-0.12); \fill (0,-0.26) circle (0.05);}
+\expandafter\def\csname dicon@exercise\endcsname{% a pencil
+  \draw[rotate=45] (-0.12,-0.5) -- (-0.12,0.32) -- (0.12,0.32) -- (0.12,-0.5) -- (0,-0.7) -- cycle;
+  \draw[rotate=45] (-0.12,0.18) -- (0.12,0.18);}
+\expandafter\def\csname dicon@askteam\endcsname{% two speech bubbles
+  \draw (-0.12,0.14) ellipse (0.34 and 0.24); \draw (-0.3,-0.06) -- (-0.4,-0.26) -- (-0.16,-0.1);
+  \draw (0.2,-0.2) ellipse (0.26 and 0.18);}
+\expandafter\def\csname dicon@milestone\endcsname{% a flag
+  \draw (-0.3,-0.48) -- (-0.3,0.46); \draw (-0.3,0.44) -- (0.38,0.3) -- (0.12,0.15) -- (0.38,0.0) -- (-0.3,0.04);}
+\expandafter\def\csname dicon@note\endcsname{% an information sign
+  \draw (0,0) circle (0.42); \draw[line width=0.1em] (0,-0.22) -- (0,0.06); \fill (0,0.2) circle (0.05);}
+\expandafter\def\csname dicon@check\endcsname{% a check mark in a box
+  \draw (-0.4,-0.4) rectangle (0.4,0.4); \draw[line width=0.1em] (-0.22,0.0) -- (-0.05,-0.18) -- (0.24,0.2);}
+\expandafter\def\csname dicon@summary\endcsname{% a list
+  \foreach \y in {0.28,0,-0.28} {\fill (-0.34,\y) circle (0.05); \draw (-0.18,\y) -- (0.38,\y);}}
+\expandafter\def\csname dicon@objectives\endcsname{% a target
+  \draw (0,0) circle (0.42); \draw (0,0) circle (0.24); \fill (0,0) circle (0.07);}
+\expandafter\def\csname dicon@prereq\endcsname{% a clock
+  \draw (0,0) circle (0.42); \draw (0,0.26) -- (0,0) -- (0.18,-0.1);}
+
+% ---------------------------------------------------------------- call-out boxes
+% Every kind has a color, an icon and its own border, so it stays recognizable in gray.
+% Titled boxes: a colored title bar with a white icon. #1 = semantic color, #2 = icon.
+\tcbset{
+  dbase/.style={enhanced,breakable,arc=1.5pt,boxrule=0pt,left=7pt,right=7pt,top=4pt,bottom=4pt,
+    before skip=8pt,after skip=8pt,colback=#1!\dtint!white,colframe=#1,
+    fonttitle=\sffamily\bfseries\small,coltitle=white,colbacktitle=#1,
+    toptitle=1.5pt,bottomtitle=1.5pt,lefttitle=6pt,
+    pad at break=2pt,parbox=false},
+  dtitled/.style 2 args={dbase=#1,title={\dicon{#2}\hspace{0.45em}\dboxtitle}},
+  dcard/.style 2 args={dbase=#1,leftrule=3pt,right=20pt,
+    overlay unbroken and first={\node[anchor=north east,inner sep=3pt,text=#1] at (frame.north east) {\dicon{#2}};}},
+}
+\newcommand{\dboxtitle}{}
+\newcommand{\dbox}[4]{% name, color, icon, extra options
+  \newtcolorbox{#1}[1]{dtitled={#2}{#3},#4,code={\renewcommand{\dboxtitle}{##1}}}}
+\dbox{boxwhy}{d2dwhy}{why}{leftrule=2.5pt}
+\dbox{boxregulated}{d2dregulated}{regulated}{borderline west={1.1pt}{0pt}{d2dregulated},borderline west={1.1pt}{2.6pt}{d2dregulated},left=11pt}
+\dbox{boxmistakes}{d2dmistakes}{mistakes}{borderline={0.9pt}{0pt}{d2dmistakes,dashed}}
+\dbox{boxexercise}{d2dexercise}{exercise}{leftrule=2.5pt,colback=d2dexercise!\dtint!white}
+\dbox{boxaskteam}{d2daskteam}{askteam}{borderline west={1.4pt}{0pt}{d2daskteam,dotted},left=10pt}
+\dbox{boxmilestone}{d2dmilestone}{milestone}{boxrule=1.4pt}
+\dbox{boxnote}{d2dnote}{note}{boxrule=0.4pt}
+% Untitled cards for the recurring sections of a chapter.
+\newtcolorbox{boxcheck}[1]{dcard={d2dcheck}{check}}
+\newtcolorbox{boxsummary}[1]{dcard={d2dsummary}{summary}}
+\newtcolorbox{boxobjectives}[1]{dcard={d2dobjectives}{objectives}}
+\newtcolorbox{boxprereq}[1]{dcard={d2dnote}{prereq},colback=d2dnote!4!white}
+
+% ---------------------------------------------------------------- code listings
+% Pandoc defines Shaded from the highlight theme's background (templates/d2d.theme).
+\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced,breakable,colback=d2dcodebg,colframe=partcolor,
+  boxrule=0pt,leftrule=2pt,arc=0pt,outer arc=0pt,left=5pt,right=4pt,top=2pt,bottom=2pt,
+  before skip=4pt,after skip=8pt,pad at break=1pt]}{\end{tcolorbox}}
+% The caption of an included listing (include-code.lua), kept with its listing.
+\newcommand{\dlistingcap}[1]{\par\needspace{4\baselineskip}\noindent{\sffamily\footnotesize
+  \textcolor{partcolor}{\rule[-0.15em]{2pt}{0.9em}}\hspace{0.4em}\textcolor{d2dmuted}{#1}}\par\nopagebreak\vspace{-2pt}}
+
+% ---------------------------------------------------------------- tables
+% A tinted head row (book/build.sh adds \rowcolor{dtablehead} to each longtable head) and
+% light rows in alternation.
+\colorlet{dzebra}{d2drule!22!white}
+\AtBeginEnvironment{longtable}{\colorlet{dtablehead}{partcolor!\dstrongtint!white}\rowcolors{2}{white}{dzebra}\sffamily\small}
+\setlength{\arrayrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------- figures
+\usepackage{caption}
+\captionsetup{font=small,labelfont={bf,sf,color=partcolor},textfont={color=d2dink}}
+\captionsetup[figure]{name=Figure}
+
+% ---------------------------------------------------------------- headings
+\usepackage{titlesec}
+\titleformat{\section}{\needspace{5\baselineskip}\Large\sffamily\bfseries\color{d2dink}}{\textcolor{partcolor}{\thesection}}{0.6em}{}
+\titleformat{name=\section,numberless}{\needspace{5\baselineskip}\Large\sffamily\bfseries\color{d2dink}}{}{0pt}{\textcolor{partcolor}{\rule[-0.1em]{3pt}{0.95em}}\hspace{0.5em}}
+\titleformat{\subsection}{\large\sffamily\bfseries\color{d2dink}}{\textcolor{partcolor}{\thesubsection}}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\sffamily\bfseries\color{d2dink}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{16pt plus 4pt minus 2pt}{6pt plus 2pt}
+\titlespacing*{\subsection}{0pt}{12pt plus 3pt minus 2pt}{4pt plus 2pt}
+
+% The chapter head: a tinted band with the number in a Part-colored badge, the title, and the
+% chapter's emblem (book/figures/emblems.tex) on the right.
+\newcommand{\demblemid}{}
+\newcommand{\dsetemblem}[1]{\renewcommand{\demblemid}{#1}}
+\input{emblems.tex}
+\newcommand{\dchapteremblem}{%
+  \ifcsname demblem@\demblemid\endcsname\csname demblem@\demblemid\endcsname
+  \else\csname demblem@default\endcsname\fi}
+\newcommand{\dchapterhead}[2]{% #1 = label (number or empty), #2 = title
+  \noindent\begin{tikzpicture}
+    \def\W{\textwidth}\def\H{1.32in}
+    \fill[partcolor!\dtint!white,rounded corners=3pt] (0,0) rectangle (\W,\H);
+    \fill[partcolor,rounded corners=3pt] (0,0) rectangle (1.05in,\H);
+    \ifx\relax#1\relax
+      \node[text=white] at (0.525in,0.5*\H) {\scalebox{2.2}{\dicon{summary}}};
+    \else
+      \node[text=white,font=\sffamily\bfseries\scriptsize,anchor=north] at (0.525in,\H-0.12in) {\addfontfeature{LetterSpace=12}CHAPTER};
+      \node[text=white,font=\sffamily\bfseries\fontsize{40}{40}\selectfont,anchor=center] at (0.525in,0.43*\H) {#1};
+    \fi
+    \node[anchor=west,text width=\W-1.05in-1.55in,font=\sffamily\bfseries\LARGE,text=d2dink,align=left]
+      at (1.25in,0.5*\H) {\raggedright #2};
+    \begin{scope}[shift={(\W-0.72in,0.5*\H)}]
+      \begin{scope}[x=0.58in,y=0.58in]\dchapteremblem\end{scope}
+    \end{scope}
+  \end{tikzpicture}\par}
+\titleformat{\chapter}[block]{}{}{0pt}{\dchapterheadnum}
+\titleformat{name=\chapter,numberless}[block]{}{}{0pt}{\dchapterhead{}}
+\newcommand{\dchapterheadnum}[1]{\dchapterhead{\thechapter}{#1}}
+\titlespacing*{\chapter}{0pt}{-24pt}{18pt}
+
+% ---------------------------------------------------------------- Part openers
+% \dpart{n}{roman}{title}{lit stages}{chapters}: a full page in the Part color with the
+% MiniDAQ map (book/figures/tikz/pipeline-map.tex), the stages this Part works on lit, and
+% the Part's chapters (\dpartch{number}{title}{label}), linked, with their pages.
+\newcommand{\dpartch}[3]{\noindent\hyperref[#3]{\colorbox{partcolor}{\makebox[1.7em]{\color{white}\sffamily\bfseries #1}}%
+  \hspace{0.8em}{\sffamily\bfseries\color{d2dink}#2}}\dotfill{\sffamily\color{d2dmuted}\pageref*{#3}}\par\vspace{5pt}}
+\input{pipeline-map.tex}
+\newcommand{\dpart}[5]{%
+  \clearpage\dsetpart{#1}\thispagestyle{empty}%
+  \phantomsection\addcontentsline{toc}{part}{Part #2: #3}%
+  \markboth{}{}%
+  \dprepmap{#4}{\dimexpr\paperwidth-1.7in\relax}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (nw) at ($(current page.north west)+(\dbleed,-\dbleed)$);
+    \coordinate (ne) at ($(current page.north east)+(-\dbleed,-\dbleed)$);
+    \coordinate (band) at ($(current page.north west)!0.5!(current page.south west)$);
+    \shade[top color=partcolor!82!black,bottom color=partcolor] (nw) rectangle ($(ne |- band)$);
+    % a ring of detector blocks, as on the cover
+    \begin{scope}[shift={($(ne |- band)+(-1.6in,2.4in)$)},white,opacity=0.16]
+      \foreach \a in {0,10,...,350} {\fill[rotate=\a] (2.2in,-0.09in) rectangle (2.5in,0.09in);}
+      \foreach \a in {5,15,...,355} {\fill[rotate=\a] (2.55in,-0.07in) rectangle (2.75in,0.07in);}
+    \end{scope}
+    \node[anchor=north west,text=white,font=\sffamily\bfseries\small] at ($(current page.north west)+(1in,-1.15in)$) {\addfontfeature{LetterSpace=25}PART};
+    \node[anchor=north west,text=white,font=\sffamily\bfseries\fontsize{96}{96}\selectfont] at ($(current page.north west)+(0.94in,-1.4in)$) {#2};
+    \node[anchor=south west,text width=\paperwidth-2in,text=white,font=\sffamily\bfseries\fontsize{26}{31}\selectfont,align=left]
+      at ($(band)+(1in,0.45in)$) {\raggedright #3};
+    \node[anchor=north,inner sep=0pt] at ($(band)+(0.5\paperwidth,-0.6in)$) {\usebox{\dmapbox}};
+    \node[anchor=north,font=\sffamily\small,text=d2dmuted] at ($(band)+(0.5\paperwidth,-0.6in-\dmapheight-0.12in)$) {Where this Part works in MiniDAQ: the stages in color.};
+    \node[anchor=north west,text width=\paperwidth-2.4in,font=\normalsize]
+      at ($(band)+(1.2in,-0.6in-\dmapheight-0.6in)$) {#5};
+  \end{tikzpicture}%
+  \clearpage}
+
+% ---------------------------------------------------------------- running heads and tabs
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[LE]{\small\textsc{Detector to Diagnosis}}
-\fancyhead[RO]{\small\nouppercase{\leftmark}}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.3pt}
-\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
-\usepackage{microtype}
-\usepackage{needspace}
-\setlength{\emergencystretch}{3em}
-\definecolor{nlfblue}{HTML}{1F4E79}
-\definecolor{nlfred}{HTML}{8B1E2D}
-\definecolor{nlfgreen}{HTML}{2E6B3A}
-\definecolor{nlfgold}{HTML}{8A6D1D}
-\definecolor{nlfgrey}{HTML}{4A4A4A}
-\tcbset{nlfbox/.style={enhanced,breakable,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,fonttitle=\bfseries\sffamily\small,before skip=8pt,after skip=8pt}}
-\newtcolorbox{boxwhy}[1]{nlfbox,colback=nlfblue!4,colframe=nlfblue,title={#1}}
-\newtcolorbox{boxregulated}[1]{nlfbox,colback=nlfred!4,colframe=nlfred,title={#1}}
-\newtcolorbox{boxaskteam}[1]{nlfbox,colback=nlfgreen!5,colframe=nlfgreen,title={#1}}
-\newtcolorbox{boxmistakes}[1]{nlfbox,colback=nlfgold!6,colframe=nlfgold,title={#1}}
-\newtcolorbox{boxnote}[1]{nlfbox,colback=nlfgrey!4,colframe=nlfgrey,title={#1}}
-\newtcolorbox{boxmilestone}[1]{nlfbox,colback=nlfblue!8,colframe=nlfblue!70!black,title={#1}}
-% Listing captions produced by include-code.lua
-\usepackage{caption}
-\captionsetup{font=small,labelfont=bf}
+\fancyhead[LE]{\sffamily\footnotesize\textcolor{d2dmuted}{\addfontfeature{LetterSpace=8}DETECTOR TO DIAGNOSIS}}
+\fancyhead[RO]{\sffamily\footnotesize\textcolor{d2dmuted}{\nouppercase{\leftmark}}}
+\fancyfoot[LE,RO]{\sffamily\small\bfseries\textcolor{partcolor}{\thepage}}
+\renewcommand{\headrule}{{\color{partcolor}\hrule height 0.6pt\vspace{-0.6pt}}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[LE,RO]{\sffamily\small\bfseries\textcolor{partcolor}{\thepage}}\renewcommand{\headrulewidth}{0pt}\renewcommand{\headrule}{}}
+% A thumb tab on the outer edge of every page of a Part, one step lower per Part, so a Part
+% can be found by flipping. Only on screen and on the tablet: the KDP interior has no bleed.
+\newcommand{\dthumbtab}{%
+  \ifnum\dtabpos>0 \ifdefstring{\dprofile}{bw}{}{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \pgfmathsetmacro{\dtabstep}{(\paperheight/72.27-1.8)/10}
+      \pgfmathsetmacro{\dtaby}{0.9+(\dtabpos-1)*\dtabstep}
+      \pgfmathsetmacro{\dtabh}{0.88*\dtabstep}
+      \ifodd\value{page}
+        \fill[partcolor] ($(current page.north east)+(-0.14in,-\dtaby in)$) rectangle ++(0.14in,-\dtabh in);
+      \else
+        \fill[partcolor] ($(current page.north west)+(0,-\dtaby in)$) rectangle ++(0.14in,-\dtabh in);
+      \fi
+    \end{tikzpicture}}\fi}
+\makeatletter\AddToHook{shipout/background}{\if@mainmatter\put(0,0){\dthumbtab}\fi}\makeatother

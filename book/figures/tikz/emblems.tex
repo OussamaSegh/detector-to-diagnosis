@@ -1,0 +1,114 @@
+% Chapter emblems: a small original drawing of each chapter's central idea, on the chapter's
+% head (book-header.tex, \dchapterhead). Drawn in [-1,1] x [-1,1] in the Part color.
+% \demblem@<id> is chosen by the chapter's identifier (ch08, sol-ch08 and app-architecture).
+\makeatletter
+\tikzset{em/.style={partcolor,line width=1.1pt,line cap=round,line join=round},
+         emf/.style={fill=partcolor},emt/.style={fill=partcolor!35!white}}
+\newcommand{\demblem@ring}[1][1]{% a ring of detector blocks
+  \foreach \a in {0,20,...,340} {\fill[partcolor,rotate=\a] (0.78*#1,-0.1*#1) rectangle (0.98*#1,0.1*#1);}}
+\def\demblem@default{\demblem@ring}
+\expandafter\def\csname demblem@ch01\endcsname{\node[partcolor,font=\sffamily\bfseries\fontsize{40}{40}\selectfont] at (0,0.05) {\{\,\}};
+  \fill[partcolor!35!white,rounded corners=1pt] (-0.25,-0.85) rectangle (0.25,-0.6);}
+\expandafter\def\csname demblem@ch02\endcsname{\foreach \r in {0,...,4} {\foreach \c in {0,...,7} {
+    \pgfmathsetmacro{\o}{\r==2 ? 100 : 30}
+    \fill[partcolor!\o!white] (-0.95+\c*0.24,0.55-\r*0.3) rectangle ++(0.2,0.24);}}}
+\expandafter\def\csname demblem@ch03\endcsname{\foreach \a [count=\i] in {0,30,...,330} {\pgfmathsetmacro{\o}{\i<6 ? 100 : 25}
+    \fill[partcolor!\o!white] (\a+2:0.55) arc (\a+2:\a+28:0.55) -- (\a+28:0.95) arc (\a+28:\a+2:0.95) -- cycle;}
+  \draw[em,-{Stealth}] (0,0) -- (160:0.45); \draw[em,-{Stealth}] (0,0) -- (10:0.45);}
+\expandafter\def\csname demblem@ch04\endcsname{\draw[em] (0,-0.08) circle (0.78); \draw[em] (-0.15,0.78) -- (0.15,0.78); \draw[em] (0,0.7) -- (0,0.88);
+  \fill[partcolor!35!white] (0,-0.08) -- (90:0.62) arc (90:-30:0.62) -- cycle; \draw[em] (0,-0.08) -- (0.45,0.2);}
+\expandafter\def\csname demblem@ch05\endcsname{\foreach \y/\x/\w/\o in {-0.8/-0.95/1.9/100, -0.45/-0.95/1.3/80, -0.45/0.4/0.5/45, -0.1/-0.95/0.8/60,
+    -0.1/-0.1/0.5/35, 0.25/-0.95/0.5/45, 0.6/-0.95/0.3/30} {\fill[partcolor!\o!white] (\x,\y) rectangle ++(\w,0.31);}}
+\expandafter\def\csname demblem@ch06\endcsname{\draw[em,fill=partcolor!20!white] (0:0.7) -- (60:0.7) -- (120:0.7) -- (180:0.7) -- (240:0.7) -- (300:0.7) -- cycle;
+  \foreach \a in {30,150,270} {\fill[partcolor] (\a:0.62) ++(-0.12,-0.12) rectangle ++(0.24,0.24);}
+  \node[partcolor,font=\sffamily\bfseries\small] at (0,0) {core};}
+\expandafter\def\csname demblem@ch07\endcsname{\draw[em,fill=partcolor!20!white] (-0.65,0.75) -- (0.65,0.75) -- (0.65,0.05) .. controls (0.65,-0.5) .. (0,-0.9) .. controls (-0.65,-0.5) .. (-0.65,0.05) -- cycle;
+  \draw[em,line width=2pt] (-0.3,-0.05) -- (-0.05,-0.3) -- (0.35,0.25);}
+\expandafter\def\csname demblem@ch08\endcsname{\demblem@ring \draw[em,dashed] (200:0.78) -- (20:0.78);
+  \fill[partcolor] (200:0.12) circle (0.07); \draw[em,-{Stealth}] (200:0.12) -- (200:0.6); \draw[em,-{Stealth}] (200:0.12) -- (20:0.6);}
+\expandafter\def\csname demblem@ch09\endcsname{\draw[partcolor!45!white,line width=0.8pt,dashed] (-0.95,-0.1) -- (0.95,-0.1);
+  \draw[em,line width=1.6pt] (-0.95,-0.65) -- (-0.55,-0.65) .. controls (-0.45,0.8) and (-0.3,0.75) .. (-0.1,0.35) .. controls (0.2,-0.35) and (0.5,-0.6) .. (0.95,-0.65);
+  \fill[partcolor] (-0.495,-0.1) circle (0.07);}
+\expandafter\def\csname demblem@ch10\endcsname{\draw[em] (-0.95,-0.4) -- (0.95,-0.4);
+  \foreach \x in {-0.8,-0.62,-0.1,0.05,0.55,0.8} {\fill[partcolor] (\x,-0.4) circle (0.07);}
+  \foreach \x in {-0.8,-0.1} {\draw[em] (\x,-0.2) -- (\x,0.05) -- (\x+0.36,0.05) -- (\x+0.36,-0.2); \fill[partcolor!25!white] (\x,0.05) rectangle (\x+0.36,0.35);}}
+\expandafter\def\csname demblem@ch11\endcsname{\draw[em,-{Stealth}] (-0.9,-0.8) -- (-0.9,0.8); \draw[em,-{Stealth}] (-0.9,-0.8) -- (0.95,-0.8);
+  \draw[partcolor!45!white,line width=1.2pt] (-0.9,-0.8) -- (0.7,0.7);
+  \draw[em,line width=1.8pt] (-0.9,-0.8) .. controls (-0.2,0.6) and (0.1,0.55) .. (0.85,-0.2);}
+\expandafter\def\csname demblem@ch12\endcsname{\fill[partcolor!15!white] (-0.9,-0.75) rectangle (0.9,0.75);
+  \foreach \p/\o in {0/100,0.9/55,2.1/35} {\draw[partcolor!\o!white,line width=2pt,domain=-0.9:0.9,samples=40] plot (\x,{0.55*sin(deg(3.4*\x+\p))});}}
+\expandafter\def\csname demblem@ch13\endcsname{\foreach \n/\x/\y in {a/0/0.65,b/-0.65/0,c/0.65/0.05,d/-0.25/-0.65,e/0.45/-0.6} {\coordinate (\n) at (\x,\y);}
+  \foreach \u/\v in {a/b,a/c,b/d,c/e,d/e,a/d} {\draw[partcolor!50!white,line width=1pt] (\u) -- (\v);}
+  \foreach \n in {a,b,c,d,e} {\fill[partcolor] (\n) circle (0.15);}}
+\expandafter\def\csname demblem@ch14\endcsname{\draw[em,line width=4pt,partcolor!35!white] (-0.85,0.7) -- (0,-0.75) -- (0.85,0.7);
+  \foreach \x/\y in {-0.85/0.7,-0.42/0,0/-0.75,0.42/0,0.85/0.7} {\fill[partcolor] (\x,\y) circle (0.14);}
+  \draw[partcolor,dashed,line width=0.8pt] (-0.42,0) -- (0.42,0);}
+\expandafter\def\csname demblem@ch15\endcsname{\foreach \r in {0,1,2} {\foreach \c in {0,1,2} {\pgfmathsetmacro{\o}{15+(\r+\c)*21}
+    \fill[partcolor!\o!white] (-0.8+\c*0.55,-0.8+\r*0.55) rectangle ++(0.5,0.5);}}}
+\expandafter\def\csname demblem@ch16\endcsname{\foreach \a in {0,90,180,270} {\draw[em,line width=2.4pt,-{Stealth[length=3mm]}] (\a+12:0.68) arc (\a+12:\a+78:0.68);}
+  \node[partcolor,font=\sffamily\bfseries\scriptsize,align=center] at (0,0) {QMS};}
+\expandafter\def\csname demblem@ch17\endcsname{\draw[em,line width=3pt] (-0.35,0.05) -- (-0.35,0.4) arc (180:0:0.35) -- (0.35,0.05);
+  \fill[partcolor,rounded corners=2pt] (-0.6,-0.8) rectangle (0.6,0.1); \fill[white] (0,-0.3) circle (0.1); \fill[white] (-0.04,-0.6) rectangle (0.04,-0.3);}
+\expandafter\def\csname demblem@ch18\endcsname{\fill[partcolor!30!white] (-0.9,-0.8) rectangle (0.9,-0.35); \fill[partcolor!60!white] (-0.6,-0.3) rectangle (0.6,0.15);
+  \fill[partcolor] (-0.3,0.2) rectangle (0.3,0.65);}
+\expandafter\def\csname demblem@ch19\endcsname{\draw[em,fill=partcolor!20!white,rounded corners=2pt] (-0.95,-0.35) rectangle (-0.25,0.35);
+  \draw[em,fill=partcolor!20!white,rounded corners=2pt] (0.25,-0.35) rectangle (0.95,0.35); \draw[em,{Stealth}-{Stealth}] (-0.2,0) -- (0.2,0);
+  \draw[em] (-0.85,-0.6) -- (-0.6,-0.6) -- (-0.5,-0.8) -- (-0.3,-0.45) -- (-0.15,-0.6) -- (0.85,-0.6);}
+\expandafter\def\csname demblem@ch20\endcsname{\draw[em] (-0.9,0) -- (0.9,0);
+  \foreach \x/\o in {-0.75/100,-0.25/100,0.25/100,0.75/30} {\fill[partcolor!\o!white] (\x,0) circle (0.2);}
+  \foreach \x in {-0.75,-0.25,0.25} {\draw[white,line width=1.2pt] (\x-0.09,0) -- (\x-0.02,-0.07) -- (\x+0.1,0.07);}}
+\expandafter\def\csname demblem@ch21\endcsname{\draw[em,line width=2pt] (-0.15,0.15) circle (0.5); \draw[em,line width=4pt] (0.2,-0.2) -- (0.7,-0.7);
+  \fill[partcolor] (-0.15,0.15) ellipse (0.16 and 0.22); \foreach \s in {-1,1} {\draw[em] (-0.15,0.15) -- ++(\s*0.28,0.1); \draw[em] (-0.15,0.05) -- ++(\s*0.28,-0.1);}}
+\expandafter\def\csname demblem@ch22\endcsname{\fill[partcolor,rounded corners=2pt] (-0.5,-0.5) rectangle (0.5,0.5);
+  \foreach \t in {-0.3,0,0.3} {\draw[em,line width=2pt] (\t,0.5) -- (\t,0.8); \draw[em,line width=2pt] (\t,-0.5) -- (\t,-0.8);
+    \draw[em,line width=2pt] (0.5,\t) -- (0.8,\t); \draw[em,line width=2pt] (-0.5,\t) -- (-0.8,\t);}
+  \fill[white] (-0.3,0.3) circle (0.07);}
+\expandafter\def\csname demblem@ch23\endcsname{\foreach \y in {0.55,0.2,-0.15} {\fill[partcolor!50!white] (-0.95,\y) rectangle ++(0.35,0.22); \draw[em,-{Stealth}] (-0.55,\y+0.11) -- (-0.1,0.02);}
+  \draw[em,fill=partcolor!20!white] (-0.05,-0.5) rectangle (0.9,0.4); \foreach \y in {-0.4,-0.2,0} {\fill[partcolor] (0.05,\y) rectangle (0.8,\y+0.14);}}
+\expandafter\def\csname demblem@ch24\endcsname{\foreach \r in {0,1,2} {\foreach \c in {0,1,2,3} {\pgfmathsetmacro{\o}{mod(\r+\c,2)==0 ? 90 : 35}
+    \fill[partcolor!\o!white] (-0.8+\c*0.42,-0.25+\r*0.32) rectangle ++(0.36,0.26);}}
+  \draw[em] (-0.85,-0.8) -- (-0.6,-0.8) -- (-0.6,-0.5) -- (-0.3,-0.5) -- (-0.3,-0.8) -- (0,-0.8) -- (0,-0.5) -- (0.3,-0.5) -- (0.3,-0.8) -- (0.6,-0.8) -- (0.6,-0.5) -- (0.85,-0.5);}
+\expandafter\def\csname demblem@ch25\endcsname{\foreach \y/\o in {-0.8/100,-0.45/70,-0.1/45} {\fill[partcolor!\o!white,rounded corners=2pt] (-0.9,\y) rectangle (0.9,\y+0.3);}
+  \draw[em,line width=1.6pt] (-0.9,0.5) -- (-0.3,0.5) -- (-0.15,0.85) -- (0.05,0.3) -- (0.2,0.5) -- (0.9,0.5);}
+\expandafter\def\csname demblem@ch26\endcsname{\draw[em] (-0.9,-0.75) -- (0.9,-0.75);
+  \draw[partcolor!40!white,line width=1.6pt,domain=-0.9:0.9,samples=50] plot (\x,{-0.75+1.3*exp(-((\x-0.25)^2)/0.03)});
+  \draw[em,line width=1.8pt,domain=-0.9:0.9,samples=50] plot (\x,{-0.75+1.3*exp(-((\x)^2)/0.03)});
+  \draw[partcolor,dashed,line width=0.8pt] (0,-0.8) -- (0,0.75);}
+\expandafter\def\csname demblem@ch27\endcsname{\foreach \x/\o in {-0.7/100,-0.25/75,0.2/55,0.65/35} {\fill[partcolor!\o!white,rounded corners=2pt] (\x-0.18,-0.55) rectangle (\x+0.18,0.55);}
+  \foreach \x in {-0.47,-0.02,0.43} {\node[partcolor,font=\sffamily\bfseries\small] at (\x,0) {$\times$};}}
+\expandafter\def\csname demblem@ch28\endcsname{\foreach \r in {0,...,7} {\foreach \c in {0,...,7} {
+    \pgfmathsetmacro{\o}{max(8,min(100,100*exp(-(((\c-3.5)^2+(\r-3.5)^2)/6))+40*exp(-(((\c-5)^2+(\r-2)^2)/0.8))))}
+    \fill[partcolor!\o!white] (-0.88+\c*0.22,-0.88+\r*0.22) rectangle ++(0.2,0.2);}}}
+\expandafter\def\csname demblem@ch29\endcsname{\draw[em,fill=partcolor!20!white,rounded corners=2pt] (-0.95,-0.35) rectangle (-0.15,0.35);
+  \node[partcolor,font=\sffamily\bfseries\scriptsize] at (-0.55,0) {C++}; \fill[partcolor,rounded corners=2pt] (0.15,-0.35) rectangle (0.95,0.35);
+  \node[white,font=\sffamily\bfseries\scriptsize] at (0.55,0) {Py}; \draw[em,{Stealth}-{Stealth}] (-0.13,0) -- (0.13,0);}
+\expandafter\def\csname demblem@ch30\endcsname{\draw[em] (-0.9,-0.75) -- (0.9,-0.75);
+  \fill[partcolor!25!white,domain=-0.9:0.9,samples=50] plot (\x,{-0.75+1.4*exp(-((\x)^2)/0.08)}) -- (0.9,-0.75) -- (-0.9,-0.75) -- cycle;
+  \draw[em,line width=1.8pt,domain=-0.9:0.9,samples=50] plot (\x,{-0.75+1.4*exp(-((\x)^2)/0.08)});
+  \draw[em,{Stealth}-{Stealth}] (-0.235,-0.05) -- (0.235,-0.05);}
+\expandafter\def\csname demblem@ch31\endcsname{\foreach \x/\h in {-0.85/0.2,-0.6/0.5,-0.35/0.9,-0.1/1.2,0.15/1.1,0.4/0.7,0.65/0.35} {\fill[partcolor!45!white] (\x,-0.8) rectangle ++(0.22,\h);}
+  \draw[em,line width=1.6pt,domain=-0.9:0.9,samples=40] plot (\x,{-0.8+1.25*exp(-((\x+0.0)^2)/0.18)});}
+\expandafter\def\csname demblem@ch32\endcsname{\foreach \n/\x/\y in {a/0/0.7,b/-0.6/0,c/0.6/0,d/0/-0.7} {\coordinate (\n) at (\x,\y);}
+  \foreach \u/\v in {a/b,a/c,b/d,c/d} {\draw[em,-{Stealth}] (\u) -- (\v);}
+  \foreach \n in {a,b,c,d} {\fill[partcolor,rounded corners=1pt] ($(\n)+(-0.2,-0.13)$) rectangle ++(0.4,0.26);}}
+\expandafter\def\csname demblem@ch33\endcsname{\begin{scope}[shift={(-0.4,0)}]\demblem@ring[0.6]\end{scope} \draw[em,-{Stealth}] (0.25,0) -- (0.5,0);
+  \foreach \r in {0,...,3} {\foreach \c in {0,...,3} {\pgfmathsetmacro{\o}{max(10,100*exp(-(((\c-1.5)^2+(\r-1.5)^2)/1.5)))}
+    \fill[partcolor!\o!white] (0.55+\c*0.11,-0.22+\r*0.11) rectangle ++(0.1,0.1);}}}
+\expandafter\def\csname demblem@ch34\endcsname{\foreach \r in {0,...,2} {\foreach \c in {0,...,4} {\pgfmathsetmacro{\o}{(\r*5+\c)<9 ? 100 : 22}
+    \fill[partcolor!\o!white,rounded corners=1pt] (-0.9+\c*0.37,0.3-\r*0.37) rectangle ++(0.31,0.31);}}
+  \fill[partcolor] (-0.9,0.72) rectangle (0.95,0.82);}
+\expandafter\def\csname demblem@ch35\endcsname{\draw[em,fill=white] (-0.6,-0.85) -- (-0.6,0.85) -- (0.35,0.85) -- (0.6,0.6) -- (0.6,-0.85) -- cycle;
+  \foreach \y in {0.55,0.38,0.21} {\draw[partcolor,line width=1pt] (-0.42,\y) -- (0.35,\y);}
+  \foreach \r in {0,...,3} {\foreach \c in {0,...,3} {\pgfmathsetmacro{\o}{max(10,100*exp(-(((\c-1.5)^2+(\r-1.5)^2)/1.2)))}
+    \fill[partcolor!\o!white] (-0.42+\c*0.2,-0.75+\r*0.2) rectangle ++(0.18,0.18);}}}
+\expandafter\def\csname demblem@ch36\endcsname{\draw[em,line width=1.6pt] (-0.9,-0.3) -- (0.9,-0.3); \draw[em,line width=1.6pt] (-0.45,-0.3) .. controls (-0.3,0.35) .. (0,0.35) -- (0.2,0.35) .. controls (0.45,0.35) .. (0.55,-0.3);
+  \foreach \x in {-0.75,-0.45,0.55,0.85} {\fill[partcolor] (\x,-0.3) circle (0.1);} \foreach \x in {0,0.25} {\fill[partcolor!45!white] (\x,0.35) circle (0.1);}}
+\expandafter\def\csname demblem@ch37\endcsname{\draw[em,fill=partcolor!18!white,rounded corners=6pt] (-0.9,-0.35) rectangle (0.75,0.75); \draw[em] (-0.55,-0.35) -- (-0.7,-0.7) -- (-0.25,-0.35);
+  \node[partcolor,font=\ttfamily\bfseries\small] at (-0.07,0.2) {</>}; \fill[partcolor] (0.65,-0.55) circle (0.27);
+  \draw[white,line width=1.6pt] (0.52,-0.55) -- (0.62,-0.65) -- (0.78,-0.43);}
+\expandafter\def\csname demblem@app-architecture\endcsname{\foreach \y/\o in {0.45/35,0/60,-0.45/100} {\fill[partcolor!\o!white,rounded corners=2pt] (-0.9,\y-0.17) rectangle (0.9,\y+0.17);}
+  \draw[em,-{Stealth}] (0,0.55) -- (0,-0.6);}
+% The solutions manual uses the emblem of the chapter it answers.
+\foreach \n in {01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37} {
+  \global\expandafter\let\csname demblem@sol-ch\n\expandafter\endcsname\csname demblem@ch\n\endcsname}
+\makeatother

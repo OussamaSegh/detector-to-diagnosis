@@ -1,0 +1,16 @@
+% Chapter 8: attenuation along a line of response depends on the line only.
+\begin{tikzpicture}[x=0.75cm,y=0.5cm]
+  \fill[d2dcat4!16!white,draw=d2dcat4,line width=0.7pt] (0,0) ellipse (9 and 4.2);
+  \node[note,anchor=north] at (0,-4.3) {a head, about 18 cm across (water: $\mu$ = 0.096 per cm at 511 keV)};
+  \fill[partcolor] (-10.6,-0.35) rectangle (-9.9,0.35); \fill[partcolor] (9.9,-0.35) rectangle (10.6,0.35);
+  \draw[partcolor,dashed,line width=0.8pt] (-9.9,0) -- (9.9,0);
+  \coordinate (d) at (-3,0);
+  \draw[photon,partcolor] (d) -- (-9.8,0);
+  \draw[photon,partcolor] (d) -- (9.8,0);
+  \fill[d2dcat1] (d) circle (0.25);
+  \node[lab,anchor=south] at ($(d)+(0,0.4)$) {decay};
+  \draw[dimline] (-9,-1.0) -- (-3,-1.0) node[midway,fill=d2dcat4!16!white,lab] {$x$};
+  \draw[dimline] (-3,-1.0) -- (9,-1.0) node[midway,fill=d2dcat4!16!white,lab] {$18\,\mathrm{cm} - x$};
+  \node[lab,anchor=north,align=center] at (0,-1.6) {both photons escape with probability\\[2pt]
+     $e^{-\mu x}\cdot e^{-\mu(18-x)} = e^{-\mu\cdot 18} = \mathbf{0.18}$, \textbf{for every $x$ on the line}};
+\end{tikzpicture}

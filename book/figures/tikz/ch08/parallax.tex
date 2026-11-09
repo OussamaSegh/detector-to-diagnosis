@@ -1,0 +1,21 @@
+% Chapter 8: parallax. A photon that enters a crystal at a steep angle can interact in the next
+% crystal; without a depth-of-interaction measurement the event is placed in the wrong one.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % crystals: long and narrow, side by side
+  \foreach \i in {0,...,6} {\draw[d2drule,fill=d2drule!25!white,line width=0.6pt] (\i*0.9,0) rectangle ++(0.82,3.0);}
+  \fill[partcolor!30!white,draw=partcolor,line width=0.8pt] (1.8,0) rectangle ++(0.82,3.0);
+  \fill[d2dcat3!30!white,draw=d2dcat3,line width=0.8pt] (2.7,0) rectangle ++(0.82,3.0);
+  \node[note,anchor=south] at (3.1,3.05) {crystal length about 20 mm};
+  % the photon from the center of the ring, at an angle
+  \draw[photon,partcolor] (-1.2,-2.5) -- (3.1,2.2);
+  \fill[d2dcat1] (3.1,2.2) circle (0.1);
+  \node[lab,anchor=west,align=left] at (6.6,2.2) {\textbf{interacts here}, deep in the\\next crystal (the event is\\recorded in that crystal)};
+  \draw[d2dmuted,line width=0.5pt] (6.55,2.2) -- (3.25,2.2);
+  \node[lab,anchor=west,align=left] at (6.6,0.3) {\textbf{enters here}};
+  \draw[d2dmuted,line width=0.5pt] (6.55,0.3) -- (2.75,0.3);
+  % the LOR as recorded
+  \draw[d2dcat3,line width=1.1pt,dashed] (3.1,1.5) -- (1.8,-2.5);
+  \node[lab,text=d2dcat3,anchor=north west,align=left] at (2.2,-1.2) {LOR drawn from the center of the\\recorded crystal: shifted};
+  \node[lab,text=partcolor,anchor=east,align=right] at (-0.2,-1.5) {true path, from\\off the ring's center};
+  \draw[dimline,d2dmuted] (-0.25,0) -- (-0.25,3.0) node[midway,left,note] {depth};
+\end{tikzpicture}

@@ -1,0 +1,19 @@
+% Chapter 8: a whole-body ring and a brain ring, at the same scale (1:10).
+\begin{tikzpicture}[x=0.75cm,y=0.75cm]
+  \newcommand{\head}{\fill[d2dcat4!18!white,draw=d2dcat4,line width=0.6pt] (0,0) ellipse (0.8 and 0.95);
+    \fill[d2dcat4!45!white] (-0.12,-0.95) rectangle (0.12,-1.25);}
+  \begin{scope}
+    \foreach \a in {0,4,...,356} {\fill[d2drule,rotate=\a] (3.9,-0.07) rectangle (4.15,0.07);}
+    \head
+    \draw[dimline] (-4.0,-4.45) -- (4.0,-4.45) node[midway,below,lab] {about 80 cm};
+    \node[title,anchor=south] at (0,4.3) {Whole-body ring};
+    \node[note,anchor=north] at (0,-5.1) {non-collinearity blur at the center: 1.8 mm};
+  \end{scope}
+  \begin{scope}[shift={(7.2,-1.0)}]
+    \foreach \a in {0,10,...,350} {\fill[partcolor,rotate=\a] (1.5,-0.07) rectangle (1.75,0.07);}
+    \head
+    \draw[dimline] (-1.5,-3.45) -- (1.5,-3.45) node[midway,below,lab] {30 cm};
+    \node[title,anchor=south] at (0,2.2) {Brain ring};
+    \node[note,anchor=north,align=center] at (0,-4.1) {non-collinearity blur: 0.66 mm;\\each crystal covers a larger\\solid angle; more parallax};
+  \end{scope}
+\end{tikzpicture}

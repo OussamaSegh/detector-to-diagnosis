@@ -1,0 +1,46 @@
+{
+  "_comment": "The book's colors (docs/PLAN-interior-design.md, section 3). Single source for LaTeX (palette.py writes build/tex/palette-<profile>.tex), the figures (book/figures/lib/d2d.py) and the checks (check_figures.py). templates/epub.css must use only these values.",
+  "base": {
+    "ink": "1F2937",
+    "muted": "4B5563",
+    "rule": "CBD5E1",
+    "paper": "FFFFFF",
+    "codebg": "F5F7FA",
+    "teal": "0F766E",
+    "gold": "A16207",
+    "violet": "6D28D9",
+    "cyan": "0E7490"
+  },
+  "parts": {
+    "0": ["front", "0F766E"],
+    "1": ["Modern C++", "0F766E"],
+    "2": ["PET physics and DAQ", "6D28D9"],
+    "3": ["Standards", "9F1239"],
+    "4": ["Testing and quality", "1D4ED8"],
+    "5": ["Hardware and networking", "B45309"],
+    "6": ["Calibration and reconstruction", "A21CAF"],
+    "7": ["Scientific Python and the build", "15803D"],
+    "8": ["MiniDAQ 1.0", "A16207"],
+    "9": ["Hospital, team, tools", "0E7490"],
+    "A": ["Appendix", "475569"],
+    "S": ["Solutions", "6D28D9"]
+  },
+  "semantic": {
+    "why": "0F766E",
+    "regulated": "4338CA",
+    "mistakes": "C2410C",
+    "exercise": "15803D",
+    "askteam": "7E22CE",
+    "milestone": "A16207",
+    "note": "475569",
+    "check": "1D4ED8",
+    "summary": "0E7490",
+    "objectives": "0F766E"
+  },
+  "categorical": ["0072B2", "E69F00", "009E73", "D55E00", "56B4E9", "CC79A7", "F0E442", "000000"],
+  "profiles": {
+    "screen": {"tint": 6, "strong_tint": 14, "gray": false, "min_line_pt": 0.6},
+    "boox":   {"tint": 12, "strong_tint": 22, "gray": false, "min_line_pt": 1.0},
+    "bw":     {"tint": 7, "strong_tint": 16, "gray": true, "min_line_pt": 0.6}
+  }
+}

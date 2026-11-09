@@ -1,0 +1,32 @@
+% Chapter 8: from a decay to a line of response. Not to scale.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % a part of the ring: crystals on an arc, left and right
+  \foreach \a in {150,155,...,210} {\fill[d2drule!70!white,rotate=\a] (5.6,-0.2) rectangle (6.3,0.2);}
+  \foreach \a in {-30,-25,...,30} {\fill[d2drule!70!white,rotate=\a] (5.6,-0.2) rectangle (6.3,0.2);}
+  \fill[partcolor,rotate=184] (5.6,-0.2) rectangle (6.3,0.2);
+  \fill[partcolor,rotate=4] (5.6,-0.2) rectangle (6.3,0.2);
+  % line of response
+  \draw[partcolor,dashed,line width=0.9pt] (184:5.95) -- (4:5.95);
+  % the nucleus, the positron's path, the annihilation
+  \coordinate (n) at (-0.9,-0.75);
+  \coordinate (a) at (-0.15,0.0);
+  \shade[ball color=d2dcat3] (n) circle (0.22);
+  \node[lab,anchor=north] at ($(n)+(0,-0.3)$) {\textsuperscript{18}F nucleus\\decays};
+  \draw[d2dcat0,line width=1pt,decorate,decoration={random steps,segment length=2.5pt,amplitude=1.2pt}] (n) -- (a);
+  \node[lab,anchor=west,text=d2dcat0] at ($(a)+(0.5,-0.55)$) {positron range\\(below 1 mm for \textsuperscript{18}F)};
+  \fill[d2dcat1] (a) circle (0.12);
+  \foreach \r in {0.25,0.38} {\draw[d2dcat1,line width=0.7pt] (a) circle (\r);}
+  % the two photons
+  \draw[photon,partcolor] ($(a)+(184:0.45)$) -- (184:5.5);
+  \draw[photon,partcolor] ($(a)+(4:0.45)$) -- (4:5.5);
+  \node[lab,anchor=south,text=partcolor] at (-3.0,0.05) {\textbf{511 keV}};
+  \node[lab,anchor=south,text=partcolor] at (3.0,0.35) {\textbf{511 keV}};
+  \node[lab,anchor=south] at ($(a)+(0,0.45)$) {annihilation\\with an electron};
+  \node[note,anchor=north] at (-3.0,-0.38) {the photons leave about 0.5°\\from exactly opposite};
+  \node[title,anchor=north] (c1) at (-4.9,-1.55) {crystal 1};
+  \draw[d2dmuted,line width=0.5pt] (c1.north) -- (184:5.55);
+  \node[title,anchor=north] (c2) at (4.9,-1.55) {crystal 2};
+  \draw[d2dmuted,line width=0.5pt] (c2.north) -- (4:5.55);
+  \node[lab,text=partcolor,anchor=north] at (0,-1.9) {\textbf{line of response (LOR)}: the decay lies somewhere on it};
+  \draw[partcolor,->,line width=0.6pt] (1.6,-1.85) -- (1.9,0.1);
+\end{tikzpicture}
