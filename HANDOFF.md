@@ -224,7 +224,7 @@ Dependencies and process:
 |---|---|
 | `book/src/` | The chapters, in `partN/chNN-*.md`, and the front matter in `front/`. `book/book.txt` and `book/solutions.txt` give the order. |
 | `book/solutions/chNN.md` | The solutions manual. |
-| `book/build.sh` | Builds the book with Pandoc and XeLaTeX (8.5 x 11 in PDF, and EPUB); trim and margins are set in one place at its top. `book/build.sh kdp [book|solutions|both]` writes the KDP interior PDFs (gutter for the page count), full-wrap covers and EPUBs to `book/build/kdp/`, and runs EPUBCheck (`EPUBCHECK_JAR`); workflow `kdp.yml` runs it in CI. Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
+| `book/build.sh` | Builds the book with Pandoc and XeLaTeX (8.5 x 11 in PDF, and EPUB); trim and margins are set in one place at its top. `book/build.sh kdp [book|solutions|both]` writes the KDP interior PDFs (gutter for the page count), full-wrap covers and EPUBs to `book/build/kdp/`, and runs EPUBCheck (`EPUBCHECK_JAR`); workflow `kdp.yml` runs it in CI. `book/build.sh boox [book|solutions|both]` writes `*-boox-air-5c.pdf` to `book/build/out/`: the screen PDF on a 6.18 x 8.24 in page (a 10.3 in 4:3 E Ink screen, Onyx Boox Air 5C), narrow margins, 9 pt tables, its own cover of that size (`build/cover/cover-<volume>-boox.pdf`). Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
 | `book/src/front/how-to-use.md`, `copyright.md` | How to use the book (chapter shape, core and full paths, the repository's tags) and the copyright page (MIT for the code, disclaimer, AI-assistance note). |
 | `book/assets/cover.tex` | The front covers and the full-wrap KDP covers (TikZ; `\nlftrimw`, `\nlftrimh`, `\nlfwrap`, `\nlfspine`, `\nlfpages`, `\nlfauthor`; the 7 x 10 design scaled to the trim), one source for both volumes: `\nlfvolume` is `book` (violet ring) or `solutions` (teal ring, "Solutions Manual"). `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, which becomes page 1 of the PDF (with `\frontmatter` patched so no blank page follows), and renders it at 240 dpi to the EPUB cover PNG. The author name is on the cover; no version. |
 | `minidaq/` | The C++20 code. `include/minidaq/` holds the core, format, processing, pipeline, rt, control and output layers; `src/`; `apps/` (server, ctl, sim, ...); `tests/unit/` (GoogleTest); `tests/support/property.hpp`. |
@@ -267,7 +267,9 @@ book/build.sh                     # the PDF must have 0 overfull hboxes (grep th
 
 The download page https://oussamasegh.github.io/detector-to-diagnosis/ is rebuilt by
 `.github/workflows/pages.yml` on every push to main: the EPUB and the PDF of the book and the
-solutions. The user dropped the phone and Kindle PDFs (2026-10-26); do not add them back. The
+solutions, and the Boox Air 5C PDF of both (user request 2026-11-09, `book/build.sh boox both`;
+it must also have 0 overfull hboxes). The user dropped the phone and Kindle PDFs (2026-10-26);
+do not add them back. The
 first runs failed on a missing `lmodern` package and on a slow apt mirror; the workflow now
 installs lmodern and retries stalled downloads. Pages itself (Settings, Pages, Source: GitHub
 Actions) was set by the user.

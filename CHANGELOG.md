@@ -21,6 +21,10 @@ the patch version.
 ### Added
 
 - How to use this book explains the *verify:* and *assumption: confirm with team* markers.
+- A PDF for 10.3 inch 4:3 color E Ink tablets (Onyx Boox Air 5C): `book/build.sh boox`
+  sets the book and the solutions manual on a 6.18 x 8.24 in page with narrow margins, so a
+  page fills the screen without zoom; links, bookmarks and colors are kept. The download page
+  lists it next to the EPUB and the PDF.
 
 ## [1.0.0] - 2026-11-08
 

@@ -17,6 +17,9 @@ KINDS = [  # (suffix of the file name, label, what it is for)
     (".epub", "EPUB", "Reflowable, for e-readers and reading apps (Apple Books, Google Play Books, "
                       "Kobo; Send to Kindle converts it)."),
     (".pdf", "PDF", "The book's own 8.5 x 11 inch pages, for a tablet, a computer or paper."),
+    ("-boox-air-5c.pdf", "PDF for Boox Air 5C (10.3 inch E Ink)",
+     "Pages the size of a 10.3 inch 4:3 screen (Onyx Boox Air 5C and similar), narrow margins, "
+     "so a page fills the screen without zoom; links, bookmarks and color kept."),
 ]
 
 PAGE = """<!doctype html>
@@ -68,11 +71,17 @@ management system.</p>
 """
 
 
+def kind_index(name):
+    """The index in KINDS of the longest suffix the name ends with."""
+    matches = [(len(k[0]), i) for i, k in enumerate(KINDS) if name.endswith(k[0])]
+    if not matches:
+        raise SystemExit(f"{name}: not an EPUB or PDF of the book")
+    return max(matches)[1]
+
+
 def kind_of(name):
-    for suffix, label, what in KINDS:
-        if name.endswith(suffix):
-            return label, what
-    raise SystemExit(f"{name}: not an EPUB or PDF of the book")
+    _, label, what = KINDS[kind_index(name)]
+    return label, what
 
 
 def size(n):
@@ -87,7 +96,6 @@ def main(argv):
     commit = os.environ.get("GITHUB_SHA", "local")[:7]
     out.mkdir(parents=True, exist_ok=True)
     groups = {"book": [], "solutions": []}
-    order = [k[0] for k in KINDS]
     for f in files:
         shutil.copy2(f, out / f.name)
         group = "solutions" if "-solutions-" in f.name else "book"
@@ -97,7 +105,7 @@ def main(argv):
         if not groups[group]:
             continue
         items = []
-        for f in sorted(groups[group], key=lambda p: next(i for i, s in enumerate(order) if p.name.endswith(s))):
+        for f in sorted(groups[group], key=lambda p: kind_index(p.name)):
             label, what = kind_of(f.name)
             data = f.read_bytes()
             items.append(

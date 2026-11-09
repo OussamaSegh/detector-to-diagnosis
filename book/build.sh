@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds Detector to Diagnosis (EPUB + PDF) and the solutions manual.
-# Usage: book/build.sh [epub|pdf|all|kdp] [book|solutions|both]
+# Usage: book/build.sh [epub|pdf|all|kdp|boox] [book|solutions|both]
 #   all  the EPUB and the screen PDF (front cover on page 1), for the download page:
 #        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>.{epub,pdf}
 #   kdp  the files for an Amazon KDP paperback and Kindle eBook, checked against KDP's rules:
@@ -8,6 +8,9 @@
 #        and the EPUB. The interior has no cover, black links and an inside margin sized for
 #        its page count; the cover is the full wrap (back, spine, front, bleed) with the spine
 #        width computed from that page count. EPUBCheck must pass.
+#   boox the PDF for a 10.3 inch 4:3 color E Ink tablet (Onyx Boox Air 5C), page = screen,
+#        narrow margins, colored links and bookmarks (user request, 2026-11-09):
+#        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>-boox-air-5c.pdf
 # Environment:
 #   BOOK_AUTHOR    the author's name, on the title page, the copyright page and the covers
 #                  (default: Oussama Seghaier)
@@ -27,6 +30,12 @@ paper="${BOOK_PAPER:-white}"
 # inches. The inside margin of the KDP interior grows with the page count (kdp_gutter).
 trim_w=8.5 trim_h=11
 margin_inner=1.0 margin_outer=0.85 margin_top=0.85 margin_bottom=0.85
+# The Boox page: the 10.3 in 4:3 screen in portrait (8.24 x 6.18 in), so a page fills it at 1:1
+# with no zoom. Narrow margins; the header and footer sit inside the top and bottom margins.
+boox_w=6.18 boox_h=8.24
+boox_side=0.32 boox_top=0.22 boox_bottom=0.12
+# A suffix of the cover's file names, so covers of other trims do not overwrite each other.
+cover_tag=""
 epubcheck_jar="${EPUBCHECK_JAR:-/usr/share/java/epubcheck.jar}"
 build="$here/build"
 out="$build/out"
@@ -56,16 +65,16 @@ common=(
 # and a PNG of it for the EPUB. $1 = book or solutions. The author is part of the cover, so a
 # change of BOOK_AUTHOR rebuilds it.
 build_cover() {
-  local vol="$1" dir="$build/cover"
+  local vol="$1" dir="$build/cover" c="cover-$1$cover_tag"
   mkdir -p "$dir"
-  if [[ ! -f "$dir/cover-$vol.png" || "$here/assets/cover.tex" -nt "$dir/cover-$vol.png" \
-        || "$(cat "$dir/cover-$vol.author" 2>/dev/null)" != "$author" ]]; then
-    (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="cover-$vol" \
+  if [[ ! -f "$dir/$c.png" || "$here/assets/cover.tex" -nt "$dir/$c.png" \
+        || "$(cat "$dir/$c.author" 2>/dev/null)" != "$author" ]]; then
+    (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="$c" \
       "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfauthor{$(cover_author)}\input{$here/assets/cover.tex}" \
-      >"cover-$vol.xelatex.log" 2>&1) \
-      || { echo "cover failed, see $dir/cover-$vol.log"; grep -n -A3 "^!" "$dir/cover-$vol.log" | head -20; exit 1; }
-    pdftoppm -png -r 240 -singlefile "$dir/cover-$vol.pdf" "$dir/cover-$vol"
-    printf '%s' "$author" > "$dir/cover-$vol.author"
+      >"$c.xelatex.log" 2>&1) \
+      || { echo "cover failed, see $dir/$c.log"; grep -n -A3 "^!" "$dir/$c.log" | head -20; exit 1; }
+    pdftoppm -png -r 240 -singlefile "$dir/$c.pdf" "$dir/$c"
+    printf '%s' "$author" > "$dir/$c.author"
   fi
 }
 
@@ -181,6 +190,13 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
     # The screen PDF: the cover is page 1, links are colored.
     build_pdf "$stem" "$meta" "$vol" screen "$margin_inner" "$out/$stem-v$version.pdf" "${files[@]}"
   fi
+  if [[ "$what" == boox ]]; then
+    # The same screen PDF on the Boox page: its own cover of that size, equal side margins.
+    local trim_w="$boox_w" trim_h="$boox_h" margin_outer="$boox_side" margin_top="$boox_top" \
+          margin_bottom="$boox_bottom" cover_tag="-boox"
+    build_cover "$vol"
+    build_pdf "$stem" "$meta" "$vol" boox "$boox_side" "$out/$stem-v$version-boox-air-5c.pdf" "${files[@]}"
+  fi
   if [[ "$what" == kdp ]]; then
     # The paperback interior: no cover, black links, and an inside margin of at least KDP's
     # gutter for the page count plus 1/8 in, and never below margin_inner. A wider margin can
@@ -206,10 +222,20 @@ build_pdf() {
   shift 6
   local files=("$@") job="$stem-$mode"
   local tex="$build/tex/$job.tex" extra=()
-  if [[ "$mode" == screen ]]; then
+  if [[ "$mode" == boox ]]; then
+    # The header and footer inside the narrow margins, close to the text. The page number sits
+    # 24 pt below the text, so a code block that runs a line past the text (framed splits them
+    # late) never touches it.
+    # Tables in 9 pt with columns 4 pt apart (not 6), so the widest fit the narrower page.
+    printf '%s\n' '\setlength{\tabcolsep}{4pt}' '\AtBeginEnvironment{longtable}{\small}' \
+      > "$build/tex/$job-boox.tex"
+    extra+=(-V "geometry:includeheadfoot" -V "geometry:headheight=13pt" -V "geometry:headsep=7pt"
+            -V "geometry:footskip=24pt" --include-in-header "$build/tex/$job-boox.tex")
+  fi
+  if [[ "$mode" == screen || "$mode" == boox ]]; then
     # The cover is page 1. \frontmatter would add a blank page after it (\cleardoublepage).
     printf '%s\n' '\usepackage{pdfpages}' \
-      "\\AtBeginDocument{\\includepdf[pages=1]{$build/cover/cover-$vol.pdf}}" \
+      "\\AtBeginDocument{\\includepdf[pages=1]{$build/cover/cover-$vol$cover_tag.pdf}}" \
       '\makeatletter\renewcommand\frontmatter{\clearpage\@mainmatterfalse\pagenumbering{roman}}\makeatother' \
       > "$build/tex/$job-cover.tex"
     extra+=(--include-in-header "$build/tex/$job-cover.tex")
