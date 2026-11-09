@@ -1,0 +1,16 @@
+% Chapter 14: the life of a SOUP item. Identification is exact, and the anomaly review repeats at
+% every minor release.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.5cm]
+  \node[box,minimum width=2.3cm] (id) {identify\\[-1pt]\scriptsize version + SHA-256};
+  \node[box,right=of id,minimum width=2.3cm] (rq) {requirements\\[-1pt]\scriptsize what we need of it};
+  \node[box,right=of rq,minimum width=2.3cm] (rk) {risk analysis\\[-1pt]\scriptsize its failure is ours};
+  \node[hot,right=of rk,minimum width=2.4cm] (rv) {anomaly review\\[-1pt]\scriptsize dated, per release};
+  \foreach \a/\b in {id/rq,rq/rk,rk/rv} {\draw[flow] (\a) -- (\b);}
+  \node[box=d2dcat2,below=0.9cm of rv,xshift=-1.5cm,minimum width=2.4cm] (keep) {keep the pin\\[-1pt]\scriptsize anomaly recorded};
+  \node[box=d2dcat1,below=0.9cm of rv,xshift=1.4cm,minimum width=2.4cm] (up) {upgrade\\[-1pt]\scriptsize a planned change};
+  \draw[flow] (rv.south) -- ++(0,-0.35) -| (keep.north);
+  \draw[flow] (rv.south) -- ++(0,-0.35) -| (up.north);
+  \draw[flow,d2dcat1] (up.west) -- ++(-0.3,0) |- ([yshift=-0.75cm]id.south) -- (id.south);
+  \node[note,text=d2dink,anchor=north] at ([yshift=-0.85cm,xshift=2.6cm]id.south) {a new version starts again};
+  \node[note,text=d2dink,anchor=south,align=center] at ([yshift=0.1cm]rv.north) {\texttt{docs.soup} fails if the review\\is older than the minor version};
+\end{tikzpicture}

@@ -1,0 +1,27 @@
+% Chapter 14: the development activities of clause 5 as a V, each with the MiniDAQ document or
+% check that is its output.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{act/.style={draw=partcolor,fill=partcolor!10!white,line width=1pt,rounded corners=2pt,minimum width=3.3cm,minimum height=0.62cm,font=\sffamily\small,align=center},
+           doc/.style={font=\ttfamily\scriptsize,text=d2dink,align=center}}
+  \node[act] (pl) at (-5.0,0.0) {5.1 planning};
+  \node[act] (rq) at (-4.0,-1.0) {5.2 requirements};
+  \node[act] (ar) at (-3.0,-2.0) {5.3 architecture};
+  \node[act] (dd) at (-2.0,-3.0) {5.4 detailed design};
+  \node[act,fill=partcolor,text=white] (im) at (0,-4.0) {5.5 units: code and tests};
+  \node[act] (it) at (2.0,-3.0) {5.6 integration};
+  \node[act] (sy) at (3.0,-2.0) {5.7 system tests};
+  \node[act] (rl) at (4.0,-1.0) {5.8 release};
+  \foreach \a/\b in {pl/rq,rq/ar,ar/dd} {\draw[flow] ([xshift=0.5cm]\a.south) -- ([xshift=0.5cm]\a.south |- \b.north);}
+  \draw[flow] (dd.south) |- (im.west); \draw[flow] (im.east) -| (it.south);
+  \foreach \a/\b in {it/sy,sy/rl} {\draw[flow] ([xshift=0.5cm]\a.north) -- ([xshift=0.5cm]\a.north |- \b.south);}
+  \draw[d2dcat0,densely dashed,line width=0.8pt,<->] (rq.east) -- node[above,note,text=d2dcat0] {trace matrix} (sy.west);
+  \draw[d2dcat0,densely dashed,line width=0.8pt,<->] (ar.east) -- (it.west);
+  \node[doc,anchor=east] at ([xshift=-0.15cm]pl.west) {sdp.md};
+  \node[doc,anchor=east] at ([xshift=-0.15cm]rq.west) {srs.md};
+  \node[doc,anchor=east,align=right] at ([xshift=-0.15cm]ar.west) {architecture.md\\software-items.json};
+  \node[doc,anchor=east] at ([xshift=-0.15cm]dd.west) {design notes};
+  \node[doc,anchor=north] at (im.south) {REQ: tags in the tests};
+  \node[doc,anchor=west] at ([xshift=0.15cm]it.east) {ctest labels};
+  \node[doc,anchor=west] at ([xshift=0.15cm]sy.east) {trace-matrix.md};
+  \node[doc,anchor=west,align=left] at ([xshift=0.15cm]rl.east) {release record,\\known-anomalies.md};
+\end{tikzpicture}

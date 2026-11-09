@@ -1,0 +1,13 @@
+% Chapter 14: MDQ-PR-005 through four processes. Each step leaves a record the next one checks.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.42cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=1pt,rounded corners=2pt,minimum width=2.45cm,minimum height=1.05cm,font=\sffamily\small,align=center}}
+  \node[st=d2dcat0] (a) {SOUP review\\[-1pt]\scriptsize clause 7};
+  \node[st=d2dcat3,right=of a] (b) {problem report\\[-1pt]\scriptsize clause 9};
+  \node[st=d2dcat1,right=of b] (c) {decision\\[-1pt]\scriptsize clauses 6 and 8};
+  \node[st=partcolor,right=of c] (d) {release record\\[-1pt]\scriptsize 5.8};
+  \node[st=d2dcat2,right=of d] (e) {closed\\[-1pt]\scriptsize next release};
+  \foreach \x/\y in {a/b,b/c,c/d,d/e} {\draw[flow] (\x) -- (\y);}
+  \foreach \n/\t in {a/{json 3.12.0 fixes\\integers read as floats},b/{not safety relevant:\\the reader refuses floats},c/{release with it;\\upgrade as a change},d/{known-anomalies.md\\lists it},e/{change and test\\recorded}} {
+    \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.1cm]\n.south) {\t};}
+  \node[font=\ttfamily\small\bfseries,text=partcolor,anchor=south west] at (a.north west) {MDQ-PR-005};
+\end{tikzpicture}

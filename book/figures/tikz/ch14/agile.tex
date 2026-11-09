@@ -1,0 +1,17 @@
+% Chapter 14: an increment under IEC 62304. The activities repeat inside each increment, and
+% "done" includes the documents and the trace.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[partcolor!25!white,line width=9pt] (0,0) circle (1.9);
+  \foreach \a/\t in {90/{5.2 requirements},18/{5.3, 5.4 design},-54/{5.5 code + tests},-126/{5.6, 5.7 verify},162/{trace, docs}} {
+    \node[draw=partcolor,fill=white,line width=0.9pt,rounded corners=2pt,font=\sffamily\scriptsize,align=center,minimum width=2.1cm] at (\a:1.9) {\t};}
+  \node[font=\sffamily\small\bfseries,text=partcolor,align=center] at (0,0) {one\\increment};
+  \foreach \m in {54,-18,-90,-162,126} {\draw[->,>=stealth,partcolor,line width=1.4pt] (\m+9:1.9) arc (\m+9:\m-9:1.9);}
+  \node[box,minimum width=2.2cm] (rel) at (6.0,1.1) {release plan};
+  \node[box,minimum width=2.2cm] (inc) at (6.0,0) {increment plan};
+  \node[box,minimum width=2.2cm] (sto) at (6.0,-1.1) {story};
+  \draw[flow] (rel) -- (inc); \draw[flow] (inc) -- (sto);
+  \node[note,text=d2dink,anchor=west,align=left] at (7.3,0) {plans at three levels,\\each kept current};
+  \node[hot,minimum width=2.2cm,align=center] (done) at (6.0,-2.45) {done = code, tests,\\trace, docs, green};
+  \draw[flow] (sto) -- (done);
+  \node[note,text=d2dink,anchor=north] at (0,-2.45) {AAMI TIR45, in this book's words};
+\end{tikzpicture}

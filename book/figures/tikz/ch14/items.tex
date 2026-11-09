@@ -1,0 +1,21 @@
+% Chapter 14: MiniDAQ's items by process and class. Process boundaries are the only segregation
+% the classification claims.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{it/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.25cm,minimum height=0.55cm,font=\sffamily\scriptsize,align=center},
+           cls/.style={circle,fill=#1,text=white,font=\sffamily\scriptsize\bfseries,inner sep=1.2pt,minimum size=0.42cm}}
+  \draw[partcolor,line width=1.1pt,rounded corners=4pt,fill=partcolor!4!white] (-0.2,0.6) rectangle (7.4,-2.25);
+  \node[font=\ttfamily\small\bfseries,text=partcolor,anchor=west] at (-0.1,0.3) {minidaq\_server};
+  \node[cls=d2dcat3,anchor=east] at (7.25,0.3) {B};
+  \foreach \n/\x/\y in {sorter/0/-0.4, pipeline/2.45/-0.4, config reader/4.9/-0.4, control protocol/0/-1.15, simulator/2.45/-1.15} {
+    \node[it=d2dcat3,anchor=north west] at (\x,\y) {\n};}
+  \node[it=d2dcat3,anchor=north west,align=center] at (4.9,-1.15) {metrics, audit\\[-2pt]\tiny no hazard, not segregated};
+  \node[note,text=d2dink,anchor=north west] at (2.45,-1.75) {MDQ-PR-009: leave out of product builds};
+  \draw[d2dmuted,line width=0.5pt] (3.55,-1.7) -- (3.55,-1.78);
+  \draw[d2dcat0,line width=1.1pt,rounded corners=4pt,fill=d2dcat0!4!white] (8.6,0.6) rectangle (11.4,-0.75);
+  \node[font=\ttfamily\small\bfseries,text=d2dcat0,anchor=west] at (8.7,0.3) {minidaq\_ctl};
+  \node[cls=d2dcat0,anchor=east] at (11.25,0.3) {A};
+  \node[note,text=d2dink,align=center] at (10.0,-0.3) {own process};
+  \draw[<->,d2dink,line width=0.9pt] (8.6,-0.1) -- node[below,note,text=d2dink,align=center] {protocol;\\input fully\\validated} (7.4,-0.1);
+  \draw[d2drule,line width=0.9pt,dashed,rounded corners=4pt] (8.6,-1.2) rectangle (11.4,-2.25);
+  \node[note,text=d2dmuted,align=center] at (10.0,-1.72) {benchmarks, measurements:\\not shipped, no class};
+\end{tikzpicture}
