@@ -1,0 +1,16 @@
+% Chapter 34: the first 90 days. Reproduce first, read in the order of the questions, map the
+% code, pin behavior before changing it, then own one item, one problem report and one release.
+\begin{tikzpicture}[x=0.13cm,y=1cm]
+  \draw[d2drule,line width=1.4pt] (0,0) -- (92,0);
+  \foreach \d in {1,10,30,60,90} {\draw[d2dink,line width=0.8pt] (\d,-0.12) -- (\d,0.12); \node[note,text=d2dink,anchor=north] at (\d,-0.15) {day \d};}
+  \tikzset{ph/.style={draw=#1,fill=#1!14!white,line width=0.8pt,rounded corners=2pt,font=\sffamily\scriptsize,align=center,minimum height=0.75cm,inner xsep=2pt}}
+  \node[ph=partcolor,minimum width=1.2cm,anchor=south west] at (1,0.35) {build, run,\\reproduce a\\release};
+  \node[ph=d2dcat0,minimum width=1.3cm,anchor=south west] at (11.5,0.35) {read the\\documents\\in order};
+  \node[ph=d2dcat0,minimum width=1.3cm,anchor=south west] at (22,0.35) {survey\\the code,\\hotspots};
+  \node[ph=d2dcat2,minimum width=1.3cm,anchor=south west] at (11.5,-1.65) {characterization\\tests};
+  \node[ph=d2dcat2,minimum width=1.3cm,anchor=south west] at (25,-1.65) {the first\\change};
+  \node[ph=d2dcat3,minimum width=1.8cm,anchor=south west] at (32,0.35) {own one item};
+  \node[ph=d2dcat3,minimum width=2.4cm,anchor=south west] at (48,0.35) {take a problem report\\end to end};
+  \node[ph=d2dcat3,minimum width=2.2cm,anchor=south west] at (68,0.35) {run a release,\\or a part of one};
+  \node[note,text=d2dink,anchor=north west,align=left] at (40,-0.75) {from reader to owner: someone who can answer\\for an item, its verification, its known problems,\\and what a change to it would affect};
+\end{tikzpicture}

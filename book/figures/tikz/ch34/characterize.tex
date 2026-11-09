@@ -1,0 +1,14 @@
+% Chapter 34: characterization tests around a change. Pin what the code does today; then any change
+% of behavior, a mistake or a fix, fails a test and becomes a decision.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.45cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.5cm,minimum height=0.95cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (run) at (0,0) {run the code at its\\boundaries: both sides\\of every comparison};
+  \node[st=d2dcat0] (pin) at (3.4,0) {tests that pin\\today's behavior,\\named for it};
+  \node[st=partcolor] (chg) at (6.8,0) {make the\\change};
+  \node[st=d2dcat2] (ok) at (10.2,0.75) {all pass: no\\behavior changed};
+  \node[st=d2dcat3] (fail) at (10.2,-0.75) {one fails: a mistake\\or a fix nobody decided};
+  \draw[flow] (run) -- (pin); \draw[flow] (pin) -- (chg); \draw[flow] (chg) -- (ok); \draw[flow] (chg) -- (fail);
+  \node[st=d2dcat3] (pr) at (6.8,-2.0) {a problem report:\\why it looks wrong,\\what depends on it};
+  \draw[flow] (fail.south) |- (pr.east);
+  \node[note,text=d2dink,anchor=north,align=center] at (1.7,-1.4) {a behavior that looks wrong is pinned too:\\its owner decides whether it changes};
+\end{tikzpicture}

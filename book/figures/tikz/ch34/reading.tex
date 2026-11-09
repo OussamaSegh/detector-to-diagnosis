@@ -1,0 +1,9 @@
+% Chapter 34: the order to read a regulated project's documents, each with its question.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{doc/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.4cm,minimum height=0.95cm,font=\sffamily\scriptsize,align=center}}
+  \foreach \n/\t/\q/\c [count=\k from 0] in {1/{intended use}/{for what, and\\never what?}/partcolor,2/{architecture,\\items, classes}/{which parts,\\which class?}/partcolor,3/{risk file}/{what can go\\wrong?}/d2dcat3,4/{requirements}/{what must it do,\\how verified?}/d2dcat0,5/{open problem\\reports}/{what is known\\to be wrong?}/d2dcat3,6/{SOUP list}/{whose code,\\which version?}/d2dcat0,7/{release record,\\CHANGELOG}/{what changed\\recently?}/d2dcat2,8/{ADRs}/{why is it\\built this way?}/d2dmuted} {
+    \pgfmathsetmacro{\x}{mod(\k,4)*2.75} \pgfmathsetmacro{\y}{-floor(\k/4)*2.1}
+    \node[doc=\c] (d\k) at (\x,\y) {\textbf{\n} \t};
+    \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.05cm]d\k.south) {\q};}
+  \foreach \a/\b in {0/1,1/2,2/3,4/5,5/6,6/7} {\draw[flow] (d\a) -- (d\b);}
+\end{tikzpicture}

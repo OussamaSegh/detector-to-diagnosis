@@ -155,6 +155,11 @@ The decision records come last for a reason. They are the most interesting docum
 easiest to read for pleasure; they are most useful once you know enough to ask why something is as
 it is, which is usually in the second week.
 
+Figure [](#fig-ch34-reading) is the same order as a reading path.
+
+```{.figure #fig-ch34-reading src="book/figures/tikz/ch34/reading.tex" caption="The order to read a regulated project's documents, each with the question it answers." alt="Eight boxes in two rows of four, numbered: intended use, architecture with items and classes, risk file, requirements; then open problem reports, SOUP list, release record and CHANGELOG, ADRs. Under each a question, such as what can go wrong for the risk file and why is it built this way for the ADRs." width="80%"}
+```
+
 ## A survey of the codebase
 
 Reading tells you what the documents say. The history tells you what actually happens: which files
@@ -224,6 +229,11 @@ that fixes it. MiniDAQ's history is also short, so its commit counts reflect the
 the chapters were written as much as anything else. On a codebase with years of history the same
 view becomes sharper, not weaker.
 
+Figure [](#fig-ch34-treemap) draws the item table as one picture.
+
+```{.figure #fig-ch34-treemap src="book/figures/plots/ch34/treemap.py" caption="The codebase survey as a treemap: each software item's area is its code lines, its color the commits that changed it since 2026-10-01. Where to read first, not where the bugs are." alt="A treemap of 22 software items. The largest areas are hw with 1,303 lines and 34 commits, tools with 1,108 lines, sim with 947 lines, format, service with 873 lines and 38 commits, update and pipeline. Service, hw and sim are the darkest. Small items such as audit, metrics, merger, platform and server are pale rectangles in a corner." width="100%" inputs="measurements/ch34/survey.json"}
+```
+
 ## Files that change together
 
 The survey looks at files one at a time. The history holds a second kind of information: which
@@ -247,6 +257,11 @@ commits above a size. And coupling can come from people rather than code: one de
 habitually changes two files in the same commit, or a process rule that makes them change together
 (a CHANGELOG, a generated file that is committed). Read the commits before you draw an arrow in the
 architecture.
+
+Figure [](#fig-ch34-coupling) shows the twenty pairs as a matrix.
+
+```{.figure #fig-ch34-coupling src="book/figures/plots/ch34/coupling.py" caption="Files that change together: the twenty most coupled pairs of MiniDAQ's history, with the number of shared commits in each cell and the coupling as its color." alt="A symmetric grid of 17 files with labelled rows and columns. The darkest cell joins the two CMakeLists files with 20 shared commits. Other marked cells join headers with their sources, sources with their tests, and the configuration's header and source with acquisition_service.cpp, four shared commits each." width="60%" inputs="measurements/ch34/coupling.txt"}
+```
 
 ## Before the first change: characterization tests
 
@@ -283,6 +298,11 @@ For a whole program rather than a function, the same idea is a golden test of it
 19), and for a whole chain, a comparison with a reference (Chapter 33). Mutation testing (Chapter
 18) is how you check that your characterization tests would notice a change: Exercise 34.3 is a
 mutation exercise in which you wrote the tests and the mutants were written for you.
+
+Figure [](#fig-ch34-characterize) puts the technique in order.
+
+```{.figure #fig-ch34-characterize src="book/figures/tikz/ch34/characterize.tex" caption="Characterization tests around a change. Pinning today's behavior first turns any change of behavior, a mistake or an undecided fix, into a failing test and a decision." alt="A flow: run the code at its boundaries, tests that pin today's behavior, make the change. Then either all pass, no behavior changed, or one fails, a mistake or a fix nobody decided, which leads to a problem report saying why it looks wrong and what depends on it. A note says a behavior that looks wrong is pinned too." width="95%"}
+```
 
 ::: box-mistakes
 - **Changing before reproducing.** Without the last release reproduced on your machine you cannot
@@ -344,6 +364,11 @@ the process, not the code, gets better.
 **Run a release, or a part of one.** Release checks, the acceptance report, the release record,
 the SOUP review. A release exercises every record the project keeps, and the person who has run
 one knows which of them are kept carefully and which are kept by habit.
+
+Figure [](#fig-ch34-timeline) puts the three months on one line.
+
+```{.figure #fig-ch34-timeline src="book/figures/tikz/ch34/timeline.tex" caption="The first 90 days as this chapter lays them out: reproduce before changing, read in the order of the questions, map the code and pin its behavior, then own one item, one problem report and one release." alt="A time line from day 1 to day 90. Above it: build, run and reproduce a release by day 10; read the documents in order and survey the code by day 30; own one item; take a problem report end to end; run a release. Below it: characterization tests and the first change. A note says the goal is to become someone who can answer for an item." width="95%"}
+```
 
 Throughout, keep asking. Every chapter of this book ended with questions to ask your team; at
 this point they become a checklist, grouped by area:
