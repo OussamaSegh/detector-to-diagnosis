@@ -8,6 +8,20 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Solutions, Exercises 1.2 and 1.5: the included listings start and end at the right lines
+  (they began with a stray `};` and left out `EventBuffer` and `ring384`).
+- Release records 0.9.0 and 1.0.0: a correction names the energy filter benchmarks by their
+  kernel (branchless, AVX-512), not by a number of channels.
+- VERSION 1.0.1-dev after release 1.0.0, so `docs.version` passes on main again.
+- README quick start installs the same packages as How to use this book (OpenSSL, NumPy and
+  the Python headers were missing, so the first configure failed).
+
+### Added
+
+- How to use this book explains the *verify:* and *assumption: confirm with team* markers.
+
 ## [1.0.0] - 2026-11-08
 
 The complete, packaged book: Parts I to IX and Appendix A, with MiniDAQ and its regulatory file

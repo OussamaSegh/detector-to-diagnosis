@@ -36,6 +36,13 @@ What 1.0.0 decided and found:
 - SOUP list version 21: the review for release 1.0.0. The next minor version needs a new review
   dated for it (`docs.soup`).
 
+Independent review of 1.0.0 (2026-11-09, review branch claude/project-thread-p4842k): set
+VERSION 1.0.1-dev (main was red on `docs.version` after the release: the commit after a release
+must set the next -dev version), corrected two stale listing ranges in solutions Chapter 1 and
+the benchmark names in the 0.9.0 and 1.0.0 records, and explained the *verify:* marker in How
+to use this book. Its open findings (the private repository the book links to, the index,
+CAPA-0002's overdue check) are in the review report.
+
 Next work: none is asked. The next thread starts VERSION 1.1.0-dev (or 2.0.0-dev, see the roadmap
 work in other threads), bumps the Python package versions with it, adds a dated SOUP review for
 the new minor version, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
@@ -222,13 +229,13 @@ Dependencies and process:
 | `book/assets/cover.tex` | The front covers and the full-wrap KDP covers (TikZ; `\nlftrimw`, `\nlftrimh`, `\nlfwrap`, `\nlfspine`, `\nlfpages`, `\nlfauthor`; the 7 x 10 design scaled to the trim), one source for both volumes: `\nlfvolume` is `book` (violet ring) or `solutions` (teal ring, "Solutions Manual"). `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, which becomes page 1 of the PDF (with `\frontmatter` patched so no blank page follows), and renders it at 240 dpi to the EPUB cover PNG. The author name is on the cover; no version. |
 | `minidaq/` | The C++20 code. `include/minidaq/` holds the core, format, processing, pipeline, rt, control and output layers; `src/`; `apps/` (server, ctl, sim, ...); `tests/unit/` (GoogleTest); `tests/support/property.hpp`. |
 | `exercises/chNN/eK_name/` | Exercises, each with `README.md`, `starter/`, `solution/` (and `NOTES.md`), and `tests/`. Built with `-DMINIDAQ_BUILD_EXERCISES=ON`. Starters are built with `-DMINIDAQ_BUILD_STARTERS=ON` and run with `ctest -L starter` (they must fail). |
-| `docs/regulatory/` | The software file: SRS (`srs.md`, 133 requirements, v7), SDP (`sdp.md`, v5), risk file (`risk/`), SOUP list, problem reports (`problem-reports.json` gives `known-anomalies.md`), trace matrix, CAPAs, change requests, QMS design file (`qms/design-file.json`), and release records (`releases/X.Y.Z.md`). |
-| `docs/adr/` | Architecture decision records 0001 to 0015. |
+| `docs/regulatory/` | The software file: SRS (`srs.md`, 237 requirements, v27), SDP (`sdp.md`, v14), risk file (`risk/`), SOUP list, problem reports (`problem-reports.json` gives `known-anomalies.md`), trace matrix, CAPAs, change requests, QMS design file (`qms/design-file.json`), and release records (`releases/X.Y.Z.md`). |
+| `docs/adr/` | Architecture decision records 0001 to 0032. |
 | `docs/architecture/` | `software-items.json` (items, class, paths) and `layers.json`. |
 | `tools/` | Checkers and generators: `trace_matrix.py`, `design_file.py`, `anomalies.py`, `check_layers.py`, `check_risk.py`, `coverage.py`, `mutation_test.py`, `perf_gate.py`, `make_sbom.py`, `static_analysis.sh`, `release_checks.sh`, and more. |
 | `measurements/` | Raw evidence behind every number in the book, one folder per chapter, plus `release-X.Y.Z/`. |
 | `ci/run_all.sh` | The six CI presets locally: debug, clang-release, gcc-cxx23, hardened, asan-ubsan and tsan. |
-| `.github/workflows/` | `ci.yml` (presets, static analysis, fuzz smoke, SBOM, Grype, document control), `codeql.yml`, and `perf.yml`. `perf.yml` never runs because there is no self-hosted runner. |
+| `.github/workflows/` | `ci.yml` (presets, static analysis, fuzz smoke, SBOM, Grype, document control), `gates.yml` (gate self-test), `codeql.yml`, `kdp.yml`, `pages.yml`, `tags.yml` and `perf.yml`. `perf.yml` never runs because there is no self-hosted runner; `pages.yml` and the CodeQL upload fail while the repository is private (since 2026-11-08). |
 
 Other presets: release, profile, fuzz, and coverage (Clang source-based coverage with MC/DC,
 which builds the exercises).
@@ -287,6 +294,9 @@ A release:
    book and the solutions, zip the clone, and copy everything to
    `the project files folder: neurolf-book/vX.Y.Z/`.
 7. Write the release report as a Claude Doc.
+8. In the next commit on main, set the next -dev VERSION (and the Python package versions);
+   otherwise `docs.version` turns every build-test job red (missed after 1.0.0, fixed by the
+   1.0.0 review). A patch -dev keeps the SOUP review of the minor version valid.
 
 Known gotchas are kept in the project memory notes: neurolf-build-gotchas,
 neurolf-book-layout-gotchas, neurolf-data-io-gotchas and neurolf-release-process. The most
@@ -324,6 +334,10 @@ important ones:
 | 0.4.0 | Part IV, Chapters 18 to 21 | 6912009 (checks on 61c2e1a and 6766495) | book-v0.4.0 = 6912009 |
 | 0.5.0 | Part V, Chapters 22 to 25 | 438ea37 (checks on 6ef606e) | book-v0.5.0 = 438ea37 |
 | 0.6.0 | Part VI, Chapters 26 to 30 | the release commit (checks on 893413d) | book-v0.6.0 |
+| 0.7.0 | Part VII, Chapters 31 and 32 | 3f7d720 (checks on cfb708f) | book-v0.7.0 = 3f7d720 |
+| 0.8.0 | Part VIII, Chapters 33 and 34 | 5770582 (checks on d262ff0) | book-v0.8.0 = 5770582 |
+| 0.9.0 | Part IX, Chapters 35 to 37, Appendix A | 8d34971 | book-v0.9.0 = 8d34971 |
+| 1.0.0 | The complete, packaged book | 33aa5ba (checks on 517cd49) | book-v1.0.0 = 33aa5ba |
 
 Release report Claude Docs:
 
@@ -378,7 +392,7 @@ d1073fb (repro report lists manifest and toolchain), 7654434 (perf_ab fails if s
 - Trap: never write a literal requirement tag (REQ + colon) in tools/*.py; the trace matrix
   scans tools/ too.
 
-### In progress (as of the last update)
+### History of Parts VII to IX (complete; kept for reference)
 
 Part VIII (thread started 2026-11-04).
 
