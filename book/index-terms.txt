@@ -53,7 +53,7 @@ hot/cold splitting | hot/cold splitting
 data-oriented design | data-oriented design
 arena | arena allocator
 false sharing | false sharing
-`std::hardware_destructive_interference_size` | hardware_destructive_interference_size@\texttt{std::hardware\_destructive\_interference\_size}
+`std::hardware_destructive_interference_size` | hardware_destructive_interference_size@\texttt{std::hardware\_\allowbreak destructive\_\allowbreak interference\_\allowbreak size}
 Google Benchmark | Google Benchmark
 perf stat | perf
 perf record | perf
