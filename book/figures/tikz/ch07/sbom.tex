@@ -1,0 +1,16 @@
+% Chapter 7: dependency hygiene. One pinned build file feeds both the build and the SBOM, so the
+% two cannot drift; the SOUP list adds the reasons and requirements.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.6cm]
+  \node[hot,minimum width=3.0cm,align=center] (dep) {\texttt{Dependencies.cmake}\\[-1pt]\scriptsize pinned by commit or SHA-256};
+  \node[box,right=1.3cm of dep,yshift=0.85cm,minimum width=2.6cm] (b) {build\\[-1pt]\scriptsize five shipped programs};
+  \node[box,right=1.3cm of dep,yshift=-0.85cm,minimum width=2.6cm] (s) {\texttt{make\_sbom.py}\\[-1pt]\scriptsize + license, scope table};
+  \node[box=d2dcat2,right=of s,minimum width=2.4cm] (cdx) {CycloneDX 1.5\\[-1pt]\scriptsize validated, reproducible};
+  \node[box=d2dcat1,below=0.7cm of cdx,minimum width=2.4cm] (soup) {SOUP list\\[-1pt]\scriptsize why, requirements, anomalies};
+  \draw[flow] (dep.east) -- ++(0.5,0) |- (b.west);
+  \draw[flow] (dep.east) -- ++(0.5,0) |- (s.west);
+  \draw[flow] (s) -- (cdx);
+  \draw[flow] (cdx) -- (soup);
+  \node[draw=d2drule,rounded corners=2pt,font=\sffamily\scriptsize,align=left,anchor=north west,inner sep=4pt] (comp) at ([xshift=0.3cm]b.north east)
+    {\textbf{shipped:} nlohmann/json\\\textcolor{d2dmuted}{\textbf{excluded:} GoogleTest,}\\\textcolor{d2dmuted}{Google Benchmark}};
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.25cm]dep.south) {a new dependency without a\\license and scope fails \texttt{tools.sbom}};
+\end{tikzpicture}

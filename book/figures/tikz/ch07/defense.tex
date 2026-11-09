@@ -1,0 +1,16 @@
+% Chapter 7: defense in depth for a C++ program. Each layer catches what the one before it lets
+% through, at a later and more expensive point.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \i/\name/\what/\c in {0/coding standard/{what a reviewer and the compiler refuse}/d2dcat0,
+                                 1/static analysis/{175 findings, zero after the third run}/d2dcat1,
+                                 2/fuzzing/{millions of malformed inputs per campaign}/d2dcat2,
+                                 3/hardening/{an overflow stops cleanly instead of corrupting}/d2dcat3,
+                                 4/SBOM and SOUP list/{third-party code you know you ship}/partcolor} {
+    \pgfmathsetmacro\w{12.4-0.8*\i}
+    \node[draw=\c,fill=\c!12!white,line width=1pt,rounded corners=3pt,minimum width=\w cm,minimum height=0.62cm,anchor=north] (L\i) at (0,-0.72*\i) {};
+    \node[font=\sffamily\small\bfseries,text=d2dink,anchor=west] at ([xshift=0.15cm]L\i.west) {\name};
+    \node[note,text=d2dink,anchor=east] at ([xshift=-0.15cm]L\i.east) {\what};
+  }
+  \draw[->,d2dcat3,line width=1.1pt] (-6.9,0) -- node[pos=0.5,sloped,above,note,text=d2dink] {defects and attacks} (-6.9,-3.5);
+  \node[note,text=d2dink,anchor=north] at (0,-3.75) {earlier layers are cheaper; none is enough on its own};
+\end{tikzpicture}

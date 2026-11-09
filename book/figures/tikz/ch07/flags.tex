@@ -1,0 +1,21 @@
+% Chapter 7: where each hardening flag acts in a running process.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{seg/.style={draw=d2drule,fill=white,line width=0.8pt,minimum width=3.0cm,anchor=north,font=\sffamily\small}}
+  \node[seg,minimum height=1.5cm,fill=d2dcat3!10!white] (st) at (0,0) {stack};
+  \node[seg,minimum height=0.6cm,draw=none,fill=none,text=d2dmuted] (gap) at (0,-1.5) {\scriptsize guard page};
+  \node[seg,minimum height=0.9cm,fill=d2dcat0!10!white] (lib) at (0,-2.1) {libc, libstdc++};
+  \node[seg,minimum height=0.6cm,fill=d2dcat1!12!white] (got) at (0,-3.0) {GOT};
+  \node[seg,minimum height=1.1cm,fill=partcolor!10!white] (txt) at (0,-3.6) {program code};
+  \node[note,text=d2dink,anchor=south] at (st.north) {process memory};
+  \newcommand\flag[3]{\node[note,text=d2dink,anchor=west,align=left] (#1) at (#2) {#3};}
+  \flag{f1}{3.0,-0.35}{\texttt{-fstack-protector-strong}: canary before the return address}
+  \flag{f2}{3.0,-0.95}{\texttt{-z noexecstack}: code on the stack cannot run}
+  \flag{f3}{3.0,-1.8}{\texttt{-fstack-clash-protection}: no jump over the guard page}
+  \flag{f4}{3.0,-2.35}{\texttt{-D\_FORTIFY\_SOURCE=3}: checked \texttt{memcpy}, \texttt{snprintf}}
+  \flag{f5}{3.0,-2.8}{\texttt{-D\_GLIBCXX\_ASSERTIONS}: checked \texttt{operator[]}}
+  \flag{f6}{3.0,-3.3}{\texttt{-z relro -z now}: table read-only after start}
+  \flag{f7}{3.0,-3.95}{\texttt{-fPIE -pie}: loaded at a random address}
+  \flag{f8}{3.0,-4.45}{\texttt{-fcf-protection=full}: CET branch tracking, shadow stack}
+  \foreach \f/\y in {f1/-0.35,f2/-0.95,f3/-1.65,f4/-2.35,f5/-2.8,f6/-3.3,f7/-3.95,f8/-4.45} {
+    \draw[d2dmuted,line width=0.5pt] (1.5,\y) -- (\f.west);}
+\end{tikzpicture}

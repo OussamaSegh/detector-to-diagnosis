@@ -26,6 +26,11 @@ failed write is now counted and reported. The questionnaire is answered by attac
 SBOM that every build produces, validated against the CycloneDX schema, and pointing to the
 SOUP list that says how each component's known anomalies are reviewed.
 
+Figure [](#fig-ch07-defense) shows the layers this chapter adds, in the order it adds them.
+
+```{.figure #fig-ch07-defense src="book/figures/tikz/ch07/defense.tex" caption="Defense in depth for a C++ program. Each layer of this chapter catches some of what the previous one lets through." alt="Five stacked, narrowing bands from top to bottom: coding standard, static analysis, fuzzing, hardening, and SBOM with SOUP list, each with a one-line note on what it catches. An arrow labelled defects and attacks runs down beside them." width="90%"}
+```
+
 ## Learning objectives {.unnumbered}
 
 After this chapter you can:
@@ -209,6 +214,11 @@ the 4-vCPU build machine with `-j 1`) reported 175 distinct findings:
 | `readability-redundant-member-init` | 6 | Disabled: `time{}` tells the reader "zero" and stays right if the type changes. |
 | `concurrency-mt-unsafe` | 6 | Fixed: `std::strerror` replaced by `std::system_category().message()`. |
 | 12 other checks | 22 | 17 fixed, 5 suppressed with reasons. |
+
+Figure [](#fig-ch07-triage) shows the same table by outcome.
+
+```{.figure #fig-ch07-triage src="book/figures/plots/ch07/triage.py" caption="The first static analysis run by check and by outcome: most findings were fixed in the code, and every suppression or disabled check carries a written reason." alt="Horizontal stacked bars for twelve clang-tidy checks. The largest, pro-type-vararg with 32 findings, was disabled; union access, 26, was suppressed; cert-err33-c, 25, and most smaller checks were fixed in the code." width="88%"}
+```
 
 The second run, after the fixes, reported five new findings: an ownership report on the
 `fclose` inside a deleter written during the fixes, three padding reports on the pipeline's
@@ -394,7 +404,10 @@ stopped growing after 7,755 executions, which suggests the fuzzer reached everyt
 reachable; the protocol and configuration targets were still finding new paths in their last
 minutes. Report a campaign
 with its numbers (duration, executions, coverage, corpus) and with what it does not cover:
-here, for example, the server's socket handling, which no target feeds.
+here, for example, the server's socket handling, which no target feeds. Figure [](#fig-ch07-fuzz) shows the three curves.
+
+```{.figure #fig-ch07-fuzz src="book/figures/plots/ch07/fuzz.py" caption="Coverage against executions in the three campaigns. The decoder's curve goes flat early; the other two still climb at the end." alt="Three step plots with a logarithmic execution axis. Configuration coverage rises from 976 to 1,756 edges, the decoder from 83 to 101 and flat after about 7,755 executions, and the control protocol from 1,468 to 2,412 and still rising." width="100%" inputs="measurements/ch07/fuzz"}
+```
 
 ### Inputs that are not bytes
 
@@ -456,6 +469,11 @@ clear message is a much better failure than one that writes a wrong value into t
 | `-z noexecstack` | Non-executable stack | Code injected on the stack cannot run |
 | `-fcf-protection=full` | Intel CET markings: indirect-branch tracking and shadow stack | Return- and jump-oriented programming, on CPUs and kernels that enforce CET |
 
+Figure [](#fig-ch07-flags) places each flag in the memory of the running program.
+
+```{.figure #fig-ch07-flags src="book/figures/tikz/ch07/flags.tex" caption="Where each hardening flag acts in a running process." alt="A column of process memory regions (stack, guard page, the C and C++ libraries, the global offset table, program code) with each hardening flag pointing to the region it protects and a short note on what it blocks." width="85%"}
+```
+
 ### Check the binary, not the flags
 
 A flag in a CMake file is a wish. Another file can override it, a toolchain can ignore it, and
@@ -499,6 +517,11 @@ against *none*.
 | Sort 4,096 singles, `std::sort` with a lambda (µs) | 30.6 | 30.2 [−1%] | 35.9 [+18%] |
 | Histogram `record()` (ns) | 3.14 | 2.68 [−14%] | 3.29 [+5%] |
 | Whole pipeline, batches of 4,096 (ms per run) | 97.6 | 97.3 [0%] | 88.4 [−9%] |
+
+Medians hide the spread. Figure [](#fig-ch07-hardcost) shows every run.
+
+```{.figure #fig-ch07-hardcost src="book/figures/plots/ch07/hardcost.py" caption="The cost of hardening, every run. Most differences sit inside the ±10% noise band; the hardened sort is the one result clearly outside it." alt="Strip plot with six benchmarks as rows and three builds (none, distro, hardened) as colored markers, positioned by percent difference from the unhardened median. Nearly all dots fall in a shaded band from minus to plus 10 percent; the hardened sort's dots cluster near plus 15 to 20 percent." width="88%" inputs="measurements/ch07"}
+```
 
 Most of these differences are inside the noise of this VM: the spread between the five runs
 of one build is often 10% (the AVX2 filter on *none* ranged from 4.5 to 6.9 µs), and a
@@ -549,7 +572,10 @@ of materials (SBOM) is the machine-readable list of it.
 `cmake/Dependencies.cmake` pins each dependency so that every build of a given MiniDAQ version
 uses byte-identical sources: GoogleTest and Google Benchmark by full git commit hash (a tag can
 be moved; a commit cannot), nlohmann/json by the SHA-256 of its release archive. A build
-cannot silently pick up a new version, and an upgrade is a visible change in review.
+cannot silently pick up a new version, and an upgrade is a visible change in review. Figure [](#fig-ch07-sbom) shows how the pins feed both the build and the SBOM.
+
+```{.figure #fig-ch07-sbom src="book/figures/tikz/ch07/sbom.tex" caption="Dependency hygiene. One pinned file feeds both the build and the SBOM, so the two cannot drift; the SOUP list adds the reasons." alt="Flow from Dependencies.cmake, pinned by commit or hash, to two branches: the build of five shipped programs, and make_sbom.py producing a validated CycloneDX 1.5 document, which feeds the SOUP list. A side note names nlohmann/json as shipped and the test frameworks as excluded." width="88%"}
+```
 
 ### Generating the SBOM
 
