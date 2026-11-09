@@ -1,0 +1,24 @@
+% Chapter 23: the receive path as a row of queues, each with who fills it, who empties it, and the
+% counter of what did not fit.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{q/.style={draw=partcolor,fill=partcolor!12!white,line width=1pt,rounded corners=2pt,minimum width=2.35cm,minimum height=1.0cm,font=\sffamily\small,align=center},
+           ctr/.style={draw=d2dcat3,fill=d2dcat3!8!white,rounded corners=2pt,font=\ttfamily\tiny,align=center,text width=2.25cm,inner sep=2pt}}
+  \node[font=\sffamily\small,text=d2dmuted] (w) at (-1.6,0) {wire};
+  \node[q] (ring) at (0.4,0) {card's ring\\[-1pt]\scriptsize DMA};
+  \node[q] (bl) at (4.0,0) {backlog\\[-1pt]\scriptsize RPS, loopback};
+  \node[q] (sb) at (7.6,0) {socket buffer\\[-1pt]\scriptsize after IP, UDP};
+  \node[q,fill=partcolor,text=white] (pl) at (11.2,0) {your pipeline\\[-1pt]\scriptsize Chapter 3};
+  \draw[flow] (w) -- (ring);
+  \draw[flow] (ring) -- node[above,note,text=d2dink] {softirq} (bl);
+  \draw[flow] (bl) -- node[above,note,text=d2dink] {softirq} (sb);
+  \draw[flow] (sb) -- node[above,note,text=d2dink] {recvmmsg} (pl);
+  \node[ctr,anchor=north] at ([yshift=-0.35cm]ring.south) {rx\_missed\_errors\\rx\_fifo\_errors\\(ethtool -S)};
+  \node[ctr,anchor=north] at ([yshift=-0.35cm]bl.south) {softnet\_stat col. 2;\\time\_squeeze col. 3};
+  \node[ctr,anchor=north] at ([yshift=-0.35cm]sb.south) {RcvbufErrors;\\/proc/net/udp drops;\\SO\_RXQ\_OVFL};
+  \node[ctr,anchor=north] at ([yshift=-0.35cm]pl.south) {your own counters};
+  \node[note,text=d2dink,anchor=south] at ([yshift=0.1cm]ring.north) {ethtool -G};
+  \node[note,text=d2dink,anchor=south] at ([yshift=0.1cm]bl.north) {netdev\_max\_backlog};
+  \node[note,text=d2dink,anchor=south] at ([yshift=0.1cm]sb.north) {SO\_RCVBUF, rmem\_max};
+  \node[note,text=d2dink,anchor=east] at (-0.9,-1.0) {counters:};
+  \node[note,text=d2dink,anchor=east] at (-0.9,0.65) {sized by:};
+\end{tikzpicture}

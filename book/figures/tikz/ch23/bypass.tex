@@ -1,0 +1,22 @@
+% Chapter 23: the kernel's receive path against the two common forms of kernel bypass. What bypass
+% gains in packet rate it pays in counters, tools and maintained code.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{lay/.style={draw=#1,fill=#1!12!white,line width=0.8pt,minimum width=3.3cm,minimum height=0.55cm,font=\sffamily\scriptsize,align=center}}
+  \foreach \x/\t in {0/{kernel stack},4.0/{AF\_XDP},8.0/{DPDK}} {\node[font=\sffamily\small\bfseries,text=partcolor] at (\x,0.6) {\t};}
+  \node[lay=partcolor] at (0,0) {application};
+  \node[lay=d2dmuted] at (0,-0.6) {socket, recvmmsg (copy)};
+  \node[lay=d2dmuted] at (0,-1.2) {IP, UDP};
+  \node[lay=d2dmuted] at (0,-1.8) {softirq, NAPI};
+  \node[lay=d2dmuted] at (0,-2.4) {driver};
+  \node[lay=partcolor] at (4.0,0) {application};
+  \node[lay=d2dcat1,minimum height=1.15cm] at (4.0,-0.9) {shared memory\\(UMEM), no copy};
+  \node[lay=d2dcat1] at (4.0,-1.8) {XDP program redirects};
+  \node[lay=d2dmuted] at (4.0,-2.4) {driver (XDP support)};
+  \node[lay=partcolor] at (8.0,0) {application};
+  \node[lay=d2dcat3,minimum height=1.75cm] at (8.0,-1.2) {user-space driver,\\polling cores at 100\%,\\hugepages};
+  \node[lay=d2dmuted,dashed] at (8.0,-2.4) {kernel: not involved};
+  \foreach \x in {0,4.0,8.0} {\node[box,minimum width=3.3cm,font=\sffamily\scriptsize] at (\x,-3.1) {card};}
+  \node[note,text=d2dink,align=center,anchor=north] at (0,-3.5) {counters, tcpdump,\\patched by the distribution};
+  \node[note,text=d2dink,align=center,anchor=north] at (4.0,-3.5) {other traffic keeps\\the normal stack};
+  \node[note,text=d2dink,align=center,anchor=north] at (8.0,-3.5) {highest rate; your SOUP,\\your tools, your patches};
+\end{tikzpicture}

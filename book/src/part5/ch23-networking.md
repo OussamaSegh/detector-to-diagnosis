@@ -72,6 +72,11 @@ more regular.
 
 : The queues of the Linux receive path, and where each records its drops.
 
+Figure [](#fig-ch23-path) draws the table as the row of queues a datagram passes.
+
+```{.figure #fig-ch23-path src="book/figures/tikz/ch23/path.tex" caption="The receive path as a row of queues: what sizes each one, and the counter that records what did not fit." alt="From the wire, four queues in a row: the card's ring filled by DMA, the per-CPU backlog, the socket buffer after IP and UDP, and your pipeline, joined by arrows labelled softirq, softirq and recvmmsg. Above each queue the setting that sizes it; below, its drop counters, such as rx_missed_errors, softnet_stat, RcvbufErrors and SO_RXQ_OVFL." width="100%"}
+```
+
 ### The card and its ring
 
 A network card does not interrupt the CPU for every frame. The driver gives it a *ring* of
@@ -249,6 +254,11 @@ is how long the receiving thread was not reading, on a virtual machine whose fou
 the sender, the receiver, the pipeline and the softirq share. The next section turns that into
 arithmetic.
 
+Figure [](#fig-ch23-drops) shows all twelve burst runs, with the tail drawn apart from the gaps.
+
+```{.figure #fig-ch23-drops src="book/figures/plots/ch23/drops.py" caption="Where the datagrams of a burst went, every run of every buffer size. Delivered plus dropped is always the number sent; the red tail is what the sequence gaps never show." alt="Stacked bars for twelve runs, three per buffer size of 64 KiB, 256 KiB, 1 MiB and 4 MiB, each totalling 12,291 datagrams. Green is delivered, orange hatched is dropped with a sequence gap, red dotted is dropped at the tail. Small buffers lose 3,000 to 5,000 per run; the same buffer size varies widely between runs, and even 4 MiB lost 180 once." width="85%" inputs="measurements/ch23/drop_accounting.txt"}
+```
+
 ### What the counters cannot see
 
 Loss on the network after the last datagram that reaches the host is invisible to every counter
@@ -274,7 +284,10 @@ receiving thread with real-time priority waits: Chapter 4 measured a worst wake-
 `PREEMPT_RT` and isolated CPUs are tens of microseconds. For the same data sent as a burst at
 470,000 datagrams per second, it is 7.7 ms, less than that worst case, which is why the bursts
 above dropped data on some runs and not on others. Exercise 23.3 turns the
-formulas into code, including the smallest request for a given stall.
+formulas into code, including the smallest request for a given stall. Figure [](#fig-ch23-stall) draws both rates against the buffer size.
+
+```{.figure #fig-ch23-stall src="book/figures/plots/ch23/stall.py" caption="The longest stall of the receiving thread a buffer absorbs, at 2,305 bytes charged per datagram. For the real-time link a 4 MiB buffer covers the worst wake-up by far; for a burst it does not." alt="Log-log chart of the longest stall absorbed in milliseconds against the receive buffer from 64 KiB to 8 MiB, for two rates. The real-time link's line runs from about 11 ms to 1.5 s; the burst's from about 0.1 to 15 ms. A dotted line at 8.4 ms marks Chapter 4's worst wake-up; a vertical line marks rmem_max at 4 MiB, where the burst line is just under 8 ms." width="70%"}
+```
 
 So the question to ask is not "how large is the buffer" but "what is the longest burst, at what
 rate, and what is the longest stall of the receiving thread". The firmware team knows how the
@@ -333,6 +346,11 @@ under 2% of one core. The receive stage that Chapter 5 left unmeasured is not th
 bottleneck. Batching stays, because it costs nothing and helps where system calls are expensive:
 on CPUs whose security mitigations flush state on every entry to the kernel, a system call can
 cost several times what it costs here (verify on the target PC with `bm_udp_receive`).
+
+Figure [](#fig-ch23-cost) shows the spread behind the medians.
+
+```{.figure #fig-ch23-cost src="book/figures/plots/ch23/cost.py" caption="The receiving thread's cost per datagram. Batching changes little; the size of the datagram decides." alt="Dot and range chart of nanoseconds per datagram for recv and recvmmsg with batches of 8, 32 and 64. Datagrams of 1,472 bytes cost about 300 ns in every case; datagrams of 8,208 bytes cost 620 to 740 ns, with larger batches slightly slower and wider ranges." width="70%" inputs="measurements/ch23/receive_cost.txt"}
+```
 
 ## Tuning a receive host
 
@@ -406,6 +424,11 @@ socket buffer, where the remedy is a buffer sized for the burst and a receiving 
 scheduled in time. The ADR states the evidence that would reopen it: a measurement on the target
 PC, with its card, at the scanner's highest rate, that shows the receive path using more than a
 quarter of a core, or drops at the card or the backlog that tuning does not remove.
+
+Figure [](#fig-ch23-bypass) compares the three paths.
+
+```{.figure #fig-ch23-bypass src="book/figures/tikz/ch23/bypass.tex" caption="The kernel's receive path against AF_XDP and DPDK. Bypass trades the kernel's layers, counters and maintenance for packet rate." alt="Three stacks side by side above a card. Kernel stack: application, socket with recvmmsg copy, IP and UDP, softirq, driver. AF_XDP: application, shared memory without copy, an XDP program that redirects, driver with XDP support. DPDK: application over a user-space driver with polling cores and hugepages, the kernel not involved. Notes below compare counters and tools, other traffic, and maintenance." width="75%"}
+```
 
 ::: box-regulated
 - **Data integrity needs a complete account.** The integrity verdict is a risk control of H-01
