@@ -156,7 +156,10 @@ the third block or fail the rename at the end of a run, faults that are hard to 
 file system. The sequence tracker takes the time as a parameter (`offer(p, now_ns, ...)`) instead
 of reading a clock, so a test can let a gap age by exactly a millisecond. A clock, a random
 generator, a file system and a device are the four dependencies that make code hard to test; pass
-each one in.
+each one in. Figure [](#fig-ch18-seams) shows the four seams side by side.
+
+```{.figure #fig-ch18-seams src="book/figures/tikz/ch18/seams.tex" caption="Seams. Each hard dependency reaches the code through a parameter or a port, so the application passes the real one and a test passes a double." alt="A central box, code under test, with four inputs on its left edge: DetectorPort, FileOps, now_ns and seed. Each input receives two arrows, one from an application adapter (UDP receiver, write fsync rename, steady clock, random device) and one from a test double (fake detector, disk full on block 3, a gap that ages exactly 1 ms, a fixed seed)." width="85%"}
+```
 
 How do you unit test code that talks to an FPGA? The same way. The code that knows the registers
 and the commands sits behind an interface (Chapter 22 builds it for the readout board), the logic
@@ -230,7 +233,10 @@ falls inside a window, the sequence number one below the wrap of the counter.
 Generated inputs are large and ugly, so a property harness does a second thing: when a property
 fails, it *shrinks* the input to a small one that still fails. A failure that reads "80 singles,
 window 4,317 ps, cuts at 12, 40 and 77" is a debugging session; one that reads "window 3,317 ps,
-singles at 0, 1 and 3,318 ps" is a diagnosis.
+singles at 0, 1 and 3,318 ps" is a diagnosis. Figure [](#fig-ch18-shrink) shows the idea; the next section shows how MiniDAQ's harness does it.
+
+```{.figure #fig-ch18-shrink src="book/figures/tikz/ch18/shrink.tex" caption="Shrinking. The harness edits the recorded choices, replays the generator, and keeps every edit after which the property still fails." alt="Three rows of small bars standing for the recorded random choices: a long row for the generated failing input of 80 singles, a shorter row after blocks of choices were deleted, and a short row of low bars after each choice was lowered, giving a window of 3,317 ps and singles at 0, 1 and 3,318 ps." width="80%"}
+```
 
 ### MiniDAQ's harness
 
@@ -398,6 +404,11 @@ all               85.2%  5586/6558   71.7%  2218/3094   49.7%   250/503    94.3%
 Test code, exercises, fuzz targets and benchmarks are excluded: the question is how much of the
 code that ships the tests run.
 
+Figure [](#fig-ch18-coverage) draws the same table. The spread between the three marks of one item says more than any of them alone.
+
+```{.figure #fig-ch18-coverage src="book/figures/plots/ch18/coverage.py" caption="Coverage per software item from the same run. MC/DC is lower than branch coverage, which is lower than line coverage, almost everywhere; the client is covered by the system tests of Chapter 19, not by unit tests." alt="Dot plot with one row per software item and three markers per row for line, branch and MC/DC condition coverage. Lines are between 80 and 100 percent for all items except the client, near zero; branches mostly 65 to 93 percent; MC/DC spreads from 0 to 100 percent." width="80%" inputs="measurements/ch18/coverage"}
+```
+
 ### Reading the uncovered branches
 
 A number hides more than it shows. `tools/coverage.py build/coverage OUT --uncovered FILE` lists
@@ -535,7 +546,10 @@ report:
 
 With the three new tests the sorter's mutants were run once more: 150 killed, 4 timeouts, and the
 ten equivalent survivors above (93.9%). That last run is
-the evidence a reviewer wants: not the score, but the list of what survives and why.
+the evidence a reviewer wants: not the score, but the list of what survives and why. Figure [](#fig-ch18-mutation) shows the three runs.
+
+```{.figure #fig-ch18-mutation src="book/figures/plots/ch18/mutation.py" caption="Mutation testing of the coincidence sorter, three runs: the example tests, with the properties, and with three tests written for the survivors." alt="Three horizontal stacked bars of 164 mutants each, split into killed, timeout and survived. The survivors fall from 28 with the example tests to 21 with the properties and to 10 with three new tests, for scores of 82.9, 87.2 and 93.9 percent." width="80%" inputs="measurements/ch18"}
+```
 
 Mutation testing is slow, one build and one test run per mutant, so it is a tool for a file under
 review rather than a gate on every commit; a commercial or LLVM-based tool (Mull, for example)

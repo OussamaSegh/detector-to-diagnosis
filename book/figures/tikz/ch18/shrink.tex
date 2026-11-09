@@ -1,0 +1,14 @@
+% Chapter 18: shrinking a counterexample. The harness edits the recorded choices (delete blocks,
+% lower values) and keeps every edit after which the property still fails.
+\begin{tikzpicture}[x=0.11cm,y=1cm]
+  \newcommand\choices[3]{% y, list of heights, color
+    \foreach \h [count=\i] in {#2} {\fill[#3] (\i*1.0,#1) rectangle (\i*1.0+0.75,#1+0.05+\h*0.0055);}}
+  \choices{0}{40,12,77,5,63,90,22,48,8,71,35,59,14,88,27,66,3,52,81,19,44,70,10,95,31,57,24,62,7,85,49,16,73,38,91,12,55,29,67,4}{d2dmuted}
+  \node[note,text=d2dink,anchor=west,align=left] at (44,0.25) {generated: 80 singles, window 4,317 ps,\\cuts at 12, 40 and 77; property fails};
+  \choices{-1.1}{40,12,77,5,63,90,22,48,8,71,35,59}{d2dcat1}
+  \node[note,text=d2dink,anchor=west] at (44,-0.85) {blocks of choices deleted: still fails};
+  \choices{-2.2}{30,1,3,1,0,2,1,0}{partcolor}
+  \node[note,text=d2dink,anchor=west,align=left] at (44,-2.0) {each choice lowered by bisection:\\window 3,317 ps, singles at 0, 1 and 3,318 ps};
+  \draw[->,d2dmuted,line width=1pt] (-2,0.45) -- (-2,-2.1);
+  \node[note,text=d2dink,anchor=east,align=right] at (-3,-0.8) {replay the\\generator on\\each edit};
+\end{tikzpicture}

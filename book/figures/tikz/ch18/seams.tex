@@ -1,0 +1,14 @@
+% Chapter 18: seams. Each hard dependency is passed in; the application passes the real one and a
+% test passes a double.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[hot,minimum width=3.0cm,minimum height=3.6cm,align=center] (u) at (0,0) {code under test\\[-1pt]\scriptsize service, sink, tracker};
+  \foreach \y/\port/\real/\dbl in {1.9/{DetectorPort}/{UDP receiver}/{fake detector},0.65/{FileOps}/{write, fsync, rename}/{disk full on block 3},-0.6/{now\_ns}/{steady clock}/{a gap ages 1 ms exactly},-1.85/{seed}/{random device}/{fixed per test}} {
+    \node[draw=partcolor,fill=white,line width=0.8pt,font=\ttfamily\scriptsize,inner sep=2pt,anchor=east] (p) at (-1.5,\y) {\port};
+    \node[box=d2dcat1,anchor=east,minimum width=2.7cm,minimum height=0.45cm,inner sep=1pt,font=\sffamily\scriptsize] (r) at (-3.7,\y+0.25) {\real};
+    \node[box=d2dcat2,anchor=east,minimum width=2.7cm,minimum height=0.45cm,inner sep=1pt,font=\sffamily\scriptsize] (t) at (-3.7,\y-0.25) {\dbl};
+    \draw[d2dcat1,line width=0.7pt,->] (r.east) -- (p.west);
+    \draw[d2dcat2,line width=0.7pt,->] (t.east) -- (p.west);}
+  \node[font=\sffamily\scriptsize\bfseries,text=d2dcat1,anchor=south] at (-5.05,2.45) {application};
+  \node[font=\sffamily\scriptsize\bfseries,text=d2dcat2,anchor=south] at (-5.05,-2.65) {test};
+  \node[note,text=d2dink,anchor=west,align=left] at (1.8,0) {a clock, a random generator,\\a file system and a device:\\pass each one in};
+\end{tikzpicture}
