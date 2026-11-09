@@ -1,0 +1,13 @@
+% Chapter 22: a board's temperature states. The warning has hysteresis; the alarm latches a fault
+% that only an operator's reset clears, with the bias off until then.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{st/.style={draw=#1,fill=#1!14!white,line width=1pt,rounded corners=9pt,minimum width=2.3cm,minimum height=0.85cm,font=\sffamily\small,align=center}}
+  \node[st=d2dcat2] (ok) at (0,0) {ok\\[-2pt]\scriptsize bias follows T};
+  \node[st=d2dcat1] (wa) at (4.2,0) {warning\\[-2pt]\scriptsize acquisition goes on};
+  \node[st=d2dcat3] (fa) at (8.4,0) {fault, latched\\[-2pt]\scriptsize bias off};
+  \draw[flow] (ok) to[bend left=22] node[above,note,text=d2dink] {T $\geq$ 35 °C} (wa);
+  \draw[flow] (wa) to[bend left=22] node[below,note,text=d2dink] {T $<$ 34 °C} (ok);
+  \draw[flow] (wa) -- node[above,note,text=d2dink] {T $\geq$ 40 °C} (fa);
+  \draw[flow] (fa.south) -- ++(0,-0.6) -| node[pos=0.25,below,note,text=d2dink,align=center] {operator's \texttt{reset}: power up again;\\if the cause remains, it latches again} (ok.south);
+  \node[note,text=d2dink,anchor=south,align=center] at ([yshift=0.25cm]fa.north) {also: board trip, overcurrent,\\supply fault, 3 failed cycles,\\a sensor below 5 °C};
+\end{tikzpicture}

@@ -96,6 +96,11 @@ The rule of thumb for which to use:
 - **Anything that must be fast and safe at once, and that other software also uses**: a kernel
   driver, written with the firmware team, reviewed, and maintained as part of the product.
 
+Figure [](#fig-ch22-paths) summarizes the four choices.
+
+```{.figure #fig-ch22-paths src="book/figures/tikz/ch22/paths.tex" caption="Four ways from a user-space program to a device: a kernel driver's device file, a mapped PCI resource, UIO, and VFIO." alt="The acquisition service at the top reaches the detector board along four paths: a device file through a kernel driver, the sysfs resource file mapped for registers only, UIO with mapping and interrupts, and VFIO with DMA behind the IOMMU. All go through a bus box (PCIe, I2C, SPI, UART, GPIO) to the board. Notes contrast safe with fast." width="85%"}
+```
+
 ::: box-regulated
 A kernel driver runs with every privilege of the kernel; a bug in it can corrupt any process,
 including the one that writes the patient's data. In IEC 62304 terms it is a software item of
@@ -261,6 +266,11 @@ It writes a C++ header and a Markdown table (`docs/hw/feb-register-map.md`), and
 is a tool whose output is compiled into the product, a class T3 tool in the terms of Chapter 20,
 so it has its own tests and an entry in the tool list.
 
+Figure [](#fig-ch22-regmap) is drawn from `hw/feb.toml` by the book's figure pipeline, a third output of the same source.
+
+```{.figure #fig-ch22-regmap src="book/figures/plots/ch22/regmap.py" caption="The front-end board's register map, drawn from the same specification as the header and the table: one row per register, bit 31 on the left, colored by access kind." alt="Twelve 32-bit register rows from 0x000 board_id to 0x040 threshold. Each row shows its fields as colored blocks, for example board_id with magic, board_type and slot, control with single bits for soft reset, trigger enable and bias enable, and error_flags with four single-bit rw1c flags. The access kind (ro, rw, rw1c) is written at the right." width="100%" inputs="hw/feb.toml"}
+```
+
 ### Types that know their access
 
 The generated header turns each register into a type and each field into a nested type:
@@ -372,7 +382,10 @@ the bias follow the temperature:
 
   V~bias~(T) = V~bd~(25 °C) + k · (T − 25 °C) + V~ov~
 
-with k = 34 mV/°C and V~ov~ = 2.7 V. At 25 °C that is 40.7 V; at 30 °C, 40.87 V.
+with k = 34 mV/°C and V~ov~ = 2.7 V. At 25 °C that is 40.7 V; at 30 °C, 40.87 V. Figure [](#fig-ch22-gain) shows the difference.
+
+```{.figure #fig-ch22-gain src="book/figures/plots/ch22/gain.py" caption="Gain against temperature, from the datasheet model. At a fixed bias the gain falls 1.3% per degree; with the bias following the temperature it stays at its nominal value, within the 5 mV dead band." alt="Line chart of gain in percent of nominal against SiPM temperature from 20 to 41 degrees. A dashed line for a fixed bias of 40.7 V falls from about 106 to 79 percent. A solid line for the compensated bias stays at 100 percent. Shaded bands mark the warning range from 35 degrees and the alarm from 40." width="70%"}
+```
 
 This assumes the temperature the sensor reads is the temperature of the SiPMs, which is only
 approximately true: a sensor on the board lags the SiPMs and misses the gradient across them. The
@@ -415,7 +428,10 @@ hysteresis, so that a temperature that hovers at 35.0 does not flood the operato
 that come and go. At 40 °C the board is in alarm, which is a fault: the bias goes off and stays
 off. These numbers are this book's (assumption: confirm with team); the shape (a warning with
 hysteresis, an alarm that latches, a reading that is not believed) is common to every slow
-control you will see.
+control you will see. Figure [](#fig-ch22-states) draws the three levels and the latch of the next section.
+
+```{.figure #fig-ch22-states src="book/figures/tikz/ch22/states.tex" caption="A board's temperature states: a warning with one degree of hysteresis, and an alarm that latches a fault until an operator resets it." alt="Three states: ok, warning and fault latched. Ok goes to warning at 35 degrees and back below 34. Warning goes to fault at 40 degrees. Fault returns to ok only through the operator's reset, which powers the board up again. A note lists other causes of a fault: board trip, overcurrent, supply fault, three failed cycles and a sensor reading below 5 degrees." width="75%"}
+```
 
 ### Latching, and who clears a fault
 

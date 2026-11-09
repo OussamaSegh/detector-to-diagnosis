@@ -1,0 +1,19 @@
+% Chapter 22: how a user-space program reaches hardware. A driver's device file (a system call per
+% access) or a mapping of the registers (no system call, every mistake yours).
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[hot,minimum width=12.4cm] (app) at (0,0) {acquisition service (user space)};
+  \foreach \x/\n/\t/\c in {-4.65/drv/{device file\\[-1pt]\scriptsize\ttfamily /dev/i2c-1, hwmon}/d2dcat0, -1.55/res/{sysfs resourceN\\[-1pt]\scriptsize mmap, registers only}/d2dcat1, 1.55/uio/{UIO\\[-1pt]\scriptsize mmap + interrupts}/d2dcat1, 4.65/vfio/{VFIO\\[-1pt]\scriptsize DMA behind the IOMMU}/d2dcat2} {
+    \node[box=\c,minimum width=2.9cm,align=center] (\n) at (\x,-1.3) {\t};
+    \draw[flow] (app.south -| \n) -- (\n);}
+  \draw[d2drule,line width=1pt,dashed] (-6.3,-2.05) -- (6.3,-2.05);
+  \node[note,text=d2dmuted,anchor=south east] at (6.3,-2.05) {kernel};
+  \node[box=d2dcat0,minimum width=2.9cm] (kd) at (-4.65,-2.75) {kernel driver};
+  \draw[flow] (drv) -- (kd);
+  \node[box,minimum width=12.4cm] (bus) at (0,-3.75) {PCIe, I2C, SPI, UART, GPIO};
+  \draw[flow] (kd) -- (kd |- bus.north);
+  \foreach \n in {res,uio,vfio} {\draw[flow] (\n) -- (\n |- bus.north);}
+  \node[box=partcolor,minimum width=12.4cm] (dev) at (0,-4.65) {detector board: registers, sensors, bias supply, data FIFO};
+  \draw[flow] (bus) -- (dev);
+  \node[note,text=d2dink,anchor=south] at (-4.65,0.32) {safe: a system call per access};
+  \node[note,text=d2dink,anchor=south] at (3.1,0.32) {fast: no system call, and every mistake is yours};
+\end{tikzpicture}
