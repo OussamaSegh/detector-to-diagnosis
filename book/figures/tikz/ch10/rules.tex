@@ -1,0 +1,17 @@
+% Chapter 10: what the sorter does to each single and each window, in order.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.42cm]
+  \node[dim,minimum width=2.1cm,minimum height=1.2cm] (in) {singles of\\all boards,\\in time order};
+  \node[box,right=of in,minimum width=2.0cm,minimum height=1.2cm] (e) {\textbf{energy}\\\textbf{window}\\{\scriptsize 435--585 keV}};
+  \node[box,right=of e,minimum width=2.0cm,minimum height=1.2cm] (w) {\textbf{coincidence}\\\textbf{window}\\{\scriptsize $\tau$ = 4 ns}};
+  \node[box,right=of w,minimum width=2.0cm,minimum height=1.2cm] (g) {\textbf{geometry}\\\textbf{gate}\\{\scriptsize sectors, FOV}};
+  \node[box,right=of g,minimum width=2.0cm,minimum height=1.2cm] (m) {\textbf{multiples}\\\textbf{policy}\\{\scriptsize 3+ singles}};
+  \node[hot,right=of m,minimum width=1.9cm,minimum height=1.2cm] (p) {prompts\\{\scriptsize T + S + R}};
+  \foreach \u/\v in {in/e,e/w,w/g,g/m,m/p} {\draw[flowp] (\u) -- (\v);}
+  \node[box=d2dcat1,below=0.9cm of w,minimum width=2.0cm,minimum height=1.0cm] (d) {\textbf{delayed}\\\textbf{window}};
+  \node[hot=d2dcat1,minimum width=1.9cm,minimum height=1.0cm] (dr) at (d -| p) {delayed\\{\scriptsize randoms only}};
+  \draw[flow,d2dcat1] (e.south) |- (d.west);
+  \draw[flow,d2dcat1] (d) -- (dr) node[midway,above,note] {same gates, shifted by D};
+  \foreach \n/\t in {e/{removes many\\scatters first}, w/{pairs singles\\close in time}, g/{rejects pairs that\\cannot be from the FOV}, m/{decides which pair,\\if any, to keep}} {
+    \node[note,anchor=south] at ($(\n.north)+(0,0.08)$) {\t};}
+  \node[note,anchor=north,text=d2dcat1] at ($(dr.south)+(0,-0.08)$) {an estimate of the randoms in the prompts};
+\end{tikzpicture}

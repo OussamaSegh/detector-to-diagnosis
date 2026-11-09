@@ -1,0 +1,17 @@
+% Chapter 10: why the stream must be in time order. A window opened at t is complete when the
+% first single later than t + tau arrives; a single that arrives after that is out of order.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[->,d2dmuted,line width=0.8pt] (-0.3,0) -- (14.3,0) node[right,note] {time};
+  \fill[partcolor!15!white] (1,0.15) rectangle (5,0.9);
+  \draw[partcolor,line width=1pt] (1,0.15) -- (1,0.9) -- (5,0.9) -- (5,0.15);
+  \node[lab,text=partcolor,anchor=south] at (3,0.92) {window opened at $t$, $\tau$ = 4 ns};
+  \foreach \x in {1,2.6,4.1} {\fill[partcolor] (\x,0) circle (0.12);}
+  \fill[d2dcat2] (6.4,0) circle (0.12);
+  \node[lab,anchor=north,text=d2dcat2,align=center] at (6.4,-0.25) {first single after $t+\tau$:\\\textbf{proves the window complete}};
+  \foreach \x in {8.2,9.5,12.0,13.2} {\fill[d2dink] (\x,0) circle (0.1);}
+  \node[lab,anchor=north,align=center] at (3,-0.25) {its singles are paired\\and the window closes};
+  % the late single
+  \fill[d2dcat3] (3.6,1.85) circle (0.12);
+  \draw[->,d2dcat3,line width=1pt,dashed] (11.3,1.85) node[right,lab,text=d2dcat3,align=left] {arrives late, after the\\window was closed} -- (3.8,1.85);
+  \node[lab,anchor=south east,text=d2dcat3,align=right] at (3.45,1.75) {counted in \texttt{out\_of\_order}\\and dropped};
+\end{tikzpicture}

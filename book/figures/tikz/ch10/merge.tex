@@ -1,0 +1,17 @@
+% Chapter 10: a k-way merge with a watermark. Each board's stream is in order; the watermark is
+% the smallest of the boards' latest times, and everything earlier is safe to release.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \b/\y/\last/\pts in {0/2.0/9.2/{1.0,2.4,4.3,6.1,7.7,9.2}, 1/1.2/6.6/{0.7,2.9,3.8,5.3,6.6}, 2/0.4/11.0/{1.6,3.1,5.0,7.0,8.4,10.1,11.0}} {
+    \node[lab,anchor=east] at (-0.2,\y) {board \b};
+    \draw[d2drule,line width=0.8pt] (0,\y) -- (12,\y);
+    \foreach \x in \pts {\fill[d2dcat\b] (\x,\y) circle (0.1);}
+    \draw[d2dcat\b,line width=1.2pt] (\last,\y-0.18) -- (\last,\y+0.18);
+  }
+  \node[note,anchor=south] at (11.0,0.6) {latest time};
+  \draw[partcolor,line width=1.6pt] (6.6,-0.2) -- (6.6,2.6);
+  \node[lab,text=partcolor,anchor=south] at (6.6,2.6) {\textbf{watermark} = min of the latest times};
+  \fill[partcolor!10!white] (0,-0.2) rectangle (6.6,-0.65);
+  \node[lab,anchor=center] at (3.3,-0.43) {safe: released in time order};
+  \node[lab,anchor=west] at (6.8,-0.43) {\textbf{held}: a board may still send earlier singles};
+  \draw[->,d2dmuted] (6.6,-0.95) -- (7.6,-0.95) node[anchor=north west,note,align=left,yshift=6pt] {moves on as boards report,\\or with time markers; never lags the\\most advanced board by more than max\_skew};
+\end{tikzpicture}

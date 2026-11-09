@@ -4,21 +4,20 @@ rate per unit, in units of 1 / tau. Right: the share of singles lost against
 activity, simulated (measurements/ch11/countrate.txt) and from the models with
 the average singles rate per block.
 
-    python3 book/tools/figures/ch11_deadtime.py book/src/img/ch11-deadtime.png
+    python3 book/tools/figures.py build book/figures/plots/ch11/deadtime.py screen 2 pdf
 """
 import math
 import os
 import sys
 
-import matplotlib
+import matplotlib.pyplot as plt
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
+import d2d
 
-SRC = os.path.join(os.path.dirname(__file__), "../../../measurements/ch11/countrate.txt")
+SRC = os.path.join(os.path.dirname(__file__), "../../../../measurements/ch11/countrate.txt")
 BLOCKS = 72
 TAU = 1e-6
-NP, P = "#c0392b", "#7a9a3a"
+NP, P = d2d.CAT[3], d2d.CAT[2]
 
 
 def read_lost():
@@ -37,20 +36,20 @@ def read_lost():
 
 
 def main(dst):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.8), dpi=300)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.8))
     x = [i / 100 for i in range(301)]
-    ax1.plot(x, x, ":", color="gray", linewidth=0.8, label="no dead time")
+    ax1.plot(x, x, ":", color=d2d.MUTED, linewidth=0.8, label="no dead time")
     ax1.plot(x, [v / (1 + v) for v in x], color=NP, linewidth=1.1, label="non-paralyzable")
     ax1.plot(x, [v * math.exp(-v) for v in x], color=P, linewidth=1.1, label="paralyzable")
     ax1.plot([1], [1 / math.e], "o", color=P, markersize=3)
-    ax1.annotate("1/e at nτ = 1", (1, 1 / math.e), xytext=(1.5, 0.12), fontsize=7,
+    ax1.annotate("1/e at nτ = 1", (1, 1 / math.e), xytext=(1.5, 0.12),
                  arrowprops={"arrowstyle": "-", "linewidth": 0.6})
     ax1.set_xlim(0, 3)
     ax1.set_ylim(0, 1.2)
-    ax1.set_xlabel("true rate nτ", fontsize=8)
-    ax1.set_ylabel("recorded rate mτ", fontsize=8)
-    ax1.set_title("one unit, Poisson arrivals", fontsize=9)
-    ax1.legend(fontsize=6.5, frameon=False, loc="upper left")
+    ax1.set_xlabel("true rate nτ")
+    ax1.set_ylabel("recorded rate mτ")
+    ax1.set_title("one unit, Poisson arrivals")
+    ax1.legend(frameon=False, loc="upper left")
     lost = read_lost()
     for model, color, f in (("non-paralyzable", NP, lambda v: 1 - 1 / (1 + v)),
                             ("paralyzable", P, lambda v: 1 - math.exp(-v))):
@@ -61,17 +60,17 @@ def main(dst):
                  label=f"{model}, model")
     ax2.set_xscale("log")
     ax2.set_xticks([5, 10, 20, 50, 100, 200, 500, 1000])
-    ax2.set_xticklabels(["5", "10", "20", "50", "100", "200", "500", "1000"], fontsize=7)
-    ax2.set_xlabel("activity (MBq)", fontsize=8)
-    ax2.set_ylabel("singles lost (%)", fontsize=8)
-    ax2.set_title("1 µs per block, 72 blocks", fontsize=9)
-    ax2.legend(fontsize=6, frameon=False)
+    ax2.set_xticklabels(["5", "10", "20", "50", "100", "200", "500", "1000"])
+    ax2.set_xlabel("activity (MBq)")
+    ax2.set_ylabel("singles lost (%)")
+    ax2.set_title("1 µs per block, 72 blocks")
+    ax2.legend(frameon=False)
     for ax in (ax1, ax2):
         ax.tick_params(labelsize=7)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
     fig.tight_layout()
-    fig.savefig(dst)
+    d2d.save(fig, dst)
 
 
 if __name__ == "__main__":

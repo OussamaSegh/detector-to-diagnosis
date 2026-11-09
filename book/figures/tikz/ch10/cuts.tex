@@ -1,0 +1,13 @@
+% Chapter 10: parallel sorting by time slices. A slice may start only at a gap wider than tau
+% between accepted singles: after it, the fixed windows do not depend on the history.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[->,d2dmuted,line width=0.8pt] (-0.2,0) -- (14.3,0) node[right,note] {time};
+  \foreach \x in {0.3,1.0,2.4,3.0,3.7,5.2,5.9,6.5,7.2,10.1,10.6,11.9,12.4,13.6} {\fill[d2dink] (\x,0) circle (0.09);}
+  \draw[d2dcat3,dashed,line width=1.2pt] (6.0,-0.6) -- (6.0,0.9);
+  \node[lab,text=d2dcat3,anchor=south,align=center] at (6.0,0.9) {nominal boundary:\\inside a run of close singles};
+  \draw[partcolor,line width=1.6pt] (8.65,-0.25) -- (8.65,0.9);
+  \node[lab,text=partcolor,anchor=south,align=center] at (9.6,0.9) {\textbf{actual cut}: the first gap\\wider than $\tau$ after it};
+  \draw[dimline] (7.2,-0.5) -- (10.1,-0.5) node[midway,below,note] {gap $> \tau$};
+  \node[box,anchor=north,minimum width=7.6cm] at (4.3,-1.15) {slice 1: thread A};
+  \node[box=d2dcat1,anchor=north,minimum width=5.4cm] at (11.4,-1.15) {slice 2: thread B};
+\end{tikzpicture}

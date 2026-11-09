@@ -3,23 +3,22 @@
 and to the delayed-window estimate, from measurements/ch10/validation.txt (the
 table with the sector and field-of-view cuts).
 
-    python3 book/tools/figures/ch10_policies.py book/src/img/ch10-policies.png
+    python3 book/tools/figures.py build book/figures/plots/ch10/policies.py screen 2 pdf
 """
 import os
 import re
 import sys
 
-import matplotlib
+import matplotlib.pyplot as plt
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
+import d2d
 
-SRC = os.path.join(os.path.dirname(__file__), "../../../measurements/ch10/validation.txt")
+SRC = os.path.join(os.path.dirname(__file__), "../../../../measurements/ch10/validation.txt")
 STYLE = {
-    "kill_all": ("#1f5fa8", "o", "kill all"),
-    "take_all_goods": ("#c0392b", "s", "take all goods"),
-    "take_winner_of_goods": ("#7a9a3a", "^", "winner of goods"),
-    "keep_if_only_one_good": ("#e08a2b", "D", "only one good"),
+    "kill_all": (d2d.CAT[0], "o", "kill all"),
+    "take_all_goods": (d2d.CAT[3], "s", "take all goods"),
+    "take_winner_of_goods": (d2d.CAT[2], "^", "winner of goods"),
+    "keep_if_only_one_good": (d2d.CAT[1], "D", "only one good"),
 }
 
 
@@ -40,7 +39,7 @@ def read_table():
 
 def main(dst):
     rows = read_table()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9), dpi=300)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9))
     for i, (policy, (color, marker, label)) in enumerate(STYLE.items()):
         pts = rows[policy]
         x = [p[0] for p in pts]
@@ -55,14 +54,14 @@ def main(dst):
         ax.set_xlabel("activity (MBq)")
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
-    ax1.set_ylabel("randoms in the prompts (%)", fontsize=8)
-    ax1.set_title("randoms fraction", fontsize=9)
-    ax1.legend(fontsize=7, frameon=False)
-    ax2.axhline(0, color="black", linewidth=0.6)
-    ax2.set_ylabel("delayed vs true randoms (%)", fontsize=8)
-    ax2.set_title("delayed-window estimate error", fontsize=9)
+    ax1.set_ylabel("randoms in the prompts (%)")
+    ax1.set_title("randoms fraction")
+    ax1.legend(frameon=False)
+    ax2.axhline(0, color=d2d.INK, linewidth=0.6)
+    ax2.set_ylabel("delayed vs true randoms (%)")
+    ax2.set_title("delayed-window estimate error")
     fig.tight_layout()
-    fig.savefig(dst)
+    d2d.save(fig, dst)
 
 
 if __name__ == "__main__":

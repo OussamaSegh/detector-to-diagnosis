@@ -1,0 +1,28 @@
+% Chapter 10: geometry acceptance on MiniDAQ's ring (24 blocks of 16 crystals, R = 150 mm).
+% Left: a minimum sector difference of 2 rejects pairs in the same or neighboring blocks.
+% Right: a 120 mm field of view rejects pairs fewer than 79 crystals apart; 96 apart passes.
+\begin{tikzpicture}[x=0.016cm,y=0.016cm]
+  \newcommand{\blocks}{\foreach \b in {0,...,23} {\pgfmathsetmacro{\a}{\b*15}
+      \fill[d2drule!80!white,rotate=\a] (150,-17) rectangle (172,17);}}
+  \begin{scope}
+    \blocks
+    \fill[partcolor,rotate=0] (150,-17) rectangle (172,17);
+    \foreach \b in {1,23} {\fill[d2dcat3!70!white,rotate=\b*15] (150,-17) rectangle (172,17);}
+    \draw[d2dcat3,line width=1.2pt,dashed] (0:150) -- (15:150);
+    \draw[d2dcat3,line width=1.2pt,dashed] (5:150) -- (-15:150);
+    \draw[partcolor,line width=1.4pt] (0:150) -- (172:150);
+    \node[lab,anchor=north,align=center] at (0,-190) {\textbf{Sectors}: block 0 with blocks 1\\and 23 (neighbors) is rejected};
+    \node[note] at (0,0) {};
+  \end{scope}
+  \begin{scope}[shift={(480,0)}]
+    \blocks
+    \fill[d2dcat2!15!white,draw=d2dcat2,line width=0.8pt] (0,0) circle (120);
+    \node[note,text=d2dcat2,anchor=north] at (0,115) {FOV, $r$ = 120 mm};
+    \pgfmathsetmacro{\da}{60/384*360}
+    \draw[d2dcat3,line width=1.2pt,dashed] (200:150) -- (200+\da:150);
+    \draw[partcolor,line width=1.4pt] (-30:150) -- (60:150);
+    \draw[d2dmuted,line width=0.5pt] (0,0) -- (15:106.1) node[pos=0.55,above,note,sloped] {106 mm};
+    \fill[d2dink] (0,0) circle (3);
+    \node[lab,anchor=north,align=center] at (0,-190) {\textbf{Field of view}: 96 crystals apart passes\\(106 mm from the axis); 60 apart does not};
+  \end{scope}
+\end{tikzpicture}

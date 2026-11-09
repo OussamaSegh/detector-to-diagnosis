@@ -699,7 +699,7 @@ by truth. **Start:** tag `ch07`. **End:** tag `ch08`.
    order, decay rate, axial acceptance against the analytic value, energy resolution, CTR,
    scatter rejected by the energy window, trues linear and randoms quadratic in activity.
 5. Add the tool `minidaq_sim` (statistics, counts by truth, optional MDQ-P1 words and a truth
-   CSV) and the figure script `book/tools/figures/ch08_energy_spectrum.py`.
+   CSV) and the figure script `book/figures/plots/ch08/spectrum.py`.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets; `tools/static_analysis.sh`
 reports nothing; `architecture.layers` passes (the simulator is in the core layer and uses no

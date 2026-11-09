@@ -67,7 +67,7 @@ nanosecond than a large one, so it crosses the same threshold later. Figure [](#
 on the pulse model of Exercise 9.4, a difference of exponentials with a 0.5 ns rise and a
 40 ns decay.
 
-```{.figure #fig-ch09-time-walk src="book/figures/plots/ch09/time_walk.py" caption="Leading-edge timing walks with amplitude; constant-fraction timing does not. Pulse model of Exercise 9.4 (a 0.5 ns rise, a 40 ns decay), threshold exaggerated to 10% so that the walk is visible." alt="Two line charts of pulse amplitude against time from 0 to 3 ns for pulses of 150, 300 and 511 keV. Left: with a fixed threshold drawn as a dashed line, the three pulses cross it at visibly different times, the smallest pulse last. Right: with a constant-fraction trigger at 20% of each pulse's peak, all three trigger points line up at the same time." width="100%"}
+```{.figure #fig-ch09-time-walk src="book/figures/plots/ch09/time_walk.py" inputs="exercises/ch09/e4_time_walk/solution/time_walk.py" caption="Leading-edge timing walks with amplitude; constant-fraction timing does not. Pulse model of Exercise 9.4 (a 0.5 ns rise, a 40 ns decay), threshold exaggerated to 10% so that the walk is visible." alt="Two line charts of pulse amplitude against time from 0 to 3 ns for pulses of 150, 300 and 511 keV. Left: with a fixed threshold drawn as a dashed line, the three pulses cross it at visibly different times, the smallest pulse last. Right: with a constant-fraction trigger at 20% of each pulse's peak, all three trigger points line up at the same time." width="100%"}
 ```
 
 With a threshold at 2% of a 511 keV pulse, a 100 keV pulse crosses 44 ps later than a
@@ -98,7 +98,7 @@ the same τ_decay · ln 2 (27.7 ns for a 40 ns decay) whether you start at 30 or
 A ToT energy is compressed at high energies and needs a calibration curve per channel before
 an energy window means anything. Exercise 9.4 measures both effects. Figure [](#fig-ch09-tot) shows the compression.
 
-```{.figure #fig-ch09-tot src="book/figures/plots/ch09/tot.py" caption="Time over threshold on the same pulse model, with a threshold at 2% of a 511 keV pulse. Left: how long three pulses stay above it. Right: ToT against energy is logarithmic, so a ToT energy needs a calibration curve per channel." alt="Left: three exponentially decaying pulses of 100, 250 and 511 keV above a low dashed threshold, with double arrows below marking how long each stays above it, from about 91 ns to about 156 ns. Right: a curve of time over threshold against deposited energy from 0 to 700 keV that rises steeply and then flattens, with marked points at 100 keV 91 ns, 200 keV 119 ns and 400 keV 147 ns." width="100%"}
+```{.figure #fig-ch09-tot src="book/figures/plots/ch09/tot.py" inputs="exercises/ch09/e4_time_walk/solution/time_walk.py" caption="Time over threshold on the same pulse model, with a threshold at 2% of a 511 keV pulse. Left: how long three pulses stay above it. Right: ToT against energy is logarithmic, so a ToT energy needs a calibration curve per channel." alt="Left: three exponentially decaying pulses of 100, 250 and 511 keV above a low dashed threshold, with double arrows below marking how long each stays above it, from about 91 ns to about 156 ns. Right: a curve of time over threshold against deposited energy from 0 to 700 keV that rises steeply and then flattens, with marked points at 100 keV 91 ns, 200 keV 119 ns and 400 keV 147 ns." width="100%"}
 ```
 
 ### Front-end ASICs

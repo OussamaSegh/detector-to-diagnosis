@@ -4,21 +4,20 @@ measurements/ch11/countrate.txt. Left: trues, scatters and randoms without
 dead time and with the 1 us non-paralyzable block dead time. Right: NECR for
 the three front ends, k = 1 solid and k = 2 dashed.
 
-    python3 book/tools/figures/ch11_countrate.py book/src/img/ch11-countrate.png
+    python3 book/tools/figures.py build book/figures/plots/ch11/countrate.py screen 2 pdf
 """
 import os
 import sys
 
-import matplotlib
+import matplotlib.pyplot as plt
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
+import d2d
 
-SRC = os.path.join(os.path.dirname(__file__), "../../../measurements/ch11/countrate.txt")
+SRC = os.path.join(os.path.dirname(__file__), "../../../../measurements/ch11/countrate.txt")
 MODELS = {  # section title prefix -> (color, label)
-    "no dead time": ("#1f5fa8", "no dead time"),
-    "non-paralyzable": ("#c0392b", "non-paralyzable 1 µs"),
-    "paralyzable": ("#7a9a3a", "paralyzable 1 µs"),
+    "no dead time": (d2d.CAT[0], "no dead time"),
+    "non-paralyzable": (d2d.CAT[3], "non-paralyzable 1 µs"),
+    "paralyzable": (d2d.CAT[2], "paralyzable 1 µs"),
 }
 
 
@@ -38,37 +37,37 @@ def read_table():
 
 def main(dst):
     rows = read_table()
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9), dpi=300)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.4, 2.9))
     for section, style in (("no dead time", "-"), ("non-paralyzable", "--")):
         pts = rows[section]
         x = [p[0] for p in pts]
-        for col, color, name in ((1, "#1f5fa8", "trues"), (2, "#e08a2b", "scatters"), (3, "#c0392b", "randoms")):
+        for col, color, name in ((1, d2d.CAT[0], "trues"), (2, d2d.CAT[1], "scatters"), (3, d2d.CAT[3], "randoms")):
             ax1.plot(x, [p[col] / 1e3 for p in pts], style, color=color, linewidth=1.0,
                      label=name if style == "-" else None)
-    ax1.plot([], [], "--", color="gray", linewidth=1.0, label="1 µs non-paralyzable")
+    ax1.plot([], [], "--", color=d2d.MUTED, linewidth=1.0, label="1 µs non-paralyzable")
     ax1.set_yscale("log")
-    ax1.set_ylabel("rate (k/s)", fontsize=8)
-    ax1.set_title("prompts by truth", fontsize=9)
-    ax1.legend(fontsize=6.5, frameon=False)
+    ax1.set_ylabel("rate (k/s)")
+    ax1.set_title("prompts by truth")
+    ax1.legend(frameon=False)
     for section, (color, label) in MODELS.items():
         pts = rows[section]
         x = [p[0] for p in pts]
         ax2.plot(x, [p[4] / 1e3 for p in pts], "-", marker="o", markersize=2.5, color=color, linewidth=1.0,
                  label=label)
         ax2.plot(x, [p[5] / 1e3 for p in pts], "--", color=color, linewidth=0.8)
-    ax2.plot([], [], "--", color="gray", linewidth=0.8, label="k = 2")
-    ax2.set_ylabel("NECR (k/s)", fontsize=8)
-    ax2.set_title("noise-equivalent count rate", fontsize=9)
-    ax2.legend(fontsize=6.5, frameon=False)
+    ax2.plot([], [], "--", color=d2d.MUTED, linewidth=0.8, label="k = 2")
+    ax2.set_ylabel("NECR (k/s)")
+    ax2.set_title("noise-equivalent count rate")
+    ax2.legend(frameon=False)
     for ax in (ax1, ax2):
         ax.set_xscale("log")
         ax.set_xticks([5, 10, 20, 50, 100, 200, 500, 1000])
-        ax.set_xticklabels(["5", "10", "20", "50", "100", "200", "500", "1000"], fontsize=7)
-        ax.set_xlabel("activity (MBq)", fontsize=8)
+        ax.set_xticklabels(["5", "10", "20", "50", "100", "200", "500", "1000"])
+        ax.set_xlabel("activity (MBq)")
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
     fig.tight_layout()
-    fig.savefig(dst)
+    d2d.save(fig, dst)
 
 
 if __name__ == "__main__":

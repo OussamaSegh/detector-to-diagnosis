@@ -93,7 +93,10 @@ The rules are:
 The output is a stream of prompt coincidences (those found in the normal window, a mix of
 trues, scatters and randoms) and delayed coincidences (randoms only). The reconstruction
 uses the prompts as data and the delayed counts, or a model of them, to subtract the
-randoms (Chapter 27 does this for real).
+randoms (Chapter 27 does this for real). Figure [](#fig-ch10-rules) shows the rules in the order the sorter applies them.
+
+```{.figure #fig-ch10-rules src="book/figures/tikz/ch10/rules.tex" caption="The sorter's rules in the order they apply. Every rule removes pairs; the delayed branch applies the same gates to windows shifted by D and counts only randoms." alt="A flow from left to right: singles of all boards in time order pass the energy window (435 to 585 keV), the coincidence window (4 ns), the geometry gate (sectors and field of view) and the multiples policy, and leave as prompts, which are trues plus scatters plus randoms. A branch after the energy window goes through a delayed window with the same gates and leaves as delayed coincidences, an estimate of the randoms in the prompts." width="100%"}
+```
 
 ### Why the stream must be in time order
 
@@ -105,7 +108,10 @@ window opened at t is complete. With singles out of order, no single proves anyt
 partner of a single could be anywhere further down the stream, and the sorter would have to
 hold the whole run. This is the first of two questions that this chapter answers, and the
 answer shapes everything else: put the singles in order first, with a bounded buffer, then
-sort them in one pass with a buffer of a few windows.
+sort them in one pass with a buffer of a few windows. Figure [](#fig-ch10-order) shows the proof, and what happens to a single that comes too late.
+
+```{.figure #fig-ch10-order src="book/figures/tikz/ch10/order.tex" caption="Why order matters. The first single later than t + τ proves the window opened at t complete; a single that arrives after that is counted in `out_of_order` and dropped." alt="A time axis with singles as dots. A shaded window opened at time t is 4 ns wide and holds three singles. The first single after the window ends, marked in green, proves the window complete, and its singles are paired. A late single, drawn above the axis with a dashed arrow, arrives after the window closed and is counted in out_of_order and dropped." width="100%"}
+```
 
 What if a single arrives out of order anyway, because a board is late? The sorter has
 already closed the windows it would have joined. MiniDAQ's sorter counts such a single in
@@ -148,7 +154,7 @@ it maps to a simple state machine; software sorters can do either.
 ### A worked timeline
 
 Take a window of 4 ns and singles at 0, 2.5, 3.5, 6, 12 and 14.5 ns, all inside the energy
-window (the left half of the figure).
+window (the left half of Figure [](#fig-ch10-windows)).
 
 **Fixed.** The single at 0 opens [0, 4]. It holds 0, 2.5 and 3.5: three singles, a
 multiple. The next single, 6, opens [6, 10]: alone. 12 opens [12, 16] with 14.5: a pair.
@@ -159,7 +165,8 @@ and 6: another multiple. 3.5 opens [3.5, 7.5] with 6: a pair, (3.5, 6), that the
 window never sees. 6 is alone, 12 and 14.5 are a pair again, 14.5 is alone. Two pairs and
 two multiples.
 
-![Fixed and per-single windows on the same singles (4 ns window). Red windows hold three or more singles, blue exactly two, gray one. The bottom row shows the delayed windows of the fixed openers, shortened to D = 20 ns for the figure.](src/img/ch10-windows.png){width=100%}
+```{.figure #fig-ch10-windows src="book/figures/plots/ch10/windows.py" caption="Fixed and per-single windows on the same singles (4 ns window). The shade of each window says whether it holds three or more singles, exactly two, or one (see the legend). The bottom row shows the delayed windows of the fixed openers, shortened to D = 20 ns for the figure." alt="Three rows over a time axis from 0 to 40 ns, each with the same ten singles as dots. The fixed row has one window per opener, and the first holds three singles. The per-single row has a window for every single, staggered, and two of them hold three singles while one, from 3.5 to 7.5 ns, holds a pair that the fixed row never forms. The delayed row shows each fixed window shifted by 20 ns with a curved arrow from its opener." width="100%"}
+```
 
 The per-single sorter found a pair that the fixed one did not, but look at that pair: the
 single at 3.5 ns was also in a multiple with the singles at 0 and 2.5. If those three came
@@ -239,7 +246,10 @@ one block; 2 also rejects pairs in neighboring blocks. The distance between sect
 and s~b~ is min(|s~a~ − s~b~|, 24 − |s~a~ − s~b~|), so blocks 0 and 23 are neighbors. The
 configuration accepts at most 12, half the ring. (assumption: confirm with team how the
 your scanner's sectors are defined; a brain scanner may group modules differently, and the
-axial direction can have its own rule.)
+axial direction can have its own rule.) Figure [](#fig-ch10-geometry) shows both gates on the model scanner.
+
+```{.figure #fig-ch10-geometry src="book/figures/tikz/ch10/geometry.tex" caption="The two geometry gates on MiniDAQ's ring of 24 blocks. Left: with a minimum sector difference of 2, a pair of block 0 with block 1 or 23 is rejected. Right: a 120 mm field of view accepts two crystals 96 apart (the chord passes 106 mm from the axis) and rejects two crystals 60 apart." alt="Two rings of 24 blocks. In the left ring, block 0 on the right side is highlighted, its two neighbors are marked as rejected partners, and a line to a block on the far side is accepted. In the right ring, a shaded circle of radius 120 mm marks the field of view; a solid line between crystals a quarter ring apart crosses the circle 106 mm from the center, and a dashed line between crystals 60 apart stays outside the circle near the edge of the ring." width="90%"}
+```
 
 ### Field of view
 
@@ -292,9 +302,10 @@ at 1 and a 120 mm field of view; the file also has the run without cuts.
 | 40 | winner of goods | 368,660 | 128,680 | 20.4% | +3.9 ± 1.8% |
 | 40 | only one good | 359,120 | 112,040 | 18.6% | +15.6 ± 2.0% |
 
-![Randoms fraction of the prompts, and the error of the delayed-window estimate, against activity, for the four policies (sector cut 1, 120 mm field of view; error bars are one standard deviation of counting statistics).](src/img/ch10-policies.png){width=100%}
+```{.figure #fig-ch10-policies src="book/figures/plots/ch10/policies.py" caption="Randoms fraction of the prompts, and the error of the delayed-window estimate, against activity, for the four policies (sector cut 1, 120 mm field of view; error bars are one standard deviation of counting statistics)." alt="Two panels against activity in MBq. The left shows the randoms fraction of the prompts rising with activity for all four policies, highest for take all goods and lowest for kill all and only one good. The right shows the error of the delayed-window estimate: negative for take all goods, falling from about plus 10 or 20 percent at 1 MBq to about plus 5 percent at 40 MBq for kill all and winner of goods, and largest, between about plus 14 and plus 26 percent, for only one good." width="100%" inputs="measurements/ch10/validation.txt"}
+```
 
-Three things stand out.
+Figure [](#fig-ch10-policies) plots the table. Three things stand out.
 
 **At low activity the policy does not matter.** At 1 MBq there are 16 multiples per second
 against 9,400 trues, and the policies differ by less than the counting noise.
@@ -437,7 +448,10 @@ most advanced board by more than `max_skew`, 100 µs by default. A single that a
 its time has been released is late: the merger counts it in `late` and drops it, because
 the sorter has already closed the windows it belonged to. `skew_releases` counts the drains
 in which the bound, rather than the slowest board, set the watermark, so an operator can
-see that a board is lagging before its data is lost.
+see that a board is lagging before its data is lost. Figure [](#fig-ch10-merge) shows the watermark on three boards.
+
+```{.figure #fig-ch10-merge src="book/figures/tikz/ch10/merge.tex" caption="A k-way merge with a watermark. Each board's stream is in order; the watermark is the smallest of the boards' latest times, and every single before it is released in time order." alt="Three horizontal timelines, one per board, with singles as dots and the latest reported time of each board marked with a tick. Board 1 has reported the least, so a vertical line at its latest time is the watermark. Everything to the left of the line is shaded as safe and released in time order; everything to the right is held, because a board may still send earlier singles. A note says the watermark moves as boards report or send time markers, and never lags the most advanced board by more than max_skew." width="100%"}
+```
 
 ```{.cpp include="minidaq/src/processing/stream_merger.cpp" snippet="watermark"}
 ```
@@ -482,7 +496,10 @@ the lines of response through one region of the ring are missing. In a sinogram 
 set of diagonal bands, and in the image an artifact, not merely a lower count. A global
 count of "coincidences per second" hides the cause; a per-board count of singles and
 coincidences shows it at once. This is why MiniDAQ counts late and out-of-order singles
-instead of dropping them silently, and why the counters go into the status report.
+instead of dropping them silently, and why the counters go into the status report. Figure [](#fig-ch10-late-board) shows it for one lost block of MiniDAQ's ring.
+
+```{.figure #fig-ch10-late-board src="book/figures/plots/ch10/late_board.py" caption="The sinogram of a uniform cylinder in MiniDAQ's ring, normalized, with every board in time (left) and with all the singles of block 5 lost (right). The loss is two diagonal bands, the lines of response through one block, not a uniformly lower count." alt="Two sinograms side by side, distance s from minus 120 to 120 mm against angle from 0 to 180 degrees. The left one is a smooth band, brightest at s equal zero and fading to the edge of the cylinder at plus and minus 100 mm. The right one is the same except for two empty diagonal stripes that cross it from the upper left and the upper right, the lines of response that pass through block 5." width="100%"}
+```
 
 ### Merging by time slices
 
@@ -501,7 +518,10 @@ five repetitions on the book's VM):
 | 24 | 13.3 M singles/s | 28.4 M singles/s |
 | 72 | 10.1 M singles/s | 20.6 M singles/s |
 
-The slices are about twice as fast for many boards. They cost latency: a slice can only be
+```{.figure #fig-ch10-slices src="book/figures/plots/ch10/slices.py" caption="The table as a chart: singles per second through the heap merger and the slice merger, by number of boards (medians of five repetitions)." alt="A grouped bar chart. For 4 boards the heap merger handles 30.4 and the slice merger 48.4 million singles per second; for 24 boards 13.3 and 28.4; for 72 boards 10.1 and 20.6. Both fall as boards are added, and the slice merger stays about twice as fast." width="62%" inputs="measurements/ch10/bench_slice_merge.txt"}
+```
+
+The slices are about twice as fast for many boards (Figure [](#fig-ch10-slices)). They cost latency: a slice can only be
 emitted when every board has reported past its end, so the latency is the watermark's plus
 up to Δ. For a DAQ that writes list-mode data, a millisecond of latency is irrelevant, and
 the slice merger is the better choice at high board counts. MiniDAQ's library keeps the heap
@@ -716,7 +736,10 @@ At 68 M singles offered per second, 31 M per second pass the energy window: the 
 met with the delayed window on, with no margin to spare in the singles that matter. The
 policy hardly changes the cost, because multiples are rare; the delayed window costs about
 a quarter, because it adds a second scan per window. The field-of-view cut costs nothing
-measurable once it is a few multiplications on table values.
+measurable once it is a few multiplications on table values. Figure [](#fig-ch10-throughput) puts the measurements against the target.
+
+```{.figure #fig-ch10-throughput src="book/figures/plots/ch10/throughput.py" caption="The sorter's throughput on one core (means of five repetitions). Each bar is the singles offered per second; its dark part is the share inside the energy window, which the 30 M target counts." alt="Horizontal bars for seven configurations. Without the delayed window the sorter takes 89.1 million singles per second, 40.0 million of them inside the energy window. With the delayed window, every policy, the field-of-view cut and per-single windows lie between 67.3 and 68.9 million offered, 30.2 to 30.9 million inside the window, just past a dashed line at the 30 million target." width="100%" inputs="measurements/ch10/bench_sorter.txt"}
+```
 
 The latency is bounded by the data: a window closes as soon as the first single beyond its
 horizon arrives, and the horizon is 104 ns. At the end of a batch, the singles of the last
@@ -742,7 +765,10 @@ counters; do not compare its numbers with the table above.) Profile first.
 When one core is not enough, the stream can be cut into time slices sorted on separate
 threads. The hard part is the boundaries. In fixed mode, which singles open windows depends
 on the history: cut in the middle of a run of singles closer than τ, and the second slice
-opens windows that the serial sorter never opened.
+opens windows that the serial sorter never opened. Figure [](#fig-ch10-cuts) shows the rule.
+
+```{.figure #fig-ch10-cuts src="book/figures/tikz/ch10/cuts.tex" caption="Where to cut a stream into slices. A nominal boundary can fall inside a run of close singles; the actual cut moves to the first gap wider than τ after it, where no window can span the cut." alt="A time axis with singles as dots. A dashed vertical line, the nominal boundary, falls between singles that are close together. A solid vertical line further right, the actual cut, sits in the middle of a wide gap marked as larger than tau. Below the axis, slice 1 for thread A ends at the cut and slice 2 for thread B starts there." width="100%"}
+```
 
 The history stops mattering at a gap. If two consecutive accepted singles are more than τ
 apart, the window that holds the first cannot hold the second, so the second opens a new
@@ -787,7 +813,10 @@ sorter is in firmware, in software, or split between them is the first thing to 
 **Hybrid designs** are common: a coarse coincidence trigger in hardware to reduce the
 rate, and the final sorting, with policies and delayed windows, in software. Whatever the
 split, the questions of this chapter apply to the part you own: which rules, documented
-where, verified how, and what the counters say when the rules discard data.
+where, verified how, and what the counters say when the rules discard data. Figure [](#fig-ch10-hwsw) compares the three.
+
+```{.figure #fig-ch10-hwsw src="book/figures/tikz/ch10/hwsw.tex" caption="Three places to sort. In hardware, only coincidences leave the detector; in software, every single crosses the link and the rules change with a release; a hybrid cuts the rate with a coarse trigger and keeps the policies in software." alt="Three rows of boxes and arrows. In hardware: detector boards feed an FPGA sorter, and coincidences, 10 to 30 times fewer, go to the acquisition PC. In software: detector boards feed an FPGA that forwards every single over the link to a software sorter. Hybrid: detector boards feed a coarse trigger, and candidate singles go to a software sorter. Notes on the right list the trade-offs of each." width="100%"}
+```
 
 ::: box-mistakes
 - **A sorter that only runs in the full system.** If the sorter is not a library that can
