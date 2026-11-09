@@ -1,0 +1,14 @@
+% Chapter 31: provenance of a QC report. The manifest names the bytes that were read, the
+% environment the code that read them; the dataset id is the manifest's own digest.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.4cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.4cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted,minimum height=1.6cm] (run) at (0,0) {the run\\run.json\\list-mode files\\singles};
+  \node[st=d2dcat0] (man) at (3.4,0.55) {manifest: each file's\\path, size, SHA-256};
+  \node[st=d2dcat0] (id) at (6.8,0.55) {dataset id: SHA-256\\of canonical JSON};
+  \node[st=d2dcat2] (env) at (3.4,-0.75) {environment: package,\\git commit (-dirty),\\Python, NumPy, SciPy};
+  \node[st=partcolor,minimum height=1.6cm] (out) at (10.0,0) {provenance.json\\report.json\\report.md\\three figures};
+  \draw[flow] (run.east |- man) -- (man); \draw[flow] (man) -- (id); \draw[flow] (id) -- (id -| out.west);
+  \draw[flow] (env.east) -- (env.east -| out.west);
+  \node[note,text=d2dink,anchor=north,align=center] at (3.4,-1.35) {verify\_manifest later names every file missing or changed};
+  \node[note,text=d2dcat3,anchor=north,align=center] at (10.0,-0.9) {not signed: proves which\\bytes, not who wrote them};
+\end{tikzpicture}

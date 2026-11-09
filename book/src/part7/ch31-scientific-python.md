@@ -215,6 +215,11 @@ The CRC check of the whole file takes 0.6 s from the page cache. It reads every 
 sequentially, and it is the reason `verify=True` is the default: a damaged block found at open is an
 error before any number is computed.
 
+Figure [](#fig-ch31-readers) puts the five readers on one plane.
+
+```{.figure #fig-ch31-readers src="book/figures/plots/ch31/readers.py" caption="Five ways to read a 1 GiB list-mode file: the median time against the private memory each needs. The chunked pass without pair counts holds 179 MiB whatever the size of the run." alt="Scatter on a log memory axis. The whole file in memory: 6,038 MiB, 7.7 s. Mapped and decoded whole: 3,777 MiB, 3.0 s. Chunks with pair counts: 1,286 MiB, 13.9 s. Chunks without pair counts: 179 MiB, 6.6 s. Mapped with CRCs only: 15 MiB, 0.6 s. A dotted line marks the file's 1,024 MiB." width="75%" inputs="measurements/ch31/analysis.txt"}
+```
+
 ## Fitting counts
 
 A QC report reduces histograms to a few numbers: the photopeak's position and width, the timing
@@ -271,6 +276,11 @@ the error bars are too small as well as the value. At 10,000 counts the two fits
 the bias is rarely noticed: the fits people check by eye are of strong peaks. At 100 counts even
 maximum likelihood is biased by a few percent, which is a property of so few counts, not of the
 method: no fit makes 1.5 counts per bin into a precise width.
+
+Figure [](#fig-ch31-fits) draws the table.
+
+```{.figure #fig-ch31-fits src="book/figures/plots/ch31/fits.py" caption="Least squares weighted by the counts against Poisson maximum likelihood, 400 histograms per point. Left, the bias of the fitted area; right, the spread of the area's pull, which is 1 when the reported errors are right." alt="Left: area bias in percent against counts in the peak from 100 to 100,000 on a log axis. Neyman least squares is minus 32% at 100 and minus 34% at 300, minus 13% at 1,000, and near 0 from 10,000. Poisson likelihood is minus 5% at 100 and near 0 from 1,000. Right: pull SD; Neyman reaches 1.53 at 300 counts, Poisson stays between 0.86 and 0.99." width="100%" inputs="measurements/ch31/analysis.txt"}
+```
 
 ### Poisson maximum likelihood
 
@@ -392,6 +402,11 @@ checks that for chunk sizes from 1 to the whole file. The pass also counts coinc
 order, within and across chunks: the sorter of Chapter 13 writes them in order, and a reset or a
 file in the wrong place shows here.
 
+Figure [](#fig-ch31-fold) shows the difference on simulated prompts.
+
+```{.figure #fig-ch31-fold src="book/figures/plots/ch31/fold.py" caption="The time difference that does not fold, on prompts drawn with a fixed seed. Stored as later minus earlier, the peak is folded onto its other half; ordered by crystal number, it is whole, with its centre and its width." alt="Two histograms of time difference from minus 1000 to 1000 ps. The folded one, in grey, starts at 0 and is twice as high and half as wide. The signed one is a symmetric peak centred on 0 with a 300 ps FWHM marked by a double arrow." width="80%"}
+```
+
 ## Is the rate constant?
 
 A QC acquisition of a long-lived source should have a constant prompt rate over a few seconds. A
@@ -415,6 +430,11 @@ because the lowest of 200 bins is low by chance more often than any one bin). At
 bin, losing one block of 160 coincidences in one bin gives a dip test p far below 0.001, and
 SRS-ANA-004 requires the package to find it. The last bin of a run is partial and is left out of
 both tests.
+
+Figure [](#fig-ch31-rate) runs both tests on a constant run and on one with a lost block.
+
+```{.figure #fig-ch31-rate src="book/figures/plots/ch31/rate.py" caption="Is the rate constant? Two synthetic runs of 200 bins of 10 ms, drawn with a fixed seed, checked with the package's own check_rate. One bin that lost a block of 160 prompts is plain to the dip test and only marginal to the dispersion test." alt="Two step plots of prompts per 10 ms over 2,000 ms, around 1,000 with a shaded band of 3 SD. The constant run has p constant 0.28 and p dip 0.036. The second has one bin near 1,200 ms dropped to 793, labelled the dip, with p constant 0.007 and p dip of about 1e-9." width="100%" inputs="analysis/src/minidaq_analysis/rates.py"}
+```
 
 ## The QC report
 
@@ -482,6 +502,11 @@ fifty times below the 25 ps limit and well below anything a time calibration res
 was not investigated. A measurement that finds something small and unexplained should say so instead
 of rounding it away.
 
+Figure [](#fig-ch31-qc) shows the two resolutions seed by seed.
+
+```{.figure #fig-ch31-qc src="book/figures/plots/ch31/qc.py" caption="The QC report on five runs of the simulator's point source. The energy resolution comes back within its errors of the simulator's 12%; the CTR is 3 ps above 300, many errors away, and the depth of interaction explains it." alt="Left: FWHM over E in percent for seeds 1 to 5, between 11.95 and 12.00 with error bars of 0.037, around a dashed line at 12. Right: CTR FWHM in ps for seeds 1 to 5, between 302.9 and 303.9 with error bars of 0.6, all above a dashed line at 300." width="100%" inputs="measurements/ch31/analysis.txt"}
+```
+
 ## Provenance
 
 When a check fails, or an auditor asks how a number in a QC record was obtained, the first questions
@@ -502,6 +527,11 @@ This is what tools such as DVC automate for many datasets and pipelines; for a r
 the manifest alone is enough. It proves which bytes were read, not who wrote them: the threat
 model's new gap "QC reports are not signed" records that a report edited afterward, or computed from
 files changed with recomputed CRCs, looks like any other.
+
+Figure [](#fig-ch31-provenance) shows what the report records.
+
+```{.figure #fig-ch31-provenance src="book/figures/tikz/ch31/provenance.tex" caption="A QC report's provenance. The manifest names the bytes that were read and the environment the code that read them; the manifest's own digest names the dataset in one string." alt="The run's files feed a manifest of each file's path, size and SHA-256, whose own SHA-256 is the dataset id. An environment record holds the package, the git commit and the library versions. Both go into provenance.json beside report.json, report.md and three figures. Notes say verify_manifest later names every missing or changed file, and that the report is not signed." width="90%"}
+```
 
 ## Is a loop worth compiling?
 
