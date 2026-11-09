@@ -1,0 +1,16 @@
+% Chapter 16: how an auditor samples. One thread is followed through the records until it ends or
+% breaks; a break is a finding.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.42cm]
+  \tikzset{rec/.style={draw=partcolor,fill=white,line width=0.9pt,rounded corners=2pt,minimum width=2.0cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[rec] (a) {requirement\\\ttfamily\tiny SRS-SRT-010};
+  \node[rec,right=of a] (b) {design input\\\tiny trace in srs.md};
+  \node[rec,right=of b] (c) {test\\\ttfamily\tiny MatchesThe...Truth};
+  \node[rec,right=of c] (d) {CI result\\\tiny in the release record};
+  \node[rec,right=of d] (e) {review\\\tiny commit trailer};
+  \foreach \x/\y in {a/b,b/c,c/d,d/e} {\draw[partcolor,line width=1.6pt,->] (\x) -- (\y);}
+  \node[note,text=d2dink,anchor=south] at ([yshift=0.1cm]a.north) {the auditor picks a thread};
+  \node[rec,below=0.85cm of c,draw=d2dcat3] (f) {change to the plan\\\tiny no history};
+  \draw[d2dcat3,line width=1.6pt,->] (b.south) |- (f.west);
+  \node[d2dcat3,font=\sffamily\bfseries\large] at ([xshift=0.35cm]f.east) {\texttimes};
+  \node[note,text=d2dink,anchor=west,align=left] at ([xshift=0.65cm]f.east) {the thread breaks:\\a finding (A-2)};
+\end{tikzpicture}

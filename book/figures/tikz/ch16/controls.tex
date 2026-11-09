@@ -1,0 +1,18 @@
+% Chapter 16: design controls (ISO 13485 7.3) as the classic flow, with MiniDAQ's artifact at each
+% step. Review and change control apply at every stage, not once.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.38cm]
+  \tikzset{st/.style={draw=partcolor,fill=partcolor!10!white,line width=1pt,rounded corners=2pt,minimum width=2.05cm,minimum height=0.95cm,font=\sffamily\small,align=center}}
+  \node[st] (n) {user needs\\[-1pt]\scriptsize intended use};
+  \node[st,right=of n] (i) {inputs\\[-1pt]\scriptsize 7.3.3};
+  \node[st,right=of i] (p) {design\\[-1pt]\scriptsize process};
+  \node[st,right=of p] (o) {outputs\\[-1pt]\scriptsize 7.3.4};
+  \node[st,right=of o] (t) {transfer\\[-1pt]\scriptsize 7.3.8};
+  \node[st,right=of t,fill=partcolor,text=white] (d) {device\\[-1pt]\scriptsize released};
+  \foreach \a/\b in {n/i,i/p,p/o,o/t,t/d} {\draw[flow] (\a) -- (\b);}
+  \draw[<->,d2dcat0,line width=1pt] (i.north) -- ++(0,0.45) -| node[pos=0.25,above,note,text=d2dcat0] {verification 7.3.6: outputs against inputs} (o.north);
+  \draw[<->,d2dcat2,line width=1pt] (n.south) -- ++(0,-0.45) -| node[pos=0.25,below,note,text=d2dcat2] {validation 7.3.7: the device against user needs, on representative product} (d.south);
+  \foreach \n/\t in {n/{intended-use.md},i/{srs.md, hazards},p/{ADRs, reviews},o/{code, formats},t/{release record},d/{tagged build}} {
+    \node[font=\ttfamily\scriptsize,text=d2dmuted,anchor=north] at ([yshift=-1.0cm]\n.south) {\t};}
+  \draw[d2dcat1,line width=4pt,opacity=0.35] ([yshift=-1.55cm]i.south west) -- ([yshift=-1.55cm]d.south east);
+  \node[note,text=d2dink,anchor=north] at ([yshift=-1.65cm]p.south -| o.south west) {reviews (7.3.5) and change control (7.3.9) at every stage; the file (7.3.10) indexes it all};
+\end{tikzpicture}

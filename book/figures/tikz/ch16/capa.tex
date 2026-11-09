@@ -1,0 +1,18 @@
+% Chapter 16: a problem report records one problem; a CAPA asks why the process let it through and
+% where else the cause acts. The nine sections of MiniDAQ's template, grouped.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.32cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.0cm,minimum height=0.9cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dcat3] (pr) {problem report\\\tiny one problem, fixed};
+  \node[st=partcolor,right=1.4cm of pr] (inv) {investigation\\\tiny where else?};
+  \node[st=partcolor,right=of inv] (rc) {root cause\\\tiny why the process\\[-2pt]\tiny let it through};
+  \node[st=d2dcat0,right=0.9cm of rc,yshift=0.85cm] (co) {correction\\\tiny the symptom};
+  \node[st=d2dcat0,right=0.9cm of rc] (ca) {corrective action\\\tiny the cause};
+  \node[st=d2dcat0,right=0.9cm of rc,yshift=-0.85cm] (pa) {preventive action\\\tiny elsewhere};
+  \node[st=d2dcat2,right=0.9cm of ca] (ve) {verification\\\tiny in place, nothing\\[-2pt]\tiny broken};
+  \node[st=d2dcat2,right=of ve] (ef) {effectiveness\\\tiny criterion, date,\\[-2pt]\tiny result};
+  \draw[flow] (pr) -- node[above,note,text=d2dink] {a pattern} (inv);
+  \draw[flow] (inv) -- (rc);
+  \foreach \x in {co,ca,pa} {\draw[flow] (rc.east) -- (\x.west); \draw[flow] (\x.east) -- (ve.west);}
+  \draw[flow] (ve) -- (ef);
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.2cm]pa.south) {a CAPA whose corrective action is a\\correction has fixed the symptom only};
+\end{tikzpicture}

@@ -1,0 +1,14 @@
+% Chapter 16: the life of a change request, with what tools/check_changes.py checks at each step.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.75cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=1pt,rounded corners=9pt,minimum width=2.3cm,minimum height=0.8cm,font=\sffamily\small,align=center}}
+  \node[st=d2dcat1] (pr) {proposed};
+  \node[st=d2dcat0,right=1.6cm of pr] (ap) {approved};
+  \node[st=d2dcat2,right=1.6cm of ap] (im) {implemented};
+  \node[st=d2dmuted,below=0.6cm of ap] (rj) {rejected};
+  \draw[flow] (pr) -- node[above,note,text=d2dink,align=center] {impact\\analysis} (ap);
+  \draw[flow] (ap) -- node[above,note,text=d2dink,align=center] {follow-up\\commit} (im);
+  \draw[flow] (pr.south) |- (rj.west);
+  \foreach \n/\t in {pr/{names only existing\\requirements, hazards,\\controls},ap/{no pending decision;\\committed with the\\implementation},im/{names its commits\\and its tests;\\both must exist}} {
+    \node[note,text=d2dink,anchor=south,align=center] at ([yshift=0.15cm]\n.north) {\t};}
+  \node[font=\ttfamily\scriptsize\bfseries,text=partcolor,anchor=west] at ([xshift=0.3cm]im.east) {docs.changes};
+\end{tikzpicture}
