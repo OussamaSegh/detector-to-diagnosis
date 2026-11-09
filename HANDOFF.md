@@ -5,7 +5,9 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba), the complete book.
+Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba); the open findings of the
+review of 1.0.0 are closed on main (CAPA-0002's check, the verify: markers, the index, the
+roadmap).
 
 ## Start here (after release 1.0.0)
 
@@ -40,14 +42,34 @@ Independent review of 1.0.0 (2026-11-09, review branch claude/project-thread-p48
 VERSION 1.0.1-dev (main was red on `docs.version` after the release: the commit after a release
 must set the next -dev version), corrected two stale listing ranges in solutions Chapter 1 and
 the benchmark names in the 0.9.0 and 1.0.0 records, and explained the *verify:* marker in How
-to use this book. Its open findings (the repository the book links to, private at the time and public again, the index,
-CAPA-0002's overdue check) are in the review report.
+to use this book. Its open findings were closed on main the same day (thread "Finish open
+review items"):
+
+- CAPA-0002's effectiveness check, due at 0.4.0 and never made, was made by an internal audit
+  (`docs/regulatory/qms/internal-audit-2026-11-09.md`): not effective, new check due at release
+  1.1.0. `tools/check_capa.py` now fails on an overdue check and on a newest release record that
+  leaves out an open CAPA (MDQ-PR-065, closed); SDP version 15, section 8 item 9: an internal
+  audit before each minor release, cited by its record. MDQ-PR-066 (open): fifteen controlled
+  documents carry "Status: draft for review"; at 1.1.0 the release record approves each document
+  at its version (the software lead's act, not a tool's).
+- The 133 printed *verify:* markers are gone (Parts I to IX, solutions Chapter 5): citations
+  completed from PubMed, IEEE and JACoW records, clause numbers given, "at the time of writing"
+  for what may change, or the sentence says what was not checked. The exercise NOTES files keep
+  theirs (they are not printed).
+- The index: `book/index-terms.txt` (about 560 phrases) and `book/filters/index-terms.lua` index
+  the first use of each term in every chapter and the appendix; about 400 main entries and 90
+  subentries (was 32). Test `book.index` (`book/tools/index_terms.py`) refuses a dead or
+  malformed entry. Add a term there when a chapter introduces one; `[text]{.idx}` spans still
+  work and must use the same key.
+- The 2.0.0 roadmap (`docs/ROADMAP-2.0.0.md`, with the author's answers in section 8) is on main,
+  rebased from claude/project-thread-k78nqm. The branches k78nqm and osszm6 are now stale (a
+  force push to update them was refused by the session's permissions); delete them on GitHub.
 
 Next work: none is asked. The next thread starts VERSION 1.1.0-dev (or 2.0.0-dev, see the roadmap
 work in other threads), bumps the Python package versions with it, adds a dated SOUP review for
 the new minor version, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-065, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-067, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
