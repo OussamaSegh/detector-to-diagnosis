@@ -1,0 +1,31 @@
+% Chapter 24: why a binary counter cannot cross a clock domain and a Gray-coded one can. Sampled
+% bit by bit during a change, 7 to 8 in binary can read as any of 16 values; in Gray only 7 or 8.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{b/.style={draw=d2drule,minimum size=0.5cm,font=\ttfamily\small,inner sep=0pt},
+           ch/.style={b,fill=d2dcat3!35!white,draw=d2dcat3}}
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.3,1.0) {binary};
+  \node[note,text=d2dink,anchor=east] at (-0.4,0.3) {7};
+  \node[note,text=d2dink,anchor=east] at (-0.4,-0.3) {8};
+  \foreach \i/\a/\bb in {0/0/1,1/1/0,2/1/0,3/1/0} {\node[ch] at (\i*0.55,0.3) {\a}; \node[ch] at (\i*0.55,-0.3) {\bb};}
+  \node[note,text=d2dink,anchor=north west,align=left] at (-0.3,-0.75) {4 bits change: a sample\\can read any of 16 values};
+  \begin{scope}[xshift=4.6cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.3,1.0) {Gray code};
+  \node[note,text=d2dink,anchor=east] at (-0.4,0.3) {7};
+  \node[note,text=d2dink,anchor=east] at (-0.4,-0.3) {8};
+  \node[ch] at (0,0.3) {0}; \node[ch] at (0,-0.3) {1};
+  \foreach \i/\a/\bb in {1/1/1,2/0/0,3/0/0} {\node[b] at (\i*0.55,0.3) {\a}; \node[b] at (\i*0.55,-0.3) {\bb};}
+  \node[note,text=d2dink,anchor=north west,align=left] at (-0.3,-0.75) {1 bit changes: a sample\\reads 7 or 8, nothing else};
+  \end{scope}
+  \begin{scope}[xshift=9.4cm]
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (-0.3,1.0) {two-flip-flop synchronizer};
+  \node[draw=d2dink,minimum width=0.7cm,minimum height=0.9cm] (f1) at (0.6,0) {};
+  \node[draw=d2dink,minimum width=0.7cm,minimum height=0.9cm] (f2) at (1.9,0) {};
+  \draw[->,d2dink,line width=0.8pt] (-0.3,0.15) node[left,note] {in} -- (f1.west |- 0,0.15);
+  \draw[->,d2dink,line width=0.8pt] (f1.east |- 0,0.15) -- (f2.west |- 0,0.15);
+  \draw[->,d2dink,line width=0.8pt] (f2.east |- 0,0.15) -- (3.1,0.15) node[right,note] {out};
+  \draw[d2dcat0,line width=0.8pt] (-0.3,-0.75) -- (2.6,-0.75) node[right,note,text=d2dcat0] {receiving clock};
+  \draw[d2dcat0,line width=0.8pt] (0.6,-0.75) -- (f1.south); \draw[d2dcat0,line width=0.8pt] (1.9,-0.75) -- (f2.south);
+  \node[note,text=d2dcat3,anchor=south] at (f1.north) {may hover};
+  \node[note,text=d2dcat2,anchor=south] at (f2.north) {settled};
+  \end{scope}
+\end{tikzpicture}

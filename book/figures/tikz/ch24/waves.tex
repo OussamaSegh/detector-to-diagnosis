@@ -1,0 +1,29 @@
+% Chapter 24: the chapter's FIFO of depth 2 as a timing diagram, from its table of rising edges.
+% Inputs change after an edge; the state shown between edges is the state after the edge before.
+\begin{tikzpicture}[x=1.15cm,y=0.55cm]
+  \tikzset{sig/.style={partcolor,line width=1pt}}
+  \newcommand\lbl[2]{\node[font=\ttfamily\scriptsize,anchor=east,text=d2dink] at (-0.15,#1+0.4) {#2};}
+  % clock
+  \lbl{0}{clk}
+  \draw[d2dink,line width=0.8pt] (0,0) \foreach \i in {0,...,6} {-- (\i,0) -- (\i,0.8) -- (\i+0.5,0.8) -- (\i+0.5,0)} -- (7,0);
+  \foreach \i in {1,...,6} {\draw[d2drule,densely dotted] (\i,0.9) -- (\i,-10.6); \node[note,text=d2dmuted,anchor=south] at (\i,0.85) {\i};}
+  % one-bit signals: one value per clock period; the value before edge i is in period i-1
+  \newcommand\bit[3]{\lbl{#1}{#2}\draw[sig] (0,#1) \foreach \v [count=\c from 0] in {#3} {-- (\c,#1+0.8*\v) -- (\c+1,#1+0.8*\v)};}
+  \bit{-1.5}{in\_valid}{1,1,1,0,1,0,0}
+  \bit{-3.0}{out\_valid}{0,1,1,1,0,1,0}
+  \bit{-4.5}{out\_ready}{0,0,1,1,1,1,1}
+  \bit{-6.0}{overflow\_clear}{0,0,0,1,0,0,0}
+  \bit{-9.0}{overflow}{0,0,0,1,0,0,0}
+  % data on in
+  \foreach \c/\d in {0/A,1/B,2/C,4/D} {\node[font=\sffamily\scriptsize\bfseries,text=partcolor] at (\c+0.5,-1.5+1.15) {\d};}
+  % level as a bus
+  \lbl{-7.5}{level}
+  \foreach \c/\v in {0/0,1/1,2/2,3/1,4/0,5/1,6/0} {
+    \draw[d2dcat0,line width=0.9pt] (\c+0.06,-7.5) -- (\c+0.94,-7.5) (\c+0.06,-6.7) -- (\c+0.94,-6.7);
+    \draw[d2dcat0,line width=0.9pt] (\c+0.06,-7.5) -- (\c,-7.1) -- (\c+0.06,-6.7) (\c+0.94,-7.5) -- (\c+1,-7.1) -- (\c+0.94,-6.7);
+    \node[font=\sffamily\scriptsize,text=d2dink] at (\c+0.5,-7.1) {\v};}
+  % word taken
+  \lbl{-10.5}{word out}
+  \foreach \c/\w in {3/A,4/B,6/D} {\node[draw=d2dcat2,fill=d2dcat2!15!white,font=\sffamily\scriptsize,inner sep=1.5pt] at (\c,-10.1) {\w};}
+  \node[draw=d2dcat3,fill=d2dcat3!12!white,font=\sffamily\scriptsize,inner sep=1.5pt,anchor=west] at (4.15,-8.15) {C lost: full at edge 3};
+\end{tikzpicture}

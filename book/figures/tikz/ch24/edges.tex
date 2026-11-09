@@ -1,0 +1,20 @@
+% Chapter 24: a run's edges. Start: the pipeline first, then the triggers. Stop: triggers off, a
+% later cycle confirms the drain, then the pipeline stops.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.4cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.25cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=east] at (-1.4,0) {start};
+  \node[st=partcolor] (s1) at (0,0) {start the\\pipeline};
+  \node[st=d2dcat0,right=of s1] (s2) {set\_triggers(on)\\wakes the cycle};
+  \node[st=d2dcat0,right=of s2] (s3) {a cycle writes\\trigger\_enable};
+  \node[st=d2dcat2,right=of s3] (s4) {triggers\_are(on)\\running};
+  \foreach \a/\b in {s1/s2,s2/s3,s3/s4} {\draw[flow] (\a) -- (\b);}
+  \node[note,text=d2dcat3,anchor=north] at ([yshift=-0.1cm]s4.south) {not within 2 s: fault};
+  \node[font=\sffamily\small\bfseries,text=partcolor,anchor=east] at (-1.4,-1.9) {stop};
+  \node[st=d2dcat0] (t1) at (0,-1.9) {set\_triggers(off)};
+  \node[st=d2dcat0,right=of t1] (t2) {cycle: write off;\\FIFO state unknown};
+  \node[st=d2dcat0,right=of t2] (t3) {a later cycle:\\fifo\_empty read};
+  \node[st=partcolor,right=of t3] (t4) {stop the\\pipeline};
+  \foreach \a/\b in {t1/t2,t2/t3,t3/t4} {\draw[flow] (\a) -- (\b);}
+  \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.1cm]t2.south) {its read came before\\its own write};
+  \node[note,text=d2dcat3,anchor=north,align=center] at ([yshift=-0.1cm]t3.south) {not within the drain\\timeout: incomplete};
+\end{tikzpicture}

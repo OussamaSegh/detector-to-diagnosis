@@ -147,6 +147,11 @@ At edge 5, D is written while the link is ready, but it cannot leave until edge 
 one cycle to get through. Reading a diagram like this is a skill worth practicing, because it is
 how the firmware team will answer most of your questions.
 
+Figure [](#fig-ch24-waves) draws the same six edges as waveforms.
+
+```{.figure #fig-ch24-waves src="book/figures/tikz/ch24/waves.tex" caption="The table above as a timing diagram, the form firmware engineers draw. Inputs are shown in the clock period before the edge that samples them; level and overflow show the state after each edge." alt="Waveforms over six clock edges for in_valid carrying words A, B, C and D, out_valid, out_ready, overflow_clear, the FIFO level as a bus reading 0, 1, 2, 1, 0, 1, 0, and the overflow flag, high between edges 3 and 4. Words A, B and D leave at edges 3, 4 and 6; a note marks C lost at edge 3 because the FIFO was full." width="75%"}
+```
+
 ### Checking firmware without the hardware
 
 The testbench `hw/rtl/feb_out_fifo_tb.sv` drives the FIFO with 20,000 cycles of random events and a
@@ -229,6 +234,11 @@ Firmware avoids this in three ways:
   synchronized; the receiver samples the value only after it has seen the request.
 - **An asynchronous FIFO** for a stream.
 
+Figure [](#fig-ch24-gray) shows the counter's problem and the two remedies side by side.
+
+```{.figure #fig-ch24-gray src="book/figures/tikz/ch24/gray.tex" caption="Crossing a clock domain. From 7 to 8, four bits of a binary counter change and a sample can read any of 16 values; in Gray code one bit changes. A two-flip-flop synchronizer gives the one changing bit time to settle." alt="Left, the binary codes 0111 and 1000 with all four bits highlighted as changing. Middle, the Gray codes 0100 and 1100 with only the first bit highlighted. Right, two flip-flops in a row on the receiving clock: the first may hover, the second has settled." width="95%"}
+```
+
 ### The same problem, seen from the bus
 
 Software meets the same problem whenever it reads something that the board changes on its own
@@ -259,6 +269,11 @@ the software must know: it bounds how long a stop has to wait for the board, and
 whenever the firmware team makes the FIFO deeper or the link slower. That makes the FIFO's depth
 part of the interface, not an internal detail of the firmware. Exercise 24.3 computes these
 numbers and models the FIFO cycle by cycle.
+
+Figure [](#fig-ch24-fifo) plots both rates.
+
+```{.figure #fig-ch24-fifo src="book/figures/plots/ch24/fifo.py" caption="The board's FIFO through a burst, from the arithmetic above. At twice the link's rate it is full in 164 ms and loses every new event; once the triggers are off it drains in 164 ms." alt="FIFO level in words against milliseconds. At 50,000 words per second the level rises linearly to the 4,096-word limit at 164 ms, stays full until the triggers go off at 400 ms, and drains to zero by 564 ms. At 27,000 words per second it rises slowly to about 800 words and drains quickly." width="75%"}
+```
 
 A FIFO only absorbs bursts. If the average rate in is above the rate out, no depth is enough; the
 fix is a faster link, less data per event, or fewer events.
@@ -390,6 +405,11 @@ FIFO's state as unknown, and only a later cycle's reading can say the board is d
 `SlowControl.SwitchesTheTriggersWhenAskedAndSaysWhenItHasDone` checks exactly this: after the
 write, `drained()` is false although the FIFO was empty, and only the next cycle makes it true.
 
+Figure [](#fig-ch24-edges) puts both sequences side by side.
+
+```{.figure #fig-ch24-edges src="book/figures/tikz/ch24/edges.tex" caption="A run's edges. At a start the pipeline comes first; at a stop the triggers go off and a later cycle, not the one that wrote, confirms the drain." alt="Two rows of four steps. Start: start the pipeline, set triggers on, a cycle writes trigger_enable, triggers_are on and running, with a fault if not within 2 s. Stop: set triggers off, a cycle writes off and marks the FIFO unknown because its read came before its write, a later cycle reads fifo_empty, stop the pipeline, with incomplete if the drain times out." width="90%"}
+```
+
 ### What the stop costs
 
 The measurement `measurements/ch24/run_sequence.py` runs the server with two simulated boards,
@@ -412,7 +432,10 @@ one period of 100 ms later, confirms the drain: about 120 ms. A backlog of 2,000
 after the switch confirms it: about 220 ms. A stalled link never drains, and the stop waits for
 the drain timeout and then marks the run incomplete. Every one of the 20 runs with boards was
 judged correctly: complete when everything arrived, incomplete when the board lost data or kept
-it.
+it. Figure [](#fig-ch24-stops) shows the steps.
+
+```{.figure #fig-ch24-stops src="book/figures/plots/ch24/stops.py" caption="How long a stop takes, five runs per scenario. The steps are the slow control's cycles: one for a drained board, two for a full FIFO, the timeout for a stalled link." alt="Range plot of the time from stop to configured for five scenarios: no hardware about 15 ms; a fast link and a backlog of 2,000 words about 135 ms; FIFO overflows about 224 ms; link stalled about 538 ms. The first three are complete runs, the last two incomplete. Dotted lines mark one and two slow-control cycles." width="80%" inputs="measurements/ch24/run_sequence.txt"}
+```
 
 The cost is at least one slow-control period per stop, which ADR 0019 accepts: nothing in the
 intended use needs a faster stop. If something did, the slow control could read the FIFO's status
