@@ -790,5 +790,6 @@ ran without a crash, and their numbers are recorded in `fuzz/README.md`. Tag `ch
 - IEC 81001-5-1:2021, *Health software and health IT systems safety, effectiveness and
   security, Part 5-1: Security, Activities in the product life cycle*.
 - FDA, *Cybersecurity in Medical Devices: Quality System Considerations and Content of Premarket
-  Submissions* (final guidance, September 2023; the FDA has reissued it since, so cite the revision
-  current when you submit); MDCG 2019-16, *Guidance on Cybersecurity for medical devices*.
+  Submissions* (final guidance, September 2023, updated in June 2025 as *Quality Management System
+  Considerations*; cite the revision current when you submit); MDCG 2019-16, *Guidance on
+  Cybersecurity for medical devices*.

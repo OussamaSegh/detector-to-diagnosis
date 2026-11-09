@@ -192,7 +192,7 @@ for scanners from several manufacturers, is classified by Rule 11: class IIa if 
 information used for diagnostic decisions, IIb if such a decision can cause a serious
 deterioration of health, III if it can cause death or an irreversible deterioration. MDCG
 2019-11 explains how to tell software that is a medical device from software that is not, and
-how Rule 11 applies (verify: the current revision of MDCG 2019-11).
+how Rule 11 applies; MDCG guidance is revised from time to time, so cite the current revision.
 
 ### Conformity assessment and the CE marking
 
@@ -206,7 +206,7 @@ management system (in practice against ISO 13485) and assesses the technical doc
 representative devices (Article 52(6); verify the route your notified body applies). It then
 issues certificates, carries out surveillance audits, including unannounced ones, and must
 approve changes that could affect the device's safety and performance before they are
-implemented (Annex IX, section 4.10; verify). The manufacturer then draws up the EU declaration
+implemented (Annex IX, section 4.10). The manufacturer then draws up the EU declaration
 of conformity and affixes the CE marking with the notified body's number.
 
 For software engineers, the notified body is concrete in three ways. Its auditors read your
@@ -223,27 +223,27 @@ engineering skill.
 - **Person responsible for regulatory compliance.** Every manufacturer must have at least one
   (Article 15), with defined qualifications, who makes sure among other things that the
   technical documentation is up to date and that vigilance obligations are met.
-- **Unique device identification (UDI).** Devices carry a UDI on the label and in the database.
-  For software, the UDI rules decide which changes need a new identifier (verify: Annex VI, Part
-  C, section 6.5 on software UDI).
-- **EUDAMED.** The European database on medical devices. Its first four modules (actor
-  registration, UDI and device registration, notified bodies and certificates, and market
-  surveillance) became mandatory on 28 May 2026, after Commission Decision (EU) 2025/2371 under
-  the gradual roll-out of Regulation (EU) 2024/1860; devices already on the market must be
-  registered by 28 November 2026 (verify).
+- **Unique device identification (UDI).** Devices carry a UDI on the label and in the database. For
+  software, the UDI rules decide which changes need a new identifier (Annex VI, Part C, section
+  6.5).
+- **EUDAMED.** The European database on medical devices. Its first four modules (actor registration,
+  UDI and device registration, notified bodies and certificates, and market surveillance) became
+  mandatory on 28 May 2026, after Commission Decision (EU) 2025/2371 under the gradual roll-out of
+  Regulation (EU) 2024/1860; devices already on the market must be registered by 28 November 2026,
+  according to that decision at the time of writing.
 
 ### The 2025 reform proposal
 
 The MDR's first years were hard on manufacturers and notified bodies alike: long certification
-queues, high costs and devices withdrawn from the market. Its date of application was postponed
-by a year in 2020, and the transition deadlines for devices still certified under the old
-directives were extended by Regulation (EU) 2023/607. On 16 December 2025 the Commission proposed a targeted revision of the MDR and the
-in vitro diagnostic regulation. Among other things it would drop the five-year limit on
-certificate validity in favor of continuous surveillance, adjust classification rules including
-Rule 11, change notified body procedures and lengthen the general serious-incident reporting
-deadline. It is in the ordinary legislative procedure, and adoption is not expected before 2027
-(verify: its status when you read this). Until it is adopted and applies, plan to the
-regulation in force, and expect the proposal to change on the way.
+queues, high costs and devices withdrawn from the market. Its date of application was postponed by a
+year in 2020, and the transition deadlines for devices still certified under the old directives were
+extended by Regulation (EU) 2023/607. On 16 December 2025 the Commission proposed a targeted
+revision of the MDR and the in vitro diagnostic regulation. Among other things it would drop the
+five-year limit on certificate validity in favor of continuous surveillance, adjust classification
+rules including Rule 11, change notified body procedures and lengthen the general serious-incident
+reporting deadline. It is in the ordinary legislative procedure, and adoption was not expected
+before 2027 at the time of writing; its legislative file gives the current status. Until it is
+adopted and applies, plan to the regulation in force, and expect the proposal to change on the way.
 
 ::: box-mistakes
 - **Confusing the MDR class with the IEC 62304 safety class.** The first is the device's, from
@@ -296,13 +296,13 @@ FDA's guidance "Content of Premarket Submissions for Device Software Functions",
 - **Basic**, otherwise.
 
 The level decides how much detail goes into the submission, not how carefully the software is
-developed: the guidance expects the same life cycle either way. The submission's software
-section contains a documentation level evaluation, a software description, the risk management
-file, the software requirements specification, the architecture with diagrams, the software
-design specification (Enhanced), a description of the development, configuration management
-and maintenance practices, test documentation, a version history and a list of unresolved
-anomalies with their assessment. FDA states that conformity to IEC 62304 can support several of
-these elements (verify: the guidance's list for each level).
+developed: the guidance expects the same life cycle either way. The submission's software section
+contains a documentation level evaluation, a software description, the risk management file, the
+software requirements specification, the architecture with diagrams, the software design
+specification (Enhanced), a description of the development, configuration management and maintenance
+practices, test documentation, a version history and a list of unresolved anomalies with their
+assessment. FDA states that conformity to IEC 62304 can support several of these elements, and lists
+them for each level.
 
 Read that list as your backlog. Every item is something a DAQ team produces anyway if it works
 well: the requirements of Chapter 14, the risk file of Chapter 15, the architecture of Chapter
@@ -331,10 +331,10 @@ functions, FDA also accepts predetermined change control plans that are cleared 
 ### Cybersecurity and reports
 
 Since 2023, section 524B of the FD&C Act requires submissions for *cyber devices*, devices with
-software that can connect to the internet and could be vulnerable, to include a plan for
-monitoring and addressing vulnerabilities, a software bill of materials and evidence of secure
-design. FDA's premarket cybersecurity guidance, final in 2023 and updated in June 2025, says
-what it expects (verify). Chapter 17 covers this.
+software that can connect to the internet and could be vulnerable, to include a plan for monitoring
+and addressing vulnerabilities, a software bill of materials and evidence of secure design. FDA's
+premarket cybersecurity guidance, final in 2023 and updated in June 2025, says what it expects.
+Chapter 17 covers this.
 
 After the market, 21 CFR 803 requires *medical device reports*: within 30 calendar days of
 becoming aware of information that a device may have caused or contributed to a death or
@@ -397,19 +397,19 @@ against clause 2, "Normative references", of the editions you work to).
 
 ### Harmonised, recognized and in force
 
-Which of these standards are harmonised under the MDR changes by implementing decision. At the
-time of writing the list contained EN ISO 13485:2016 with its 2021 amendment, EN ISO 14971:2019
-with its 2021 amendment and EN 60601-1, but not EN 62304, EN 62366-1 or EN IEC 81001-5-1
-(verify: the Commission's list of harmonised standards for the MDR). FDA's database of
-recognized consensus standards lists IEC 62304, ISO 14971 and others with their recognized
-editions.
+Which of these standards are harmonised under the MDR changes by implementing decision. At the time
+of writing the list contained EN ISO 13485:2016 with its 2021 amendment, EN ISO 14971:2019 with its
+2021 amendment and EN 60601-1, but not EN 62304, EN 62366-1 or EN IEC 81001-5-1; the Commission's
+list of harmonised standards for the MDR is the reference when you read this. FDA's database of
+recognized consensus standards lists IEC 62304, ISO 14971 and others with their recognized editions.
 
 Editions move slowly and then all at once. IEC 62304 dates from 2006, amended in 2015. A second
-edition, which would extend its scope to health software in general and replace the three
-safety classes with two levels of process rigor, has been in preparation for years; the IEC
-currently expects publication in late 2028, and a transition period would follow (verify).
-Until then, the 2006+A1:2015 edition is the one auditors expect. Who in your organization
-watches for new editions, and decides when to move, is one of the questions to ask.
+edition, which would extend its scope to health software in general and replace the three safety
+classes with two levels of process rigor, has been in preparation for years; the IEC currently
+expects publication in late 2028, and a transition period would follow; both dates are the IEC's
+expectation at the time of writing. Until then, the 2006+A1:2015 edition is the one auditors expect.
+Who in your organization watches for new editions, and decides when to move, is one of the questions
+to ask.
 
 ## Switzerland
 
@@ -717,17 +717,17 @@ class the scanner is in and why, and which documents of the regulatory file exis
 - Regulation (EU) 2017/745 on medical devices, consolidated version on EUR-Lex: Articles 2, 10,
   11, 15, 52, 83 to 88, and Annexes I, VIII and IX.
 - MDCG 2019-11, "Guidance on qualification and classification of software in Regulation (EU)
-  2017/745 and Regulation (EU) 2017/746", and MDCG 2021-24, "Guidance on classification of
-  medical devices" (verify: the current revisions).
+  2017/745 and Regulation (EU) 2017/746", and MDCG 2021-24, "Guidance on classification of medical
+  devices" (cite the current revision of each).
 - MDCG 2023-3, "Questions and answers on vigilance terms and concepts as outlined in the
-  Regulation (EU) 2017/745" (verify: the current revision).
+  Regulation (EU) 2017/745" (cite the current revision).
 - European Commission, proposal of 16 December 2025 for a regulation amending Regulations (EU)
   2017/745 and 2017/746, and its legislative file.
 - US FDA, "Content of Premarket Submissions for Device Software Functions", guidance, June 2023.
 - US FDA, "Deciding When to Submit a 510(k) for a Software Change to an Existing Device",
   guidance, October 2017.
 - US FDA, "Cybersecurity in Medical Devices: Quality System Considerations and Content of
-  Premarket Submissions", guidance, 2023, updated June 2025 (verify: the current version).
+  Premarket Submissions", guidance, 2023, updated June 2025.
 - 21 CFR 820 (Quality Management System Regulation), 21 CFR 803 (Medical Device Reporting) and
   21 CFR 892.1200 (emission computed tomography system), on the eCFR.
 - US FDA, Premarket Notification 510(k) database, accessdata.fda.gov, searchable by product
