@@ -1,0 +1,10 @@
+% Chapter 28: OSEM's subsets. Every k-th view goes into one subset, so each subset covers all
+% angles; here 24 view directions in 4 subsets, the scanner has 192 views in 8.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \k/\c/\cx in {0/partcolor/0,1/d2dcat0/2.9,2/d2dcat2/5.8,3/d2dcat3/8.7} {
+    \draw[d2drule,line width=0.5pt] (\cx,0) circle (1.1);
+    \foreach \v in {0,...,5} {\pgfmathsetmacro{\a}{(\k+4*\v)*7.5}
+      \draw[\c,line width=1pt] ({\cx-1.1*cos(\a)},{-1.1*sin(\a)}) -- ({\cx+1.1*cos(\a)},{1.1*sin(\a)});}
+    \node[note,text=\c,anchor=north,align=center] at (\cx,-1.2) {subset \the\numexpr\k+1\relax\\views \k, \the\numexpr\k+4\relax, \the\numexpr\k+8\relax, \dots};}
+  \node[note,text=d2dink,anchor=north,align=center] at (4.35,-1.95) {each subset is a fair sample of all angles, so one update on it does about what one MLEM iteration does;\\one OSEM iteration (all subsets) costs one MLEM iteration and makes k updates};
+\end{tikzpicture}

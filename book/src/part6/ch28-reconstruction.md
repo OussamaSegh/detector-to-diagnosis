@@ -143,7 +143,10 @@ The weights depend only on the geometry, so the class computes them once per vie
 them: 89 MB for MiniDAQ's 2D sinogram and a 128 x 128 image, built in 0.3 s. A forward
 projection then takes 54 ms and a backprojection 44 ms on the reference machine. That is fine in
 2D and much too slow in 3D, where the oblique planes multiply the lines by the number of ring
-differences; Chapter 29 moves the projector to C++.
+differences; Chapter 29 moves the projector to C++. Figure [](#fig-ch28-joseph) shows the steps on a small grid.
+
+```{.figure #fig-ch28-joseph src="book/figures/tikz/ch28/joseph.tex" caption="Joseph's method on a small grid. The line takes one step per column; at each step it reads the image between the two nearest pixel centres of that column and weights it by the step's length." alt="A grid of 7 by 5 pixels with their centres as dots. A rising line crosses it; in each column a dot marks where the line passes, joined by a dotted segment to the two nearest pixel centres above and below. Notes say each step takes the interpolated image times the step length, and that back() uses the same weights in reverse." width="75%"}
+```
 
 ### The adjoint and the dot-product test
 
@@ -216,6 +219,11 @@ in a gap or belongs to a dead crystal, takes no part: its ratio is weighted by 0
 nothing to the sensitivity. `Reconstruction.test_unmeasured_bins_take_no_part` puts 1,000 counts
 in every such bin and checks that the image does not change.
 
+Figure [](#fig-ch28-loop) shows where each correction enters.
+
+```{.figure #fig-ch28-loop src="book/figures/tikz/ch28/loop.tex" caption="One MLEM update. The measured counts are never changed: the corrections live in the expected counts, in the weighting of the ratio, and in the sensitivity." alt="A loop: image x, forward to the expected counts m A x plus b, the ratio of measured y to expected, backprojected with the weights m, divided by the sensitivity A transpose m, which multiplies x. A note says m holds normalization, attenuation and live fraction, b holds randoms and scatter, and a bin with m equal to 0 takes no part." width="90%"}
+```
+
 ### What pre-correction costs
 
 The alternative is to correct the data first, `(y - b) / m`, and reconstruct the result with a
@@ -272,6 +280,11 @@ approaches it while the subsets are many enough to be fast and few enough to be 
 of subsets is therefore a setting of the reconstruction like the number of iterations, and is
 validated with it.
 
+Figure [](#fig-ch28-subsets) shows what interleaved subsets look like.
+
+```{.figure #fig-ch28-subsets src="book/figures/tikz/ch28/subsets.tex" caption="OSEM's subsets, drawn with 24 view directions in 4 subsets; MiniDAQ uses 192 views in 8. Every k-th view goes into a subset, so each subset spans the whole half turn." alt="Four circles, each crossed by six lines through its centre at angles 30 degrees apart, offset by 7.5 degrees from one circle to the next, in four colors. Labels name subset 1 with views 0, 4, 8 and so on through subset 4 with views 3, 7, 11." width="80%"}
+```
+
 ## A phantom, iteration by iteration
 
 ### The data
@@ -311,6 +324,11 @@ spatial frequencies, the shape of the object, and the later ones the high freque
 noisy data are mostly noise; the maximum-likelihood image of noisy counts is itself very noisy.
 In practice the reconstruction is stopped early, at a number of iterations chosen for the task,
 and often followed by a smoothing filter.
+
+Figure [](#fig-ch28-montage) shows the same behaviour in images.
+
+```{.figure #fig-ch28-montage src="book/figures/plots/ch28/montage.py" caption="A phantom like the measurement's, simulated in numpy at about its counts and reconstructed with the chapter's own projector and osem(), 8 subsets. The shape is there by iteration 2 and the small rod by iteration 4; after that, mostly noise is added." alt="Eight panels. The phantom: a disc with three bright rods of 12, 8 and 5 mm. Its sinogram: three sinusoids over a broad band. Reconstructions at iterations 1, 2, 4, 8, 16 and 32, with background noise of about 8, 11, 20, 35, 56 and 78%: the rods sharpen by iteration 4 and the background becomes grainier with every iteration." width="100%" inputs="tools/recon/mlem.py"}
+```
 
 ### How certain is one image?
 
@@ -361,6 +379,11 @@ fill in the space between the rods. Without the normalization the profile tilts 
 following the geometric factors of Chapter 27. With all corrections the background is flat
 within 4% from the center to 70 mm.
 
+Figure [](#fig-ch28-model) draws the rows of the table.
+
+```{.figure #fig-ch28-model src="book/figures/plots/ch28/model.py" caption="The background's profile with a correction left out of the model, from the table above. Without attenuation the centre sinks and the edge rises; without scatter the profile tilts the other way and the contrast falls." alt="Ring mean over the mean of the rings at 5, 25, 45 and 65 mm. All corrections stays near 1. No attenuation rises from 0.66 to 1.62. No scatter falls from 1.09 to 0.90. No normalization rises from 0.94 to 1.11. None rises from 0.71 to 1.47. The legend gives the 12 mm rod's contrast recovery for each." width="80%" inputs="measurements/ch28/reconstruct.txt"}
+```
+
 ### When to stop, and a filter
 
 A Gaussian post-filter trades the noise for resolution:
@@ -383,6 +406,11 @@ the noise a reader accepts. It is not a software decision: the number of iterati
 and the filter are protocol settings, set and validated with the image-quality measurements of
 Chapter 30 (assumption: confirm with team who owns the reconstruction protocols and how a change
 to one is validated).
+
+Figure [](#fig-ch28-crc) puts iterations and filters on one trade-off.
+
+```{.figure #fig-ch28-crc src="book/figures/plots/ch28/crc.py" caption="OSEM on the phantom, iteration by iteration. Left, the likelihood and the noise both keep rising. Right, each rod's contrast against the noise: the contrast stops growing long before the noise does, and a post-filter (hollow markers) moves an image to the left at some cost in contrast." alt="Left: log-likelihood over iteration 1 rising steeply to about 4,000 by iteration 4 and slowly to 5,400 at 32, and background noise rising almost linearly from 7% to 81%. Right: contrast recovery against background noise for the 12, 8 and 5 mm rods; the large rods plateau near 1.23 from about 15% noise, the small rod peaks near 0.96 and falls slightly; hollow markers for filtered images sit at 7 to 23% noise with lower contrast." width="100%" inputs="measurements/ch28/reconstruct.txt"}
+```
 
 ## What the tool is, and what it is not
 

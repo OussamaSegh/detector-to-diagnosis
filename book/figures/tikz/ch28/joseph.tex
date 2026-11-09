@@ -1,0 +1,18 @@
+% Chapter 28: Joseph's method. A line whose direction is closer to the x axis steps one column at
+% a time; at each column it takes the image interpolated between the two nearest pixel centres in
+% that column, weighted by the step's length.
+\begin{tikzpicture}[x=0.8cm,y=0.8cm]
+  \foreach \i in {0,...,6} {\foreach \j in {0,...,4} {\draw[d2drule,line width=0.4pt] (\i,\j) rectangle ++(1,1);
+    \fill[d2dmuted] (\i+0.5,\j+0.5) circle (0.035);}}
+  \draw[partcolor,line width=1.4pt] (-0.4,0.75) -- (7.4,3.35);
+  \foreach \c in {0,...,6} {
+    \pgfmathsetmacro{\yy}{0.75 + (\c+0.5+0.4)*2.6/7.8}
+    \pgfmathsetmacro{\lo}{floor(\yy-0.5)+0.5}
+    \draw[d2dcat0,line width=0.5pt,densely dotted] (\c+0.5,\lo) -- (\c+0.5,\lo+1);
+    \fill[d2dcat0] (\c+0.5,\lo) circle (0.06); \fill[d2dcat0] (\c+0.5,\lo+1) circle (0.06);
+    \fill[partcolor] (\c+0.5,\yy) circle (0.075);}
+  \node[note,text=partcolor,anchor=west] at (7.45,3.35) {a line of response};
+  \draw[<->,d2dink,line width=0.6pt] (2.5,-0.25) -- node[below,note,text=d2dink]{one step per column} (3.5,-0.25);
+  \node[note,text=d2dink,anchor=west,align=left] at (7.6,1.9) {at each column: the image at\\the line's point, interpolated\\between the two nearest pixel\\centres (blue), times the\\step length $p / |\cos\theta|$};
+  \node[note,text=d2dink,anchor=west,align=left] at (7.6,0.35) {back(): the same weights\\in reverse, so it is the\\exact adjoint};
+\end{tikzpicture}

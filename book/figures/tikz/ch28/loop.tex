@@ -1,0 +1,17 @@
+% Chapter 28: one MLEM update. The data are never changed; the corrections live in the model's
+% expected counts, in the weighting of the ratio and in the sensitivity.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.45cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.6cm,minimum height=0.95cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=partcolor] (x) at (0,0) {image $x$};
+  \node[st=d2dcat0] (f) at (4.2,0) {expected counts\\$\bar y = m\,A x + b$};
+  \node[st=d2dmuted] (r) at (4.2,-1.7) {ratio $y / \bar y$\\(the measured $y$ as it is)};
+  \node[st=d2dcat0] (b) at (0,-1.7) {backproject:\\$A^T (m \cdot y / \bar y)$};
+  \node[st=d2dcat2] (s) at (-3.6,-0.85) {divide by the\\sensitivity $s = A^T m$};
+  \draw[flow] (x) -- node[above,note,text=d2dink]{forward} (f);
+  \draw[flow] (f) -- (r);
+  \draw[flow] (r) -- (b);
+  \draw[flow] (b.west) -| (s.south);
+  \draw[flow] (s.north) |- node[pos=0.75,above,note,text=d2dink]{multiply $x$} (x.west);
+  \node[note,text=d2dink,anchor=west,align=left] at (6.0,-0.85) {$m$: normalization, attenuation,\\live fraction; $b$: randoms\\and scatter; a bin with $m = 0$\\takes no part};
+  \node[note,text=d2dmuted,anchor=north] at (0.3,-2.35) {with k subsets, the same loop over each subset's views: OSEM};
+\end{tikzpicture}
