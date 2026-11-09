@@ -92,6 +92,11 @@ frame into counts at the reference time. A reconstruction that models the data s
 these factors into its system model instead of applying them to the data (Chapter 28), but it
 needs the same numbers.
 
+Figure [](#fig-ch27-chain) lays the chain out with what each step needs.
+
+```{.figure #fig-ch27-chain src="book/figures/tikz/ch27/chain.tex" caption="From counts to activity. Solving the measurement model for the trues gives the order of the corrections, and each correction needs something the acquisition must record." alt="The formula P equals n times (A L T plus S) plus R, solved for T. Below, a chain of boxes: prompts, minus randoms, divided by normalization and live fraction, minus scatter, divided by attenuation, times the decay factor, giving trues at the reference time. Under each step what it needs: singles per crystal or delayeds; a normalization scan and singles per block; the tails outside the object; the outline or a CT or MR image; frame times and the tracer." width="100%"}
+```
+
 ### What each correction needs
 
 | Correction | Needs from the acquisition | MiniDAQ records it in |
@@ -232,6 +237,11 @@ The delayed window, which goes through the same sorter, is 7.1% high, the kill-a
 10 measured: a random that the kill-all rule discards from a prompt window, because the window
 also held the true partner, is still counted in the delayed window of the same opener.
 
+Figure [](#fig-ch27-randoms) compares the three.
+
+```{.figure #fig-ch27-randoms src="book/figures/plots/ch27/randoms.py" caption="Three randoms estimates against the simulator's truth in the patient-like scan. The textbook singles formula is 31% high for a sorter with the kill-all rule; taking the paired singles off first brings it to within 2%." alt="Horizontal bars of the error against the true randoms: delayed window plus 7.1%, singles estimate with all singles plus 31.1%, singles estimate with the paired singles subtracted minus 1.8%, with the counts of each estimate in parentheses." width="75%" inputs="measurements/ch27/corrections.txt"}
+```
+
 ### Noise
 
 Randoms are few per bin. In this run there were 0.028 per bin on average, and a sinogram bin almost
@@ -311,6 +321,11 @@ exp(mu (a + b)) for a uniform medium, and why it is large: water at 511 keV has 
 (verify: NIST XCOM), so a line through the center of a head of 18 cm is corrected by
 exp(1.73) = 5.6.
 
+Figure [](#fig-ch27-attenuation) shows why the position along the line drops out.
+
+```{.figure #fig-ch27-attenuation src="book/figures/tikz/ch27/attenuation.tex" caption="Both photons must leave the body. Their survival depends on the whole chord a + b and not on where along it the annihilation was, so attenuation correction is one factor per line of response." alt="A ring of crystals around an elliptical water region. A line of response crosses it through an annihilation point; the two parts of the chord inside the water are marked a and b. Notes give the survival probability as e to the minus mu times (a plus b), mu of water at 511 keV as 0.096 per cm, a head's factor of 5.6, and 10% too many counts for an outline 5 mm too large." width="75%"}
+```
+
 MiniDAQ's tool models the phantom as what it is, a water cylinder, and averages over the ring
 pairs of each slice, whose oblique lines cross more water:
 
@@ -380,6 +395,11 @@ model's axial shape is right. A real patient's tails are also cut by the bed and
 scatter correction is a model with a measured scale, and both the model and the scale need
 validation with phantoms (Chapter 30).
 
+Figure [](#fig-ch27-scatter) plots the four estimates across the projection.
+
+```{.figure #fig-ch27-scatter src="book/figures/plots/ch27/scatter.py" caption="Scatter estimates by tail fitting over the true scatter, at five positions across the projection. The Gaussian is fitted where the tails are and is wrong everywhere else; the model's shape is right, and its remaining 14% comes from the randoms left in the tails." alt="Ratio of estimate to true scatter on a log scale against s from 0 to 95 mm. The Gaussian runs from 3.8 at the centre down to 0.76 at 80 mm. The model with a scale per slice and with one scale stay near 1.15. The model with the true randoms subtracted stays near 1.0. The tail region near 95 mm is shaded." width="85%" inputs="measurements/ch27/corrections.txt"}
+```
+
 ## Dead time and decay
 
 ### Dead time
@@ -404,6 +424,11 @@ At 109 kHz per block a single is live 97.8% of the time and a coincidence 95.7%,
 from the recorded singles agrees with the two runs to 0.03%, well inside the 0.37% that the trues'
 counting allows. That is the easy case, because the correction uses the same model that the
 simulator applied.
+
+Figure [](#fig-ch27-factors) draws the live fractions against the rate, and the decay factor of the next section.
+
+```{.figure #fig-ch27-factors src="book/figures/plots/ch27/factors.py" caption="Two multiplicative factors. Left, the decay factor of a 10-minute fluorine-18 frame, exact and to the frame's start only. Right, the live fractions for a 200 ns non-paralyzable dead time, with the measured point; a coincidence needs both blocks live." alt="Left: decay factor against frame start from 0 to 120 minutes, two rising curves; at 60 minutes the exact one gives 1.5072 and the frame-start one 1.4606, 3.1% low. Right: live fraction against recorded singles per block from 0 to 1000 kHz, a straight line for a block and a steeper curve for a coincidence, with the measured point at 109 kHz at 0.978 and 0.957." width="100%" inputs="measurements/ch27/corrections.txt"}
+```
 
 The model's kind (non-paralyzable, paralyzable, or the mixture a real front end has) and its tau
 come from the electronics' design and a count-rate measurement (Chapter 11); a wrong kind gives a
@@ -444,6 +469,11 @@ and attenuation, whose noise is the Poisson noise of the columns. The difference
 estimate, 14% high, which leaves the center a few percent low. The truth rows are equal whether the
 normalization is the measured one or the true efficiencies, so the normalization's own error does
 not show at this scale; it shows as noise and patterns in an image (Chapter 28).
+
+Figure [](#fig-ch27-profile) draws the rows of the table as profiles.
+
+```{.figure #fig-ch27-profile src="book/figures/plots/ch27/profile.py" caption="The radial profile of the phantom's central slices after each correction, scaled to a mean of 1. Only the attenuation correction makes it flat, to 1.9% rms against the truth's 1.1%; the drop at 75 mm is the detector's resolution at the source's edge, in the truth too." alt="Profile against s from 0 to 75 mm for six steps. Prompts as measured, minus randoms and normalized rise from about 0.85 at the centre to 1.25 at 60 mm; minus scatter is steeper, 0.79 to 1.32. Attenuation corrected is flat near 1 to 60 mm, then drops to 0.70 at 75 mm, following the dotted truth." width="85%" inputs="measurements/ch27/corrections.txt"}
+```
 
 Two things are not in this table and no test of the software can give them: a patient whose outline
 is not a cylinder, and a scatter model that is not the patient's. The tool's tests prove that each

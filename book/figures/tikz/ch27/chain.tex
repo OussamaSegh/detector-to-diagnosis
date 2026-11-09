@@ -1,0 +1,16 @@
+% Chapter 27: from counts to activity. Solving P = n (A L T + S) + R for T gives the order of the
+% corrections; each needs something the acquisition must record.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.32cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=1.75cm,minimum height=0.9cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (p) at (0,0) {prompts\\P};
+  \node[st=d2dcat0,right=of p] (r) {$-$ randoms\\R};
+  \node[st=d2dcat0,right=of r] (n) {$\div$ normalization\\and live fraction\\n L};
+  \node[st=d2dcat0,right=of n] (s) {$-$ scatter\\S};
+  \node[st=d2dcat0,right=of s] (a) {$\div$ attenuation\\A};
+  \node[st=d2dcat0,right=of a] (d) {$\times$ decay\\factor};
+  \node[st=partcolor,right=of d] (t) {trues at the\\reference time};
+  \foreach \x/\y in {p/r,r/n,n/s,s/a,a/d,d/t} {\draw[flow] (\x) -- (\y);}
+  \foreach \x/\w in {r/{singles per\\crystal, or\\delayeds},n/{a normalization\\scan; singles\\per block},s/{the tails\\outside the\\object},a/{the outline,\\or a CT or MR\\image},d/{frame times,\\the tracer}} {
+    \node[note,text=d2dink,anchor=north,align=center] at ([yshift=-0.12cm]\x.south) {\w};}
+  \node[anchor=south,text=d2dink] at ([yshift=0.25cm]n.north -| s.north) {$P = n\,(A\,L\,T + S) + R \quad\Longrightarrow\quad T = \dfrac{(P - R)/(n\,L) - S}{A}$};
+\end{tikzpicture}

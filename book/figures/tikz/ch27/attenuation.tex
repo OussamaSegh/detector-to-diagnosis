@@ -1,0 +1,19 @@
+% Chapter 27: both photons must leave the body. The pair survives with exp(-mu a) exp(-mu b) =
+% exp(-mu (a + b)), the whole chord, wherever on the line the annihilation was.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[d2drule,line width=0.8pt] (0,0) circle (2.3);
+  \foreach \k in {0,...,35} {\fill[d2dmuted] ({2.3*cos(10*\k)},{2.3*sin(10*\k)}) circle (0.06);}
+  \fill[d2dcat0!20!white,draw=d2dcat0,line width=0.9pt] (0,0) ellipse (1.35 and 1.0);
+  \node[note,text=d2dcat0] at (0.55,0.72) {water};
+  \coordinate (L) at ({2.3*cos(200)},{2.3*sin(200)}); \coordinate (R) at ({2.3*cos(20)},{2.3*sin(20)});
+  \draw[d2dmuted,line width=0.6pt,densely dashed] (L) -- (R);
+  \coordinate (e1) at (-1.2116,-0.4410); \coordinate (e2) at (1.2116,0.4410);
+  \coordinate (x) at ($(e1)!0.3!(e2)$);
+  \draw[partcolor,line width=1.6pt] (x) -- (e1); \draw[d2dcat2,line width=1.6pt] (x) -- (e2);
+  \fill[d2dcat3] (x) circle (0.09);
+  \node[note,text=partcolor,anchor=north] at ($(x)!0.5!(e1)+(0,-0.05)$) {a};
+  \node[note,text=d2dcat2,anchor=north] at ($(x)!0.5!(e2)+(0,-0.05)$) {b};
+  \node[note,text=d2dcat3,anchor=south east] at ([xshift=-0.02cm,yshift=0.12cm]x) {annihilation};
+  \node[note,text=d2dink,anchor=west,align=left] at (2.8,0.5) {the pair survives with\\$e^{-\mu a}\,e^{-\mu b} = e^{-\mu (a+b)}$:\\the whole chord, wherever\\the annihilation was};
+  \node[note,text=d2dink,anchor=west,align=left] at (2.8,-0.9) {water at 511 keV: $\mu$ = 0.096 per cm\\a head's 18 cm: factor $e^{1.73} = 5.6$\\an outline 5 mm too large\\all round: 10\% too many};
+\end{tikzpicture}
