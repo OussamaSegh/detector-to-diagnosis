@@ -41,18 +41,19 @@ def main(dst):
     for section, style in (("no dead time", "-"), ("non-paralyzable", "--")):
         pts = rows[section]
         x = [p[0] for p in pts]
-        for col, color, name in ((1, d2d.CAT[0], "trues"), (2, d2d.CAT[1], "scatters"), (3, d2d.CAT[3], "randoms")):
-            ax1.plot(x, [p[col] / 1e3 for p in pts], style, color=color, linewidth=1.0,
-                     label=name if style == "-" else None)
+        for col, color, name, m in ((1, d2d.CAT[0], "trues", "o"), (2, d2d.CAT[1], "scatters", "s"),
+                                    (3, d2d.CAT[3], "randoms", "^")):
+            ax1.plot(x, [p[col] / 1e3 for p in pts], style, color=color, linewidth=1.0, marker=m,
+                     markersize=2.8, label=name if style == "-" else None)
     ax1.plot([], [], "--", color=d2d.MUTED, linewidth=1.0, label="1 µs non-paralyzable")
     ax1.set_yscale("log")
     ax1.set_ylabel("rate (k/s)")
     ax1.set_title("prompts by truth")
     ax1.legend(frameon=False)
-    for section, (color, label) in MODELS.items():
+    for (section, (color, label)), m in zip(MODELS.items(), ("o", "s", "^")):
         pts = rows[section]
         x = [p[0] for p in pts]
-        ax2.plot(x, [p[4] / 1e3 for p in pts], "-", marker="o", markersize=2.5, color=color, linewidth=1.0,
+        ax2.plot(x, [p[4] / 1e3 for p in pts], "-", marker=m, markersize=2.8, color=color, linewidth=1.0,
                  label=label)
         ax2.plot(x, [p[5] / 1e3 for p in pts], "--", color=color, linewidth=0.8)
     ax2.plot([], [], "--", color=d2d.MUTED, linewidth=0.8, label="k = 2")

@@ -1,0 +1,39 @@
+% Chapter 11: the NEMA-style count-rate phantom of MiniDAQ's harness, at scale (1 cm = 70 mm).
+% A 203 mm diameter, 700 mm long water cylinder with a line source 45 mm off the axis; most of
+% it lies outside the 118 mm axial field of view of the brain-sized ring.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\s{0.0142857} % cm per mm
+  % side view
+  \begin{scope}
+    \node[title,anchor=west] at (0,2.9) {side view};
+    \fill[d2dcat1!18!white] (0,-1.45) rectangle (10,1.45);
+    \draw[d2dcat1,line width=0.8pt] (0,-1.45) rectangle (10,1.45);
+    \draw[d2dmuted,dash pattern=on 4pt off 2pt] (-0.3,0) -- (10.3,0);
+    \draw[d2dcat3,line width=1.6pt] (0,0.643) -- (10,0.643);
+    % ring: inner radius 150 mm, 15 mm crystals, 118 mm axial
+    \foreach \y in {1,-1} {
+      \fill[partcolor] (5-0.843,\y*2.143) rectangle (5+0.843,\y*2.357);
+    }
+    \fill[partcolor,opacity=0.12] (5-0.843,-2.143) rectangle (5+0.843,2.143);
+    \draw[d2dcat3,line width=1.6pt] (0,0.643) -- (10,0.643);
+    \draw[partcolor,line width=0.6pt,dashed] (5-0.843,-2.143) -- (5-0.843,2.143) (5+0.843,-2.143) -- (5+0.843,2.143);
+    \draw[dimline] (0,-1.85) -- (10,-1.85) node[midway,fill=white,note] {700 mm};
+    \draw[dimline] (5-0.843,-2.65) -- (5+0.843,-2.65) node[midway,below,note] {118 mm axial field of view};
+    \node[lab,anchor=south west] at (0.15,0.65) {line source, 45 mm off the axis};
+    \node[lab,anchor=south west] at (0.15,-1.4) {water, 203 mm diameter};
+    \node[lab,text=partcolor,anchor=south] at (5,2.4) {the ring};
+  \end{scope}
+  % transaxial view
+  \begin{scope}[xshift=13.3cm]
+    \node[title,anchor=west] at (-2.5,2.9) {seen along the axis};
+    \foreach \a in {0,15,...,345} {\fill[partcolor,rotate=\a] (2.143,-0.27) rectangle (2.357,0.27);}
+    \fill[d2dcat1!18!white] (0,0) circle (1.45); \draw[d2dcat1,line width=0.8pt] (0,0) circle (1.45);
+    \fill[d2dcat3] (0,0.643) circle (0.09);
+    \fill[d2dmuted] (0,0) circle (0.04);
+    \draw[dimline] (0,0) -- (0,0.55);
+    \node[note,anchor=west] at (0.1,0.3) {45 mm};
+    \draw[dimline] (-1.45,-0.9) -- (1.45,-0.9);
+    \node[note,anchor=north] at (0,-0.95) {203 mm};
+    \node[note,anchor=north] at (0,-2.45) {ring of 24 blocks, inner radius 150 mm};
+  \end{scope}
+\end{tikzpicture}

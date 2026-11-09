@@ -1,0 +1,18 @@
+% Chapter 11: pile-up. A second photon arrives while the first pulse is being integrated;
+% its light adds to the first event's energy, and both are gone.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\p#1#2{#2*(exp(-(\x-#1)/1.8)-exp(-(\x-#1)/0.18))}
+  \draw[->,d2dmuted,line width=0.8pt] (0,0) -- (13.2,0) node[right,note] {time};
+  \draw[->,d2dmuted,line width=0.8pt] (0,0) -- (0,3.1) node[above,note] {signal};
+  \fill[partcolor!10!white] (0.6,0.02) rectangle (6.6,2.75);
+  \draw[partcolor,line width=0.6pt] (0.6,0) -- (0.6,2.75) (6.6,0) -- (6.6,2.75);
+  \node[note,anchor=north,text=partcolor] at (3.6,2.75) {integration window of the first event};
+  \draw[d2dcat0,line width=1pt,dashed,domain=0.6:12.8,samples=160] plot (\x,{\p{0.6}{2.6}});
+  \draw[d2dcat3,line width=1pt,dashed,domain=2.6:12.8,samples=160] plot (\x,{\p{2.6}{1.05}});
+  \draw[d2dink,line width=1.5pt,domain=0.6:2.6,samples=60] plot (\x,{\p{0.6}{2.6}});
+  \draw[d2dink,line width=1.5pt,domain=2.6:12.8,samples=160] plot (\x,{\p{0.6}{2.6}+\p{2.6}{1.05}});
+  \draw[->,d2dcat3,line width=0.8pt] (2.6,-0.45) node[below right,lab,text=d2dcat3,xshift=-6pt] {second photon, 200 keV} -- (2.6,-0.05);
+  \draw[->,d2dcat0,line width=0.8pt] (0.6,-0.45) node[below left,lab,text=d2dcat0,xshift=6pt] {511 keV} -- (0.6,-0.05);
+  \node[lab,anchor=west,align=left] at (7.2,1.9) {\textbf{recorded: one event of 711 keV}\\above the 585 keV upper threshold:\\the true it belonged to is lost};
+  \node[note,anchor=west,align=left] at (7.2,0.75) {dashed: the two pulses alone\\solid: what the channel sees};
+\end{tikzpicture}

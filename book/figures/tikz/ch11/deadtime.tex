@@ -1,0 +1,27 @@
+% Chapter 11: the two dead-time models on the same arrivals (time in units of the dead time).
+% Non-paralyzable: only recorded events start a dead period. Paralyzable: every arrival does.
+\begin{tikzpicture}[x=1.65cm,y=1cm]
+  \def\arr{0,0.6,1.4,1.9,3.5,4.2,4.8,6.6}
+  % arrivals
+  \node[lab,anchor=east] at (-0.15,2.6) {photons arrive};
+  \draw[d2drule,line width=0.8pt] (0,2.6) -- (7.4,2.6);
+  \foreach \x in \arr {\draw[d2dink,line width=1.2pt,-{Stealth[length=1.8mm]}] (\x,3.05) -- (\x,2.62);}
+  % rows: dead periods, recorded, lost
+  \newcommand\row[4]{% y, label, dead periods a/b, recorded/lost x/r
+    \node[lab,anchor=east,align=right] at (-0.15,#1) {#2};
+    \draw[d2drule,line width=0.8pt] (0,#1) -- (7.4,#1);
+    \foreach \a/\b in {#3} {\fill[partcolor!22!white] (\a,#1-0.22) rectangle (\b,#1+0.22);
+      \draw[partcolor,line width=0.8pt] (\a,#1-0.22) rectangle (\b,#1+0.22);}
+    \foreach \x/\r in {#4} {
+      \ifnum\r=1 \fill[d2dcat2] (\x,#1) circle (0.095);
+      \else \draw[d2dcat3,line width=1.3pt] (\x-0.07,#1-0.11) -- (\x+0.07,#1+0.11) (\x-0.07,#1+0.11) -- (\x+0.07,#1-0.11); \fi}
+  }
+  \row{1.5}{non-paralyzable\\\scriptsize 5 of 8 recorded}{0/1,1.4/2.4,3.5/4.5,4.8/5.8,6.6/7.4}{0/1,0.6/0,1.4/1,1.9/0,3.5/1,4.2/0,4.8/1,6.6/1}
+  \row{0.4}{paralyzable\\\scriptsize 3 of 8 recorded}{0/2.9,3.5/5.8,6.6/7.4}{0/1,0.6/0,1.4/0,1.9/0,3.5/1,4.2/0,4.8/0,6.6/1}
+  % scale
+  \draw[dimline] (0,-0.25) -- (1,-0.25) node[midway,below,note] {dead time $\tau$};
+  \draw[dimline] (3.5,-0.25) -- (5.8,-0.25) node[midway,below,note] {each arrival extends it};
+  % legend
+  \fill[d2dcat2] (5.25,3.05) circle (0.095); \node[note,anchor=west] at (5.33,3.05) {recorded};
+  \draw[d2dcat3,line width=1.3pt] (6.28,2.94) -- (6.42,3.16) (6.28,3.16) -- (6.42,2.94); \node[note,anchor=west] at (6.47,3.05) {lost};
+\end{tikzpicture}

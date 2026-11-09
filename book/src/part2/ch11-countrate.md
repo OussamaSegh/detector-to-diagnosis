@@ -91,16 +91,16 @@ Electronics whose busy period is set by a fixed conversion time behave like the 
 Electronics that must see the signal drop below a threshold before accepting a new pulse
 behave like the second, because a pulse that arrives in the tail of the previous one keeps
 the signal up. Real front ends are often a mixture of both, and their behavior is measured,
-not assumed.
+not assumed. Figure [](#fig-ch11-models) applies both rules to the same eight photons.
 
-![Left: recorded against true rate for one unit with Poisson arrivals, in units of 1/τ. The
-paralyzable curve has a maximum of 1/e at nτ = 1, and every lower recorded rate belongs to
-two true rates. Right: the share of singles lost with a 1 µs dead time per block in
-MiniDAQ's simulator, against the models evaluated at the average singles rate per
-block.](src/img/ch11-deadtime.png){width=100%}
+```{.figure #fig-ch11-models src="book/figures/tikz/ch11/deadtime.tex" caption="The two dead-time models on the same arrivals. A non-paralyzable unit is dead for τ after each recorded event; a paralyzable unit is dead for τ after every arrival, so a burst keeps it dead." alt="Eight photon arrivals on a time line, and two rows below them. In the non-paralyzable row, each recorded photon starts a dead period of one tau, photons inside a dead period are crossed out as lost, and five of eight are recorded. In the paralyzable row, every arrival, recorded or not, extends the dead period, so the first four photons make one long dead period, and only three of eight are recorded." width="100%"}
+```
+
+```{.figure #fig-ch11-deadtime src="book/figures/plots/ch11/deadtime.py" caption="Left: recorded against true rate for one unit with Poisson arrivals, in units of 1/τ. The paralyzable curve has a maximum of 1/e at nτ = 1, and every lower recorded rate belongs to two true rates. Right: the share of singles lost with a 1 µs dead time per block in MiniDAQ's simulator, against the models evaluated at the average singles rate per block." alt="Left panel: recorded rate against true rate for one unit, both in units of one over tau. The line with no dead time rises straight; the non-paralyzable curve bends towards 1; the paralyzable curve rises to a maximum of 1 over e at a true rate of 1 and then falls. Right panel: the percentage of singles lost against activity from 5 to 1000 MBq, simulated points for both models above the model curves computed from the average block rate, reaching about 71 percent non-paralyzable and 90 percent paralyzable at 1000 MBq." width="100%" inputs="measurements/ch11/countrate.txt"}
+```
 
 The two models agree to first order: for nτ ≪ 1 both give m ≈ n(1 − nτ). They part ways
-above nτ ≈ 0.2. The right half of the figure shows something the formulas alone do not. The
+above nτ ≈ 0.2. The right half of Figure [](#fig-ch11-deadtime) shows something the formulas alone do not. The
 simulated losses are higher than the models predict from the average block rate: 20.9%
 against 18.8% for the non-paralyzable model at 100 MBq. The line source sits 45 mm off the
 axis, so the blocks do not share the load evenly. At 100 MBq they see between 122,000 and
@@ -124,7 +124,7 @@ coincidence rates show this square law. With the 1 µs block dead time at 100 MB
 switched off, 20.9% of the singles are lost and the trues fall from 90,700 to 59,300 per
 second. That is 65% of them, against (1 − 0.209)² = 63%
 (`measurements/ch11/frontend.txt`). The small difference comes from blocks whose rates differ,
-the same effect as in the figure.
+the same effect as in Figure [](#fig-ch11-deadtime).
 
 ### Pile-up
 
@@ -152,7 +152,10 @@ NECR, and pile-up costs more than 40% of what is left. The scatter fraction, whi
 low activity precisely because it should not depend on the rate, rises from 0.33 to 0.40.
 That is why the readout architecture (how many crystals share a channel, and how the
 channel rejects pile-up) sets the count-rate performance of a scanner long before the
-software does.
+software does. Figure [](#fig-ch11-pileup) shows the mechanism.
+
+```{.figure #fig-ch11-pileup src="book/figures/tikz/ch11/pileup.tex" caption="Pile-up. A second photon arrives inside the first event's integration window; the channel sees one pulse with both photons' light and records one event of the summed energy." alt="Signal against time. A 511 keV pulse rises sharply and decays; a smaller 200 keV pulse starts a little later, inside the shaded integration window of the first. Dashed curves show each pulse alone and a solid curve shows their sum, which the channel records as one event of 711 keV, above the 585 keV upper threshold, so the true it belonged to is lost." width="90%"}
+```
 
 ::: box-mistakes
 - **One dead time for the whole scanner.** The rate per unit, not the total, sets the loss.
@@ -255,7 +258,10 @@ A worked example, from the harness at 100 MBq without dead time: T = 90,733, S =
 R = 66,233 per second. Then T + S + R = 202,046 and NECR (k = 1) = 90,733² / 202,046 =
 40,745 per second, within rounding of the 40,746 the harness prints. With k = 2 the
 denominator is 268,279 and the NECR is 30,686. Of the 202,046 prompts per second, the image
-gets the statistical value of 40,745 noise-free trues.
+gets the statistical value of 40,745 noise-free trues. Figure [](#fig-ch11-necr) draws the comparison.
+
+```{.figure #fig-ch11-necr src="book/figures/plots/ch11/necr.py" caption="The NECR as a comparison at 100 MBq without dead time: about 202,000 prompts per second carry the statistical value of about 40,700 noise-free trues (k = 1), or 30,700 when the randoms are subtracted with a delayed window (k = 2)." alt="Three horizontal bars. The top bar, prompts, is split into trues 90.7 thousand, scatters 45.1 thousand and randoms 66.2 thousand per second, about 202 thousand in all. Below it, a bar for the NECR with k equal 1 reaches 40.7 thousand, and one for k equal 2 reaches 30.7 thousand, less than half the trues." width="100%" inputs="measurements/ch11/countrate.txt"}
+```
 
 ### The count-rate curve
 
@@ -266,12 +272,13 @@ kill-all multiples policy, sectors at least one apart and a 120 mm field of view
 the trues, scatters, randoms, scatter fraction and NECR. The source is a 1.6 mm radius, 700
 mm long line 45 mm off the axis of a 203 mm diameter, 700 mm long water cylinder, after the
 NEMA count-rate phantom (verify: the dimensions against the NU 2 edition in use). Most of its
-700 mm lies outside MiniDAQ's 118 mm axial field of view, as it would in a brain scanner.
+700 mm lies outside MiniDAQ's 118 mm axial field of view, as it would in a brain scanner. Figure [](#fig-ch11-phantom) draws it to scale.
 
-![NEMA-style count-rate curves from MiniDAQ's simulator. Left: trues, scatters and randoms
-without dead time (solid) and with a 1 µs non-paralyzable dead time per block and pile-up
-(dashed). Right: NECR for the three front ends, k = 1 solid and k = 2
-dashed.](src/img/ch11-countrate.png){width=100%}
+```{.figure #fig-ch11-phantom src="book/figures/tikz/ch11/phantom.tex" caption="The NEMA-style count-rate phantom of the harness, to scale: a 700 mm water cylinder, 203 mm across, with a line source 45 mm off the axis, in MiniDAQ's ring with its 118 mm axial field of view." alt="Left, a side view: a long rectangle, the water cylinder 700 mm long, with a line source drawn as a line parallel to the axis 45 mm above it, and the ring as a short band 118 mm wide around its middle, so most of the cylinder sticks out on both sides. Right, the view along the axis: a ring of 24 blocks around a circle of 203 mm, with the source a dot 45 mm above the center." width="100%"}
+```
+
+```{.figure #fig-ch11-countrate src="book/figures/plots/ch11/countrate.py" caption="NEMA-style count-rate curves from MiniDAQ's simulator. Left: trues, scatters and randoms without dead time (solid) and with a 1 µs non-paralyzable dead time per block and pile-up (dashed). Right: NECR for the three front ends, k = 1 solid and k = 2 dashed." alt="Left panel, on log axes: trues, scatters and randoms against activity. Without dead time trues and scatters rise linearly and randoms as the square, overtaking the trues near 140 MBq. With dead time all three bend over and fall above about 100 to 300 MBq. Right panel: NECR against activity. Without dead time it peaks near 73 thousand per second around 560 MBq; with either dead-time model it peaks near 16 thousand around 70 MBq; the k equal 2 curves lie lower and peak earlier." width="100%" inputs="measurements/ch11/countrate.txt"}
+```
 
 | Front end | Peak, k = 1 | At | Peak, k = 2 | At |
 |:--------------------------|---------:|--------:|---------:|--------:|
@@ -283,7 +290,7 @@ dashed.](src/img/ch11-countrate.png){width=100%}
 a parabola in ln(activity) through the best point and its neighbors (Exercise 11.1), so the
 activities are approximate.
 
-Three things stand out. Without dead time the randoms overtake the trues near 140 MBq and
+Three things stand out in Figure [](#fig-ch11-countrate). Without dead time the randoms overtake the trues near 140 MBq and
 grow as the square of the activity, while trues and scatters grow linearly. The dead-time
 front end moves the peak down by almost an order of magnitude, from about 560 to about
 70 MBq, and lowers it to about a fifth. And k = 2 lowers every peak and moves it to a lower
@@ -337,11 +344,10 @@ well past the peak is enough. A faster one buys nothing the image can use.
 The NECR is the number that chooses the coincidence window. A wider time window keeps trues
 whose photons arrive further apart, but it opens more time for randoms, and the randoms grow
 linearly with its width. A narrower one does the opposite. `measurements/ch11/windows.py`
-sweeps both windows at 30 and 100 MBq with the dead-time front end.
+sweeps both windows at 30 and 100 MBq with the dead-time front end (Figure [](#fig-ch11-windows)).
 
-![NECR (k = 1) against the coincidence time window (left) and the lower energy threshold
-(right), at 30 and 100 MBq with the 1 µs block dead time and pile-up. The dotted lines mark
-the harness's 4 ns and 435 keV.](src/img/ch11-windows.png){width=100%}
+```{.figure #fig-ch11-windows src="book/figures/plots/ch11/windows.py" caption="NECR (k = 1) against the coincidence time window (left) and the lower energy threshold (right), at 30 and 100 MBq with the 1 µs block dead time and pile-up. The dotted lines mark the harness's 4 ns and 435 keV." alt="Left panel: NECR against the time window from 0.5 to 8 ns, falling steadily as the window widens, from about 22 to 11 thousand per second at 100 MBq and from 13.5 to 10.5 at 30 MBq, with a dotted line at 4 ns. Right panel: NECR against the lower energy threshold from 350 to 480 keV, rising to a maximum at 460 keV and falling at 480, at both activities, with a dotted line at 435 keV." width="100%" inputs="measurements/ch11/windows.txt"}
+```
 
 | Time window | Trues/s | Randoms/s | NECR (k = 1) |
 |------------:|--------:|----------:|-------------:|
@@ -509,7 +515,10 @@ capacity:
 The *load* on each stage grows with the activity in its own unit: singles per second for
 the link and the sorter, bytes per second of coincidences for the disk. A budget compares
 them at the activity they share. A comparison of capacities directly is meaningless,
-because the units differ (Exercise 11.5).
+because the units differ (Exercise 11.5). Figure [](#fig-ch11-chain) shows the chain with the capacities this chapter measures.
+
+```{.figure #fig-ch11-chain src="book/figures/tikz/ch11/chain.tex" caption="The chain from crystal to disk and the capacity of each stage for the NEMA-style source, in singles per second. The pair stage, the coincidence sorter, saturates first among the software stages." alt="A row of boxes joined by arrows: detector, front end, readout link, decode, sort, pair, write and disk. A brace over decode to write marks the acquisition software. Under each box its capacity: the front end with a 1 microsecond block dead time records below 49 million per second; a Gigabit link carries 14.8 million and a 10 GbE link 148 million; decode about 330 million; sort about 96 million; pair about 70 million, highlighted as the first to saturate; write and disk depend on the list-mode format of Chapter 12." width="100%"}
+```
 
 ### Measuring the software
 
@@ -548,7 +557,10 @@ the source starts to drop words, and the end-to-end latency's 99th percentile ju
 about 2 ms to about 10 ms as the queues fill. The sort stage is next, at about 96 M singles
 per second. The replay source's own busy time, 23% at 20 MBq and about 65% from 100 MBq up,
 is the work of reading the clock and copying, not a limit of the pipeline. A real source is
-a network card, so it is left out of the analysis.
+a network card, so it is left out of the analysis. Figure [](#fig-ch11-bottleneck) shows the fit.
+
+```{.figure #fig-ch11-bottleneck src="book/figures/plots/ch11/bottleneck.py" caption="How busy each software stage is against the singles rate (two runs per activity), with a line through the origin fitted to each: the pair stage reaches 100% at about 70 M singles per second, the sort stage at about 96 M." alt="A scatter plot of busy percentage against singles per second from 0 to 110 million, with a dashed fitted line per stage. The pair stage's points rise steepest, reaching 97 percent at 67 million, and its line crosses 100 percent at about 70 million. The sort stage's line crosses 100 percent at about 96 million. The decode stage rises slowly, to 20 percent at 67 million, and would reach 100 percent only at about 330 million." width="75%" inputs="measurements/ch11/bottleneck.txt"}
+```
 
 Compare the capacity with Chapter 10's benchmark with care. There the sorter alone took
 68 M singles per second, 31 M of them inside the energy window. Here about 63% of the
@@ -582,7 +594,10 @@ would be the first software limit, at about six times this NECR peak. Keep a mar
 every stage: 30% is a common rule, which makes the sorter "full" at about 290 MBq. A faster
 front end is what would bring it into play. The disk is not in this table,
 because its load depends on the list-mode format, which Chapter 12 defines. The method of
-Exercise 11.5 adds it with a single line.
+Exercise 11.5 adds it with a single line. Figure [](#fig-ch11-budget) shows the same budget as curves.
+
+```{.figure #fig-ch11-budget src="book/figures/plots/ch11/budget.py" caption="The budget as curves: the singles rate the front end delivers against the activity, without dead time and with the 1 µs block dead time and pile-up, against the capacity of each stage." alt="A log-log plot of singles per second against activity from 5 to 1000 MBq. Without dead time the rate is a straight line, 0.167 singles per decay, that crosses the Gigabit link's 14.8 million near 90 MBq, the pair stage's 70 million near 420 MBq and the sort stage's 96 million near 570 MBq. With the block dead time the curve bends away and stays below 49 million up to 1000 MBq, crossing only the Gigabit link's line, near 115 MBq." width="80%" inputs="measurements/ch11/countrate.txt"}
+```
 
 A budget like this is a design document. It says which stage to watch when the scanner
 changes: a faster front end moves the peak up and brings the link and the sorter closer.
