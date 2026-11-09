@@ -1,0 +1,14 @@
+% Chapter 3: store buffering. Each thread stores, then loads the other variable; with
+% acquire/release both loads can read 0, because each store waits in its core's store buffer.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[title] at (1.6,2.5) {thread 1}; \node[title] at (8.8,2.5) {thread 2};
+  \node[box,minimum width=2.6cm,font=\ttfamily\footnotesize] (a1) at (1.6,1.6) {x.store(1)};
+  \node[box,minimum width=2.6cm,font=\ttfamily\footnotesize] (a2) at (1.6,0.3) {r1 = y.load()};
+  \node[box,minimum width=2.6cm,font=\ttfamily\footnotesize] (b1) at (8.8,1.6) {y.store(1)};
+  \node[box,minimum width=2.6cm,font=\ttfamily\footnotesize] (b2) at (8.8,0.3) {r2 = x.load()};
+  \draw[flow] (a1) -- (a2); \draw[flow] (b1) -- (b2);
+  \node[dim,minimum width=2.0cm,font=\sffamily\scriptsize] (sb1) at (5.2,2.2) {store buffer 1: x = 1};
+  \node[dim,minimum width=2.0cm,font=\sffamily\scriptsize] (sb2) at (5.2,1.0) {store buffer 2: y = 1};
+  \draw[->,d2dmuted,dashed] (a1.east) -- (sb1.west); \draw[->,d2dmuted,dashed] (b1.west) -- (sb2.east);
+  \node[lab,anchor=north,align=center] at (5.2,-0.4) {acquire/release: \textcolor{d2dcat3}{\textbf{r1 = r2 = 0}} possible (2 to 11 times per million here)\\\texttt{seq\_cst}: at least one thread sees the other's store (0 times)};
+\end{tikzpicture}

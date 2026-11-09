@@ -72,7 +72,10 @@ Notice two design choices. First, consumers start before producers, so the sourc
 fills a queue that nobody reads. Second, only the source receives a stop token. Stopping a
 pipeline means stopping the *input*. Every later stage keeps running until its input is
 closed and drained, so a stop never discards data that was already accepted. The other
-threads end because their input ends, not because someone tells them to.
+threads end because their input ends, not because someone tells them to. Figure [](#fig-ch03-jthread) shows the order.
+
+```{.figure #fig-ch03-jthread src="book/figures/tikz/ch03/jthread.tex" caption="Starting and stopping the pipeline. The consumers start first and the source last; only the source has a stop token, and every later stage ends because its input ends." alt="Five boxes in a row, source, decode, sort, pair and write, joined by arrows, numbered in start order: write first, source fifth. A stop token points only at the source. A note says that on stop the source ends its input, each stage drains what it accepted, sees its input closed and returns, so no accepted data is discarded, and each std::jthread's destructor then requests stop and joins, so an early return cannot call std::terminate." width="90%"}
+```
 
 ### Waiting without polling: condition_variable_any and stop tokens
 
@@ -231,7 +234,10 @@ exactly the guarantee acquire/release gives. Store buffering would only matter i
 example, the producer stored `tail` and then decided something from a load of `head` that had
 to be ordered after its own store. Our ring never does that. Lock-free algorithms that do, such
 as Dekker-style mutual exclusion or some hazard-pointer schemes, need `seq_cst` or explicit
-fences.
+fences. Figure [](#fig-ch03-storebuffer) shows the store-buffering case.
+
+```{.figure #fig-ch03-storebuffer src="book/figures/tikz/ch03/storebuffer.tex" caption="Store buffering. Each thread stores one variable and then loads the other; while the stores wait in the cores' store buffers, both loads can read 0 under acquire/release, never under seq_cst." alt="Two threads side by side. Thread 1 does x.store(1) then r1 = y.load(); thread 2 does y.store(1) then r2 = x.load(). Each store goes into a store buffer drawn between them, x equals 1 in store buffer 1 and y equals 1 in store buffer 2. Below: with acquire/release, r1 and r2 can both be 0, 2 to 11 times per million trials here; with seq_cst at least one thread sees the other's store, 0 times." width="75%"}
+```
 
 ### Fences, briefly
 
@@ -383,7 +389,10 @@ spread along with the median.
 
 Exercise 3.1 asks for 50 M singles per second between two pinned threads. With 16-byte
 `Single` values, the reference solution's per-item median was 33 M/s on this VM and batches of
-64 reached 314 M/s, so batching meets the target with a large margin.
+64 reached 314 M/s, so batching meets the target with a large margin. Figure [](#fig-ch03-spsc) shows the table on a log scale, with the spread of every variant.
+
+```{.figure #fig-ch03-spsc src="book/figures/plots/ch03/spsc.py" caption="Hand-off rates between two pinned threads (ten repetitions; bar the median, line from min to max). The memory order is worth almost ten times, and batching more than that again." alt="Horizontal bars on a log scale of million items per second, with a line from min to max. Mutex and deque 5.2; ring with seq_cst 7.1; ring with acquire/release 61.7, spread from 36 to 140; SpscRing with cached indices 51.6; MpmcQueue with one producer 28.7; SpscRing with batches of 16, 159; with batches of 256, 386.8." width="90%"}
+```
 
 ### Multiple producers: Vyukov's bounded queue
 
@@ -510,7 +519,10 @@ drop oldest) with exact accounting and discusses why only the entry stage may dr
 empty batch, then the sort stage waits, and so on back to the source, where the policy decides.
 That is the answer to this chapter's second check-yourself question. When the writer falls
 behind, the DAQ must apply back-pressure up to a single, deliberate decision point, never
-drop silently in the middle, and raise an alarm when the drop counter moves.
+drop silently in the middle, and raise an alarm when the drop counter moves. Figure [](#fig-ch03-backpressure) shows the one decision point.
+
+```{.figure #fig-ch03-backpressure src="book/figures/tikz/ch03/backpressure.tex" caption="Back-pressure inside the PC, one decision at the entry. When the writer falls behind, every stage waits for an empty batch in turn, back to the source; only there does the policy choose between stalling the boards and dropping with a count." alt="A row: the boards' FIFOs, the source highlighted, decode, sort, pair, and write marked as falling behind. Arrows under the row run backwards from write to the source: inside the PC every stage blocks, and waiting propagates back. A dashed arrow from the source back to the boards says waits propagate to hardware. Under the source: the decision point; back-pressure waits and stalls the boards when they fill, drop reads, discards and counts." width="95%"}
+```
 
 ### Keeping accounts
 
@@ -582,7 +594,10 @@ Even the slowest configuration handles 33 M words/s. That is more than three tim
 singles/s this book uses as its working rate (assumption: confirm with team), but only just
 above the 30 M singles/s of Chapter 2's high-activity estimate: no margin at all. On the real
 acquisition PC, with pinned cores and without a hypervisor, expect better numbers. Measure
-them.
+them. Figure [](#fig-ch03-batches) shows the pipeline and its sort stage against the batch size.
+
+```{.figure #fig-ch03-batches src="book/figures/plots/ch03/batches.py" caption="The five-stage pipeline against the batch size, and the sort stage timed alone. At 4,096 singles per batch the sort sets the pipeline's speed; at 64 the hand-offs do." alt="A line chart against singles per batch, 64, 512 and 4,096. The whole pipeline runs at 42.6, 47.3 and 33.1 million singles per second, with a narrow band for min to max. The sort stage alone falls from about 90 to about 46 and 36. A dotted line at 30 million marks Chapter 2's high-activity estimate, just under the slowest point." width="62%"}
+```
 
 ::: box-mistakes
 - **Unbounded queues.** A `std::queue` between stages "never blocks". It grows during every

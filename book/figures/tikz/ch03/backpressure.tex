@@ -1,0 +1,14 @@
+% Chapter 3: back-pressure inside the PC, one deliberate decision point at the entry.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.9cm]
+  \node[dim,minimum width=1.7cm] (hw) {boards'\\FIFOs};
+  \node[hot,right=of hw,minimum width=1.6cm] (src) {source};
+  \node[box,right=of src,minimum width=1.4cm] (dec) {decode};
+  \node[box,right=of dec,minimum width=1.4cm] (sort) {sort};
+  \node[box,right=of sort,minimum width=1.4cm] (pair) {pair};
+  \node[box=d2dcat3,right=of pair,minimum width=1.4cm] (wr) {write\\[-1pt]\scriptsize falls behind};
+  \foreach \a/\b in {hw/src,src/dec,dec/sort,sort/pair,pair/wr} {\draw[flow] (\a) -- (\b);}
+  \foreach \a/\b in {wr/pair,pair/sort,sort/dec,dec/src} {\draw[->,d2dcat3,line width=1pt] ([yshift=-0.55cm]\a.west) -- ([yshift=-0.55cm]\b.east);}
+  \node[note,text=d2dink,anchor=north] at ($(dec)!0.5!(wr)+(0,-0.75)$) {inside the PC every stage \textbf{blocks}: waiting for an empty batch propagates back};
+  \node[lab,anchor=north,align=center] at ([yshift=-1.3cm]src.south) {\textbf{the decision point}:\\back-pressure: wait, and stall\\the boards when they fill;\\drop: read, discard, and \textbf{count}};
+  \draw[->,d2dcat3,line width=1pt,dashed] (src.north) to[out=135,in=45] node[above,note,text=d2dink] {waits propagate to hardware} (hw.north);
+\end{tikzpicture}
