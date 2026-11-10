@@ -8,6 +8,8 @@ the patch version.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-10
+
 ### Fixed
 
 - The workflows `kdp` and `pages` install the figures' Python environment from
@@ -36,6 +38,9 @@ the patch version.
 - Fifteen controlled documents approved by the software lead for release 1.1.0, each as a new
   version that records the approval (MDQ-PR-066, closed); `tools/design_file.py` refuses a
   controlled document that says draft in a release.
+- Release record 1.1.0 (`docs/regulatory/releases/1.1.0.md`), the internal audit before it
+  (`docs/regulatory/qms/internal-audit-2026-11-10.md`) and the evidence of the release checks
+  (`measurements/release-1.1.0/`). CAPA-0002 closed: its check at 1.1.0 is effective.
 - The internal audit before release 1.1.0 (`docs/regulatory/qms/internal-audit-2026-11-10.md`)
   and the SOUP review for MiniDAQ 1.1.
 - `measurements/ch37/mutants.py`: which test of Exercise 37.3 catches which mutant.

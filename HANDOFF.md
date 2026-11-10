@@ -9,7 +9,16 @@ Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba); the open 
 review of 1.0.0 are closed on main (CAPA-0002's check, the verify: markers, the index, the
 roadmap).
 
-## Start here (after release 1.0.0)
+## Start here (after release 1.1.0)
+
+**Release 1.1.0 (2026-11-10): the illustrated interior.** Internal audit before the checks
+(`docs/regulatory/qms/internal-audit-2026-11-10.md`, no nonconformity), fifteen controlled
+documents approved by the software lead at their content (MDQ-PR-066 closed; `tools/design_file.py`
+now refuses a "draft" status in a release VERSION), SOUP list v22 (review for 1.1) and v23,
+release checks in four parts on 9b9e96d (`measurements/release-1.1.0/`, ACC-04 179 of 180
+intervals: passed), reproducible build checked, CAPA-0002 closed (effective), release record
+`docs/regulatory/releases/1.1.0.md`, tag book-v1.1.0 through `.github/tags.txt`. Open: MDQ-PR-006,
+007, 009, 064. No CAPA open.
 
 **Interior redesign for 1.1.0: complete, on main** (plan `book/docs/PLAN-interior-design.md`,
 approved by the user: "Go implement", then "Review and finish everything"). The palette
@@ -63,9 +72,9 @@ review items"):
   (`docs/regulatory/qms/internal-audit-2026-11-09.md`): not effective, new check due at release
   1.1.0. `tools/check_capa.py` now fails on an overdue check and on a newest release record that
   leaves out an open CAPA (MDQ-PR-065, closed); SDP version 15, section 8 item 9: an internal
-  audit before each minor release, cited by its record. MDQ-PR-066 (open): fifteen controlled
-  documents carry "Status: draft for review"; at 1.1.0 the release record approves each document
-  at its version (the software lead's act, not a tool's).
+  audit before each minor release, cited by its record. MDQ-PR-066 (closed at 1.1.0): fifteen
+  controlled documents carried "Status: draft for review"; the software lead approved each at
+  release 1.1.0.
 - The 133 printed *verify:* markers are gone (Parts I to IX, solutions Chapter 5): citations
   completed from PubMed, IEEE and JACoW records, clause numbers given, "at the time of writing"
   for what may change, or the sentence says what was not checked. The exercise NOTES files keep
@@ -79,9 +88,9 @@ review items"):
   rebased from claude/project-thread-k78nqm. The branches k78nqm and osszm6 are now stale (a
   force push to update them was refused by the session's permissions); delete them on GitHub.
 
-Next work: none is asked. The next thread starts VERSION 1.1.0-dev (or 2.0.0-dev, see the roadmap
-work in other threads), bumps the Python package versions with it, adds a dated SOUP review for
-the new minor version, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
+Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor version (1.2.0
+or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
+for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
 Next free numbers: MDQ-PR-067, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
@@ -465,6 +474,8 @@ Part VIII (thread started 2026-11-04).
 - RELEASED 1.0.0 on 2026-11-08: checks on 517cd49, record on 33aa5ba, tag book-v1.0.0 on
   33aa5ba; CR-0025 implemented, MDQ-PR-063 closed, MDQ-PR-064 open, deviation for ACC-04
   approved (see "Start here").
+- RELEASED 1.1.0 on 2026-11-10: the illustrated interior (231 figures); checks on 9b9e96d,
+  record and tag book-v1.1.0 on the release commit; CAPA-0002 closed, MDQ-PR-066 closed.
 - Opus review of Part VIII (2026-11-04): PR #6 (branch claude/project-thread-uss0ag) MERGED
   LOCALLY (79187ef): e2e sorter partition with out_of_order and a stricter damaged-link test
   (MDQ-PR-059), acceptance.py commit prefix of at least 7 characters (MDQ-PR-060), Chapters 33

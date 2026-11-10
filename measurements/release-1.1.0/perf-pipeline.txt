@@ -1,0 +1,23 @@
+# 2026-11-10T08:29:49Z commit 9b9e96d hardened bm_pipeline, 5 repetitions (SRS-PERF-020)
+4
+2026-11-10T08:29:49+00:00
+Running build/hardened/benchmarks/bm_pipeline
+Run on (4 X 2100 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x4)
+  L1 Instruction 32 KiB (x4)
+  L2 Unified 2048 KiB (x4)
+  L3 Unified 266240 KiB (x1)
+Load Average: 7.29, 13.70, 16.54
+-----------------------------------------------------------------------------------------------
+Benchmark                                     Time             CPU   Iterations UserCounters...
+-----------------------------------------------------------------------------------------------
+BM_Pipeline/4096/64/real_time               205 ms         6.97 ms            3 items_per_second=41.0164M/s
+BM_Pipeline/4096/64/real_time               190 ms         6.30 ms            3 items_per_second=44.0617M/s
+BM_Pipeline/4096/64/real_time               188 ms         6.04 ms            3 items_per_second=44.7219M/s
+BM_Pipeline/4096/64/real_time               210 ms         7.21 ms            3 items_per_second=40.0124M/s
+BM_Pipeline/4096/64/real_time               253 ms         6.61 ms            3 items_per_second=33.1914M/s
+BM_Pipeline/4096/64/real_time_mean          209 ms         6.63 ms            5 items_per_second=40.6008M/s
+BM_Pipeline/4096/64/real_time_median        205 ms         6.61 ms            5 items_per_second=41.0164M/s
+BM_Pipeline/4096/64/real_time_stddev       26.2 ms        0.476 ms            5 items_per_second=4.59292M/s
+BM_Pipeline/4096/64/real_time_cv          12.52 %          7.18 %             5 items_per_second=11.31%

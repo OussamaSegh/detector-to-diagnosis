@@ -1,0 +1,491 @@
+# 2026-11-10T08:30:39Z commit 9b9e96d perf: release build of 9b9e96d and of book-v1.0.0, interleaved
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="/tmp/claude-0/rel110/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="/tmp/claude-0/rel110/.deps"
+  FETCHCONTENT_UPDATES_DISCONNECTED="ON"
+
+-- Failed to find LLVM FileCheck
+-- Google Benchmark version: v1.9.1, normalized to 1.9.1
+-- Performing Test HAVE_STD_REGEX -- success
+-- Performing Test HAVE_GNU_POSIX_REGEX -- failed to compile
+-- Performing Test HAVE_POSIX_REGEX -- success
+-- Performing Test HAVE_STEADY_CLOCK -- success
+-- Performing Test HAVE_PTHREAD_AFFINITY -- success
+-- Using the multi-header code from /tmp/claude-0/rel110/.deps/nlohmann_json-src/include/
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
+-- pybind11 v3.1.0 
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
+-- Configuring done (2.4s)
+-- Generating done (0.2s)
+-- Build files have been written to: /tmp/claude-0/rel110/build/release
+[0/2] Re-checking globbed directories...
+[1/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[3/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
+[4/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
+[5/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[6/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
+[7/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
+[8/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
+[9/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
+[10/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
+[11/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
+[12/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
+[13/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
+[14/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
+[15/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
+[16/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
+[17/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
+[18/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
+[19/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
+[20/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
+[21/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+[22/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
+[23/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
+[24/191] Linking CXX static library /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/libbenchmark.a
+[25/191] Linking CXX static library /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/libbenchmark_main.a
+[26/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[27/191] Linking CXX static library lib/libgtest.a
+[28/191] Linking CXX static library lib/libgmock.a
+[29/191] Linking CXX static library lib/libgmock_main.a
+[30/191] Linking CXX static library lib/libgtest_main.a
+[31/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/access.cpp.o
+[32/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/hardware_config.cpp.o
+[33/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/acquisition_state.cpp.o
+[34/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/calibration_file.cpp.o
+[35/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/acquisition_config.cpp.o
+[36/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/audit.cpp.o
+[37/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/hardware.cpp.o
+[38/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/adapters.cpp.o
+[39/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/audit_log.cpp.o
+[40/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/tls.cpp.o
+[41/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/corrections_record.cpp.o
+[42/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/run_integrity.cpp.o
+[43/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/udp_detector.cpp.o
+[44/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/control_server.cpp.o
+[45/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/file_ops.cpp.o
+[46/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/acquisition_service.cpp.o
+[47/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/service_manager.cpp.o
+[48/191] Linking CXX executable minidaq/tests/minidaq_alloc_tests
+[49/191] Building CXX object minidaq/apps/CMakeFiles/minidaq_server.dir/minidaq_server.cpp.o
+[50/191] Linking CXX executable recon/recon_tests
+[51/191] Linking CXX executable benchmarks/bm_layout
+[52/191] Linking CXX executable benchmarks/bm_alloc
+[53/191] Linking CXX executable benchmarks/bm_false_sharing
+[54/191] Linking CXX executable benchmarks/bm_decode
+[55/191] Linking CXX executable benchmarks/bm_latency
+[56/191] Linking CXX executable benchmarks/bm_spsc
+[57/191] Linking CXX executable benchmarks/bm_pipeline
+[58/191] Linking CXX executable benchmarks/bm_histogram
+[59/191] Linking CXX executable benchmarks/bm_energy_filter
+[60/191] Linking CXX executable benchmarks/bm_sort
+[61/191] Linking CXX executable benchmarks/bm_sorter
+[62/191] Linking CXX executable benchmarks/bm_listmode
+[63/191] Linking CXX executable benchmarks/bm_flight_recorder
+[64/191] Linking CXX executable benchmarks/bm_udp_receive
+[65/191] Linking CXX executable exercises/ch01/ch01_e2_rule_of_zero_solution
+[66/191] Linking CXX executable exercises/ch01/ch01_e1_strong_types_solution
+[67/191] Linking CXX executable exercises/ch01/ch01_e3_parse_single_solution
+[68/191] Linking CXX executable exercises/ch01/ch01_e4_ub_hunt_solution
+[69/191] Linking CXX executable exercises/ch01/ch01_e6_event_concepts_solution
+[70/191] Linking CXX executable exercises/ch01/ch01_e5_constexpr_lut_solution
+[71/191] Linking CXX executable exercises/ch02/ch02_e2_aos_soa_solution_bench
+[72/191] Linking CXX executable exercises/ch02/ch02_e1_stream_budget_solution
+[73/191] Linking CXX executable exercises/ch02/ch02_e2_aos_soa_solution
+[74/191] Linking CXX executable exercises/ch02/ch02_e3_pmr_arena_solution
+[75/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/control_protocol.cpp.o
+[76/191] Linking CXX executable exercises/ch02/ch02_e5_false_sharing_solution_bench
+[77/191] Linking CXX executable exercises/ch02/ch02_e4_packed_word_solution
+[78/191] Linking CXX executable exercises/ch03/ch03_e1_spsc_ring_solution_bench
+[79/191] Linking CXX executable exercises/ch02/ch02_e5_false_sharing_solution
+[80/191] Linking CXX executable exercises/ch02/ch02_e6_struct_layout_solution
+[81/191] Linking CXX executable exercises/ch03/ch03_e3_four_stage_pipeline_solution
+[82/191] Linking CXX executable exercises/ch03/ch03_e1_spsc_ring_solution
+[83/191] Linking CXX executable exercises/ch03/ch03_e2_seeded_race_solution
+[84/191] Linking CXX executable exercises/ch03/ch03_e4_latch_barrier_solution
+[85/191] Linking CXX executable exercises/ch03/ch03_e6_stop_token_solution
+[86/191] Linking CXX executable exercises/ch03/ch03_e5_drop_policy_solution
+[87/191] Linking CXX executable exercises/ch04/ch04_e1_cyclictest_solution
+[88/191] Linking CXX executable exercises/ch04/ch04_e2_pin_stages_solution
+[89/191] Linking CXX executable exercises/ch04/ch04_e3_stage_histograms_solution
+[90/191] Linking CXX executable exercises/ch04/ch04_e5_tsc_clock_solution
+[91/191] Linking CXX executable exercises/ch04/ch04_e4_prefault_arena_solution
+[92/191] Linking CXX executable exercises/ch05/ch05_e1_energy_filters_solution_bench
+[93/191] Linking CXX executable exercises/ch04/ch04_e6_coordinated_omission_solution
+[94/191] Linking CXX executable exercises/ch05/ch05_e2_hotspot_solution_bench
+[95/191] Linking CXX executable exercises/ch05/ch05_e1_energy_filters_solution
+[96/191] Linking CXX executable exercises/ch05/ch05_e2_hotspot_solution
+[97/191] Linking CXX executable exercises/ch05/ch05_e4_energy_spectrum_solution_bench
+[98/191] Linking CXX executable exercises/ch05/ch05_e4_energy_spectrum_solution
+[99/191] Linking CXX executable exercises/ch05/ch05_e5_speedup_ci_solution
+[100/191] Linking CXX executable exercises/ch06/ch06_e2_state_machine_solution
+[101/191] Linking CXX executable exercises/ch06/ch06_e4_frame_reader_solution
+[102/191] Linking CXX executable exercises/ch07/ch07_e1_tidy_zero_solution
+[103/191] Linking CXX executable exercises/ch07/ch07_e2_fuzz_packets_solution
+[104/191] Linking CXX executable exercises/ch07/ch07_e4_untrusted_path_solution
+[105/191] Linking CXX executable exercises/ch07/ch07_e5_strict_duration_solution
+[106/191] Linking CXX executable exercises/ch08/ch08_e3_randoms_solution
+[107/191] Linking CXX executable exercises/ch08/ch08_e4_klein_nishina_solution
+[108/191] Linking CXX executable exercises/ch08/ch08_e5_rates_vs_activity_solution
+[109/191] Linking CXX executable exercises/ch09/ch09_e1_tdc_word_solution
+[110/191] Linking CXX executable exercises/ch09/ch09_e2_link_monitor_solution
+[111/191] Linking CXX executable exercises/ch09/ch09_e3_clock_drift_solution
+[112/191] Linking CXX executable exercises/ch10/ch10_e1_reference_sorter_solution
+[113/191] Linking CXX executable exercises/ch10/ch10_e2_multiples_policies_solution
+[114/191] Linking CXX executable exercises/ch10/ch10_e3_parallel_slices_solution
+[115/191] Linking CXX executable exercises/ch10/ch10_e5_slice_merge_solution_bench
+[116/191] Linking CXX executable exercises/ch10/ch10_e4_fast_sorter_solution
+[117/191] Linking CXX executable exercises/ch10/ch10_e5_slice_merge_solution
+[118/191] Linking CXX executable exercises/ch11/ch11_e1_count_rate_solution
+[119/191] Linking CXX executable exercises/ch11/ch11_e2_dead_time_solution
+[120/191] Linking CXX executable exercises/ch12/ch12_e1_listmode_writer_solution
+[121/191] Linking CXX executable exercises/ch15/ch15_e2_loss_controls_solution
+[122/191] Linking CXX executable exercises/ch17/ch17_e2_token_roles_solution
+[123/191] Linking CXX executable exercises/ch17/ch17_e5_secure_bind_solution
+[124/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m0
+[125/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m1
+[126/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m2
+[127/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m3
+[128/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m4
+[129/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m5
+[130/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m6
+[131/191] Linking CXX executable exercises/ch18/ch18_e1_unwrap_tests_solution_m7
+[132/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m0
+[133/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m1
+[134/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m3
+[135/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m2
+[136/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m4
+[137/191] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/listmode_sink.cpp.o
+[138/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m5
+[139/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m7
+[140/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m6
+[141/191] Linking CXX static library minidaq/libminidaq_control.a
+[142/191] Linking CXX executable exercises/ch18/ch18_e2_sorter_properties_solution_m8
+[143/191] Linking CXX executable exercises/ch19/ch19_e4_batching_test_solution_m0
+[144/191] Linking CXX executable minidaq/apps/minidaq_server
+[145/191] Linking CXX executable exercises/ch18/ch18_e5_kill_survivors_solution
+[146/191] Linking CXX executable benchmarks/writer_throughput
+[147/191] Linking CXX executable minidaq/apps/minidaq_sim
+[148/191] Linking CXX executable minidaq/apps/minidaq_ctl
+[149/191] Linking CXX executable exercises/ch12/ch12_e3_writer_rate_solution
+[150/191] Linking CXX executable exercises/ch06/ch06_e5_fault_injection_solution
+[151/191] Linking CXX executable exercises/ch18/ch18_e4_fault_injection_solution
+[152/191] Linking CXX executable exercises/ch19/ch19_e4_batching_test_solution_m2
+[153/191] Linking CXX executable exercises/ch19/ch19_e4_batching_test_solution_m3
+[154/191] Linking CXX executable exercises/ch19/ch19_e4_batching_test_solution_m1
+[155/191] Linking CXX executable exercises/ch19/ch19_e4_batching_test_solution_m4
+[156/191] Linking CXX executable exercises/ch19/ch19_e4_batching_test_solution_m5
+[157/191] Linking CXX executable exercises/ch21/ch21_e2_postmortem_solution
+[158/191] Linking CXX executable exercises/ch21/ch21_e3_flight_recorder_solution
+[159/191] Linking CXX executable minidaq/tests/minidaq_unit_tests
+[160/191] Linking CXX executable exercises/ch22/ch22_e2_bias_control_solution
+[161/191] Linking CXX executable exercises/ch22/ch22_e3_tmp117_solution
+[162/191] Linking CXX executable exercises/ch23/ch23_e2_rxq_ovfl_solution
+[163/191] Linking CXX executable exercises/ch22/ch22_e4_supply_guard_solution
+[164/191] Linking CXX executable exercises/ch23/ch23_e4_batch_receiver_solution
+[165/191] Linking CXX executable exercises/ch23/ch23_e3_buffer_sizing_solution
+[166/191] Linking CXX executable exercises/ch24/ch24_e2_gray_code_solution
+[167/191] Linking CXX executable exercises/ch24/ch24_e1_handshake_solution
+[168/191] Linking CXX executable exercises/ch24/ch24_e3_out_fifo_solution
+[169/191] Linking CXX executable exercises/ch24/ch24_e4_split_counter_solution
+[170/191] Linking CXX executable exercises/ch25/ch25_e1_watchdog_env_solution
+[171/191] Linking CXX executable exercises/ch25/ch25_e2_semver_solution
+[172/191] Linking CXX executable exercises/ch25/ch25_e3_power_cut_solution
+[173/191] Linking CXX executable exercises/ch33/ch33_e1_counts_add_up_solution
+[174/191] Linking CXX executable exercises/ch29/ch29_e2_threads_solution
+[175/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m0
+[176/191] Linking CXX executable exercises/ch25/ch25_e4_verify_tree_solution
+[177/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m1
+[178/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m2
+[179/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m3
+[180/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m4
+[181/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m5
+[182/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m6
+[183/191] Linking CXX executable exercises/ch34/ch34_e3_characterize_solution_m7
+[184/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m0
+[185/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m1
+[186/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m2
+[187/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m3
+[188/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m4
+[189/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m5
+[190/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m7
+[191/191] Linking CXX executable exercises/ch37/ch37_e3_review_by_tests_solution_m6
+Preparing worktree (detached HEAD 33aa5ba)
+HEAD is now at 33aa5ba Release 1.0.0: the deviation for ACC-04 is approved
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="/tmp/tmp.V6DYMoXJ8o/perf-base/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="/tmp/tmp.V6DYMoXJ8o/perf-base/.deps"
+  FETCHCONTENT_UPDATES_DISCONNECTED="ON"
+
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The C compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Failed to find LLVM FileCheck
+-- Found Git: /usr/bin/git (found version "2.43.0") 
+-- Google Benchmark version: v1.9.1, normalized to 1.9.1
+-- Looking for shm_open in rt
+-- Looking for shm_open in rt - found
+-- Performing Test HAVE_CXX_FLAG_WALL
+-- Performing Test HAVE_CXX_FLAG_WALL - Success
+-- Performing Test HAVE_CXX_FLAG_WEXTRA
+-- Performing Test HAVE_CXX_FLAG_WEXTRA - Success
+-- Performing Test HAVE_CXX_FLAG_WSHADOW
+-- Performing Test HAVE_CXX_FLAG_WSHADOW - Success
+-- Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL
+-- Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL - Success
+-- Performing Test HAVE_CXX_FLAG_WOLD_STYLE_CAST
+-- Performing Test HAVE_CXX_FLAG_WOLD_STYLE_CAST - Success
+-- Performing Test HAVE_CXX_FLAG_WCONVERSION
+-- Performing Test HAVE_CXX_FLAG_WCONVERSION - Success
+-- Performing Test HAVE_CXX_FLAG_WSUGGEST_OVERRIDE
+-- Performing Test HAVE_CXX_FLAG_WSUGGEST_OVERRIDE - Success
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC - Success
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS
+-- Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS - Success
+-- Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32
+-- Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32 - Failed
+-- Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING
+-- Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING - Success
+-- Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS
+-- Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS - Success
+-- Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING
+-- Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING - Success
+-- Performing Test HAVE_CXX_FLAG_WD654
+-- Performing Test HAVE_CXX_FLAG_WD654 - Failed
+-- Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY
+-- Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY - Failed
+-- Performing Test HAVE_CXX_FLAG_COVERAGE
+-- Performing Test HAVE_CXX_FLAG_COVERAGE - Success
+-- Compiling and running to test HAVE_STD_REGEX
+-- Performing Test HAVE_STD_REGEX -- success
+-- Compiling and running to test HAVE_GNU_POSIX_REGEX
+-- Performing Test HAVE_GNU_POSIX_REGEX -- failed to compile
+-- Compiling and running to test HAVE_POSIX_REGEX
+-- Performing Test HAVE_POSIX_REGEX -- success
+-- Compiling and running to test HAVE_STEADY_CLOCK
+-- Performing Test HAVE_STEADY_CLOCK -- success
+-- Compiling and running to test HAVE_PTHREAD_AFFINITY
+-- Performing Test HAVE_PTHREAD_AFFINITY -- success
+-- Using the multi-header code from /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/nlohmann_json-src/include/
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found suitable version "3.0.13", minimum required is "3.0")  
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
+-- pybind11 v3.1.0 
+-- Performing Test HAS_FLTO_AUTO
+-- Performing Test HAS_FLTO_AUTO - Success
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
+-- Configuring done (10.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/tmp.V6DYMoXJ8o/perf-base/build/release
+[1/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[3/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
+[4/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
+[5/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[6/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
+[7/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
+[8/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
+[9/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
+[10/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
+[11/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
+[12/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
+[13/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
+[14/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
+[15/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
+[16/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
+[17/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
+[18/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
+[19/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
+[20/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
+[21/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
+[22/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
+[23/184] Linking CXX static library /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/libbenchmark.a
+[24/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+[25/184] Linking CXX static library /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googlebenchmark-build/src/libbenchmark_main.a
+[26/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/raw_single.cpp.o
+[27/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/packed_single.cpp.o
+[28/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/core/crc32.cpp.o
+[29/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/readout_packet.cpp.o
+[30/184] Building CXX object /tmp/tmp.V6DYMoXJ8o/perf-base/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[31/184] Linking CXX static library lib/libgtest.a
+[32/184] Linking CXX static library lib/libgmock.a
+[33/184] Linking CXX static library lib/libgmock_main.a
+[34/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/core/flight_recorder.cpp.o
+[35/184] Linking CXX static library lib/libgtest_main.a
+[36/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/list_mode.cpp.o
+[37/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/synthetic_source.cpp.o
+[38/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/truth_counter.cpp.o
+[39/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/detector_simulator.cpp.o
+[40/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/readout_link.cpp.o
+[41/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/energy_filter.cpp.o
+[42/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/dead_time.cpp.o
+[43/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/pipeline/acquisition_pipeline.cpp.o
+[44/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/singles_counter.cpp.o
+[45/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/coincidence_sorter.cpp.o
+[46/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/sinogram.cpp.o
+[47/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/calibration.cpp.o
+[48/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/rt/crash_report.cpp.o
+[49/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/stream_merger.cpp.o
+[50/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/rt/realtime.cpp.o
+[51/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/hw/register.cpp.o
+[52/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/rt/health.cpp.o
+[53/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/hw/mmio_bus.cpp.o
+[54/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/hw/fake_board.cpp.o
+[55/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/net/host_counters.cpp.o
+[56/184] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/hw/slow_control.cpp.o
+[57/184] Linking CXX static library minidaq/libminidaq_core.a
+[58/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/access.cpp.o
+[59/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/hardware_config.cpp.o
+[60/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/acquisition_config.cpp.o
+[61/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/acquisition_state.cpp.o
+[62/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/calibration_file.cpp.o
+[63/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/audit.cpp.o
+[64/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/hardware.cpp.o
+[65/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/adapters.cpp.o
+[66/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/audit_log.cpp.o
+[67/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/tls.cpp.o
+[68/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/corrections_record.cpp.o
+[69/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/run_integrity.cpp.o
+[70/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/udp_detector.cpp.o
+[71/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/control_server.cpp.o
+[72/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/acquisition_service.cpp.o
+[73/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/file_ops.cpp.o
+[74/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/service_manager.cpp.o
+[75/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/control_protocol.cpp.o
+[76/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_jitter.dir/minidaq_jitter.cpp.o
+[77/184] Linking CXX executable minidaq/apps/minidaq_jitter
+[78/184] Building CXX object minidaq/CMakeFiles/minidaq_update_lib.dir/src/update/bundle.cpp.o
+[79/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_latency.dir/minidaq_latency.cpp.o
+[80/184] Linking CXX executable minidaq/apps/minidaq_latency
+[81/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_send.dir/minidaq_send.cpp.o
+[82/184] Linking CXX executable minidaq/apps/minidaq_send
+[83/184] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/listmode_sink.cpp.o
+[84/184] Linking CXX static library minidaq/libminidaq_control.a
+[85/184] Building CXX object minidaq/CMakeFiles/minidaq_update_lib.dir/src/update/slots.cpp.o
+[86/184] Linking CXX static library minidaq/libminidaq_update_lib.a
+[87/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_server.dir/minidaq_server.cpp.o
+[88/184] Linking CXX executable minidaq/apps/minidaq_server
+[89/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_update.dir/minidaq_update.cpp.o
+[90/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_sim.dir/minidaq_sim.cpp.o
+[91/184] Linking CXX executable minidaq/apps/minidaq_update
+[92/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_ctl.dir/minidaq_ctl.cpp.o
+[93/184] Linking CXX executable minidaq/apps/minidaq_sim
+[94/184] Linking CXX executable minidaq/apps/minidaq_ctl
+[95/184] Building CXX object minidaq/apps/CMakeFiles/minidaq_listmode.dir/minidaq_listmode.cpp.o
+[96/184] Linking CXX executable minidaq/apps/minidaq_listmode
+[97/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_quantity.cpp.o
+[98/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_expected.cpp.o
+[99/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_parse_number.cpp.o
+[100/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_geometry.cpp.o
+[101/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_raw_single.cpp.o
+[102/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_packed_single.cpp.o
+[103/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_readout_link_quantize.cpp.o
+[104/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_crc32.cpp.o
+[105/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_readout_packet.cpp.o
+[106/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_flight_recorder.cpp.o
+[107/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_crash_report.cpp.o
+[108/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_list_mode.cpp.o
+[109/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_sinogram.cpp.o
+[110/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_coincidence_sorter.cpp.o
+[111/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_count_rates.cpp.o
+[112/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_stream_merger.cpp.o
+[113/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_dead_time.cpp.o
+[114/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_spsc_ring.cpp.o
+[115/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_replay_source.cpp.o
+[116/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_mpmc_queue.cpp.o
+[117/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_channel.cpp.o
+[118/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_memory_model.cpp.o
+[119/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_realtime.cpp.o
+[120/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_listmode_sink.cpp.o
+[121/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_pipeline.cpp.o
+[122/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_latency_histogram.cpp.o
+[123/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_paced_source.cpp.o
+[124/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_energy_filter.cpp.o
+[125/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_calibration.cpp.o
+[126/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_physics.cpp.o
+[127/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_detector_simulator.cpp.o
+[128/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_singles_counter.cpp.o
+[129/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_calibration_file.cpp.o
+[130/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_acquisition_state.cpp.o
+[131/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_acquisition_service.cpp.o
+[132/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_run_integrity.cpp.o
+[133/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_config.cpp.o
+[134/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_audit_log.cpp.o
+[135/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_control_protocol.cpp.o
+[136/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_udp_detector.cpp.o
+[137/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_host_counters.cpp.o
+[138/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_hw_registers.cpp.o
+[139/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_security.cpp.o
+[140/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_properties.cpp.o
+[141/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_service_interactions.cpp.o
+[142/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_slow_control.cpp.o
+[143/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_health.cpp.o
+[144/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_alloc_tests.dir/unit/test_zero_alloc.cpp.o
+[145/184] Linking CXX executable minidaq/tests/minidaq_alloc_tests
+[146/184] Building CXX object recon/CMakeFiles/recon_projector.dir/src/joseph.cpp.o
+[147/184] Linking CXX static library recon/librecon_projector.a
+[148/184] Building CXX object recon/CMakeFiles/recon_tests.dir/tests/test_joseph.cpp.o
+[149/184] Linking CXX executable recon/recon_tests
+[150/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_hardware_service.cpp.o
+[151/184] Building CXX object recon/CMakeFiles/recon_cpp.dir/python/recon_cpp.cpp.o
+[152/184] Building CXX object benchmarks/CMakeFiles/bm_layout.dir/bm_layout.cpp.o
+[153/184] Linking CXX executable benchmarks/bm_layout
+[154/184] Building CXX object benchmarks/CMakeFiles/bm_alloc.dir/bm_alloc.cpp.o
+[155/184] Linking CXX executable benchmarks/bm_alloc
+[156/184] Building CXX object benchmarks/CMakeFiles/bm_false_sharing.dir/bm_false_sharing.cpp.o
+[157/184] Linking CXX executable benchmarks/bm_false_sharing
+[158/184] Building CXX object benchmarks/CMakeFiles/bm_decode.dir/bm_decode.cpp.o
+[159/184] Linking CXX executable benchmarks/bm_decode
+[160/184] Linking CXX shared module recon/recon_cpp.cpython-313-x86_64-linux-gnu.so
+[161/184] Building CXX object benchmarks/CMakeFiles/bm_latency.dir/bm_latency.cpp.o
+[162/184] Linking CXX executable benchmarks/bm_latency
+[163/184] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_update.cpp.o
+[164/184] Linking CXX executable minidaq/tests/minidaq_unit_tests
+[165/184] Building CXX object benchmarks/CMakeFiles/bm_spsc.dir/bm_spsc.cpp.o
+[166/184] Linking CXX executable benchmarks/bm_spsc
+[167/184] Building CXX object benchmarks/CMakeFiles/bm_energy_filter.dir/bm_energy_filter.cpp.o
+[168/184] Linking CXX executable benchmarks/bm_energy_filter
+[169/184] Building CXX object benchmarks/CMakeFiles/bm_histogram.dir/bm_histogram.cpp.o
+[170/184] Building CXX object benchmarks/CMakeFiles/bm_pipeline.dir/bm_pipeline.cpp.o
+[171/184] Linking CXX executable benchmarks/bm_histogram
+[172/184] Linking CXX executable benchmarks/bm_pipeline
+[173/184] Building CXX object benchmarks/CMakeFiles/bm_flight_recorder.dir/bm_flight_recorder.cpp.o
+[174/184] Linking CXX executable benchmarks/bm_flight_recorder
+[175/184] Building CXX object benchmarks/CMakeFiles/bm_sorter.dir/bm_sorter.cpp.o
+[176/184] Linking CXX executable benchmarks/bm_sorter
+[177/184] Building CXX object benchmarks/CMakeFiles/bm_listmode.dir/bm_listmode.cpp.o
+[178/184] Building CXX object benchmarks/CMakeFiles/bm_sort.dir/bm_sort.cpp.o
+[179/184] Linking CXX executable benchmarks/bm_listmode
+[180/184] Linking CXX executable benchmarks/bm_sort
+[181/184] Building CXX object benchmarks/CMakeFiles/bm_udp_receive.dir/bm_udp_receive.cpp.o
+[182/184] Linking CXX executable benchmarks/bm_udp_receive
+[183/184] Building CXX object benchmarks/CMakeFiles/writer_throughput.dir/writer_throughput.cpp.o
+[184/184] Linking CXX executable benchmarks/writer_throughput
+base book-v1.0.0 = 33aa5badd379f7b0c65812d890433dbf7ba48fe1
+base: BM_DecodePacked/65536 x10, BM_EnergyFilter/1/50/0/4096 x10, BM_EnergyFilter/3/50/0/4096 x10, BM_HistogramRecord x10, BM_Pipeline/4096/64/real_time x10, BM_SortFunctor/4096/0 x10
+head: BM_DecodePacked/65536 x10, BM_EnergyFilter/1/50/0/4096 x10, BM_EnergyFilter/3/50/0/4096 x10, BM_HistogramRecord x10, BM_Pipeline/4096/64/real_time x10, BM_SortFunctor/4096/0 x10
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           1.030   0.6020  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.933   0.0446  ok 
+BM_EnergyFilter/3/50/0/4096                                     0.987   0.2894  ok 
+BM_HistogramRecord                                              0.916   0.0116  ok 
+BM_Pipeline/4096/64/real_time                                   1.015   0.7106  ok 
+BM_SortFunctor/4096/0                                           0.876   0.0526  ok 

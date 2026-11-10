@@ -9,7 +9,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "minidaq-recon"
-version = "1.1.0.dev0"
+version = "1.1.0"
 description = "The C++ Joseph projector of MiniDAQ's reconstruction, as a Python module (Detector to Diagnosis, Chapters 29 and 32)"
 license = "MIT"
 requires-python = ">=3.11"

@@ -1,0 +1,10 @@
+# 2026-11-10 GitHub Actions runs, read with the GitHub API
+candidate 9b9e96d5eb6d1e85ef3911d7698406432d4ddde4 (internal audit, document approvals, SOUP review):
+  ci run 222 (42775432736): success; gates run 115 (42775432725): success; codeql run 177:
+  success; pages run 162: success
+the commit before it, 1a0fa8c (the book builds install the figures' Python environment): ci run
+221, gates run 114, codeql run 176, kdp run 83, pages run 161: success
+039e718 (the first run of the release checks): ci run 220, codeql run 175: success; kdp run 82 and
+pages run 160 failed (Matplotlib not installed on their runners), fixed in 1a0fa8c
+GitHub Actions ran no workflow from 2026-11-09 19:45 UTC to 2026-11-10 00:44 UTC (a billing lock on
+the account); the commits of that period have no runs of their own

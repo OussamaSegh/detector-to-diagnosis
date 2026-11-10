@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-10-25, by the software lead (internal audit findings A-1 and A-2) |
 | Source | internal audit 2026-10-25, findings A-1 and A-2; at the effectiveness check, MDQ-PR-065 |
 | Owner | software lead |
-| Effectiveness check | release 0.4.0: not made when due; made late on 2026-11-09: not effective; next at release 1.1.0 |
+| Effectiveness check | release 0.4.0: not made when due; made late on 2026-11-09: not effective; release 1.1.0: effective |
 
 ## Problem
 
@@ -101,6 +101,17 @@ changed without a new version and no commit without its review line since this r
 release record cites that audit, and `docs.capa` passes on the release commit.
 Due: release 1.1.0.
 
+Result: effective, at release 1.1.0 (2026-11-10). The [internal audit of
+2026-11-10](../qms/internal-audit-2026-11-10.md), held before the release checks, finds no
+controlled document changed without a new version (`tools/design_file.py --since book-v1.0.0`)
+and no commit without its review line since the result of 2026-11-09 (`tools/check_commits.py`);
+the [release record of 1.1.0](../releases/1.1.0.md) cites that audit; and `docs.capa` passes on
+the release commit, where it also checks that this record names every CAPA that is not closed.
+
 ## Closure
 
-Not closed: the effectiveness check is due at release 1.1.0.
+Closed on 2026-11-10 by the software lead at release 1.1.0: the criterion is met. The guards
+stay in force: `tools/design_file.py` and `tools/check_commits.py` on every change, `docs.capa`
+on the overdue checks, and the internal audit before each minor release (SDP, section 8, item
+9). An audit that is not held before a release opens a new problem report and, if its cause is
+this one, a new CAPA.
