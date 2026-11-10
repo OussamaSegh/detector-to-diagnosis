@@ -70,17 +70,16 @@ on the pulse model of Exercise 9.4, a difference of exponentials with a 0.5 ns r
 ```{.figure #fig-ch09-time-walk src="book/figures/plots/ch09/time_walk.py" inputs="exercises/ch09/e4_time_walk/solution/time_walk.py" caption="Leading-edge timing walks with amplitude; constant-fraction timing does not. Pulse model of Exercise 9.4 (a 0.5 ns rise, a 40 ns decay), threshold exaggerated to 10% so that the walk is visible." alt="Two line charts of pulse amplitude against time from 0 to 3 ns for pulses of 150, 300 and 511 keV. Left: with a fixed threshold drawn as a dashed line, the three pulses cross it at visibly different times, the smallest pulse last. Right: with a constant-fraction trigger at 20% of each pulse's peak, all three trigger points line up at the same time." width="100%"}
 ```
 
-With a threshold at 2% of a 511 keV pulse, a 100 keV pulse crosses 44 ps later than a
-511 keV pulse in this model. That is a large fraction of a 300 ps coincidence time
-resolution, and it depends on energy, so it biases the time difference of every pair whose
-photons deposited different energies. There are three remedies. A *walk correction* in
-software subtracts a measured, energy-dependent delay from each time stamp. A *constant
-fraction discriminator* (CFD) triggers at a fixed fraction of each pulse's own peak, which
-for a fixed pulse shape removes the walk entirely; an analog CFD does it by comparing the
-pulse with a delayed, attenuated copy of itself. And a *very low threshold*, at the level
-of the first few detected optical photons, keeps the walk small because the earliest part
-of the pulse rises steeply. Fast SiPM front ends commonly use the last approach and correct
-the rest in software (verify: the timing method of your scanner's front end).
+With a threshold at 2% of a 511 keV pulse, a 100 keV pulse crosses 44 ps later than a 511 keV pulse
+in this model. That is a large fraction of a 300 ps coincidence time resolution, and it depends on
+energy, so it biases the time difference of every pair whose photons deposited different energies.
+There are three remedies. A *walk correction* in software subtracts a measured, energy-dependent
+delay from each time stamp. A *constant fraction discriminator* (CFD) triggers at a fixed fraction
+of each pulse's own peak, which for a fixed pulse shape removes the walk entirely; an analog CFD
+does it by comparing the pulse with a delayed, attenuated copy of itself. And a *very low
+threshold*, at the level of the first few detected optical photons, keeps the walk small because the
+earliest part of the pulse rises steeply. Fast SiPM front ends commonly use the last approach and
+correct the rest in software; your scanner's front-end documentation says which method it uses.
 
 ### Energy: charge integration and time over threshold
 
@@ -103,16 +102,14 @@ an energy window means anything. Exercise 9.4 measures both effects. Figure [](#
 
 ### Front-end ASICs
 
-A scanner with tens of thousands of channels cannot afford discrete electronics per channel.
-It uses application-specific integrated circuits that each serve tens of channels. Two
-families appear often in PET research. The TOFPET2 ASIC from PETsys Electronics has 64
-channels and provides a time stamp and either a charge or a ToT value per event (Bugalho et
-al. 2019; verify: the details in the datasheet). Weeroc's PETIROC family is another
-(verify: the current product names). Whatever the ASIC, it outputs per event a channel
-number, a coarse and a fine time, an energy value, and sometimes flags. The ASIC's data goes
-to an FPGA that collects many ASICs, applies thresholds and corrections, may form
-coincidences itself, and packs the events into the words and packets that the acquisition
-PC receives.
+A scanner with tens of thousands of channels cannot afford discrete electronics per channel. It uses
+application-specific integrated circuits that each serve tens of channels. Two families appear often
+in PET research. The TOFPET2 ASIC from PETsys Electronics has 64 channels and provides a time stamp
+and either a charge or a ToT value per event (Bugalho et al. 2019; the datasheet gives the details).
+Weeroc's PETIROC family is another. Whatever the ASIC, it outputs per event a channel number, a
+coarse and a fine time, an energy value, and sometimes flags. The ASIC's data goes to an FPGA that
+collects many ASICs, applies thresholds and corrections, may form coincidences itself, and packs the
+events into the words and packets that the acquisition PC receives.
 
 ::: box-mistakes
 - **Treating a time stamp as the photon's arrival time.** It is the time a circuit crossed a
@@ -373,13 +370,13 @@ matter:
 
 : Ethernet link budget for MDQ-R1 (8-byte words, 16-byte header, IPv4, no VLAN tag).
 
-At MiniDAQ's working rate of 10 M singles/s (Chapter 3), one Gigabit link is 68% full, too
-little margin for the high-activity end of a count-rate test. A scanner of that class uses
-10 GbE, several links, or coincidence filtering in the FPGA so that fewer singles leave the
-detector (verify: your scanner's link type and count). The packet rate matters as much as the
-byte rate: a receiving CPU pays a cost per packet, so small packets cost more than their
-bytes suggest. With jumbo frames (a 9,000-byte MTU) a packet can hold over a thousand words,
-which is why MDQ-R1 allows up to 1,024. Figure [](#fig-ch09-wire) shows where the 1,538 bytes go.
+At MiniDAQ's working rate of 10 M singles/s (Chapter 3), one Gigabit link is 68% full, too little
+margin for the high-activity end of a count-rate test. A scanner of that class uses 10 GbE, several
+links, or coincidence filtering in the FPGA so that fewer singles leave the detector; your scanner's
+interface control document gives its link type and count. The packet rate matters as much as the
+byte rate: a receiving CPU pays a cost per packet, so small packets cost more than their bytes
+suggest. With jumbo frames (a 9,000-byte MTU) a packet can hold over a thousand words, which is why
+MDQ-R1 allows up to 1,024. Figure [](#fig-ch09-wire) shows where the 1,538 bytes go.
 
 ```{.figure #fig-ch09-wire src="book/figures/tikz/ch09/wire.tex" caption="One full MDQ-R1 packet on the Ethernet wire, to scale, with the overhead enlarged above it. The overhead is small per packet; the packet rate is what costs the receiving CPU." alt="A long bar to scale shows a 1,538-byte Ethernet frame almost filled by 182 MDQ-P1 words, 1,456 bytes of singles. An enlarged strip above shows the thin slices at its edges: preamble 8 bytes, Ethernet header 14, IPv4 header 20, UDP 8 and MDQ-R1 header 16 at the start, and the frame checksum 4 and inter-frame gap 12 at the end. The total works out to 8.45 bytes of wire time per single." width="100%"}
 ```
@@ -816,5 +813,5 @@ sender's injected faults exactly. Tag `ch09`.
   Networking API*, 3rd ed., Addison-Wesley, 2004.
 - The Linux manual pages socket(7), udp(7) and recvmmsg(2): the receive buffer, its limits
   and the doubling.
-- J. Serrano et al., "The White Rabbit project", Proceedings of ICALEPCS 2009, Kobe (verify:
-  the citation details).
+- J. Serrano et al., "The White Rabbit project", Proceedings of ICALEPCS 2009, Kobe, paper TUC004,
+  93–95.

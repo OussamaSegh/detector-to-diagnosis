@@ -241,15 +241,14 @@ adding signal. The noise-equivalent count rate expresses all of that as one numb
   NECR = T² / (T + S + kR)
 
 It is the rate of trues of a hypothetical noise-free acquisition that would give the same
-signal-to-noise ratio as the real one (Strother, Casey and Hoffman, 1990). The intuition is
-in the variance. The trues are what you want. Their estimate is the prompts minus the
-estimated randoms and scatters, and with Poisson counting its variance is the sum of the
-counts that went into it. If the randoms are subtracted with a delayed window, whose counts
-are as noisy as the randoms themselves, the randoms contribute twice, and k = 2. If the
-randoms estimate is smooth (computed from the singles rates, or a variance-reduced delayed
-estimate), it adds almost no noise, and k = 1. NEMA NU 2 has used both conventions over its
-editions (verify: the k and the randoms estimate that the edition you report against
-prescribes). A count-rate curve is meaningless without its k.
+signal-to-noise ratio as the real one (Strother, Casey and Hoffman, 1990). The intuition is in the
+variance. The trues are what you want. Their estimate is the prompts minus the estimated randoms and
+scatters, and with Poisson counting its variance is the sum of the counts that went into it. If the
+randoms are subtracted with a delayed window, whose counts are as noisy as the randoms themselves,
+the randoms contribute twice, and k = 2. If the randoms estimate is smooth (computed from the
+singles rates, or a variance-reduced delayed estimate), it adds almost no noise, and k = 1. NEMA NU
+2 has used both conventions over its editions; report the k and the randoms estimate that the
+edition you report against prescribes. A count-rate curve is meaningless without its k.
 
 ```{.cpp include="minidaq/include/minidaq/processing/count_rates.hpp" snippet="rates"}
 ```
@@ -265,13 +264,12 @@ gets the statistical value of 40,745 noise-free trues. Figure [](#fig-ch11-necr)
 
 ### The count-rate curve
 
-`measurements/ch11/countrate.py` is MiniDAQ's count-rate harness. For thirteen activities
-from 5 to 1000 MBq and three front-end models, it runs `minidaq_sim --nema 1` with 10 to
-15 million decays per point. It sorts with a 4 ns window, a 435 to 585 keV energy window, the
-kill-all multiples policy, sectors at least one apart and a 120 mm field of view. It prints
-the trues, scatters, randoms, scatter fraction and NECR. The source is a 1.6 mm radius, 700
-mm long line 45 mm off the axis of a 203 mm diameter, 700 mm long water cylinder, after the
-NEMA count-rate phantom (verify: the dimensions against the NU 2 edition in use). Most of its
+`measurements/ch11/countrate.py` is MiniDAQ's count-rate harness. For thirteen activities from 5 to
+1000 MBq and three front-end models, it runs `minidaq_sim --nema 1` with 10 to 15 million decays per
+point. It sorts with a 4 ns window, a 435 to 585 keV energy window, the kill-all multiples policy,
+sectors at least one apart and a 120 mm field of view. It prints the trues, scatters, randoms,
+scatter fraction and NECR. The source is a 1.6 mm radius, 700 mm long line 45 mm off the axis of a
+203 mm diameter, 700 mm long water cylinder, after the NEMA count-rate phantom of NU 2. Most of its
 700 mm lies outside MiniDAQ's 118 mm axial field of view, as it would in a brain scanner. Figure [](#fig-ch11-phantom) draws it to scale.
 
 ```{.figure #fig-ch11-phantom src="book/figures/tikz/ch11/phantom.tex" caption="The NEMA-style count-rate phantom of the harness, to scale: a 700 mm water cylinder, 203 mm across, with a line source 45 mm off the axis, in MiniDAQ's ring with its 118 mm axial field of view." alt="Left, a side view: a long rectangle, the water cylinder 700 mm long, with a line source drawn as a line parallel to the axis 45 mm above it, and the ring as a short band 118 mm wide around its middle, so most of the cylinder sticks out on both sides. Right, the view along the axis: a ring of 24 blocks around a circle of 203 mm, with the source a dot 45 mm above the center." width="100%"}
@@ -372,8 +370,7 @@ the simulator's 300 ps FWHM coincidence time resolution. An object filling MiniD
 radius field of view would need 0.8 ns plus a margin for the resolution. The window a
 scanner needs is set by the diameter of its field of view and its time resolution. It is not
 set by habit. In MiniDAQ the window τ is the largest accepted time difference, so pairs with
-|Δt| ≤ τ pass; some vendors quote the full width 2τ instead (verify: your scanner's
-convention).
+|Δt| ≤ τ pass; some vendors quote the full width 2τ instead, so check which convention a data sheet uses before you compare.
 
 ### The energy window
 
@@ -430,14 +427,14 @@ window from the curve, at the activity the protocol uses.
 
 NEMA NU 2, *Performance Measurements of Positron Emission Tomographs*, is the standard that
 manufacturers use to specify a clinical PET scanner. The current edition is NU 2-2024; most
-published specifications, including many of the scanners you will compare with, still quote
-NU 2-2018 (verify: the edition your scanner's documentation cites). It does not set
-limits. It defines how each figure of merit is measured, so that two scanners measured by it
-can be compared. For small-animal scanners, NEMA NU 4-2008 defines the same kinds of tests
-with phantoms the size of a mouse and a rat. A brain-dedicated scanner sits between the two.
-Its ring is smaller than a whole-body scanner's, and the NU 2 phantoms may not fit or may not
-represent a head. Which edition, and which adaptations, your scanner's performance is
-specified with is a question for your team (assumption: confirm with team).
+published specifications, including many of the scanners you will compare with, still quote NU
+2-2018; note which edition a figure was measured to. It does not set limits. It defines how each
+figure of merit is measured, so that two scanners measured by it can be compared. For small-animal
+scanners, NEMA NU 4-2008 defines the same kinds of tests with phantoms the size of a mouse and a
+rat. A brain-dedicated scanner sits between the two. Its ring is smaller than a whole-body
+scanner's, and the NU 2 phantoms may not fit or may not represent a head. Which edition, and which
+adaptations, your scanner's performance is specified with is a question for your team (assumption:
+confirm with team).
 
 The standard's text is copyrighted, and this book does not reproduce it. What follows is the
 shape of each test in general terms, and what the DAQ must provide for it. When you run or
@@ -445,37 +442,35 @@ analyze a test, work from the standard itself.
 
 ### The tests
 
-- **Spatial resolution.** Point sources at several positions in the field of view are
-  reconstructed with a specified algorithm. The width of the point-spread function is
-  reported as its full width at half and at tenth maximum, radially, tangentially and axially
-  (verify: the positions and the reconstruction NU 2-2024 prescribes). The DAQ must deliver
-  unfiltered list-mode or sinogram data and the exact crystal and time information the
-  reconstruction needs.
+- **Spatial resolution.** Point sources at several positions in the field of view are reconstructed
+  with a specified algorithm. The width of the point-spread function is reported as its full width
+  at half and at tenth maximum, radially, tangentially and axially, at the positions and with the
+  reconstruction that the edition prescribes. The DAQ must deliver unfiltered list-mode or sinogram
+  data and the exact crystal and time information the reconstruction needs.
 - **Sensitivity.** A line source is measured inside a series of metal sleeves of increasing
-  thickness, and the count rate is extrapolated to zero attenuation (the method of Bailey et
-  al., 1991). The result is counts per second per unit of activity, at the center and off the
-  axis (verify: the off-axis position). The DAQ's rates must be correct at low activity, with
-  dead time and randoms negligible or corrected.
-- **Scatter fraction, count losses and randoms.** This is the count-rate test of this
-  chapter. A long line source in a cylindrical phantom starts at high activity and is
-  measured repeatedly as it decays, so one fill gives the whole curve. From each
-  acquisition's sinograms, the trues are separated from the scatters and randoms using the
-  counts outside a band around the source, and the randoms from the delayed window or the
-  singles. The results are the trues, scatter, randoms and NECR curves, the peak NECR and its
-  activity, and the scatter fraction (verify: the band width and the randoms estimate
-  NU 2-2024 prescribes). The DAQ must record every acquisition with its activity, start time
-  and duration, its counters (singles, prompts, delayed, losses), and its window settings.
-  Those are the counters and the configuration record of Chapter 10.
+  thickness, and the count rate is extrapolated to zero attenuation (the method of Bailey et al.,
+  1991). The result is counts per second per unit of activity, at the center and at the off-axis
+  position that the edition gives. The DAQ's rates must be correct at low activity, with dead time
+  and randoms negligible or corrected.
+- **Scatter fraction, count losses and randoms.** This is the count-rate test of this chapter. A
+  long line source in a cylindrical phantom starts at high activity and is measured repeatedly as it
+  decays, so one fill gives the whole curve. From each acquisition's sinograms, the trues are
+  separated from the scatters and randoms using the counts outside a band around the source, and the
+  randoms from the delayed window or the singles. The results are the trues, scatter, randoms and
+  NECR curves, the peak NECR and its activity, and the scatter fraction; the edition fixes the width
+  of the band and the randoms estimate. The DAQ must record every acquisition with its activity,
+  start time and duration, its counters (singles, prompts, delayed, losses), and its window
+  settings. Those are the counters and the configuration record of Chapter 10.
 - **Accuracy of corrections.** From the same data, the standard measures how well the
   scanner's own dead-time and randoms corrections recover the true rate across the activity
   range, as a residual error per slice. This is where the correction of this chapter, and its
   error amplification near saturation, is tested.
-- **Image quality and the accuracy of attenuation and scatter corrections.** A body-shaped
-  phantom with hot and cold spheres in a warm background, and a lung insert, is imaged with
-  the clinical protocol. Contrast recovery and background variability are reported (verify:
-  the phantom and the activity ratios). Every correction of the chain is in this result.
+- **Image quality and the accuracy of attenuation and scatter corrections.** A body-shaped phantom
+  with hot and cold spheres in a warm background, and a lung insert, is imaged with the clinical
+  protocol. Contrast recovery and background variability are reported, with the phantom and the
+  activity ratios that the edition specifies. Every correction of the chain is in this result.
 - **Time-of-flight resolution.** The 2018 edition added a measurement of the coincidence
-  time resolution of time-of-flight scanners (verify). The DAQ must deliver each
+  time resolution of time-of-flight scanners. The DAQ must deliver each
   coincidence's time difference at full resolution.
 
 ### What MiniDAQ's harness is and is not
@@ -633,10 +628,9 @@ the data it is measured from.
   and in the acquisition record, so that a scan acquired past a limit can be recognized
   afterwards. The budget's margins, and how they were measured, belong in the verification
   records.
-- **Simulations support, they do not replace.** A NEMA-style simulation is evidence for
-  design decisions. The device's performance claims come from measurements made as the
-  standard prescribes (verify: what your quality system accepts as verification evidence for
-  performance claims).
+- **Simulations support, they do not replace.** A NEMA-style simulation is evidence for design
+  decisions. The device's performance claims come from measurements made as the standard prescribes,
+  and your quality system says what it accepts as verification evidence for them.
 :::
 
 ::: box-askteam
@@ -798,13 +792,12 @@ saturate. Tag `ch11`.
   NU 4-2008: Performance Measurements of Small Animal Positron Emission Tomographs*, NEMA, 2008.
 - S. C. Strother, M. E. Casey and E. J. Hoffman, "Measuring PET scanner sensitivity:
   relating countrates to image signal-to-noise ratios using noise equivalent counts", *IEEE
-  Transactions on Nuclear Science* 37(2) (1990) 783–788 (verify: the citation details).
+  Transactions on Nuclear Science* 37(2) (1990) 783–788.
 - G. F. Knoll, *Radiation Detection and Measurement*, 4th ed., Wiley, 2010: Chapter 4 on
   counting statistics and dead time.
 - S. R. Cherry, J. A. Sorenson and M. E. Phelps, *Physics in Nuclear Medicine*, 4th ed.,
   Elsevier Saunders, 2012: the chapters on PET performance and count-rate behavior.
-- D. L. Bailey, T. Jones and T. Spinks, "A method for measuring the absolute sensitivity of
-  positron emission tomographic scanners", *European Journal of Nuclear Medicine* 18 (1991)
-  374–379 (verify: the citation details).
+- D. L. Bailey, T. Jones and T. Spinks, "A method for measuring the absolute sensitivity of positron
+  emission tomographic scanners", *European Journal of Nuclear Medicine* 18(6) (1991) 374–379.
 - D. L. Bailey, D. W. Townsend, P. E. Valk and M. N. Maisey (eds.), *Positron Emission
   Tomography: Basic Sciences*, Springer, 2005: the chapter on performance evaluation.

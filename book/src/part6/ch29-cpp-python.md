@@ -431,12 +431,12 @@ threads; every starter of the chapter fails. Tag `ch29`.
 ## Further reading {.unnumbered}
 
 - The pybind11 documentation, <https://pybind11.readthedocs.io>: the chapters on NumPy arrays
-  (`array_t`, its flags and `unchecked`), exception translation, and the GIL (verify: the version
-  of the documentation that matches the pinned release).
+  (`array_t`, its flags and `unchecked`), exception translation, and the GIL; read the version of
+  the documentation that matches the pinned release.
 - The NumPy documentation on the memory layout of arrays (strides, C and Fortran order) and on
   the C API, <https://numpy.org/doc/stable/>.
 - The nanobind documentation, <https://nanobind.readthedocs.io>, for the alternative and its
-  differences from pybind11 (verify: the current version's requirements).
+  differences from pybind11, and the requirements of its current version.
 - The Python documentation on extending and embedding the interpreter, and on the global
   interpreter lock, <https://docs.python.org/3/>.
 - A. Williams, *C++ Concurrency in Action*, 2nd edition, Manning, 2019: sharing work between

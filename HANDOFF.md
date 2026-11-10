@@ -5,7 +5,9 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba), the complete book.
+Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba); the open findings of the
+review of 1.0.0 are closed on main (CAPA-0002's check, the verify: markers, the index, the
+roadmap).
 
 ## Start here (after release 1.0.0)
 
@@ -51,14 +53,34 @@ Independent review of 1.0.0 (2026-11-09, review branch claude/project-thread-p48
 VERSION 1.0.1-dev (main was red on `docs.version` after the release: the commit after a release
 must set the next -dev version), corrected two stale listing ranges in solutions Chapter 1 and
 the benchmark names in the 0.9.0 and 1.0.0 records, and explained the *verify:* marker in How
-to use this book. Its open findings (the repository the book links to, private at the time and public again, the index,
-CAPA-0002's overdue check) are in the review report.
+to use this book. Its open findings were closed on main the same day (thread "Finish open
+review items"):
+
+- CAPA-0002's effectiveness check, due at 0.4.0 and never made, was made by an internal audit
+  (`docs/regulatory/qms/internal-audit-2026-11-09.md`): not effective, new check due at release
+  1.1.0. `tools/check_capa.py` now fails on an overdue check and on a newest release record that
+  leaves out an open CAPA (MDQ-PR-065, closed); SDP version 15, section 8 item 9: an internal
+  audit before each minor release, cited by its record. MDQ-PR-066 (open): fifteen controlled
+  documents carry "Status: draft for review"; at 1.1.0 the release record approves each document
+  at its version (the software lead's act, not a tool's).
+- The 133 printed *verify:* markers are gone (Parts I to IX, solutions Chapter 5): citations
+  completed from PubMed, IEEE and JACoW records, clause numbers given, "at the time of writing"
+  for what may change, or the sentence says what was not checked. The exercise NOTES files keep
+  theirs (they are not printed).
+- The index: `book/index-terms.txt` (about 560 phrases) and `book/filters/index-terms.lua` index
+  the first use of each term in every chapter and the appendix; about 400 main entries and 90
+  subentries (was 32). Test `book.index` (`book/tools/index_terms.py`) refuses a dead or
+  malformed entry. Add a term there when a chapter introduces one; `[text]{.idx}` spans still
+  work and must use the same key.
+- The 2.0.0 roadmap (`docs/ROADMAP-2.0.0.md`, with the author's answers in section 8) is on main,
+  rebased from claude/project-thread-k78nqm. The branches k78nqm and osszm6 are now stale (a
+  force push to update them was refused by the session's permissions); delete them on GitHub.
 
 Next work: none is asked. The next thread starts VERSION 1.1.0-dev (or 2.0.0-dev, see the roadmap
 work in other threads), bumps the Python package versions with it, adds a dated SOUP review for
 the new minor version, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-065, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-067, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
@@ -119,7 +141,9 @@ Quality:
 Accuracy:
 
 - Never invent a reference or a number.
-- Mark an uncertain claim with "verify:".
+- Do not print "verify:" markers (resolved after the 1.0.0 review, 2026-11-09): give the
+  source, write "at the time of writing" for what may change, or say in the sentence what the
+  book did not check.
 - Mark a product-specific number with "assumption: confirm with team".
 - Never reproduce ISO or IEC text.
 
@@ -237,7 +261,7 @@ Dependencies and process:
 | `book/solutions/chNN.md` | The solutions manual. |
 | `book/build.sh` | Builds the book with Pandoc and XeLaTeX (8.5 x 11 in PDF, and EPUB); trim and margins are set in one place at its top. `book/build.sh kdp [book|solutions|both]` writes the KDP interior PDFs (gutter for the page count), full-wrap covers and EPUBs to `book/build/kdp/`, and runs EPUBCheck (`EPUBCHECK_JAR`); workflow `kdp.yml` runs it in CI. `book/build.sh boox [book|solutions|both]` writes `*-boox-air-5c.pdf` to `book/build/out/`: the screen PDF on a 6.18 x 8.24 in page (a 10.3 in 4:3 E Ink screen, Onyx Boox Air 5C), narrow margins, 9 pt tables, its own cover of that size (`build/cover/cover-<volume>-boox.pdf`). Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
 | `book/src/front/how-to-use.md`, `copyright.md` | How to use the book (chapter shape, core and full paths, the repository's tags) and the copyright page (MIT for the code, disclaimer, AI-assistance note). |
-| `book/assets/cover.tex` | The front covers and the full-wrap KDP covers (TikZ; `\nlftrimw`, `\nlftrimh`, `\nlfwrap`, `\nlfspine`, `\nlfpages`, `\nlfauthor`; the 7 x 10 design scaled to the trim), one source for both volumes: `\nlfvolume` is `book` (violet ring) or `solutions` (teal ring, "Solutions Manual"). `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, which becomes page 1 of the PDF (with `\frontmatter` patched so no blank page follows), and renders it at 240 dpi to the EPUB cover PNG. The author name is on the cover; no version. |
+| `book/assets/cover.tex`, `book/tools/cover_art.py` | The front covers and the full-wrap KDP covers (redesigned 2026-11-09). `cover_art.py` simulates a PET scan end to end (an FDG-like brain phantom, its sinogram with Poisson noise, an MLEM image; numpy, SciPy, Pillow; fixed seeds) and draws the artwork at 300 dpi into `book/assets/cover-{front,back}-{book,solutions}.jpg`: the front is the detector ring with the image forming out of the lines of response, the back shows the four steps singles, coincidences, sinogram, image. The JPEGs are committed, so the book build needs only XeLaTeX; run the script again only to change the artwork. `cover.tex` sets all text over it (TeX Gyre Heros, Inconsolata) and the spine (same gradient as the artwork, no seam); it is drawn for the 8.5 x 11 trim and stops on any other. `\nlfvolume` is `book` (violet) or `solutions` (teal, "Solutions Manual"); the positions marked "shared with cover_art.py" must match the script. `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, page 1 of the screen PDF, and a 200 dpi JPEG for the EPUB cover. `build.sh all` also writes `<stem>-cover.jpg` (front, 300 dpi) and `<stem>-cover.pdf` (full wrap for the screen PDF's pages less the cover page) for the download page; the Boox front cover is the same design scaled. The back cover keeps KDP's barcode area (2 x 1.2 in at the lower right) empty. The author name is on the cover; no version. |
 | `minidaq/` | The C++20 code. `include/minidaq/` holds the core, format, processing, pipeline, rt, control and output layers; `src/`; `apps/` (server, ctl, sim, ...); `tests/unit/` (GoogleTest); `tests/support/property.hpp`. |
 | `exercises/chNN/eK_name/` | Exercises, each with `README.md`, `starter/`, `solution/` (and `NOTES.md`), and `tests/`. Built with `-DMINIDAQ_BUILD_EXERCISES=ON`. Starters are built with `-DMINIDAQ_BUILD_STARTERS=ON` and run with `ctest -L starter` (they must fail). |
 | `docs/regulatory/` | The software file: SRS (`srs.md`, 237 requirements, v27), SDP (`sdp.md`, v14), risk file (`risk/`), SOUP list, problem reports (`problem-reports.json` gives `known-anomalies.md`), trace matrix, CAPAs, change requests, QMS design file (`qms/design-file.json`), and release records (`releases/X.Y.Z.md`). |

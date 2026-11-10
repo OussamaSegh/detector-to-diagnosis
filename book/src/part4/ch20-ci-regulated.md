@@ -491,17 +491,16 @@ the build IDs show that the debug information belongs to another program.
 
 ### What the standards ask
 
-IEC 62304 asks the development plan to name the tools, methods and standards of development
-(clause 5.1.4) and to put the supporting items that can affect the software under configuration
-management (clause 5.1.10) (verify: clause numbers against the 2015 amendment). ISO 13485:2016
-asks for documented procedures to validate software used in the quality management system,
-proportionate to the risk of its use (clause 4.1.6), and for the validation of software used for
-monitoring and measurement (clause 7.6). Neither prescribes how. ISO/TR 80002-2 gives guidance
-for the validation of such software, and the FDA's guidance on computer software assurance for
-production and quality system software argues for effort proportionate to risk, with
-unscripted and scripted testing where each fits (verify: the current status of the FDA
-guidance). IEC 61508, which is not a medical standard, gives the clearest vocabulary for
-software tools, and MiniDAQ borrows its three classes:
+IEC 62304 asks the development plan to name the tools, methods and standards of development (clause
+5.1.4) and to put the supporting items that can affect the software under configuration management
+(clause 5.1.10). ISO 13485:2016 asks for documented procedures to validate software used in the
+quality management system, proportionate to the risk of its use (clause 4.1.6), and for the
+validation of software used for monitoring and measurement (clause 7.6). Neither prescribes how.
+ISO/TR 80002-2 gives guidance for the validation of such software, and the FDA's guidance on
+computer software assurance for production and quality system software argues for effort
+proportionate to risk, with unscripted and scripted testing where each fits (final in September
+2025). IEC 61508, which is not a medical standard, gives the clearest vocabulary for software tools,
+and MiniDAQ borrows its three classes:
 
 - **T1**: the tool's output does not reach the product or the evidence, or a defect in it would
   be noticed by what follows (an editor, version control);
@@ -813,8 +812,8 @@ identical; MDQ-PR-020 to MDQ-PR-023 are closed; every starter of the chapter fai
   software used in the quality management system) and 7.6.
 - ISO/TR 80002-2:2017, *Medical device software, Part 2: Validation of software for medical
   device quality systems*.
-- FDA, *Computer Software Assurance for Production and Quality System Software*, guidance
-  (verify: the final version and its date).
+- FDA, *Computer Software Assurance for Production and Quality Management System Software*,
+  guidance, final in September 2025 (the draft of 2022 said "Quality System").
 - IEC 61508-3:2010, *Functional safety of electrical/electronic/programmable electronic
   safety-related systems, Part 3: Software requirements*, subclause 7.4.4 (requirements for
   support tools), and IEC 61508-4, the definitions of the tool classes T1 to T3.

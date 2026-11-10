@@ -40,7 +40,7 @@ jobs:
           book/build.sh all both
           book/build.sh boox both
       - name: Write the download page
-        run: python3 book/tools/site.py site "$(tr -d '[:space:]' < VERSION)" book/build/out/*.epub book/build/out/*.pdf
+        run: python3 book/tools/site.py site "$(tr -d '[:space:]' < VERSION)" book/build/out/*.epub book/build/out/*.pdf book/build/out/*.jpg
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

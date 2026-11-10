@@ -444,7 +444,7 @@ MiniDAQ processes the same events through different stages: an energy filter, a 
 filter, a histogrammer, a writer. Templates let you write `feed(events, filter, sink)` once
 and have the compiler generate a specialized, fully inlined loop for each combination.
 Before C++20, the price was error messages pages long when somebody passed the wrong
-type. [Concepts]{.idx} fix that by stating, in code, what a template requires. Figure [](#fig-ch01-concepts) shows what the check looks like at a call.
+type. [Concepts]{.idx key="concepts"} fix that by stating, in code, what a template requires. Figure [](#fig-ch01-concepts) shows what the check looks like at a call.
 
 ### Writing a concept
 

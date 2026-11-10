@@ -584,11 +584,11 @@ within 5% with all corrections; every starter of the chapter fails. Tag `ch28`.
 - R. L. Siddon, "Fast calculation of the exact radiological path for a three-dimensional CT
   array", *Medical Physics* 12(2), 1985: the exact intersection lengths.
 - J. Qi and R. M. Leahy, "Iterative reconstruction techniques in emission computed tomography",
-  *Physics in Medicine and Biology* 51(15), 2006: a review of the models, the algorithms and
-  their noise (verify: the pages before you cite it).
+  *Physics in Medicine and Biology* 51(15), 2006, R541–R578: a review of the models, the algorithms
+  and their noise.
 - D. L. Bailey, D. W. Townsend, P. E. Valk and M. N. Maisey (editors), *Positron Emission
   Tomography: Basic Sciences*, Springer, 2005: the chapters on image reconstruction.
-- The documentation of open-source reconstruction software, for example STIR and CASToR, for how
-  a full 3D reconstruction with time of flight and resolution modeling is organized (verify: what
-  each project currently documents).
+- The documentation of open-source reconstruction software, for example STIR and CASToR, for how a
+  full 3D reconstruction with time of flight and resolution modeling is organized in its current
+  release.
 - ADR 0023 and CR-0014 in the repository: the decision and the change record.

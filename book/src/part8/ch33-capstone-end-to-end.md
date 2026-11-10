@@ -498,15 +498,15 @@ limit was. And the comparison with the reference shares the sorter with the serv
 decision record states and the sorter's own tests cover.
 
 ::: box-regulated
-- **System testing.** IEC 62304 expects software system testing against the software
-  requirements, with the results recorded, and the evaluation of anomalies found (verify: the
-  standard's clauses on software system testing; assumption: confirm with team). The end-to-end
-  run is MiniDAQ's software system test of the whole chain; its result file names every check,
-  its equation and its values, and it is kept as release evidence.
+- **System testing.** IEC 62304 expects software system testing against the software requirements,
+  with the results recorded, and the evaluation of anomalies found (clause 5.7; how your team
+  records it is an assumption: confirm with team). The end-to-end run is MiniDAQ's software system
+  test of the whole chain; its result file names every check, its equation and its values, and it is
+  kept as release evidence.
 - **Release.** The standard expects the verification to be complete and evaluated, known residual
-  anomalies documented, and the released version identified before release (verify: the clauses
-  on software release). The acceptance report shows, criterion by criterion, that the evidence of
-  this commit meets its target, and the problem reports list the known anomalies.
+  anomalies documented, and the released version identified before release (clause 5.8). The
+  acceptance report shows, criterion by criterion, that the evidence of this commit meets its
+  target, and the problem reports list the known anomalies.
 - **Configuration management of requirements.** A requirement that has been verified is a
   configuration item; a change to it is a change request with an impact analysis. The baseline
   and `docs.baseline` enforce that, and the baseline is retaken only in the release review.

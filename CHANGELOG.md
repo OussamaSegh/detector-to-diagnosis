@@ -15,6 +15,17 @@ the patch version.
 - Release records 0.9.0 and 1.0.0: a correction names the energy filter benchmarks by their
   kernel (branchless, AVX-512), not by a number of channels.
 - VERSION 1.0.1-dev after release 1.0.0, so `docs.version` passes on main again.
+- CAPA-0002's effectiveness check, due at release 0.4.0 and never made, is made and recorded
+  (not effective; next check at 1.1.0), from an internal audit of releases 0.4.0 to 1.0.0
+  (`docs/regulatory/qms/internal-audit-2026-11-09.md`). `tools/check_capa.py` now fails on an
+  overdue check and on a newest release record that leaves out a CAPA that is not closed; the
+  records of 0.9.0 and 1.0.0 get a correction; SDP version 15 holds an internal audit before
+  each minor release (MDQ-PR-065). MDQ-PR-066 (open): fifteen controlled documents are released
+  with the status "draft for review".
+- The book and the solutions print no *verify:* marker any more (133 in 1.0.0): each claim is
+  stated with its source (citations completed from PubMed, IEEE and JACoW records; clause
+  numbers of the standards), worded "at the time of writing" where it may change, or says in
+  the sentence what the book did not check. How to use this book explains the wording.
 - README quick start installs the same packages as How to use this book (OpenSSL, NumPy and
   the Python headers were missing, so the first configure failed).
 
@@ -26,13 +37,28 @@ the patch version.
   icons, tinted tables and code, and thumb tabs in the color PDFs.
 - A figure pipeline (`book/tools/figures.py`): TikZ and matplotlib figures built per profile,
   cached, numbered and referenced in the PDF and the EPUB, each with alt text, checked by the
-  ctest `book.figures`. Part II has 51 figures (Chapters 8 to 12); plots read the measurement
-  files they show.
+  ctest `book.figures`. 231 figures over every chapter and the appendix, where 1.0.0 had 25;
+  plots read the measurement files they show, and diagrams are drawn in TikZ in the Part's
+  color.
+- A real index: about 400 main entries and 90 subentries over every chapter and the appendix,
+  where 1.0.0 had 32 from Chapters 1 to 8. `book/index-terms.txt` lists the terms and
+  `book/filters/index-terms.lua` indexes the first use of each in every chapter (running text
+  only); the test `book.index` (`book/tools/index_terms.py`) refuses a malformed or dead entry.
 - How to use this book explains the *verify:* and *assumption: confirm with team* markers.
 - A PDF for 10.3 inch 4:3 color E Ink tablets (Onyx Boox Air 5C): `book/build.sh boox`
   sets the book and the solutions manual on a 6.18 x 8.24 in page with narrow margins, so a
   page fills the screen without zoom; links, bookmarks and colors are kept. The download page
   lists it next to the EPUB and the PDF.
+
+### Changed
+
+- New covers for the book and the solutions manual, front and full-wrap KDP paperback. The
+  artwork is a PET scan simulated end to end by `book/tools/cover_art.py` (a brain phantom,
+  its sinogram with Poisson noise and an MLEM image): the front shows the image forming inside
+  the detector ring out of the lines of response, the back the four steps singles,
+  coincidences, sinogram and image under the blurb. The EPUB cover is now a JPEG.
+- The download page offers the covers of both volumes: the front as a 300 dpi JPEG and the
+  paperback's full-wrap print cover as a PDF (`book/build.sh all` builds them).
 
 ## [1.0.0] - 2026-11-08
 

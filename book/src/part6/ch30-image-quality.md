@@ -66,22 +66,22 @@ filter lowers both; smaller pixels show finer detail with fewer counts each. A p
 on those trades, and a specification states the protocol with its numbers.
 
 The reference for how to measure them is NEMA NU 2, *Performance Measurements of Positron Emission
-Tomographs*, the standard by which PET scanners are specified and compared, with the
-corresponding IEC 61675-1 (verify: the editions your scanner's specification cites). It defines the
-phantoms, the acquisitions, the reconstructions and the analysis for spatial resolution,
-sensitivity, count rate performance and scatter fraction, the accuracy of the corrections, and
-image quality. This chapter follows its methods for resolution and image quality, adapted to
-MiniDAQ's 2D reconstruction, and describes them in its own words; the standard's text is what a
-real test follows. What it leaves out of NEMA NU 2 is said at the end.
+Tomographs*, the standard by which PET scanners are specified and compared, with the corresponding
+IEC 61675-1; note the editions that a specification cites. It defines the phantoms, the
+acquisitions, the reconstructions and the analysis for spatial resolution, sensitivity, count rate
+performance and scatter fraction, the accuracy of the corrections, and image quality. This chapter
+follows its methods for resolution and image quality, adapted to MiniDAQ's 2D reconstruction, and
+describes them in its own words; the standard's text is what a real test follows. What it leaves out
+of NEMA NU 2 is said at the end.
 
 ## Spatial resolution
 
 ### A width, measured the same way every time
 
-A point's image is a few pixels wide, and reading a width off a few samples needs a rule. The
-one NEMA NU 2 uses takes the maximum from a parabola through the highest sample and its two
-neighbors, and finds each side's crossing of the level by linear interpolation between the two
-samples around it (verify: the edition's wording):
+A point's image is a few pixels wide, and reading a width off a few samples needs a rule. The one
+NEMA NU 2 uses takes the maximum from a parabola through the highest sample and its two neighbors,
+and finds each side's crossing of the level by linear interpolation between the two samples around
+it:
 
 ```{.python include="tools/recon/quality.py" snippet="width"}
 ```
@@ -91,7 +91,7 @@ whole number of samples: a Gaussian of 3.5 samples FWHM comes out 15% too narrow
 on a sample and 13% too wide when it is not, and the width jumps as the point moves. Interpolation
 makes the width move smoothly with the profile. It still overestimates a curved side a little, up to
 2.7% for the FWHM and 3.5% for the FWTM at 3.5 samples per FWHM and less than half of that at 7,
-which is why the standard asks for pixels of at most a third of the expected FWHM (verify). The
+which is why the standard asks for pixels of at most a third of the expected FWHM. The
 parabola matters because both levels are fractions of the maximum: the highest sample of a peak
 centered between two samples is 5.5% below the true maximum at that sampling, which widens the FWHM
 by about 4%; the parabola's vertex is within 1.2%. Exercise 30.1 has you write both, against tests
@@ -113,7 +113,7 @@ x axis, the row is the radial direction (toward the axis) and the column the tan
 
 ### FBP, because it has no iterations
 
-NEMA NU 2 measures the resolution with filtered backprojection (FBP) and no smoothing (verify).
+NEMA NU 2 measures the resolution with filtered backprojection (FBP) and no smoothing.
 The reason is in the next section: OSEM's width of a point depends on the iterations, the subsets
 and the counts, and the point would measure the reconstruction, not the scanner. FBP is a linear
 operation with nothing to choose but its filter. It inverts the projection exactly for continuous,
@@ -229,8 +229,8 @@ with team which reconstruction your scanner's specification uses for resolution)
 ### Regions of interest
 
 NEMA NU 2's image quality test uses a body-shaped phantom with six spheres of 10 to 37 mm inner
-diameter in a warm background, filled four times as hot as the background (eight in later
-editions as an option), and measures in the reconstructed images (verify):
+diameter in a warm background, filled four times as hot as the background (the editions differ in
+whether a second ratio is measured), and measures in the reconstructed images:
 
 - each hot sphere's contrast: its region's mean over the background's, less one, over the true
   ratio less one, in percent;
@@ -399,7 +399,7 @@ accepted. Two rules matter, and Exercise 30.3 has you write both.
   one result in 44), but puts most results on one side of the mean. Seven in a row on one side is
   a finding: for a stable process, the expected wait for one is 2^7 - 1 = 127 results, about two
   and a half years of weekly checks. Run rules come from statistical process control (the Western
-  Electric rules use eight in a row and Nelson's rules nine; verify); the length is part of the
+  Electric rules use eight in a row and Nelson's rules nine); the length is part of the
   protocol.
 
 The day in the life is this rule at work: the contrast fell outside the baseline's limits, the
@@ -562,19 +562,19 @@ realization; every starter of the chapter fails. Tag `ch30`.
 ## Further reading {.unnumbered}
 
 - NEMA NU 2, *Performance Measurements of Positron Emission Tomographs*, National Electrical
-  Manufacturers Association (verify: the current edition, 2018 or later).
+  Manufacturers Association (the 2018 edition or later).
 - IEC 61675-1, *Radionuclide imaging devices: Characteristics and test conditions, Part 1:
-  Positron emission tomographs* (verify: the current edition).
+  Positron emission tomographs*.
 - A. C. Kak and M. Slaney, *Principles of Computerized Tomographic Imaging*, IEEE Press, 1988,
   reprinted by SIAM, 2001: chapter 3 for filtered backprojection and the discrete ramp filter.
 - W. W. Moses, "Fundamental limits of spatial resolution in PET", *Nuclear Instruments and Methods
-  in Physics Research A* 648 (2011) S236 to S240 (verify).
+  in Physics Research A* 648 (2011) S236 to S240.
 - E. J. Hoffman, S.-C. Huang and M. E. Phelps, "Quantitation in positron emission computed
   tomography: 1. Effect of object size", *Journal of Computer Assisted Tomography* 3 (1979) 299 to
-  308, for the partial volume effect (verify).
+  308, for the partial volume effect.
 - S. R. Cherry, J. A. Sorenson and M. E. Phelps, *Physics in Nuclear Medicine*, 4th edition,
   Elsevier Saunders, 2012: the chapters on PET performance and image quality.
 - L. S. Nelson, "The Shewhart control chart: tests for special causes", *Journal of Quality
   Technology* 16 (1984) 237 to 239, and the Western Electric *Statistical Quality Control
-  Handbook* (1956), for run rules (verify).
+  Handbook* (1956), for run rules.
 - ADR 0025 and CR-0016 in the repository: the decision and the change record.

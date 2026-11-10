@@ -648,8 +648,8 @@ Architecture is where software design meets the regulatory file, and auditors re
   compatibility rules are specified, versioned and verified like any other requirement, and a
   breaking change is a change request with impact analysis.
 - **Audit trails may become records.** If the product's quality system or a customer treats
-  acquisition logs as records, retention, integrity and access control follow (Chapter 16), and
-  so do electronic-record rules in some markets (verify: which apply to your company's
+  acquisition logs as records, retention, integrity and access control follow (Chapter 16), and so
+  do electronic-record rules in some markets (ask your regulatory team which apply to your company's
   products and markets).
 :::
 

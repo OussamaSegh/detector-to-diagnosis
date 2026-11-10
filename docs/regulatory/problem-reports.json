@@ -1187,6 +1187,47 @@
         "rationale": "No single was lost or arrived after the sorter's window in those intervals (the soak counts no loss), the latency is not a risk control of a hazard, and the delay before a fault is noticed is MDQ-PR-006, which does not depend on it."
       },
       "decision": "Release 1.0.0 with a recorded deviation for ACC-04. Find the cause with a finer measure of the machine during the soak (the steal and run-queue time of the pipeline's threads per second, from /proc/self/task/*/schedstat) before the latency limit is judged again."
+    },
+    {
+      "id": "MDQ-PR-065",
+      "title": "CAPA-0002's effectiveness check, due at release 0.4.0, was never made, and two release records said no CAPA was open",
+      "found": "2026-11-09, the independent review of release 1.0.0 (finding H3) and the internal audit of 2026-11-09 (A-1)",
+      "item": "release",
+      "status": "closed",
+      "capa": "CAPA-0002",
+      "description": "CAPA-0002 (status implemented) set its effectiveness check for release 0.4.0. Releases 0.4.0 to 1.0.0 were made without it, the internal audit per Part that its preventive action asked for was not held for Parts IV to IX, and the release records of 0.9.0 and 1.0.0 say \"No CAPA is open\". tools/check_capa.py checked the fields and sections of a CAPA, not whether its check was due.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A record of the quality process. The controls the CAPA put in place (document versions checked by docs.design_file, the review line checked by the commit policy) ran throughout; the check made late finds them held from the commits that enforce them."
+      },
+      "resolution": {
+        "change": "The effectiveness check is made and recorded in CAPA-0002 (not effective; new criterion due at 1.1.0). tools/check_capa.py fails on an overdue check and on a newest release record that does not name an open CAPA. The SDP (version 15) holds the internal audit before each minor release and has the release record cite it. Corrections in the records of 0.9.0 and 1.0.0.",
+        "verification": "docs.capa failed on the commit before the change with both new errors (CAPA-0002 overdue at 0.4.0, 1.0.0.md does not name CAPA-0002) and passes after it."
+      },
+      "root_cause": {
+        "whys": [
+          "The check of 0.4.0 was not made because no step of the release checks asked for it.",
+          "The release records were written from the CAPAs that had results, and CAPA-0002 had none to report.",
+          "tools/check_capa.py checked a CAPA's form but not its due date against the releases already made."
+        ],
+        "cause": "A dated commitment in a record with no check that reads the date.",
+        "category": "process",
+        "escape": "No tool or release step compared a CAPA's due release with the release records; the Part reviews read the chapters, not the open CAPAs."
+      }
+    },
+    {
+      "id": "MDQ-PR-066",
+      "title": "Fifteen controlled documents are released with the status \"draft for review\"",
+      "found": "2026-11-09, the independent review of release 1.0.0 (finding M4) and the internal audit of 2026-11-09 (A-2)",
+      "item": "release",
+      "status": "open",
+      "capa": "",
+      "description": "Fifteen of the nineteen controlled documents in the design file (the SDP, the SRS, the risk management plan and the threat model among them) begin with \"Status: draft for review\" at release 1.0.0. The release record approves the release, but no record approves each document at its version, so the status line contradicts the release.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The content of every document was verified by its docs.* test and reviewed in the Part reviews; what is missing is the record of the approval, not a check of the content."
+      },
+      "decision": "Released with. Approving a document is the software lead's act and is not made by a tool: at release 1.1.0 the release record lists each controlled document with the version it approves, the documents' status lines say so, and tools/design_file.py checks that no controlled document of a release says draft."
     }
   ]
 }

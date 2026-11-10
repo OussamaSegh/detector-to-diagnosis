@@ -76,14 +76,14 @@ accordingly.
 
 ### IEC 81001-5-1 and its neighbors
 
-IEC 81001-5-1:2021, *Health software and health IT systems safety, effectiveness and security:
-Part 5-1: Security: Activities in the product life cycle*, is to security what IEC 62304 is to
-software safety. It was derived from IEC 62443-4-1, the secure development standard for industrial
+IEC 81001-5-1:2021, *Health software and health IT systems safety, effectiveness and security: Part
+5-1: Security: Activities in the product life cycle*, is to security what IEC 62304 is to software
+safety. It was derived from IEC 62443-4-1, the secure development standard for industrial
 automation, and adapted to health software, and it is written to sit on top of IEC 62304: its
 clauses follow the same life cycle (development, maintenance, risk management, configuration
-management, problem resolution) and add the security activities to each (verify: the clause
-numbering against your copy). In a team that already follows IEC 62304, the standard does not ask
-for a second process. It asks for more in the same places:
+management, problem resolution) and add the security activities to each. In a team that already
+follows IEC 62304, the standard does not ask for a second process. It asks for more in the same
+places:
 
 - **Planning.** The development plan names the security activities, the people and their training,
   and the security risk management process. Section 9 of MiniDAQ's threat model
@@ -113,7 +113,7 @@ Figure [](#fig-ch17-lifecycle) shows where the activities attach.
 ### The FDA and the EU
 
 The FDA's guidance *Cybersecurity in Medical Devices: Quality System Considerations and Content of
-Premarket Submissions* (final in September 2023, updated in 2025; verify: the current revision)
+Premarket Submissions* (final in September 2023, updated in June 2025)
 describes what a submission must show: a security risk management report with the threat model, the
 security architecture with its views, an SBOM, the testing done and its results, the vulnerabilities
 known at submission and their assessment, and the plan for the product's life after release. Since
@@ -903,8 +903,8 @@ decision. Tag `ch17`.
 - IEC 81001-5-1:2021, *Health software and health IT systems safety, effectiveness and security:
   Part 5-1: Security: Activities in the product life cycle*.
 - U.S. Food and Drug Administration, *Cybersecurity in Medical Devices: Quality System
-  Considerations and Content of Premarket Submissions*, guidance, September 2023, and its later
-  revision (verify: the current revision and date).
+  Considerations and Content of Premarket Submissions*, guidance, September 2023, and its revision
+  of June 2025.
 - Federal Food, Drug, and Cosmetic Act, section 524B, *Ensuring cybersecurity of devices*, added by
   the Consolidated Appropriations Act, 2023.
 - Medical Device Coordination Group, MDCG 2019-16 rev. 1, *Guidance on Cybersecurity for medical

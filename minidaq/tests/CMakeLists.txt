@@ -113,8 +113,10 @@ if(Python3_Interpreter_FOUND)
   set_tests_properties(docs.regmap tools.regmap_gen PROPERTIES LABELS "unit")
   # CAPA-0001: every sleep in a test states why (coding standard rule 5.5).
   add_test(NAME tests.waits COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_test_waits.py ${PROJECT_SOURCE_DIR})
+  # Review of 1.0.0 (finding H2): the book's index terms are well formed and none is dead.
+  add_test(NAME book.index COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/book/tools/index_terms.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk docs.design_file docs.changes docs.capa
-                       docs.threats docs.tools tests.waits PROPERTIES LABELS "unit")
+                       docs.threats docs.tools tests.waits book.index PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

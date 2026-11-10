@@ -403,11 +403,11 @@ to by something it read.
 
 The controls are those of any tool with the developer's rights, made explicit:
 
-- **Permissions.** Assistants ask before running a command or editing a file unless allowed, and
-  the allowed commands can be listed (the build, the tests, read-only git) and the rest left to a
-  prompt. Some assistants can run a check of their own before each tool call, a hook that can
-  refuse it, for example a read of a file that holds patient data (verify: the hook and permission
-  settings of the assistant you use, which change between versions).
+- **Permissions.** Assistants ask before running a command or editing a file unless allowed, and the
+  allowed commands can be listed (the build, the tests, read-only git) and the rest left to a
+  prompt. Some assistants can run a check of their own before each tool call, a hook that can refuse
+  it, for example a read of a file that holds patient data. The hook and permission settings differ
+  between assistants and change between versions.
 - **Isolation.** A session on a machine or container with access to the repository and nothing
   else: no production systems, no site networks, no stored credentials beyond what the task needs.
   MiniDAQ's sessions ran in disposable containers with a proxy that limited where they could
@@ -575,9 +575,9 @@ requirements named by CR-0024) pass; every starter of the chapter fails. Tag `ch
 
 - IEC 62304:2006+A1:2015, clauses 5.1 (development planning), 7 and 8; ISO 13485:2016, clauses
   4.1.6 and 7.3.9.
-- FDA, *Computer Software Assurance for Production and Quality System Software*, guidance (verify:
-  the current status and date of the guidance), on assurance proportionate to risk for software
-  used in the quality system.
+- FDA, *Computer Software Assurance for Production and Quality Management System Software*,
+  guidance, final in September 2025, on assurance proportionate to risk for software used in the
+  quality system.
 - OWASP, *Top 10 for Large Language Model Applications*, https://owasp.org, on prompt injection and
   excessive agency.
 - N. Perry, M. Srivastava, D. Kumar and D. Boneh, "Do Users Write More Insecure Code with AI

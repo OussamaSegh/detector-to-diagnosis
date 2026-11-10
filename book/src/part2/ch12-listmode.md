@@ -283,16 +283,15 @@ with ring a on one axis and ring b on the other. The diagonal holds the direct p
 fully 3D sinogram keeps every ring pair: 2,304 sinograms of 192 × 227 bins, 402 MB at 4 bytes
 per bin.
 
-Most reconstructions combine ring pairs to save memory and time. *Span* is the conventional
-way to say how much. Neighboring ring differences are grouped into *segments*, and within a
-segment ring pairs with the same a + b go into the same sinogram. Span 1 keeps every pair,
-and larger spans group more ring differences per segment. A *maximum ring difference* drops
-lines that are too oblique. The extreme is *single-slice rebinning* (SSRB): every line goes to
-the direct plane halfway between its rings, slice a + b, so 48 rings give 95 slices 1.225 mm
-apart. SSRB ignores the obliqueness of the line, which blurs the axial position the farther
-the source is from the axis (verify: SSRB's axial error grows with radial distance and ring
-difference; Daube-Witherspoon and Muehllehner, 1987). Better rebinning algorithms, such as
-Fourier rebinning, belong to reconstruction (Chapter 28).
+Most reconstructions combine ring pairs to save memory and time. *Span* is the conventional way to
+say how much. Neighboring ring differences are grouped into *segments*, and within a segment ring
+pairs with the same a + b go into the same sinogram. Span 1 keeps every pair, and larger spans group
+more ring differences per segment. A *maximum ring difference* drops lines that are too oblique. The
+extreme is *single-slice rebinning* (SSRB): every line goes to the direct plane halfway between its
+rings, slice a + b, so 48 rings give 95 slices 1.225 mm apart. SSRB ignores the obliqueness of the
+line, which blurs the axial position the farther the source is from the axis (the error grows with
+the radial distance and the ring difference; Daube-Witherspoon and Muehllehner, 1987). Better
+rebinning algorithms, such as Fourier rebinning, belong to reconstruction (Chapter 28).
 
 MiniDAQ's histogrammer does SSRB with a configurable maximum ring difference. It keeps the
 full Michelogram as a separate table, counted before the ring-difference cut, so that a
@@ -419,15 +418,14 @@ analysis tools read it too. For PET it is attractive for exactly what list mode 
 self-description. A file can hold the events as a compound dataset, the configuration as
 attributes, and calibration tables as their own datasets, and a reader discovers all of it.
 
-For the DAQ's raw stream, three properties need care. First, crash behavior. An HDF5 file
-whose writer dies with its metadata cache unflushed may be unreadable. The library's
-single-writer multiple-reader (SWMR) mode, available since version 1.10, is designed to keep
-the file readable while it is written (verify: the crash guarantees of the version and
-settings you would ship). Second, throughput depends on the chunk size, the compression and
-the library's caches, and must be measured on the acquisition disk. Third, it is a large
-library, which makes it SOUP under IEC 62304 (Chapter 14), with its own list of known
-anomalies to evaluate. Many systems therefore write raw data in a simple format and convert
-to HDF5 for analysis. That is MiniDAQ's position too.
+For the DAQ's raw stream, three properties need care. First, crash behavior. An HDF5 file whose
+writer dies with its metadata cache unflushed may be unreadable. The library's single-writer
+multiple-reader (SWMR) mode, available since version 1.10, is designed to keep the file readable
+while it is written; test the crash behavior of the version and settings you would ship. Second,
+throughput depends on the chunk size, the compression and the library's caches, and must be measured
+on the acquisition disk. Third, it is a large library, which makes it SOUP under IEC 62304 (Chapter
+14), with its own list of known anomalies to evaluate. Many systems therefore write raw data in a
+simple format and convert to HDF5 for analysis. That is MiniDAQ's position too.
 
 ### Interfile
 
@@ -447,16 +445,15 @@ Two open-source packages define much of what reconstruction expects to read:
   Interfile headers and list-mode data in several scanner-specific formats. Its scanner
   description (rings, crystals per ring, radius, depth of interaction) is the geometry a
   converter must match.
-- **CASToR** (Customizable and Advanced Software for Tomographic Reconstruction) reads data
-  files with a text header (`.cdh`) and binary events (`.cdf`), in list-mode or histogram
-  form, and describes the scanner in a geometry file or a lookup table of crystal positions.
-  Its list-mode events carry their time in milliseconds and a pair of crystal indices,
-  optionally with correction factors and a TOF value (verify: against the current CASToR user
-  guide).
+- **CASToR** (Customizable and Advanced Software for Tomographic Reconstruction) reads data files
+  with a text header (`.cdh`) and binary events (`.cdf`), in list-mode or histogram form, and
+  describes the scanner in a geometry file or a lookup table of crystal positions. Its list-mode
+  events carry their time in milliseconds and a pair of crystal indices, optionally with correction
+  factors and a TOF value (the CASToR user guide of your version gives the exact layout).
 
 A third effort is a standard rather than a package: PETSIRD, a PET raw data format from the
 Emission Tomography Standardization Initiative, which defines list-mode events and scanner
-geometry once for all tools (verify: its current version and status before relying on it).
+geometry once for all tools; check its current version and status before you rely on it.
 A DAQ that writes its own format and converts to these keeps its acquisition path stable
 while the conventions evolve. A DAQ that writes one of them directly saves the converter but
 inherits every field the convention fixes. CASToR's millisecond times, for example, would lose
@@ -485,9 +482,9 @@ many ways:
   ends in half a block.
 - **Lost writes.** A power loss discards data that the operating system had accepted but not
   yet written. The page cache can hold gigabytes.
-- **Lies about durability.** A disk with a volatile write cache that does not honor flush
-  requests, or a virtual disk that a host caches. The software did everything right and the
-  data still vanish (verify: the acquisition disk's write-cache behavior with its vendor).
+- **Lies about durability.** A disk with a volatile write cache that does not honor flush requests,
+  or a virtual disk that a host caches. The software did everything right and the data still vanish.
+  Ask the disk's vendor how its write cache behaves on power loss.
 - **A full disk.** The write fails at hour three of a four-hour run.
 - **Lost errors.** On Linux, a failed write-back is reported to the next fsync. In 2018 the
   PostgreSQL developers found that after such a failure the kernel could mark the pages clean,
@@ -551,11 +548,11 @@ accepted, but a power loss can lose everything not yet written back. `fsync()` w
 file's data and metadata are on stable storage. It is the only way for a program to know that
 they are, and it is slow, because it waits for the disk.
 
-A new file's *name* is metadata of its directory, not of the file. The fsync(2) manual page
-says so: making the file durable does not make its directory entry durable, which needs an
-fsync of the directory. A rename is atomic: after a crash a file has either its old name or
-its new one, never neither (verify: the guarantees of the file system you deploy on; Pillai
-and others, 2014, catalog where file systems differ).
+A new file's *name* is metadata of its directory, not of the file. The fsync(2) manual page says so:
+making the file durable does not make its directory entry durable, which needs an fsync of the
+directory. A rename is atomic: after a crash a file has either its old name or its new one, never
+neither, on the common Linux file systems; Pillai and others, 2014, catalog where file systems
+differ, so test the one you deploy on.
 
 The sink combines these into one rule: *a file whose name ends in `.mdql` is complete.* It
 writes each file as `.mdql.part`. After the closing block it calls fsync, closes the file,
@@ -632,14 +629,14 @@ one fsync at the end, 24 M per second: the fsync of 320 MB takes 285 ms, during 
 else happens. Frequent fsyncs (every 64 or 16 blocks) are *faster* on short runs, 36 M per
 second, because each one is small and overlaps with encoding.
 
-The long runs measure the disk. With any fsync policy the sink sustains 18.6 to 20.5 M
-coincidences per second, about 300 MB/s, which is what this virtual disk delivers. Without
-fsync it reaches 29 M per second only because part of the run is still in the page cache when
-the clock stops. `dd` writing 3 GB with one fsync at the end gives the same picture: 278 MB/s
-on the first run (verify: the second run reached 1.4 GB/s, which suggests the host caches the
-virtual disk; measure on real hardware). With fsync every 16 blocks, the slowest fsync took
-up to 75 ms and the writer waited for a buffer about 16,500 times per run. That is backpressure
-doing its job, with nothing lost.
+The long runs measure the disk. With any fsync policy the sink sustains 18.6 to 20.5 M coincidences
+per second, about 300 MB/s, which is what this virtual disk delivers. Without fsync it reaches 29 M
+per second only because part of the run is still in the page cache when the clock stops. `dd`
+writing 3 GB with one fsync at the end gives the same picture: 278 MB/s on the first run (the second
+run reached 1.4 GB/s, which suggests the host caches the virtual disk; real hardware must be
+measured on its own). With fsync every 16 blocks, the slowest fsync took up to 75 ms and the writer
+waited for a buffer about 16,500 times per run. That is backpressure doing its job, with nothing
+lost.
 
 Against the sorter's 2.7 M per second, the slowest policy leaves a margin of seven. On this
 machine the disk is not the first stage to saturate, and an `interval` policy that bounds
@@ -656,12 +653,11 @@ had produced, with no gap and no duplicate. In 7 of the 20, the `.part` file end
 truncated block. A kill can cut a large `write()` short, so the reader's handling of a torn
 tail is not a corner case.
 
-SIGKILL ends the process, not the machine. What the process had passed to `write()` is in the
-page cache and reaches the disk. A power loss can also lose what was not yet fsynced, which a
-kill test cannot show (verify: with a power-cut rig or a block-layer fault injector such as
-dm-log-writes). Until that test exists, the crash-safety claim holds for process crashes, and
-the durability under power loss rests on the fsync policy and the file system's documented
-behavior.
+SIGKILL ends the process, not the machine. What the process had passed to `write()` is in the page
+cache and reaches the disk. A power loss can also lose what was not yet fsynced, which a kill test
+cannot show; that needs a power-cut rig or a block-layer fault injector such as dm-log-writes. Until
+that test exists, the crash-safety claim holds for process crashes, and the durability under power
+loss rests on the fsync policy and the file system's documented behavior.
 
 After a crash someone has to act on the `.part` name. Exercise 12.5 writes the recovery
 tool. It cuts the partial file after its last intact block, appends a closing block that ends
@@ -721,21 +717,20 @@ attributes depend on data that only the DAQ has:
   and *Corrected Image* (0028,0051), the list of corrections applied, such as decay,
   attenuation, scatter, randoms, normalization and dead time.
 
-(Verify: the attribute tags, and which are required, against the edition of PS3.3 you
-implement.) A standardized uptake value (SUV) computed by a viewer combines the image's
-activity concentration with the patient's weight (0010,1030), the dose and the injection
-time, decay corrected. An error in any of the DAQ's times reaches every SUV computed from the
-images. That is why Chapter 8 insisted on a trustworthy acquisition start time. MiniDAQ
-records `created_utc` from the DAQ computer's clock when the sink opens. A production system
-must also relate the acquisition clock to UTC, for example with a time-mark tag at a known
-UTC time from a synchronized clock (assumption: confirm with team how your scanner ties its
-acquisition clock to UTC).
+(The PET Series and PET Image modules of PS3.3 say which attributes are required.) A standardized
+uptake value (SUV) computed by a viewer combines the image's activity concentration with the
+patient's weight (0010,1030), the dose and the injection time, decay corrected. An error in any of
+the DAQ's times reaches every SUV computed from the images. That is why Chapter 8 insisted on a
+trustworthy acquisition start time. MiniDAQ records `created_utc` from the DAQ computer's clock when
+the sink opens. A production system must also relate the acquisition clock to UTC, for example with
+a time-mark tag at a known UTC time from a synchronized clock (assumption: confirm with team how
+your scanner ties its acquisition clock to UTC).
 
 ### Where raw data fits
 
 DICOM has room for raw data. The *Raw Data* IOD carries data whose content is defined by the
 manufacturer, and vendors use it, or private attributes, to archive list-mode data and
-sinograms next to the images (verify: how your scanner archives raw data, if at all). Most of
+sinograms next to the images; ask how your scanner archives raw data, if at all. Most of
 the time, however, raw data never leave the scanner's own storage. Reconstruction reads them
 there and sends DICOM images to the hospital's PACS, and the raw data are kept for a period
 the site decides.
@@ -780,9 +775,9 @@ The list-mode file is where the DAQ's requirements become evidence.
 - **SOUP is a cost of the format choice.** A container library such as HDF5 would be SOUP with
   its own anomaly list. A custom format avoids that and takes on its own maintenance.
 - **Records of the run.** The configuration in every header and the run record with its counters
-  make each acquisition traceable to its settings and its losses, which complaint
-  investigations and performance claims rely on (verify: what your quality system requires to
-  be retained with raw data, and for how long).
+  make each acquisition traceable to its settings and its losses, which complaint investigations and
+  performance claims rely on; your quality system says what is retained with raw data, and for how
+  long.
 - **Patient data stay inside the boundary.** Raw files carry no identity; the link to a patient
   is protected and audited, and DICOM export follows the device's DICOM conformance statement
   (PS3.2).
@@ -948,18 +943,17 @@ command whose header names the machine. Tag `ch12`.
 ## Further reading {.unnumbered}
 
 - P. Koopman, "32-bit cyclic redundancy codes for Internet applications", *Proceedings of the
-  International Conference on Dependable Systems and Networks (DSN)*, 2002, 459–468 (verify:
-  the page numbers).
+  International Conference on Dependable Systems and Networks (DSN)*, 2002, 459–468.
 - R. N. Williams, "A painless guide to CRC error detection algorithms", 1993, widely mirrored
   online: the clearest derivation of table-driven CRCs.
 - M. E. Kounavis and F. L. Berry, "A systematic approach to building high performance
   software-based CRC generators", *Proceedings of the 10th IEEE Symposium on Computers and
-  Communications (ISCC)*, 2005: slicing-by-8 (verify: the citation details).
+  Communications (ISCC)*, 2005, 855–862: slicing-by-8.
 - T. S. Pillai and others, "All file systems are not created equal: on the complexity of
   crafting crash-consistent applications", *Proceedings of the 11th USENIX Symposium on
   Operating Systems Design and Implementation (OSDI)*, 2014.
 - The Linux manual pages fsync(2), rename(2) and renameat2(2); and the PostgreSQL wiki page
-  "Fsync Errors" on the 2018 fsync failure handling (verify: the page's current title).
+  "Fsync Errors" on the 2018 fsync failure handling.
 - M. E. Daube-Witherspoon and G. Muehllehner, "Treatment of axial data in three-dimensional
   PET", *Journal of Nuclear Medicine* 28 (1987) 1717–1724: single-slice rebinning.
 - K. Thielemans and others, "STIR: software for tomographic image reconstruction release 2",

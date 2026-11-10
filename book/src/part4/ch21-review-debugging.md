@@ -220,12 +220,12 @@ open it with the right build, and read it in an order.
 When a process dies of a signal whose default action dumps core (SIGSEGV, SIGBUS, SIGFPE, SIGILL,
 SIGABRT, among others), the kernel writes a core if the process's `RLIMIT_CORE` allows it and
 `kernel.core_pattern` says where. The pattern is either a file name, relative to the process's
-working directory or absolute, or a pipe to a program (`|/usr/lib/systemd/systemd-coredump ...`
-on systems that use systemd's collector, a pipe to apport on Ubuntu desktops). On the reference
-machine it is the plain name `core`, and the hard limit is unlimited. An acquisition PC's setting
-is part of its installation, like the receive buffer of Chapter 20 (verify: what the acquisition
-PC's image sets, and how long it keeps cores). A service manager decides the limit for the
-programs it starts: under systemd, `LimitCORE=` in the unit file.
+working directory or absolute, or a pipe to a program (`|/usr/lib/systemd/systemd-coredump ...` on
+systems that use systemd's collector, a pipe to apport on Ubuntu desktops). On the reference machine
+it is the plain name `core`, and the hard limit is unlimited. An acquisition PC's setting is part of
+its installation, like the receive buffer of Chapter 20: check what the acquisition PC's image sets,
+and how long it keeps cores. A service manager decides the limit for the programs it starts: under
+systemd, `LimitCORE=` in the unit file.
 
 A core holds everything in the process's memory. For MiniDAQ that includes the control tokens'
 digests and, in a product, possibly data that relates to a patient. Where cores are kept, who may
@@ -340,14 +340,14 @@ crash, and the stack shows only where it was noticed. Two tools go further, at a
 the test environment, run it under AddressSanitizer or ThreadSanitizer first; the report names
 the access and the allocation.
 
-**Record and replay** records a run of the program so that you can replay it in a debugger as
-often as you like, also backwards: set a watchpoint on the corrupted variable and run in reverse
-to the store that wrote it. On Linux the tool is rr (O'Callahan and others, in the further
-reading). It needs the CPU's hardware performance counters, which virtual machines often do not
-expose, and it knows the CPU models it supports. On the reference machine, a cloud VM, rr 5.7.0
-stopped at once with `Intel CPU type 0xc06f0 unknown`. That is worth knowing before you plan an
-investigation around it: try rr on the acquisition PC, a physical machine, before you need it
-(verify: rr on the acquisition PC's CPU and kernel).
+**Record and replay** records a run of the program so that you can replay it in a debugger as often
+as you like, also backwards: set a watchpoint on the corrupted variable and run in reverse to the
+store that wrote it. On Linux the tool is rr (O'Callahan and others, in the further reading). It
+needs the CPU's hardware performance counters, which virtual machines often do not expose, and it
+knows the CPU models it supports. On the reference machine, a cloud VM, rr 5.7.0 stopped at once
+with `Intel CPU type 0xc06f0 unknown`. That is worth knowing before you plan an investigation around
+it: try rr on the acquisition PC, a physical machine, before you need it, because rr depends on the
+CPU's performance counters and the kernel.
 
 ::: box-mistakes
 - **No core, because nobody set it up.** Check `kernel.core_pattern` and the service's core limit

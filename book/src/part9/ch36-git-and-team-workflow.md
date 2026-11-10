@@ -87,11 +87,11 @@ A name proves less than it seems to. It proves *which content*. It does not prov
 commit (the author and committer fields hold whatever the maker's configuration said), when (the
 times are the maker's clock and can be set at will), or that anything was reviewed or tested. And
 SHA-1 is no longer collision resistant: in 2017 a team from CWI Amsterdam and Google published two
-different PDF files with the same SHA-1. Git has used a hardened SHA-1 that detects such
-constructed collisions since version 2.13, and it can create repositories named with SHA-256
-(`git init --object-format=sha256`); support for those on hosting services has lagged (verify:
-the state of the service your team uses). Integrity against accidents is what the names give you;
-integrity against an adversary needs signatures, which come later in this chapter.
+different PDF files with the same SHA-1. Git has used a hardened SHA-1 that detects such constructed
+collisions since version 2.13, and it can create repositories named with SHA-256 (`git init
+--object-format=sha256`); support for those on hosting services has lagged, so check the service
+your team uses. Integrity against accidents is what the names give you; integrity against an
+adversary needs signatures, which come later in this chapter.
 
 Figure [](#fig-ch36-objects) draws the objects behind one commit.
 

@@ -296,13 +296,13 @@ review has to cover what it hides.
 
 ### CodeQL
 
-CodeQL compiles the code under observation, builds a database of the program, and runs queries
-over it, for example "data from `recv` reaches the size argument of `memcpy` without a bounds
-check". It complements clang-tidy, which looks at one translation unit at a time.
-`.github/workflows/codeql.yml` runs the `security-and-quality` query suite for C and C++ on
-pushes to `main`, pull requests and once a week, and the results appear in the repository's
-code scanning alerts. verify: this workflow was not executed in the book's build environment,
-which has no GitHub runner; check its first run and triage its findings the same way.
+CodeQL compiles the code under observation, builds a database of the program, and runs queries over
+it, for example "data from `recv` reaches the size argument of `memcpy` without a bounds check". It
+complements clang-tidy, which looks at one translation unit at a time.
+`.github/workflows/codeql.yml` runs the `security-and-quality` query suite for C and C++ on pushes
+to `main`, pull requests and once a week, and the results appear in the repository's code scanning
+alerts. The book's build environment has no GitHub runner, so this workflow runs only on GitHub:
+check its first run on your repository and triage its findings the same way.
 
 ::: box-mistakes
 - **Turning on everything at once and suppressing the result in bulk.** A baseline of 2,000
@@ -523,18 +523,17 @@ Medians hide the spread. Figure [](#fig-ch07-hardcost) shows every run.
 ```{.figure #fig-ch07-hardcost src="book/figures/plots/ch07/hardcost.py" caption="The cost of hardening, every run. Most differences sit inside the ±10% noise band; the hardened sort is the one result clearly outside it." alt="Strip plot with six benchmarks as rows and three builds (none, distro, hardened) as colored markers, positioned by percent difference from the unhardened median. Nearly all dots fall in a shaded band from minus to plus 10 percent; the hardened sort's dots cluster near plus 15 to 20 percent." width="88%" inputs="measurements/ch07"}
 ```
 
-Most of these differences are inside the noise of this VM: the spread between the five runs
-of one build is often 10% (the AVX2 filter on *none* ranged from 4.5 to 6.9 µs), and a
-"hardened" pipeline that runs 9% faster is not an effect of hardening. One result is
-outside the noise: the sort, where the fastest hardened run was slower than the slowest
-unhardened one. A fourth build with only `-D_GLIBCXX_ASSERTIONS` added to the `release`
-preset reproduced it (median 34.5 µs against 31.7 µs in a second set of five runs), so the
-cost comes from the library's precondition checks, not from the compiler and linker flags.
-Even there, the hardened sort costs about 36 µs per batch of 4,096 singles, 8.8 ns per
-single: against the performance budget's 100 ns per single at 10 M singles/s and 33 ns at
-30 M singles/s (`docs/performance-budget.md`, both rates assumption: confirm with team), the
-margin is 11x and 3.8x, and the whole pipeline shows no measurable cost. verify: on the target hardware, where the noise is lower and the
-cost may differ.
+Most of these differences are inside the noise of this VM: the spread between the five runs of one
+build is often 10% (the AVX2 filter on *none* ranged from 4.5 to 6.9 µs), and a "hardened" pipeline
+that runs 9% faster is not an effect of hardening. One result is outside the noise: the sort, where
+the fastest hardened run was slower than the slowest unhardened one. A fourth build with only
+`-D_GLIBCXX_ASSERTIONS` added to the `release` preset reproduced it (median 34.5 µs against 31.7 µs
+in a second set of five runs), so the cost comes from the library's precondition checks, not from
+the compiler and linker flags. Even there, the hardened sort costs about 36 µs per batch of 4,096
+singles, 8.8 ns per single: against the performance budget's 100 ns per single at 10 M singles/s and
+33 ns at 30 M singles/s (`docs/performance-budget.md`, both rates assumption: confirm with team),
+the margin is 11x and 3.8x, and the whole pipeline shows no measurable cost. Measure it again on the
+target hardware, where the noise is lower and the cost may differ.
 
 ### Decision
 
@@ -637,13 +636,13 @@ for evidence of it across the life cycle.
   verification including static analysis and testing of inputs, and management of third-party
   components. The coding standard, the static analysis gate and its suppression records, the
   fuzz targets and campaign reports of this chapter are that evidence for MiniDAQ.
-  verify: which edition and which parts your notified body and your company's QMS reference.
-- **SBOM.** In the United States, section 524B of the Federal Food, Drug, and Cosmetic Act
-  requires manufacturers of "cyber devices" to provide an SBOM in premarket submissions,
-  including commercial, open-source and off-the-shelf components, and FDA's premarket
-  cybersecurity guidance describes what it expects alongside it. In the EU, the MDR's general
-  safety and performance requirements on IT security and MDCG 2019-16 guide the same work.
-  verify: whether your scanner is a cyber device in the 524B sense and which markets apply
+  Ask which edition and which parts your notified body and your company's QMS reference.
+- **SBOM.** In the United States, section 524B of the Federal Food, Drug, and Cosmetic Act requires
+  manufacturers of "cyber devices" to provide an SBOM in premarket submissions, including
+  commercial, open-source and off-the-shelf components, and FDA's premarket cybersecurity guidance
+  describes what it expects alongside it. In the EU, the MDR's general safety and performance
+  requirements on IT security and MDCG 2019-16 guide the same work. Whether your scanner is a cyber
+  device in the 524B sense, and which markets apply, is a question for your regulatory team
   (assumption: confirm with team).
 - **SOUP.** IEC 62304 expects each SOUP item to be identified, its requirements stated, and
   its known anomalies evaluated (Chapter 14). The SBOM and the SOUP list are two views of the
@@ -816,6 +815,7 @@ ran without a crash, and their numbers are recorded in `fuzz/README.md`. Tag `ch
   Elements for a Software Bill of Materials (SBOM)*, 2021.
 - IEC 81001-5-1:2021, *Health software and health IT systems safety, effectiveness and
   security, Part 5-1: Security, Activities in the product life cycle*.
-- FDA, *Cybersecurity in Medical Devices: Quality System Considerations and Content of
-  Premarket Submissions* (guidance; verify: the current revision); MDCG 2019-16, *Guidance on
+- FDA, *Cybersecurity in Medical Devices: Quality System Considerations and Content of Premarket
+  Submissions* (final guidance, September 2023, updated in June 2025 as *Quality Management System
+  Considerations*; cite the revision current when you submit); MDCG 2019-16, *Guidance on
   Cybersecurity for medical devices*.

@@ -4,7 +4,7 @@
 
 Usage: book/tools/site.py OUT_DIR VERSION FILES...
 
-The files (EPUB and PDF, built by book/build.sh) are copied into OUT_DIR, and OUT_DIR/index.html
+The files (EPUB, PDF and covers, built by book/build.sh) are copied into OUT_DIR, and OUT_DIR/index.html
 lists them with their size and SHA-256, so a reader can check a download."""
 import hashlib
 import html
@@ -20,6 +20,12 @@ KINDS = [  # (suffix of the file name, label, what it is for)
     ("-boox-air-5c.pdf", "PDF for Boox Air 5C (10.3 inch E Ink)",
      "Pages the size of a 10.3 inch 4:3 screen (Onyx Boox Air 5C and similar), narrow margins, "
      "so a page fills the screen without zoom; links, bookmarks and color kept."),
+    ("-cover.jpg", "Front cover (JPEG)",
+     "The front cover at 300 dpi, 2550 x 3300 pixels."),
+    ("-cover.pdf", "Print cover (PDF)",
+     "The paperback's full wrap for 8.5 x 11 inch pages on white paper: back cover, spine and "
+     "front cover with 1/8 inch bleed, the spine sized for this edition's page count, the "
+     "barcode area left empty."),
 ]
 
 PAGE = """<!doctype html>
@@ -75,7 +81,7 @@ def kind_index(name):
     """The index in KINDS of the longest suffix the name ends with."""
     matches = [(len(k[0]), i) for i, k in enumerate(KINDS) if name.endswith(k[0])]
     if not matches:
-        raise SystemExit(f"{name}: not an EPUB or PDF of the book")
+        raise SystemExit(f"{name}: not an EPUB, PDF or cover of the book")
     return max(matches)[1]
 
 

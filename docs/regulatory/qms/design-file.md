@@ -11,7 +11,7 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 | 4.2.4 | Control of documents | `docs/regulatory/qms/design-file.json`<br>`tools/design_file.py` | Version and history of every controlled document, checked on every change; a changed document gets a new version before the next release. |
 | 4.2.5 | Control of records | `docs/regulatory/trace-matrix.md`<br>`docs/regulatory/known-anomalies.md`<br>`measurements/` | Generated records are checked against their sources; measurements keep their raw output. |
 | 7.1 | Risk management in product realization | `docs/regulatory/risk/`<br>`docs/regulatory/security/` | Software part of the ISO 14971 file (Chapter 15), and the security risk assessment: threat model and vulnerability triage (Chapter 17). |
-| 7.3.2 | Design and development planning | `docs/regulatory/sdp.md`<br>`docs/regulatory/risk/risk-management-plan.md` |  |
+| 7.3.2 | Design and development planning | `docs/regulatory/sdp.md`<br>`docs/regulatory/risk/risk-management-plan.md`<br>`docs/ROADMAP-2.0.0.md` |  |
 | 7.3.3 | Design and development inputs | `docs/regulatory/intended-use.md`<br>`docs/regulatory/regulatory-context.md`<br>`docs/regulatory/srs.md`<br>`docs/regulatory/srs-baseline.json`<br>`tools/req_baseline.py`<br>`docs/performance-budget.md`<br>`docs/regulatory/standards-map.dot`<br>`docs/regulatory/standards-map.svg` | Requirements from the intended use, the regulations, the risk controls and the performance budget; frozen against the baseline of SRS version 21, so that a verified requirement changes only through an approved change request (Chapter 33). |
 | 7.3.4 | Design and development outputs | `docs/architecture/`<br>`docs/formats/`<br>`docs/hw/`<br>`docs/coding-standard.md`<br>`minidaq/`<br>`CHANGELOG.md` | Architecture with classified items, data formats, the code and its coding standard. |
 | 7.3.5 | Design and development review | `docs/adr/`<br>`CHANGELOG.md`<br>`docs/code-review-checklist.md` | Decisions with their alternatives (ADRs), and the review at the end of each Part, recorded in the release notes. The review of each change that SDP section 5 asks for is the subject of internal audit finding A-1 (Chapter 16); since Chapter 21 it follows the code review checklist. |
@@ -23,7 +23,7 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 | 7.4 | Purchasing (SOUP) | `docs/regulatory/soup-list.md`<br>`cmake/Dependencies.cmake` | Every SOUP item identified by its pin, with its requirements and its known-anomaly review. |
 | 7.5.3 | Installation activities | `docs/platform/installation.md`<br>`platform/platform.json`<br>`tools/platform_check.py`<br>`packaging/` | Chapter 25: the platform the software is installed on, how it is installed and updated, and the installation qualification whose records (facts, platform SBOM, exposure score) are kept with each installation. |
 | 8.2.1 | Feedback | `docs/regulatory/problem-reports.json` | In MiniDAQ, problems found by tests, fuzzing, measurements and reviews; at the scanner, complaints and service reports as well. From MDQ-PR-019 on, each closed report records its root cause analysis (Chapter 21). |
-| 8.2.4 | Internal audit | `docs/regulatory/qms/internal-audit-2026-10-25.md` | The audit of Chapter 16, by the author (no independent auditor in a teaching project). |
+| 8.2.4 | Internal audit | `docs/regulatory/qms/internal-audit-2026-10-25.md`<br>`docs/regulatory/qms/internal-audit-2026-11-09.md` | The audit of Chapter 16 and the audit after release 1.0.0 (MDQ-PR-065), by the author (no independent auditor in a teaching project). |
 | 8.3 | Control of nonconforming product | `docs/regulatory/problem-reports.json`<br>`docs/regulatory/known-anomalies.md` | Every problem evaluated for safety; the open ones are stated by each release. |
 | 8.5.2 | Corrective action | `docs/regulatory/capa/`<br>`tools/check_capa.py` | CAPA records with investigation, actions and effectiveness check (Chapter 16). |
 | 8.5.3 | Preventive action | `docs/regulatory/capa/`<br>`docs/coding-standard.md` | Preventive actions become rules of the coding standard or checks in CI. |
@@ -46,6 +46,7 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/regulatory/changes/README.md`
 - `docs/regulatory/capa/README.md`
 - `docs/regulatory/qms/internal-audit-2026-10-25.md`
+- `docs/regulatory/qms/internal-audit-2026-11-09.md`
 - `docs/regulatory/security/threat-model.md`
 - `docs/regulatory/verification/stp.md`
 - `docs/code-review-checklist.md`
