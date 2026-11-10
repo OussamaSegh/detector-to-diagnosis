@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 15 (MiniDAQ 1.0.1-dev). Status: draft for review.
+Version 16 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -260,3 +260,4 @@ of Chapter 13.
 | 13 | Chapter 36: the commit policy in section 5 (ADR 0031, CR-0023); Chapter 37: AI-assisted development in section 4 (ADR 0032, CR-0024). |
 | 14 | Release 1.0.0: the release checks' regression gate compares the candidate with the previous release run interleaved on the reference machine, and the recorded baseline becomes the trend (CR-0025). |
 | 15 | After release 1.0.0: section 8, item 9, the internal audit before each minor release and the state of every CAPA that is not closed (internal audit of 2026-11-09, MDQ-PR-065, CAPA-0002). |
+| 16 | Approved by the software lead for release 1.1.0; the content is that of version 15 (MDQ-PR-066). |

@@ -13,6 +13,8 @@ evidence, and lists which documents are controlled. This tool:
    ends its history table with version N, numbered 1, 2, 3 ... without gaps;
 3. with --since REF, fails for every controlled document that changed since the git ref REF
    (normally the last release tag) and still has the version it had there;
+   and when VERSION is a release (no -dev), fails for every controlled document whose status says
+   draft (MDQ-PR-066);
 4. with --write, generates docs/regulatory/qms/design-file.md from the index.
 
 Usage: design_file.py ROOT [--write | --check] [--since REF]. Exit status 0 if all holds.
@@ -27,6 +29,7 @@ INDEX = pathlib.Path("docs/regulatory/qms/design-file.json")
 OUT = pathlib.Path("docs/regulatory/qms/design-file.md")
 DESIGN = ("7.3.2", "7.3.3", "7.3.4", "7.3.5", "7.3.6", "7.3.7", "7.3.8", "7.3.9", "7.3.10")
 VERSION = re.compile(r"^Version (\d+)\b", re.M)
+STATUS = re.compile(r"Status: ([^\n]*)")
 HISTORY_HEADING = re.compile(r"^## (?:\d+\. )?(?:Changes|Document history)\b.*$", re.M)
 HISTORY_ROW = re.compile(r"^\|\s*(\d+)\s*\|", re.M)
 
@@ -87,6 +90,9 @@ def check_index(root, index):
 
 def check_controlled(root, index, since=None):
     errors = []
+    # A release (a VERSION without -dev) approves every controlled document: none may say draft.
+    v = (root / "VERSION").read_text().strip() if (root / "VERSION").is_file() else ""
+    release = v if v and "-" not in v else None
     for doc in index["controlled"]:
         p = root / doc
         if not p.is_file():
@@ -101,6 +107,10 @@ def check_controlled(root, index, since=None):
             if old.returncode == 0 and old.stdout != text and version_of(old.stdout)[0] == version:
                 errors.append(f"{doc}: changed since {since} but still version {version}")
             # [/snippet:since]
+        if release:
+            status = STATUS.search("\n".join(text.splitlines()[:6]))
+            if status and "draft" in status.group(1).lower():
+                errors.append(f"{doc}: says '{status.group(1).strip()}' in release {release} (MDQ-PR-066)")
     return errors
 
 

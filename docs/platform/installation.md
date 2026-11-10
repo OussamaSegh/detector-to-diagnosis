@@ -1,6 +1,6 @@
 # Installation, updates and installation qualification of MiniDAQ
 
-Version 1 (MiniDAQ 0.5.0-dev). Status: draft for review.
+Version 2 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 Document ID: INST. Owner: the software lead; the service organization reviews every version.
 
 This document says how MiniDAQ is installed on the acquisition PC, how it is updated and rolled
@@ -94,3 +94,4 @@ the outputs with the installation record.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 25, CR-0011, ADR 0020). |
+| 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |

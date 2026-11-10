@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 19 (MiniDAQ 0.9.0-dev, Appendix A). Status: draft for review.
+Version 20 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -369,3 +369,4 @@ Open issues:
 | 17 | Chapter 31: the analysis package `analysis/` as tool TL-33, its libraries as TL-34 to TL-36 (ADR 0026, CR-0017). |
 | 18 | Chapter 32: the installed CMake package of the projector, its wheel, the workflow presets and the formatting check (ADR 0027, CR-0018). |
 | 19 | The architecture appendix of the book: corrects what earlier versions left stale, the range of decisions in section 12 (ADR 0001 to 0032, not 0020) and the slow-control thread missing from section 6 since Chapter 22. Chapters 33 to 37 added no item, layer or interface to the server (Chapter 35 added the preliminary hazard HZ-5, which no server item carries); their tools are in the tool list. |
+| 20 | Approved by the software lead for release 1.1.0; the content is that of version 19 (MDQ-PR-066). |

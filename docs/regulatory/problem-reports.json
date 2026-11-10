@@ -1220,14 +1220,27 @@
       "title": "Fifteen controlled documents are released with the status \"draft for review\"",
       "found": "2026-11-09, the independent review of release 1.0.0 (finding M4) and the internal audit of 2026-11-09 (A-2)",
       "item": "release",
-      "status": "open",
+      "status": "closed",
       "capa": "",
       "description": "Fifteen of the nineteen controlled documents in the design file (the SDP, the SRS, the risk management plan and the threat model among them) begin with \"Status: draft for review\" at release 1.0.0. The release record approves the release, but no record approves each document at its version, so the status line contradicts the release.",
       "evaluation": {
         "safety_relevant": false,
         "rationale": "The content of every document was verified by its docs.* test and reviewed in the Part reviews; what is missing is the record of the approval, not a check of the content."
       },
-      "decision": "Released with. Approving a document is the software lead's act and is not made by a tool: at release 1.1.0 the release record lists each controlled document with the version it approves, the documents' status lines say so, and tools/design_file.py checks that no controlled document of a release says draft."
+      "resolution": {
+        "change": "The software lead approved the fifteen documents for release 1.1.0 on 2026-11-10, each with the content it had at 1.0.0; each document records the approval as a new version whose history row says so, and its status line names the release. The release record of 1.1.0 lists every controlled document with the version it approves. tools/design_file.py fails when VERSION is a release (no -dev) and a controlled document's status says draft.",
+        "verification": "With VERSION set to 1.1.0, docs.design_file failed before the approvals with fifteen errors, one per document, and passes after them; --since book-v1.0.0 passes, since every approved document has a new version."
+      },
+      "root_cause": {
+        "whys": [
+          "Each document was written with the status draft for review, and the status was never changed.",
+          "No step of a release asked the software lead to approve the documents at their versions; the release record approved the release as a whole.",
+          "tools/design_file.py checked versions and history tables, not the status line."
+        ],
+        "cause": "Approval of a document was in the procedure but in no release step and no check.",
+        "category": "process",
+        "escape": "Nothing compared the documents' status with a release until the independent review of 1.0.0 read them."
+      }
     }
   ]
 }

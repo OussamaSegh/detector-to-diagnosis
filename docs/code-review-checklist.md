@@ -1,6 +1,6 @@
 # MiniDAQ code review checklist
 
-Version 3 (MiniDAQ 0.6.0, release 0.6.0). Status: draft for review.
+Version 4 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 The compilers, clang-tidy, cppcheck, the sanitizers and the documentation tests check what a
 machine can check (the [coding standard](coding-standard.md) says which rule each one enforces).
@@ -100,3 +100,4 @@ a problem report (development plan, section 7).
 | 1 | First version (Chapter 21, CR-0007). |
 | 2 | Items 4.6, 5.3 (a check that cannot run fails) and 5.5, from the release checks of 0.4.0 (MDQ-PR-028 to MDQ-PR-031). |
 | 3 | Item 4.7 and the second sentence of item 5.5, from the release checks of 0.6.0 (MDQ-PR-045, MDQ-PR-046). |
+| 4 | Approved by the software lead for release 1.1.0; the content is that of version 3 (MDQ-PR-066). |

@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 12 (MiniDAQ 0.9.0-dev). Status: draft for review.
+Version 13 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -295,3 +295,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 10 | Chapter 35 (CR-0022): the DICOM export reviewed against the diagram. It runs outside the scope of section 1, as the reconstruction does, and adds no element, flow or interface to the running MiniDAQ; but it carries patient identity to the hospital's network, so its threats are recorded as a gap in section 7 for the console that would ship it. |
 | 11 | Chapter 36 (CR-0023): the commit policy, its check in CI and the commit-msg hook reviewed against the diagram. They are development-time tools and add no element, flow or interface to the running MiniDAQ. The gap "The build runs the repository's code" says what the policy checks and what it cannot: who pushed a commit. |
 | 12 | Chapter 37 (CR-0024): AI-assisted development reviewed against the diagram. The assistant is a development tool and adds no element, flow or interface to the running MiniDAQ; its access to the repository, to the developer's commands and to its provider's service is recorded as a gap in section 7. |
+| 13 | Approved by the software lead for release 1.1.0; the content is that of version 12 (MDQ-PR-066). |

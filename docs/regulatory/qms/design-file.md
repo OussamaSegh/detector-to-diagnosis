@@ -23,7 +23,7 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 | 7.4 | Purchasing (SOUP) | `docs/regulatory/soup-list.md`<br>`cmake/Dependencies.cmake` | Every SOUP item identified by its pin, with its requirements and its known-anomaly review. |
 | 7.5.3 | Installation activities | `docs/platform/installation.md`<br>`platform/platform.json`<br>`tools/platform_check.py`<br>`packaging/` | Chapter 25: the platform the software is installed on, how it is installed and updated, and the installation qualification whose records (facts, platform SBOM, exposure score) are kept with each installation. |
 | 8.2.1 | Feedback | `docs/regulatory/problem-reports.json` | In MiniDAQ, problems found by tests, fuzzing, measurements and reviews; at the scanner, complaints and service reports as well. From MDQ-PR-019 on, each closed report records its root cause analysis (Chapter 21). |
-| 8.2.4 | Internal audit | `docs/regulatory/qms/internal-audit-2026-10-25.md`<br>`docs/regulatory/qms/internal-audit-2026-11-09.md` | The audit of Chapter 16 and the audit after release 1.0.0 (MDQ-PR-065), by the author (no independent auditor in a teaching project). |
+| 8.2.4 | Internal audit | `docs/regulatory/qms/internal-audit-2026-10-25.md`<br>`docs/regulatory/qms/internal-audit-2026-11-09.md`<br>`docs/regulatory/qms/internal-audit-2026-11-10.md` | The audit of Chapter 16, the audit after release 1.0.0 (MDQ-PR-065) and the audit before release 1.1.0, by the author (no independent auditor in a teaching project). |
 | 8.3 | Control of nonconforming product | `docs/regulatory/problem-reports.json`<br>`docs/regulatory/known-anomalies.md` | Every problem evaluated for safety; the open ones are stated by each release. |
 | 8.5.2 | Corrective action | `docs/regulatory/capa/`<br>`tools/check_capa.py` | CAPA records with investigation, actions and effectiveness check (Chapter 16). |
 | 8.5.3 | Preventive action | `docs/regulatory/capa/`<br>`docs/coding-standard.md` | Preventive actions become rules of the coding standard or checks in CI. |
@@ -47,6 +47,7 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/regulatory/capa/README.md`
 - `docs/regulatory/qms/internal-audit-2026-10-25.md`
 - `docs/regulatory/qms/internal-audit-2026-11-09.md`
+- `docs/regulatory/qms/internal-audit-2026-11-10.md`
 - `docs/regulatory/security/threat-model.md`
 - `docs/regulatory/verification/stp.md`
 - `docs/code-review-checklist.md`

@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 27 (MiniDAQ 1.0.0-dev). Status: draft for review.
+Version 28 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -516,3 +516,4 @@ change.
 | 25 | Chapter 36: the commit policy, SRS-GIT-001 to SRS-GIT-007 (ADR 0031, CR-0023). |
 | 26 | Chapter 37: AI-assisted changes, SRS-AI-001 to SRS-AI-004 (ADR 0032, CR-0024). |
 | 27 | Release 1.0.0: SRS-PERF-022 holds in at least 99% of the 10 s intervals, not in every one; the reference machine's tail latency varies from day to day (CR-0025). |
+| 28 | Approved by the software lead for release 1.1.0; the content is that of version 27 (MDQ-PR-066). |

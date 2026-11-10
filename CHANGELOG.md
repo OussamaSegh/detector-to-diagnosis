@@ -10,6 +10,8 @@ the patch version.
 
 ### Fixed
 
+- The workflows `kdp` and `pages` install the figures' Python environment from
+  `analysis/requirements.lock`; they failed on the first commit with plots.
 - Solutions, Exercises 1.2 and 1.5: the included listings start and end at the right lines
   (they began with a stray `};` and left out `EventBuffer` and `ring384`).
 - Release records 0.9.0 and 1.0.0: a correction names the energy filter benchmarks by their
@@ -31,6 +33,12 @@ the patch version.
 
 ### Added
 
+- Fifteen controlled documents approved by the software lead for release 1.1.0, each as a new
+  version that records the approval (MDQ-PR-066, closed); `tools/design_file.py` refuses a
+  controlled document that says draft in a release.
+- The internal audit before release 1.1.0 (`docs/regulatory/qms/internal-audit-2026-11-10.md`)
+  and the SOUP review for MiniDAQ 1.1.
+- `measurements/ch37/mutants.py`: which test of Exercise 37.3 catches which mutant.
 - Interior design (book/docs/PLAN-interior-design.md): one color per Part from a single palette
   for the PDFs, the EPUB and the figures, with a black-and-white profile for the paperback;
   chapter heads with an emblem, Part openers with the MiniDAQ pipeline map, call-out cards with

@@ -1,6 +1,6 @@
 # MiniDAQ: intended use
 
-Version 3 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
+Version 4 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 MiniDAQ is a learning project, not a medical device. This document is written as if MiniDAQ
 were the data acquisition (DAQ) software of a dedicated brain PET scanner, so that the rest of
@@ -84,3 +84,4 @@ RC-05 in the [hazard analysis](risk/hazards.json)).
 | 1 | First version (Chapter 13). |
 | 2 | The integrity verdict that software reading MiniDAQ's data checks first (risk control RC-05, Chapter 15), and this history (Chapter 16). |
 | 3 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e50a79e); the content is unchanged. |
+| 4 | Approved by the software lead for release 1.1.0; the content is that of version 3 (MDQ-PR-066). |

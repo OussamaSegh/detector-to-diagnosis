@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 6 (MiniDAQ 0.7.0-dev). Status: draft for review.
+Version 7 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -155,3 +155,4 @@ must report nothing before a change is merged.
 | 4 | Rule 5.6 on tests that start threads (CAPA-0001, problem report MDQ-PR-028). |
 | 5 | Rule 1.4 on formatting, checked on changed lines (Chapter 32, ADR 0027, CR-0018). |
 | 6 | Rules 5.5 and 5.6: clock reads and thread starts in tests state their kind, checked by `tests.waits` (CAPA-0001, MDQ-PR-047, MDQ-PR-048). |
+| 7 | Approved by the software lead for release 1.1.0; the content is that of version 6 (MDQ-PR-066). |

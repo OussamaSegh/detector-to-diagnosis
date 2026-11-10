@@ -1,6 +1,6 @@
 # Interface control document: MiniDAQ software and the front-end board firmware
 
-Version 1 (MiniDAQ 0.5.0-dev). Status: draft for review by the software and firmware teams.
+Version 2 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10; the firmware lead's co-signature is not recorded (assumption: confirm with team).
 Document ID: ICD-FEB. Owner: the software lead; the firmware lead co-signs every version.
 
 This document is the contract between the two sides of the front-end board (FEB): the firmware
@@ -183,3 +183,4 @@ without them (`measurements/ch24/run_sequence.txt`).
 | Version | Change |
 |---|---|
 | 1 | First version: register map 1.1, firmware 1.2 and later 1.x, data format 1 (Chapter 24, CR-0010, ADR 0019). |
+| 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |

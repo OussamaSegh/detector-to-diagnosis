@@ -1,6 +1,6 @@
 # MiniDAQ risk management plan
 
-Version 2 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: draft for review.
+Version 3 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 This plan describes how risk is managed for MiniDAQ's software, following the structure that
 ISO 14971:2019 expects of a risk management plan, for a teaching project. It is not a document
@@ -76,3 +76,4 @@ are the reviews of section 4.
 |---|---|
 | 1 | First version (Chapter 15). |
 | 2 | Editorial, recorded at the release checks of 0.4.0 (MDQ-PR-030): the text names no manufacturer (the book is generic, commit e50a79e); the content is unchanged. |
+| 3 | Approved by the software lead for release 1.1.0; the content is that of version 2 (MDQ-PR-066). |

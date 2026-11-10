@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 1 (MiniDAQ 0.4.0-dev, Chapter 19). Status: draft for review.
+Version 2 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -126,3 +126,4 @@ release and per change of the readout, not per commit.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 19). |
+| 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |
