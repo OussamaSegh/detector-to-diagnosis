@@ -426,7 +426,7 @@ manufacturer from outside the EU. For a Swiss manufacturer that is an everyday
 fact: the CE marking comes from an EU notified body, and the EU authorized representative is on the
 label.
 
-Three developments are worth following (verify each). Devices on the Swiss market are
+Three developments are worth following, and each may have moved since this was written. Devices on the Swiss market are
 registered in Swissmedic's swissdamed database: mandatory for new devices from 1 July 2026,
 and by 31 December 2026 for devices already on the market. An updated MRA was signed in March
 2026 as part of the wider EU-Swiss package; it needs approval on both sides, possibly including

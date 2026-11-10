@@ -53,8 +53,7 @@ Xeon at 2.30 GHz in a Firecracker VM, with AVX2 and AVX-512 (F, BW, VL), Linux 6
 at `-O2` unless stated otherwise, Google Benchmark 1.9.1, single-threaded benchmarks pinned to
 CPU 2 with `taskset`, 5 repetitions, median reported. The hypervisor does not expose hardware
 performance counters to the VM, which this chapter turns into a lesson: you will see what you
-can and cannot learn without them. Every number needs repeating on the acquisition PC
-(verify on the acquisition PC).
+can and cannot learn without them. Every number needs repeating on the acquisition PC.
 
 ## Benchmark hygiene
 
