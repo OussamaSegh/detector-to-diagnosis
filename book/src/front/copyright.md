@@ -8,7 +8,8 @@ No part of this book may be reproduced, stored in a retrieval system or transmit
 or by any means without the prior written permission of the author, except for brief quotations
 in reviews and articles. The source code of MiniDAQ, of its exercises and of every listing in
 this book is published separately under the MIT License, given in the file `LICENSE` of the
-companion repository, and may be used under that license.
+companion repository, and may be used under that license. That license does not cover the text,
+the figures or the covers of this book, nor their sources in the repository (see `book/LICENSE`).
 
 Version {{version}}, {{date}}.
 

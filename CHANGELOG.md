@@ -10,6 +10,10 @@ the patch version.
 
 ### Fixed
 
+- The license says what it covers (MDQ-PR-067): the code is under the MIT License; the book's
+  text, figures with their sources, covers and design notes are all rights reserved
+  (`book/LICENSE`, a note in `LICENSE`, a License section in the README, and the copyright
+  page).
 - How to use this book and the README install SciPy and Matplotlib: with the packages listed
   before, `system.e2e` failed on a fresh machine (its daily QC step needs both), so the first
   `ctest` of a new reader ended red. CI already installed them.

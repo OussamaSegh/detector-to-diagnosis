@@ -86,3 +86,12 @@ sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra texlive-fonts-e
   fonts-texgyre fonts-inconsolata graphviz librsvg2-bin latexmk epubcheck
 book/build.sh            # EPUB + PDF of the book and the solutions manual into book/build/out/
 ```
+
+## License
+
+The code is under the MIT License (`LICENSE`): MiniDAQ, the exercises and their solutions'
+code, the tools, tests, records and measurements, and the book's build tooling. The book itself
+is not: its text, the solutions manual's text, the figures with their sources and the covers
+(`book/src`, `book/solutions`, `book/figures`, `book/assets`, `book/docs`) are all rights
+reserved, as `book/LICENSE` and the book's copyright page say. Every code listing printed in
+the book comes from the MIT-licensed files.

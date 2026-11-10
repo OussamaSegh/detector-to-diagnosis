@@ -1,0 +1,22 @@
+Detector to Diagnosis: Building Regulated Medical Imaging Software in Modern C++
+Copyright (c) 2026 Oussama Seghaier. All rights reserved.
+
+These parts of this repository are the book and are NOT under the MIT License of the
+root LICENSE file:
+
+  book/src/        the text of the book
+  book/solutions/  the text of the solutions manual
+  book/figures/    the figures and their sources (TikZ drawings and plot scripts)
+  book/assets/     the covers
+  book/docs/       the book's design notes
+
+No part of them may be reproduced, stored in a retrieval system or transmitted in any
+form or by any means without the prior written permission of the author, except for
+brief quotations in reviews and articles. You may read them here and build the book
+for your own study.
+
+Everything else in this repository is under the MIT License of the root LICENSE file:
+MiniDAQ, its exercises, tools, tests, records and measurements, and the book's build
+tooling (book/build.sh, book/tools/, book/filters/, book/templates/). A code listing
+printed in the book is included from those files at build time, so it is under the
+MIT License wherever it appears.

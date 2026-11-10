@@ -1241,6 +1241,32 @@
         "category": "process",
         "escape": "Nothing compared the documents' status with a release until the independent review of 1.0.0 read them."
       }
+    },
+    {
+      "id": "MDQ-PR-067",
+      "title": "The repository's MIT License does not say that it leaves out the book",
+      "found": "2026-11-10, the second full review (PR #9)",
+      "item": "docs",
+      "status": "closed",
+      "capa": "",
+      "description": "The root LICENSE grants the MIT License on \"this software and associated documentation files\" with no scope, while the book's copyright page reserves all rights in the text. The book's sources (book/src, book/solutions, book/figures, book/assets) are in the same public repository, so a reader could take the text and figures to be under the MIT License.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A licensing statement of the book; no software item, requirement or hazard is affected."
+      },
+      "resolution": {
+        "change": "The author decided the split on 2026-11-10: the code is under the MIT License, the book's text, figures with their sources, covers and design notes are all rights reserved. book/LICENSE names the reserved directories and the MIT ones (the build tooling of book/ among them); the root LICENSE ends with a note that points to it; the README has a License section; the copyright page says that the MIT License does not cover the text, the figures or the covers, nor their sources in the repository.",
+        "verification": "Read together, LICENSE, book/LICENSE, the README and the copyright page of the built PDF name the same split; of the 536 include attributes in book/src and book/solutions, the only ones inside the reserved directories are five Graphviz diagrams of book/src/diagrams (figures); every code listing comes from a file under the MIT License."
+      },
+      "root_cause": {
+        "whys": [
+          "LICENSE was written in Chapter 1, when the repository held only code.",
+          "The book's sources joined the repository later, and the copyright page was written for the printed book alone."
+        ],
+        "cause": "Nothing compared the repository's license with the book's copyright page when the book moved into the repository.",
+        "category": "process",
+        "escape": "Licensing is in no checklist of the Part reviews; the second full review read both."
+      }
     }
   ]
 }
