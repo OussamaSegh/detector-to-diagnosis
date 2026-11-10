@@ -50,7 +50,7 @@ All measurements in this chapter come from the book's machine: a 4-vCPU Intel Xe
 in a Firecracker virtual machine (VM), Linux 6.18 with `PREEMPT_DYNAMIC` (not `PREEMPT_RT`),
 clock source `tsc`, GCC 13.3 at `-O2`, running as root. A hypervisor adds its own pauses, so
 every maximum in this chapter is an upper bound for what you would see on bare metal, and
-every number needs repeating on your scanner's acquisition PC (verify on the acquisition PC).
+every number needs repeating on your scanner's acquisition PC.
 
 ## Scheduling: who runs, and when
 
@@ -346,10 +346,14 @@ start-up**. Figure [](#fig-ch04-faults) shows the difference on a timeline.
 
 `AcquisitionPipeline::start()` calls it before it creates the stage threads when the profile
 says `lock_memory = true`. Because of `MCL_FUTURE`, the batches allocated by the channels and
-each new thread's stack are then resident from the start. One gap remains: a thread's stack is
-mapped when the thread starts, but the kernel grows a stack's *use* page by page, and
-`MCL_FUTURE` locks a mapping when it is created, not every page your function will ever
-reach. Each stage therefore touches the stack it will need before entering its loop:
+each new thread's stack are then resident from the start: the C library maps a thread's whole
+stack when it creates the thread, and the kernel faults in a locked mapping at once. Two gaps
+remain. The main thread's stack is not such a mapping: the kernel grows it page by page as the
+program goes deeper, and each new page is a fault. And the lock can be refused, on a developer's
+machine or in CI, where the process has neither the capability nor the limit for it; the
+pipeline then runs unlocked, and every stack page a stage has not reached yet faults on first
+use. Each stage therefore touches the stack it will need before entering its loop, whether or
+not the lock succeeded:
 
 ```{.cpp include="minidaq/src/rt/realtime.cpp" snippet="prefault"}
 ```
@@ -406,9 +410,10 @@ call a function that may allocate (Chapter 2), and count the faults in tests so 
 regression shows up as a failing test rather than as a field report.
 
 ::: box-mistakes
-- **`mlockall` and nothing else.** It locks what is mapped. Stack pages your code has not
-  reached yet, and memory a library maps lazily, can still fault. Prefault the stack and the
-  buffers, and measure.
+- **`mlockall` and nothing else.** It can fail, and then nothing is locked. When it succeeds,
+  the main thread's stack still grows by faulting, and a file a library maps later is still read
+  from disk on first touch. Check the return value, prefault the stack and the buffers, and
+  count the faults.
 - **Touching pages by reading.** It maps the zero page; the first write still faults.
 - **Huge pages allocated on the hot path.** One fault zeroes 2 MiB: about 50 µs on the book's
   machine. Reserve and touch them at start-up.

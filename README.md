@@ -26,8 +26,8 @@ install, building and testing, a first MiniDAQ session, working from the chapter
 the exercises. The short version:
 
 ```bash
-sudo apt-get install -y build-essential cmake ninja-build git python3 python3-numpy python3-dev \
-  clang-18 clang-tidy-18 libclang-rt-18-dev libssl-dev
+sudo apt-get install -y build-essential cmake ninja-build git python3 python3-numpy python3-scipy \
+  python3-matplotlib python3-dev clang-18 clang-tidy-18 libclang-rt-18-dev libssl-dev
 git clone <this repo> minidaq && cd minidaq      # or unzip minidaq-vX.Y.Z.zip
 ci/run_all.sh                                    # configure, build and test: GCC, Clang, ASan+UBSan
 ```

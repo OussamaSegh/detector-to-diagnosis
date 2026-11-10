@@ -5,9 +5,8 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-09: RELEASED 1.0.0 (tag book-v1.0.0 on 33aa5ba); the open findings of the
-review of 1.0.0 are closed on main (CAPA-0002's check, the verify: markers, the index, the
-roadmap).
+Last updated: 2026-11-10: RELEASED 1.1.0 (tag book-v1.1.0 on 19c6364, the illustrated interior);
+the second full review (PR #9) is merged on main after it, for the next release.
 
 ## Start here (after release 1.1.0)
 
@@ -87,6 +86,22 @@ review items"):
 - The 2.0.0 roadmap (`docs/ROADMAP-2.0.0.md`, with the author's answers in section 8) is on main,
   rebased from claude/project-thread-k78nqm. The branches k78nqm and osszm6 are now stale (a
   force push to update them was refused by the session's permissions); delete them on GitHub.
+
+Second full review (2026-11-10, PR #9, branch claude/project-thread-azh4pv, merged LOCALLY on main
+after release 1.1.0, so its fixes go out with the next release):
+debug preset 926 of 926 tests, every starter fails and none hangs, the book and the solutions
+build (685 and 209 pages, 0 overfull hboxes), Chapter 8's table reproduces from
+`minidaq_sim --activity 5e6 --seconds 1 --window 4000`. Fixed: the install line of
+How to use this book and the README lacked python3-scipy and python3-matplotlib, so `system.e2e`
+failed for a new reader (the other Python tests skip without their packages); Chapter 4 said a
+new thread's stack still faults under `mlockall(MCL_FUTURE)` (it does not: measured 0 faults; the
+main thread's stack and a refused lock are the real gaps); class A in Chapter 14 follows
+Amendment 1; stale statements that the book prints *verify* marks or keeps every measured number
+under `measurements/` (Chapters 2, 3 and 8 have no folder there). Left for the author: the root
+`LICENSE` (MIT) does not say that it excludes `book/`, while the copyright page reserves all
+rights in the text; `measurements/` folders for Chapters 2, 3 and 8 if the rule "a file for every
+number" is to hold; the SRS header still reads "MiniDAQ 1.0.0-dev".
+
 
 Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor version (1.2.0
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review

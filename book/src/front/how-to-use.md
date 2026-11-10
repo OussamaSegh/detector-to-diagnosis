@@ -97,8 +97,12 @@ Install the compilers and build tools once:
 
 ```bash
 sudo apt-get install -y build-essential cmake ninja-build git python3 python3-numpy \
-  python3-dev clang-18 clang-tidy-18 libclang-rt-18-dev libssl-dev
+  python3-scipy python3-matplotlib python3-dev clang-18 clang-tidy-18 libclang-rt-18-dev \
+  libssl-dev
 ```
+
+SciPy and Matplotlib are for the end-to-end system test (`system.e2e`), which runs the daily quality
+control of Chapter 31 on the data it acquires; without them that one test fails.
 
 A few chapters use one more tool, and say so in their prerequisites: `linux-tools-generic` for
 `perf` (Chapter 5), `gdb` (Chapter 21), `iverilog` for the firmware listing (Chapter 24,
@@ -179,8 +183,9 @@ commonly give. Read it after you have tried, not before.
 
 ### Measurements, documents and the book itself {.unnumbered}
 
-Every number the book quotes from a measurement has its raw results and the script that produced
-it under `measurements/chNN/`; run the script to measure your own machine, and expect different
+A number the book quotes from a measurement has its raw results and the script that produced
+it under `measurements/chNN/`, or, in Chapters 2, 3 and 8, comes from a benchmark or a seeded
+simulator run that the text names; run the script to measure your own machine, and expect different
 numbers with the same shape. The architecture, the decision records and, from Part III, the
 regulatory file are under `docs/`. The book and the solutions manual are built from `book/` with
 `book/build.sh`; the repository README lists the packages that needs.

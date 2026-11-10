@@ -8,6 +8,27 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed
+
+- How to use this book and the README install SciPy and Matplotlib: with the packages listed
+  before, `system.e2e` failed on a fresh machine (its daily QC step needs both), so the first
+  `ctest` of a new reader ended red. CI already installed them.
+- Chapter 4, memory locking: with `mlockall(MCL_CURRENT | MCL_FUTURE)` in force, a new thread's
+  stack is resident from the start (measured: 0 faults over 512 KiB, against 128 without the
+  lock); the text said its pages still fault. What still faults is the main thread's growing
+  stack, and everything when the lock is refused, which is why the stages prefault anyway. The
+  mistakes box and the solutions' answer 8 follow.
+- Chapter 14: class A is stated as Amendment 1 of IEC 62304 has it (no contribution to a
+  hazardous situation, or no unacceptable risk after risk controls outside the software).
+- Chapter 15, rating H-01: the worked example no longer uses P1 and P2 both for the standard's
+  two factors and for levels of the plan's probability scale in one paragraph.
+- Part III's opening and Chapter 37 no longer say the book marks claims with *verify*; four
+  leftover "(verify ...)" asides that repeated their own sentence are gone (Chapters 4, 5 and
+  13, solutions Chapter 7).
+- How to use this book and Chapter 37 no longer say every measured number has a file under
+  `measurements/`: Chapters 2, 3 and 8 quote benchmarks and seeded simulator runs that the text
+  names, and have no folder there.
+
 ## [1.1.0] - 2026-11-10
 
 ### Fixed

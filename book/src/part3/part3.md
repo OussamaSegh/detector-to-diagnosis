@@ -27,7 +27,7 @@ exists because you built it, not because someone reconstructed it before an audi
 
 Standards are copyrighted, and this book does not reproduce their text. It names clauses
 where that helps you find your way in your organization's copies, describes what they ask in
-its own words, and marks with *verify* every detail you should check against the edition you
-work to. Regulations are law and are quoted where the wording matters. Nothing in these
-chapters describes any manufacturer's own procedures; your quality system decides how the work is
-done there.
+its own words, and says "at the time of writing" where a detail depends on the edition you
+work to or on a list that changes. Regulations are law and are quoted where the wording matters.
+Nothing in these chapters describes any manufacturer's own procedures; your quality system
+decides how the work is done there.
