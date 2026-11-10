@@ -33,7 +33,14 @@ jobs:
           sudo apt-get install -y --no-install-recommends pandoc texlive-xetex texlive-latex-extra \
             texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
             texlive-plain-generic lmodern tex-gyre fonts-texgyre fonts-texgyre-math fonts-inconsolata \
-            graphviz librsvg2-bin poppler-utils
+            graphviz librsvg2-bin poppler-utils python3-venv
+      - name: Python environment for the figures, from the lock file
+        # The plots of book/figures read the measurement files with NumPy and draw them with
+        # Matplotlib, at the versions the analysis package is specified with.
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --no-deps -r analysis/requirements.lock
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
       - name: Build the EPUBs and the PDFs
         run: |
           export BOOK_DATE="$(git log -1 --format=%cs)"
