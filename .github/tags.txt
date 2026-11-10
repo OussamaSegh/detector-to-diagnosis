@@ -49,3 +49,4 @@ ch36 4ba099641a680d833039062de0c4b31055714d82 Chapter 36: Git and the workflow o
 ch37 4ba099641a680d833039062de0c4b31055714d82 Chapter 37: AI-assisted coding for medical-device software (on the same commit, the first green one after it). ci and gates green on GitHub.
 book-v0.9.0 8d349716537359c14f24202f54a8e55c115b4f9d Release 0.9.0: Part IX and Appendix A, with a deviation for ACC-04 and ACC-08 the software lead approved. ci and gates green on GitHub.
 book-v1.0.0 33aa5badd379f7b0c65812d890433dbf7ba48fe1 Release 1.0.0: the complete, packaged book, with a deviation for ACC-04 the software lead approved. ci green on GitHub; gates green on de8d158, the commit before it (only the record's text differs).
+book-v1.1.0 19c6364d6406c7610bde1bcffafc3fc494446281 Release 1.1.0: the illustrated interior (231 figures), checks on 9b9e96d, CAPA-0002 closed. ci, gates, codeql and pages green on GitHub.
