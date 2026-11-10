@@ -7,7 +7,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "minidaq-analysis"
-version = "1.1.0"
+version = "1.1.1.dev0"
 description = "MiniDAQ list-mode analysis and acquisition quality control (Detector to Diagnosis, Chapter 31)"
 readme = "README.md"
 license = "MIT"
