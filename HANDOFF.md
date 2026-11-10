@@ -11,16 +11,19 @@ roadmap).
 
 ## Start here (after release 1.0.0)
 
-**In progress (branch `claude/project-thread-gjiwu8`, not on main): the interior redesign for
-1.1.0**, plan `book/docs/PLAN-interior-design.md`, approved by the user ("Go implement").
-Done: the palette (`book/tools/palette.json`, one color per Part, profiles screen, boox and bw;
-`BOOK_INK=bw` stays the KDP default), the page design (`book/templates/book-header.tex`,
-`book/filters/design.lua`: chapter heads with emblems, Part openers with the MiniDAQ map,
-call-out cards, thumb tabs), the EPUB colors (`palette.py css`), and the figure pipeline
-(`book/tools/figures.py`, `{.figure}` blocks, cached builds, ctest `book.figures`). Part II is
-the pilot: 51 figures in Chapters 8 to 12, every one with alt text and a reference. Left: roll
-the figures out to the other Parts (about six per chapter, plan section 5), convert the remaining
-`book/src/img` PNGs (Part I's are under 300 ppi), then release 1.1.0.
+**Interior redesign for 1.1.0: complete, on main** (plan `book/docs/PLAN-interior-design.md`,
+approved by the user: "Go implement", then "Review and finish everything"). The palette
+(`book/tools/palette.json`, one color per Part, profiles screen, boox and bw; `BOOK_INK=bw` stays
+the KDP default), the page design (`book/templates/book-header.tex`, `book/filters/design.lua`:
+chapter heads with emblems, Part openers with the MiniDAQ map, call-out cards, thumb tabs), the
+EPUB colors (`palette.py css`) and the figure pipeline (`book/tools/figures.py`, `{.figure}`
+blocks, cached builds, ctest `book.figures`). 231 figures over every chapter and Appendix A
+(1.0.0 had 25), each with alt text and a reference; plots read the measurement files they show
+(Chapter 37 added `measurements/ch37/mutants.py` for its kill matrix). Appendix figures use the
+appendix color (part "A"). Builds on 2026-11-10: screen PDF 745 pages, Boox 1017, KDP bw
+interior 744, 0 overfull boxes, every image at 300 ppi or more. Adding a figure: write the
+source under `book/figures/{tikz,plots}/<chapter>/`, insert a `{.figure}` block after the
+paragraph that refers to it as `Figure [](#fig-id)`, run `figures.py check`.
 
 State on 2026-11-09: the book is complete. Release 1.0.0 (the packaged book, Parts I to IX and
 Appendix A) was released on 2026-11-08: release record `docs/regulatory/releases/1.0.0.md` on
