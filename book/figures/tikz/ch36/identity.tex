@@ -1,0 +1,14 @@
+% Chapter 36: identity, signatures and who may push. The name in a commit is what the committer
+% typed; a signature binds it to a key; the server's rules decide what reaches main.
+\begin{tikzpicture}[x=1cm,y=1cm,node distance=0.4cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.6cm,minimum height=0.9cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (id) at (0,0) {author and committer:\\whatever user.name\\and user.email say};
+  \node[st=d2dcat0] (sig) at (3.6,0) {signature (SSH or GPG):\\binds the commit\\to a key};
+  \node[st=d2dcat2] (srv) at (7.2,0) {the server: who may push,\\protected main,\\required review and CI};
+  \node[st=partcolor] (main) at (10.6,0) {main: the\\record};
+  \draw[flow] (id) -- (sig); \draw[flow] (sig) -- (srv); \draw[flow] (srv) -- (main);
+  \node[note,text=d2dcat3,anchor=north,align=center] at (0,-0.6) {a claim, not a proof};
+  \node[note,text=d2dink,anchor=north,align=center] at (3.6,-0.6) {verified against the\\person's registered key};
+  \node[note,text=d2dink,anchor=north,align=center] at (7.2,-0.6) {the control that\\actually holds};
+  \node[note,text=d2dink,anchor=north,align=center] at (10.6,-0.6) {no-reply addresses\\keep emails private};
+\end{tikzpicture}

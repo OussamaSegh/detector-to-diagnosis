@@ -93,6 +93,11 @@ constructed collisions since version 2.13, and it can create repositories named 
 the state of the service your team uses). Integrity against accidents is what the names give you;
 integrity against an adversary needs signatures, which come later in this chapter.
 
+Figure [](#fig-ch36-objects) draws the objects behind one commit.
+
+```{.figure #fig-ch36-objects src="book/figures/tikz/ch36/objects.tex" caption="What a commit is. A commit names a tree and its parent; trees name trees and blobs; every name is a hash of the content, so one changed bit renames everything above it." alt="A commit box, 34cf130 with author and message, points to its parent commit and that one to its parent. The commit also points to the root tree, which holds a docs tree and the blobs VERSION, c70836ca5cf3, and README.md; the docs tree holds sdp.md. A note gives the hash of the VERSION blob and says one changed bit changes all 20 bytes of its name, and the names of the tree and commit above it." width="90%"}
+```
+
 ## The history as a record
 
 ISO 13485 asks for records that stay legible, identifiable and retrievable, and for their changes
@@ -181,6 +186,11 @@ None is wrong in itself. What is wrong is choosing one after records already nam
 will discard. A team that rebases or squashes writes the change request's commits after the merge,
 from the main branch; a team that cites commits during review merges. MiniDAQ merges, and writes
 the field `Commits` when a change request is implemented.
+
+Figure [](#fig-ch36-integrate) puts the three side by side.
+
+```{.figure #fig-ch36-integrate src="book/figures/tikz/ch36/integrate.tex" caption="Three ways to bring a branch to main. A merge keeps the branch's commits and their names; a rebase rewrites them; a squash folds them into one." alt="Three panels, each with main and a branch of two commits a and b. Merge: a merge commit M with two parents, and a and b keep their names. Rebase: new commits a prime and b prime on top of main, so every cited name of a and b is gone. Squash: a single commit ab on main whose one message merges what a and b said." width="100%"}
+```
 
 Whichever way you integrate, Git has to combine changes, and it does that file by file with a
 **three-way merge**. It finds the merge base (the last commit both sides share), and for each file
@@ -276,6 +286,11 @@ runners, does not. MiniDAQ's parser and the exercise follow the newer rule, and 
 that one case out of the comparison when the installed git is older. CI failed on exactly this line
 before the tests knew it; the oracle has a version, like any tool.
 
+Figure [](#fig-ch36-message) labels the three parts on one of the project's own messages.
+
+```{.figure #fig-ch36-message src="book/figures/tikz/ch36/message.tex" caption="The parts of a commit message: a subject that says what, a body that says why, and a block of trailers that tools read." alt="A sample commit message divided into three braced parts: the subject line, labelled what, at most 72 characters; the body, labelled why and what changed, wrapped at 72; and the trailers at the end, labelled read by tools, holding the review line and the co-author." width="85%"}
+```
+
 ## A policy the history is checked against
 
 A rule that nobody checks drifts, and MiniDAQ's commit conventions were all unchecked: the review
@@ -330,6 +345,11 @@ checking an empty range and passing.
 
 The check takes about a second over all 260 commits. It costs nothing to run on every push, which
 is the only frequency at which it is worth having.
+
+Figure [](#fig-ch36-policy) shows what the check found when it was first run on this repository.
+
+```{.figure #fig-ch36-policy src="book/figures/plots/ch36/policy.py" caption="The project's own history checked against the commit policy, before any accepted exception. The review rule fails almost everywhere because the review line was not in the trailer block; the identity, reference and merge rules almost never fail." alt="A grouped bar chart of the percentage of commits breaking each rule, for the whole history of 260 commits and since CR-0001 with 194. Identity 3 and 3, subject 91 and 75, layout 151 and 130, review 254 and 188, reference 3 and 0, merge 0 and 0." width="90%" inputs="measurements/ch36/history.txt"}
+```
 
 ## What is under control
 
@@ -405,6 +425,11 @@ but not who pushed it, and protected branches and verified signatures would make
 change harder to land. A scanner's repository is part of its supply chain, and IEC 81001-5-1 asks
 for the development environment's security to be managed; the settings above are where that starts.
 
+Figure [](#fig-ch36-identity) puts the three layers in order.
+
+```{.figure #fig-ch36-identity src="book/figures/tikz/ch36/identity.tex" caption="Who made a commit, in three layers. The name in it is a claim; a signature binds it to a key; the server's rules decide what reaches main." alt="Four boxes in a row joined by arrows: author and committer, whatever user.name and user.email say, noted as a claim, not a proof; a signature by SSH or GPG that binds the commit to a key, verified against the person's registered key; the server's push rules, protected main and required review and CI, the control that actually holds; and main, the record, where no-reply addresses keep emails private." width="100%"}
+```
+
 ## Review in the workflow
 
 Chapter 21 described how to review a change. In a Git workflow the review usually happens on a
@@ -455,6 +480,11 @@ so that a build from a source archive without a `.git` directory still knows its
 that also embeds the commit's name in its binaries can say exactly what a running program was built
 from. And a release can be rebuilt from its tag: Chapter 20 showed the shipped build reproducible
 from two checkouts, so the tag, the record and the archive all name the same thing.
+
+Figure [](#fig-ch36-releases) draws the releases from the CHANGELOG itself.
+
+```{.figure #fig-ch36-releases src="book/figures/plots/ch36/releases.py" caption="The project's releases, read from its CHANGELOG: when each was made and how long its entry is. Releases came fast and their entries shrank as the work moved from building to fixing." alt="A stem plot with release dates on the horizontal axis from 24 October and the number of non-blank lines in each CHANGELOG entry on the vertical axis. 0.1.0 has 105 lines, 0.2.0 113, 0.3.0 127, 0.4.0 152, then 0.5.0 79, 0.6.0 82, 0.7.0 62, 0.8.0 65, 0.9.0 58 and 1.0.0 34, with the major release in the Part color." width="90%" inputs="CHANGELOG.md"}
+```
 
 ::: box-mistakes
 - **Rewriting a published history** with rebase, amend or a filter: every commit name a record

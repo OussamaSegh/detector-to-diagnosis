@@ -1,0 +1,22 @@
+% Chapter 36: three ways to bring a reviewed branch into main. A merge keeps the branch's commits;
+% a rebase replaces them with new ones; a squash replaces them with one.
+\begin{tikzpicture}[x=0.75cm,y=0.75cm]
+  \tikzset{c/.style={circle,draw=#1,fill=#1!25!white,line width=0.9pt,minimum size=0.42cm,inner sep=0pt,font=\sffamily\tiny}}
+  \foreach \t/\xs in {merge/0,rebase/6.3,squash/12.6} {
+    \node[font=\sffamily\small\bfseries,text=partcolor,anchor=west] at (\xs-0.2,2.2) {\t};
+    \foreach \i in {0,1,2} {\node[c=d2dmuted] (m\t\i) at (\xs+\i*1.1,0) {};}
+    \draw[d2dmuted,line width=1pt] (m\t0) -- (m\t1) -- (m\t2);}
+  % merge: branch commits a, b stay, a merge commit joins
+  \node[c=d2dcat0] (a) at (1.1,1.2) {a}; \node[c=d2dcat0] (b) at (2.2,1.2) {b};
+  \node[c=partcolor] (mm) at (3.3,0) {M};
+  \draw[d2dcat0,line width=1pt] (mmerge0) -- (a) -- (b) -- (mm); \draw[d2dmuted,line width=1pt] (mmerge2) -- (mm);
+  \node[note,text=d2dink,anchor=north,align=center] at (1.6,-0.5) {a and b keep their names;\\M has two parents};
+  % rebase: a', b' on top
+  \node[c=d2dcat3] (ra) at (9.6,0) {a'}; \node[c=d2dcat3] (rb) at (10.7,0) {b'};
+  \draw[d2dcat3,line width=1pt] (mrebase2) -- (ra) -- (rb);
+  \node[note,text=d2dink,anchor=north,align=center] at (8.3,-0.5) {new commits, new names:\\every cited name of a, b is gone};
+  % squash: one commit
+  \node[c=d2dcat3] (s) at (15.9,0) {ab};
+  \draw[d2dcat3,line width=1pt] (msquash2) -- (s);
+  \node[note,text=d2dink,anchor=north,align=center] at (14.4,-0.5) {one commit, one message:\\what a and b said is merged};
+\end{tikzpicture}

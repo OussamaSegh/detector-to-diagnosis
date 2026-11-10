@@ -1,0 +1,16 @@
+% Chapter 36: what a commit is. A commit names a tree and its parents; a tree names blobs and trees;
+% every name is the hash of the content, so changing one byte changes every name above it.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{o/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.0cm,minimum height=0.75cm,font=\sffamily\scriptsize,align=center}}
+  \node[o=partcolor] (c2) at (0,0) {commit 34cf130\\author, message};
+  \node[o=d2dmuted] (c1) at (-3.2,0) {parent commit};
+  \node[o=d2dmuted] (c0) at (-6.0,0) {its parent};
+  \node[o=d2dcat0] (t) at (0,-1.4) {tree: the root};
+  \node[o=d2dcat0] (t2) at (-2.4,-2.8) {tree: docs/};
+  \node[o=d2dcat2] (b1) at (0,-2.8) {blob: VERSION\\c70836ca5cf3};
+  \node[o=d2dcat2] (b2) at (2.4,-2.8) {blob: README.md};
+  \node[o=d2dcat2] (b3) at (-2.4,-4.1) {blob: sdp.md};
+  \draw[flow] (c2) -- node[above,note,text=d2dink]{parent} (c1); \draw[flow] (c1) -- (c0);
+  \draw[flow] (c2) -- (t); \draw[flow] (t) -- (t2); \draw[flow] (t) -- (b1); \draw[flow] (t) -- (b2); \draw[flow] (t2) -- (b3);
+  \node[note,text=d2dink,anchor=west,align=left] at (3.6,-1.0) {each name is a hash of the content:\\sha1("blob 10\textbackslash 0" + VERSION) = c70836ca5cf3;\\one bit changed: 20 of 20 bytes of\\the name differ, and so do the names\\of the tree and the commit above it};
+\end{tikzpicture}
