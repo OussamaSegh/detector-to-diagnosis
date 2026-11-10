@@ -126,6 +126,8 @@ def blocks():
 
 
 def chapter_part(md):
+    if md.parent.name == "appendix":
+        return "A"
     n = re.search(r"ch(\d\d)", md.name)
     if not n:
         return "0"

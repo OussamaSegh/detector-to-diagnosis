@@ -127,6 +127,11 @@ Three of MiniDAQ's boundaries show the rule at work.
   resolution is the architectural one: a product build leaves the simulator out, or refuses it
   outside a service mode.
 
+Figure [](#fig-app-items) draws every item with the hazards the item list gives it.
+
+```{.figure #fig-app-items src="book/figures/plots/appendix/items.py" caption="MiniDAQ's shipped software items, grouped by the process they run in, and the hazards each can contribute to, read from the item list. No item of the device contributes to HZ-5: the DICOM export that could is a tool in this book." alt="A grid with one column per shipped item and one row per hazard. Under minidaq_server, 19 items from core to server; under minidaq_update, update; under minidaq_ctl, ctl. Colored cells mark the hazards: coincidences lost or altered for core, format, pipeline, processing, sorter, merger, service, readout, output and hw; acquisition stops for pipeline, rt, service, protocol, hw, platform, server and update; wrong or unknown settings for sim, config, service and output; unauthorized control for protocol, access, update and ctl; no item for image filed wrongly. metrics and audit have no hazard." width="100%" inputs="docs/architecture/software-items.json"}
+```
+
 ### Processes are the only segregation MiniDAQ claims
 
 Section 10 of the architecture description is short and blunt: inside `minidaq_server` there is
@@ -256,6 +261,11 @@ not choose. The second is that **the version is in the data, not in the file nam
 a list-mode file names its own format, and a response names its API, so a record read years later
 can still be interpreted.
 
+Figure [](#fig-app-interfaces) puts the nine on one page.
+
+```{.figure #fig-app-interfaces src="book/figures/tikz/appendix/interfaces.tex" caption="The external interfaces MiniDAQ owns, each with the version its readers check." alt="MiniDAQ in the centre with nine interfaces around it: control protocol API 2.4; acquisition configuration schema 1.4; hardware description schema 1.1; calibration table format 1.0 with a CRC; readout packets MDQ-R1; list-mode files MDQ-L1; firmware contract ICD-FEB 1; update bundles with an Ed25519 manifest; DICOM export to the conformance of Chapter 35. A note says a reader refuses what it does not understand and the version is in the data, not the file name." width="80%"}
+```
+
 ## Concurrency architecture
 
 Concurrency is an architectural decision, not an implementation detail, because the threads decide
@@ -280,12 +290,22 @@ threads take the service's mutex; stage threads never do. No memory is allocated
 after start, because every batch comes from a pool the channel allocated at construction and
 returns through a second ring.
 
+Figure [](#fig-app-threads) draws the threads and what they share.
+
+```{.figure #fig-app-threads src="book/figures/tikz/appendix/threads.tex" caption="The server's threads, fixed at start. The five stages share only their channels; the control plane reaches them only through atomics." alt="Top row: source, decode, sort, pair and write, joined by SPSC channels, noted as the hot path with no lock, no allocation after start and no system call per batch. The write stage feeds the list-mode I/O thread, which returns buffers. A dashed line marks atomics only: counters, histograms, stop request and heartbeats. Bottom row: the service monitor every 20 ms, the slow control, the control server with poll and 8 clients, the watchdog under systemd, and the main thread that shuts down in order; they take the service's mutex, which stage threads never do." width="95%"}
+```
+
 The channel's ring shows how small the shared surface is. The producer writes a slot and publishes
 its index with a release store; the consumer reads the index with an acquire load before it reads
 the slot; each side caches the other's index and reads the shared atomic only when the cache says
 the ring looks full or empty. Nothing in the hot path needs sequential consistency, a lock or a
 system call. A full pipeline appears as *no empty batch available* at the producer, which is the
 one place where the drop policy acts and counts.
+
+Figure [](#fig-app-ring) draws one channel.
+
+```{.figure #fig-app-ring src="book/figures/tikz/appendix/ring.tex" caption="A batched SPSC channel. One release store and one acquire load order each hand-off; empty batches come back through a second ring, and the drop policy acts only when none is left." alt="A ring of eight slots, three filled with full batches. On the left the producer stage writes a slot and then stores the head index with release; on the right the consumer stage loads it with acquire and then reads the slot. An arrow below returns empty batches through a second ring; when no empty batch is available, the drop policy acts and counts. A note says each side caches the other's index and reads the shared atomic only when the ring looks full or empty." width="90%"}
+```
 
 This architecture made two things checkable that would otherwise be arguments. ThreadSanitizer
 runs every test with these threads (the `tsan` preset), and the stress run repeats the concurrent
@@ -326,6 +346,11 @@ And a security advisory in OpenSSL concerns two items and the three programs tha
 whole server; the vulnerability triage (threat model, section 8) can say which features the advisory
 touches and whether MiniDAQ uses them, because the SOUP entry lists the features used and those not
 used.
+
+Figure [](#fig-app-soup) draws the boundaries on the layers.
+
+```{.figure #fig-app-soup src="book/figures/tikz/appendix/soup.tex" caption="Where each SOUP item may be used. The layers of layers.json with the boundaries check_layers.py enforces, and the SOUP that stays outside the shipped server." alt="Four stacked layers, apps, adapters, application and core. nlohmann/json is allowed in apps, adapters and application; OpenSSL only in adapters, for access and update. A thick line below application says no nlohmann, openssl or socket headers in the core, which is the hot path; a line below adapters says no openssl or sockets in application. A dashed box says the platform is everywhere, tar in update only. On the right, outside the shipped server: GoogleTest and Benchmark for tests only, pybind11 for the projector module, pydicom and pynetdicom for the export's tests." width="95%"}
+```
 
 The last boundary is the test oracle. A SOUP item used only by the tests, such as pydicom checking
 the DICOM export's files, is not in the product but is part of the product's verification. Its
@@ -506,6 +531,11 @@ changes always come together are a sign that the boundary between them is in the
 item that never changes is either finished or unused. Neither is a failure of a test, but both are
 inputs to the next architecture review.
 
+Figure [](#fig-app-checks) arranges the table by when each check runs.
+
+```{.figure #fig-app-checks src="book/figures/tikz/appendix/checks.tex" caption="Keeping the architecture true: each claim a machine can check, by when it runs. Only whether the architecture is still the right one is left to the review." alt="Five lanes. Every ctest run: layers and forbidden headers, every file in one item, requirements and the trace matrix, state diagram equals table, register map equals specification, SOUP pins equal the list and the SBOM. CI: a change of a requirement, hazard or the item map names a change request. Release checks: a changed controlled document has a new version. On demand: the survey of hotspots, unclaimed files and empty prefixes. Review: whether the architecture is still the right one, with every ADR and at every release." width="90%"}
+```
+
 What no check can do is decide whether the architecture is still the right one. That is the
 review's job, and it has two triggers in MiniDAQ's process. Every ADR is reviewed with the code
 that implements it, in the same change. And at each release, the architecture description, the
@@ -558,6 +588,11 @@ The common thread is that each likely change has one place to happen and a check
 it happens somewhere else. That is what an architecture is for in a regulated product: not a
 diagram for the file, but a set of boundaries that make the next change cheap to make and cheap to
 verify.
+
+Figure [](#fig-app-change) collects the list.
+
+```{.figure #fig-app-change src="book/figures/tikz/appendix/change.tex" caption="Designing for change: each change a scanner's software is likely to meet in ten years, and the one place where it happens." alt="Seven rows, each a change with an arrow to its place: a new detector or readout to a decoder in format and an adapter; a new acquisition setting to a new minor schema version; a new client of the API to the protocol document and a token; a new compiler or library to the Expected shim becoming an alias; a new platform release to a new platform.json and SOUP review; a new reconstruction method to a new tool version on the same data; a new team to the ADRs, document histories and commits." width="80%"}
+```
 
 ## Checklist for an architecture review
 

@@ -1,0 +1,19 @@
+% Appendix A: designing for change. Each likely change over a scanner's life has one place to
+% happen and a check that notices when it happens somewhere else.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{ch/.style={draw=#1,fill=#1!12!white,line width=0.8pt,rounded corners=2pt,minimum width=3.2cm,minimum height=0.6cm,font=\sffamily\scriptsize,align=center},
+           pl/.style={draw=partcolor,fill=white,line width=0.8pt,rounded corners=2pt,minimum width=4.6cm,minimum height=0.6cm,font=\sffamily\scriptsize,align=center}}
+  \node[font=\sffamily\small\bfseries,text=d2dink] at (0,0.7) {the change};
+  \node[font=\sffamily\small\bfseries,text=partcolor] at (5.6,0.7) {its one place};
+  \foreach \c/\p/\k [count=\i] in {
+      a new detector or readout/{a decoder in format/ and an adapter}/d2dcat0,
+      a new acquisition setting/a new minor schema version/d2dcat1,
+      a new client of the API/the protocol document and a token/d2dcat2,
+      a new compiler or library/the Expected shim becomes an alias/d2dcat4,
+      a new platform release/a new platform.json and SOUP review/d2dcat3,
+      a new reconstruction method/a new tool version on the same data/d2dcat5,
+      a new team/{the ADRs, document histories, commits}/d2dmuted} {
+    \node[ch=\k] (c\i) at (0,-0.75*\i+0.75) {\c};
+    \node[pl] (p\i) at (5.6,-0.75*\i+0.75) {\p};
+    \draw[flow] (c\i) -- (p\i);}
+\end{tikzpicture}

@@ -1,0 +1,24 @@
+% Appendix A: where each SOUP item is allowed. The layers of layers.json, from core to apps, and the
+% boundaries that check_layers.py enforces; the test-only and offline SOUP outside the server.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{ly/.style={draw=#1,fill=#1!10!white,line width=0.9pt,rounded corners=2pt,minimum width=5.4cm,minimum height=0.85cm,font=\sffamily\scriptsize\bfseries,align=left,text width=5.0cm},
+           sp/.style={draw=#1,fill=white,line width=0.8pt,rounded corners=4pt,font=\sffamily\tiny,inner sep=2.5pt}}
+  \node[ly=partcolor] (apps) at (0,2.85) {apps};
+  \node[ly=partcolor] (ad) at (0,1.9) {adapters};
+  \node[ly=partcolor] (app) at (0,0.95) {application};
+  \node[ly=partcolor] (core) at (0,0) {core};
+  \node[sp=d2dcat1,anchor=east] at (2.6,2.85) {nlohmann/json};
+  \node[sp=d2dcat1,anchor=east] at (2.6,1.9) {nlohmann/json};
+  \node[sp=d2dcat3,anchor=east] at (1.2,1.9) {OpenSSL: access, update};
+  \node[sp=d2dcat1,anchor=east] at (2.6,0.95) {nlohmann/json};
+  \node[note,text=d2dcat3,anchor=east,align=right] at (2.6,0.0) {the hot path: no JSON,\\no OpenSSL, no sockets};
+  \draw[d2dcat3,line width=1.4pt] (-2.75,0.475) -- (2.75,0.475);
+  \draw[d2dcat3,line width=1.4pt] (-2.75,1.425) -- (2.75,1.425);
+  \node[note,text=d2dcat3,anchor=west,align=left] at (2.9,0.475) {check\_layers.py:\\no nlohmann/, openssl/,\\socket headers below};
+  \node[note,text=d2dcat3,anchor=west,align=left] at (2.9,1.5) {no openssl/, sockets\\in application};
+  \node[draw=d2dmuted,dashed,rounded corners=3pt,minimum width=5.6cm,minimum height=0.6cm,font=\sffamily\tiny,align=center] at (0,-0.95) {platform everywhere: C and C++ libraries, kernel, systemd (tar in update only)};
+  \node[sp=d2dcat0,anchor=west,font=\sffamily\scriptsize] (gt) at (6.0,2.6) {GoogleTest, Benchmark: tests only};
+  \node[sp=d2dcat2,anchor=west,font=\sffamily\scriptsize] (pb) at (6.0,1.9) {pybind11: the projector module};
+  \node[sp=d2dcat4,anchor=west,font=\sffamily\scriptsize] (pd) at (6.0,1.2) {pydicom, pynetdicom: export tests};
+  \node[note,text=d2dink,anchor=south west] at (6.0,3.0) {outside the shipped server};
+\end{tikzpicture}

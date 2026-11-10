@@ -1,0 +1,19 @@
+% Appendix A: the server's threads, decided at start. Five pipeline stages joined by SPSC channels;
+% the control plane shares only atomics with them; stage threads never take the service's mutex.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{th/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=1.75cm,minimum height=0.8cm,font=\sffamily\scriptsize,align=center},
+           ch/.style={draw=d2dink,fill=white,line width=0.6pt,minimum width=0.5cm,minimum height=0.32cm,font=\sffamily\tiny}}
+  \foreach \n/\x in {source/0,decode/2.6,sort/5.2,pair/7.8,write/10.4} \node[th=partcolor] (\n) at (\x,0) {\n};
+  \foreach \a/\b in {source/decode,decode/sort,sort/pair,pair/write} {
+    \node[ch] (c\a) at ($(\a)!0.5!(\b)$) {SPSC};
+    \draw[flow] (\a) -- (c\a); \draw[flow] (c\a) -- (\b);}
+  \node[th=d2dcat0] (io) at (10.4,-1.6) {list-mode I/O\\(fsync by policy)};
+  \draw[flow] (write) -- (io);
+  \draw[flow,d2dmuted] (io.west) -- ++(-1.2,0) |- node[pos=0.25,left,note,text=d2dmuted]{buffers back} (pair.south east);
+  \node[note,text=d2dink,anchor=south] at (5.2,0.55) {the hot path: no lock, no allocation after start, no system call per batch};
+  \draw[d2drule,dashed,line width=0.6pt] (-1,-2.6) -- (11.5,-2.6);
+  \node[note,text=d2dmuted,anchor=west] at (-1,-2.45) {atomics only: counters, histograms, stop request, heartbeats};
+  \foreach \n/\x/\t/\c in {mon/0/{service monitor\\every 20 ms}/d2dcat1,slow/2.6/{slow control\\(bias)}/d2dcat2,ctl/5.2/{control server\\poll(), 8 clients}/d2dcat4,wd/7.8/{watchdog\\(systemd)}/d2dcat3,main/10.4/{main: signal,\\shutdown in order}/d2dmuted}
+    \node[th=\c] (\n) at (\x,-3.5) {\t};
+  \node[note,text=d2dink,anchor=north] at (5.2,-4.05) {control threads take the service's mutex; stage threads never do};
+\end{tikzpicture}

@@ -1,0 +1,14 @@
+% Appendix A: the batched SPSC channel. The producer writes a slot and publishes its index with a
+% release store; the consumer acquires the index before it reads the slot; empty batches come back
+% through a second ring; the drop policy acts only when no empty batch is available.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \i in {0,...,7} {
+    \pgfmathsetmacro{\a}{90-\i*45}
+    \ifnum\i<3 \def\c{d2dcat2}\else\def\c{d2drule}\fi
+    \fill[\c!35!white,draw=d2dink,line width=0.5pt] (0,0) ++(\a+22.5:1.6) arc[start angle=\a+22.5,end angle=\a-22.5,radius=1.6] -- ++(\a-22.5+180:0.7) arc[start angle=\a-22.5,end angle=\a+22.5,radius=0.9] -- cycle;}
+  \node[font=\sffamily\scriptsize,align=center] at (0,0) {full\\batches};
+  \draw[flow,d2dcat0] (-4.0,1.0) node[left,font=\sffamily\scriptsize,align=right,text=d2dink]{producer stage:\\write the slot, then\\\texttt{head.store(release)}} -- (-1.7,0.5);
+  \draw[flow,d2dcat3] (1.7,0.5) -- (4.0,1.0) node[right,font=\sffamily\scriptsize,align=left,text=d2dink]{consumer stage:\\\texttt{head.load(acquire)},\\then read the slot};
+  \node[note,text=d2dink,align=center] at (0,-2.05) {each side caches the other's index and reads the shared atomic\\only when the ring looks full or empty};
+  \draw[flow,d2dmuted] (4.0,-0.8) node[right,font=\sffamily\scriptsize,align=left,text=d2dink]{empty batches return\\through a second ring} to[bend left=20] (-4.0,-0.8) node[left,font=\sffamily\scriptsize,align=right,text=d2dcat3]{no empty batch:\\the drop policy acts,\\and counts};
+\end{tikzpicture}

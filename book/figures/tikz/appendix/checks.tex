@@ -1,0 +1,17 @@
+% Appendix A: keeping the architecture true. Each claim a machine can check is a test, and the
+% cadence at which it runs; what remains is the review.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{lane/.style={draw=#1,fill=#1!10!white,line width=0.9pt,rounded corners=2pt,minimum width=2.3cm,minimum height=0.9cm,font=\sffamily\scriptsize\bfseries,align=center},
+           ck/.style={draw=#1,fill=white,line width=0.6pt,rounded corners=2pt,font=\sffamily\scriptsize,inner sep=2.5pt,anchor=west}}
+  \node[lane=d2dcat0,minimum height=1.2cm] at (0,0) {every ctest run};
+  \foreach \t [count=\i] in {layers and forbidden headers,every file in one item,{requirements, trace matrix},state diagram = table,register map = spec,SOUP pins = list = SBOM}
+    \node[ck=d2dcat0] at ({1.4+mod(\i-1,2)*3.6},{0.4-floor((\i-1)/2)*0.4}) {\t};
+  \node[lane=d2dcat1] at (0,-1.25) {CI};
+  \node[ck=d2dcat1] at (1.4,-1.25) {a requirement, hazard or item-map change names a change request};
+  \node[lane=d2dcat2] at (0,-2.1) {release checks};
+  \node[ck=d2dcat2] at (1.4,-2.1) {a changed controlled document has a new version};
+  \node[lane=d2dcat4] at (0,-3.1) {on demand};
+  \node[ck=d2dcat4] at (1.4,-3.1) {the survey: hotspots, files no item claims, prefixes that claim nothing};
+  \node[lane=partcolor] at (0,-4.2) {review};
+  \node[ck=partcolor,font=\sffamily\scriptsize] at (1.4,-4.2) {is the architecture still the right one? Every ADR with its code; every release};
+\end{tikzpicture}

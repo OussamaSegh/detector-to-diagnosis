@@ -1,0 +1,18 @@
+% Appendix A: the external interfaces MiniDAQ owns, each with the version a reader checks.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{ifc/.style={draw=#1,fill=#1!12!white,line width=0.8pt,rounded corners=2pt,minimum width=3.2cm,minimum height=0.72cm,font=\sffamily\scriptsize,align=center}}
+  \node[draw=partcolor,fill=partcolor!15!white,line width=1.2pt,rounded corners=4pt,minimum width=2.6cm,minimum height=1.4cm,font=\sffamily\small\bfseries] (s) at (0,0) {MiniDAQ};
+  \foreach \t/\v/\a/\c [count=\i] in {
+      control protocol/API 2.4/90/d2dcat0,
+      acquisition configuration/schema 1.4/50/d2dcat1,
+      hardware description/schema 1.1/10/d2dcat1,
+      calibration table/format 1.0 + CRC/-30/d2dcat2,
+      readout packets/MDQ-R1/-70/d2dcat4,
+      list-mode files/MDQ-L1/-110/d2dcat2,
+      firmware contract/ICD-FEB 1/-150/d2dcat4,
+      update bundles/Ed25519 manifest/170/d2dcat3,
+      DICOM export/Chapter 35 conformance/130/d2dcat0} {
+    \node[ifc=\c] (n\i) at (\a:{\i==1 ? 2.1 : 3.9}) {\t\\\textbf{\v}};
+    \draw[line width=0.8pt,\c] (s) -- (n\i);}
+  \node[note,text=d2dink,anchor=north,align=center] at (0,-4.25) {a reader refuses what it does not understand, and the version is in the data, not the file name};
+\end{tikzpicture}
