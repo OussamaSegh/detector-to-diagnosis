@@ -1,0 +1,12 @@
+% Chapter 37: the four layers of context an assistant started each MiniDAQ session with, and the
+% rule that a change that makes them wrong updates them in the same commit.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{ly/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=7.6cm,minimum height=0.8cm,font=\sffamily\scriptsize,align=left,text width=7.2cm}}
+  \node[ly=d2dcat0] (h) at (0,0) {\textbf{HANDOFF.md}: rules, layout, how to build and release, state, what is left};
+  \node[ly=d2dcat1] (r) at (0,-0.95) {\textbf{the person's rules}, with date and reason: no personal data, ask before a dependency};
+  \node[ly=d2dcat2] (d) at (0,-1.9) {\textbf{decisions already made}: do not reopen (and the ADRs of Chapter 6)};
+  \node[ly=d2dcat4] (c) at (0,-2.85) {\textbf{the recipe of a change}: code, tests, SRS, risk, tools, measurements, exercises, text};
+  \node[draw=partcolor,fill=partcolor!12!white,line width=1pt,rounded corners=3pt,minimum width=2.4cm,minimum height=3.6cm,font=\sffamily\scriptsize,align=center] (s) at (5.9,-1.42) {a new session:\\knows nothing\\else};
+  \foreach \n in {h,r,d,c} \draw[flow] (\n.east) -- (s.west |- \n.east);
+  \node[note,text=d2dcat3,anchor=north,align=center] at (0,-3.4) {stale context is followed as faithfully as true context: a review line in the wrong place, 191 times};
+\end{tikzpicture}

@@ -75,6 +75,11 @@ Its output has a characteristic shape, and it is worth knowing it before reviewi
 The last point is the reason to use one, and the other four are the reasons the rest of this
 chapter exists.
 
+Figure [](#fig-ch37-loop) draws the loop.
+
+```{.figure #fig-ch37-loop src="book/figures/tikz/ch37/loop.tex" caption="What an assistant does in a repository: a model with tools, reading, editing, running and reading the output, in a loop that ends in a pushed commit or a question to a person." alt="The request and the context file feed the model. The model reads files and searches the repository, edits files, runs the build, the tests and git, and reads their output, which goes back to the model. From the edits two exits: stop and ask a person, or done, a commit pushed. A note says the loop repeats until the tests pass and nothing is remembered between sessions beyond what is written in the repository." width="90%"}
+```
+
 ## Where it helps, and where it does not
 
 The history of this project gives a rough map of where an assistant earns its place in
@@ -102,7 +107,10 @@ arguments and point to the clauses, and the decision is a person's. And **anythi
 is a decision for a person by definition.
 
 Between the two is most of the work: code that an assistant writes well and that is wrong in a way
-only a test from the requirement shows. The rest of this chapter is about that middle.
+only a test from the requirement shows. The rest of this chapter is about that middle. Figure [](#fig-ch37-map) puts the two lists side by side.
+
+```{.figure #fig-ch37-map src="book/figures/tikz/ch37/map.tex" caption="Where an assistant helps and where it needs the most help, from this project's history. Between the two is most of the work." alt="Two columns. Strongest: completeness, every row tested; reading failures, logs and sanitizers; mechanical refactoring under tests; writing measurement scripts, where the test suite says whether it is right. Weakest: hardware facts, numbers without a measurement, references without a check, concurrency and timing, regulatory interpretation, anything irreversible, where the truth is not in the repository. In the middle: most of the work, code written well and wrong in a way only a test from the requirement shows." width="95%"}
+```
 
 ## Context: what the assistant knows
 
@@ -137,7 +145,10 @@ reports six lines, and none is stale: five name build outputs that exist only af
 uses a placeholder the check does not know. A check like that finds broken references; it cannot
 find a rule the team has dropped or a number that changed. The context file is a controlled
 document in effect: it has an owner, and a change that makes it wrong updates it in the same
-commit.
+commit. Figure [](#fig-ch37-context) shows the four layers.
+
+```{.figure #fig-ch37-context src="book/figures/tikz/ch37/context.tex" caption="The four layers of context each MiniDAQ session started from. A new session knows nothing else, so each layer is kept current with the change that would make it wrong." alt="Four stacked boxes with arrows to a box labelled a new session, knows nothing else: HANDOFF.md with the rules, layout, build and release, state and what is left; the person's rules with date and reason; decisions already made, not to be reopened; and the recipe of a change, from code and tests to measurements, exercises and text. A note says stale context is followed as faithfully as true context, as the review line in the wrong place was, 191 times." width="90%"}
+```
 
 ## Small steps, each one verified
 
@@ -183,6 +194,11 @@ were added after the author approved them; a history rewrite to remove personal 
 the owner's decision; tags go through a reviewed list. What the assistant may do alone is a
 decision for the team, written in the context file, not a question of what the assistant can do.
 
+Figure [](#fig-ch37-steps) puts the method in one line.
+
+```{.figure #fig-ch37-steps src="book/figures/tikz/ch37/steps.tex" caption="The working method: one change, the whole test suite, numbers and listings from files, committed and pushed; the irreversible steps wait for a person." alt="Four boxes in a row: one change with one purpose; the whole ctest of more than 900 tests; numbers from measurements and listings included from tested code; commit and push. An arrow from the last back to the first says the next change, possibly in the next session. Below, a box says stop and ask for a dependency, the history, a message outside or a release. A note says a session can end at any point and the next one continues from the repository." width="90%"}
+```
+
 ## What found the mistakes
 
 Every commit of MiniDAQ that is not a merge, 256 of them, names the assistant in a
@@ -209,6 +225,11 @@ between code (8), tests (12), tools (10) and process (11): an assistant's mistak
 the code it writes but in the tests that should have caught them and in the tools and procedures
 around both.
 
+Figure [](#fig-ch37-found) draws both counts.
+
+```{.figure #fig-ch37-found src="book/figures/plots/ch37/found.py" caption="What found the defects of a project written with an assistant: the 60 problem reports by what found them, with the classes that ran something in the Part color, and their root causes where one was recorded." alt="Two horizontal bar charts. Found by: release checks 20, CI runs 14, the author's tests 12, design and measurement 6, fuzzing 5, independent review 2, internal audit 1. Root cause: test 12, process 11, tool 10, code 8, environment 1, none recorded 18." width="100%" inputs="measurements/ch37/provenance.txt"}
+```
+
 Three findings from writing Part IX show the kinds of mistake that only an independent check
 finds, because the assistant's own checks shared the mistake.
 
@@ -233,6 +254,11 @@ commit by a single character (MDQ-PR-060). Two problem reports from five reviews
 also two defects that the author, the assistant, the tests and CI had all accepted, which is what
 a review by someone who did not write the code is for.
 
+Figure [](#fig-ch37-reviews) shows where each review's changes landed.
+
+```{.figure #fig-ch37-reviews src="book/figures/plots/ch37/reviews.py" caption="The five independent reviews, one per Part from Part IV on: the files each merge changed in the book and in the code and records. The later reviews found less to fix in the text and more in the code." alt="A stacked bar chart of files changed by each review's merge. Part IV 4, all in the book; Part V 5, 4 in the book; Part VI 9, 6 in the book; Part VII 9, 1 in the book; Part VIII 10, 2 in the book, annotated with the two problem reports MDQ-PR-059 and MDQ-PR-060." width="80%" inputs="measurements/ch37/provenance.txt"}
+```
+
 ## Reviewing an assistant's change
 
 A review of an assistant's change starts from the requirement, not from the diff. The diff tells
@@ -253,6 +279,11 @@ with a real single, a fabricated coincidence. Only the first, the second and the
 to a careful reader of the code. All seven are caught by eight tests written clause by clause from
 the requirement, each with the values on both sides of its edge, without looking at the mutants at
 all.
+
+Figure [](#fig-ch37-kills) shows, for each test, the versions it fails on.
+
+```{.figure #fig-ch37-kills src="book/figures/plots/ch37/kills.py" caption="Which test catches which version of the coincidence check in Exercise 37.3, measured. The assistant's two tests catch none of the seven mutants; the eight written clause by clause from the requirement catch all of them, three of the mutants by one test only." alt="A grid of tests against eight versions of the function, 0 as required and mutants 1 to 7. The two tests that came with the function have no colored cell. Below a line, the solution's tests: the window's edge catches mutants 1 and 6; across the wrap catches 1, 2, 3, 5 and 6; the order of the arguments catches 3; an invalid timestamp catches 4; a window of half the period catches 1 and 7; distances using all forty bits catch 5. No test fails on version 0." width="100%" inputs="measurements/ch37/mutants.txt"}
+```
 
 The practices that follow are the ones Part IV taught, used with more discipline because the
 author of the code will not remember writing it:
@@ -310,6 +341,11 @@ comments made product-neutral); one is an optimization of the simulator's replay
 change of behavior, the server sending READY before its watchdog starts, which the system test
 `system.platform` had caught in the first place; and one is a robustness fix whose message names
 no test. None is a defect. But for each, a reviewer had to reconstruct why no test was needed.
+
+Figure [](#fig-ch37-assisted) shows how the nine were found and what they were.
+
+```{.figure #fig-ch37-assisted src="book/figures/plots/ch37/assisted.py" caption="The assisted commits of MiniDAQ's history: every commit that is not a merge names the assistant; 52 changed product code, and 9 of them changed no test. Right, the nine as read one by one." alt="Left, a funnel of horizontal bars: 256 commits with the 6 merges left out, 256 that name an assistant, 52 that change product code, 9 that change no test. Right, the nine by kind: comment, assertion and warning fixes 6, optimization 1, a change of behavior caught by system.platform 1, a robustness fix that names no test 1." width="100%" inputs="measurements/ch37/provenance.txt"}
+```
 
 So the commit policy of Chapter 36 has a seventh rule from version 2 on: an assisted change of a
 product item's code changes a test, or names in a `Tests:` trailer the tests that cover it.
@@ -384,6 +420,11 @@ tool outside the running system, whose access to the repository, to the develope
 its provider is limited by those controls and not modeled further. A scanner's development
 environment is part of its supply chain, and IEC 81001-5-1 asks for its security to be managed;
 the assistant is now part of that environment.
+
+Figure [](#fig-ch37-threat) puts the controls in order.
+
+```{.figure #fig-ch37-threat src="book/figures/tikz/ch37/threat.tex" caption="The assistant in the threat model. It has the developer's rights and reads text that others wrote; permissions, isolation and review stand between that and main." alt="Three inputs on the left, a fetched web page, an issue or README, and a command's output, noted as text that can carry instructions, feed the assistant with the developer's rights. Arrows lead through three controls in order: permissions with allowed commands and hooks, isolation in a container behind a proxy with no credentials, and review and CI like any change, to main. A note says the development environment is part of the supply chain under IEC 81001-5-1." width="100%"}
+```
 
 ::: box-mistakes
 - **Taking fluency for correctness.** Well-named, well-commented code with a mistake in it is the

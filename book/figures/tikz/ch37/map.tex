@@ -1,0 +1,15 @@
+% Chapter 37: where an assistant helps and where it needs the most help, from the project's history.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{it/.style={draw=#1,fill=#1!12!white,line width=0.8pt,rounded corners=2pt,minimum width=4.2cm,minimum height=0.62cm,font=\sffamily\scriptsize,align=center}}
+  \node[font=\sffamily\small\bfseries,text=d2dcat2] at (0,0.75) {strongest};
+  \node[font=\sffamily\small\bfseries,text=d2dcat3] at (9.4,0.75) {weakest};
+  \foreach \t [count=\i] in {completeness: every row tested,{reading failures: logs, sanitizers},mechanical refactoring under tests,writing measurement scripts}
+    \node[it=d2dcat2] at (0,-0.75*\i+0.75) {\t};
+  \foreach \t [count=\i] in {hardware facts,numbers without a measurement,references without a check,concurrency and timing,regulatory interpretation,anything irreversible}
+    \node[it=d2dcat3] at (9.4,-0.62*\i+0.75) {\t};
+  \node[draw=partcolor,fill=partcolor!10!white,line width=1pt,rounded corners=3pt,minimum width=3.6cm,minimum height=2.4cm,font=\sffamily\scriptsize,align=center] (mid) at (4.7,-1.25) {most of the work:\\code written well and wrong\\in a way only a test\\from the requirement shows};
+  \draw[flow] (2.2,-1.25) -- (mid.west);
+  \draw[flow] (7.2,-1.25) -- (mid.east);
+  \node[note,text=d2dink,anchor=north,align=center] at (0,-2.5) {the test suite says\\whether it is right};
+  \node[note,text=d2dink,anchor=north,align=center] at (9.4,-3.2) {the truth is not in the repository:\\invented with the same fluency};
+\end{tikzpicture}

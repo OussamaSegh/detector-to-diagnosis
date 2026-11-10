@@ -1,0 +1,23 @@
+% Chapter 37: what an assistant does in a repository. A model with tools, in a loop: read, edit,
+% run, read the output, until the task is done or it stops to ask.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.5cm,minimum height=0.85cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dmuted] (task) at (-3.6,0) {the request\\and the context file};
+  \node[st=partcolor,minimum width=2.2cm,minimum height=1.1cm] (m) at (0,0) {the model};
+  \node[st=d2dcat0] (rd) at (0,1.75) {read files,\\search the repository};
+  \node[st=d2dcat1] (ed) at (3.5,0) {edit files};
+  \node[st=d2dcat2] (run) at (0,-1.75) {run the build,\\the tests, git};
+  \node[st=d2dcat4] (out) at (-3.6,-1.75) {read their output};
+  \node[st=d2dcat3] (ask) at (6.8,1.0) {stop and ask\\a person};
+  \node[st=d2dink] (done) at (6.8,-1.0) {done: a commit,\\pushed};
+  \draw[flow] (task) -- (m);
+  \draw[flow] (m.north west) to[bend left=25] (rd.west);
+  \draw[flow] (rd.east) to[bend left=25] (m.north east);
+  \draw[flow] (m) -- (ed);
+  \draw[flow] (ed.south) to[bend left=20] (run.east);
+  \draw[flow] (run) -- (out);
+  \draw[flow] (out.north) to[bend left=15] (m.south west);
+  \draw[flow] (ed.north east) -- (ask.west);
+  \draw[flow] (ed.south east) -- (done.west);
+  \node[note,text=d2dink,anchor=north,align=center] at (0,-2.4) {repeated until the tests pass; nothing is remembered between sessions\\beyond what is written down in the repository};
+\end{tikzpicture}

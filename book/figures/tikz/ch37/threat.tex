@@ -1,0 +1,17 @@
+% Chapter 37: the assistant in the threat model. It has the developer's rights and reads text others
+% wrote; three controls stand between that and the product.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.6cm,minimum height=0.8cm,font=\sffamily\scriptsize,align=center}}
+  \node[st=d2dcat3] (i1) at (0,1.1) {a fetched web page};
+  \node[st=d2dcat3] (i2) at (0,0) {an issue, a README};
+  \node[st=d2dcat3] (i3) at (0,-1.1) {a command's output};
+  \node[st=partcolor,minimum height=2.8cm] (a) at (3.6,0) {the assistant:\\the developer's\\rights};
+  \foreach \n in {i1,i2,i3} \draw[flow,d2dcat3] (\n.east) -- (a.west |- \n.east);
+  \node[note,text=d2dcat3,anchor=south] at (0,1.6) {text can carry instructions};
+  \node[st=d2dcat0,minimum height=2.8cm,minimum width=1.9cm] (p) at (6.5,0) {permissions:\\allowed\\commands,\\hooks};
+  \node[st=d2dcat1,minimum height=2.8cm,minimum width=1.9cm] (s) at (8.7,0) {isolation:\\a container,\\a proxy, no\\credentials};
+  \node[st=d2dcat2,minimum height=2.8cm,minimum width=1.9cm] (r) at (10.9,0) {review\\and CI,\\like any\\change};
+  \node[st=d2dink,minimum height=2.8cm,minimum width=1.4cm] (m) at (12.9,0) {main};
+  \draw[flow] (a) -- (p); \draw[flow] (p) -- (s); \draw[flow] (s) -- (r); \draw[flow] (r) -- (m);
+  \node[note,text=d2dink,anchor=north,align=center] at (8.7,-1.6) {the development environment is part of the supply chain (IEC 81001-5-1)};
+\end{tikzpicture}

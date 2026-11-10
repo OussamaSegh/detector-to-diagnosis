@@ -1,0 +1,19 @@
+Chapter 37: which test of Exercise 37.3 catches which version of assisted::coincident
+1 = the test fails on that version (the mutant is caught); version 0 is the function as required
+versions: 0 as required; 1 < for <=; 2 wrap forgotten; 3 one way around; 4 inputs masked; 5 32-bit distance; 6 period off by one; 7 window unlimited
+
+starter (2 tests)
+  CloseSinglesAreCoincident                0 0 0 0 0 0 0 0
+  DistantSinglesAreNot                     0 0 0 0 0 0 0 0
+  mutants caught: 0 of 7; version 0 passes: True
+
+solution (8 tests)
+  CloseSinglesAreCoincident                0 0 0 0 0 0 0 0
+  DistantSinglesAreNot                     0 0 0 0 0 0 0 0
+  TheWindowsEdgeIsInside                   0 1 0 0 0 0 1 0
+  AcrossTheWrap                            0 1 1 1 0 1 1 0
+  TheOrderOfTheArgumentsDoesNotMatter      0 0 0 1 0 0 0 0
+  AnInvalidTimestampIsNeverCoincident      0 0 0 0 1 0 0 0
+  AWindowOfHalfThePeriodIsRefused          0 1 0 0 0 0 0 1
+  DistancesUseAllFortyBits                 0 0 0 0 0 1 0 0
+  mutants caught: 7 of 7; version 0 passes: True

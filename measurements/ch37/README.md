@@ -27,3 +27,12 @@ What it shows:
    written the Part: each one commit, together 37 files changed. For Parts IV to VI most of them
    were in the book (numbers, claims, layout); for Parts VII and VIII most were in the code and the
    records, and the review of Part VIII opened the two problem reports.
+
+`mutants.txt` is the output of `python3 measurements/ch37/mutants.py measurements/ch37/mutants.txt`
+(a few seconds, a C++17 compiler). It compiles the two tests of Exercise 37.3's starter and the
+eight of its solution against each of the eight versions of `assisted::coincident` and records
+which test fails on which version. The starter's two tests catch none of the seven mutants; the
+solution's catch all seven. Three mutants are caught by one test only: the wrap forgotten (2) by
+the test across the wrap, the inputs masked (4) by the invalid timestamps, the window unlimited
+(7) by the window of half the period. The two tests the solution keeps from the starter catch
+nothing.
