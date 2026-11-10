@@ -1267,6 +1267,32 @@
         "category": "process",
         "escape": "Licensing is in no checklist of the Part reviews; the second full review read both."
       }
+    },
+    {
+      "id": "MDQ-PR-068",
+      "title": "Chapters 2, 3 and 8 quote measured numbers with no file under measurements/",
+      "found": "2026-11-10, the second full review (PR #9)",
+      "item": "docs",
+      "status": "closed",
+      "capa": "",
+      "description": "The book's rule is that a measured number comes from a file in measurements/, written by a script from the code it describes. Chapters 2 and 3 quote benchmark tables and Chapter 8 a table of simulated rates with no such file: the first runs of Chapters 2 and 3 were not kept, and Chapter 8's table was copied from a run of minidaq_sim. The review's fix only reworded the rule to name the exception.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The numbers illustrate the text of the book; no requirement, test or hazard depends on them."
+      },
+      "resolution": {
+        "change": "measurements/ch08/rates.py writes rates.txt, the table, from the seeded minidaq_sim. measurements/ch02/run.sh and measurements/ch03/run.sh run the chapters' benchmarks into Google Benchmark JSON; the files are a rerun on 2026-11-10 of builds of tags ch02 and ch03, and each README sets the printed values against the rerun. How to use this book and Chapter 37 state the rule again without an exception, and say that the folders of Chapters 2 and 3 hold a later rerun.",
+        "verification": "rates.txt is identical to the printed table, row for row. The reruns agree with every printed conclusion (the latency ladder, SoA 2.3 times faster from DRAM, the arena about 12% faster, the memory-order and batching gaps, the pipeline slowest at batches of 4,096); single values differ by VM noise, most for DRAM latency and false sharing, as the READMEs say."
+      },
+      "root_cause": {
+        "whys": [
+          "Chapters 2, 3 and 8 were written before measurements/ held a file for every measured number.",
+          "When the rule was made, nothing went back over the chapters written before it."
+        ],
+        "cause": "A rule introduced partway through the book was applied forward only.",
+        "category": "process",
+        "escape": "No check ties a number in the text to a file; the Part reviews of Parts I and II predate the rule, and the second full review read every chapter against it."
+      }
     }
   ]
 }

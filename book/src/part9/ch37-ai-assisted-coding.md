@@ -169,8 +169,9 @@ is wrong.
 
 **Numbers come from measurements.** A measured number in this book's text comes from a file in
 `measurements/`, written by a script in the same directory from the code it describes, and the
-text quotes the file; in the first chapters, written before that directory existed, it comes
-from a benchmark or a seeded simulator run that the text names. When a number is not measured,
+text quotes the file. Chapters 2 and 3 were written before that directory existed and their
+first runs were lost; their folders were added later, with a rerun at the chapter's tag that
+shows the same shape, a gap that only the second full review found. When a number is not measured,
 it is marked as an assumption to confirm, and a claim that could not be checked says so in its
 sentence. A model writes plausible numbers easily, so the rule is mechanical: no number without
 its file or its command. It also found things. The DICOM export's first

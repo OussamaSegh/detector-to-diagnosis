@@ -1,0 +1,5 @@
+# minidaq_sim, 5 MBq cylinder (r 80 mm, l 100 mm) in water (r 90 mm, l 180 mm), 1 s,
+# 4 ns window, default seed; coincidences per second by truth
+# elow_kev ehigh_kev trues scatters randoms multiples scatter_fraction
+100 1000 100427 186472 11043 3982 0.650
+435 650 47362 17098 3007 462 0.265

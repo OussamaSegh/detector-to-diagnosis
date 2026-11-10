@@ -184,9 +184,9 @@ commonly give. Read it after you have tried, not before.
 ### Measurements, documents and the book itself {.unnumbered}
 
 A number the book quotes from a measurement has its raw results and the script that produced
-it under `measurements/chNN/`, or, in Chapters 2, 3 and 8, comes from a benchmark or a seeded
-simulator run that the text names; run the script to measure your own machine, and expect different
-numbers with the same shape. The architecture, the decision records and, from Part III, the
+it under `measurements/chNN/`. For Chapters 2 and 3, whose first runs were not kept, the folder
+holds a rerun of the chapter's benchmarks at its tag, next to the values printed. Run the script
+to measure your own machine, and expect different numbers with the same shape. The architecture, the decision records and, from Part III, the
 regulatory file are under `docs/`. The book and the solutions manual are built from `book/` with
 `book/build.sh`; the repository README lists the packages that needs.
 

@@ -97,17 +97,20 @@ failed for a new reader (the other Python tests skip without their packages); Ch
 new thread's stack still faults under `mlockall(MCL_FUTURE)` (it does not: measured 0 faults; the
 main thread's stack and a refused lock are the real gaps); class A in Chapter 14 follows
 Amendment 1; stale statements that the book prints *verify* marks or keeps every measured number
-under `measurements/` (Chapters 2, 3 and 8 have no folder there). Left for the author: the root
-`LICENSE` (MIT) does not say that it excludes `book/`, while the copyright page reserves all
-rights in the text; `measurements/` folders for Chapters 2, 3 and 8 if the rule "a file for every
-number" is to hold; the SRS header still reads "MiniDAQ 1.0.0-dev".
+under `measurements/` (Chapters 2, 3 and 8 have no folder there). The two items it left for
+the author were decided by the author on 2026-11-10 and done on main: MDQ-PR-067, the license
+split (code MIT; book text, figures with their sources, covers and design notes all rights
+reserved, `book/LICENSE`, README and copyright page agree); MDQ-PR-068, `measurements/ch08/`
+reproduces Chapter 8's rate table exactly, `measurements/ch02/` and `ch03/` hold a rerun of the
+chapters' benchmarks built at their tags (the first runs were never kept), each README with the
+printed values beside the rerun. Still open: the SRS header reads "MiniDAQ 1.0.0-dev".
 
 
 Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor version (1.2.0
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-067, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-069, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
