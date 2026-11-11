@@ -45,6 +45,7 @@ jobs:
             pandoc texlive-xetex texlive-latex-extra \
             texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
             texlive-plain-generic lmodern tex-gyre fonts-texgyre fonts-texgyre-math fonts-inconsolata \
+            fonts-ebgaramond fonts-inter \
             graphviz librsvg2-bin poppler-utils python3-venv
           sudo chown -R "$(id -u):$(id -g)" ~/apt-archives
       - name: Python environment for the figures, from the lock file

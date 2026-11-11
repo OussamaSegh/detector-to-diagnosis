@@ -8,6 +8,17 @@ the patch version.
 
 ## [Unreleased]
 
+### Changed
+
+- Chapter openers, in the screen PDF, the Boox PDF, the black-ink interior and the EPUB. The
+  head is a Part-colored kicker, the title in EB Garamond, the words after a colon as the
+  subtitle, and a Part-colored rule. "Why it matters" is a sand card with a Part-colored bar
+  (the label stays the text ink, so every Part clears 4.5:1). "Learning objectives" and
+  "Prerequisites and estimated time" are small tracked headings. Body text, the other
+  call-outs, listings, figures, tables, Part openers, covers and the download page are
+  unchanged. The screen PDF stays 750 pages, with 0 overfull boxes. The Boox PDF is 1024
+  pages and the black-ink interior is 749 (it has no cover page), both with 0 overfull boxes.
+
 ### Fixed
 
 - The license says what it covers (MDQ-PR-067): the code is under the MIT License; the book's

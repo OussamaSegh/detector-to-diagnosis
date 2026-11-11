@@ -4,10 +4,11 @@
 -- * A Part header (# Part II: Title {.part}) becomes \dpart, the Part opener page with the
 --   MiniDAQ map; every block after it belongs to that Part (its color).
 -- * A chapter header (# Title {#ch08}, {#sol-ch08}) sets the Part from the chapter number, so
---   the solutions manual uses the colors of the Part it answers, and chooses the emblem.
+--   the solutions manual uses the colors of the Part it answers. In the EPUB it also sets
+--   data-kicker for the Atlas opener (Part / Chapter, in the Part color).
 -- * In "Exercises", each **Exercise n.m ...** paragraph and what follows it up to the next one
---   becomes a box-exercise; "Learning objectives", "Prerequisites and estimated time", "Check
---   yourself" and "Summary" get their cards.
+--   becomes a box-exercise. "Check yourself" and "Summary" get their cards. "Learning
+--   objectives" and "Prerequisites and estimated time" stay body text under an opener heading.
 -- * Diagram and figure blocks learn their Part (attribute part) for their colors.
 
 local latex = FORMAT:match("latex") ~= nil
@@ -37,11 +38,22 @@ local function raw(s) return pandoc.RawBlock("latex", s) end
 
 -- Sections whose content becomes a card, by their (unnumbered) title.
 local cards = {
-  ["Learning objectives"] = "box-objectives",
-  ["Prerequisites and estimated time"] = "box-prereq",
   ["Check yourself"] = "box-check",
   ["Summary"] = "box-summary",
 }
+local opener_heads = {
+  ["Learning objectives"] = true,
+  ["Prerequisites and estimated time"] = true,
+}
+local part_roman = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" }
+
+local function kicker_of(part, chapter_n)
+  if part == "A" then return "Appendix" end
+  local roman_name = part_roman[part]
+  local n = tonumber(chapter_n)
+  if not roman_name or not n then return nil end
+  return string.format("Part %s / Chapter %02d", roman_name, n)
+end
 
 local function is_exercise_para(b)
   if b.t ~= "Para" or #b.content == 0 or b.content[1].t ~= "Strong" then return false end
@@ -142,10 +154,15 @@ function Pandoc(doc)
         out:insert(raw("\\dsetpart{" .. part .. "}\\dsetemblem{" .. b.identifier .. "}"))
       else
         b.classes:insert("part-" .. tostring(part))
+        local kick = kicker_of(part, n)
+        if kick then b.attributes["data-kicker"] = kick end
       end
       out:insert(b)
     elseif b.t == "Header" and b.level == 2 then
       flush()
+      if opener_heads[pandoc.utils.stringify(b.content)] then
+        b.classes:insert("opener-head")
+      end
       out:insert(b)
       sec_title, sec_blocks = pandoc.utils.stringify(b.content), pandoc.List()
     elseif b.t == "Header" then

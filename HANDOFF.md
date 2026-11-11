@@ -5,8 +5,10 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-10: RELEASED 1.1.0 (tag book-v1.1.0 on 19c6364, the illustrated interior);
-the second full review (PR #9) is merged on main after it, for the next release.
+Last updated: 2026-11-11: the chapter opener is the Atlas head (Part-colored kicker and
+rule, EB Garamond title, sand "Why it matters" card). The rest of the 1.1.0 interior stands.
+VERSION is still 1.1.1-dev. Release 1.1.0 was 2026-11-10 (tag book-v1.1.0 on 19c6364); the
+second full review (PR #9) is merged on main after it.
 
 ## Start here (after release 1.1.0)
 
@@ -18,6 +20,19 @@ release checks in four parts on 9b9e96d (`measurements/release-1.1.0/`, ACC-04 1
 intervals: passed), reproducible build checked, CAPA-0002 closed (effective), release record
 `docs/regulatory/releases/1.1.0.md`, tag book-v1.1.0 through `.github/tags.txt`. Open: MDQ-PR-006,
 007, 009, 064. No CAPA open.
+
+**Chapter opener (2026-11-11), from the Atlas direction in the design proposals.** Only the
+opener changed. The head is a Part-colored kicker (`PART III / CHAPTER 14`), the title in EB
+Garamond, the clause after a colon set as the subtitle, and a Part-colored rule. "Why it
+matters" is a sand card with a Part-colored bar; its label stays the text ink, because Part I's
+teal is 4.2:1 on that sand and Part VIII's gold is 3.8:1, under 4.5:1. "Learning objectives"
+and "Prerequisites and estimated time" are small tracked headings in the Part color, and their
+old cards are gone. Body text, the other call-outs, listings, figures, tables, Part openers,
+covers and the download page are the 1.1.0 design. The chapter emblems are no longer drawn
+(`\dsetemblem` remains, so the filter still calls it). EB Garamond and Inter are installed in
+the `pages` and `kdp` workflows. Screen PDF: 750 pages before and after (the cover is page 1),
+0 overfull boxes. Boox PDF: 1024 pages, 0 overfull boxes. Black-ink interior: 749 pages (no
+cover), 0 overfull boxes, every font embedded.
 
 **Interior redesign for 1.1.0: complete, on main** (plan `book/docs/PLAN-interior-design.md`,
 approved by the user: "Go implement", then "Review and finish everything"). The palette
