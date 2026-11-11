@@ -31,7 +31,12 @@
       "docs/architecture/software-items.json"
     ]
   },
-  "accepted": [],
+  "accepted": [
+    {"commit": "b54db07897df", "rule": "identity", "reason": "GitHub merge of pull request 10. The merge button set the author; the commit is already on main."},
+    {"commit": "5bff4b3bc741", "rule": "identity", "reason": "GitHub merge of pull request 12. The merge button set the author; the commit is already on main."},
+    {"commit": "2e9ecee9b3d2", "rule": "identity", "reason": "GitHub merge of pull request 11. The merge button set the author; the commit is already on main."},
+    {"commit": "9ed9f83ca501", "rule": "identity", "reason": "GitHub merge of pull request 13. The merge button set the author; the commit is already on main."}
+  ],
   "assistants": [
     "noreply@anthropic\\.com",
     "\\bclaude\\b",
