@@ -57,7 +57,9 @@ and the barcode area stays empty. The download page takes its JPEG from this fro
 does for the book. The KDP black-ink profile replaces each color with the gray of its
 lightness: the slice runs from paper to near-black, and the type is ink (16:1 on the paper)
 and teal (4.9:1), so the cover still reads in gray. `cover_art.py` writes
-`cover-{front,back}-solutions.jpg`; the book's JPEGs are untouched.
+`cover-{front,back}-solutions.jpg`; the book's JPEGs are untouched. The black-ink
+solutions interior is 203 pages, so on white paper the spine is 0.4572 in and the wrap
+is 17.707 x 11.250 in.
 
 **Interior redesign for 1.1.0: complete, on main** (plan `book/docs/PLAN-interior-design.md`,
 approved by the user: "Go implement", then "Review and finish everything"). The palette
