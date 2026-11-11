@@ -13,6 +13,10 @@
 \usepackage{needspace}
 \usepackage{etoolbox}
 \setlength{\emergencystretch}{3em}
+% The chapter opener only (Atlas): EB Garamond for the title, Inter for the kicker,
+% the opener headings and the "Why it matters" label. The body stays Pagella.
+\newfontfamily\dheadfont{EB Garamond}
+\newfontfamily\dui{Inter}
 
 % ---------------------------------------------------------------- the current Part
 % \dsetpart{n} makes Part n's color the current one (partcolor): Part openers, chapter
@@ -73,7 +77,15 @@
 \newcommand{\dboxtitle}{}
 \newcommand{\dbox}[4]{% name, color, icon, extra options
   \newtcolorbox{#1}[1]{dtitled={#2}{#3},#4,code={\renewcommand{\dboxtitle}{##1}}}}
-\dbox{boxwhy}{d2dwhy}{why}{leftrule=2.5pt}
+% Chapter opener only. A sand panel and a Part-colored bar. The label is the text
+% ink: Part I's teal is 4.2:1 on this sand and Part VIII's gold is 3.8:1, under 4.5:1.
+% The kicker, the rule and the bar carry the Part color. Other call-outs are unchanged.
+\newtcolorbox{boxwhy}[1]{enhanced, breakable, sharp corners, boxrule=0pt,
+  colback=d2dsand, colframe=partcolor, leftrule=3pt,
+  left=10pt, right=8pt, top=3pt, bottom=4pt,
+  before skip=9pt, after skip=9pt, pad at break=2pt, lines before break=3,
+  before upper={\noindent{\dui\footnotesize\addfontfeatures{LetterSpace=10}%
+    \textcolor{d2dink}{\MakeUppercase{#1}}}\par\vspace{1.5pt}}}
 \dbox{boxregulated}{d2dregulated}{regulated}{borderline west={1.1pt}{0pt}{d2dregulated},borderline west={1.1pt}{2.6pt}{d2dregulated},left=11pt}
 \dbox{boxmistakes}{d2dmistakes}{mistakes}{borderline={0.9pt}{0pt}{d2dmistakes,dashed}}
 \dbox{boxexercise}{d2dexercise}{exercise}{leftrule=2.5pt,colback=d2dexercise!\dtint!white}
@@ -110,41 +122,58 @@
 % ---------------------------------------------------------------- headings
 \usepackage{titlesec}
 \titleformat{\section}{\needspace{5\baselineskip}\Large\sffamily\bfseries\color{d2dink}}{\textcolor{partcolor}{\thesection}}{0.6em}{}
-\titleformat{name=\section,numberless}{\needspace{5\baselineskip}\Large\sffamily\bfseries\color{d2dink}}{}{0pt}{\textcolor{partcolor}{\rule[-0.1em]{3pt}{0.95em}}\hspace{0.5em}}
+% Learning objectives and Prerequisites are the opener's small tracked headings.
+% Every other unnumbered section keeps the Part-colored bar.
+\newcommand{\dopenhead}[1]{{\dui\footnotesize\addfontfeatures{LetterSpace=12}\textcolor{partcolor}{\MakeUppercase{#1}}}}
+\newcommand{\dnumberless}[1]{%
+  \ifstrequal{#1}{Learning objectives}{\dopenhead{#1}}{%
+  \ifstrequal{#1}{Prerequisites and estimated time}{\dopenhead{#1}}{%
+    {\Large\sffamily\bfseries\textcolor{partcolor}{\rule[-0.1em]{3pt}{0.95em}}\hspace{0.5em}#1}}}}
+\titleformat{name=\section,numberless}{\needspace{4\baselineskip}\normalfont\color{d2dink}}{}{0pt}{\dnumberless}
 \titleformat{\subsection}{\large\sffamily\bfseries\color{d2dink}}{\textcolor{partcolor}{\thesubsection}}{0.6em}{}
 \titleformat{\subsubsection}{\normalsize\sffamily\bfseries\color{d2dink}}{\thesubsubsection}{0.6em}{}
 \titlespacing*{\section}{0pt}{16pt plus 4pt minus 2pt}{6pt plus 2pt}
 \titlespacing*{\subsection}{0pt}{12pt plus 3pt minus 2pt}{4pt plus 2pt}
 
-% The chapter head: a tinted band with the number in a Part-colored badge, the title, and the
-% chapter's emblem (book/figures/emblems.tex) on the right.
-\newcommand{\demblemid}{}
-\newcommand{\dsetemblem}[1]{\renewcommand{\demblemid}{#1}}
-\input{emblems.tex}
-\newcommand{\dchapteremblem}{%
-  \ifcsname demblem@\demblemid\endcsname\csname demblem@\demblemid\endcsname
-  \else\csname demblem@default\endcsname\fi}
+% The chapter head (Atlas): a Part-colored kicker, the title in EB Garamond, the clause
+% after a colon as the subtitle, and a Part-colored rule. design.lua still calls
+% \dsetemblem; the emblem is no longer drawn.
+\newcommand{\dsetemblem}[1]{}
+\newcommand{\dchapternum}{\ifnum\value{chapter}<10 0\fi\thechapter}
+\newcommand{\dchapterkicker}{%
+  \ifdefstring{\dcurpart}{0}{}{\ifdefstring{\dcurpart}{S}{}{%
+    \noindent{\dui\footnotesize\addfontfeatures{LetterSpace=12}\textcolor{partcolor}{%
+      \ifdefstring{\dcurpart}{A}{APPENDIX}{PART \dpartroman{\dcurpart}}%
+      \ /\ CHAPTER \ifdefstring{\dcurpart}{A}{\thechapter}{\dchapternum}}}\par}}}
+\ExplSyntaxOn
+\tl_new:N \dtitlemain
+\tl_new:N \dtitlesub
+\cs_new_protected:Npn \dsplittitle #1
+  {
+    \regex_extract_once:nnNTF { \A (.*?) \:\s (.*) \Z } {#1} \l_tmpa_seq
+      {
+        \tl_set:Nx \dtitlemain { \seq_item:Nn \l_tmpa_seq { 2 } }
+        \tl_set:Nx \dtitlesub { \seq_item:Nn \l_tmpa_seq { 3 } }
+      }
+      {
+        \tl_set:Nn \dtitlemain {#1}
+        \tl_clear:N \dtitlesub
+      }
+  }
+\cs_new_protected:Npn \difhassub #1
+  { \tl_if_empty:NF \dtitlesub {#1} }
+\ExplSyntaxOff
 \newcommand{\dchapterhead}[2]{% #1 = label (number or empty), #2 = title
-  \noindent\begin{tikzpicture}
-    \def\W{\textwidth}\def\H{1.32in}
-    \fill[partcolor!\dtint!white,rounded corners=3pt] (0,0) rectangle (\W,\H);
-    \fill[partcolor,rounded corners=3pt] (0,0) rectangle (1.05in,\H);
-    \ifx\relax#1\relax
-      \node[text=white] at (0.525in,0.5*\H) {\scalebox{2.2}{\dicon{summary}}};
-    \else
-      \node[text=white,font=\sffamily\bfseries\scriptsize,anchor=north] at (0.525in,\H-0.12in) {\addfontfeature{LetterSpace=12}CHAPTER};
-      \node[text=white,font=\sffamily\bfseries\fontsize{40}{40}\selectfont,anchor=center] at (0.525in,0.43*\H) {#1};
-    \fi
-    \node[anchor=west,text width=\W-1.05in-1.55in,font=\sffamily\bfseries\LARGE,text=d2dink,align=left]
-      at (1.25in,0.5*\H) {\raggedright #2};
-    \begin{scope}[shift={(\W-0.72in,0.5*\H)}]
-      \begin{scope}[x=0.58in,y=0.58in]\dchapteremblem\end{scope}
-    \end{scope}
-  \end{tikzpicture}\par}
+  \par\vspace{0.08in}%
+  \ifx\relax#1\relax\else\dchapterkicker\vspace{6pt}\fi
+  \dsplittitle{#2}%
+  {\dheadfont\fontsize{30}{34}\selectfont\raggedright\dtitlemain\par}%
+  \difhassub{\vspace{2pt}{\dui\large\color{d2dmuted}\raggedright\dtitlesub\par}}%
+  \vspace{7pt}{\color{partcolor}\rule{\textwidth}{1.4pt}}\par}
 \titleformat{\chapter}[block]{}{}{0pt}{\dchapterheadnum}
 \titleformat{name=\chapter,numberless}[block]{}{}{0pt}{\dchapterhead{}}
 \newcommand{\dchapterheadnum}[1]{\dchapterhead{\thechapter}{#1}}
-\titlespacing*{\chapter}{0pt}{-24pt}{18pt}
+\titlespacing*{\chapter}{0pt}{2pt}{12pt}
 
 % ---------------------------------------------------------------- Part openers
 % \dpart{n}{roman}{title}{lit stages}{chapters}: a full page in the Part color with the

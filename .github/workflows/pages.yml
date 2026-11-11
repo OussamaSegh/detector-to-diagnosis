@@ -33,6 +33,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends pandoc texlive-xetex texlive-latex-extra \
             texlive-latex-recommended texlive-fonts-recommended texlive-pictures latexmk \
             texlive-plain-generic lmodern tex-gyre fonts-texgyre fonts-texgyre-math fonts-inconsolata \
+            fonts-ebgaramond fonts-inter \
             graphviz librsvg2-bin poppler-utils python3-venv
       - name: Python environment for the figures, from the lock file
         # The plots of book/figures read the measurement files with NumPy and draw them with
