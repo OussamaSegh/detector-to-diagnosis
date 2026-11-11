@@ -1,0 +1,43 @@
+% Atlas front cover. Proposal only. 8.5 x 11 in.
+% \nlfplate is a square crop of the book's own scan artwork, made by render.py.
+\documentclass{article}
+\usepackage[paperwidth=8.5in,paperheight=11in,margin=0pt]{geometry}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\setmainfont{EB Garamond}
+\newfontfamily\atlasui{Inter}
+\providecommand{\nlfplate}{plate.png}
+\pagestyle{empty}
+\definecolor{ink}{HTML}{1A1C1A}
+\definecolor{muted}{HTML}{5C615C}
+\definecolor{teal}{HTML}{0E5E54}
+\begin{document}
+\mbox{}%
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[white] (current page.south west) rectangle (current page.north east);
+  \node[anchor=north west, inner sep=0, text=teal, font=\atlasui\fontsize{9}{11}\selectfont]
+    at ($(current page.north west)+(0.62in,-0.62in)$)
+    {\addfontfeatures{LetterSpace=16}PET DATA ACQUISITION};
+  \node[anchor=north west, inner sep=0, text=ink, align=left, font=\fontsize{42}{44}\selectfont]
+    at ($(current page.north west)+(0.58in,-1.05in)$) {Detector\\[1pt]to Diagnosis};
+  \node[anchor=north west, inner sep=0, text=muted, align=left, text width=3.4in,
+        font=\atlasui\fontsize{13}{18}\selectfont]
+    at ($(current page.north west)+(0.64in,-3.15in)$)
+    {Building regulated medical imaging software in modern C++.};
+  \draw[teal, line width=1.6pt] ($(current page.north west)+(0.64in,-4.15in)$) -- ++(1.35in,0);
+  \node[anchor=north west, inner sep=0] at ($(current page.north east)+(-4.15in,-1.55in)$)
+    {\includegraphics[width=3.45in]{\nlfplate}};
+  \node[anchor=north west, inner sep=0, text=muted, text width=3.45in,
+        font=\atlasui\fontsize{8.5}{11}\selectfont]
+    at ($(current page.north east)+(-4.15in,-5.12in)$)
+    {Lines of response, and the image they form. Artwork from the book's own scan simulation.};
+  \draw[teal!40!white, line width=0.6pt] ($(current page.south west)+(0.64in,1.15in)$)
+    -- ($(current page.south east)+(-0.64in,1.15in)$);
+  \node[anchor=north west, inner sep=0, text=ink, font=\fontsize{13}{16}\selectfont]
+    at ($(current page.south west)+(0.64in,0.95in)$) {Oussama Seghaier};
+  \node[anchor=north east, inner sep=0, text=muted, font=\atlasui\fontsize{9}{11}\selectfont]
+    at ($(current page.south east)+(-0.64in,0.98in)$) {A reading edition};
+\end{tikzpicture}
+\end{document}

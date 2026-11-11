@@ -1,0 +1,49 @@
+% Folio front cover. Proposal only. 8.5 x 11 in.
+\documentclass{article}
+\usepackage[paperwidth=8.5in,paperheight=11in,margin=0pt]{geometry}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\setmainfont{Linux Libertine O}
+\pagestyle{empty}
+\definecolor{paper}{HTML}{F3EEE4}
+\definecolor{ink}{HTML}{1C1917}
+\definecolor{oxide}{HTML}{8E3B2F}
+\definecolor{muted}{HTML}{5E584F}
+\begin{document}
+\mbox{}%
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[paper] (current page.south west) rectangle (current page.north east);
+  \draw[oxide, line width=0.7pt] ($(current page.north west)+(0.48in,-0.55in)$)
+    -- ($(current page.south west)+(0.48in,0.55in)$);
+  \node[anchor=north west, inner sep=0, text=muted, font=\fontsize{9.5}{12}\selectfont]
+    at ($(current page.north west)+(0.78in,-0.72in)$)
+    {\addfontfeatures{Letters=SmallCaps,LetterSpace=12}A technical book};
+  \node[anchor=north west, inner sep=0, text=ink, align=left, font=\fontsize{46}{50}\selectfont]
+    at ($(current page.north west)+(0.74in,-1.15in)$) {Detector\\[2pt]to Diagnosis};
+  \draw[oxide, line width=0.8pt] ($(current page.north west)+(0.78in,-3.55in)$)
+    -- ++(1.55in,0);
+  \node[anchor=north west, inner sep=0, text=ink, align=left, font=\fontsize{15}{20}\selectfont]
+    at ($(current page.north west)+(0.78in,-3.75in)$)
+    {Building regulated\\medical imaging software\\in modern C++};
+  \node[anchor=north west, inner sep=0, text=muted, font=\fontsize{11}{14}\selectfont]
+    at ($(current page.north west)+(0.78in,-5.05in)$)
+    {\addfontfeatures{Letters=SmallCaps,LetterSpace=6}Oussama Seghaier};
+  \node[anchor=south west, inner sep=0, text=muted, font=\fontsize{9}{12}\selectfont]
+    at ($(current page.south west)+(0.78in,0.62in)$)
+    {\addfontfeatures{Letters=SmallCaps,LetterSpace=8}Modern C++\quad PET data acquisition};
+  % An engraved detector ring, lower right.
+  \begin{scope}[shift={($(current page.south east)+(-2.55in,3.15in)$)}]
+    \draw[oxide!55!paper, line width=0.4pt] (0,0) circle (1.42in);
+    \draw[oxide, line width=0.55pt] (0,0) circle (1.72in);
+    \foreach \a in {0,9,...,351} {
+      \begin{scope}[rotate=\a]
+        \draw[oxide, line width=0.4pt] (1.62in,-0.045in) rectangle (1.86in,0.045in);
+      \end{scope}}
+    \draw[oxide!70!paper, line width=0.35pt] (28:1.42in) -- (206:1.42in);
+    \draw[oxide!70!paper, line width=0.35pt] (96:1.42in) -- (262:1.42in);
+    \draw[oxide!70!paper, line width=0.35pt] (154:1.42in) -- (318:1.42in);
+    \draw[oxide, line width=0.7pt] (0.02in,0) ellipse (0.38in and 0.48in);
+  \end{scope}
+\end{tikzpicture}
+\end{document}

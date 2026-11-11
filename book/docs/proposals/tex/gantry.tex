@@ -1,0 +1,126 @@
+% Gantry: an instrument-manual interior. Loaded only by book/docs/proposals/render.py.
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+\usepackage[most]{tcolorbox}
+\usepackage{caption}
+\usepackage{needspace}
+\usepackage{enumitem}
+\usepackage{colortbl}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fvextra}
+
+\definecolor{d2dink}{HTML}{161A1E}
+\definecolor{d2dmuted}{HTML}{5C6570}
+\definecolor{d2drule}{HTML}{D5DBE0}
+\definecolor{d2dcodebg}{HTML}{F3F5F4}
+\definecolor{panel}{HTML}{1B2430}
+\definecolor{amber}{HTML}{8A5A00}
+\definecolor{amberon}{HTML}{F0B429}
+\definecolor{signal}{HTML}{1F6B45}
+\definecolor{zebra}{HTML}{EEF1F2}
+\colorlet{d2daccent}{amber}
+\newfontfamily\plexsans{IBM Plex Sans}
+\newfontfamily\plexcond{IBM Plex Sans Condensed}
+\newfontfamily\plexmono{IBM Plex Mono}
+
+\setlist{leftmargin=1.3em, topsep=0.32em, itemsep=0.16em, parsep=0pt}
+\setlength{\parskip}{0.38em plus 0.06em minus 0.05em}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2.5em}
+\color{d2dink}
+\AtBeginDocument{\hypersetup{hidelinks}\color{d2dink}\plexsans}
+
+\newcommand{\chnum}{\ifnum\value{chapter}<10 0\fi\thechapter}
+\newcommand{\gantryfoot}{%
+  \begin{tikzpicture}
+    \fill[panel] (0,0) rectangle (\textwidth,0.30in);
+    \node[anchor=west, inner sep=0, font=\plexmono\fontsize{7.5}{9}\selectfont, text=amberon]
+      at (0.1in,0.15in) {D2D\quad PART I\quad MODERN C++};
+    \node[inner sep=0, font=\plexmono\fontsize{7.5}{9}\selectfont, text=white]
+      at (0.5\textwidth,0.15in) {CH \chnum};
+    \node[anchor=east, inner sep=0, font=\plexmono\fontsize{7.5}{9}\selectfont, text=white]
+      at (\textwidth-0.1in,0.15in) {\thepage};
+  \end{tikzpicture}}
+
+% ---------------------------------------------------------------- call-outs
+\tcbset{gantrybase/.style={enhanced, breakable, sharp corners, boxrule=0.4pt,
+  colback=white, left=8pt, right=6pt, top=2pt, bottom=3pt,
+  before skip=8pt, after skip=8pt, pad at break=2pt, lines before break=3}}
+\newcommand{\gantrylabel}[3]{{\plexmono\scriptsize\textcolor{#1}{[#2]}}%
+  \hspace{0.45em}{\plexsans\footnotesize\bfseries #3}\par\vspace{1pt}}
+\newtcolorbox{boxwhy}[1]{gantrybase, colframe=d2drule, borderline west={2.4pt}{0pt}{signal},
+  before upper={\gantrylabel{signal}{NOTE}{#1}}}
+\newtcolorbox{boxmistakes}[1]{gantrybase, colframe=amber, boxrule=0.7pt,
+  before upper={\gantrylabel{amber}{CHECK}{#1}}}
+\newtcolorbox{boxregulated}[1]{gantrybase, colframe=d2drule, borderline west={2.4pt}{0pt}{panel},
+  before upper={\gantrylabel{panel}{RECORD}{#1}}}
+
+\renewenvironment{quote}{%
+  \list{}{\leftmargin=0.55em\rightmargin=0.15em\topsep=0.35em\partopsep=0pt}\item\relax\itshape
+}{\endlist}
+
+% ---------------------------------------------------------------- listings
+\renewcommand{\theFancyVerbLine}{\textcolor{d2dmuted}{\plexmono\scriptsize\arabic{FancyVerbLine}}}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+  commandchars=\\\{\}, breaklines, breakanywhere, fontsize=\footnotesize,
+  numbers=left, numbersep=8pt, xleftmargin=2pt}
+\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, breakable, sharp corners,
+  colback=d2dcodebg, colframe=panel, boxrule=0pt, leftrule=2pt,
+  left=2pt, right=5pt, top=3pt, bottom=3pt, before skip=0pt, after skip=8pt,
+  pad at break=2pt, lines before break=4]}{\end{tcolorbox}}
+\newcommand{\dlistingcap}[1]{\par\needspace{6\baselineskip}\noindent
+  \colorbox{panel}{\parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+    \plexmono\scriptsize\textcolor{amberon}{\strut\quad CH-A\quad #1\quad}}}\par\nopagebreak}
+
+% ---------------------------------------------------------------- tables and figures
+\setlength{\tabcolsep}{5pt}
+\AtBeginEnvironment{longtable}{\plexsans\footnotesize\renewcommand{\arraystretch}{1.22}\rowcolors{2}{white}{zebra}}
+\captionsetup{font={small,color=d2dink}, labelfont={bf,color=panel}, skip=6pt,
+  format=plain, justification=justified, singlelinecheck=false}
+\DeclareCaptionFont{plexface}{\plexsans}
+\captionsetup{font+=plexface, labelfont+=plexface}
+\tikzset{
+  stage/.style={draw=panel, line width=0.7pt, inner sep=3pt, font=\plexsans\footnotesize,
+    minimum height=2.15em, minimum width=6.4em, fill=white},
+  own/.style={draw=panel, line width=0.7pt, inner sep=3pt, font=\plexsans\footnotesize\bfseries,
+    minimum width=5.6em, fill=amberon!25!white, text=d2dink},
+  arr/.style={-{Stealth[length=1.7mm]}, panel, line width=0.7pt},
+  ownline/.style={amber, line width=1.3pt},
+  view/.style={-{Stealth[length=1.6mm]}, d2dmuted, dashed, line width=0.6pt}
+}
+
+% ---------------------------------------------------------------- headings
+\newcommand{\gantrychapter}[1]{%
+  \noindent\begin{tikzpicture}
+    \fill[panel] (0,0) rectangle (\textwidth,1.12in);
+    \node[anchor=north west, inner sep=0, text=amberon, font=\plexmono\fontsize{8}{10}\selectfont]
+      at (0.16in,1.00in) {CH \chnum\quad PART I\quad MODERN C++};
+    \node[anchor=north west, inner sep=0, text=white, text width=\textwidth-0.34in, align=left,
+      font=\plexcond\bfseries\fontsize{22}{25}\selectfont]
+      at (0.16in,0.72in) {\raggedright #1};
+  \end{tikzpicture}\par
+  \vspace{0pt}{\color{amberon}\rule{\textwidth}{2pt}}\par\vspace{8pt}}
+\titleformat{\chapter}[block]{\normalfont\color{d2dink}}{}{0pt}{\gantrychapter}
+\titlespacing*{\chapter}{0pt}{-8pt}{2pt}
+\titleformat{\section}{\needspace{4\baselineskip}\large\plexsans\bfseries\color{d2dink}}{%
+  \textcolor{amber}{\plexmono\normalsize\thesection}}{0.5em}{}
+\titleformat{name=\section,numberless}{\needspace{3\baselineskip}\plexmono\scriptsize}{}{0pt}{\gantryplain}
+\newcommand{\gantryplain}[1]{\textcolor{amber}{\MakeUppercase{#1}}}
+\titleformat{\subsection}{\needspace{3\baselineskip}\normalsize\plexsans\bfseries\color{d2dink}}{%
+  \textcolor{d2dmuted}{\plexmono\footnotesize\thesubsection}}{0.45em}{}
+\titlespacing*{\section}{0pt}{0.95em}{0.28em}
+\titlespacing*{\subsection}{0pt}{0.75em}{0.18em}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+
+% ---------------------------------------------------------------- page
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headrule}{{\color{amberon}\hrule height 1.4pt}}
+\fancyfoot[C]{\gantryfoot}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\gantryfoot}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\headrule}{{\color{amberon}\hrule height 1.4pt}}}

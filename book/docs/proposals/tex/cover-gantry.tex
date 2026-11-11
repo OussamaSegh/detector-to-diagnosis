@@ -1,0 +1,49 @@
+% Gantry front cover. Proposal only. 8.5 x 11 in.
+\documentclass{article}
+\usepackage[paperwidth=8.5in,paperheight=11in,margin=0pt]{geometry}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\newfontfamily\plexcond{IBM Plex Sans Condensed}
+\newfontfamily\plexmono{IBM Plex Mono}
+\pagestyle{empty}
+\definecolor{bg}{HTML}{12171E}
+\definecolor{bezel}{HTML}{3A4658}
+\definecolor{white}{HTML}{F4F6F8}
+\definecolor{dim}{HTML}{C5CDD6}
+\definecolor{amberon}{HTML}{F0B429}
+\begin{document}
+\mbox{}%
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[bg] (current page.south west) rectangle (current page.north east);
+  \draw[bezel, line width=0.8pt] ($(current page.south west)+(0.36in,0.36in)$)
+    rectangle ($(current page.north east)+(-0.36in,-0.36in)$);
+  \node[anchor=north west, inner sep=0, text=amberon, font=\plexmono\fontsize{9}{11}\selectfont]
+    at ($(current page.north west)+(0.68in,-0.68in)$)
+    {D2D-MAN-001\quad REV 1.1\quad PET DATA ACQUISITION};
+  \node[anchor=north west, inner sep=0, text=white, align=left,
+        font=\plexcond\bfseries\fontsize{58}{56}\selectfont]
+    at ($(current page.north west)+(0.64in,-1.15in)$) {DETECTOR\\[-2pt]TO DIAGNOSIS};
+  \draw[amberon, line width=1.6pt] ($(current page.north west)+(0.70in,-3.55in)$) -- ++(2.1in,0);
+  \node[anchor=north west, inner sep=0, text=dim, align=left, text width=4.6in,
+        font=\plexcond\fontsize{16}{21}\selectfont]
+    at ($(current page.north west)+(0.70in,-3.75in)$)
+    {Building regulated medical imaging software in modern C++};
+  % Detector modules as a scale, not a rainbow.
+  \begin{scope}[shift={($(current page.south west)+(4.25in,3.35in)$)}]
+    \draw[bezel, line width=0.6pt] (0,0) circle (1.62in);
+    \foreach \a in {0,7.5,...,352.5} {
+      \begin{scope}[rotate=\a]
+        \fill[amberon] (1.78in,-0.032in) rectangle (2.05in,0.032in);
+      \end{scope}}
+    \draw[amberon, opacity=0.85, line width=0.45pt] (24:1.62in) -- (198:1.62in);
+    \draw[amberon, opacity=0.55, line width=0.4pt] (78:1.62in) -- (250:1.62in);
+    \draw[amberon, opacity=0.55, line width=0.4pt] (132:1.62in) -- (310:1.62in);
+    \draw[white, line width=0.8pt] (0,0) ellipse (0.46in and 0.56in);
+  \end{scope}
+  \node[anchor=south west, inner sep=0, text=dim, font=\plexmono\fontsize{8.5}{11}\selectfont]
+    at ($(current page.south west)+(0.68in,0.62in)$) {OUSSAMA SEGHAIEER};
+  \node[anchor=south east, inner sep=0, text=amberon, font=\plexmono\fontsize{8.5}{11}\selectfont]
+    at ($(current page.south east)+(-0.68in,0.62in)$) {CH 01--37};
+\end{tikzpicture}
+\end{document}

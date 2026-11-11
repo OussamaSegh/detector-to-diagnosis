@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Detector to Diagnosis</title>
+<style>
+  :root { --ink: #1A1C1A; --muted: #5C615C; --teal: #0E5E54; --sand: #E7E1D4; --paper: #F7F4EE; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: white; color: var(--ink); }
+  body { display: grid; grid-template-columns: 390px 1fr; min-height: 100vh;
+    font: 16px/1.45 Inter, "Source Sans 3", sans-serif; }
+  .plate { background: var(--paper); padding: 36px 32px; border-right: 1px solid var(--sand); }
+  .plate img { width: 100%; height: auto; display: block; }
+  .plate p { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+  main { padding: 36px 44px 48px; max-width: 760px; }
+  .kicker { letter-spacing: 0.18em; font-size: 11px; color: var(--teal); margin: 0 0 10px; }
+  h1 { font-family: "EB Garamond", Georgia, serif; font-weight: 400; font-size: 58px; line-height: 0.9; margin: 0 0 12px; }
+  .dek { font-size: 18px; margin: 0 0 8px; max-width: 36em; }
+  .by { color: var(--muted); margin: 0 0 22px; }
+  h2 { font-size: 12px; letter-spacing: 0.16em; color: var(--teal); margin: 22px 0 8px; font-weight: 600; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li { display: grid; grid-template-columns: 1fr auto; gap: 8px 18px; align-items: baseline;
+    border-top: 1px solid var(--sand); padding: 11px 0; }
+  a.dl { color: var(--ink); font-weight: 600; text-decoration: none; font-size: 16px; }
+  a.dl:hover { color: var(--teal); }
+  .what { grid-column: 1; margin: 0; color: var(--muted); font-size: 14px; }
+  .go { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: white; background: var(--teal);
+    text-decoration: none; font-size: 13px; font-weight: 600; padding: 6px 10px; }
+  .meta { grid-column: 1; margin: 0; font: 11px/1.35 "JetBrains Mono", ui-monospace, monospace; color: var(--muted); }
+  footer { margin-top: 18px; color: var(--muted); font-size: 13px; max-width: 46em; }
+  footer a { color: var(--teal); }
+</style>
+</head>
+<body>
+  <aside class="plate">
+    <img src="../atlas-cover.png" alt="Proposed Atlas cover">
+    <p>Lines of response, and the image they form.</p>
+  </aside>
+  <main>
+    <p class="kicker">PET DATA ACQUISITION</p>
+    <h1>Detector<br>to Diagnosis</h1>
+    <p class="dek">Building regulated medical imaging software in modern C++.</p>
+    <p class="by">Oussama Seghaier · Version 1.1.1-dev</p>
+    <h2>THE BOOK</h2>
+    <ul>
+      <li><a class="dl" href="#">EPUB</a><a class="go" href="#">Download</a><p class="what">Reflowable, for an e-reader or a reading app.</p><p class="meta">5.1 MB · 824240ba99ae…0c712320</p></li>
+      <li><a class="dl" href="#">PDF, 8.5 × 11 in</a><a class="go" href="#">Download</a><p class="what">The book's own pages, for a tablet, a computer, or paper.</p><p class="meta">8.6 MB · 5437e65489ab…96952f51</p></li>
+      <li><a class="dl" href="#">PDF for Boox Air 5C</a><a class="go" href="#">Download</a><p class="what">A 10.3 inch page, one page to the screen.</p><p class="meta">8.9 MB · a2504ec38dda…d66d4b5e</p></li>
+      <li><a class="dl" href="#">Front cover</a><a class="go" href="#">Download</a><p class="what">JPEG at 300 dpi.</p><p class="meta">1.2 MB · d5ed588eaffb…f9fa1cf7e</p></li>
+      <li><a class="dl" href="#">Print cover</a><a class="go" href="#">Download</a><p class="what">Full wrap. The barcode area is empty.</p><p class="meta">1.9 MB · f063275d1777…084758a7f</p></li>
+    </ul>
+    <h2>THE SOLUTIONS MANUAL</h2>
+    <ul>
+      <li><a class="dl" href="#">EPUB</a><a class="go" href="#">Download</a><p class="what">Worked solutions, reflowable.</p><p class="meta">1.0 MB</p></li>
+      <li><a class="dl" href="#">PDF, 8.5 × 11 in</a><a class="go" href="#">Download</a><p class="what">The solutions at the book's page size.</p><p class="meta">2.4 MB</p></li>
+      <li><a class="dl" href="#">PDF for Boox Air 5C</a><a class="go" href="#">Download</a><p class="what">The solutions on a 10.3 inch page.</p><p class="meta">2.5 MB</p></li>
+    </ul>
+    <footer>
+      <p>Built from <a href="#">the companion repository</a> at <span style="font-family: 'JetBrains Mono', monospace">340ac27</span>. Every listing in the book is compiled and tested there. The book is for learning. It is not a substitute for a manufacturer's quality system.</p>
+    </footer>
+  </main>
+</body>
+</html>
