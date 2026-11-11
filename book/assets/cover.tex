@@ -10,18 +10,20 @@
 % \nlfvolume is book or solutions ("Solutions Manual" in the kicker, the subtitle and the spine).
 % \nlfauthor, when given, goes on the front cover and the spine.
 %
-% The Plate design. book/tools/cover_art.py simulates a PET scan (a brain phantom, a sinogram
-% with Poisson noise, an MLEM image) and writes the artwork at 300 dpi:
-% cover-front-<volume>.jpg is the reconstruction, full bleed, over an ink band (the band height
-% BAND is shared with this file); cover-back-<volume>.jpg is the same ink with the four steps
-% singles, coincidences, sinogram and image. The book and the solutions manual share the
-% artwork. The type is set here, in EB Garamond and Inter, so it stays vector. The positions
+% Two designs, drawn by book/tools/cover_art.py from one simulated PET scan (a brain phantom,
+% a sinogram with Poisson noise, an MLEM image) at 300 dpi. The book is Plate: the
+% reconstruction over an ink band (BAND, 3.45 in). The solutions manual is Inverse: the same
+% slice printed in teal and ink on paper, over a paper band (SOLUTIONS_BAND, 4.15 in). Each
+% back is the field its spine uses, with the four steps singles, coincidences, sinogram and
+% image. The type is set here, in EB Garamond and Inter, so it stays vector. The positions
 % marked "shared with cover_art.py" must match the script.
 %
 % KDP: bleed 0.125 in on the outer edges, text at least 0.375 in inside the trim (this file
 % keeps 0.58 in), spine text only from 80 pages, and the barcode area (2 x 1.2 in, at the
 % lower right of the back cover next to the spine) left empty. The spine and the back are the
-% same ink, so they meet without a seam.
+% same field, ink for the book and paper for the solutions, so they meet without a seam. The
+% Inverse colors are a dark teal and a near-black on paper, which keep their order when every
+% color is replaced by the gray of its lightness (the KDP black-ink profile).
 \providecommand{\nlftrimw}{8.5}
 \providecommand{\nlftrimh}{11}
 \providecommand{\nlfwrap}{0}
@@ -65,37 +67,53 @@
   \ifdim\nlftrimh pt=11pt\else\errmessage{cover.tex: the full wrap is drawn for an 8.5 x 11 in trim}\fi
 \fi
 
-% Palette, shared with cover_art.py: the ink is bg_top and bg_bottom (the spine is flat).
-\definecolor{bgtop}{HTML}{100E0C}
-\definecolor{bgbottom}{HTML}{100E0C}
-\definecolor{gold}{HTML}{C49A54}
-\definecolor{cream}{HTML}{F5EFE4}
-\definecolor{mute}{HTML}{C4B8A4}
-% The background: flat ink over the whole sheet. Only the spine shows it; the panels are
-% covered by the artwork, and the back artwork is the same ink.
+% Palette, shared with cover_art.py. bg_top and bg_bottom are the flat spine. For the book,
+% cream is the light type and gold the accent. For the solutions manual those names are the
+% Inverse ink and the Part I teal, so the same nodes print dark-on-paper.
+\ifx\nlfvolume\nlfsolutions
+  \definecolor{bgtop}{HTML}{F6F1E7}
+  \definecolor{bgbottom}{HTML}{F6F1E7}
+  \definecolor{gold}{HTML}{0F766E}
+  \definecolor{cream}{HTML}{161412}
+  \definecolor{mute}{HTML}{5A4E42}
+  \def\nlfband{4.15}
+\else
+  \definecolor{bgtop}{HTML}{100E0C}
+  \definecolor{bgbottom}{HTML}{100E0C}
+  \definecolor{gold}{HTML}{C49A54}
+  \definecolor{cream}{HTML}{F5EFE4}
+  \definecolor{mute}{HTML}{C4B8A4}
+  \def\nlfband{3.45}
+\fi
+% The background: flat field over the whole sheet. Only the spine shows it; the panels are
+% covered by the artwork, and the back artwork is the same field.
 % TikZ fits the middle half (25bp to 75bp) of a declared shading to the path.
 \pgfdeclareverticalshading{nlfbg}{100bp}{color(0bp)=(bgbottom); color(25bp)=(bgbottom);
   color(75bp)=(bgtop); color(100bp)=(bgtop)}
-
-% The ink band on the front trim, shared with cover_art.py (BAND).
-\def\nlfband{3.45}
 
 % ---------------------------------------------------------------------------------------------
 % Front cover, drawn relative to the lower left corner of the front trim. The picture fills
 % everything above the band; the type sits in the band, 0.58 in inside the trim.
 \newcommand{\nlffront}{%
-  \draw[gold, line width=1.75pt] (-0.125,\nlfband) -- (8.625,\nlfband);
-  \node[anchor=north west, inner sep=0, text=gold, font=\uifont\fontsize{10}{12}\selectfont]
-    at (0.58,3.22) {\addfontfeatures{LetterSpace=90}%
-      \ifx\nlfvolume\nlfsolutions SOLUTIONS MANUAL\else PET DATA ACQUISITION\fi};
-  \node[anchor=north west, inner sep=0, text=cream, align=left,
-        font=\fontsize{52}{56}\selectfont]
-    at (0.55,2.90) {Detector\\[-2pt]{\itshape\color{gold}to }Diagnosis};
   \ifx\nlfvolume\nlfsolutions
-    \node[anchor=north west, inner sep=0, text=mute, align=left, text width=6.4in,
-          font=\uifont\fontsize{15}{19}\selectfont]
-      at (0.58,1.28) {Worked solutions and model answers for every exercise};
+    % Inverse: SOLUTIONS / MANUAL are the words a thumbnail can read. Sizes match
+    % book/docs/proposals/solutions-covers (94 pt and 52 pt on a 7.34 in measure).
+    \draw[gold, line width=1.75pt] (-0.125,\nlfband) -- (8.625,\nlfband);
+    \node[anchor=north west, inner sep=0, text=cream, font=\bfseries\fontsize{94}{98}\selectfont]
+      at (0.58,3.84) {SOLUTIONS};
+    \node[anchor=north west, inner sep=0, text=gold, font=\fontsize{52}{56}\selectfont]
+      at (0.58,2.42) {MANUAL};
+    \node[anchor=north west, inner sep=0, text=mute, font=\uifont\fontsize{15}{19}\selectfont]
+      at (0.58,1.58) {Companion to Detector to Diagnosis};
+    \node[anchor=north west, inner sep=0, text=cream, font=\fontsize{26}{30}\selectfont]
+      at (0.58,1.16) {Detector {\itshape\color{gold}to} Diagnosis};
   \else
+    \draw[gold, line width=1.75pt] (-0.125,\nlfband) -- (8.625,\nlfband);
+    \node[anchor=north west, inner sep=0, text=gold, font=\uifont\fontsize{10}{12}\selectfont]
+      at (0.58,3.22) {\addfontfeatures{LetterSpace=90}PET DATA ACQUISITION};
+    \node[anchor=north west, inner sep=0, text=cream, align=left,
+          font=\fontsize{52}{56}\selectfont]
+      at (0.55,2.90) {Detector\\[-2pt]{\itshape\color{gold}to }Diagnosis};
     \node[anchor=north west, inner sep=0, text=mute, align=left,
           font=\uifont\fontsize{15}{19}\selectfont]
       at (0.58,1.32) {Building regulated\\medical imaging software\\in modern C++};
@@ -176,7 +194,7 @@
     \node[rotate=-90, anchor=west, inner sep=0, text=cream,
           font=\fontsize{\fs}{\fs}\selectfont]
       at (0,10.15) {Detector {\itshape\color{gold}to} Diagnosis\ifx\nlfvolume\nlfsolutions
-        {\uifont\fontsize{\fsol}{\fsol}\selectfont\color{gold}\enspace Solutions Manual}\fi};
+        {\mdseries\fontsize{\fsol}{\fsol}\selectfont\color{gold}\enspace Solutions Manual}\fi};
     \ifx\nlfauthor\nlfempty\else
       \node[rotate=-90, anchor=east, inner sep=0, text=mute,
             font=\uifont\fontsize{\fa}{\fa}\selectfont]
