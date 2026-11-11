@@ -5,21 +5,23 @@
 %     xelatex -jobname=cover-book "\def\nlfvolume{book}\def\nlfassets{book/assets}\input{cover.tex}"
 % - the full-wrap paperback cover for KDP: bleed, back cover, spine and front cover, with the
 %   spine width computed from the interior's page count;
-%     xelatex "\def\nlfvolume{book}\def\nlfwrap{1}\def\nlfspine{1.529}\def\nlfpages{679}
+%     xelatex "\def\nlfvolume{book}\def\nlfwrap{1}\def\nlfspine{1.6867}\def\nlfpages{749}
 %              \def\nlfauthor{Name}\def\nlfassets{book/assets}\input{cover.tex}"
-% \nlfvolume is book (violet) or solutions (teal, "Solutions Manual"). \nlfauthor, when given,
-% goes on the front cover and the spine.
+% \nlfvolume is book or solutions ("Solutions Manual" in the kicker, the subtitle and the spine).
+% \nlfauthor, when given, goes on the front cover and the spine.
 %
-% The artwork is a PET scan simulated end to end by book/tools/cover_art.py: a detector ring
-% with the reconstructed brain image forming inside it out of the lines of response (front),
-% and the four steps singles, coincidences, sinogram and image (back). The script writes
-% cover-front-<volume>.jpg (the front panel with bleed on all four sides) and
-% cover-back-<volume>.jpg (the back panel with its outer bleed) at 300 dpi; the text is set
-% here, so it stays vector. The positions marked "shared with cover_art.py" must match it.
+% The Plate design. book/tools/cover_art.py simulates a PET scan (a brain phantom, a sinogram
+% with Poisson noise, an MLEM image) and writes the artwork at 300 dpi:
+% cover-front-<volume>.jpg is the reconstruction, full bleed, over an ink band (the band height
+% BAND is shared with this file); cover-back-<volume>.jpg is the same ink with the four steps
+% singles, coincidences, sinogram and image. The book and the solutions manual share the
+% artwork. The type is set here, in EB Garamond and Inter, so it stays vector. The positions
+% marked "shared with cover_art.py" must match the script.
 %
-% KDP: bleed 0.125 in on the outer edges, text at least 0.375 in inside the trim, spine text
-% only from 80 pages, and the barcode area (2 x 1.2 in, at the lower right of the back cover
-% next to the spine) left empty.
+% KDP: bleed 0.125 in on the outer edges, text at least 0.375 in inside the trim (this file
+% keeps 0.58 in), spine text only from 80 pages, and the barcode area (2 x 1.2 in, at the
+% lower right of the back cover next to the spine) left empty. The spine and the back are the
+% same ink, so they meet without a seam.
 \providecommand{\nlftrimw}{8.5}
 \providecommand{\nlftrimh}{11}
 \providecommand{\nlfwrap}{0}
@@ -48,9 +50,8 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{calc}
-\setmainfont{TeX Gyre Heros}
-\newfontfamily\condfont{TeX Gyre Heros Cn}
-\newfontfamily\codefont{Inconsolata}
+\setmainfont{EB Garamond}
+\newfontfamily\uifont{Inter}
 \pagestyle{empty}
 \def\nlfempty{}
 \def\nlfsolutions{solutions}
@@ -64,75 +65,54 @@
   \ifdim\nlftrimh pt=11pt\else\errmessage{cover.tex: the full wrap is drawn for an 8.5 x 11 in trim}\fi
 \fi
 
-% Palette: bgtop/bgbottom are cover_art.py's BG_TOP/BG_BOTTOM (shared with cover_art.py).
-\ifx\nlfvolume\nlfsolutions
-  \definecolor{bgtop}{HTML}{03141A}
-  \definecolor{bgbottom}{HTML}{07322F}
-  \definecolor{accent}{HTML}{5EEAD4}
-  \definecolor{warm}{HTML}{FACC15}
-  \definecolor{rulea}{HTML}{2DD4BF}
-  \definecolor{ruleb}{HTML}{FACC15}
-  \definecolor{subtle}{HTML}{CCFBF1}
-\else
-  \definecolor{bgtop}{HTML}{050816}
-  \definecolor{bgbottom}{HTML}{1A0B3A}
-  \definecolor{accent}{HTML}{67E8F9}
-  \definecolor{warm}{HTML}{FBBF24}
-  \definecolor{rulea}{HTML}{22D3EE}
-  \definecolor{ruleb}{HTML}{EC4899}
-  \definecolor{subtle}{HTML}{DDD6FE}
-\fi
-% The background: a linear gradient over the whole sheet height, as in cover_art.py. Only the
-% spine shows it; the panels are covered by the artwork, which has the same gradient.
+% Palette, shared with cover_art.py: the ink is bg_top and bg_bottom (the spine is flat).
+\definecolor{bgtop}{HTML}{100E0C}
+\definecolor{bgbottom}{HTML}{100E0C}
+\definecolor{gold}{HTML}{C49A54}
+\definecolor{cream}{HTML}{F5EFE4}
+\definecolor{mute}{HTML}{C4B8A4}
+% The background: flat ink over the whole sheet. Only the spine shows it; the panels are
+% covered by the artwork, and the back artwork is the same ink.
 % TikZ fits the middle half (25bp to 75bp) of a declared shading to the path.
 \pgfdeclareverticalshading{nlfbg}{100bp}{color(0bp)=(bgbottom); color(25bp)=(bgbottom);
   color(75bp)=(bgtop); color(100bp)=(bgtop)}
 
-\newcommand{\nlfrule}[3]{% x, y, length: the two-color rule under the titles
-  \fill[left color=rulea, right color=ruleb] (#1,#2) rectangle ($(#1,#2)+(#3,0.045)$)}
+% The ink band on the front trim, shared with cover_art.py (BAND).
+\def\nlfband{3.45}
 
 % ---------------------------------------------------------------------------------------------
-% Front cover, drawn relative to the lower left corner of the front trim.
+% Front cover, drawn relative to the lower left corner of the front trim. The picture fills
+% everything above the band; the type sits in the band, 0.58 in inside the trim.
 \newcommand{\nlffront}{%
-  \node[anchor=north west, inner sep=0, text=accent,
-        font=\codefont\fontsize{10}{12}\selectfont]
-    at (0.75,10.30) {\addfontfeatures{LetterSpace=14}MODERN C++ \,/\, PET DATA ACQUISITION \,/\, MEDICAL DEVICE SOFTWARE};
-  \node[anchor=north west, inner sep=0, text=white, align=left,
-        font=\bfseries\fontsize{68}{66}\selectfont]
-    at (0.68,9.92) {\addfontfeatures{LetterSpace=-2.5}Detector\\[-1pt]{\mdseries\color{accent}to }Diagnosis};
-  \nlfrule{0.75}{7.92}{2.2};
+  \draw[gold, line width=1.75pt] (-0.125,\nlfband) -- (8.625,\nlfband);
+  \node[anchor=north west, inner sep=0, text=gold, font=\uifont\fontsize{10}{12}\selectfont]
+    at (0.58,3.22) {\addfontfeatures{LetterSpace=90}%
+      \ifx\nlfvolume\nlfsolutions SOLUTIONS MANUAL\else PET DATA ACQUISITION\fi};
+  \node[anchor=north west, inner sep=0, text=cream, align=left,
+        font=\fontsize{52}{56}\selectfont]
+    at (0.55,2.90) {Detector\\[-2pt]{\itshape\color{gold}to }Diagnosis};
   \ifx\nlfvolume\nlfsolutions
-    \node[anchor=north west, inner sep=0, text=warm, font=\bfseries\fontsize{24}{28}\selectfont]
-      at (0.75,7.70) {\addfontfeatures{LetterSpace=8}SOLUTIONS MANUAL};
-    \node[anchor=north west, inner sep=0, text=subtle, align=left,
-          font=\fontsize{14}{18}\selectfont]
-      at (0.75,7.18) {Worked solutions and model\\answers for every exercise};
+    \node[anchor=north west, inner sep=0, text=mute, align=left, text width=6.4in,
+          font=\uifont\fontsize{15}{19}\selectfont]
+      at (0.58,1.28) {Worked solutions and model answers for every exercise};
   \else
-    \node[anchor=north west, inner sep=0, text=subtle, align=left,
-          font=\fontsize{16}{20.5}\selectfont]
-      at (0.75,7.70) {Building regulated\\medical imaging software\\in modern C++};
+    \node[anchor=north west, inner sep=0, text=mute, align=left,
+          font=\uifont\fontsize{15}{19}\selectfont]
+      at (0.58,1.32) {Building regulated\\medical imaging software\\in modern C++};
   \fi
-  % The pipeline the book builds, next to the ring.
-  \foreach \i/\name in {0/singles, 1/coincidences, 2/sinograms, 3/images} {
-    \pgfmathsetmacro{\yy}{3.55 - 0.36*\i}
-    \fill[accent] (0.80,\yy) circle (0.032);
-    \node[anchor=west, inner sep=0, text=subtle, font=\codefont\fontsize{10}{12}\selectfont]
-      at (0.98,\yy) {\textcolor{accent}{0\the\numexpr\i+1\relax}\enspace\name};
-  }
-  \draw[accent, opacity=0.5, line width=0.6pt] (0.80,3.55) -- (0.80,2.47);
   \ifx\nlfauthor\nlfempty\else
-    \node[anchor=south west, inner sep=0, text=white, font=\fontsize{20}{24}\selectfont]
-      at (0.75,0.80) {\addfontfeatures{LetterSpace=3}\nlfauthor};
+    \node[anchor=south east, inner sep=0, text=cream, font=\uifont\fontsize{15}{18}\selectfont]
+      at (7.92,0.42) {\nlfauthor};
   \fi
 }
 
 % ---------------------------------------------------------------------------------------------
 % Back cover, relative to the lower left corner of the back trim. Panels: shared with
 % cover_art.py (PANEL_X, PANEL_Y, PANEL_S).
-\newcommand{\nlfitem}{\par\hangindent=1.1em\hangafter=1\textcolor{accent}{\textbullet}\enspace}
+\newcommand{\nlfitem}{\par\hangindent=1.1em\hangafter=1\textcolor{gold}{\textbullet}\enspace}
 \ifx\nlfvolume\nlfsolutions
   \newcommand{\nlfblurb}{%
-    {\bfseries\fontsize{15}{19}\selectfont\color{warm} Solutions Manual\par}\medskip
+    {\fontsize{16}{20}\selectfont\color{cream} Solutions Manual\par}\medskip
     This manual holds a worked solution to every exercise in \emph{Detector to Diagnosis} and a
     model answer to every Check yourself question.\par\medskip
     Each solution walks through the reasoning, shows the key code and names the mistakes the
@@ -142,7 +122,7 @@
     compare your design with the one in the repository.}
 \else
   \newcommand{\nlfblurb}{%
-    {\bfseries\fontsize{15}{19}\selectfont\color{white} Building regulated medical imaging software in modern C++\par}
+    {\fontsize{16}{20}\selectfont\color{cream} Building regulated medical imaging software in modern C++\par}
     \medskip
     A PET scanner turns tens of millions of detected photons per second into an image that a
     physician trusts. The software in between must keep up, lose nothing without saying so, and
@@ -151,7 +131,7 @@
     simulated PET data acquisition system, from strong types and lock-free queues to a
     coincidence sorter, a crash-safe list-mode writer, image reconstruction and a continuous
     integration pipeline whose results are verification records.\par\medskip
-    {\color{white}\bfseries You learn}\par\smallskip
+    {\color{cream}You learn}\par\smallskip
     \nlfitem low-latency, real-time C++ on Linux, measured rather than guessed;
     \nlfitem the PET physics and readout a data acquisition engineer needs;
     \nlfitem IEC 62304, ISO 14971, ISO 13485 and medical device cybersecurity, applied to
@@ -161,54 +141,48 @@
     compiled and tested from the companion repository.}
 \fi
 \newcommand{\nlfback}{%
-  \node[anchor=north west, inner sep=0, text=white, font=\bfseries\fontsize{30}{34}\selectfont]
-    at (0.75,10.25) {\addfontfeatures{LetterSpace=-1.5}Detector {\mdseries\color{accent}to} Diagnosis};
-  \nlfrule{0.75}{9.55}{2.2};
-  \node[anchor=north west, inner sep=0, text width=6.9in, text=subtle, align=left,
-        font={\fontsize{12}{17}\selectfont\hyphenpenalty=10000\exhyphenpenalty=10000}]
-    at (0.75,9.25) {\nlfblurb};
-  \node[anchor=south west, inner sep=0, text=accent, font=\codefont\fontsize{9.5}{11}\selectfont]
-    at (0.75,4.20) {\addfontfeatures{LetterSpace=12}FROM DETECTOR TO DIAGNOSIS};
+  \node[anchor=north west, inner sep=0, text=cream, font=\fontsize{32}{36}\selectfont]
+    at (0.58,10.35) {Detector {\itshape\color{gold}to} Diagnosis};
+  \draw[gold, line width=1.25pt] (0.58,9.78) -- (2.55,9.78);
+  \node[anchor=north west, inner sep=0, text width=7.15in, text=mute, align=left,
+        font={\uifont\fontsize{11.5}{16}\selectfont\hyphenpenalty=10000\exhyphenpenalty=10000}]
+    at (0.58,9.52) {\nlfblurb};
+  \node[anchor=south west, inner sep=0, text=gold, font=\uifont\fontsize{8.5}{11}\selectfont]
+    at (0.58,4.18) {\addfontfeatures{LetterSpace=90}FROM DETECTOR TO DIAGNOSIS};
   \foreach \x/\n/\name/\what in {0.75/01/SINGLES/photons stop in crystals,
                                  2.62/02/COINCIDENCES/pairs within nanoseconds,
                                  4.49/03/SINOGRAM/lines binned by angle,
                                  6.36/04/IMAGE/reconstructed with MLEM} {
-    \node[anchor=north west, inner sep=0, text=white, font=\codefont\fontsize{9.5}{11}\selectfont]
-      at (\x,2.40) {\textcolor{accent}{\n}\enspace\name};
-    \node[anchor=north west, inner sep=0, text=subtle, font=\fontsize{8.5}{10}\selectfont]
-      at (\x,2.18) {\what};
+    \node[anchor=north west, inner sep=0, text=cream, font=\uifont\fontsize{8.5}{11}\selectfont]
+      at (\x,2.40) {\textcolor{gold}{\n}\enspace\name};
+    \node[anchor=north west, inner sep=0, text=mute, font=\uifont\fontsize{8}{10}\selectfont]
+      at (\x,2.16) {\what};
   }
-  \foreach \x in {2.17, 4.04, 5.91} {
-    \draw[accent, line width=1pt, line cap=round, line join=round]
-      (\x+0.13,3.36) -- (\x+0.25,3.26) -- (\x+0.13,3.16);
-  }
-  \node[anchor=south west, inner sep=0, text=subtle, opacity=0.8,
-        font=\codefont\fontsize{8}{10}\selectfont, align=left]
-    at (0.75,0.70) {COMPUTERS / Programming Languages / C++\\MEDICAL / Biotechnology};
+  \node[anchor=south west, inner sep=0, text=mute,
+        font=\uifont\fontsize{8}{10}\selectfont, align=left]
+    at (0.58,0.48) {COMPUTERS / Programming Languages / C++\\MEDICAL / Biotechnology};
   % The barcode area, x 6.25..8.25, y 0.25..1.45, stays empty.
 }
 
 % ---------------------------------------------------------------------------------------------
 % Spine, centered on its middle line. KDP keeps 0.0625 in on each side of the spine text.
+% The title reads upward, as on the previous cover.
 \newcommand{\nlfspinetext}{%
-  \pgfmathsetmacro{\fs}{min(22, 0.40*72*(\nlfspine-0.125))}%
-  \pgfmathsetmacro{\fa}{min(15, 0.80*\fs)}%
+  \pgfmathsetmacro{\fs}{min(24, 0.36*72*(\nlfspine-0.125))}%
+  \pgfmathsetmacro{\fa}{min(12, 0.55*\fs)}%
+  \pgfmathsetmacro{\fsol}{0.62*\fs}%
   \begin{scope}[shift={(\nlfbleed+\nlftrimw+\nlfspine/2, \nlfbleed)}]
-    \foreach \k in {0,...,23} {
-      \pgfmathsetmacro{\aa}{15*\k}
-      \pgfmathsetmacro{\mix}{100*abs(mod(\k,12)-6)/6}
-      \fill[rulea!\mix!ruleb] (0,10.30) ++(\aa+3:{min(0.26,0.30*\nlfspine)}) arc[start angle=\aa+3, end angle=\aa+12, radius={min(0.26,0.30*\nlfspine)}]
-        -- ++(\aa+12:{min(0.07,0.08*\nlfspine)}) arc[start angle=\aa+12, end angle=\aa+3, radius={min(0.33,0.38*\nlfspine)}] -- cycle;
-    }
-    \node[rotate=-90, anchor=west, inner sep=0, text=white,
-          font=\bfseries\fontsize{\fs}{\fs}\selectfont]
-      at (0,9.65) {Detector {\mdseries\color{accent}to} Diagnosis\ifx\nlfvolume\nlfsolutions
-        {\mdseries\color{warm}\enspace Solutions Manual}\fi};
+    \draw[gold, line width=0.7pt] (0,10.55) -- (0,10.85);
+    \node[rotate=-90, anchor=west, inner sep=0, text=cream,
+          font=\fontsize{\fs}{\fs}\selectfont]
+      at (0,10.15) {Detector {\itshape\color{gold}to} Diagnosis\ifx\nlfvolume\nlfsolutions
+        {\uifont\fontsize{\fsol}{\fsol}\selectfont\color{gold}\enspace Solutions Manual}\fi};
     \ifx\nlfauthor\nlfempty\else
-      \node[rotate=-90, anchor=east, inner sep=0, text=subtle,
-            font=\fontsize{\fa}{\fa}\selectfont]
-        at (0,0.55) {\nlfauthor};
+      \node[rotate=-90, anchor=east, inner sep=0, text=mute,
+            font=\uifont\fontsize{\fa}{\fa}\selectfont]
+        at (0,0.48) {\nlfauthor};
     \fi
+    \draw[gold, line width=0.7pt] (0,0.22) -- (0,0.08);
   \end{scope}
 }
 

@@ -1,7 +1,7 @@
 # Cover proposals: five fronts
 
-Proposal only. Nothing here is read by `book/build.sh`, `book/assets/cover.tex`, or
-`book/tools/cover_art.py`. The live cover is unchanged.
+Nothing here is read by `book/build.sh`. The owner chose Plate, and that design is
+now the live cover (`book/assets/cover.tex`, `book/tools/cover_art.py`).
 
 These are drawn to sit with the Atlas chapter opener (EB Garamond titles, a small
 tracked kicker, one rule). Each one uses that type, and then a different picture.
