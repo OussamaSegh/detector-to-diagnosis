@@ -10,11 +10,16 @@ the patch version.
 
 ### Changed
 
-- The cover is the Plate design, for the book and the solutions manual: the screen PDF, the
-  Boox PDF, the EPUB, the download page and the KDP wrap. The front is the MLEM reconstruction,
-  edge to edge, above an ink band, with the title in EB Garamond. The spine and the back are
-  that ink. The back keeps the four steps and an empty barcode area. The two volumes share the
-  artwork; the solutions manual has its own kicker, subtitle, blurb and spine line.
+- The solutions manual cover is Inverse, on the screen PDF, the Boox PDF, the EPUB, the
+  download page and the KDP wrap. The slice prints in teal and ink on paper, and the band is
+  paper, with SOLUTIONS and MANUAL in EB Garamond. The spine and the back are that paper, so
+  they meet without a seam. The back keeps the blurb, the four steps and an empty barcode
+  area. In the KDP black-ink grays the slice and the words still separate. The book's cover
+  stays the Plate design.
+- The book's cover is the Plate design, on the screen PDF, the Boox PDF, the EPUB, the
+  download page and the KDP wrap. The front is the MLEM reconstruction, edge to edge, above
+  an ink band, with the title in EB Garamond. The spine and the back are that ink. The back
+  keeps the four steps and an empty barcode area.
 - Chapter openers, in the screen PDF, the Boox PDF, the black-ink interior and the EPUB. The
   head is a Part-colored kicker, the title in EB Garamond, the words after a colon as the
   subtitle, and a Part-colored rule. "Why it matters" is a sand card with a Part-colored bar

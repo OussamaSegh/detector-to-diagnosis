@@ -2,10 +2,10 @@
 """Raster artwork of the covers (book/assets/cover.tex): the Plate design.
 
 A brain phantom (an FDG-like axial slice) is forward projected into a sinogram, given Poisson
-noise and reconstructed with MLEM. The front is that reconstruction, edge to edge, above an ink
-band; cover.tex sets the type in the band. The back is the same ink, with the four steps of the
-pipeline (singles, coincidences, sinogram, image) in the same colors. The book and the solutions
-manual share the artwork; the words differ in cover.tex.
+noise and reconstructed with MLEM. The book's front is that reconstruction, edge to edge, above
+an ink band; the solutions manual is the Inverse design, the same slice printed in teal and ink
+on paper above a paper band. cover.tex sets the type. Each back is the field its spine uses
+(ink for the book, paper for the solutions), with the four steps of the pipeline.
 
     python3 book/tools/cover_art.py [--out book/assets] [--dpi 300]
 
@@ -13,10 +13,10 @@ writes cover-front-<volume>.jpg and cover-back-<volume>.jpg for volume = book an
 The output is deterministic (fixed seeds) and is committed, so building the book needs only
 XeLaTeX. Needs numpy, scipy and Pillow (the versions of analysis/requirements.lock).
 
-The ink is flat, the same color cover.tex paints the spine, so the back panel meets the spine
-without a seam. The front image runs to the spine; its margin there is the dark ground of the
-slice. Positions are in inches on the trimmed panel (origin at its lower left corner); the
-constants marked "shared with cover.tex" must match the ones there.
+The field is flat, the same color cover.tex paints the spine, so the back panel meets the spine
+without a seam. Positions are in inches on the trimmed panel (origin at its lower left corner);
+the constants marked "shared with cover.tex" must match the ones there. The solutions band is
+taller than the book's, so SOLUTIONS and MANUAL fit.
 """
 from __future__ import annotations
 
@@ -30,14 +30,16 @@ from scipy import ndimage
 
 TRIM_W, TRIM_H, BLEED = 8.5, 11.0, 0.125
 
-# Shared with cover.tex. BAND is the ink band's height on the trim. The back panels sit above
-# the barcode area (x 6.25..8.25, y 0.25..1.45), which cover.tex leaves empty.
+# Shared with cover.tex. BAND is the book's ink band; SOLUTIONS_BAND is the Inverse paper band.
+# The back panels sit above the barcode area (x 6.25..8.25, y 0.25..1.45), which cover.tex
+# leaves empty.
 BAND = 3.45
+SOLUTIONS_BAND = 4.15
 IMAGE_SPAN = 0.86                       # half side of a panel image, over the panel ring radius
 PANEL_Y, PANEL_S = 2.55, 1.42          # back panels: bottom edge and side
 PANEL_X = (0.75, 2.62, 4.49, 6.36)     # back panels: left edges
 
-# One plate for both volumes: ink, gold, and the reconstruction's colors.
+# The book's plate: ink, gold, and the reconstruction's colors.
 _PLATE = {
     "bg_top": "100E0C", "bg_bottom": "100E0C",
     "gold": "C49A54", "cream": "F5EFE4",
@@ -45,7 +47,16 @@ _PLATE = {
     "cmap": [(0.00, "080A0E"), (0.08, "0C101C"), (0.22, "241848"), (0.40, "0E4E54"),
              (0.58, "A87A3A"), (0.78, "ECD6B0"), (1.00, "FCF6EA")],
 }
-PALETTES = {"book": _PLATE, "solutions": _PLATE}
+# Inverse: paper ground, Part I teal, ink. The same lightness ordering the KDP black-ink
+# profile keeps, so the slice and the type still separate in gray.
+_INVERSE = {
+    "bg_top": "F6F1E7", "bg_bottom": "F6F1E7",
+    "gold": "0F766E", "cream": "161412", "on_paper": True,
+    "cmap": [(0.00, "F6F1E7"), (0.20, "E8E0D0"), (0.42, "A8C4BC"), (0.62, "0F766E"),
+             (0.82, "184844"), (1.00, "161412")],
+}
+PALETTES = {"book": _PLATE, "solutions": _INVERSE}
+BANDS = {"book": BAND, "solutions": SOLUTIONS_BAND}
 
 
 def rgb(hexstr: str) -> np.ndarray:
@@ -222,7 +233,10 @@ def gold_ring(canvas: Canvas, cx, cy, r_in, r_out, pal, n_blocks=28, lit=None):
             cell = block & (np.abs(np.arctan2(np.sin(th - ang), np.cos(th - ang))) < sector * 0.28)
             cell = cell & (radial < 0.55)
             hits = np.maximum(hits, cell * strength)
-        canvas.add(rgb(pal["cream"]), hits * 0.85)
+        if pal.get("on_paper"):
+            canvas.over(rgb("0B3D3A"), hits)
+        else:
+            canvas.add(rgb(pal["cream"]), hits * 0.85)
 
 
 def events(img: np.ndarray, n_events: int, r_in: float, rng) -> list:
@@ -268,12 +282,12 @@ def disc_image(img: np.ndarray, pal, gamma: float = 0.92):
 
 # ---------------------------------------------------------------------------------------------
 
-def front(pal, data, dpi: int, path: Path):
-    """The reconstruction, full bleed, with a flat ink band along the bottom of the trim."""
+def front(pal, data, dpi: int, path: Path, band: float = BAND):
+    """The reconstruction, full bleed, with a flat band along the bottom of the trim."""
     _, _, recon = data
     w_px = round((TRIM_W + 2 * BLEED) * dpi)
     h_px = round((TRIM_H + 2 * BLEED) * dpi)
-    band_px = round((BLEED + BAND) * dpi)
+    band_px = round((BLEED + band) * dpi)
     n = recon.shape[0]
     m = int(round(n * 0.14))
     crop = plate_tone(recon[m:n - m, m:n - m])
@@ -302,7 +316,10 @@ def back(pal, data, dpi: int, path: Path):
     # 2 coincidences: lines of response across the bore.
     segs = [(centers[1] + e[0], cy + e[1], centers[1] + e[2], cy + e[3]) for e in evs[:36]]
     cov = c.lines(segs, 0.007)
-    c.add(rgb(pal["cream"]), cov * 0.55 + ndimage.gaussian_filter(cov, dpi * 0.012) * 0.45)
+    if pal.get("on_paper"):
+        c.over(rgb(pal["gold"]), cov * 0.9)
+    else:
+        c.add(rgb(pal["cream"]), cov * 0.55 + ndimage.gaussian_filter(cov, dpi * 0.012) * 0.45)
     gold_ring(c, centers[1], cy, rr_in, rr_out, pal)
     # 3 sinogram.
     cols = np.flatnonzero(sino.max(axis=0) > 0.02)
@@ -326,7 +343,7 @@ def main() -> None:
     data = scan(n=200, n_angles=180, counts=2.0e7, iters=22)
     for vol in (["book", "solutions"] if args.volume == "both" else [args.volume]):
         pal = PALETTES[vol]
-        front(pal, data, args.dpi, args.out / f"cover-front-{vol}.jpg")
+        front(pal, data, args.dpi, args.out / f"cover-front-{vol}.jpg", BANDS[vol])
         back(pal, data, args.dpi, args.out / f"cover-back-{vol}.jpg")
         print(f"wrote {args.out}/cover-front-{vol}.jpg and cover-back-{vol}.jpg")
 

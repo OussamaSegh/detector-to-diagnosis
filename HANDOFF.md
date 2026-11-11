@@ -5,10 +5,10 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-11: the cover is the Plate design (the reconstruction full bleed,
-over an ink band, EB Garamond and Inter). The chapter opener is the Atlas head. VERSION is
-still 1.1.1-dev. Release 1.1.0 was 2026-11-10 (tag book-v1.1.0 on 19c6364); the second full
-review (PR #9) is merged on main after it.
+Last updated: 2026-11-11: the solutions manual cover is Inverse (the slice printed on
+paper, SOLUTIONS / MANUAL). The book's cover stays the Plate design. The chapter opener
+is the Atlas head. VERSION is still 1.1.1-dev. Release 1.1.0 was 2026-11-10 (tag
+book-v1.1.0 on 19c6364); the second full review (PR #9) is merged on main after it.
 
 ## Start here (after release 1.1.0)
 
@@ -36,16 +36,28 @@ cover), 0 overfull boxes, every font embedded.
 
 **Cover (2026-11-11): the Plate design, chosen from the cover proposals.** The front is the
 MLEM reconstruction, edge to edge, above an ink band (`#100E0C`). In the band, 0.58 in inside
-the trim: a tracked kicker (PET DATA ACQUISITION, or SOLUTIONS MANUAL), the title in EB
+the trim: a tracked kicker (PET DATA ACQUISITION), the title in EB
 Garamond with *to* in gold italic, the subtitle in Inter, and the author at the lower right. A
 gold rule separates the picture from the band. The spine is the same ink, so the back meets it
 without a seam; the title reads upward, with a short gold tick at the head and the foot. The
 back is that ink, the blurb, and the four steps (singles, coincidences, sinogram, image) in the
-plate colors. The barcode area stays empty. The solutions manual uses the same artwork, with
-its own kicker, subtitle, blurb and spine line. `cover.tex` sets the type; `cover_art.py`
+plate colors. The barcode area stays empty. The solutions manual does not use this
+artwork; its cover is Inverse, next. `cover.tex` sets the type; `cover_art.py`
 writes the JPEGs. Screen, EPUB and download-page covers are this front. The KDP wrap is back,
 spine and front at the interior's page count (white paper, 0.002252 in per page). The black-ink
 interior is 749 pages, so the book's spine is 1.6867 in and the wrap is 18.937 x 11.250 in.
+
+**Solutions cover (2026-11-11): Inverse, chosen from the solutions cover proposals.** The
+book stays Plate. The solutions front is the same reconstruction printed in Part I teal and
+ink on paper (`#F6F1E7`), above a paper band 4.15 in tall. In the band, 0.58 in inside the
+trim: SOLUTIONS in EB Garamond Bold, MANUAL in teal, the line "Companion to Detector to
+Diagnosis", the series title, and the author. The spine and the back are the same paper, so
+they meet without a seam. The back keeps the blurb and the four steps, drawn in teal and ink,
+and the barcode area stays empty. The download page takes its JPEG from this front, as it
+does for the book. The KDP black-ink profile replaces each color with the gray of its
+lightness: the slice runs from paper to near-black, and the type is ink (16:1 on the paper)
+and teal (4.9:1), so the cover still reads in gray. `cover_art.py` writes
+`cover-{front,back}-solutions.jpg`; the book's JPEGs are untouched.
 
 **Interior redesign for 1.1.0: complete, on main** (plan `book/docs/PLAN-interior-design.md`,
 approved by the user: "Go implement", then "Review and finish everything"). The palette
@@ -319,7 +331,7 @@ Dependencies and process:
 | `book/solutions/chNN.md` | The solutions manual. |
 | `book/build.sh` | Builds the book with Pandoc and XeLaTeX (8.5 x 11 in PDF, and EPUB); trim and margins are set in one place at its top. `book/build.sh kdp [book|solutions|both]` writes the KDP interior PDFs (gutter for the page count), full-wrap covers and EPUBs to `book/build/kdp/`, and runs EPUBCheck (`EPUBCHECK_JAR`); workflow `kdp.yml` runs it in CI. `book/build.sh boox [book|solutions|both]` writes `*-boox-air-5c.pdf` to `book/build/out/`: the screen PDF on a 6.18 x 8.24 in page (a 10.3 in 4:3 E Ink screen, Onyx Boox Air 5C), narrow margins, 9 pt tables, its own cover of that size (`build/cover/cover-<volume>-boox.pdf`). Code listings are included from the repo at build time with `include` and `snippet` markers (`// [snippet:name]`). |
 | `book/src/front/how-to-use.md`, `copyright.md` | How to use the book (chapter shape, core and full paths, the repository's tags) and the copyright page (MIT for the code, disclaimer, AI-assistance note). |
-| `book/assets/cover.tex`, `book/tools/cover_art.py` | The front covers and the full-wrap KDP covers (the Plate design, 2026-11-11). `cover_art.py` simulates a PET scan end to end (an FDG-like brain phantom, its sinogram with Poisson noise, an MLEM image; numpy, SciPy, Pillow; fixed seeds) and draws the artwork at 300 dpi into `book/assets/cover-{front,back}-{book,solutions}.jpg`: the front is the reconstruction, edge to edge, above an ink band; the back is the same ink with the four steps singles, coincidences, sinogram and image in those colors. The book and the solutions manual share the artwork. The JPEGs are committed, so the book build needs only XeLaTeX; run the script again only to change the artwork. `cover.tex` sets the type in EB Garamond and Inter and the spine in the same ink, so the back meets the spine without a seam; it is drawn for the 8.5 x 11 trim and stops on any other. `\nlfvolume` is `book` or `solutions` (the kicker, subtitle and spine say Solutions Manual); the positions marked "shared with cover_art.py" must match the script. `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, page 1 of the screen PDF, and a 200 dpi JPEG for the EPUB cover. `build.sh all` also writes `<stem>-cover.jpg` (front, 300 dpi) and `<stem>-cover.pdf` (full wrap for the screen PDF's pages less the cover page) for the download page; the Boox front cover is the same design scaled. The back cover keeps KDP's barcode area (2 x 1.2 in at the lower right) empty. The author name is on the cover; no version. |
+| `book/assets/cover.tex`, `book/tools/cover_art.py` | The front covers and the full-wrap KDP covers (the Plate design, 2026-11-11). `cover_art.py` simulates a PET scan end to end (an FDG-like brain phantom, its sinogram with Poisson noise, an MLEM image; numpy, SciPy, Pillow; fixed seeds) and draws the artwork at 300 dpi into `book/assets/cover-{front,back}-{book,solutions}.jpg`: the front is the reconstruction, edge to edge, above an ink band; the back is the same ink with the four steps singles, coincidences, sinogram and image in those colors. The book is this Plate artwork. The solutions manual is Inverse: the same slice in teal and ink on paper, a paper band 4.15 in tall, and a paper spine and back. The JPEGs are committed, so the book build needs only XeLaTeX; run the script again only to change the artwork. `cover.tex` sets the type in EB Garamond and Inter; the spine matches the back, so they meet without a seam. It is drawn for the 8.5 x 11 trim and stops on any other. `\nlfvolume` is `book` (Plate) or `solutions` (Inverse); the positions marked "shared with cover_art.py" must match the script. `build.sh` compiles it into `build/cover/cover-<volume>.pdf`, page 1 of the screen PDF, and a 200 dpi JPEG for the EPUB cover. `build.sh all` also writes `<stem>-cover.jpg` (front, 300 dpi) and `<stem>-cover.pdf` (full wrap for the screen PDF's pages less the cover page) for the download page; the Boox front cover is the same design scaled. The back cover keeps KDP's barcode area (2 x 1.2 in at the lower right) empty. The author name is on the cover; no version. |
 | `minidaq/` | The C++20 code. `include/minidaq/` holds the core, format, processing, pipeline, rt, control and output layers; `src/`; `apps/` (server, ctl, sim, ...); `tests/unit/` (GoogleTest); `tests/support/property.hpp`. |
 | `exercises/chNN/eK_name/` | Exercises, each with `README.md`, `starter/`, `solution/` (and `NOTES.md`), and `tests/`. Built with `-DMINIDAQ_BUILD_EXERCISES=ON`. Starters are built with `-DMINIDAQ_BUILD_STARTERS=ON` and run with `ctest -L starter` (they must fail). |
 | `docs/regulatory/` | The software file: SRS (`srs.md`, 237 requirements, v27), SDP (`sdp.md`, v14), risk file (`risk/`), SOUP list, problem reports (`problem-reports.json` gives `known-anomalies.md`), trace matrix, CAPAs, change requests, QMS design file (`qms/design-file.json`), and release records (`releases/X.Y.Z.md`). |

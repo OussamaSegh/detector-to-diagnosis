@@ -1,15 +1,16 @@
 # Solutions cover proposals
 
-Proposal only. Nothing here is read by `book/build.sh`, `book/assets/cover.tex`, or
-`book/tools/cover_art.py`. The live solutions cover is unchanged.
+The owner chose Inverse. It is the live solutions cover (`book/assets/cover.tex`,
+`book/tools/cover_art.py`): the slice printed in teal and ink on paper, with
+SOLUTIONS and MANUAL in the paper band. The book stays the Plate cover. Band and
+Key stay proposals. Nothing in this folder is read by `book/build.sh`.
 
-The book and the solutions manual currently share one Plate front, so the two can
-be mistaken on a shelf or in a listing. These three keep that family (EB Garamond,
-Inter, the same reconstruction, the series title, the author) and make
-**SOLUTIONS MANUAL** the words a thumbnail can read. Each accent is a color the
-book already uses. Type sits at least 0.58 in inside the 8.5 by 11 in trim.
-Cream on the rose band is 7.0:1, ink on the paper band is 16:1, and cream on the
-violet footer is 10:1.
+These three were drawn so the solutions manual could not be mistaken for the book.
+They keep the Plate family (EB Garamond, Inter, the same reconstruction, the series
+title, the author) and make **SOLUTIONS MANUAL** the words a thumbnail can read.
+Each accent is a color the book already uses. Type sits at least 0.58 in inside
+the 8.5 by 11 in trim. Cream on the rose band is 7.0:1, ink on the paper band is
+16:1, and cream on the violet footer is 10:1.
 
 `plate.png` is the live book cover, rendered only so the contact sheets can sit
 it beside the proposals. Rebuild with

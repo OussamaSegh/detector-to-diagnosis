@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Three front-cover proposals for the solutions manual. Not used by book/build.sh.
 
-The live solutions cover is unchanged. These are the 8.5 x 11 in trim a reader
-sees, including an Amazon thumbnail. Type sits at least 0.58 in inside the trim.
+The live solutions cover is Inverse, drawn by book/tools/cover_art.py and
+book/assets/cover.tex. These files are the record of the three options. The trim
+is 8.5 x 11 in, including an Amazon thumbnail. Type sits at least 0.58 in inside.
 
     python3 book/docs/proposals/solutions-covers/render.py
 
