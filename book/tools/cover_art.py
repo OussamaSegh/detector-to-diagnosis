@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: MIT
-"""Raster artwork of the covers (book/assets/cover.tex): a PET scan simulated end to end.
+"""Raster artwork of the covers (book/assets/cover.tex): the Plate design.
 
 A brain phantom (an FDG-like axial slice) is forward projected into a sinogram, given Poisson
-noise and reconstructed with MLEM. The front artwork is a detector ring with the reconstructed
-image inside it and lines of response running through it; the back artwork shows the four steps
-of the pipeline (singles, coincidences, sinogram, image) as small panels.
+noise and reconstructed with MLEM. The front is that reconstruction, edge to edge, above an ink
+band; cover.tex sets the type in the band. The back is the same ink, with the four steps of the
+pipeline (singles, coincidences, sinogram, image) in the same colors. The book and the solutions
+manual share the artwork; the words differ in cover.tex.
 
     python3 book/tools/cover_art.py [--out book/assets] [--dpi 300]
 
@@ -12,10 +13,10 @@ writes cover-front-<volume>.jpg and cover-back-<volume>.jpg for volume = book an
 The output is deterministic (fixed seeds) and is committed, so building the book needs only
 XeLaTeX. Needs numpy, scipy and Pillow (the versions of analysis/requirements.lock).
 
-The background is the same vertical gradient that cover.tex draws on the spine, from BG_TOP at
-the top of the sheet to BG_BOTTOM at its bottom, so the panels meet the spine without a seam.
-Positions are in inches on the trimmed panel (origin at its lower left corner); the constants
-marked "shared with cover.tex" must match the ones there.
+The ink is flat, the same color cover.tex paints the spine, so the back panel meets the spine
+without a seam. The front image runs to the spine; its margin there is the dark ground of the
+slice. Positions are in inches on the trimmed panel (origin at its lower left corner); the
+constants marked "shared with cover.tex" must match the ones there.
 """
 from __future__ import annotations
 
@@ -24,34 +25,27 @@ import math
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 from scipy import ndimage
 
 TRIM_W, TRIM_H, BLEED = 8.5, 11.0, 0.125
 
-# Shared with cover.tex: the front ring and the back panels.
-RING_CX, RING_CY = 5.55, 4.05          # center of the ring on the front panel
-RING_R_IN, RING_R_OUT = 2.86, 3.38     # inner face and outer edge of the detector blocks
-IMAGE_SPAN = 0.86                       # half side of the image in the bore, over RING_R_IN
+# Shared with cover.tex. BAND is the ink band's height on the trim. The back panels sit above
+# the barcode area (x 6.25..8.25, y 0.25..1.45), which cover.tex leaves empty.
+BAND = 3.45
+IMAGE_SPAN = 0.86                       # half side of a panel image, over the panel ring radius
 PANEL_Y, PANEL_S = 2.55, 1.42          # back panels: bottom edge and side
 PANEL_X = (0.75, 2.62, 4.49, 6.36)     # back panels: left edges
 
-PALETTES = {
-    "book": {
-        "bg_top": "050816", "bg_bottom": "1A0B3A", "glow": "6D28D9",
-        "ring": ["22D3EE", "3B82F6", "8B5CF6", "EC4899", "F59E0B"],
-        "lor": "FDE68A",
-        "cmap": [(0.00, "0B0B26"), (0.18, "2E1065"), (0.38, "7C3AED"), (0.58, "DB2777"),
-                 (0.76, "F97316"), (0.90, "FACC15"), (1.00, "FFFBEB")],
-    },
-    "solutions": {
-        "bg_top": "03141A", "bg_bottom": "07322F", "glow": "0D9488",
-        "ring": ["2DD4BF", "22C55E", "A3E635", "FACC15", "38BDF8"],
-        "lor": "FEF3C7",
-        "cmap": [(0.00, "042024"), (0.18, "134E4A"), (0.38, "0F766E"), (0.58, "14B8A6"),
-                 (0.76, "84CC16"), (0.90, "FACC15"), (1.00, "FEFCE8")],
-    },
+# One plate for both volumes: ink, gold, and the reconstruction's colors.
+_PLATE = {
+    "bg_top": "100E0C", "bg_bottom": "100E0C",
+    "gold": "C49A54", "cream": "F5EFE4",
+    # The stops of the Plate proposal: black ground, violet, teal, gold, cream.
+    "cmap": [(0.00, "080A0E"), (0.08, "0C101C"), (0.22, "241848"), (0.40, "0E4E54"),
+             (0.58, "A87A3A"), (0.78, "ECD6B0"), (1.00, "FCF6EA")],
 }
+PALETTES = {"book": _PLATE, "solutions": _PLATE}
 
 
 def rgb(hexstr: str) -> np.ndarray:
@@ -210,51 +204,25 @@ def place(canvas: Canvas, cx: float, cy: float, rgb_img: np.ndarray, alpha: np.n
     canvas.px[y0:y0 + n, x0:x0 + n] = sub * (1 - a) + img * a
 
 
-def ring(canvas: Canvas, cx, cy, r_in, r_out, n_blocks, pal, lit=None, glow=1.0, crystals=8):
-    """A PET detector ring of n_blocks blocks of crystals x crystals crystals, colored by angle.
-    lit: list of (angle in rad, strength) crystals hit by photons, drawn as bright cells."""
+def gold_ring(canvas: Canvas, cx, cy, r_in, r_out, pal, n_blocks=28, lit=None):
+    """A detector ring in the plate's gold, with a few crystals lit in cream."""
     X, Y = canvas.grid(cx, cy)
     r = np.hypot(X, Y)
     th = np.mod(np.arctan2(Y, X), 2 * np.pi)
     sector = 2 * np.pi / n_blocks
-    k = np.floor(th / sector)
-    local = th / sector - k                               # 0..1 across the block
-    gap = 0.07
-    radial = (r - r_in) / (r_out - r_in)                  # 0..1 through the block's depth
-    inside = (radial >= 0) & (radial <= 1)
-    block = inside & (local > gap / 2) & (local < 1 - gap / 2)
-    # Color by angle: blend through the ring stops and back.
-    stops = [rgb(c) for c in pal["ring"]]
-    t = (k + 0.5) / n_blocks * len(stops)
-    i0 = np.floor(t).astype(int) % len(stops)
-    i1 = (i0 + 1) % len(stops)
-    f = (t - np.floor(t))[..., None]
-    col = np.stack(stops)[i0] * (1 - f) + np.stack(stops)[i1] * f
-    # Crystal grid: dark lines between the crystals, and a lit inner face.
-    u = (local - gap / 2) / (1 - gap)
-    cu = np.abs(np.mod(u * crystals + 0.5, 1) - 0.5)
-    cr = np.abs(np.mod(radial * crystals + 0.5, 1) - 0.5)
-    line = np.minimum(cu, cr)
-    shade = 0.62 + 0.38 * smoothstep(0.03, 0.16, line)
-    shade = shade * (0.55 + 0.45 * np.clip(1 - radial, 0, 1) ** 0.6)
-    face = (radial < 0.06).astype(np.float64)
-    blk = block.astype(np.float64)
-    # Soft halo of the ring.
-    halo = ndimage.gaussian_filter(blk, canvas.dpi * 0.10)
-    canvas.add(col * 0.9, halo * 0.55 * glow)
-    canvas.over(col * shade[..., None] + face[..., None] * 0.35, blk * 0.96)
+    local = th / sector - np.floor(th / sector)
+    radial = (r - r_in) / (r_out - r_in)
+    gap = 0.10
+    block = (radial >= 0) & (radial <= 1) & (local > gap / 2) & (local < 1 - gap / 2)
+    shade = 0.55 + 0.45 * np.clip(1 - radial, 0, 1)
+    canvas.over(rgb(pal["gold"]) * shade[..., None], block.astype(np.float64) * 0.92)
     if lit:
-        # The crystal on the inner face where each photon stopped, all in one mask.
-        hits = np.zeros_like(blk)
+        hits = np.zeros(block.shape)
         for ang, strength in lit:
-            kk = math.floor(ang / sector) % n_blocks
-            uu = (ang / sector - math.floor(ang / sector) - gap / 2) / (1 - gap) * crystals
-            ci = min(crystals - 1, max(0, int(uu)))
-            cell = block & (k == kk) & (np.floor(u * crystals) == ci) & (radial * crystals < 2)
+            cell = block & (np.abs(np.arctan2(np.sin(th - ang), np.cos(th - ang))) < sector * 0.28)
+            cell = cell & (radial < 0.55)
             hits = np.maximum(hits, cell * strength)
-        canvas.add(rgb("FFFFFF"), hits * 0.75)
-        canvas.add(rgb(pal["lor"]), ndimage.gaussian_filter(hits, canvas.dpi * 0.05) * 1.6)
-    return block
+        canvas.add(rgb(pal["cream"]), hits * 0.85)
 
 
 def events(img: np.ndarray, n_events: int, r_in: float, rng) -> list:
@@ -282,9 +250,15 @@ def events(img: np.ndarray, n_events: int, r_in: float, rng) -> list:
     return out
 
 
-def disc_image(img: np.ndarray, pal, gamma: float = 1.15):
-    """The reconstructed image colored with the palette, and its alpha (activity and a disc)."""
+def plate_tone(img: np.ndarray, gamma: float = 0.92) -> np.ndarray:
+    """The Plate proposal's curve: lift the cortex, keep the bore black."""
     v = np.clip(img, 0, 1) ** gamma
+    return np.clip((v - 0.08) / 0.85, 0, 1)
+
+
+def disc_image(img: np.ndarray, pal, gamma: float = 0.92):
+    """The reconstructed image colored with the palette, and its alpha (activity and a disc)."""
+    v = plate_tone(img, gamma)
     col = colormap(pal["cmap"], v)
     n = img.shape[0]
     rr = np.hypot(*np.mgrid[-1:1:n * 1j, -1:1:n * 1j])
@@ -295,86 +269,50 @@ def disc_image(img: np.ndarray, pal, gamma: float = 1.15):
 # ---------------------------------------------------------------------------------------------
 
 def front(pal, data, dpi: int, path: Path):
-    truth, sino, recon = data
-    c = Canvas(TRIM_W + 2 * BLEED, TRIM_H + 2 * BLEED, dpi, pal)
-    cx, cy = RING_CX + BLEED, RING_CY + BLEED
-    X, Y = c.grid(cx, cy)
-    r = np.hypot(X, Y)
-    # A wide glow behind the ring and a brighter core behind the image.
-    c.add(rgb(pal["glow"]), 0.42 * np.exp(-(r / 2.6) ** 2))
-    c.add(rgb(pal["glow"]), 0.30 * np.exp(-(r / 1.3) ** 2))
-    # Faint rings of the gantry.
-    for rad, a in ((RING_R_OUT + 0.16, 0.22), (RING_R_OUT + 0.30, 0.10)):
-        c.add(rgb(pal["ring"][0]), a * np.exp(-((r - rad) / 0.008) ** 2))
-    rng = np.random.default_rng(13485)
-    evs = events(truth, 900, RING_R_IN, rng)
-    # Lines of response: dense and faint across the bore, fading out over the lower right
-    # where the image has formed; a few bright ones with a halo.
-    direction = (-X * 0.70 + Y * 0.71)                    # toward the upper left
-    raw = smoothstep(-1.6, 1.2, direction) * (r < RING_R_IN)
-    faint = c.lines([(cx + e[0], cy + e[1], cx + e[2], cy + e[3]) for e in evs[:700]], 0.004)
-    c.add(rgb(pal["lor"]), faint * 0.22 * (0.25 + 0.75 * raw))
-    bright = evs[700:711]
-    cov = c.lines([(cx + e[0], cy + e[1], cx + e[2], cy + e[3]) for e in bright], 0.009)
-    c.add(rgb(pal["lor"]), ndimage.gaussian_filter(cov, dpi * 0.018) * 1.4 * (0.35 + 0.65 * raw))
-    c.add(rgb(pal["lor"]), cov * 0.85 * (0.35 + 0.65 * raw))
-    # The reconstructed image, revealed toward the lower right.
-    col, alpha = disc_image(recon, pal)
-    size = 2 * IMAGE_SPAN * RING_R_IN
-    n = round(size * dpi)
-    reveal = smoothstep(-0.9, 0.9, -direction)
-    x0 = round(cx * dpi) - n // 2
-    y0 = c.h - round(cy * dpi) - n // 2
-    rv = reveal[y0:y0 + n, x0:x0 + n]
-    big = np.asarray(Image.fromarray((np.clip(recon, 0, 1) * 65535).astype(np.uint16))
-                     .resize((n, n), Image.Resampling.BICUBIC), dtype=np.float64) / 65535.0
-    col, alpha = disc_image(big, pal)
-    a = np.clip(alpha * (0.18 + 0.82 * rv), 0, 1)[..., None]
-    sub = c.px[y0:y0 + n, x0:x0 + n]
-    c.px[y0:y0 + n, x0:x0 + n] = sub * (1 - a) + col * a + col * a * 0.25 * rv[..., None]
-    lit = [(e[4], 1.0) for e in bright] + [(e[5], 1.0) for e in bright]
-    ring(c, cx, cy, RING_R_IN, RING_R_OUT, 48, pal, lit=lit)
-    c.save(path)
+    """The reconstruction, full bleed, with a flat ink band along the bottom of the trim."""
+    _, _, recon = data
+    w_px = round((TRIM_W + 2 * BLEED) * dpi)
+    h_px = round((TRIM_H + 2 * BLEED) * dpi)
+    band_px = round((BLEED + BAND) * dpi)
+    n = recon.shape[0]
+    m = int(round(n * 0.14))
+    crop = plate_tone(recon[m:n - m, m:n - m])
+    colored = colormap(pal["cmap"], crop)
+    image = Image.fromarray((np.clip(colored, 0, 1) * 255 + 0.5).astype(np.uint8), mode="RGB")
+    image = image.resize((w_px, h_px - band_px), Image.Resampling.LANCZOS)
+    ink = tuple(int(pal["bg_bottom"][i:i + 2], 16) for i in (0, 2, 4))
+    canvas = Image.new("RGB", (w_px, h_px), ink)
+    canvas.paste(image, (0, 0))
+    canvas.save(path, quality=92, subsampling=0, dpi=(dpi, dpi), optimize=True)
 
 
 def back(pal, data, dpi: int, path: Path):
+    """Ink field (it meets the spine) and the four steps, in the plate colors."""
     truth, sino, recon = data
-    # The back panel: bleed on the left, the spine on the right.
+    # Bleed on the left; the right edge is the spine.
     c = Canvas(BLEED + TRIM_W, TRIM_H + 2 * BLEED, dpi, pal)
-    X, Y = c.grid(BLEED + 3.6, BLEED + 8.0)
-    # A glow behind the blurb, gone before the spine so that the two meet without a seam.
-    c.add(rgb(pal["glow"]), 0.20 * np.exp(-((X / 4.0) ** 2 + (Y / 2.8) ** 2))
-          * smoothstep(8.4 - 3.6, 6.0 - 3.6, X))
     rng = np.random.default_rng(14971)
-    evs = events(truth, 400, 0.5, rng)
+    evs = events(truth, 80, 0.50, rng)
     cy = BLEED + PANEL_Y + PANEL_S / 2
     centers = [BLEED + x + PANEL_S / 2 for x in PANEL_X]
-    # Frames of the panels.
-    for x in centers:
-        X, Y = c.grid(x, cy)
-        box = smoothstep(PANEL_S / 2 + 0.004, PANEL_S / 2 - 0.004, np.maximum(np.abs(X), np.abs(Y)))
-        c.over(rgb(pal["bg_top"]) * 0.6, box * 0.65)
-        edge = np.exp(-((np.maximum(np.abs(X), np.abs(Y)) - PANEL_S / 2) / 0.004) ** 2)
-        c.add(rgb(pal["ring"][0]), edge * 0.35)
-    rr_in, rr_out = 0.52, 0.64
-    # 1 singles: the ring with crystals lit at random.
-    lit = [(rng.random() * 2 * math.pi, 0.8) for _ in range(26)]
-    ring(c, centers[0], cy, rr_in, rr_out, 24, pal, lit=lit, glow=0.6, crystals=4)
-    # 2 coincidences: lines of response between pairs.
-    segs = [(centers[1] + e[0], cy + e[1], centers[1] + e[2], cy + e[3]) for e in evs[:60]]
-    cov = c.lines(segs, 0.006)
-    c.add(rgb(pal["lor"]), cov * 0.55 + ndimage.gaussian_filter(cov, dpi * 0.01) * 0.6)
-    lit2 = [(e[4], 0.6) for e in evs[:60]] + [(e[5], 0.6) for e in evs[:60]]
-    ring(c, centers[1], cy, rr_in, rr_out, 24, pal, lit=lit2[:40], glow=0.6, crystals=4)
-    # 3 sinogram: angle down, radial position across.
+    rr_in, rr_out = 0.50, 0.62
+    # 1 singles: the ring, a few crystals lit.
+    lit = [(rng.random() * 2 * math.pi, 0.9) for _ in range(8)]
+    gold_ring(c, centers[0], cy, rr_in, rr_out, pal, lit=lit)
+    # 2 coincidences: lines of response across the bore.
+    segs = [(centers[1] + e[0], cy + e[1], centers[1] + e[2], cy + e[3]) for e in evs[:36]]
+    cov = c.lines(segs, 0.007)
+    c.add(rgb(pal["cream"]), cov * 0.55 + ndimage.gaussian_filter(cov, dpi * 0.012) * 0.45)
+    gold_ring(c, centers[1], cy, rr_in, rr_out, pal)
+    # 3 sinogram.
     cols = np.flatnonzero(sino.max(axis=0) > 0.02)
     s = np.clip(sino[:, cols[0]:cols[-1] + 1], 0, 1) ** 0.8
     s = np.asarray(Image.fromarray((s * 65535).astype(np.uint16)).resize((s.shape[1], s.shape[1])),
                    dtype=np.float64) / 65535.0
-    place(c, centers[2], cy, colormap(pal["cmap"], s), np.ones_like(s) * 0.97, PANEL_S - 0.16)
-    # 4 image.
+    place(c, centers[2], cy, colormap(pal["cmap"], s), np.ones_like(s) * 0.98, PANEL_S - 0.12)
+    # 4 the reconstruction.
     col, alpha = disc_image(recon, pal)
-    place(c, centers[3], cy, col, alpha, PANEL_S - 0.10)
+    place(c, centers[3], cy, col, alpha, PANEL_S - 0.08)
     c.save(path)
 
 
@@ -384,7 +322,8 @@ def main() -> None:
     ap.add_argument("--dpi", type=int, default=300)
     ap.add_argument("--volume", choices=["book", "solutions", "both"], default="both")
     args = ap.parse_args()
-    data = scan()
+    # The same scan the Plate proposal was drawn from.
+    data = scan(n=200, n_angles=180, counts=2.0e7, iters=22)
     for vol in (["book", "solutions"] if args.volume == "both" else [args.volume]):
         pal = PALETTES[vol]
         front(pal, data, args.dpi, args.out / f"cover-front-{vol}.jpg")

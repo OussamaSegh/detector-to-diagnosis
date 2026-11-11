@@ -10,6 +10,11 @@ the patch version.
 
 ### Changed
 
+- The cover is the Plate design, for the book and the solutions manual: the screen PDF, the
+  Boox PDF, the EPUB, the download page and the KDP wrap. The front is the MLEM reconstruction,
+  edge to edge, above an ink band, with the title in EB Garamond. The spine and the back are
+  that ink. The back keeps the four steps and an empty barcode area. The two volumes share the
+  artwork; the solutions manual has its own kicker, subtitle, blurb and spine line.
 - Chapter openers, in the screen PDF, the Boox PDF, the black-ink interior and the EPUB. The
   head is a Part-colored kicker, the title in EB Garamond, the words after a colon as the
   subtitle, and a Part-colored rule. "Why it matters" is a sand card with a Part-colored bar
