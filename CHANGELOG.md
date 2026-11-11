@@ -31,6 +31,10 @@ the patch version.
 
 ### Fixed
 
+- The commit policy accepts the four GitHub merge commits of pull requests 10, 12, 11 and 13
+  (`tools/commit_policy.json`). Each was made with the merge button, so its author is not a
+  no-reply address. The commits are already on main, and the history stays. The check covers
+  every commit since the policy began, which is why a later branch failed on them.
 - The license says what it covers (MDQ-PR-067): the code is under the MIT License; the book's
   text, figures with their sources, covers and design notes are all rights reserved
   (`book/LICENSE`, a note in `LICENSE`, a License section in the README, and the copyright
