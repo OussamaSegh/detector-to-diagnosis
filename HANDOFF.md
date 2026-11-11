@@ -286,7 +286,10 @@ Commits and pushing:
   MDQ-PR-NNN (or a CR lists it in Commits). A PR branch's commits must follow it too (CI checks
   them). A new session uses its own Claude-Session line. The policy's `accepted` list names the
   four GitHub merge commits of pull requests 10, 12, 11 and 13: the merge button set their
-  author, they are already on main, and only the identity rule is waived for them.
+  author, they are already on main, and only the identity rule is waived for them. The same
+  list also names the four commits of pull request 14 after the rebase-merge (`6a69349d8c2d`,
+  `3baf4f4c52f3`, `c93d73f781d9`, `b0134ec098fd`): that merge rewrote the committer, and only
+  the identity rule is waived for them.
 - "Always push, don't wait": run `git push -q origin main` after every commit. Commit in small
   steps within a chapter.
 - Tag pushes are refused from cloud sessions (HTTP 403). The GitHub API is no way around it:

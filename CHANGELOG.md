@@ -31,6 +31,9 @@ the patch version.
 
 ### Fixed
 
+- The commit policy accepts the four commits of pull request 14 as they landed on main
+  (`6a69349d8c2d`, `3baf4f4c52f3`, `c93d73f781d9`, `b0134ec098fd`). A rebase-merge rewrote the
+  committer. The authors were already no-reply addresses. Only the identity rule is waived.
 - The commit policy accepts the four GitHub merge commits of pull requests 10, 12, 11 and 13
   (`tools/commit_policy.json`). Each was made with the merge button, so its author is not a
   no-reply address. The commits are already on main, and the history stays. The check covers

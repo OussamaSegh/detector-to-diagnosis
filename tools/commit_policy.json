@@ -35,7 +35,11 @@
     {"commit": "b54db07897df", "rule": "identity", "reason": "GitHub merge of pull request 10. The merge button set the author; the commit is already on main."},
     {"commit": "5bff4b3bc741", "rule": "identity", "reason": "GitHub merge of pull request 12. The merge button set the author; the commit is already on main."},
     {"commit": "2e9ecee9b3d2", "rule": "identity", "reason": "GitHub merge of pull request 11. The merge button set the author; the commit is already on main."},
-    {"commit": "9ed9f83ca501", "rule": "identity", "reason": "GitHub merge of pull request 13. The merge button set the author; the commit is already on main."}
+    {"commit": "9ed9f83ca501", "rule": "identity", "reason": "GitHub merge of pull request 13. The merge button set the author; the commit is already on main."},
+    {"commit": "6a69349d8c2d2db7bd642444c2c7971f43dbe714", "rule": "identity", "reason": "Rebase-merge of pull request 14 rewrote the committer. The author is already a no-reply address; the commit is on main."},
+    {"commit": "3baf4f4c52f313463882f3d69aa81272a53f293f", "rule": "identity", "reason": "Rebase-merge of pull request 14 rewrote the committer. The author is already a no-reply address; the commit is on main."},
+    {"commit": "c93d73f781d950d113af8f8e49abc0ee62448721", "rule": "identity", "reason": "Rebase-merge of pull request 14 rewrote the committer. The author is already a no-reply address; the commit is on main."},
+    {"commit": "b0134ec098fd242d8899b0dac939f6ab16222319", "rule": "identity", "reason": "Rebase-merge of pull request 14 rewrote the committer. The author is already a no-reply address; the commit is on main."}
   ],
   "assistants": [
     "noreply@anthropic\\.com",
