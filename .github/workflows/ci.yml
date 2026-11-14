@@ -43,6 +43,29 @@ jobs:
         # The output of a failed test is the only record of why it failed (MDQ-PR-020).
         run: ctest --preset ${{ matrix.preset }} -LE starter --output-on-failure
 
+  build-test-arm64:
+    # Roadmap 2.0.0, Theme D: readers on Apple silicon build MiniDAQ in an arm64 Linux VM (How to
+    # use this book), so the debug preset is built and tested on arm64 too. The x86-only code
+    # (AVX-512 kernels, the TSC clock) must fall back, and its tests skip, on this runner.
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-18 libclang-rt-18-dev libssl-dev python3-numpy python3-dev \
+            python3-scipy python3-matplotlib
+      - name: Tune the network stack as the acquisition PC is installed (ADR 0009)
+        run: sudo sysctl -w net.core.rmem_max=4194304
+      - name: Configure
+        run: cmake --preset debug
+      - name: Build
+        run: cmake --build --preset debug
+      - name: Test
+        run: ctest --preset debug -LE starter --output-on-failure
+
   format:
     # Chapter 32: the C++ lines this push or pull request touches are formatted as .clang-format
     # says (tools/check_format.py, ADR 0027). Lines it does not touch are not checked.
