@@ -8,12 +8,15 @@
 #
 #   tools/release_checks.sh OUT [FUZZ_SECONDS] [PART]
 #
-# PART is all (the default) or one of four parts, each under 45 minutes on the reference machine:
+# PART is all (the default), resume, or one of four parts, each under 45 minutes on the reference machine:
 # 1 the six presets, static analysis and the starters; 2 the stress run, the wide property
 # search, coverage and the benchmarks; 3 the regression gate, the system tests, the soak and the
 # end-to-end run; 4 the fuzzing. Run the parts in order, on the same commit and into the same OUT,
 # when one session cannot hold the whole run (MDQ-PR-041: a machine that restarts within the
-# hour). Parts 2 to 4 use the builds that part 1 made.
+# hour). Parts 2 to 4 use the builds that part 1 made. PART resume runs, in order, every part
+# that OUT/release-checks.txt does not record as passed ("all release checks passed (part N)"),
+# and stops at the first part that fails: after a restart, run it again with the same OUT and it
+# continues where the run stopped (roadmap 2.0.0, Theme D). A failed part runs again in full.
 #
 # The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails), and
 # 3 if the run stopped before the last check (MDQ-PR-029).
@@ -21,7 +24,19 @@ set -uo pipefail
 out=${1:?usage: tools/release_checks.sh OUT [FUZZ_SECONDS]}
 fuzz_seconds=${2:-600}
 part=${3:-all}
-case "$part" in all | 1 | 2 | 3 | 4) ;; *) echo "PART is all, 1, 2, 3 or 4" >&2; exit 2 ;; esac
+case "$part" in all | resume | 1 | 2 | 3 | 4) ;; *) echo "PART is all, resume, 1, 2, 3 or 4" >&2; exit 2 ;; esac
+if [ "$part" = resume ]; then
+  mkdir -p "$out"
+  for p in 1 2 3 4; do
+    if grep -qxE "all release checks passed \(part ($p|all)\)" "$out/release-checks.txt" 2>/dev/null; then
+      echo "part $p: passed before, skipped"
+      continue
+    fi
+    "$0" "$out" "$fuzz_seconds" "$p" || exit $?
+  done
+  echo "every part has passed"
+  exit 0
+fi
 root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$root"
 mkdir -p "$out/fuzz"

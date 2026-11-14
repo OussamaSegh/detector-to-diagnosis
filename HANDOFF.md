@@ -392,25 +392,30 @@ update this file and the memory notes.
 
 A release:
 
-1. Run `tools/release_checks.sh OUT 600` on one clean commit, in a git worktree in the
-   scratchpad, so the main tree can keep changing. It takes about 1.5 h: six presets, static
-   analysis, starters, the tsan stress run, benchmarks, the perf gate, and 10 minutes of
-   fuzzing per target.
+1. Run `tools/release_checks.sh OUT 600 resume` on one clean commit, in a git worktree in the
+   scratchpad, so the main tree can keep changing. It takes more than two hours: six presets,
+   static analysis, starters, the tsan stress run, benchmarks, the perf gate, the soak, and 10
+   minutes of fuzzing per target. `resume` runs the four parts in order and skips each part that
+   `OUT/release-checks.txt` records as passed, so after a restart the same command continues.
 2. Copy OUT to `measurements/release-X.Y.Z/`.
-3. Write `docs/regulatory/releases/X.Y.Z.md` and check it with Exercise 14.5's checker.
-4. Bump `VERSION`, add the CHANGELOG section, and update `book/src/front/edition.md`. Bump the
-   Python package versions with it (`analysis/pyproject.toml`, `minidaq_analysis.__version__`,
-   `recon/python/pyproject.toml`; `0.8.0-dev` is `0.8.0.dev0`): `analysis.pytest` fails otherwise
-   (Part VII review). For a KDP upload, build with `book/build.sh kdp both`.
+3. `tools/release_record.py skeleton . X.Y.Z > docs/regulatory/releases/X.Y.Z.md` writes the
+   rows, results and evidence paths from OUT; fill every `TODO(record):` line, then
+   `tools/release_record.py check . docs/regulatory/releases/X.Y.Z.md` (Exercise 14.5's check,
+   and no TODO left; ctest `tools.release_record` checks the newest record).
+4. `tools/post_release.py . X.Y.Z` sets VERSION and the three Python package versions
+   (ctest `docs.package_versions` fails if they disagree); add the CHANGELOG section's date.
+   For a KDP upload, build with `book/build.sh kdp both`.
 5. Commit and push. **Wait for green GitHub CI on that release commit** (SDP section 8,
    MDQ-PR-016).
 6. Tag `book-vX.Y.Z` (locally, and a line in `.github/tags.txt` pushed to main), build the
    book and the solutions, zip the clone, and copy everything to
    `the project files folder: neurolf-book/vX.Y.Z/`.
 7. Write the release report as a Claude Doc.
-8. In the next commit on main, set the next -dev VERSION (and the Python package versions);
-   otherwise `docs.version` turns every build-test job red (missed after 1.0.0, fixed by the
-   1.0.0 review). A patch -dev keeps the SOUP review of the minor version valid.
+8. In the next commit on main, run `tools/post_release.py .` (no version: it sets the next
+   patch -dev of the newest release record, in VERSION and the Python packages, and opens an
+   empty `[Unreleased]` section); otherwise `docs.version` turns every build-test job red
+   (missed after 1.0.0). A patch -dev keeps the SOUP review of the minor version valid; to start
+   a minor version, `tools/post_release.py . X.Y.0-dev`, which says the SOUP review is due.
 
 Known gotchas are kept in the project memory notes: neurolf-build-gotchas,
 neurolf-book-layout-gotchas, neurolf-data-io-gotchas and neurolf-release-process. The most

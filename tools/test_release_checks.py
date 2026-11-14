@@ -44,7 +44,46 @@ def run_bash(body):
                           capture_output=True, text=True)
 
 
+def resume(out, failing_part=None):
+    """Runs the script's resume block with a stub for "$0" that records each part it is asked
+    to run (and fails on failing_part), so no check runs."""
+    lines = SCRIPT.read_text().splitlines()
+    first = next(i for i, x in enumerate(lines) if x.startswith('if [ "$part" = resume ]'))
+    last = next(i for i in range(first, len(lines)) if lines[i] == "fi")
+    block = "\n".join(lines[first:last + 1]).replace('"$0"', "stub")
+    stub = ('stub() { echo "ran part $3" >> "$1/ran"; '
+            f'[ "$3" = "{failing_part}" ] && return 1; '
+            'echo "all release checks passed (part $3)" >> "$1/release-checks.txt"; }\n')
+    return subprocess.run(["bash", "-c", f"set -uo pipefail\nout={out}\nfuzz_seconds=1\npart=resume\n"
+                           + stub + block], capture_output=True, text=True)
+
+
 class ReleaseChecks(unittest.TestCase):
+    def test_resume_runs_only_the_parts_not_yet_passed(self):
+        with tempfile.TemporaryDirectory() as out:
+            path = pathlib.Path(out)
+            (path / "release-checks.txt").write_text(
+                "## part 1\nall release checks passed (part 1)\n## part 2\n1 release checks failed (part 2)\n")
+            p = resume(out)
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\n")
+            # Run again after everything passed: nothing runs.
+            (path / "ran").unlink()
+            self.assertEqual(resume(out).returncode, 0)
+            self.assertFalse((path / "ran").exists())
+
+    def test_resume_stops_at_the_first_failing_part(self):
+        with tempfile.TemporaryDirectory() as out:
+            p = resume(out, failing_part=2)
+            self.assertNotEqual(p.returncode, 0)
+            self.assertEqual((pathlib.Path(out) / "ran").read_text(), "ran part 1\nran part 2\n")
+
+    def test_a_whole_run_that_passed_counts_for_every_part(self):
+        with tempfile.TemporaryDirectory() as out:
+            (pathlib.Path(out) / "release-checks.txt").write_text("all release checks passed (part all)\n")
+            self.assertEqual(resume(out).returncode, 0)
+            self.assertFalse((pathlib.Path(out) / "ran").exists())
+
     def test_no_group_of_the_script_exits(self):
         self.assertEqual(groups_with_exit(SCRIPT.read_text()), [])
 
@@ -65,7 +104,7 @@ class ReleaseChecks(unittest.TestCase):
     def test_an_unknown_part_is_refused_before_anything_runs(self):
         p = subprocess.run(["bash", str(SCRIPT), "/nonexistent/out", "600", "5"], capture_output=True, text=True)
         self.assertEqual(p.returncode, 2)
-        self.assertIn("PART is all, 1, 2, 3 or 4", p.stderr)
+        self.assertIn("PART is all, resume, 1, 2, 3 or 4", p.stderr)
 
     def test_a_part_ends_with_its_summary(self):
         text = SCRIPT.read_text()

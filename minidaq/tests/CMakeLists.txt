@@ -146,6 +146,12 @@ if(Python3_Interpreter_FOUND)
            COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_postmortem.py
                    $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl>)
   set_tests_properties(docs.version tools.check_version tools.postmortem PROPERTIES LABELS "unit")
+  # Roadmap 2.0.0, Theme D: one command sets the version everywhere; the packages follow VERSION.
+  add_test(NAME docs.package_versions
+           COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/post_release.py ${PROJECT_SOURCE_DIR} --check)
+  add_test(NAME tools.post_release COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_post_release.py)
+  add_test(NAME tools.release_record COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_release_record.py)
+  set_tests_properties(docs.package_versions tools.post_release tools.release_record PROPERTIES LABELS "unit")
   # Chapter 32: every configuration has its build, test and workflow presets.
   add_test(NAME docs.presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_presets.py ${PROJECT_SOURCE_DIR})
   add_test(NAME tools.check_presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_check_presets.py)
