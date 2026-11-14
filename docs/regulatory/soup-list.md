@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 24 (MiniDAQ 1.2.0-dev). Status: draft for review.
+Version 25 (MiniDAQ 1.2.0-dev). Status: approved by the software lead for release 1.2.0, 2026-11-14.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -466,3 +466,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 22 | The review for release 1.1.0: the trackers and advisories read again. |
 | 23 | Approved by the software lead for release 1.1.0; the content is that of version 22, the approval of 2026-11-10 covering version 21 and the routine review for 1.1.0 added the same day (MDQ-PR-066). |
 | 24 | The review for MiniDAQ 1.2, after release 1.1.0, with the OpenSSL advisories of 2026-11-10. |
+| 25 | Approved by the software lead for release 1.2.0; the content is that of version 24. |

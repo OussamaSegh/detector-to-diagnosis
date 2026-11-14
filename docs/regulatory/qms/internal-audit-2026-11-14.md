@@ -1,6 +1,6 @@
 # Internal audit 2026-11-14: plan and practice before release 1.2.0
 
-Version 1 (MiniDAQ 1.2.0-dev). Status: final.
+Version 2 (MiniDAQ 1.2.0-dev). Status: final.
 
 | Field | Value |
 |---|---|
@@ -18,7 +18,7 @@ item 9 asks.
 |---|---|---|---|---|
 | O-1 | SDP 5: every change reviewed, the review recorded in the commit | 31 commits since book-v1.1.0: `tools/check_commits.py . book-v1.1.0..HEAD` reports 0 problems under commit policy 2. | Observation | None |
 | O-2 | ISO 13485 4.2.4: changes to documents identified | `tools/design_file.py . --check --since book-v1.1.0`: no controlled document changed without a new version. | Observation | None |
-| O-3 | ISO 13485 4.2.4: documents approved before issue | One controlled document says "draft for review": the SOUP list, version 24, the routine review for 1.2. It needs the software lead's approval before the release; `tools/design_file.py` refuses a draft in a release, so the release cannot pass without it. | Observation | Software lead's approval of the SOUP list before the release checks |
+| O-3 | ISO 13485 4.2.4: documents approved before issue | One controlled document says "draft for review": the SOUP list, version 24, the routine review for 1.2. It needs the software lead's approval before the release; `tools/design_file.py` refuses a draft in a release, so the release cannot pass without it. | Observation | Approved by the software lead on 2026-11-14, recorded as SOUP list version 25, before the release checks |
 | O-4 | SDP 7.3 and the SOUP list: known vulnerabilities assessed | The vulnerability scan of CI turned red on 2026-11-14 on five OpenSSL advisories of 2026-11-10. Each is triaged `not_affected` (`code_not_reachable`) in `vulnerability-triage.json`: the affected code (QUIC, AES-GCM-SIV, CMS) is not used by MiniDAQ. The gate did what it is there for: a new advisory stopped CI until a person decided. | Observation | None |
 | O-5 | SDP 6: CI on every change | The web edition's check failed in the Pages workflow on the branch (1221 anchors reported as unresolved: the check compared relative with absolute paths). The deploy step did not run, so nothing was published from the branch; it was fixed, with a test, before the merge. A new CI job builds and tests on arm64. | Observation | None |
 | O-6 | Product verification of the book | Two defects of the EPUB of 1.1.0 were found by reading it, not by EPUBCheck, which passed it: a wrongly decoded copyright sign on the title page (E-007, a locale left unset in the build) and an appendix numbered as a chapter (E-008). Both are fixed and recorded in the new errata (`book/errata.json`, checked by `book.errata`). The new cross-reference check (`book.xrefs`) found five exercises marked "(S)", a mark the book does not define (E-006). | Observation | None |
@@ -28,11 +28,13 @@ item 9 asks.
 ## Conclusion
 
 No nonconformity. The controls that CAPA-0002 put in tools held for every change since 1.1.0,
-and the vulnerability gate stopped CI on new advisories until they were assessed. One step rests
-on a person and is open: the software lead's approval of the SOUP list (O-3).
+and the vulnerability gate stopped CI on new advisories until they were assessed. The one step that
+rests on a person, the software lead's approval of the SOUP list (O-3), was given before the
+release checks.
 
 ## Document history
 
 | Version | Change |
 |---|---|
 | 1 | First version, before the release checks of 1.2.0. |
+| 2 | O-3: the software lead's approval of the SOUP list, given 2026-11-14. |
