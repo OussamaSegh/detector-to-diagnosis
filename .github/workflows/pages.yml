@@ -49,6 +49,16 @@ jobs:
           book/build.sh boox both
       - name: Write the download page
         run: python3 book/tools/site.py site "$(tr -d '[:space:]' < VERSION)" book/build/out/*.epub book/build/out/*.pdf book/build/out/*.jpg
+      - name: Write the web edition from the EPUBs, and check it
+        # Roadmap 2.0.0, Theme F: one page per chapter under read/, the solutions under
+        # read/solutions/; the check fails on a dead link or anchor or an image without alt text.
+        run: |
+          v="$(tr -d '[:space:]' < VERSION)"
+          python3 book/tools/web.py build "book/build/out/detector-to-diagnosis-v$v.epub" site/read \
+            --version "$v" --other "Solutions manual=solutions/"
+          python3 book/tools/web.py build "book/build/out/detector-to-diagnosis-solutions-v$v.epub" \
+            site/read/solutions --version "$v" --downloads ../../ --other "The book=../"
+          python3 book/tools/web.py check site/read
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

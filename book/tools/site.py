@@ -67,6 +67,14 @@ footer {{ margin-top: 40px; color: var(--muted); font-size: 0.9rem; }}
 <main>
 <h1>Detector to Diagnosis</h1>
 <p class="sub">Building regulated medical imaging software in modern C++. Version {version}.</p>
+<h2>Read online</h2>
+<ul>
+<li><a class="dl" href="read/">The book in your browser</a><p class="what">One page per chapter, with
+a contents sidebar and search; the same text, figures and listings as the EPUB. Light and dark
+follow your system.</p></li>
+<li><a class="dl" href="read/solutions/">The solutions manual in your browser</a><p class="what">The
+worked solutions of every exercise, as a separate site. Read them after you have tried.</p></li>
+</ul>
 {sections}
 <h2>Errata</h2>
 <p><a href="errata.html">The errata of the released versions</a>, and how to report a new one.</p>

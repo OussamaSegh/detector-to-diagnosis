@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds Detector to Diagnosis (EPUB + PDF) and the solutions manual.
-# Usage: book/build.sh [epub|pdf|all|kdp|boox] [book|solutions|both]
+# Usage: book/build.sh [epub|pdf|all|kdp|boox|web] [book|solutions|both]
 #   all  the EPUB and the screen PDF (front cover on page 1), for the download page, and the
 #        covers: the front as a JPEG and the paperback's full wrap as a PDF:
 #        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>.{epub,pdf}
@@ -13,6 +13,9 @@
 #   boox the PDF for a 10.3 inch 4:3 color E Ink tablet (Onyx Boox Air 5C), page = screen,
 #        narrow margins, colored links and bookmarks (user request, 2026-11-09):
 #        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>-boox-air-5c.pdf
+#   web  the web edition, one HTML page per chapter, made from the EPUB (book/tools/web.py,
+#        roadmap 2.0.0 Theme F): book/build/out/web/read/ (the book) and read/solutions/;
+#        Pages publishes it next to the downloads. book/tools/web.py check must pass.
 # Environment:
 #   BOOK_AUTHOR    the author's name, on the title page, the copyright page and the covers
 #                  (default: Oussama Seghaier)
@@ -190,7 +193,7 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
     [[ -z "$f" || "$f" == \#* ]] && continue
     files+=("$here/$f")
   done < "$list"
-  if [[ "$what" == epub || "$what" == all || "$what" == kdp ]]; then
+  if [[ "$what" == epub || "$what" == all || "$what" == kdp || "$what" == web ]]; then
     # The copyright page follows the EPUB's title page.
     python3 "$here/tools/figures.py" all screen >/dev/null
     python3 "$here/tools/palette.py" css "$build/palette.css"
@@ -202,6 +205,15 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
     python3 "$here/tools/fix_epub.py" "$out/$stem-v$version.epub"
     echo "built $out/$stem-v$version.epub"
     epubcheck_run "$out/$stem-v$version.epub"
+  fi
+  if [[ "$what" == web ]]; then
+    if [[ "$vol" == book ]]; then
+      python3 "$here/tools/web.py" build "$out/$stem-v$version.epub" "$out/web/read" --version "$version" \
+        --other "Solutions manual=solutions/"
+    else
+      python3 "$here/tools/web.py" build "$out/$stem-v$version.epub" "$out/web/read/solutions" \
+        --version "$version" --downloads ../../ --other "The book=../"
+    fi
   fi
   if [[ "$what" == pdf || "$what" == all ]]; then
     # The screen PDF: the cover is page 1, links are colored.
@@ -316,9 +328,13 @@ build_pdf() {
   echo "built $pdfout ($(pdfinfo "$pdfout" 2>/dev/null | awk '/Pages/{print $2}') pages)"
 }
 
+[[ "$what" == web ]] && rm -rf "$out/web"
 if [[ "$which" == book || "$which" == both ]]; then
   build_one "$here/book.txt" "detector-to-diagnosis" "$here/metadata.yaml" book
 fi
 if [[ "$which" == solutions || "$which" == both ]]; then
   build_one "$here/solutions.txt" "detector-to-diagnosis-solutions" "$here/metadata-solutions.yaml" solutions
+fi
+if [[ "$what" == web && "$which" == both ]]; then
+  python3 "$here/tools/web.py" check "$out/web/read"
 fi

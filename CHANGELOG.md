@@ -10,8 +10,15 @@ the patch version.
 
 ### Added
 
-- Web edition planned for 1.2.0 (roadmap 2.0.0, Theme F): the book and the solutions readable
-  in a browser, one page per chapter, from the download page.
+- Web edition (roadmap 2.0.0, Theme F): the book and the solutions manual readable in a
+  browser from the download page (`read/` and `read/solutions/`), one page per chapter, made
+  from the EPUB by `book/tools/web.py` (`book/build.sh web both`), so its text, figures with
+  their alt text, MathML and listings are the EPUB's. A contents sidebar (a menu on a phone),
+  previous and next links, light and dark themes that follow the system (the dark styles invert
+  each color's lightness, and every pair of the book's colors that reads at 4.5:1 in light still
+  does in dark), and a search of every section that uses no library. `web.py check` refuses a
+  dead link or anchor, an image without alt text, a page without a language, title, main
+  landmark or single h1; the Pages workflow runs it, ctest `book.web_tool` tests both.
 - `tools/post_release.py`: sets VERSION and the Python package versions in one step, the next
   patch -dev after a release by default; ctest `docs.package_versions` checks they agree.
 - `tools/release_checks.sh OUT FUZZ resume`: runs only the parts not yet recorded as passed, so
