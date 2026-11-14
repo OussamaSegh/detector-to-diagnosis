@@ -376,6 +376,7 @@ class Page(HTMLParser):
 
 def check(out):
     errors, parsed = [], {}
+    out = out.resolve()  # links are resolved to absolute paths, so the pages are keyed by them too
     for path in sorted(out.rglob("*.html")):
         p = Page()
         p.feed(path.read_text())

@@ -136,6 +136,18 @@ class Build(unittest.TestCase):
         self.assertIn("std", index["words"])
         self.assertEqual(index["titles"]["ch002.html"], "Second")
 
+    def test_the_check_works_from_a_relative_path(self):
+        import os
+        cwd = os.getcwd()
+        try:
+            os.chdir(self.base)
+            self.assertEqual(web.check(pathlib.Path("read")), ([], 3))
+            (self.out / "ch001.html").write_text((self.out / "ch001.html").read_text().replace(
+                'href="ch002.html#end"', 'href="ch002.html#gone"'))
+            self.assertIn("ch002.html#gone: no such anchor", "\n".join(web.check(pathlib.Path("read"))[0]))
+        finally:
+            os.chdir(cwd)
+
     def test_the_check_finds_each_fault(self):
         page = self.out / "ch002.html"
         text = page.read_text()
