@@ -553,7 +553,7 @@ crystal, with less than 0.15 times the noise of the delayeds, for fans of 48 and
 answer in `NOTES.md` what subtracting raw delayeds does to MiniDAQ's sinograms, why the singles
 estimate was 31% high, and which estimate you would give the reconstruction. *Time:* 90 minutes.
 
-**Exercise 27.3 (S): A head outline and the decay of a frame.** *Goal:* compute the attenuation
+**Exercise 27.3 (E): A head outline and the decay of a frame.** *Goal:* compute the attenuation
 correction of an elliptical head outline, off center and turned, and the decay factor of a frame.
 *Starter:* `exercises/ch27/e3_attenuation/starter/attenuation.py`. *Acceptance:*
 `tests/test_attenuation.py` passes: chords of circles and of 40 random ellipses against a

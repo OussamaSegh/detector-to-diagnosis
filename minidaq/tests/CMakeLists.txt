@@ -117,6 +117,10 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME book.index COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/book/tools/index_terms.py ${PROJECT_SOURCE_DIR})
   set_tests_properties(docs.srs docs.trace docs.soup docs.anomalies docs.risk docs.design_file docs.changes docs.capa
                        docs.threats docs.tools tests.waits book.index PROPERTIES LABELS "unit")
+  # Roadmap 2.0.0, Theme A: every "Chapter N", "Part X" and "Exercise N.M" points to what exists.
+  add_test(NAME book.xrefs COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/xrefs.py ${PROJECT_SOURCE_DIR})
+  add_test(NAME book.xrefs_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_xrefs.py)
+  set_tests_properties(book.xrefs book.xrefs_tool PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

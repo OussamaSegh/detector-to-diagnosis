@@ -492,7 +492,7 @@ unmeasured bins without stripes, and the counts left unchanged. Then answer in `
 the clipped counts go, what MLEM believes about the gaps, and why the background outside the disc
 is not 0 either way. *Time:* 60 minutes.
 
-**Exercise 28.3 (S): Ordered subsets.** *Goal:* speed up MLEM with subsets, chosen and weighted
+**Exercise 28.3 (E): Ordered subsets.** *Goal:* speed up MLEM with subsets, chosen and weighted
 so that 4 iterations of 5 subsets reach what 20 iterations of MLEM reach. *Starter:*
 `exercises/ch28/e3_subsets/starter/subsets.py`. *Acceptance:* `tests/test_subsets.py` passes:
 the subsets hold every view once and span the half turn, impossible subsets are refused, the

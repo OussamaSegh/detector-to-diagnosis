@@ -359,7 +359,7 @@ threads, the same bits in repeated runs, and an index outside the output refused
 `NOTES.md` which indices the starter missed, what ThreadSanitizer reports for it, and why the last
 bits may differ between thread counts. *Time:* 60 minutes.
 
-**Exercise 29.3 (S): Is the second implementation the same?** *Goal:* write the check that a
+**Exercise 29.3 (E): Is the second implementation the same?** *Goal:* write the check that a
 second implementation of a projector does what the reference does. *Starter:*
 `exercises/ch29/e3_equivalence/starter/equivalence.py`. *Acceptance:* `tests/test_equivalence.py`
 passes: the same projector and a float32 one accepted, and angles half a view off, `s` reversed, a

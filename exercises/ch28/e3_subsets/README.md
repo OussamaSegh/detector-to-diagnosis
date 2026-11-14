@@ -1,4 +1,4 @@
-# Exercise 28.3 (S): Ordered subsets
+# Exercise 28.3 (E): Ordered subsets
 
 **Goal.** Speed up the MLEM of Exercise 28.2 by updating the image once per subset of the views,
 as `tools/recon/mlem.py` does, and choose the subsets and the sensitivity so that four

@@ -1,4 +1,4 @@
-# Exercise 30.2 (S): Contrast and noise from regions of interest
+# Exercise 30.2 (E): Contrast and noise from regions of interest
 
 **Goal.** Compute a hot region's contrast recovery coefficient (CRC) and the background
 variability of an image the way NEMA NU 2 describes it for its image quality phantom: the

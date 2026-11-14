@@ -1,4 +1,4 @@
-# Exercise 29.3 (S): Is the second implementation the same?
+# Exercise 29.3 (E): Is the second implementation the same?
 
 **Goal.** Write the check that a second implementation of a projector (the C++ one, a GPU one)
 does what the reference does, so that a test can say "the same" and mean it. The check in

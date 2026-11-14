@@ -1,4 +1,4 @@
-# Exercise 27.3 (S): A head outline and the decay of a frame
+# Exercise 27.3 (E): A head outline and the decay of a frame
 
 **Goal.** Compute the attenuation correction of a head modeled as an ellipse of water, off center
 and turned, as a calculated attenuation correction does when there is no CT, and the decay factor

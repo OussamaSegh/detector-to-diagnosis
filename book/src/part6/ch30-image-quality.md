@@ -467,7 +467,7 @@ which of these your scanner's design verification includes).
 
 ## Exercises {.unnumbered}
 
-**Exercise 30.1 (S): A width that does not depend on the pixels.** *Goal:* measure a FWHM and a
+**Exercise 30.1 (E): A width that does not depend on the pixels.** *Goal:* measure a FWHM and a
 FWTM from a parabolic peak and linear interpolation. *Starter:*
 `exercises/ch30/e1_width/starter/width.py`. *Acceptance:* `tests/test_width.py` passes: straight
 sides measured exactly, a Gaussian of 3.5 samples FWHM within 4% wherever it falls and one of 7
@@ -475,7 +475,7 @@ within 1.5%, the peak between samples found, and a profile that does not fall re
 in `NOTES.md` how far off the starter was, why the parabola matters, and which of section 1's
 pixel sizes meet the rule of a third. *Time:* 30 minutes.
 
-**Exercise 30.2 (S): Contrast and noise from regions of interest.** *Goal:* compute a contrast
+**Exercise 30.2 (E): Contrast and noise from regions of interest.** *Goal:* compute a contrast
 recovery coefficient and a background variability from regions. *Starter:*
 `exercises/ch30/e2_regions/starter/regions.py`. *Acceptance:* `tests/test_regions.py` passes: the
 true contrast gives 1 and none gives 0, regions of known levels give their sample standard

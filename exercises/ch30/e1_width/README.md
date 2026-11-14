@@ -1,4 +1,4 @@
-# Exercise 30.1 (S): A width that does not depend on the pixels
+# Exercise 30.1 (E): A width that does not depend on the pixels
 
 **Goal.** Measure the full width of a peak at half and at a tenth of its maximum (FWHM, FWTM) the
 way NEMA NU 2 describes: the maximum from a parabola through the highest sample and its two

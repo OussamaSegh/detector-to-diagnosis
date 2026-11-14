@@ -8,6 +8,22 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+
+- Web edition planned for 1.2.0 (roadmap 2.0.0, Theme F): the book and the solutions readable
+  in a browser, one page per chapter, from the download page.
+- `tools/post_release.py`: sets VERSION and the Python package versions in one step, the next
+  patch -dev after a release by default; ctest `docs.package_versions` checks they agree.
+- `tools/release_checks.sh OUT FUZZ resume`: runs only the parts not yet recorded as passed, so
+  a restarted machine continues the release checks.
+- `tools/release_record.py`: a release record's skeleton from the checks' evidence, and a check
+  that refuses a record with a `TODO(record):` line left (ctest `tools.release_record`).
+- `book/tools/xrefs.py` (ctest `book.xrefs`): every "Chapter N", "Part X" and "Exercise N.M"
+  in the book and the solutions points to what exists, and every exercise's starter directory
+  matches its number.
+- CI job `build-test-arm64`: the debug preset built and tested on arm64, as readers on Apple
+  silicon build it.
+
 ### Changed
 
 - The solutions manual cover is Inverse, on the screen PDF, the Boox PDF, the EPUB, the
@@ -31,6 +47,8 @@ the patch version.
 
 ### Fixed
 
+- Exercises 27.3, 28.3, 29.3, 30.1 and 30.2 were marked (S), a mark How to use this book does
+  not define; they are easy exercises, marked (E). Found by the new cross-reference check.
 - The commit policy accepts the four commits of pull request 14 as they landed on main
   (`6a69349d8c2d`, `3baf4f4c52f3`, `c93d73f781d9`, `b0134ec098fd`). A rebase-merge rewrote the
   committer. The authors were already no-reply addresses. Only the identity rule is waived.
