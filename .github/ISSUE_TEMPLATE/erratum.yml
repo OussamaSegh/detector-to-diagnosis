@@ -1,0 +1,47 @@
+# A reader reports an error in the book or the solutions manual (roadmap 2.0.0, Theme A). Accepted
+# reports become entries of book/errata.json and appear on the errata page of the download page.
+name: Erratum in the book
+description: Report an error in the text, a figure, a listing or an exercise of the book or the solutions manual.
+title: "Erratum: "
+labels: ["erratum"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting. Please check the errata page on the download page first: the
+        error may already be listed. Do not include personal or patient information.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Printed on the title page and in the file name, for example 1.1.0.
+      placeholder: 1.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      options:
+        - PDF
+        - PDF for Boox
+        - EPUB
+        - Web edition
+        - Paperback
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Chapter and section, exercise, figure or listing; a page number for the PDF or the paperback.
+      placeholder: Chapter 4, section "Locking memory", page 112
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong, and what it should say
+      description: Quote the text if you can, and give the source or the measurement that shows the error.
+    validations:
+      required: true

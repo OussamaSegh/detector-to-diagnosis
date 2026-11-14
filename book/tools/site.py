@@ -5,13 +5,17 @@
 Usage: book/tools/site.py OUT_DIR VERSION FILES...
 
 The files (EPUB, PDF and covers, built by book/build.sh) are copied into OUT_DIR, and OUT_DIR/index.html
-lists them with their size and SHA-256, so a reader can check a download."""
+lists them with their size and SHA-256, so a reader can check a download. OUT_DIR/errata.html
+lists the errata of book/errata.json (book/tools/errata.py)."""
 import hashlib
 import html
 import os
 import pathlib
 import shutil
 import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import errata  # noqa: E402  (the errata page, from book/errata.json)
 
 KINDS = [  # (suffix of the file name, label, what it is for)
     (".epub", "EPUB", "Reflowable, for e-readers and reading apps (Apple Books, Google Play Books, "
@@ -62,9 +66,10 @@ footer {{ margin-top: 40px; color: var(--muted); font-size: 0.9rem; }}
 <body>
 <main>
 <h1>Detector to Diagnosis</h1>
-<p class="sub">Building regulated medical imaging software in modern C++. Version {version}, a
-work-in-progress edition released Part by Part.</p>
+<p class="sub">Building regulated medical imaging software in modern C++. Version {version}.</p>
 {sections}
+<h2>Errata</h2>
+<p><a href="errata.html">The errata of the released versions</a>, and how to report a new one.</p>
 <footer>
 <p>Built from <a href="{repo}">the companion repository</a> at commit <code>{commit}</code> by
 GitHub Actions. Every code listing in the book is included from that repository and is compiled
@@ -122,7 +127,9 @@ def main(argv):
         sections.append(f"<h2>{title}</h2>\n<ul>\n" + "\n".join(items) + "\n</ul>")
     (out / "index.html").write_text(PAGE.format(version=html.escape(version), sections="\n".join(sections),
                                                 repo=repo, commit=html.escape(commit)))
-    print(f"wrote {out / 'index.html'} with {len(files)} files")
+    root = pathlib.Path(__file__).resolve().parents[2]
+    (out / "errata.html").write_text(errata.page(errata.load(root), version, repo))
+    print(f"wrote {out / 'index.html'} with {len(files)} files, and errata.html")
 
 
 if __name__ == "__main__":

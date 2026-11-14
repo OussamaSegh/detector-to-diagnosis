@@ -200,3 +200,6 @@ regulatory file are under `docs/`. The book and the solutions manual are built f
   ordinary user does not have; Chapter 4 explains which, and how to grant them.
 - **The disk fills up.** Each preset has its own build directory; delete the ones you no longer
   use.
+- **The book seems wrong.** The download page lists the errata of every released version,
+  with what to read instead. An error that is not there is worth reporting with the
+  repository's "Erratum in the book" issue form: the version, the place and what it should say.

@@ -120,7 +120,10 @@ if(Python3_Interpreter_FOUND)
   # Roadmap 2.0.0, Theme A: every "Chapter N", "Part X" and "Exercise N.M" points to what exists.
   add_test(NAME book.xrefs COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/xrefs.py ${PROJECT_SOURCE_DIR})
   add_test(NAME book.xrefs_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_xrefs.py)
-  set_tests_properties(book.xrefs book.xrefs_tool PROPERTIES LABELS "unit")
+  # Roadmap 2.0.0, Theme A: the errata list is consistent with the released versions.
+  add_test(NAME book.errata COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/errata.py check ${PROJECT_SOURCE_DIR})
+  add_test(NAME book.errata_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_errata.py)
+  set_tests_properties(book.xrefs book.xrefs_tool book.errata book.errata_tool PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

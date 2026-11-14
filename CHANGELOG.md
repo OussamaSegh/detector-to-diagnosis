@@ -21,6 +21,10 @@ the patch version.
 - `book/tools/xrefs.py` (ctest `book.xrefs`): every "Chapter N", "Part X" and "Exercise N.M"
   in the book and the solutions points to what exists, and every exercise's starter directory
   matches its number.
+- Errata (roadmap 2.0.0, Theme A): `book/errata.json` lists the errors of the released text
+  (six so far, E-001 to E-006), `book/tools/errata.py` checks it against the release tags
+  (ctest `book.errata`) and writes `errata.html` on the download page, linked from it. Readers
+  report one with the issue form "Erratum in the book"; How to use this book says so.
 - CI job `build-test-arm64`: the debug preset built and tested on arm64, as readers on Apple
   silicon build it.
 
@@ -49,6 +53,7 @@ the patch version.
 
 - Exercises 27.3, 28.3, 29.3, 30.1 and 30.2 were marked (S), a mark How to use this book does
   not define; they are easy exercises, marked (E). Found by the new cross-reference check.
+- The download page no longer calls the book a work-in-progress edition released Part by Part.
 - The commit policy accepts the four commits of pull request 14 as they landed on main
   (`6a69349d8c2d`, `3baf4f4c52f3`, `c93d73f781d9`, `b0134ec098fd`). A rebase-merge rewrote the
   committer. The authors were already no-reply addresses. Only the identity rule is waived.
