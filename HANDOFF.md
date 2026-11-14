@@ -5,12 +5,41 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-11: the solutions manual cover is Inverse (the slice printed on
-paper, SOLUTIONS / MANUAL). The book's cover stays the Plate design. The chapter opener
-is the Atlas head. VERSION is still 1.1.1-dev. Release 1.1.0 was 2026-11-10 (tag
-book-v1.1.0 on 19c6364); the second full review (PR #9) is merged on main after it.
+Last updated: 2026-11-14: work toward 2.0.0 has started (thread "Build book version 2.0.0",
+branch claude/project-thread-fo39bu). VERSION is still 1.1.1-dev; the next release is 1.2.0.
 
-## Start here (after release 1.1.0)
+## Start here (toward 2.0.0)
+
+The roadmap (`docs/ROADMAP-2.0.0.md`) was renumbered on 2026-11-14: 1.1.0 became the interior,
+so **1.2.0 = Theme D (tooling), Theme A (book quality) and Theme F (web edition)**; 1.3.0 =
+Theme B's non-breaking items with Chapter 38; 1.4.0 = Chapter 39; then 2.0.0-dev and 2.0.0-rc.
+Theme C (Part X) waits for four to six weeks of errata after 1.0.0 (from about 2026-12-07).
+
+Done for 1.2.0 (2026-11-14):
+
+- Theme D: `tools/post_release.py` (versions in one step; ctest `docs.package_versions`),
+  `tools/release_checks.sh OUT FUZZ resume`, `tools/release_record.py` (skeleton and check),
+  CI job `build-test-arm64` (green). `perf.yml` already runs A/B on GitHub runners since
+  Chapter 20, so nothing was removed; the flaky FrameReader test is in CAPA-0001's table.
+- Theme A: `book/tools/xrefs.py` (ctest `book.xrefs`; found five exercises marked "S", now E),
+  errata (`book/errata.json`, `book/tools/errata.py`, `errata.html` on the download page, issue
+  form `.github/ISSUE_TEMPLATE/erratum.yml`; E-001 to E-008), EPUB accessibility metadata
+  (`fix_epub.py`; EPUBCheck 5.1.0 clean), two EPUB defects of 1.0.0 and 1.1.0 fixed (title page
+  copyright sign: `build.sh` sets C.UTF-8; appendix numbered 38: `design.lua` numbers it A).
+  Standards checked 2026-11-14: Chapter 13 already says IEC 62304 Ed. 2 is expected in late 2028
+  and EN 62304 is not harmonised under the MDR; still true.
+- Theme F, the web edition (the author chose one page per chapter): `book/tools/web.py` turns
+  the EPUB into `read/` and `read/solutions/` (`book/build.sh web both`), with `book/web/`
+  (frame CSS and search script, no library). `web.py check` (links, anchors, alt text, lang,
+  landmarks) runs in `pages.yml`; ctest `book.web_tool`.
+- CI: five OpenSSL CVEs of 2026-11-10 were triaged `not_affected` in
+  `docs/regulatory/security/vulnerability-triage.json` (QUIC, AES-GCM-SIV, CMS not used).
+
+Left for 1.2.0: the release itself: `tools/post_release.py . 1.2.0-dev` with a dated SOUP review
+for 1.2, the internal audit, the release checks (`resume`), the record (`release_record.py`),
+the document approvals, the tag, then the Opus review of the release.
+
+## Release 1.1.0 (for reference)
 
 **Release 1.1.0 (2026-11-10): the illustrated interior.** Internal audit before the checks
 (`docs/regulatory/qms/internal-audit-2026-11-10.md`, no nonconformity), fifteen controlled
