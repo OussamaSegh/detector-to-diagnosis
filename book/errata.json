@@ -4,44 +4,81 @@
     {
       "id": "E-001",
       "where": "Solutions, Exercises 1.2 and 1.5",
-      "found_in": ["1.0.0"],
+      "found_in": [
+        "1.0.0"
+      ],
       "fixed_in": "1.1.0",
       "text": "The included listings began with a stray \"};\" and left out EventBuffer and ring384: their line ranges were stale."
     },
     {
       "id": "E-002",
       "where": "How to use this book, installing the tools",
-      "found_in": ["1.0.0", "1.1.0"],
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "fixed_in": "1.2.0",
       "text": "The apt line lacked python3-scipy and python3-matplotlib, so the test system.e2e failed on a new reader's first ctest run. Add both packages to the install line."
     },
     {
       "id": "E-003",
       "where": "Chapter 4, memory locking",
-      "found_in": ["1.0.0", "1.1.0"],
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "fixed_in": "1.2.0",
       "text": "With mlockall(MCL_CURRENT | MCL_FUTURE) in force, a new thread's stack is resident from the start (measured: 0 page faults over 512 KiB); the text said its pages still fault. What still faults is the main thread's growing stack, and everything when the lock is refused, which is why the stages prefault anyway. The mistakes box and the solutions' answer 8 change with it."
     },
     {
       "id": "E-004",
       "where": "Chapter 14, software safety classes",
-      "found_in": ["1.0.0", "1.1.0"],
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "fixed_in": "1.2.0",
       "text": "Class A is stated as Amendment 1 of IEC 62304 has it: the software cannot contribute to a hazardous situation, or it can but no unacceptable risk results after risk controls outside the software."
     },
     {
       "id": "E-005",
       "where": "Chapter 15, rating hazard H-01",
-      "found_in": ["1.0.0", "1.1.0"],
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "fixed_in": "1.2.0",
       "text": "The worked example used P1 and P2 both for the standard's two probability factors and for two levels of the plan's probability scale in one paragraph. The factors keep P1 and P2; the levels are named by the scale."
     },
     {
       "id": "E-006",
       "where": "Chapters 27 to 30, exercises",
-      "found_in": ["1.0.0", "1.1.0"],
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "fixed_in": "1.2.0",
       "text": "Exercises 27.3, 28.3, 29.3, 30.1 and 30.2 were marked (S), which How to use this book does not define. They are easy exercises: (E)."
+    },
+    {
+      "id": "E-007",
+      "where": "EPUB, title page",
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
+      "fixed_in": "1.2.0",
+      "text": "The copyright line showed replacement characters where the copyright sign belongs: read \"Copyright ©\". The PDFs and the copyright page were right."
+    },
+    {
+      "id": "E-008",
+      "where": "EPUB, Appendix A",
+      "found_in": [
+        "1.0.0",
+        "1.1.0"
+      ],
+      "fixed_in": "1.2.0",
+      "text": "The appendix and its sections were numbered 38, 38.1 and so on, after the last chapter; they are Appendix A, A.1 and so on, as in the PDFs, where the text refers to them."
     }
   ]
 }

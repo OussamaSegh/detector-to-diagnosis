@@ -23,6 +23,9 @@
 #                  with the gray of the same lightness (black ink printing); the screen PDF and
 #                  the EPUB are always in color, the Boox PDF in its own stronger tints.
 set -euo pipefail
+# Pandoc reads its arguments in the locale's encoding: under C or POSIX the copyright line's "©"
+# became two replacement characters on the EPUB's title page (1.0.0 and 1.1.0, erratum E-007).
+export LC_ALL=C.UTF-8
 here="$(cd "$(dirname "$0")" && pwd)"
 repo="$(cd "$here/.." && pwd)"
 what="${1:-all}"

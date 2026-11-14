@@ -116,7 +116,31 @@ local function part_chapters(blocks)
   return out
 end
 
+-- Outside LaTeX, --number-sections would number the appendix after the last chapter (38, 38.1);
+-- LaTeX's \appendix restarts at A. So each heading after the appendix marker is numbered here as
+-- LaTeX numbers it (A, A.1, A.1.1) and marked unnumbered for the writer.
+local function number_appendix(blocks)
+  local counters, letter, seen = {}, 64, false
+  for _, b in ipairs(blocks) do
+    if b.t == "RawBlock" and b.text:match("\\appendix") then
+      seen = true
+    elseif seen and b.t == "Header" and not b.classes:includes("unnumbered") then
+      if b.level == 1 then letter = letter + 1 end
+      counters[b.level] = (counters[b.level] or 0) + 1
+      for l = b.level + 1, 6 do counters[l] = 0 end
+      local parts = { string.char(letter) }
+      for l = 2, b.level do parts[#parts + 1] = tostring(counters[l] or 0) end
+      local number = table.concat(parts, ".")
+      b.classes:insert("unnumbered")
+      b.attributes["number"] = number
+      b.content = { pandoc.Span({ pandoc.Str(number) }, { class = "header-section-number" }), pandoc.Space(),
+        table.unpack(b.content) }
+    end
+  end
+end
+
 function Pandoc(doc)
+  if not latex then number_appendix(doc.blocks) end
   local chapters = part_chapters(doc.blocks)
   local volume = doc.meta["d2d-volume"] and pandoc.utils.stringify(doc.meta["d2d-volume"]) or "book"
   local part = volume == "solutions" and "S" or 0

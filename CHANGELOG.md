@@ -25,6 +25,9 @@ the patch version.
   (six so far, E-001 to E-006), `book/tools/errata.py` checks it against the release tags
   (ctest `book.errata`) and writes `errata.html` on the download page, linked from it. Readers
   report one with the issue form "Erratum in the book"; How to use this book says so.
+- EPUB accessibility metadata (EPUB Accessibility 1.1, schema.org): access modes, features
+  (alternative text, MathML, structural navigation, table of contents), no hazards, and a
+  summary that makes no conformance claim. EPUBCheck 5.1.0 reports nothing.
 - CI job `build-test-arm64`: the debug preset built and tested on arm64, as readers on Apple
   silicon build it.
 
@@ -53,6 +56,10 @@ the patch version.
 
 - Exercises 27.3, 28.3, 29.3, 30.1 and 30.2 were marked (S), a mark How to use this book does
   not define; they are easy exercises, marked (E). Found by the new cross-reference check.
+- EPUB: the title page's copyright line showed two replacement characters for the copyright
+  sign (Pandoc read its arguments in the POSIX locale; `book/build.sh` now sets C.UTF-8), and
+  Appendix A was numbered 38 with sections 38.1 and on (the appendix headings are numbered A,
+  A.1 as in the PDF). Errata E-007 and E-008.
 - The download page no longer calls the book a work-in-progress edition released Part by Part.
 - The commit policy accepts the four commits of pull request 14 as they landed on main
   (`6a69349d8c2d`, `3baf4f4c52f3`, `c93d73f781d9`, `b0134ec098fd`). A rebase-merge rewrote the
