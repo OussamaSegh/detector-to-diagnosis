@@ -8,6 +8,11 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+
+- `.github/labels.txt` and the workflow `labels.yml`, which creates a listed issue label that
+  the repository lacks: the `erratum` label that the erratum form applies did not exist.
+
 ### Fixed (review of 1.2.0)
 
 - EPUB and web edition: the appendix's figure references read ".10" to ".17" instead of A.1 to

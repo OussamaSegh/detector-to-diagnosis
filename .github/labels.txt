@@ -1,0 +1,3 @@
+# The issue labels the issue forms use, one per line: name, color (hex, no #), description.
+# .github/workflows/labels.yml creates a label that is missing; it never changes or deletes one.
+erratum	d93f0b	An error in the released text of the book or the solutions manual
