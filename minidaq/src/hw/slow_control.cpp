@@ -86,7 +86,7 @@ void SlowControl::latch(Board& b, HwFaultCause cause, std::string why) {
   b.ready_deadline_ns.reset();
   b.s.triggers = false;
   b.s.fifo_empty = false;
-  trace(TraceCode::hw_fault, b.s.index, static_cast<std::uint64_t>(cause));
+  trace(TraceCode::hw_fault, b.s.index, std::to_underlying(cause));
   // The fail-safe state of a SiPM is unbiased, and a board in fault sends no data: bias and
   // triggers off in one write. Best effort: a board that does not answer cannot be told, and
   // its own protection is all that is left.

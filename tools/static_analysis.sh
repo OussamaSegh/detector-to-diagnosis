@@ -30,6 +30,7 @@ rm -f "$log"
 # [/snippet:tidy]
 
 echo "== cppcheck ($(cppcheck --version))"
+# cppcheck 2.13 knows no C++23: it parses the C++23 sources as C++20 (ADR 0035).
 cppcheck --std=c++20 --language=c++ --enable=warning,performance,portability,style \
   --inline-suppr --suppress=missingIncludeSystem \
   --suppressions-list="$root/tools/cppcheck-suppressions.txt" \

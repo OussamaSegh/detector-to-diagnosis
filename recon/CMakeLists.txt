@@ -8,7 +8,7 @@ add_library(recon::projector ALIAS recon_projector)
 target_include_directories(recon_projector PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_compile_features(recon_projector PUBLIC cxx_std_20)
+target_compile_features(recon_projector PUBLIC cxx_std_23)
 find_package(Threads REQUIRED)
 # The warnings are how MiniDAQ builds its code, not something a user of the library inherits:
 # BUILD_INTERFACE keeps them out of the exported target (a static library's private links are

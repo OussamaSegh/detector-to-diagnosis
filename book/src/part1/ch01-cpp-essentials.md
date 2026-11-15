@@ -378,17 +378,41 @@ The caller must look at it to get the value, and the error type documents exactl
 failures can happen. It is the right default for "this can fail for reasons outside the
 program's control".
 
-There is a practical snag that you will meet in real projects. `std::expected` is a
-C++23 library feature. GCC 13 with `-std=c++23` provides it. Clang 17 and 18 used with
-the GNU standard library (libstdc++ 13), which is the default on Ubuntu, do not: the
-libstdc++ header is guarded on a concepts feature-test macro that those Clang versions do
-not yet define. MiniDAQ builds in C++20 on both compilers, so it ships a small
-`minidaq::Expected` that becomes an alias of `std::expected` when the standard library
-provides it. This is the kind of portability decision you should record in an
-architecture decision record (Chapter 6), because a future toolchain upgrade can delete
-the shim.
+Here is the standard type at work, as C++23 code would write it with GCC 13:
 
-```{.cpp include="minidaq/include/minidaq/core/expected.hpp" lines="1-24"}
+```cpp
+#include <expected>
+
+enum class ParseError { too_short, bad_crystal };
+
+std::expected<int, ParseError> crystal_of(std::span<const std::byte> b) {
+  if (b.size() < 4) return std::unexpected{ParseError::too_short};
+  return std::to_integer<int>(b[0]);  // the value: the caller must look before using it
+}
+
+auto c = crystal_of(bytes);
+if (!c) { count_error(c.error()); }  // the error type says exactly what can go wrong
+else    { use(*c); }
+```
+
+MiniDAQ is C++23 on both of its compilers (ADR 0035), yet it does not write `std::expected`
+directly, for a reason you will meet in real projects. `std::expected` is a library feature,
+and a compiler can support C++23 while the standard library it uses hides part of it. GCC 13
+with its own library, libstdc++ 13, provides `std::expected`. Clang 18 with the same libstdc++
+13, which is the default pairing on Ubuntu 24.04, does not: the header `<expected>` is guarded
+on the concepts feature-test macro `__cpp_concepts >= 202002L`, Clang 18 still defines
+201907L, and so in `-std=c++23` the header declares nothing and `__cpp_lib_expected` stays
+undefined. MiniDAQ builds and tests with both compilers, because each finds bugs the other
+misses, so it ships a small `minidaq::Expected`. Where the library provides `std::expected`
+(GCC), `minidaq::Expected` is an alias of it, and code written against it is ordinary C++23;
+where it does not (Clang 18), the header provides the subset MiniDAQ uses, with the same
+meaning. The GCC builds therefore test the standard type and the Clang builds the shim, in every
+run. This is the kind of portability decision you record in an architecture decision record
+(Chapter 6): ADR 0006 made it for C++20, and ADR 0035 kept it when C++23 became the baseline,
+with the condition for deleting the shim (a Clang that defines the concepts macro libstdc++
+needs, Clang 19 or later).
+
+```{.cpp include="minidaq/include/minidaq/core/expected.hpp" lines="1-22"}
 ```
 
 The parser that the rest of the pipeline uses for MiniDAQ's 16-byte debug record shows
@@ -710,6 +734,32 @@ concrete and auditable:
 5. How are physical units and timestamps represented today (raw integers, a units
    library, conventions in names)?
 :::
+
+## What C++23 adds, and what it replaces
+
+MiniDAQ's baseline is C++23 as far as GCC 13 and Clang 18 with libstdc++ 13 both accept it
+(ADR 0035). If your project is still on C++20 or C++17, each feature below has an older
+equivalent, which is what you will find in existing code:
+
+| C++23 | Replaces | In MiniDAQ |
+|---|---|---|
+| `std::expected<T, E>` | an error code plus an out-parameter, or a hand-made result type | through `minidaq::Expected`, an alias of it with GCC and a shim with Clang 18 (above) |
+| `std::to_underlying(e)` | `static_cast<std::underlying_type_t<E>>(e)` | enumerations stored as integers in the flight recorder and traces |
+| `if consteval` | `if (std::is_constant_evaluated())`, which is easy to get wrong inside `if constexpr` | not needed: no function asks whether it runs at compile time |
+| `std::unreachable()` | `__builtin_unreachable()` | not used on values from outside the program (below) |
+| `m[i, j]`, a subscript with several arguments | `m(i, j)` or index arithmetic such as `i * cols + j` | not used: without `std::mdspan` a container has to write it itself |
+
+`std::unreachable()` tells the compiler that a point cannot be reached, and the compiler may
+remove the checks that lead there. If the point is reached after all, the behavior is undefined.
+That is a fair trade for a value the program made itself, and a bad one for a value that came
+from a register, a file or a datagram: an enumeration read from the readout can hold a value that
+no `case` names, and MiniDAQ's switches over such values end in a defined fallback
+(`return "unknown";`) instead. The coding standard says so in rule 1.
+
+Some well-known C++23 features are out of reach of this baseline: explicit object parameters
+("deducing this"), `std::print`, `std::ranges::to`, `std::mdspan` and importable modules need
+GCC 14 or later or a newer standard library. Check a feature against your compilers' status
+pages and against the standard library you actually link, as the `std::expected` case shows.
 
 ## Exercises {.unnumbered}
 

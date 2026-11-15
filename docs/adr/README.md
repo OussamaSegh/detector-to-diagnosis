@@ -12,7 +12,7 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0003](0003-control-protocol.md) | Control protocol: newline-delimited JSON over TCP | Accepted |
 | [0004](0004-json-library.md) | JSON library for the control plane | Accepted |
 | [0005](0005-acquisition-state-machine.md) | A table-driven acquisition state machine | Accepted |
-| [0006](0006-cpp20-with-expected-shim.md) | C++20 with a std::expected shim | Accepted |
+| [0006](0006-cpp20-with-expected-shim.md) | C++20 with a std::expected shim | Superseded by [0035](0035-cpp23-baseline.md) |
 | [0007](0007-list-mode-file-format.md) | List-mode file format | Superseded by [0012](0012-mdq-l1-list-mode-format-and-writer.md) |
 | [0008](0008-hardened-release-builds.md) | Hardened release builds | Accepted |
 | [0009](0009-udp-readout-link.md) | UDP readout link with sequence numbers and a bounded reorder buffer | Accepted |
@@ -41,3 +41,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0032](0032-ai-assisted-changes-recorded-in-trailers-and-verified-like-any-other.md) | AI-assisted changes: recorded in trailers, verified like any other change, with a test for each change of product code | Accepted |
 | [0033](0033-time-markers-in-the-readout-stream-and-a-count-of-datagrams-sent.md) | Time markers in the readout stream as words no single can be, and a count of the datagrams each board sent | Accepted |
 | [0034](0034-signed-run-records-calibration-tables-and-reports.md) | Signed run records with the digests of their files, signed calibration tables and reports | Accepted |
+| [0035](0035-cpp23-baseline.md) | C++23 as the baseline, keeping the Expected alias for Clang | Accepted |

@@ -9,6 +9,7 @@
 
 #include <cerrno>
 #include <cmath>
+#include <utility>
 
 #include <nlohmann/json.hpp>
 
@@ -110,9 +111,8 @@ std::string read_small_file(const std::string& path, std::string& out,
 }  // namespace
 
 AcquisitionService::AcquisitionService(ServiceOptions options)
-    : opt_{std::move(options)},
-      machine_{[this](const Transition& t) {
-        trace(TraceCode::state, static_cast<std::uint64_t>(t.from), static_cast<std::uint64_t>(t.to));
+    : opt_{std::move(options)}, machine_{[this](const Transition& t) {
+        trace(TraceCode::state, std::to_underlying(t.from), std::to_underlying(t.to));
         note("service", "transition",
              std::string{to_string(t.from)} + " -> " + std::string{to_string(t.to)} + " (" +
                  std::string{to_string(t.event)} + ")");
@@ -380,7 +380,7 @@ void AcquisitionService::enter_fault_locked(std::string reason, std::string_view
                       : fault_.starts_with("sort:")   ? FaultSource::sorter
                       : fault_.starts_with("hw:")     ? FaultSource::hardware
                                                       : FaultSource::other;
-  trace(TraceCode::fault, run_id_, static_cast<std::uint64_t>(source));
+  trace(TraceCode::fault, run_id_, std::to_underlying(source));
   note(who, "fault", fault_, false);
   (void)machine_.apply(AcqEvent::error);
 }

@@ -1,7 +1,7 @@
 # 0006. C++20 with a std::expected shim
 
 Date: 2026-10-24
-Status: Accepted
+Status: Superseded by 0035
 
 ## Context
 

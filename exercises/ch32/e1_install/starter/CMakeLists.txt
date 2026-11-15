@@ -6,7 +6,7 @@ project(pulse VERSION 1.2.0 LANGUAGES CXX)
 
 add_library(pulse src/pulse.cpp)
 add_library(pulse::pulse ALIAS pulse)
-target_compile_features(pulse PUBLIC cxx_std_20)
+target_compile_features(pulse PUBLIC cxx_std_23)
 # TODO(1): this path is right while building and wrong once installed: the source tree may be
 # gone, and install(EXPORT) refuses a target whose interface names it.
 target_include_directories(pulse PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

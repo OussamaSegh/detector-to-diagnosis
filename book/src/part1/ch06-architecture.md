@@ -585,7 +585,12 @@ re-running the same discussion, or lets them see that the context has changed an
 should too. The *Negative consequences* section is a close second: a decision without a cost
 was not a decision. ADR 0006 is an example of a consequence turned into a check: because two
 implementations of `Expected` sit behind one name, a new CI preset, `gcc-cxx23`, builds and
-tests everything in C++23 with `std::expected`, beside the C++20 presets that use the shim.
+tests everything in C++23 with `std::expected`, beside the C++20 presets that use the shim. The
+record also said when to look again ("revisit when the toolchain baseline changes"), and that
+is how it ended: when C++23 became MiniDAQ's baseline in 2.0, ADR 0035 superseded it. Every
+preset is now C++23, so the GCC presets test `std::expected` and the Clang presets the shim,
+and the extra preset was retired; the shim itself stays, because Clang 18 with libstdc++ 13
+still lacks `std::expected` (Chapter 1).
 
 Exercise 6.3 writes a linter for the format; MiniDAQ's own records pass it in every CI run.
 Record 0007 is *Proposed* on purpose: writing down an undecided question with its options is

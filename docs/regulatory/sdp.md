@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 16 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
+Version 17 (MiniDAQ 1.3.1-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -68,7 +68,7 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 
 ## 4. Standards, methods and tools
 
-- **Language and coding standard:** C++20 (C++23 tested), the
+- **Language and coding standard:** C++23, within what GCC 13 and Clang 18 accept (ADR 0035), the
   [coding standard](../coding-standard.md) with its rule rationale.
 - **Build:** CMake presets, dependencies pinned by commit or hash (`cmake/Dependencies.cmake`).
 - **Static analysis:** clang-tidy 18 and cppcheck 2.13 with zero findings
@@ -261,3 +261,4 @@ of Chapter 13.
 | 14 | Release 1.0.0: the release checks' regression gate compares the candidate with the previous release run interleaved on the reference machine, and the recorded baseline becomes the trend (CR-0025). |
 | 15 | After release 1.0.0: section 8, item 9, the internal audit before each minor release and the state of every CAPA that is not closed (internal audit of 2026-11-09, MDQ-PR-065, CAPA-0002). |
 | 16 | Approved by the software lead for release 1.1.0; the content is that of version 15 (MDQ-PR-066). |
+| 17 | Section 4: C++23 is the language standard (CR-0028, ADR 0035). |

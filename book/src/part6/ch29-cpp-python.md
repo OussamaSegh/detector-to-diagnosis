@@ -73,7 +73,7 @@ checks it for every caller.
 
 ### An interface a binding can call
 
-The library, `recon/`, is plain C++20 with no Python in it. Its interface takes spans and sizes,
+The library, `recon/`, is plain C++23 with no Python in it. Its interface takes spans and sizes,
 throws standard exceptions for anything that does not fit, and says what it guarantees about
 threads:
 
@@ -413,7 +413,7 @@ threads; every starter of the chapter fails. Tag `ch29`.
 
 - Measure before moving code: the projector took nearly all of the reconstruction's time, so it
   moved, and the algorithm stayed in Python.
-- `recon/` is a C++20 library with no Python, its own tests, and weights computed on the fly. Its
+- `recon/` is a C++23 library with no Python, its own tests, and weights computed on the fly. Its
   forward and back call the same `walk`, so they are adjoint by construction.
 - The threads share the lines; the backprojection adds into an image per thread and sums them in
   a fixed order: no race, no lock, reproducible bits for a given number of threads.

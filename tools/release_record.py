@@ -25,7 +25,7 @@ import pathlib
 import re
 import sys
 
-PRESETS = ["debug", "clang-release", "gcc-cxx23", "hardened", "asan-ubsan", "tsan"]
+PRESETS = ["debug", "clang-release", "release", "hardened", "asan-ubsan", "tsan"]
 TODO = "TODO(record):"
 # (row of the record, the release check lines it rests on (prefixes), evidence file)
 ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in PRESETS] + \

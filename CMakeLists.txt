@@ -11,7 +11,7 @@ project(minidaq
   LANGUAGES CXX)
 
 if(PROJECT_IS_TOP_LEVEL)
-  set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ standard (20 or 23)")
+  set(CMAKE_CXX_STANDARD 23)  # the baseline (ADR 0035); a normal variable, so a stale cache cannot keep 20
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

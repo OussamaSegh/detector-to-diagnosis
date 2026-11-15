@@ -124,8 +124,8 @@ OUTPUT ... CONTENT "$<...>")` to see what an expression evaluates to, per config
 
 Chapter 1 introduced `CMakePresets.json`: a configuration's generator, build directory and cache
 variables, named, so that `cmake --preset release` configures the same build on every machine.
-Building and testing were two more commands with their own presets. MiniDAQ has ten configurations
-(debug, release, profile, clang-release, gcc-cxx23, hardened, asan-ubsan, tsan, fuzz and coverage),
+Building and testing were two more commands with their own presets. MiniDAQ has nine configurations
+(debug, release, profile, clang-release, hardened, asan-ubsan, tsan, fuzz and coverage),
 and CI runs six of them on every push. A developer who wanted to know whether a change would pass
 the `tsan` job had to know the three commands and their order.
 
@@ -181,7 +181,7 @@ runtime library as well as an instrumentation, and both halves must be in the pr
 
 Figure [](#fig-ch32-presets) shows the whole set.
 
-```{.figure #fig-ch32-presets src="book/figures/tikz/ch32/presets.tex" caption="MiniDAQ's configure presets, from CMakePresets.json. Three hidden presets carry the shared settings and the two compilers; the ten visible ones each inherit base and one compiler and have a workflow of their own." alt="A tree. The hidden preset base, with Ninja, the shared deps directory and C++20, above the hidden presets gcc and clang. Under gcc: debug, release, profile, gcc-cxx23 and hardened. Under clang: clang-release, asan-ubsan, tsan, fuzz and coverage. A note says each visible preset has a workflow that configures, builds and tests." width="85%"}
+```{.figure #fig-ch32-presets src="book/figures/tikz/ch32/presets.tex" caption="MiniDAQ's configure presets, from CMakePresets.json. Three hidden presets carry the shared settings and the two compilers; the nine visible ones each inherit base and one compiler and have a workflow of their own." alt="A tree. The hidden preset base, with Ninja and the shared deps directory, above the hidden presets gcc and clang. Under gcc: debug, release, profile and hardened. Under clang: clang-release, asan-ubsan, tsan, fuzz and coverage. A note says each visible preset has a workflow that configures, builds and tests." width="85%"}
 ```
 
 ## Installing a library as a package
@@ -195,7 +195,7 @@ same usage requirements the target has in MiniDAQ's own build. The user writes t
 ```{.cmake include="recon/tests/consumer/CMakeLists.txt" snippet="consumer"}
 ```
 
-and gets the include directory, the C++20 requirement and the thread library, from wherever the
+and gets the include directory, the C++23 requirement and the thread library, from wherever the
 package was installed. Making that work took four pieces, in `recon/CMakeLists.txt`.
 
 **Usage requirements that are true in both places.** The target's include directory had been the

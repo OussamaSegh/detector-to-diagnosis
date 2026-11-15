@@ -26,6 +26,7 @@ Checks: >
   modernize-*,
   -modernize-use-trailing-return-type,
   -modernize-avoid-c-arrays,
+  -modernize-use-std-print,
   performance-*,
   portability-*,
   readability-braces-around-statements,
@@ -53,6 +54,7 @@ Checks: >
 #  include-cleaner: too many false positives with the standard library in clang-tidy 18.
 #  no-recursion: none on the hot path; the configuration reader may recurse on nested objects.
 #  use-trailing-return-type: a style choice MiniDAQ does not make.
+#  use-std-print: offered in C++23, but libstdc++ 13 has no <print> (ADR 0035).
 #  optin.performance.Padding: MiniDAQ pads on purpose; the channel and ring indices sit on
 #    separate cache lines against false sharing (Chapter 2).
 #  redundant-member-init: `Picoseconds time{};` says "zero" to the reader and stays correct if

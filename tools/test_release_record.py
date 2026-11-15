@@ -2,9 +2,12 @@
 # SPDX-License-Identifier: MIT
 """Tests of tools/release_record.py (roadmap 2.0.0, Theme D)."""
 import pathlib
+import re
 import shutil
+import subprocess
 import sys
 import tempfile
+import types
 import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -62,11 +65,30 @@ class ReleaseRecord(unittest.TestCase):
             with self.assertRaises(ValueError):
                 rr.skeleton(pathlib.Path(d), "9.9.0")
 
-    def test_the_newest_record_passes(self):
+    def test_the_newest_record_passes_the_rules_of_its_release(self):
+        # A record is judged by the check of the commit it releases: a later change of the rules
+        # (CR-0028 replaced the gcc-cxx23 rows with release) does not make an old record wrong.
         newest = max((p for p in (ROOT / "docs/regulatory/releases").glob("*.md")
                       if p.stem[0].isdigit()), key=lambda p: tuple(int(x) for x in p.stem.split(".")))
-        self.assertEqual(rr.check(ROOT, newest), [])
+        text = newest.read_text()
+        m = re.search(r"commit ([0-9a-f]{40})", text)
+        self.assertIsNotNone(m, f"{newest.name} names no commit")
+        rules = subprocess.run(["git", "-C", str(ROOT), "show",
+                                f"{m.group(1)}:exercises/ch14/e5_release_check/solution/release_check.py"],
+                               capture_output=True, text=True, check=False)
+        if rules.returncode != 0:
+            self.skipTest("no git history to read the rules of the release from")
+        module = types.ModuleType("release_check_at_release")
+        exec(compile(rules.stdout, "release_check.py", "exec"), module.__dict__)
+        errors = module.check(text, ROOT / "docs/regulatory")
+        errors += [line for line in text.splitlines() if rr.TODO in line]
+        self.assertEqual(errors, [])
 
+    def test_the_current_rules_ask_for_the_current_presets(self):
+        spec = rr.exercise_check(ROOT).__globals__
+        for p in rr.PRESETS:
+            self.assertIn(f"build {p}", spec["REQUIRED_CHECKS"])
+            self.assertIn(f"tests {p}", spec["REQUIRED_CHECKS"])
 
 if __name__ == "__main__":
     unittest.main()

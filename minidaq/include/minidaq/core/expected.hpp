@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 // MiniDAQ - minidaq::Expected<T, E>, a small std::expected (Chapter 1).
 //
-// Why this file exists: std::expected is C++23. GCC 13 ships it in -std=c++23
-// mode, but Clang 17/18 used together with libstdc++ 13 do not expose it
-// (libstdc++ gates <expected> on __cpp_concepts >= 202002L, which those Clang
-// versions do not define). MiniDAQ must build with both compilers in C++20, so
-// we provide the subset we use. When the standard library has std::expected
-// (feature-test macro __cpp_lib_expected), the names below are aliases for the
-// standard ones, so code written against this header is also valid C++23.
+// Why this file exists: std::expected is C++23, and MiniDAQ is C++23 (ADR 0035).
+// GCC 13 with libstdc++ 13 provides it, and then the names below are aliases of
+// the standard ones. Clang 18 with the same libstdc++ does not: the library
+// gates <expected> on __cpp_concepts >= 202002L, and Clang 18 defines 201907L.
+// For that case this header provides the subset we use, with the same meaning,
+// so code written against it is valid with std::expected too.
 #pragma once
 
 #include <version>

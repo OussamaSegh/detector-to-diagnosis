@@ -11,8 +11,8 @@ import re
 
 SECTIONS = ["Release", "Verification", "Known anomalies", "SOUP review", "Build", "Archive"]
 REQUIRED_CHECKS = [
-    "build debug", "build clang-release", "build gcc-cxx23", "build hardened", "build asan-ubsan", "build tsan",
-    "tests debug", "tests clang-release", "tests gcc-cxx23", "tests hardened", "tests asan-ubsan", "tests tsan",
+    "build debug", "build clang-release", "build release", "build hardened", "build asan-ubsan", "build tsan",
+    "tests debug", "tests clang-release", "tests release", "tests hardened", "tests asan-ubsan", "tests tsan",
     "static analysis", "fuzzing", "performance", "trace matrix",
 ]
 

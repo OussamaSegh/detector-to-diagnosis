@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [debug, clang-release, gcc-cxx23, hardened, asan-ubsan, tsan]
+        preset: [debug, clang-release, release, hardened, asan-ubsan, tsan]
     steps:
       - uses: actions/checkout@v5
         with:

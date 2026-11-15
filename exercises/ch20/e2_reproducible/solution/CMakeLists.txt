@@ -2,7 +2,7 @@
 # Exercise 20.2 solution: the same program, built reproducibly.
 cmake_minimum_required(VERSION 3.20)
 project(reproducible_demo VERSION 1.0 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 # [snippet:maps]
 # Paths in __FILE__ and in the debug information, relative to the top of the sources (and of the
 # build directory, which may lie inside them: GCC takes the last matching map, Clang the longest).

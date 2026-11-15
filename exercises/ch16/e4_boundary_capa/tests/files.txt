@@ -670,8 +670,8 @@ exercises/ch14/e5_release_check/tests/fixture/logs/static-analysis.log
 exercises/ch14/e5_release_check/tests/fixture/logs/tests-asan-ubsan.log
 exercises/ch14/e5_release_check/tests/fixture/logs/tests-clang-release.log
 exercises/ch14/e5_release_check/tests/fixture/logs/tests-debug.log
-exercises/ch14/e5_release_check/tests/fixture/logs/tests-gcc-cxx23.log
 exercises/ch14/e5_release_check/tests/fixture/logs/tests-hardened.log
+exercises/ch14/e5_release_check/tests/fixture/logs/tests-release.log
 exercises/ch14/e5_release_check/tests/fixture/logs/tests-tsan.log
 exercises/ch14/e5_release_check/tests/fixture/logs/trace.txt
 exercises/ch14/e5_release_check/tests/fixture/problem-reports.json

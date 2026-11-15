@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "minidaq/core/expected.hpp"
 
@@ -61,4 +62,17 @@ TEST(Expected, Void) {
   Expected<void, Err> bad{Unexpected{Err::bad}};
   EXPECT_FALSE(bad);
   EXPECT_EQ(bad.error(), Err::bad);
+}
+
+// CR-0028: every build is C++23 (GCC 13 reports 202100L, Clang 18 202302L), and
+// Expected is std::expected exactly when the standard library provides it.
+TEST(Expected, IsStdExpectedWhereverTheLibraryHasIt) {
+  static_assert(__cplusplus > 202002L, "MiniDAQ is built as C++23 (ADR 0035)");
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+  static_assert(std::is_same_v<Expected<int, Err>, std::expected<int, Err>>);
+  RecordProperty("implementation", "std::expected");
+#else
+  RecordProperty("implementation", "minidaq shim");
+#endif
+  SUCCEED();
 }

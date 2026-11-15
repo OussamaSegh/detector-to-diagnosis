@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <ctime>
+#include <utility>
 
 namespace minidaq {
 
@@ -117,7 +118,7 @@ void FlightRecorder::record(TraceCode code, std::uint64_t a, std::uint64_t b) no
   s.t_ns.store(now_ns(), std::memory_order_relaxed);
   s.a.store(a, std::memory_order_relaxed);
   s.b.store(b, std::memory_order_relaxed);
-  s.code.store(static_cast<std::uint8_t>(code), std::memory_order_relaxed);
+  s.code.store(std::to_underlying(code), std::memory_order_relaxed);
   s.seq.store(2 * n + 2, std::memory_order_release);  // even: complete, and the fields with it
   ring->next.store(n + 1, std::memory_order_release);  // also the count of recorded events
 }

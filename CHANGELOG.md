@@ -8,6 +8,18 @@ the patch version.
 
 ## [Unreleased]
 
+### Changed (2.0.0-dev, breaking)
+
+- C++23 is the language standard of every build, within what GCC 13 and Clang 18 with
+  libstdc++ 13 both accept (CR-0028, ADR 0035, which supersedes ADR 0006); a C++20 build is no
+  longer supported. `minidaq::Expected` stays an alias of `std::expected` with GCC and the shim
+  with Clang 18, whose libstdc++ 13 hides `<expected>`. The `gcc-cxx23` preset is retired and
+  `release` takes its place among the six presets of `ci/run_all.sh` and CI. Enumerations stored
+  as integers use `std::to_underlying`. clang-tidy's `modernize-use-std-print` is off
+  (libstdc++ 13 has no `<print>`); cppcheck 2.13 parses the sources as C++20.
+- Chapter 1 shows `std::expected` and a table of the C++23 features with what each replaces;
+  Chapters 6, 29 and 32 and Exercise 14.5 follow the retired preset.
+
 ### Fixed (review of 1.3.0)
 
 - `minidaq_listmode verify-run` refuses a signed run record whose digest has a field of the

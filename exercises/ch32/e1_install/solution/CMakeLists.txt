@@ -7,7 +7,7 @@ include(CMakePackageConfigHelpers)
 
 add_library(pulse src/pulse.cpp)
 add_library(pulse::pulse ALIAS pulse)
-target_compile_features(pulse PUBLIC cxx_std_20)
+target_compile_features(pulse PUBLIC cxx_std_23)
 # The headers are in the source tree while building and under the prefix once installed.
 target_include_directories(pulse PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

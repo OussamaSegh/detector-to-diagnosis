@@ -74,19 +74,6 @@
       }
     },
     {
-      "name": "gcc-cxx23",
-      "displayName": "GCC release, C++23 (std::expected instead of the shim, ADR 0006)",
-      "inherits": [
-        "base",
-        "gcc"
-      ],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG",
-        "CMAKE_CXX_STANDARD": "23"
-      }
-    },
-    {
       "name": "hardened",
       "displayName": "GCC release with hardening (ADR 0008): what ships",
       "inherits": [
@@ -173,10 +160,6 @@
       "configurePreset": "clang-release"
     },
     {
-      "name": "gcc-cxx23",
-      "configurePreset": "gcc-cxx23"
-    },
-    {
       "name": "hardened",
       "configurePreset": "hardened"
     },
@@ -228,11 +211,6 @@
       "name": "clang-release",
       "inherits": "base",
       "configurePreset": "clang-release"
-    },
-    {
-      "name": "gcc-cxx23",
-      "inherits": "base",
-      "configurePreset": "gcc-cxx23"
     },
     {
       "name": "hardened",
@@ -333,23 +311,6 @@
         {
           "type": "test",
           "name": "clang-release"
-        }
-      ]
-    },
-    {
-      "name": "gcc-cxx23",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "gcc-cxx23"
-        },
-        {
-          "type": "build",
-          "name": "gcc-cxx23"
-        },
-        {
-          "type": "test",
-          "name": "gcc-cxx23"
         }
       ]
     },

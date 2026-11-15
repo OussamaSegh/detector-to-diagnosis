@@ -20,7 +20,7 @@ if tidy is None:
     sys.exit(77)
 # clang-tidy finds the repository's .clang-tidy by walking up from the source file.
 r = subprocess.run([tidy, "--quiet", f"--header-filter={variant}/.*", str(variant / "legacy_tool.cpp"), "--",
-                    "-std=c++20", f"-I{variant}", f"-I{repo / 'minidaq/include'}"],
+                    "-std=c++23", f"-I{variant}", f"-I{repo / 'minidaq/include'}"],
                    capture_output=True, text=True)
 findings = sorted({line for line in r.stdout.splitlines() if "warning:" in line or "error:" in line})
 for f in findings:

@@ -106,7 +106,7 @@ class Header(unittest.TestCase):
             t = pathlib.Path(tmp)
             (t / "demo.hpp").write_text(header(load(GOOD)))
             (t / "check.cpp").write_text(CHECK)
-            subprocess.run([cxx, "-std=c++20", "-Wall", "-Werror", "-o", str(t / "check"), str(t / "check.cpp")],
+            subprocess.run([cxx, "-std=c++23", "-Wall", "-Werror", "-o", str(t / "check"), str(t / "check.cpp")],
                            check=True, cwd=tmp)
             self.assertEqual(subprocess.run([str(t / "check")]).returncode, 0)
 

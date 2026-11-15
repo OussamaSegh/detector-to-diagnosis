@@ -5,8 +5,13 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-15: release 1.3.0 is out (tag book-v1.3.0) and its independent review is
-in a PR; VERSION is 1.3.1-dev. The next milestone is 2.0.0-dev (Theme B's breaking items).
+Last updated: 2026-11-15: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
+(143407e); VERSION is 1.3.1-dev. Milestone 2.0.0-dev (Theme B's breaking items) has started:
+CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;
+`minidaq::Expected` stays an alias on GCC and the shim on Clang 18, whose libstdc++ 13 hides
+`<expected>`; clang-tidy's use-std-print off; cppcheck 2.13 parses as C++20). Next: CR-0029
+(product build without the simulator, approved), CR-0030 (API 3.0 and schema 2.0). An existing
+build directory reconfigures to C++23 by itself (the standard is no longer a cache variable).
 
 ## Start here (toward 2.0.0)
 
@@ -233,7 +238,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-069, CR-0028, ADR 0035, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-072, CR-0030, ADR 0036, RC-53, SRS-PLT-013, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
@@ -427,7 +432,7 @@ Dependencies and process:
 | `docs/architecture/` | `software-items.json` (items, class, paths) and `layers.json`. |
 | `tools/` | Checkers and generators: `trace_matrix.py`, `design_file.py`, `anomalies.py`, `check_layers.py`, `check_risk.py`, `coverage.py`, `mutation_test.py`, `perf_gate.py`, `make_sbom.py`, `static_analysis.sh`, `release_checks.sh`, and more. |
 | `measurements/` | Raw evidence behind every number in the book, one folder per chapter, plus `release-X.Y.Z/`. |
-| `ci/run_all.sh` | The six CI presets locally: debug, clang-release, gcc-cxx23, hardened, asan-ubsan and tsan. |
+| `ci/run_all.sh` | The six CI presets locally: debug, clang-release, release, hardened, asan-ubsan and tsan (all C++23, ADR 0035). |
 | `.github/workflows/` | `ci.yml` (presets, static analysis, fuzz smoke, SBOM, Grype, document control), `gates.yml` (gate self-test), `codeql.yml`, `kdp.yml`, `pages.yml`, `tags.yml` and `perf.yml`. `perf.yml` never runs because there is no self-hosted runner; `pages.yml` and the CodeQL upload need a public repository (it was private on 2026-11-08 and 09, public again since 2026-11-09). |
 
 Other presets: release, profile, fuzz, and coverage (Clang source-based coverage with MC/DC,

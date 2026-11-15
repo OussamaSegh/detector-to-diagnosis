@@ -10,13 +10,13 @@ MiniDAQ 0.3.0, commit 0123456789abcdef0123456789abcdef01234567, tag book-v0.3.0
 |---|---|---|
 | build debug | pass | logs/build.log |
 | build clang-release | pass | logs/build.log |
-| build gcc-cxx23 | pass | logs/build.log |
+| build release | pass | logs/build.log |
 | build hardened | pass | logs/build.log |
 | build asan-ubsan | pass | logs/build.log |
 | build tsan | pass | logs/build.log |
 | tests debug | pass | logs/tests-debug.log |
 | tests clang-release | pass | logs/tests-clang-release.log |
-| tests gcc-cxx23 | pass | logs/tests-gcc-cxx23.log |
+| tests release | pass | logs/tests-release.log |
 | tests hardened | pass | logs/tests-hardened.log |
 | tests asan-ubsan | pass | logs/tests-asan-ubsan.log |
 | tests tsan | pass | logs/tests-tsan.log |

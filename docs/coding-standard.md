@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 7 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
+Version 8 (MiniDAQ 1.3.1-dev). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -15,8 +15,11 @@ their text. MiniDAQ does not claim conformance to any of them.
 
 ## 1. Language and build
 
-1. C++20, also built as C++23 (`gcc-cxx23` preset). No compiler extensions
-   (`CMAKE_CXX_EXTENSIONS OFF`). *Enforced:* CMake, both compilers in CI.
+1. C++23, limited to what GCC 13 and Clang 18 with libstdc++ 13 both accept (ADR 0035). No
+   compiler extensions (`CMAKE_CXX_EXTENSIONS OFF`). `std::unreachable` is not used where the
+   value can come from outside the program (a register, a file, a datagram): a switch over
+   such a value ends in a defined fallback, because an unexpected value must not become
+   undefined behaviour. *Enforced:* CMake, both compilers in CI; review for `std::unreachable`.
 2. The code compiles without warnings under GCC and Clang with the flags in
    `cmake/Warnings.cmake`, including `-Wconversion -Wsign-conversion
    -Wold-style-cast -Wshadow -Wformat=2`. *Enforced:* `-Werror`.
@@ -156,3 +159,4 @@ must report nothing before a change is merged.
 | 5 | Rule 1.4 on formatting, checked on changed lines (Chapter 32, ADR 0027, CR-0018). |
 | 6 | Rules 5.5 and 5.6: clock reads and thread starts in tests state their kind, checked by `tests.waits` (CAPA-0001, MDQ-PR-047, MDQ-PR-048). |
 | 7 | Approved by the software lead for release 1.1.0; the content is that of version 6 (MDQ-PR-066). |
+| 8 | Rule 1: C++23, and when `std::unreachable` may not be used (CR-0028, ADR 0035). |
