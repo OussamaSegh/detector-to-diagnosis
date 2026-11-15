@@ -1,0 +1,35 @@
+# 2026-11-15T19:51:57Z commit ced71e9 property-based tests, MINIDAQ_PROP_CASES=100
+Running main() from /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = Properties.*
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from Properties
+[ RUN      ] Properties.TheUnwrapperRestoresEveryTime
+[       OK ] Properties.TheUnwrapperRestoresEveryTime (90 ms)
+[ RUN      ] Properties.PackAndUnpackAreInverse
+[       OK ] Properties.PackAndUnpackAreInverse (15 ms)
+[ RUN      ] Properties.TheSorterFindsWhatTheReferenceFinds
+[       OK ] Properties.TheSorterFindsWhatTheReferenceFinds (321 ms)
+[ RUN      ] Properties.TheOrderOfTiesDoesNotMatter
+[       OK ] Properties.TheOrderOfTiesDoesNotMatter (297 ms)
+[ RUN      ] Properties.LongStreamsGiveTheSameResult
+[       OK ] Properties.LongStreamsGiveTheSameResult (1483 ms)
+[ RUN      ] Properties.EveryCoincidenceIsInItsWindow
+[       OK ] Properties.EveryCoincidenceIsInItsWindow (82 ms)
+[ RUN      ] Properties.FixedWindowsUseEachSingleOnce
+[       OK ] Properties.FixedWindowsUseEachSingleOnce (82 ms)
+[ RUN      ] Properties.BatchSizesDoNotMatter
+[       OK ] Properties.BatchSizesDoNotMatter (100 ms)
+[ RUN      ] Properties.EverySingleIsAccountedFor
+[       OK ] Properties.EverySingleIsAccountedFor (77 ms)
+[ RUN      ] Properties.TheTrackerRestoresOrderAndCountsEveryPacket
+[       OK ] Properties.TheTrackerRestoresOrderAndCountsEveryPacket (359 ms)
+[ RUN      ] Properties.TheMergerOutputIsOrderedAndComplete
+[       OK ] Properties.TheMergerOutputIsOrderedAndComplete (125 ms)
+[ RUN      ] Properties.TheHarnessShrinksACounterexample
+[       OK ] Properties.TheHarnessShrinksACounterexample (0 ms)
+[----------] 12 tests from Properties (3037 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 1 test suite ran. (3037 ms total)
+[  PASSED  ] 12 tests.

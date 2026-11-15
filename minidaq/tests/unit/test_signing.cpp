@@ -176,6 +176,51 @@ TEST_F(Signing, ASignedRunVerifiesUntilAFileOrItsRecordChanges) {
   EXPECT_NE(unsigned_run.error().find("signature"), std::string::npos) << unsigned_run.error();
 }
 
+TEST_F(Signing, ASignedRecordThatDoesNotListItsFilesProperlyIsRefused) {
+  // REQ: SRS-OUT-014
+  // A trusted key can sign a record that is malformed: the check refuses it instead of
+  // believing it. Each record below is signed again, so that only the content is wrong.
+  const auto k = key();
+  const fs::path record = run(k);
+  ASSERT_FALSE(record.empty());
+  const auto good = nlohmann::json::parse(read(record));
+  const auto refused = [&](const nlohmann::json& j, const char* what) {
+    const std::string text = j.dump();
+    write(record, text);
+    write(record.string() + ".sig", *k->sign(text));
+    const auto r = verify_signed_run(record, dir_ / "keys");
+    EXPECT_FALSE(r) << what;
+    return r ? std::string{} : r.error();
+  };
+  auto j = good;
+  j.erase("file_digests");
+  EXPECT_NE(refused(j, "no digests").find("do not match"), std::string::npos);
+  j = good;
+  j["file_digests"].push_back(good["file_digests"][0]);
+  EXPECT_NE(refused(j, "one digest too many").find("do not match"), std::string::npos);
+  j = good;
+  j["file_digests"][0]["file"] = "other.lm";
+  EXPECT_NE(refused(j, "a digest of another file").find("has no digest"), std::string::npos);
+  j = good;
+  j["files"][0] = 7;
+  EXPECT_NE(refused(j, "a file that is not a name").find("has no digest"), std::string::npos);
+  j = good;
+  j["files"][0] = "../" + good["files"][0].get<std::string>();
+  j["file_digests"][0]["file"] = j["files"][0];
+  EXPECT_NE(refused(j, "a path out of the run's directory").find("not a path"), std::string::npos);
+  j = good;
+  j["file_digests"][0]["bytes"] = good["file_digests"][0]["bytes"].get<std::uint64_t>() + 1;
+  EXPECT_NE(refused(j, "a wrong size").find("size or SHA-256"), std::string::npos);
+  j = good;
+  j["files"][0] = "missing.lm";
+  j["file_digests"][0]["file"] = "missing.lm";
+  EXPECT_NE(refused(j, "a file that is not there").find("cannot read"), std::string::npos);
+  write(record, "not json");
+  write(record.string() + ".sig", *k->sign("not json"));
+  EXPECT_FALSE(verify_signed_run(record, dir_ / "keys")) << "a signed text that is not JSON";
+  EXPECT_FALSE(verify_signed_run(dir_ / "data" / "none.run.json", dir_ / "keys")) << "no record";
+}
+
 TEST_F(Signing, WithoutAKeyTheRunRecordIsAsBefore) {
   // REQ: SRS-OUT-013
   const fs::path record = run(nullptr);

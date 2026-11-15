@@ -1,0 +1,88 @@
+== minidaq/apps/minidaq_listmode.cpp: 6 changed lines with an untaken branch (of 137 listed, 26 changed)
+  270: if ((cmd == "sino" && a == "--out" && has_value) ||
+  271: (cmd == "verify-run" && a == "--keys" && has_value)) {
+  289: if (!ok || files.empty() || ((cmd == "sino" || cmd == "verify-run") && out.empty())) {
+  302: if (cmd == "verify-run") {
+  304: for (const auto& f : files) {
+  306: if (key) {
+== minidaq/apps/minidaq_send.cpp: 1 changed lines with an untaken branch (of 56 listed, 15 changed)
+   87: } else if (a == "--marker-interval-us") {
+== minidaq/apps/minidaq_server.cpp: 6 changed lines with an untaken branch (of 118 listed, 36 changed)
+  114: } else if (a == "--signing-key" && v) {
+  116: } else if (a == "--calibration-keys" && v) {
+  203: if (!signing_key_path.empty()) {
+  205: if (!key) {
+  212: if (!calibration_keys.empty()) {
+  217: return key ? std::nullopt : std::optional<std::string>{key.error()};
+== minidaq/include/minidaq/control/acquisition_service.hpp: 0 changed lines with an untaken branch (of 28 listed, 7 changed)
+== minidaq/include/minidaq/control/adapters.hpp: 0 changed lines with an untaken branch (of 28 listed, 5 changed)
+== minidaq/include/minidaq/control/control_protocol.hpp: 0 changed lines with an untaken branch (of 28 listed, 9 changed)
+== minidaq/include/minidaq/control/listmode_sink.hpp: 0 changed lines with an untaken branch (of 28 listed, 23 changed)
+== minidaq/include/minidaq/control/ports.hpp: 0 changed lines with an untaken branch (of 28 listed, 3 changed)
+== minidaq/include/minidaq/control/signing.hpp: 0 changed lines with an untaken branch (of 28 listed, 61 changed)
+== minidaq/include/minidaq/format/packed_single.hpp: 1 changed lines with an untaken branch (of 29 listed, 40 changed)
+  154: : num_crystals_{num_crystals < marker_crystal ? num_crystals : marker_crystal} {}
+== minidaq/include/minidaq/hw/fake_board.hpp: 0 changed lines with an untaken branch (of 28 listed, 12 changed)
+== minidaq/include/minidaq/hw/feb_regs.hpp: 0 changed lines with an untaken branch (of 28 listed, 20 changed)
+== minidaq/include/minidaq/hw/register.hpp: 0 changed lines with an untaken branch (of 31 listed, 1 changed)
+== minidaq/include/minidaq/hw/slow_control.hpp: 0 changed lines with an untaken branch (of 28 listed, 6 changed)
+== minidaq/include/minidaq/pipeline/acquisition_pipeline.hpp: 0 changed lines with an untaken branch (of 28 listed, 5 changed)
+== minidaq/include/minidaq/pipeline/channel.hpp: 0 changed lines with an untaken branch (of 28 listed, 11 changed)
+== minidaq/include/minidaq/processing/calibration.hpp: 0 changed lines with an untaken branch (of 29 listed, 4 changed)
+== minidaq/include/minidaq/processing/coincidence_sorter.hpp: 0 changed lines with an untaken branch (of 29 listed, 5 changed)
+== minidaq/include/minidaq/sim/readout_link.hpp: 0 changed lines with an untaken branch (of 28 listed, 8 changed)
+== minidaq/src/control/acquisition_service.cpp: 1 changed lines with an untaken branch (of 86 listed, 36 changed)
+   56: {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)}});
+== minidaq/src/control/adapters.cpp: 2 changed lines with an untaken branch (of 40 listed, 11 changed)
+   57: if (!o.sink && run_key) {
+   60: if (c.output.type == "listmode") {
+== minidaq/src/control/hardware.cpp: 0 changed lines with an untaken branch (of 41 listed, 5 changed)
+== minidaq/src/control/listmode_sink.cpp: 14 changed lines with an untaken branch (of 167 listed, 108 changed)
+  244: if (!write_durably(path, text) || !cfg_.signing_key) {
+  249: if (!sig) {
+  271: (r ? std::string{"wrote nothing"} : errno_message(r.error())));
+  282: set_fault((sync_error != 0 ? "fsync " : "close ") + part + ": " +
+  283: errno_message(sync_error != 0 ? sync_error : e));
+  478: return static_cast<bool>(in) || in.eof();
+  482: if (!slurp(record, text)) {
+  493: if (!j.is_object() || !j.contains("files") || !j["files"].is_array() ||
+  494: !j.contains("file_digests") || !j["file_digests"].is_array() ||
+  495: j["files"].size() != j["file_digests"].size()) {
+  501: if (!j["files"][i].is_string() || !d.is_object() ||
+  502: d.value("file", "") != j["files"][i].get<std::string>()) {
+  507: if (name.find('/') != std::string::npos) {
+  523: if (bytes != d.value("bytes", std::uint64_t{0}) || h.hex_digest() != d.value("sha256", "")) {
+== minidaq/src/control/run_integrity.cpp: 5 changed lines with an untaken branch (of 66 listed, 29 changed)
+   72: if (det != status.end() && det->is_object() && det->contains("packets_delivered") &&
+   73: det->contains("packets_lost") && boards != it->end() && boards->is_array() &&
+   74: !boards->empty()) {
+   79: if (d == b.end() || !d->is_number_unsigned()) {
+   87: if (known && delivered.is_number_unsigned() && lost.is_number_unsigned()) {
+== minidaq/src/control/signing.cpp: 8 changed lines with an untaken branch (of 55 listed, 156 changed)
+   67: if (!f) {
+   77: if (ctx && EVP_DigestVerifyInit(ctx.get(), nullptr, nullptr, nullptr, key.get()) == 1 &&
+  101: if (!impl->key || EVP_PKEY_get_id(impl->key.get()) != EVP_PKEY_ED25519) {
+  106: if (EVP_PKEY_get_raw_public_key(impl->key.get(), pub.data(), &len) != 1 || len != pub.size()) {
+  111: if (EVP_Digest(pub.data(), pub.size(), md.data(), &md_len, EVP_sha256(), nullptr) != 1) {
+  123: if (!ctx || EVP_DigestSignInit(ctx.get(), nullptr, nullptr, nullptr, impl_->key.get()) != 1 ||
+  124: EVP_DigestSign(ctx.get(), out, &len, bytes_of(message), message.size()) != 1 ||
+  125: len != sig.size()) {
+== minidaq/src/format/packed_single.cpp: 1 changed lines with an untaken branch (of 32 listed, 24 changed)
+   51: if (!has_marker_ || t > marker_) {
+== minidaq/src/hw/fake_board.cpp: 1 changed lines with an untaken branch (of 53 listed, 34 changed)
+  223: if (has_map_1_2()) {
+== minidaq/src/hw/slow_control.cpp: 3 changed lines with an untaken branch (of 59 listed, 27 changed)
+  228: const bool map_1_2 = major > 1 || minor >= 3;
+  231: if (const auto w = write<feb::MarkerInterval>(*b.bus, settings_.marker_interval_us); !w) {
+  259: if (!sent) {
+== minidaq/src/pipeline/acquisition_pipeline.cpp: 3 changed lines with an untaken branch (of 58 listed, 47 changed)
+  270: if (marker_ps != no_marker) {
+  290: marker_ps != no_marker && (end == held.end() || end->time.count() >= marker_ps);
+  292: if (from == end && marker_holds) {
+== minidaq/src/processing/calibration.cpp: 0 changed lines with an untaken branch (of 28 listed, 1 changed)
+== minidaq/src/processing/coincidence_sorter.cpp: 1 changed lines with an untaken branch (of 36 listed, 11 changed)
+  140: if (have_last_ && t <= last_time_) {
+== minidaq/src/sim/readout_link.cpp: 2 changed lines with an untaken branch (of 55 listed, 26 changed)
+   44: step > 0 && end.count() > 0 ? static_cast<std::size_t>(end.count() / step) : 0;
+   52: while (step > 0 && next <= s.single.time.count() && next <= end.count()) {
+== minidaq/src/update/bundle.cpp: 0 changed lines with an untaken branch (of 45 listed, 3 changed)

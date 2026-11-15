@@ -85,6 +85,26 @@ TEST(StreamDecoder, ReadsAMarkerAsAPromiseNotASingle) {
   EXPECT_FALSE(d.take_marker().has_value()) << "taken once";
 }
 
+TEST(StreamDecoder, KeepsTheLatestOfSeveralMarkersAndNeverTakesTheMarkerForASingle) {
+  // REQ: SRS-FMT-014
+  // A later marker after an earlier one in the same call moves the promise forward.
+  const std::vector<std::uint64_t> words = {p::marker(300), p::marker(400)};
+  std::array<Single, 4> out{};
+  p::StreamDecoder d{G::num_crystals};
+  EXPECT_EQ(d.decode(words, out), 0U);
+  EXPECT_EQ(d.take_marker()->count(), 2'000);
+
+  // A crystal count above the marker's crystal is taken as 32767, so that the marker word stays a
+  // marker and every other crystal of the 15-bit field is still a single.
+  p::StreamDecoder wide{p::marker_crystal + 1};
+  const std::vector<std::uint64_t> w2 = {p::marker(300), p::pack({p::marker_crystal - 1, 100, 7}),
+                                         p::pack({p::marker_crystal, 100, 9})};
+  EXPECT_EQ(wide.decode(w2, out), 1U);
+  EXPECT_EQ(out[0].crystal, CrystalId{p::marker_crystal - 1});
+  EXPECT_EQ(wide.stats().markers, 1U);
+  EXPECT_EQ(wide.stats().invalid_crystal, 1U) << "crystal 32767 without the marker's energy";
+}
+
 TEST(StreamDecoder, UnwrapsAMarkerLikeASingle) {
   // REQ: SRS-FMT-014
   const std::uint64_t near_end = p::time_mask - 10;

@@ -1,0 +1,9 @@
+# 2026-11-15 GitHub Actions runs, read with the GitHub API
+candidate ced71e9e25fb21a2ff423313e7168f0e4bd4ab3d (commit policy: accept b9e5e69 without its Tests: trailer):
+  ci run 266 (43747979281): success; gates run 137 (43747979266): success; codeql run 217
+  (43747979331): success; pages run 191 (43747979294): success
+the commit before it, b9e5e69 (the stream decoder as fast as in 1.2.0, MDQ-PR-070): ci run 265
+  (43747869391): failure, the document-control job's commit policy (no Tests: trailer), accepted
+  in ced71e9; perf run 44 (43747869392): success; gates run 136: success; codeql run 216: success;
+  kdp run 109: success; pages run 190: cancelled by the next push
+895eaee (internal audit version 2): gates run 135: success; codeql run 215: success
