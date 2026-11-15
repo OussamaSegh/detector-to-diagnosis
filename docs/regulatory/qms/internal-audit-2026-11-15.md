@@ -1,6 +1,6 @@
 # Internal audit 2026-11-15: plan and practice before release 1.3.0
 
-Version 1 (MiniDAQ 1.3.0-dev). Status: final.
+Version 2 (MiniDAQ 1.3.0-dev). Status: final.
 
 | Field | Value |
 |---|---|
@@ -24,10 +24,11 @@ item 9 asks.
 | O-6 | Risk management: new functions reviewed against the hazards and threats | CR-0026 added a windowing failure mode for a marker that arrives too late to the sorter's FMEA and SRS-HW-017 to risk control RC-30; CR-0027 names its requirements in threats T-27 and T-54. `docs.threats`, `docs.risk` and the trace matrix pass. | Observation | None |
 | O-7 | SDP 7 and 10, CAPA procedure | `docs.anomalies` (68 reports, 3 open, each with a decision; MDQ-PR-007 closed by CR-0026, MDQ-PR-006 decided again for this release), `docs.soup`, `docs.changes`, `docs.capa`: all pass. CAPA-0001 to CAPA-0004 are closed; no CAPA is open. | Observation | None |
 | O-8 | SDP 6: static analysis on every change | The first run of `tools/static_analysis.sh` on CR-0027 reported two clang-tidy findings (a repeated branch body, a `reinterpret_cast` in the hashing of bytes); both were resolved before the commit, the cast with a scoped suppression that says why. The commit itself is clean. | Observation | None |
+| O-9 | SDP 6: CI on every change; change control, impact analysis | After the audit's first version, CI's fuzz-smoke job failed on main: the decoder's fuzz target still counted a time marker as a single or an invalid crystal (MDQ-PR-069, a stale property, not a decoder defect). CR-0026's impact analysis had not named the fuzz target, and the local test run before a commit leaves out the fuzz label. Fixed in 4686729 with the crashing input kept as a seed, before the release checks were run again; the pre-commit hook's crash on that raw-bytes seed was fixed in the same commit. The release checks of 1.3.0 that had started on 9034920 were stopped, because their fuzzing would have failed on the same property. | Observation | The release checks run on the fixed commit. The impact analysis of a change to a decoder's counters names the fuzz target that states a property over them (MDQ-PR-069's root cause); no CAPA, because CI found it on the first push as designed |
 
 ## Conclusion
 
-No nonconformity. Both changes of the release went through change control with their approval
+No nonconformity. CI found one stale test property after the first version (O-9), which is the control working as designed. Both changes of the release went through change control with their approval
 recorded before the work, and the condition attached to CR-0027 is met by its tests. The step that
 rests on a person, the approval of the five controlled documents (O-4), was given before the
 release checks under the software lead's standing delegation.
@@ -37,3 +38,4 @@ release checks under the software lead's standing delegation.
 | Version | Change |
 |---|---|
 | 1 | First version, before the release checks of 1.3.0. |
+| 2 | O-9: MDQ-PR-069, found by CI after the first version, fixed before the release checks. |
