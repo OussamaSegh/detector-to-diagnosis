@@ -32,8 +32,10 @@ ALLOWED_LOCAL = ("noreply@", "no-reply@")
 
 
 def staged_diff():
-    return subprocess.run(["git", "diff", "--cached", "-U0", "--no-color"], capture_output=True,
-                          text=True, check=True).stdout
+    # Not text=True: a staged file need not be UTF-8 (a fuzz seed is raw bytes, MDQ-PR-069).
+    out = subprocess.run(["git", "diff", "--cached", "-U0", "--no-color"], capture_output=True,
+                         check=True).stdout
+    return out.decode("utf-8", errors="replace")
 
 
 def addresses(diff):

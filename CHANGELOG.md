@@ -34,6 +34,12 @@ the patch version.
 - `.github/labels.txt` and the workflow `labels.yml`, which creates a listed issue label that
   the repository lacks: the `erratum` label that the erratum form applies did not exist.
 
+### Fixed
+
+- The decoder's fuzz target accounts for time markers (MDQ-PR-069): it counted a marker as a
+  single or an invalid crystal and aborted on the first all-ones word. The input is kept as a seed.
+- The pre-commit hook no longer crashes on a staged file that is not UTF-8, such as a fuzz seed.
+
 ### Fixed (review of 1.2.0)
 
 - EPUB and web edition: the appendix's figure references read ".10" to ".17" instead of A.1 to

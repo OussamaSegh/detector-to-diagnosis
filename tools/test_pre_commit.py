@@ -57,6 +57,13 @@ class PreCommit(unittest.TestCase):
         r = self.add("t.py", "@unittest.skipUnless(True, 'x')\nclass A:\n    pass\n")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
+    def test_a_file_of_raw_bytes_is_committed(self):
+        # A fuzz seed is not UTF-8; the hook read the diff as text and crashed on it (MDQ-PR-069).
+        (self.dir / "seed").write_bytes(bytes([7]) + b"\xff" * 8)
+        self.git("add", "seed")
+        r = self.commit()
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
     def test_unformatted_cpp_is_refused(self):
         # REQ: SRS-BLD-005
         r = self.add("a.cpp", "int  add(int a,int b){return a+b;}\n")

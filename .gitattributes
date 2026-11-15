@@ -1,3 +1,5 @@
 # Measurements are evidence written by the tools: kept byte for byte, so their trailing spaces
 # are not whitespace errors for `git diff --check` (the pre-commit hook, Chapter 32).
 measurements/** -whitespace
+# Fuzz seeds are raw bytes: no text diff, no line-ending or whitespace rules.
+fuzz/corpus/** binary

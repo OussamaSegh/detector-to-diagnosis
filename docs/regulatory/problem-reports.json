@@ -1298,6 +1298,32 @@
         "category": "process",
         "escape": "No check ties a number in the text to a file; the Part reviews of Parts I and II predate the rule, and the second full review read every chapter against it."
       }
+    },
+    {
+      "id": "MDQ-PR-069",
+      "title": "The decoder's fuzz target still counted a time marker as a single or an invalid crystal",
+      "found": "2026-11-15, CI on main (fuzz-smoke) after CR-0026",
+      "item": "tests",
+      "status": "closed",
+      "capa": "",
+      "description": "CR-0026 taught the stream decoder to count a time marker (crystal 32767, energy code 2047) in DecodeStats::markers instead of invalid_crystal. The fuzz target fuzz_decoder checks that every word is accounted for as words == decoded + invalid_crystal; it was not updated, so the first input with an all-ones word aborted it within a second. The decoder is right: the property was stale.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The defect is in a test; the decoder's counting of markers is what CR-0026 specifies and its unit tests verify. No release carries it: the release checks of 1.3.0 had not reached the fuzzing."
+      },
+      "resolution": {
+        "change": "fuzz_decoder accounts for markers (words == decoded + invalid crystal + markers), checks the count of markers against the words, and checks that the chunked decode gives the same count and the same latest marker as the decode in one call. The all-ones input is kept as the seed seed_marker. Chapter 7's text names the three ways a word is accounted for. Committing that seed showed a second defect: the pre-commit hook read the staged diff as UTF-8 text and crashed on the raw bytes; it now decodes with replacement, a test commits a file of raw bytes, and .gitattributes marks the fuzz corpus as binary.",
+        "verification": "The old target aborts on seed_marker and the new one passes it; the new target ran 90 s (3.4 million inputs) from the seed corpus without a finding, and the fuzz CTest runs pass."
+      },
+      "root_cause": {
+        "whys": [
+          "The fuzz target's property names the decoder's counters, and a new counter changed what the property must add up.",
+          "CR-0026's impact analysis listed the decoder's unit tests but not the fuzz target, and the fuzz targets run only in CI's fuzz-smoke job and the release checks, not in the local test run."
+        ],
+        "cause": "A change to the decoder's counters was not traced to every test that states a property over them.",
+        "category": "test",
+        "escape": "The local ctest run before the commit excludes the fuzz label (it needs the fuzz preset); CI's fuzz-smoke job found it on the first push."
+      }
     }
   ]
 }

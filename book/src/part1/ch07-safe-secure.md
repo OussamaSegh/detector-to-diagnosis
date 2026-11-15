@@ -345,9 +345,10 @@ MiniDAQ's decoder target:
 ```
 
 It uses the first input byte to choose a chunk size, so the fuzzer also explores how bytes
-arrive. It checks that every word is accounted for (decoded or counted as invalid), that every
-decoded single is in range and encodes back to the same word, and that decoding the bytes in
-chunks gives exactly the same singles as decoding the words in one call. That last property
+arrive. It checks that every word is accounted for (decoded, counted as an invalid crystal, or
+counted as a time marker, the word Chapter 24 adds), that every decoded single is in range and
+encodes back to the same word, and that decoding the bytes in chunks gives exactly the same
+singles and the same latest marker as decoding the words in one call. That last property
 compares two code paths through the decoder, and any difference is a bug even if neither path
 crashes. The other targets follow the same pattern: `fuzz_raw16` checks the serialize round
 trip; `fuzz_config` checks that a rejected configuration always says why and that an accepted

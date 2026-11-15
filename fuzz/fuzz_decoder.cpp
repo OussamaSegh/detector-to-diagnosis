@@ -2,9 +2,10 @@
 // Fuzz target: the packed-word stream decoder (Chapter 7).
 //
 // Besides "does not crash" (ASan, UBSan), it checks properties that must hold
-// for any input: every word is accounted for, every single written is valid,
-// valid words survive a decode/encode round trip, and decoding bytes in
-// arbitrary chunks gives the same result as decoding the words in one call.
+// for any input: every word is accounted for (a single, an invalid crystal or a
+// time marker), every single written is valid, valid words survive a
+// decode/encode round trip, and decoding bytes in arbitrary chunks gives the
+// same result, markers included, as decoding the words in one call.
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -52,10 +53,15 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
   const std::size_t na = ref.decode(words, a);
   check(na <= nwords);
   check(ref.stats().words == nwords);
-  check(ref.stats().words == na + ref.stats().invalid_crystal);
+  check(ref.stats().words == na + ref.stats().invalid_crystal + ref.stats().markers);
   std::size_t k = 0;
+  std::size_t markers = 0;
   for (std::size_t i = 0; i < nwords; ++i) {
     const packed::Fields f = packed::unpack(words[i]);
+    if (packed::is_marker(words[i])) {
+      ++markers;  // a promise about time, not a single (Chapter 24)
+      continue;
+    }
     if (f.crystal >= ScannerGeometry::num_crystals) {
       continue;
     }
@@ -65,6 +71,7 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
     check(packed::encode(s) == words[i]);  // lossless for every valid word
   }
   check(k == na);
+  check(ref.stats().markers == markers);
 
   // The same bytes in chunks of `chunk` bytes: identical singles and counts.
   packed::StreamDecoder chunked{ScannerGeometry::num_crystals};
@@ -80,6 +87,8 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
   }
   check(nb == na);
   check(std::equal(a.begin(), a.begin() + static_cast<std::ptrdiff_t>(na), b.begin()));
+  check(chunked.stats().markers == ref.stats().markers);
+  check(chunked.take_marker() == ref.take_marker());  // the latest marker, however it arrived
   return 0;
 }
 // [/snippet:target]
