@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-15, by the software lead |
 | Source | threat model gaps T-27 (list-mode files and QC reports) and T-54 (calibration tables); roadmap 2.0.0, theme B |
 | Decision | approved, 2026-11-15, under the software lead's standing delegation of 2026-11-15 |
-| Commits | none yet |
+| Commits | b7c6f51 |
 
 ## Description
 
