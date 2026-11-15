@@ -125,7 +125,10 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME book.errata_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_errata.py)
   # Roadmap 2.0.0, Theme F: the web edition's builder and its check, on a small EPUB.
   add_test(NAME book.web_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_web.py)
-  set_tests_properties(book.xrefs book.xrefs_tool book.errata book.errata_tool book.web_tool PROPERTIES LABELS "unit")
+  # Review of 1.2.0: the EPUB's figure numbers, in the chapters and the appendix (erratum E-009).
+  add_test(NAME book.figure_numbers COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_figure_numbers.py)
+  set_tests_properties(book.xrefs book.xrefs_tool book.errata book.errata_tool book.web_tool book.figure_numbers
+                       PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

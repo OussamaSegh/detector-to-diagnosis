@@ -8,6 +8,13 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed (review of 1.2.0)
+
+- EPUB and web edition: the appendix's figure references read ".10" to ".17" instead of A.1 to
+  A.8 (erratum E-009, a regression of the appendix numbering in 1.2.0): `figures.lua` now counts
+  the level-1 headings that `design.lua` numbers in the appendix. The EPUB's figure captions
+  start with their number ("Figure 10.1."), as in the PDFs. Test `book.figure_numbers`.
+
 ## [1.2.0] - 2026-11-15
 
 ### Added
