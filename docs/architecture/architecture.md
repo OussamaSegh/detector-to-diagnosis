@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 22 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
+Version 23 (MiniDAQ 1.3.0-dev). Status: approved for release 1.3.0, 2026-11-15, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -382,3 +382,4 @@ Open issues:
 | 20 | Approved by the software lead for release 1.1.0; the content is that of version 19 (MDQ-PR-066). |
 | 21 | Release 1.3.0: time markers and the datagrams sent, register map 1.2, control API 2.5 (ADR 0033, CR-0026). |
 | 22 | Release 1.3.0: signed run records, calibration tables and reports, and the shared `minidaq_signing` library (ADR 0034, CR-0027). |
+| 23 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 22. |

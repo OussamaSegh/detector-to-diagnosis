@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 15 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
+Version 16 (MiniDAQ 1.3.0-dev). Status: approved for release 1.3.0, 2026-11-15, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -299,3 +299,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 13 | Approved by the software lead for release 1.1.0; the content is that of version 12 (MDQ-PR-066). |
 | 14 | Release 1.3.0 (CR-0026): time markers and register map 1.2 reviewed against the diagram. They add no element or flow: the markers travel the readout flow and the new registers the hardware bus. T-16's note says what a forged marker can do. |
 | 15 | Release 1.3.0 (CR-0027): signed run records, calibration tables and QC reports reviewed against the diagram. They add no element or flow; the keys are new assets of the acquisition PC (the private key) and of every reader (the public keys). T-27 and T-54 name the new requirements, and the three gaps of section 7 now say what remains when a site does not install the keys. |
+| 16 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 15. |

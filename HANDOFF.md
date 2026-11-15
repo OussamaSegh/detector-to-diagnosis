@@ -47,8 +47,8 @@ milestone 1.3.0 (Theme B non-breaking items and Chapter 38; Theme C waits for er
 
 **Review of 1.2.0 (2026-11-15, branch claude/project-thread-9gymzp, PR for the main thread to
 merge locally).** Fixed: the EPUB's appendix figure references printed ".10" to ".17" (a
-regression of 1.2.0's appendix numbering; erratum E-009, `fixed_in` 1.2.1, change it if the
-next release is 1.3.0), and EPUB captions now start with "Figure N.M."; web pages are named
+regression of 1.2.0's appendix numbering; erratum E-009, `fixed_in` 1.3.0, the next
+release), and EPUB captions now start with "Figure N.M."; web pages are named
 after the chapter ids (`ch06.html`, not Pandoc's `ch010.html`), so Chapter 38 will not move
 them; `color-scheme` on the web pages; `xrefs.py` reads references broken across lines;
 `post_release.py` writes all or nothing. The branch's three commits lack a parsable `Review:`
@@ -61,13 +61,15 @@ register map 1.2 (CR-0026, approved 2026-11-15 under the user's standing delegat
 which the coordinator exercises; ADR 0033; SRS v29 with SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014,
 SRS-HW-016, SRS-HW-017; ICD-FEB v3; architecture v21; threat model v14; control API 2.5;
 MDQ-PR-007 closed; Chapter 24 section "Register map 1.2", notes in Chapters 10, 23, 34 and the
-architecture appendix). The new documents are "draft for review": they need an approval before
-the release (ask the coordinator, which answers for the user). Simulated boards default to
-firmware 1.2.0 on purpose (ICD-FEB open item). Signing done too (CR-0027, approved the same way; ADR 0034;
-SRS v30; threat model v15; SOUP list v26; architecture v22; `--signing-key`,
+architecture appendix). Simulated boards default to firmware 1.2.0 on purpose (ICD-FEB open
+item). Signing done too (CR-0027, approved the same way; ADR 0034; `--signing-key`,
 `--calibration-keys`, `minidaq_listmode verify-run`, `minidaq-qc --keys/--sign`, `tools/calib --sign`;
-no private key in the repository, tests make their own). Left for 1.3.0: the MDQ-PR-006 decision; Chapter 38
-(after about 2026-12-07); VERSION to 1.3.0-dev with the SOUP review; audit, checks, record, tag.
+no private key in the repository, tests make their own). MDQ-PR-006 decided again (stays open).
+Option A (coordinator, 2026-11-15): 1.3.0 is Theme B non-breaking only, Chapter 38 moves after
+2.0.0-dev's breaking items (roadmap updated). VERSION 1.3.0-dev, SOUP review for 1.3 done; the five
+documents approved by the coordinator under the delegation (SRS v31, ICD-FEB v4, threat model v16,
+architecture v23, SOUP list v27); internal audit 2026-11-15, no nonconformity. Left: release
+checks, record, release commit, tag book-v1.3.0, then message the coordinator for the Opus review.
 
 ## Release 1.1.0 (for reference)
 

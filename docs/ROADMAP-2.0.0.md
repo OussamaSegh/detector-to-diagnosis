@@ -166,10 +166,10 @@ model. The same rhythm is kept.
 |---|---|---|
 | 1.0.x | Errata from readers and from the 1.0.0 review, free | Patch release per batch of errata |
 | 1.1.0 | The illustrated interior (released 2026-11-10) | Released |
-| 1.2.0 | Theme D first (post-release script, resumable checks), then Theme A and Theme F (web edition); the errata window of four to six weeks runs alongside | Verify count down to the ones kept with a reason; index in the PDF; EPUBCheck clean with accessibility; web edition on the download page |
-| 1.3.0 | Theme B, non-breaking items (register map 1.2, time markers, signing), with Chapter 38, clock distribution | Problem reports and threat gaps closed or re-decided; chapter recipe complete; release checks pass |
-| 1.4.0 | Chapter 39, time of flight | Chapter recipe complete (code, tests, exercises, measurements, review) |
+| 1.2.0 | Theme D first (post-release script, resumable checks), then Theme A and Theme F (web edition); the errata window of four to six weeks runs alongside | Released 2026-11-15 |
+| 1.3.0 | Theme B, non-breaking items: register map 1.2 and time markers (MDQ-PR-007), signing (T-27, T-54), MDQ-PR-006 decided again | Problem reports and threat gaps closed or re-decided; release checks pass |
 | 2.0.0-dev | Theme B, breaking items: control API 3.0, configuration schema 2.0, product build without the simulator, C++23 baseline | Earlier chapters, exercises and solutions updated to the new interface |
+| 2.0.0-dev, after the errata window (about 2026-12-07) | Chapter 38, clock distribution, and Chapter 39, time of flight, written against the new interfaces | Chapter recipe complete for each (code, tests, exercises, measurements, review) |
 | 2.0.0-rc | Chapter 40, maintenance and post-market, with MiniDAQ's 1.0 to 2.0 history as its example; Theme E files | Chapter recipe complete; page count within the KDP limit |
 | 2.0.0 | Second Edition: whole-book review, full release checks, KDP files | CI green on the release commit; tag `book-v2.0.0` |
 
@@ -180,6 +180,12 @@ Part X list.
 Themes A and D come first because they make every later step cheaper and give readers of 1.0.0
 something soon. Breaking changes are grouped in one step so the book's text about interfaces is
 rewritten once.
+
+Order changed on 2026-11-15 (decided under the author's standing delegation of that day): the
+non-breaking items of Theme B were done before the errata window closed, so 1.3.0 is released
+with them alone, and the breaking items come next instead of after Chapters 38 and 39. The new
+chapters are then written once, against the interfaces of 2.0.0, rather than written against
+the 1.x interfaces and rewritten. Release 1.4.0 is not planned any more.
 
 ## 5. Out of scope for 2.0.0
 

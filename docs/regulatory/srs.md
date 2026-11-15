@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 30 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
+Version 31 (MiniDAQ 1.3.0-dev). Status: approved for release 1.3.0, 2026-11-15, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -529,3 +529,4 @@ change.
 | 28 | Approved by the software lead for release 1.1.0; the content is that of version 27 (MDQ-PR-066). |
 | 29 | Release 1.3.0, Chapter 24: time markers in the readout stream, SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014 (problem report MDQ-PR-007); register map 1.2 of firmware 1.3, SRS-HW-016, and the datagrams the boards sent in the integrity verdict, SRS-HW-017; SRS-FMT-013 leaves markers out and SRS-HW-007 names the boards' new fields (ADR 0033, CR-0026); control API 2.5. |
 | 30 | Release 1.3.0, Chapter 25: signed run records, SRS-OUT-013 and SRS-OUT-014 (threat T-27), signed calibration tables, SRS-CAL-008 (threat T-54), and the analysis package's check and signature, SRS-ANA-007 and SRS-ANA-008 (ADR 0034, CR-0027). |
+| 31 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 30. |

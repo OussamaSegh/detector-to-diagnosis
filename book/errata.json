@@ -86,7 +86,7 @@
       "found_in": [
         "1.2.0"
       ],
-      "fixed_in": "1.2.1",
+      "fixed_in": "1.3.0",
       "text": "The text's references to the appendix's figures read \".10\" to \".17\" instead of A.1 to A.8, as in the PDFs. In the EPUB and the web edition the figure captions now start with their number as well."
     }
   ]
