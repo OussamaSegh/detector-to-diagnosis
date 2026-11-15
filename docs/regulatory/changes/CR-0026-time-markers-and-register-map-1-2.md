@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-15, by the software lead |
 | Source | problem report MDQ-PR-007; the open item of ICD-FEB version 2 on datagrams sent (residual of ADR 0018); roadmap 2.0.0, theme B |
 | Decision | approved, 2026-11-15, under the software lead's standing delegation of 2026-11-15 |
-| Commits | none yet |
+| Commits | 19c4c84 |
 
 ## Description
 
