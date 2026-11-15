@@ -47,6 +47,12 @@ class Xrefs(unittest.TestCase):
         for want in ("Chapter 9 does not exist", "Exercise 2.7 is not defined", "Part IV does not exist"):
             self.assertIn(want, text)
 
+    def test_a_reference_broken_across_lines_is_read_and_its_line_reported(self):
+        # Review of 1.2.0: the check read line by line and missed "Chapter" + newline + "9".
+        errors = self.check(chapter=CH + "\n```\ncode\n```\n\nSee Chapter\n9 and Exercise\n2.7.\n")
+        self.assertIn("book/src/part1/ch02-two.md:13: Chapter 9 does not exist", errors)
+        self.assertIn("book/src/part1/ch02-two.md:14: Exercise 2.7 is not defined", errors)
+
     def test_numbers_in_code_are_not_references(self):
         self.assertEqual(self.check(chapter=CH + "\n```\nChapter 9\n```\n\n`Exercise 9.9`\n"), [])
 

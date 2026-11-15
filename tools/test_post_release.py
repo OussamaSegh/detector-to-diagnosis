@@ -67,6 +67,13 @@ class PostRelease(unittest.TestCase):
         self.assertEqual(pr.main(["x", str(self.root), "1.2"]), 1)
         self.assertEqual((self.root / "VERSION").read_text(), "1.1.0\n")
 
+    def test_a_place_without_a_version_line_writes_nothing(self):
+        # Review of 1.2.0: VERSION used to be written before the packages were read.
+        (self.root / "recon/python/pyproject.toml").write_text("[project]\n")
+        self.assertEqual(pr.main(["x", str(self.root), "1.2.0-dev"]), 1)
+        self.assertEqual((self.root / "VERSION").read_text(), "1.1.0\n")
+        self.assertIn('"1.1.0"', (self.root / "analysis/pyproject.toml").read_text())
+
     def test_an_existing_unreleased_section_is_kept(self):
         text = "# C\n\n## [Unreleased]\n\n- x\n\n## [1.1.0]\n"
         self.assertEqual(pr.with_unreleased(text), text)

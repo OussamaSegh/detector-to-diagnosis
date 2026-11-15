@@ -19,6 +19,11 @@ the patch version.
   Chapter 6), so a chapter added in 1.3.0 does not move every later page and break links to
   them. Pages declare `color-scheme: light dark`, so form controls and scroll bars follow the
   dark styles. The search ignores words that are only `Object.prototype` keys.
+- `book/tools/xrefs.py` reads a paragraph's lines joined, so a "Chapter" at the end of a line
+  with its number on the next is checked too, and reports the file's own line numbers (a fenced
+  code block no longer shifts them).
+- `tools/post_release.py` makes every new text before it writes any, so a package without a
+  version line leaves VERSION as it was.
 
 ## [1.2.0] - 2026-11-15
 
