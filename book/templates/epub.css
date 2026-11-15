@@ -28,6 +28,7 @@ figure { margin: 1.2em 0; text-align: center; }
 figure img { max-width: 100%; }
 figcaption { font-size: 0.86em; text-align: left; color: #1F2937;
       font-family: "Helvetica Neue", Arial, sans-serif; margin-top: 0.4em; }
+figcaption .figure-number { font-weight: bold; }
 div.box-why, div.box-regulated, div.box-askteam, div.box-mistakes, div.box-note, div.box-milestone,
 div.box-exercise, div.box-objectives, div.box-prereq, div.box-check, div.box-summary {
   border: 1px solid #CBD5E1; border-radius: 4px; padding: 0.3em 0.8em; margin: 1em 0; }

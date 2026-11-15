@@ -10,7 +10,7 @@
 -- The alt text becomes the image's description in the EPUB; the caption is the caption.
 --
 -- A reference: Figure [](#fig-ch08-annihilation) prints the figure's number ("8.3"): \ref in
--- LaTeX, the same number counted here for the EPUB.
+-- LaTeX, the same number counted here for the EPUB, whose captions start with it as well.
 
 local latex = FORMAT:match("latex") ~= nil
 local profile = os.getenv("BOOK_PROFILE") or "screen"
@@ -50,9 +50,13 @@ local function numbers(doc)
   local letters = "ABCDEFGHIJ"
   for _, b in ipairs(doc.blocks) do
     if b.t == "RawBlock" and b.text:match("\\appendix") then
-      appendix, chapter = true, 0
-    elseif b.t == "Header" and b.level == 1 and not b.classes:includes("unnumbered")
-        and not b.classes:includes("part") then
+      appendix, chapter, k = true, 0, 0
+    elseif b.t == "Header" and b.level == 1 and not b.classes:includes("part")
+        and (not b.classes:includes("unnumbered") or (appendix and b.attributes["number"])) then
+      -- design.lua numbers the appendix itself outside LaTeX (A, B) and marks its headings
+      -- unnumbered, so an appendix chapter is a level-1 heading that carries a number. Before
+      -- this was read, the EPUB of 1.2.0 printed the appendix's figures as ".10" to ".17"
+      -- (erratum E-009): the count went on from Chapter 37 under no chapter number.
       chapter, k = chapter + 1, 0
     end
     pandoc.Div({ b }):walk({ Figure = function(f)
@@ -69,6 +73,17 @@ end
 function Pandoc(doc)
   local nums = latex and {} or numbers(doc)
   return doc:walk({
+    -- Outside LaTeX the caption carries its number too, as LaTeX prints it ("Figure 10.1."), so
+    -- a reader, or a screen reader, that meets "Figure 10.1" in the text finds the figure by it.
+    Figure = function(f)
+      local n = nums[f.identifier]
+      if latex or not n or #f.caption.long == 0 then return nil end
+      local first = f.caption.long[1]
+      if first.t ~= "Plain" and first.t ~= "Para" then return nil end
+      first.content:insert(1, pandoc.Space())
+      first.content:insert(1, pandoc.Span({ pandoc.Str("Figure " .. n .. ".") }, { class = "figure-number" }))
+      return f
+    end,
     Link = function(l)
       local id = l.target:match("^#(fig%-.+)$")
       if not id or #l.content > 0 then return nil end

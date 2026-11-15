@@ -49,8 +49,9 @@ def numbers(span):
 
 
 def strip_code(text):
-    """The text without fenced code blocks and inline code, where numbers are not references."""
-    text = re.sub(r"^(```|~~~).*?^\1", "", text, flags=re.M | re.S)
+    """The text without fenced code blocks and inline code, where numbers are not references.
+    A fenced block leaves its line breaks, so the line numbers of the report stay the file's."""
+    text = re.sub(r"^(```|~~~).*?^\1", lambda m: "\n" * m.group(0).count("\n"), text, flags=re.M | re.S)
     return re.sub(r"`[^`\n]*`", "", text)
 
 
@@ -94,19 +95,24 @@ def check(root):
     for path in files:
         text = strip_code(path.read_text())
         where = str(path.relative_to(root))
-        for lineno, line in enumerate(text.splitlines(), 1):
-            for m in CHAPTER_REF.finditer(line):
-                for x in numbers(m.group(1)):
-                    if "." in x or int(x) not in chs:
-                        errors.append(f"{where}:{lineno}: Chapter {x} does not exist")
-            for m in EXERCISE_REF.finditer(line):
-                for x in numbers(m.group(1)):
-                    if x not in defined:
-                        errors.append(f"{where}:{lineno}: Exercise {x} is not defined")
-            for m in PART_REF.finditer(line):
-                for x in re.findall(r"[IVX]+", m.group(1)):
-                    if x not in parts:
-                        errors.append(f"{where}:{lineno}: Part {x} does not exist")
+        # Lines are joined within a paragraph, so a "Chapter" at the end of a line and its number
+        # on the next are read too (review of 1.2.0); one character for one keeps the offsets.
+        flat = re.sub(r"(?<!\n)\n(?!\n)", " ", text)
+
+        def line_of(m):
+            return text.count("\n", 0, m.start()) + 1
+        for m in CHAPTER_REF.finditer(flat):
+            for x in numbers(m.group(1)):
+                if "." in x or int(x) not in chs:
+                    errors.append(f"{where}:{line_of(m)}: Chapter {x} does not exist")
+        for m in EXERCISE_REF.finditer(flat):
+            for x in numbers(m.group(1)):
+                if x not in defined:
+                    errors.append(f"{where}:{line_of(m)}: Exercise {x} is not defined")
+        for m in PART_REF.finditer(flat):
+            for x in re.findall(r"[IVX]+", m.group(1)):
+                if x not in parts:
+                    errors.append(f"{where}:{line_of(m)}: Part {x} does not exist")
         sm = re.fullmatch(r"ch(\d+)\.md", path.name)
         if path.parent.name == "solutions" and sm:
             for h in re.finditer(r"^#+ .*?Exercise (\d+)\.(\d+)", text, re.M):

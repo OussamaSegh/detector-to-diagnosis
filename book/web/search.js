@@ -33,7 +33,9 @@
     var terms = tokens(query);
     if (!terms.length) return null;
     var sets = terms.map(function (t, i) {
-      return i === terms.length - 1 ? prefixed(t) : new Set(index.words[t] || []);
+      // own keys only: a word such as "constructor" must not find Object.prototype's
+      return i === terms.length - 1 ? prefixed(t)
+        : new Set(Object.prototype.hasOwnProperty.call(index.words, t) ? index.words[t] : []);
     });
     sets.sort(function (a, b) { return a.size - b.size; });
     var hits = Array.from(sets[0]).filter(function (s) { return sets.every(function (x) { return x.has(s); }); });

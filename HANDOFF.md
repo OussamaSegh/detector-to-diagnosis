@@ -45,6 +45,17 @@ build checked, release record `docs/regulatory/releases/1.2.0.md` written with
 milestone 1.3.0 (Theme B non-breaking items and Chapter 38; Theme C waits for errata until about
 2026-12-07).
 
+**Review of 1.2.0 (2026-11-15, branch claude/project-thread-9gymzp, PR for the main thread to
+merge locally).** Fixed: the EPUB's appendix figure references printed ".10" to ".17" (a
+regression of 1.2.0's appendix numbering; erratum E-009, `fixed_in` 1.2.1, change it if the
+next release is 1.3.0), and EPUB captions now start with "Figure N.M."; web pages are named
+after the chapter ids (`ch06.html`, not Pandoc's `ch010.html`), so Chapter 38 will not move
+them; `color-scheme` on the web pages; `xrefs.py` reads references broken across lines;
+`post_release.py` writes all or nothing. The branch's three commits lack a parsable `Review:`
+trailer (the history rewrite to add it was refused): squash them when merging. Open: the
+issue form's label `erratum` does not exist in the repository, so reports arrive unlabeled
+until it is created.
+
 ## Release 1.1.0 (for reference)
 
 **Release 1.1.0 (2026-11-10): the illustrated interior.** Internal audit before the checks

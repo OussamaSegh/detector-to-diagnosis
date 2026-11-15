@@ -84,16 +84,20 @@ def set_version(root, version):
     """Writes version everywhere; returns the notes for the person running it."""
     python_version(version)  # refuses a malformed version before anything is written
     old = (root / "VERSION").read_text().strip()
-    (root / "VERSION").write_text(version + "\n")
+    # Every new text is made first, so a place without a version line writes nothing at all
+    # (review of 1.2.0: VERSION was written before the packages were read).
+    writes = [(root / "VERSION", version + "\n")]
     for rel, pattern in PLACES:
         path = root / rel
         text = path.read_text()
         m = re.search(pattern, text)
         if not m:
             raise ValueError(f"{rel}: no version line")
-        path.write_text(text[:m.start(1)] + python_version(version) + text[m.end(1):])
+        writes.append((path, text[:m.start(1)] + python_version(version) + text[m.end(1):]))
     changelog = root / "CHANGELOG.md"
-    changelog.write_text(with_unreleased(changelog.read_text()))
+    writes.append((changelog, with_unreleased(changelog.read_text())))
+    for path, text in writes:
+        path.write_text(text)
     notes = [f"VERSION {old} -> {version}; Python packages {python_version(version)}"]
     if VERSION_RE.fullmatch(old) and key(VERSION_RE.fullmatch(old).expand(r"\1.\2.\3"))[:2] != \
             key(VERSION_RE.fullmatch(version).expand(r"\1.\2.\3"))[:2]:
