@@ -67,10 +67,15 @@
       "title": "The sorter holds its last 104 ns of singles until more data arrives",
       "found": "2026-10-24, Chapter 10 design",
       "item": "sorter",
-      "status": "open",
+      "status": "closed",
+      "capa": "",
       "description": "A single can only be judged when a later single shows that its window is closed. A source that falls silent leaves up to the window plus the delay of singles in the sorter until the end of the run.",
       "evaluation": {"safety_relevant": false, "rationale": "The singles are processed at the end of the run, so no coincidence is lost; only their latency grows while the source is silent."},
-      "decision": "Release with it; time markers from the readout would flush the sorter (Chapter 23)."
+      "decision": "Release with it; time markers from the readout would flush the sorter (Chapter 23).",
+      "resolution": {
+        "change": "CR-0026 (ADR 0033): boards of firmware 1.3 put time markers into their stream, MDQ-P1 words with crystal 32767 and energy code 2047 whose time promises that no later word has an earlier one. The decoder reports them, the sort stage moves them earlier by the calibration's largest time offset and releases its held singles below them, and CoincidenceSorter::advance closes every window that no later single could join. With firmware older than 1.3 the delay remains.",
+        "verification": "Pipeline.AMarkerDeliversTheLastCoincidencesWhileTheSourceIsSilent: the last coincidences of a source that falls silent come out on a marker, before the stop. CoincidenceSorter.MarkersChangeNoCoincidence and Pipeline.MarkersChangeNoCoincidence: the same coincidences and counters with and without markers, in both window modes and with a calibration."
+      }
     },
     {
       "id": "MDQ-PR-008",

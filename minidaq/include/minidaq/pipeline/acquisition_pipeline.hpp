@@ -116,6 +116,10 @@ class AcquisitionPipeline {
 
   [[nodiscard]] std::array<StageSnapshot, num_stages> stats() const noexcept;
   [[nodiscard]] std::uint64_t late_singles() const noexcept { return late_singles_.load(std::memory_order_relaxed); }
+  // Time markers the decode stage read (Chapter 24): words that are neither singles nor filtered.
+  [[nodiscard]] std::uint64_t markers() const noexcept {
+    return markers_.load(std::memory_order_relaxed);
+  }
   // The pair stage's sorter counters, updated after every batch. While the
   // pipeline runs, fields may be from consecutive batches; after wait() they
   // are exact.
@@ -158,6 +162,7 @@ class AcquisitionPipeline {
   Channel<Coincidence> pairs_;
   std::array<StageStats, num_stages> stats_{};
   alignas(cache_line_size) std::atomic<std::uint64_t> late_singles_{0};
+  std::atomic<std::uint64_t> markers_{0};
   std::unique_ptr<CoincidenceSorter> sorter_;  // used by the pair thread only
   PhotopeakMonitor photopeak_;                 // written by the decode thread only
   SinglesCounter singles_;                     // written by the decode thread only

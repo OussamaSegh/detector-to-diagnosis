@@ -1,6 +1,6 @@
 # Interface control document: MiniDAQ software and the front-end board firmware
 
-Version 2 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10; the firmware lead's co-signature is not recorded (assumption: confirm with team).
+Version 3 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review; the firmware lead's co-signature is not recorded (assumption: confirm with team).
 Document ID: ICD-FEB. Owner: the software lead; the firmware lead co-signs every version.
 
 This document is the contract between the two sides of the front-end board (FEB): the firmware
@@ -30,6 +30,10 @@ chain and the firmware's internal design, which are the firmware team's own docu
   4,096 words (32 KiB).
 - **Drained**: the triggers are off and the output FIFO is empty: every word the board took has
   left the board.
+- **Time marker**: an MDQ-P1 word with crystal 32767 and energy code 2047 (MDQ-P1 revision 1.1,
+  `packed::marker`). Its time field is a promise: no later word of the same board has an earlier
+  time. No crystal of the scanner has the ID 32767, so a decoder that does not know markers drops
+  them as invalid singles.
 - **Cycle**: one pass of the software's slow-control loop over every board, every 100 ms by
   default (`SlowControlSettings::period`).
 
@@ -58,7 +62,8 @@ Which firmware implements which map, and what this software accepts:
 | Firmware | Register map | Data format | MiniDAQ 0.5 |
 |---|---|---|---|
 | 1.0.x, 1.1.x | 1.0 (no FIFO status) | 1 | refused: the run stop cannot know when the board has drained |
-| 1.2.x and later 1.x | 1.1 | 1 | supported |
+| 1.2.x | 1.1 | 1 | supported |
+| 1.3.x and later 1.x | 1.2 (time markers, datagrams sent) | 1, with MDQ-P1 revision 1.1 words | supported; markers and the datagram count used |
 | 2.x | not defined | not defined | refused |
 
 The software checks the firmware version of every board in every cycle, not once at start-up,
@@ -109,6 +114,11 @@ them.
 
 The pipeline starts before the triggers, so that no datagram arrives before something reads it.
 
+With firmware 1.3 or later, step 3 also writes `marker_interval` (in microseconds, 100 by
+default, `SlowControlSettings::marker_interval_us`) and sets `control.marker_enable` in the same
+write as `trigger_enable` (SRS-HW-016). The firmware resets `datagrams_sent` to 0 on the rising
+edge of `trigger_enable`. An interval of 0 in the software leaves the markers off.
+
 ### 5.3 Run stop
 
 | Step | Software | Firmware |
@@ -137,6 +147,21 @@ without them (`measurements/ch24/run_sequence.txt`).
 - The firmware sends a board's words in time order and numbers its datagrams consecutively from 0
   at every run start (assumption: confirm with team whether the sequence restarts at the trigger
   enable or at a soft reset).
+- With `control.marker_enable` set (firmware 1.3 and later), the board puts a time marker into
+  its stream at every multiple of `marker_interval` of its clock, after every word with an earlier
+  time and before every word with a later one, also while it takes no event. The software's
+  sorter closes the coincidence windows before a marker without waiting for a later single
+  (SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014), which bounds the latency of a run's last
+  coincidences when a detector falls silent (problem report MDQ-PR-007). A marker is a word of
+  the stream like any other: it takes a place in the FIFO and in a datagram and is counted in
+  `datagrams_sent`. The marker's time must not be earlier than a word sent before it (assumption:
+  confirm with team that the marker is inserted after the event logic's own reordering).
+- `datagrams_sent` (firmware 1.3 and later) counts the datagrams the board has handed to the link
+  since `trigger_enable` was last set; a datagram is counted when it leaves the board. The
+  software reads it every cycle; when every board reports it, the run's integrity verdict counts
+  the datagrams sent beyond those the link delivered or counted as lost as a loss (SRS-HW-017,
+  `/hardware/datagrams_unaccounted`). This finds the datagrams lost on the network after the last
+  one that reached the software, which no sequence gap can show (the residual of ADR 0018).
 - When the output FIFO is full, the board drops the new event, not words already in the FIFO, and
   sets `error_flags.fifo_overflow`. It never sends a partial event.
 - The software counts each cycle that finds `fifo_overflow` set, clears the flag, and the run's
@@ -157,12 +182,15 @@ without them (`measurements/ch24/run_sequence.txt`).
 | Unsupported firmware | | Latches a fault, bias and triggers off |
 | Triggers not on after start | | Faults the run after the trigger timeout |
 | FIFO not empty after stop | Keeps sending | Stops the pipeline after the drain timeout; the run is incomplete |
+| Datagrams sent that never arrived (firmware 1.3) | Counts every datagram it sends | Counts the difference as a loss; the run is incomplete |
 
 ## 8. Open items
 
 | Item | Owner | Status |
 |---|---|---|
-| A counter of datagrams sent per run in the board, so that the software can find loss on the network after the last datagram that reached it (the residual of ADR 0018) | both | planned for register map 1.2; needs a firmware change |
+| A counter of datagrams sent per run in the board, so that the software can find loss on the network after the last datagram that reached it (the residual of ADR 0018) | both | closed in version 3: register map 1.2, `datagrams_sent` (CR-0026) |
+| Whether `datagrams_sent` is the count of datagrams handed to the MAC or of datagrams on the wire | firmware | open (section 6) |
+| The simulated board counts its datagrams from its FIFO model, not from the link: a simulated board with firmware 1.3 together with the UDP detector can report datagrams the link never carried. The hardware description's simulated boards therefore report firmware 1.2.0 | software | open; a real board or a simulated link with the board's own count closes it |
 | The real bus's access time and whether a posted write can be overtaken by a read | firmware | open (section 4) |
 | Whether `fifo_empty` includes the link's own buffer | firmware | open (section 5.3) |
 | When the datagram sequence restarts | firmware | open (section 6) |
@@ -176,6 +204,9 @@ without them (`measurements/ch24/run_sequence.txt`).
 | Drained only on a status read after the write, and only with an empty FIFO | `SlowControl.SwitchesTheTriggersWhenAskedAndSaysWhenItHasDone`, `SlowControl.SaysDrainedOnlyOnceTheFifoIsEmpty` |
 | Overflows and drain timeouts are losses | `SlowControl.CountsFifoOverflowsAsLostDataNotAsAFault`, `HardwareService.AStopWaitsForTheBoardsAndADrainThatRunsOutOfTimeIsALoss`, `RunIntegrity.TheBoardsLossesCount` |
 | A fault switches bias and triggers off | `SlowControl.ALatchedFaultSwitchesTheBiasAndTheTriggersOff` |
+| Markers enabled with the triggers on firmware 1.3, never on 1.2; `datagrams_sent` read every cycle | `SlowControl.SwitchesTheTimeMarkersOnWithTheTriggersAndReadsTheDatagramsSent`, `FakeBoard.HasTheRegistersOfMap12OnlyWithFirmware13` |
+| A marker is no single and closes the windows before it, with no change to any coincidence | `TimeMarker.IsAWordThatNoSingleOfTheScannerCanBe`, `StreamDecoder.ReadsAMarkerAsAPromiseNotASingle`, `CoincidenceSorter.MarkersChangeNoCoincidence`, `Pipeline.MarkersChangeNoCoincidence`, `Pipeline.AMarkerDeliversTheLastCoincidencesWhileTheSourceIsSilent` |
+| Datagrams sent and never seen are a loss | `RunIntegrity.DatagramsTheBoardsSentButTheLinkNeverSawAreALoss` |
 | The register map is generated and checked | `docs.regmap`, `Registers.TheGeneratedMapMatchesItsSpecification` |
 
 ## 10. Changes
@@ -184,3 +215,4 @@ without them (`measurements/ch24/run_sequence.txt`).
 |---|---|
 | 1 | First version: register map 1.1, firmware 1.2 and later 1.x, data format 1 (Chapter 24, CR-0010, ADR 0019). |
 | 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |
+| 3 | Register map 1.2 of firmware 1.3: time markers (`control.marker_enable`, `marker_interval`, MDQ-P1 revision 1.1) and `datagrams_sent`; the open item on datagrams sent closed (Chapter 24, CR-0026, ADR 0033). |

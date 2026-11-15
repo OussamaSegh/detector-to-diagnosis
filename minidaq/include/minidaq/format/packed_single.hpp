@@ -19,6 +19,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 #include "minidaq/core/single.hpp"
@@ -74,6 +75,23 @@ struct Fields {
 }
 // [/snippet:codec]
 
+// [snippet:marker]
+// A time marker (MDQ-P1 revision 1.1, register map 1.2, Chapter 24): the word with crystal 32767
+// and energy code 2047, which no detector's crystal uses. It carries the board's time and
+// promises that no later word of the same stream has an earlier time, so the sorter can close the
+// windows before it although no single follows. A decoder older than revision 1.1 reads it as a
+// single with an invalid crystal and drops it, counted.
+inline constexpr std::uint32_t marker_crystal = static_cast<std::uint32_t>(crystal_mask);
+inline constexpr std::uint32_t marker_energy_code = static_cast<std::uint32_t>(energy_mask);
+[[nodiscard]] constexpr std::uint64_t marker(std::uint64_t time_code) noexcept {
+  return pack(Fields{marker_crystal, marker_energy_code, time_code});
+}
+[[nodiscard]] constexpr bool is_marker(std::uint64_t w) noexcept {
+  const Fields f = unpack(w);
+  return f.crystal == marker_crystal && f.energy_code == marker_energy_code;
+}
+// [/snippet:marker]
+
 // Encodes a Single. Time is truncated to 5 ps and taken modulo the wrap period
 // (precondition: time >= 0). Energy is rounded to 0.5 keV and saturates; NaN
 // and negative energies encode as 0. The crystal id must be < 2^15.
@@ -124,6 +142,7 @@ class TimeUnwrapper {
 struct DecodeStats {
   std::uint64_t words = 0;
   std::uint64_t invalid_crystal = 0;
+  std::uint64_t markers = 0;  // time markers read (revision 1.1)
 };
 
 // Zero-allocation stream decoder: decodes words into caller-provided storage.
@@ -132,7 +151,8 @@ class StreamDecoder {
   explicit StreamDecoder(std::uint32_t num_crystals) noexcept : num_crystals_{num_crystals} {}
 
   // Decodes min(words.size(), out.size()) words; words with an invalid crystal
-  // id are counted and skipped. Returns the number of singles written.
+  // id are counted and skipped, time markers are counted and remembered.
+  // Returns the number of singles written.
   std::size_t decode(std::span<const std::uint64_t> words, std::span<Single> out) noexcept;
 
   // Same, from little-endian bytes (size must be a multiple of 8; a trailing
@@ -142,11 +162,23 @@ class StreamDecoder {
   [[nodiscard]] const DecodeStats& stats() const noexcept { return stats_; }
   [[nodiscard]] std::uint64_t truncated_bytes() const noexcept { return truncated_bytes_; }
 
+  // The latest time marker decoded since the last call, if any; the next call
+  // returns nothing until another marker is decoded.
+  [[nodiscard]] std::optional<Picoseconds> take_marker() noexcept {
+    if (!has_marker_) {
+      return std::nullopt;
+    }
+    has_marker_ = false;
+    return marker_;
+  }
+
  private:
   TimeUnwrapper unwrapper_;
   DecodeStats stats_;
   std::uint64_t truncated_bytes_ = 0;
   std::uint32_t num_crystals_;
+  Picoseconds marker_{};
+  bool has_marker_ = false;
 };
 
 }  // namespace minidaq::packed

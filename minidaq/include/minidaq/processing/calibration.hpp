@@ -114,6 +114,9 @@ class CalibrationTable {
   [[nodiscard]] bool is_identity() const noexcept { return identity_; }
   // The largest offset minus the smallest: how far the correction can reorder two singles.
   [[nodiscard]] std::int64_t time_spread_ps() const noexcept { return spread_ps_; }
+  // The largest offset: a single reported at t or later is at t - max_time_offset_ps() or later
+  // once corrected, which is how far back a time marker of the readout moves (Chapter 24).
+  [[nodiscard]] std::int64_t max_time_offset_ps() const noexcept { return max_offset_ps_; }
   // CRC-32 of the coefficients in their canonical byte order (canonical_bytes), which the file
   // carries so that a damaged or hand-edited table is refused.
   [[nodiscard]] std::uint32_t crc32() const noexcept { return crc_; }
@@ -123,6 +126,7 @@ class CalibrationTable {
   CalibrationInfo info_;
   std::vector<CrystalCalibration> crystals_;
   std::int64_t spread_ps_ = 0;
+  std::int64_t max_offset_ps_ = 0;
   std::uint32_t crc_ = 0;
   bool identity_ = false;
 };

@@ -452,9 +452,84 @@ it set may stand for one lost event or a thousand. That is enough to judge a run
 which is the verdict's purpose; a firmware that should say *how many* events it lost needs a
 counter register, which is an addition to the ICD.
 
-One loss remains outside the verdict: datagrams lost on the network after the last one that
-reaches the host (Chapter 23). Closing it needs the board to report how many datagrams it sent,
-which ICD-FEB lists as an open item for register map 1.2.
+One loss remained outside the verdict at this chapter's tag: datagrams lost on the network after
+the last one that reaches the host (Chapter 23). Closing it needs the board to report how many
+datagrams it sent, which ICD-FEB listed as an open item for register map 1.2. Release 1.3.0 closed
+it, in the next section.
+
+### Register map 1.2: time markers and the datagrams sent
+
+Two gaps of earlier chapters have the same remedy: the board knows something the host cannot
+find out. Chapter 10's sorter judges a single only when a later single shows that its window is
+closed, so a detector that falls silent leaves its last coincidences waiting until the end of the
+run (problem report MDQ-PR-007). And the loss after the last datagram, above, leaves no trace on
+the host. Firmware 1.3 adds register map 1.2 for both (CR-0026, ADR 0033): a bit
+`control.marker_enable`, a register `marker_interval` in microseconds, and a read-only counter
+`datagrams_sent`. The firmware's minor version goes up, because these are additions; software
+that needs them checks for 1.3 and leaves older boards as they were.
+
+A **time marker** is a word of the data stream that says: no later word of this board has an
+earlier time. A new kind of datagram would carry it cleanly, but it would change the data format,
+and every receiver would have to change at once. MDQ-P1 has room for it instead: crystal IDs go
+up to 32,767 and the scanner has 18,432 crystals, so a word with crystal 32767 and the saturated
+energy code can never be a single (MDQ-P1 revision 1.1):
+
+```{.cpp include="minidaq/include/minidaq/format/packed_single.hpp" snippet="marker"}
+```
+
+A decoder written before the marker drops it as an invalid crystal, which it already counted
+and did not believe; the new decoder reads its time like a single's, through the same unwrapper,
+and keeps the latest one for the pipeline to take (SRS-FMT-014). It counts markers apart from
+invalid words, because the integrity verdict counts filtered words as a loss, and a run full of
+markers would otherwise never be complete:
+
+```{.cpp include="minidaq/src/format/packed_single.cpp" snippet="decode"}
+```
+
+The marker travels the pipeline beside the singles, as a field of the batch, so no stage after
+the decoder can take it for a single. The sort stage has one thing to do with it. A calibration
+moves each crystal's times by its offset, up to the table's largest one, and the board's promise
+holds for its raw times; a single stamped just after the marker can come out of the calibration
+earlier than it. So the stage moves the marker back by the largest offset, which makes the
+promise true again for corrected times, and releases the singles it holds below it (SRS-PIPE-013).
+The pair stage then tells the sorter:
+
+```{.cpp include="minidaq/src/processing/coincidence_sorter.cpp" snippet="advance"}
+```
+
+`advance` closes the windows that no single at or after the promised time could join, which is
+what `push` does when such a single arrives; it moves no window boundary, so the coincidences and
+the counters are the ones without markers (SRS-SRT-014). That is the property to test, and
+`Pipeline.MarkersChangeNoCoincidence` compares a run with and without markers, with and without
+a calibration whose offsets differ. Removing the shift of the marker makes it fail with 246
+singles out of order. A first version of the test, with markers in the middle of the batches, did
+not catch the missing shift. The test now ends every batch with a marker, so that the singles
+just after it arrive in the next batch, after the sorter has been told: the case where a marker
+that was not moved back does harm. A promise that is wrong does not pass silently either: a single below a
+marker it should not have followed is counted as out of order, which ends the run in a fault
+(RC-07). ICD-FEB version 3 states the firmware's side as an assumption a real firmware team must
+confirm: the marker is inserted after any reordering of the board's own words.
+
+The slow control switches the markers on with the triggers, in the same write, and reads
+`datagrams_sent` every cycle; the firmware resets the counter when the triggers go on, so the
+count is the run's (SRS-HW-016). The integrity verdict then compares the boards' sum with what
+the link accounted for, delivered or found missing in the sequence (SRS-HW-017, RC-30):
+
+```{.cpp include="minidaq/src/control/run_integrity.cpp" snippet="datagrams-sent"}
+```
+
+Two choices in it are deliberate. The comparison runs only when every board reports a count: a
+system with one board of firmware 1.2 keeps the checks it had, rather than a comparison of the
+datagrams of some boards against those of all. And a tail drop at the socket is counted twice,
+once as `socket_drops` and once here; the verdict is about whether a run is complete, and a loss
+counted twice still makes it incomplete. Both new fields appear in each board's status (control
+API 2.5), `markers` and `datagrams_sent`, null for a board without map 1.2.
+
+The simulated board counts its datagrams from its FIFO model, 182 words to a datagram, not from
+the simulated link, which `minidaq_send` produces separately; with firmware 1.3, it would report
+datagrams that the UDP detector never saw. The hardware description's simulated boards therefore
+report firmware 1.2.0 unless told otherwise, and ICD-FEB lists the gap as an open item.
+`minidaq_send --marker-interval-us N` puts markers on the simulated link for the sorter's side.
 
 ## What belongs on which side
 

@@ -36,6 +36,32 @@ std::vector<Datagram> Packetizer::packetize(std::span<const std::uint64_t> words
   return out;
 }
 
+std::vector<std::uint64_t> encode_with_markers(std::span<const TruthSingle> singles,
+                                               Picoseconds interval, Picoseconds end) {
+  std::vector<std::uint64_t> words;
+  const std::int64_t step = interval.count();
+  const std::size_t markers =
+      step > 0 && end.count() > 0 ? static_cast<std::size_t>(end.count() / step) : 0;
+  words.reserve(singles.size() + markers);
+  const auto marker_at = [](std::int64_t t_ps) {
+    return packed::marker(static_cast<std::uint64_t>(t_ps / packed::time_lsb_ps) &
+                          packed::time_mask);
+  };
+  std::int64_t next = step;  // the first marker; none at time 0, before any data
+  for (const TruthSingle& s : singles) {
+    while (step > 0 && next <= s.single.time.count() && next <= end.count()) {
+      words.push_back(marker_at(next));
+      next += step;
+    }
+    words.push_back(packed::encode(s.single));
+  }
+  while (step > 0 && next <= end.count()) {
+    words.push_back(marker_at(next));
+    next += step;
+  }
+  return words;
+}
+
 LinkFaults::LinkFaults(LinkFaultConfig cfg) : cfg_{cfg}, rng_{cfg.seed} {
   const auto probability = [](double p) { return p >= 0.0 && p <= 1.0; };
   if (!probability(cfg_.loss) || !probability(cfg_.reorder) || !probability(cfg_.duplicate) ||

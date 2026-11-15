@@ -127,6 +127,7 @@ Expected<CalibrationTable, std::vector<std::string>> CalibrationTable::make(
   const auto [lo, hi] =
       std::ranges::minmax_element(t.crystals_, {}, &CrystalCalibration::time_offset_ps);
   t.spread_ps_ = std::int64_t{hi->time_offset_ps} - lo->time_offset_ps;
+  t.max_offset_ps_ = hi->time_offset_ps;
   t.crc_ = minidaq::crc32(canonical_bytes(t.crystals_));
   return t;
 }

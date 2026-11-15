@@ -86,6 +86,19 @@
       ]
     },
     {
+      "function": "windowing",
+      "failure_mode": "A time marker promises a time later than a single still to come, so a window is closed before a single that belongs to it arrives",
+      "effect": "A coincidence is missed or a pair forms from the wrong singles (H-02)",
+      "cause": "The firmware inserts a marker before its event logic has reordered its words; the pipeline does not move the marker by the calibration's largest time offset",
+      "severity": "S2",
+      "detection": "The single that arrives below the marker is counted as out of order; the integrity verdict counts it as a loss and the service ends the run in a fault",
+      "controls": [
+        "SRS-PIPE-013",
+        "SRS-SRT-009",
+        "RC-07"
+      ]
+    },
+    {
       "function": "multiples resolution",
       "failure_mode": "Wrong policy applied, or a policy keeps the wrong pair",
       "effect": "Prompts are biased at high rates, where multiples are frequent (H-07)",

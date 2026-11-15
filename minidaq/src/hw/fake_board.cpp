@@ -35,6 +35,13 @@ void FakeBoard::soft_reset_locked() {
   errors_ = feb::ErrorFlags::reset;
   overtemp_ = false;
   fifo_words_ = 0;
+  words_sent_ = 0;
+  marker_interval_us_ = feb::MarkerInterval::reset;
+}
+
+bool FakeBoard::has_map_1_2() const noexcept {
+  const std::uint32_t major = feb::FwVersion::Major::get(fw_version_);
+  return major > 1 || (major == 1 && feb::FwVersion::Minor::get(fw_version_) >= 3);
 }
 
 // [snippet:fake-physics]
@@ -64,6 +71,8 @@ void FakeBoard::update_locked(std::int64_t now_ns) {
   // lost, and the board says so in a sticky flag.
   const double in = feb::Control::TriggerEnable::get(control_) != 0 ? fill_words_per_s_ : 0.0;
   const double out = fault_ == BoardFault::stalled_link ? 0.0 : drain_words_per_s_;
+  words_sent_ +=
+      std::min(out * dt_s, fifo_words_ + in * dt_s);  // the link cannot send what is not there
   fifo_words_ += (in - out) * dt_s;
   if (fifo_words_ > fifo_depth_words) {
     fifo_words_ = fifo_depth_words;
@@ -104,6 +113,18 @@ std::uint32_t FakeBoard::read_locked(std::uint32_t address) const {
       return errors_;
     case feb::FifoLevel::address:
       return static_cast<std::uint32_t>(std::lround(std::min(fifo_words_, 65'535.0)));
+    case feb::DatagramsSent::address: {
+      if (!has_map_1_2()) {
+        return 0;
+      }
+      // Whole datagrams, and the partial one the board sends when its FIFO runs empty.
+      const double full = std::floor(words_sent_ / words_per_datagram);
+      const double partial =
+          fifo_words_ < 1.0 && words_sent_ - full * words_per_datagram >= 1.0 ? 1.0 : 0.0;
+      return static_cast<std::uint32_t>(static_cast<std::uint64_t>(full + partial) & 0xFFFF'FFFFU);
+    }
+    case feb::MarkerInterval::address:
+      return has_map_1_2() ? marker_interval_us_ : 0;
     case feb::BiasSetpoint::address:
       return setpoint_mv_;
     case feb::BiasMonitor::address:
@@ -174,8 +195,14 @@ HwStatus FakeBoard::write32(std::uint32_t address, std::uint32_t value) {
         soft_reset_locked();
         break;
       }
+      // DATAGRAMS_SENT counts from 0 at every trigger enable, as the sequence numbers do.
+      if (feb::Control::TriggerEnable::get(value) != 0 &&
+          feb::Control::TriggerEnable::get(control_) == 0) {
+        words_sent_ = 0;
+      }
       // The board keeps the bias off while it is too hot, whatever software writes.
-      control_ = value & (feb::Control::BiasEnable::mask | feb::Control::TriggerEnable::mask);
+      control_ = value & (feb::Control::BiasEnable::mask | feb::Control::TriggerEnable::mask |
+                          (has_map_1_2() ? feb::Control::MarkerEnable::mask : 0U));
       if (overtemp_) {
         control_ = feb::Control::BiasEnable::set(control_, 0);
       }
@@ -191,6 +218,12 @@ HwStatus FakeBoard::write32(std::uint32_t address, std::uint32_t value) {
       break;
     case feb::Threshold::address:
       threshold_ = feb::Threshold::Code::set(0, value);
+      break;
+    case feb::MarkerInterval::address:
+      if (has_map_1_2()) {
+        marker_interval_us_ =
+            std::max<std::uint32_t>(1, feb::MarkerInterval::Microseconds::set(0, value));
+      }
       break;
     default:
       break;  // writes to read-only registers have no effect on the board

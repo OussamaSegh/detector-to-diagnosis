@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -398,7 +399,7 @@ TEST(SlowControl, RefusesFirmwareItWasNotWrittenFor) {
   Rig rig;
   rig.run_for(45 * s);
   ASSERT_EQ(rig.state().state, BoardState::ready);
-  EXPECT_EQ(rig.state().firmware, "1.2.0");
+  EXPECT_EQ(rig.state().firmware, "1.3.0");
   rig.board.set_firmware(0x0101'0003U);
   rig.sc.step(rig.now);
   EXPECT_EQ(rig.state().fault,
@@ -429,6 +430,58 @@ TEST(SlowControl, SwitchesTheTriggersWhenAskedAndSaysWhenItHasDone) {
       << "the FIFO was read before the triggers went off: what it holds now is not known";
   rig.sc.step(rig.now);
   EXPECT_TRUE(rig.sc.drained());
+}
+
+TEST(SlowControl, SwitchesTheTimeMarkersOnWithTheTriggersAndReadsTheDatagramsSent) {
+  // REQ: SRS-HW-016
+  // Firmware 1.3 (register map 1.2): the markers go on with the triggers, at the configured
+  // interval, and the board's count of datagrams sent is read every cycle. 1 s of data at
+  // 18,200 words/s is 100 datagrams of 182 words.
+  SlowControlSettings settings;
+  settings.marker_interval_us = 250;
+  Rig rig{settings};
+  rig.run_for(45 * s);
+  EXPECT_EQ(rig.state().datagrams_sent, std::optional<std::uint32_t>{0U});
+  EXPECT_FALSE(rig.state().markers);
+  rig.board.set_data_rates(18'200.0, 1'000'000.0);
+  rig.sc.set_triggers(true);
+  rig.sc.step(rig.now);
+  EXPECT_EQ(*read_field<feb::Control::MarkerEnable>(rig.board), 1U);
+  EXPECT_EQ(*read<feb::MarkerInterval>(rig.board), 250U);
+  EXPECT_TRUE(rig.state().markers);
+  rig.run_for(1 * s);
+  rig.sc.set_triggers(false);
+  rig.sc.step(rig.now);
+  rig.sc.step(rig.now + 100 * ms);
+  EXPECT_TRUE(rig.sc.drained());
+  ASSERT_TRUE(rig.state().datagrams_sent.has_value());
+  EXPECT_NEAR(static_cast<double>(*rig.state().datagrams_sent), 100.0, 1.0);
+
+  // The count starts again at the next trigger enable, as the sequence numbers do.
+  rig.sc.set_triggers(true);
+  rig.sc.step(rig.now + 100 * ms);
+  EXPECT_LE(*rig.state().datagrams_sent, 1U);
+
+  // Firmware 1.2 (map 1.1) has neither: the software does not ask for them.
+  Rig old;
+  old.board.set_firmware(0x0102'0000U);
+  old.run_for(45 * s);
+  old.sc.set_triggers(true);
+  old.sc.step(old.now);
+  EXPECT_TRUE(old.sc.triggers_are(true));
+  EXPECT_EQ(*read_field<feb::Control::MarkerEnable>(old.board), 0U);
+  EXPECT_FALSE(old.state().markers);
+  EXPECT_FALSE(old.state().datagrams_sent.has_value());
+
+  // An interval of 0 sends no markers; the count is still read.
+  SlowControlSettings none;
+  none.marker_interval_us = 0;
+  Rig quiet{none};
+  quiet.run_for(45 * s);
+  quiet.sc.set_triggers(true);
+  quiet.sc.step(quiet.now);
+  EXPECT_EQ(*read_field<feb::Control::MarkerEnable>(quiet.board), 0U);
+  EXPECT_TRUE(quiet.state().datagrams_sent.has_value());
 }
 
 TEST(SlowControl, SaysDrainedOnlyOnceTheFifoIsEmpty) {

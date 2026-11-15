@@ -1,6 +1,6 @@
 # MiniDAQ threat model
 
-Version 13 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
+Version 14 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
 
 This document records the security analysis of MiniDAQ: what is worth protecting, who could
 attack it and how, which threats the software counters and which it leaves to the site, and
@@ -296,3 +296,4 @@ IT security across the life cycle (Annex I, sections 17.2 and 17.4; guidance in 
 | 11 | Chapter 36 (CR-0023): the commit policy, its check in CI and the commit-msg hook reviewed against the diagram. They are development-time tools and add no element, flow or interface to the running MiniDAQ. The gap "The build runs the repository's code" says what the policy checks and what it cannot: who pushed a commit. |
 | 12 | Chapter 37 (CR-0024): AI-assisted development reviewed against the diagram. The assistant is a development tool and adds no element, flow or interface to the running MiniDAQ; its access to the repository, to the developer's commands and to its provider's service is recorded as a gap in section 7. |
 | 13 | Approved by the software lead for release 1.1.0; the content is that of version 12 (MDQ-PR-066). |
+| 14 | Release 1.3.0 (CR-0026): time markers and register map 1.2 reviewed against the diagram. They add no element or flow: the markers travel the readout flow and the new registers the hardware bus. T-16's note says what a forged marker can do. |

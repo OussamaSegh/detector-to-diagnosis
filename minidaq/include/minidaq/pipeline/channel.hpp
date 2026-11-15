@@ -16,6 +16,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <span>
 #include <utility>
@@ -25,6 +26,9 @@
 
 namespace minidaq {
 
+// A batch's time marker when it has none (Chapter 24).
+inline constexpr std::int64_t no_marker = std::numeric_limits<std::int64_t>::min();
+
 template <typename T>
 struct Batch {
   explicit Batch(std::size_t capacity) : items(capacity) {}
@@ -32,12 +36,18 @@ struct Batch {
   std::size_t size = 0;
   std::uint64_t sequence = 0;  // batch number, for gap detection downstream
   std::int64_t origin_ns = 0;  // monotonic time the oldest data in it entered the PC (Chapter 4)
+  // A time marker of the readout that follows this batch's data, in ps, or no_marker: no later
+  // single will be earlier than it (Chapter 24).
+  std::int64_t marker_ps = no_marker;
 
   [[nodiscard]] std::span<T> view() noexcept { return {items.data(), size}; }
   [[nodiscard]] std::span<const T> view() const noexcept { return {items.data(), size}; }
   [[nodiscard]] std::size_t capacity() const noexcept { return items.size(); }
   [[nodiscard]] bool full() const noexcept { return size == items.size(); }
-  void clear() noexcept { size = 0; }
+  void clear() noexcept {
+    size = 0;
+    marker_ps = no_marker;
+  }
   void push_unchecked(const T& v) noexcept { items[size++] = v; }
 };
 

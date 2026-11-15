@@ -11,13 +11,12 @@
 //       "error": {"code": "illegal_transition", "message": "cannot start in state running"}}
 //
 // Commands: hello, auth (with "token"), configure (with "config"), start,
-// stop, reset, status, diagnostics (with an optional "events" count). Compatibility rules (docs/adr/0003): a request whose
-// "api" major version differs is refused with "unsupported_api"; unknown
-// fields are ignored, so a newer client may send fields an older server does
-// not know; new commands and new response fields are added only in minor
-// versions; "id" is echoed unchanged so a client can match responses to
-// requests. The status object is part of the versioned API too (ADR 0013):
-// status_fields lists its top-level fields for this version.
+// stop, reset, status, diagnostics (with an optional "events" count). Compatibility rules
+// (docs/adr/0003): a request whose "api" major version differs is refused with "unsupported_api";
+// unknown fields are ignored, so a newer client may send fields an older server does not know; new
+// commands and new response fields are added only in minor versions; "id" is echoed unchanged so a
+// client can match responses to requests. The status object is part of the versioned API too (ADR
+// 0013): status_fields lists its top-level fields for this version.
 //
 // 1.0: Chapter 6. 1.1: Chapter 16, the status fields of Chapters 9 to 15.
 // 2.0: Chapter 17 (ADR 0014): a connection authenticates with "auth" before any
@@ -28,6 +27,8 @@
 // 2.3: Chapter 24 (ADR 0019): the boards' triggers, FIFOs and drain timeouts in "hardware".
 // 2.4: Chapter 26 (ADR 0021): status field "calibration", the table in use and the photopeak of
 // each detector block.
+// 2.5: Chapter 24 (ADR 0033): each board in "hardware" says whether its time markers are on and
+// how many datagrams it has sent; the decode stage counts the markers.
 #pragma once
 
 #include <array>
@@ -41,7 +42,7 @@
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "2.4";
+inline constexpr std::string_view api_version = "2.5";
 
 // diagnostics: how many flight-recorder events it returns without "events", and at most.
 inline constexpr std::size_t diagnostics_default_events = 64;

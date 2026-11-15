@@ -54,7 +54,18 @@ them; `color-scheme` on the web pages; `xrefs.py` reads references broken across
 `post_release.py` writes all or nothing. The branch's three commits lack a parsable `Review:`
 trailer (the history rewrite to add it was refused): squash them when merging. Open: the
 issue form's label `erratum` does not exist in the repository, so reports arrive unlabeled
-until it is created.
+until it is created. (Merged as 98690f5; the label now exists, created by `labels.yml`.)
+
+**Milestone 1.3.0, in progress (branch claude/project-thread-fo39bu).** Done: time markers and
+register map 1.2 (CR-0026, approved 2026-11-15 under the user's standing delegation of that day,
+which the coordinator exercises; ADR 0033; SRS v29 with SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014,
+SRS-HW-016, SRS-HW-017; ICD-FEB v3; architecture v21; threat model v14; control API 2.5;
+MDQ-PR-007 closed; Chapter 24 section "Register map 1.2", notes in Chapters 10, 23, 34 and the
+architecture appendix). The new documents are "draft for review": they need an approval before
+the release (ask the coordinator, which answers for the user). Simulated boards default to
+firmware 1.2.0 on purpose (ICD-FEB open item). Left for 1.3.0: Ed25519 signing of list-mode
+files, calibration tables and QC reports (T-27, T-54); the MDQ-PR-006 decision; Chapter 38
+(after about 2026-12-07); VERSION to 1.3.0-dev with the SOUP review; audit, checks, record, tag.
 
 ## Release 1.1.0 (for reference)
 
@@ -198,7 +209,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-069, CR-0026, ADR 0033, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-069, CR-0027, ADR 0034, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 

@@ -63,6 +63,35 @@ json assess_integrity(const json& status) {
       }
     }
     add(losses, "/hardware/drain_timeouts", it->value("drain_timeouts", json(0U)));
+    // [snippet:datagrams-sent]
+    // Register map 1.2 (Chapter 24): the datagrams the boards sent against the datagrams the link
+    // accounted for, delivered or found missing in the sequence. What the boards sent beyond that
+    // was lost after the last datagram that arrived, which no sequence gap shows (ADR 0018).
+    const auto det = status.find("detector_counters");
+    const auto boards = it->find("boards");
+    if (det != status.end() && det->is_object() && det->contains("packets_delivered") &&
+        det->contains("packets_lost") && boards != it->end() && boards->is_array() &&
+        !boards->empty()) {
+      std::uint64_t sent = 0;
+      bool known = true;
+      for (const json& b : *boards) {
+        const auto d = b.find("datagrams_sent");
+        if (d == b.end() || !d->is_number_unsigned()) {
+          known = false;  // a board with an older map: nothing to compare
+          break;
+        }
+        sent += d->get<std::uint64_t>();
+      }
+      const json& delivered = (*det)["packets_delivered"];
+      const json& lost = (*det)["packets_lost"];
+      if (known && delivered.is_number_unsigned() && lost.is_number_unsigned()) {
+        const std::uint64_t accounted = delivered.get<std::uint64_t>() + lost.get<std::uint64_t>();
+        if (sent > accounted) {
+          add(losses, "/hardware/datagrams_unaccounted", json(sent - accounted));
+        }
+      }
+    }
+    // [/snippet:datagrams-sent]
   }
   const bool fault = status.contains("fault") && !status["fault"].is_null();
   return {{"complete", !fault && losses.empty()}, {"losses", std::move(losses)}};

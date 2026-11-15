@@ -34,7 +34,7 @@ digraph boundaries {
   ssl [label="OpenSSL 3 (platform)", shape=component];
   platform [label="C++ and C libraries, kernel,\nsystemd, tar (platform-1)", shape=component];
 
-  ctl -> adapters [style=dashed, label="control API 2.4\nTLS 1.3, tokens", lhead=cluster_adapters];
+  ctl -> adapters [style=dashed, label="control API 2.5\nTLS 1.3, tokens", lhead=cluster_adapters];
   update -> server [style=dashed, label="signed bundle,\nA/B slots", lhead=cluster_apps];
   adapters -> offline [style=dashed, label="MDQ-L1 files,\nrun record"];
   adapters -> json; service -> json; adapters -> ssl; update -> ssl;

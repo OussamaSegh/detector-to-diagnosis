@@ -198,7 +198,12 @@ void AcquisitionPipeline::run_decode() {
     idle.reset();
     Batch<Single>* out = acquire_blocking(decoded_, s);
     const std::int64_t t0 = monotonic_ns();  // service time excludes waiting
+    const std::uint64_t markers_before = decoder.stats().markers;
     out->size = decoder.decode(in->view(), out->items);
+    const std::uint64_t markers = decoder.stats().markers - markers_before;
+    if (const auto m = decoder.take_marker()) {
+      out->marker_ps = m->count();  // the readout's time marker, raw like the singles (Chapter 24)
+    }
     // [snippet:decode-count]
     if (calibration != nullptr) {
       calibration->apply(out->view());  // energies and times per crystal (SRS-CAL-002, 003)
@@ -210,7 +215,8 @@ void AcquisitionPipeline::run_decode() {
     lat.record(monotonic_ns() - t0);
     StageStats::add(s.items_in, in->size);
     StageStats::add(s.items_out, out->size);
-    StageStats::add(s.items_filtered, in->size - out->size);  // invalid words, counted
+    StageStats::add(s.items_filtered, in->size - out->size - markers);  // invalid words, counted
+    markers_.fetch_add(markers, std::memory_order_relaxed);  // neither singles nor losses
     StageStats::add(s.batches, 1);
     words_.release(in);
     decoded_.publish(out);
@@ -236,8 +242,14 @@ void AcquisitionPipeline::run_sort() {
   LatencyHistogram& lat = latency_of(StageId::sort);
   Backoff idle{cfg_.backoff};
   Picoseconds last_emitted{std::numeric_limits<std::int64_t>::min()};
-  const std::int64_t hold_ps =
-      cfg_.calibration != nullptr && !cfg_.calibration->is_identity() ? cfg_.calibration->time_spread_ps() : 0;
+  const bool calibrated = cfg_.calibration != nullptr && !cfg_.calibration->is_identity();
+  const std::int64_t hold_ps = calibrated ? cfg_.calibration->time_spread_ps() : 0;
+  // A marker at t in reported time: every later single is at t - max offset or later once
+  // corrected, so that is the marker the next stage gets (Chapter 24).
+  const std::int64_t marker_shift_ps = calibrated ? cfg_.calibration->max_time_offset_ps() : 0;
+  const auto shifted = [&](std::int64_t marker_ps) {
+    return marker_ps == no_marker ? no_marker : marker_ps - marker_shift_ps;
+  };
   // Held singles plus one batch; allocated once, before the stage counts as started.
   std::vector<Single> held;
   held.reserve(hold_ps > 0 ? 2 * cfg_.batch_size : 0);
@@ -250,12 +262,21 @@ void AcquisitionPipeline::run_sort() {
       last_emitted = std::max(last_emitted, v.back().time);
     }
   };
-  // Sends the oldest held singles that may go (all of them at the end), at most one batch.
-  const auto send_held = [&](bool all, std::int64_t origin_ns) {
+  // Sends the oldest held singles that may go (all of them at the end), at most one batch. A
+  // marker (corrected) also releases every single before it, and goes with the last batch sent, or
+  // alone in an empty batch.
+  const auto send_held = [&](bool all, std::int64_t origin_ns, std::int64_t marker_ps) {
     if (held.empty()) {
+      if (marker_ps != no_marker) {
+        Batch<Single>* out = acquire_blocking(sorted_, s);
+        out->origin_ns = origin_ns;
+        out->marker_ps = marker_ps;
+        StageStats::add(s.batches, 1);
+        sorted_.publish(out);
+      }
       return;
     }
-    const Picoseconds cutoff{held.back().time.count() - hold_ps};
+    const Picoseconds cutoff{std::max(held.back().time.count() - hold_ps, marker_ps)};
     auto end = all ? held.end()
                    : std::lower_bound(held.begin(), held.end(), cutoff,
                                       [](const Single& x, Picoseconds t) { return x.time < t; });
@@ -264,13 +285,26 @@ void AcquisitionPipeline::run_sort() {
     if (static_cast<std::size_t>(held.end() - end) > cfg_.batch_size) {
       end = held.end() - static_cast<std::ptrdiff_t>(cfg_.batch_size);
     }
+    // The marker can go only if every single before it went.
+    const bool marker_holds =
+        marker_ps != no_marker && (end == held.end() || end->time.count() >= marker_ps);
     auto from = held.begin();
+    if (from == end && marker_holds) {
+      Batch<Single>* out = acquire_blocking(sorted_, s);
+      out->origin_ns = origin_ns;
+      out->marker_ps = marker_ps;
+      StageStats::add(s.batches, 1);
+      sorted_.publish(out);
+    }
     while (from != end) {
       Batch<Single>* out = acquire_blocking(sorted_, s);
       const auto n = std::min(static_cast<std::size_t>(end - from), out->items.size());
       std::copy_n(from, n, out->items.begin());
       out->size = n;
       out->origin_ns = origin_ns;
+      if (from + static_cast<std::ptrdiff_t>(n) == end && marker_holds) {
+        out->marker_ps = marker_ps;
+      }
       count_late(out->view());
       StageStats::add(s.items_out, n);
       StageStats::add(s.batches, 1);
@@ -302,9 +336,10 @@ void AcquisitionPipeline::run_sort() {
       std::sort(held.begin() + mid, held.end(), TimeOrder{});
       std::inplace_merge(held.begin(), held.begin() + mid, held.end(), TimeOrder{});
       last_origin_ns = in->origin_ns;
+      const std::int64_t marker_ps = shifted(in->marker_ps);
       StageStats::add(s.items_in, in->size);
       decoded_.release(in);
-      send_held(false, last_origin_ns);
+      send_held(false, last_origin_ns, marker_ps);
       lat.record(monotonic_ns() - t0);
       continue;
     }
@@ -316,6 +351,7 @@ void AcquisitionPipeline::run_sort() {
     std::sort(v.begin(), v.end(), TimeOrder{});  // a function object, so the comparison inlines
     count_late(v);
     out->origin_ns = in->origin_ns;
+    out->marker_ps = shifted(in->marker_ps);  // offsets all equal, or none: no hold, only a shift
     lat.record(monotonic_ns() - t0);
     StageStats::add(s.items_in, in->size);
     StageStats::add(s.items_out, out->size);
@@ -323,7 +359,7 @@ void AcquisitionPipeline::run_sort() {
     decoded_.release(in);
     sorted_.publish(out);
   }
-  send_held(true, last_origin_ns);
+  send_held(true, last_origin_ns, no_marker);
   sorted_.close();
   finished_stages_.fetch_add(1);
 }
@@ -454,6 +490,9 @@ void AcquisitionPipeline::run_pair() {
       origins.add(in->view().back().time, in->origin_ns);
     }
     sorter.push(in->view(), found);
+    if (in->marker_ps != no_marker) {
+      sorter.advance(Picoseconds{in->marker_ps}, found);  // the readout's promise (MDQ-PR-007)
+    }
     StageStats::add(s.items_in, in->size);
     sorted_.release(in);
     const std::int64_t waited_ns = publish();  // never hold coincidences across input batches

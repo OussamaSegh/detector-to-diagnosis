@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 20 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
+Version 21 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -60,6 +60,11 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   blocks whose calibration has drifted, and the procedure that makes the table, `tools/calib`
   (items processing, pipeline, config and service, control API 2.4, Chapter 26,
   [ADR 0021](../adr/0021-calibration-table-and-procedure.md)).
+- time markers and the datagrams the boards sent: register map 1.2 of firmware 1.3; the decoder
+  reads a marker word as a promise of the board, the pipeline passes it to the sorter beside the
+  singles, and the integrity verdict compares the boards' datagrams with the link's (items format, sorter,
+  processing, pipeline, hw and service, control API 2.5, Chapter 24,
+  [ADR 0033](../adr/0033-time-markers-in-the-readout-stream-and-a-count-of-datagrams-sent.md)).
 - the inputs of the corrections: a singles counter per crystal and per block in the pipeline and
   a `corrections` object in the run record (the windows, the singles, the prompts and delayeds),
   from which the corrections tool, `tools/recon`, computes the normalization, randoms, scatter,
@@ -99,7 +104,7 @@ pipeline does not use it yet). The control API's security is described in the
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity; the run record's `corrections` object is what `tools/recon` (tool TL-30) reads with the files |
 | Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
-| Operator, scripts, test harness | Control protocol 2.4: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Operator, scripts, test harness | Control protocol 2.5: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
 | Configuration files | JSON, schema version 1.4 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
 | Calibration table | JSON, schema version 1.0 ([format](../formats/calibration.md)), written by `tools/calib` and named by the configuration | in | Checked against its CRC-32, the scanner serial, its expiry and the limits of a working detector before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
@@ -329,7 +334,7 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 
 ## 12. Decisions and open issues
 
-Decisions: [the ADR index](../adr/README.md) (ADR 0001 to 0032 at version 19). Known anomalies, with their evaluation:
+Decisions: [the ADR index](../adr/README.md) (ADR 0001 to 0033 at version 21). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
@@ -370,3 +375,4 @@ Open issues:
 | 18 | Chapter 32: the installed CMake package of the projector, its wheel, the workflow presets and the formatting check (ADR 0027, CR-0018). |
 | 19 | The architecture appendix of the book: corrects what earlier versions left stale, the range of decisions in section 12 (ADR 0001 to 0032, not 0020) and the slow-control thread missing from section 6 since Chapter 22. Chapters 33 to 37 added no item, layer or interface to the server (Chapter 35 added the preliminary hazard HZ-5, which no server item carries); their tools are in the tool list. |
 | 20 | Approved by the software lead for release 1.1.0; the content is that of version 19 (MDQ-PR-066). |
+| 21 | Release 1.3.0: time markers and the datagrams sent, register map 1.2, control API 2.5 (ADR 0033, CR-0026). |

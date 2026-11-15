@@ -78,7 +78,7 @@ struct Field {
   static constexpr unsigned lsb = Lsb;
   static constexpr unsigned width = Width;
   static constexpr bool is_signed = Signed;
-  static constexpr std::uint32_t max = Width == 32 ? 0xFFFF'FFFFU : (1U << Width) - 1U;
+  static constexpr std::uint32_t max = 0xFFFF'FFFFU >> (32U - Width);  // Width is 1 to 32
   static constexpr std::uint32_t mask = max << Lsb;
 
   // The field's bits of a register value, right-aligned.

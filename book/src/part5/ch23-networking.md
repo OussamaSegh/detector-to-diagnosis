@@ -265,8 +265,9 @@ Loss on the network after the last datagram that reaches the host is invisible t
 of the host: a switch that drops the last packets of a run leaves no gap, no socket drop, no
 card counter. The only remedy is the sender's own count, sent in-band (a final packet that says
 how many came before it, or periodic packets that carry the running count), which is part of the
-interface between the firmware and the software that Chapter 24 is about. Until then, ADR 0018
-records it as a residual of H-01.
+interface between the firmware and the software that Chapter 24 is about. ADR 0018 recorded it
+as a residual of H-01; register map 1.2 closes it with a counter of the datagrams each board sent,
+which the slow control reads every cycle (Chapter 24, release 1.3.0).
 
 ## Sizing the socket buffer
 

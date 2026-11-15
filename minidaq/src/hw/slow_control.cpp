@@ -224,6 +224,20 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     }
     (void)clear<feb::ErrorFlags>(*b.bus, feb::ErrorFlags::FifoOverflow::mask);
   }
+  // Register map 1.2: the time markers go on with the triggers (Chapter 24, CR-0026).
+  const bool map_1_2 = major > 1 || minor >= 3;
+  const bool markers = map_1_2 && triggers && settings_.marker_interval_us > 0;
+  if (triggers != s.triggers && markers) {
+    if (const auto w = write<feb::MarkerInterval>(*b.bus, settings_.marker_interval_us); !w) {
+      failed_cycle(w.error);
+      return;
+    }
+    if (const auto w = write_field<feb::Control::MarkerEnable>(*b.bus, 1U); !w) {
+      failed_cycle(w.error);
+      return;
+    }
+    s.markers = true;
+  }
   if (triggers != s.triggers) {
     if (const auto w = write_field<feb::Control::TriggerEnable>(*b.bus, triggers ? 1U : 0U); !w) {
       failed_cycle(w.error);
@@ -237,6 +251,19 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
       // until the next cycle reads it again.
       s.fifo_empty = false;
     }
+  }
+  if (map_1_2) {
+    // What the board has sent since the triggers went on; after a drain, the run's total, which
+    // the integrity verdict compares with the datagrams the link accounted for (SRS-HW-016).
+    auto sent = b.bus->read32(feb::DatagramsSent::address);
+    if (!sent) {
+      failed_cycle(sent.error());
+      return;
+    }
+    s.datagrams_sent = feb::DatagramsSent::Count::get(*sent);
+  } else {
+    s.datagrams_sent.reset();
+    s.markers = false;
   }
   // [/snippet:triggers]
 

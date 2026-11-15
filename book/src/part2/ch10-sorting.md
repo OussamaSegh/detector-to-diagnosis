@@ -742,7 +742,9 @@ horizon arrives, and the horizon is 104 ns. At the end of a batch, the singles o
 104 ns wait for the next batch, which the source publishes after at most
 `max_batch_delay_us` even at low rates. If the data stops altogether, they wait for the end
 of the run, when `flush` closes every window; a sorter that must report coincidences while
-the detector is silent would need a time marker from the source, as the merger has.
+the detector is silent needs a time marker from the source, as the merger has. Since release
+1.3.0 the sorter takes one with `advance(t)`, the same promise as the merger's, and boards of
+firmware 1.3 send them (Chapter 24, problem report MDQ-PR-007).
 
 ### Where the time goes in a naive sorter
 

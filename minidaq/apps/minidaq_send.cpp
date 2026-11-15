@@ -29,10 +29,14 @@
 namespace {
 
 constexpr const char* usage =
-    "usage: minidaq_send [--host IPV4] [--port N] [--activity BQ] [--seconds S] [--phantom RADIUS_MM]\n"
+    "usage: minidaq_send [--host IPV4] [--port N] [--activity BQ] [--seconds S] [--phantom "
+    "RADIUS_MM]\n"
     "                    [--words-per-packet N] [--first-sequence N] [--source-id N] [--seed N]\n"
-    "                    [--loss P] [--reorder P] [--duplicate P] [--speed F]\n"
-    "  --speed 1 sends in real time (detector time), 2 twice as fast, 0 as fast as possible\n";
+    "                    [--loss P] [--reorder P] [--duplicate P] [--speed F] "
+    "[--marker-interval-us N]\n"
+    "  --speed 1 sends in real time (detector time), 2 twice as fast, 0 as fast as possible\n"
+    "  --marker-interval-us N sends a time marker every N us of detector time (register map 1.2);\n"
+    "    0, the default, sends none, as a board with an older map\n";
 
 struct Options {
   std::string host = "127.0.0.1";
@@ -40,6 +44,7 @@ struct Options {
   double seconds = 0.2;
   double phantom_mm = 90.0;
   double speed = 1.0;
+  double marker_interval_us = 0.0;
   minidaq::sim::SimulatorConfig sim;
   minidaq::sim::PacketizerConfig packets;
   minidaq::sim::LinkFaultConfig faults;
@@ -79,6 +84,8 @@ bool parse(int argc, char** argv, Options& o) {
       ok = minidaq::parse_into(v, o.faults.reorder, 0.0, 1.0);
     } else if (a == "--duplicate") {
       ok = minidaq::parse_into(v, o.faults.duplicate, 0.0, 1.0);
+    } else if (a == "--marker-interval-us") {
+      ok = minidaq::parse_into(v, o.marker_interval_us, 0.0, 1e6);
     } else if (a == "--speed") {
       ok = minidaq::parse_into(v, o.speed, 0.0, 1000.0);
     } else {
@@ -123,14 +130,12 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  // 1. Detector: singles in time order, encoded as MDQ-P1 words.
+  // 1. Detector: singles in time order, encoded as MDQ-P1 words, with the time markers if asked.
   sim::DetectorSimulator detector{o.sim};
-  const auto singles = detector.generate_until(Picoseconds{static_cast<std::int64_t>(o.seconds * 1e12)});
-  std::vector<std::uint64_t> words;
-  words.reserve(singles.size());
-  for (const auto& s : singles) {
-    words.push_back(packed::encode(s.single));
-  }
+  const Picoseconds end{static_cast<std::int64_t>(o.seconds * 1e12)};
+  const auto singles = detector.generate_until(end);
+  const auto words = sim::encode_with_markers(
+      singles, Picoseconds{static_cast<std::int64_t>(o.marker_interval_us * 1e6)}, end);
   // 2. Readout link: packets, then the network's damage.
   sim::Packetizer packetizer{o.packets};
   auto packets = packetizer.packetize(words, /*end=*/true);

@@ -10,6 +10,18 @@ the patch version.
 
 ### Added
 
+- Time markers and register map 1.2 (CR-0026, ADR 0033, Chapter 24): boards of firmware 1.3
+  put time markers into their stream, MDQ-P1 words that no single can be (crystal 32767, energy
+  code 2047). The decoder reads them as a promise, the pipeline passes them to the sorter
+  (moved back by the calibration's largest offset), and `CoincidenceSorter::advance` closes the
+  windows before them, with the same coincidences as without markers: a silent detector no
+  longer holds its last coincidences until the end of the run (MDQ-PR-007, closed). Register
+  map 1.2 adds `control.marker_enable`, `marker_interval` and `datagrams_sent`; the integrity
+  verdict counts the datagrams the boards sent beyond those the link accounted for
+  (`/hardware/datagrams_unaccounted`). Control API 2.5: `markers` and `datagrams_sent` per board,
+  `markers` in the decode stage. `minidaq_send --marker-interval-us`. SRS version 29
+  (SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014, SRS-HW-016, SRS-HW-017), ICD-FEB version 3,
+  architecture version 21, threat model version 14.
 - `.github/labels.txt` and the workflow `labels.yml`, which creates a listed issue label that
   the repository lacks: the `erratum` label that the erratum form applies did not exist.
 

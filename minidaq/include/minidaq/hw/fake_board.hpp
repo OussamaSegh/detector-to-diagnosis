@@ -9,6 +9,13 @@
 // bus hangs (an access that does not return).
 // Since Chapter 24 it also has an output FIFO: while its triggers are on, events fill it at one
 // rate and the data link empties it at another, and a full FIFO loses data (FIFO_OVERFLOW).
+// Since Chapter 24 (register map 1.2, firmware 1.3) it counts the datagrams its link sent since
+// the triggers went on (DATAGRAMS_SENT: a datagram per 182 words, a partial one when the FIFO
+// runs empty) and keeps MARKER_ENABLE and MARKER_INTERVAL. A firmware older than 1.3 has none of
+// them: the registers read 0 and the bit is not kept, as on a board that predates the map. The
+// counts come from this model, not from datagrams anyone receives: a simulated board's counter
+// matches no real link (assumption: confirm with team that the firmware counts marker datagrams
+// too).
 //
 // Time is a function the owner gives, so a test moves it by hand and the server uses the steady
 // clock. The board brings its state up to that time at every access. Thread-safe.
@@ -45,7 +52,7 @@ class FakeBoard final : public RegisterBus {
   void set_temperature(double celsius);
   void set_fault(BoardFault f);
   void set_dark_current_ua(double ua);          // at 2.7 V overvoltage and 25 C; scales with both
-  void set_firmware(std::uint32_t fw_version);  // the FW_VERSION register; reset 1.2.0
+  void set_firmware(std::uint32_t fw_version);  // the FW_VERSION register; reset 1.3.0
   // Words per second that events put into the output FIFO while the triggers are on, and that
   // the data link takes out of it.
   void set_data_rates(double fill_words_per_s, double drain_words_per_s);
@@ -57,12 +64,14 @@ class FakeBoard final : public RegisterBus {
   static constexpr double overtemp_limit_c = 60.0;
   static constexpr double ready_band_mv = 50.0;
   static constexpr double fifo_depth_words = 4'096.0;
+  static constexpr double words_per_datagram = 182.0;  // a standard 1,500-byte MTU (ICD section 6)
   static constexpr std::chrono::seconds hang_time{60};
 
  private:
   void update_locked(std::int64_t now_ns);
   [[nodiscard]] std::uint32_t read_locked(std::uint32_t address) const;
   [[nodiscard]] std::uint32_t status_locked() const;
+  [[nodiscard]] bool has_map_1_2() const noexcept;  // firmware 1.3 or later
   void soft_reset_locked();
   // With hung_bus, waits until hang_time has passed or the fault has changed; true if it hung.
   bool hang_locked(std::unique_lock<std::mutex>& lock);
@@ -88,6 +97,8 @@ class FakeBoard final : public RegisterBus {
   double fill_words_per_s_ = 20'000.0;
   double drain_words_per_s_ = 1'000'000.0;
   double fifo_words_ = 0;
+  double words_sent_ = 0;  // since the triggers were last switched on
+  std::uint32_t marker_interval_us_ = 0;
   std::uint64_t accesses_ = 0;
 };
 

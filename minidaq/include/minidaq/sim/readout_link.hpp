@@ -43,6 +43,14 @@ class Packetizer {
 };
 // [/snippet:packetize]
 
+// [snippet:markers]
+// The MDQ-P1 words of `singles` (in time order) with a time marker at every multiple of
+// `interval` up to `end`, each before the first single at or after its time: what a board sends
+// with register map 1.2 and MARKER_ENABLE set (Chapter 24). An interval of 0 adds no marker.
+[[nodiscard]] std::vector<std::uint64_t> encode_with_markers(std::span<const TruthSingle> singles,
+                                                             Picoseconds interval, Picoseconds end);
+// [/snippet:markers]
+
 // [snippet:faults]
 struct LinkFaultConfig {
   double loss = 0.0;               // probability that a packet is dropped

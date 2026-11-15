@@ -107,3 +107,34 @@ TEST(RunIntegrity, TheBoardsLossesCount) {
   s["hardware"] = nullptr;
   EXPECT_EQ(assess_integrity(s)["complete"], true) << "no hardware port";
 }
+
+TEST(RunIntegrity, DatagramsTheBoardsSentButTheLinkNeverSawAreALoss) {
+  // REQ: SRS-HW-017
+  // Register map 1.2: 100 datagrams sent, 97 delivered and 1 found missing in the sequence: the
+  // last 2 were lost after the last one that arrived, which no sequence gap shows.
+  json s = clean_status();
+  s["detector_counters"]["packets_delivered"] = 97U;
+  s["detector_counters"]["packets_lost"] = 1U;
+  s["hardware"] = {{"drain_timeouts", 0U},
+                   {"boards", json::array({{{"fifo_overflows", 0U}, {"datagrams_sent", 60U}},
+                                           {{"fifo_overflows", 0U}, {"datagrams_sent", 40U}}})}};
+  json v = assess_integrity(s);
+  EXPECT_EQ(v["complete"], false);
+  bool found = false;
+  for (const auto& l : v["losses"]) {
+    if (l["counter"] == "/hardware/datagrams_unaccounted") {
+      found = true;
+      EXPECT_EQ(l["count"], 2U);
+    }
+  }
+  EXPECT_TRUE(found);
+  s["detector_counters"]["packets_lost"] = 0U;
+  s["detector_counters"]["packets_delivered"] = 100U;
+  EXPECT_EQ(assess_integrity(s)["complete"], true) << "every datagram accounted for";
+  s["detector_counters"]["packets_delivered"] = 98U;
+  s["hardware"]["boards"][1]["datagrams_sent"] = nullptr;  // a board with map 1.1
+  EXPECT_EQ(assess_integrity(s)["complete"], true) << "nothing to compare with an older board";
+  s["hardware"]["boards"][1]["datagrams_sent"] = 40U;
+  s["detector_counters"].erase("packets_delivered");  // a simulated detector: no link
+  EXPECT_EQ(assess_integrity(s)["complete"], true);
+}

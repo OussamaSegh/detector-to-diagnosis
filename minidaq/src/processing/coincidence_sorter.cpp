@@ -135,6 +135,17 @@ void CoincidenceSorter::push(std::span<const Single> in, std::vector<Coincidence
 }
 // [/snippet:push]
 
+// [snippet:advance]
+void CoincidenceSorter::advance(Picoseconds t, std::vector<Coincidence>& out) {
+  if (have_last_ && t <= last_time_) {
+    return;  // the singles already seen promised as much
+  }
+  have_last_ = true;
+  last_time_ = t;
+  close_ready(t, out);
+}
+// [/snippet:advance]
+
 void CoincidenceSorter::flush(std::vector<Coincidence>& out) {
   while (opener_ < buf_.size()) {
     close_window(out);  // the run is over: every open window is complete

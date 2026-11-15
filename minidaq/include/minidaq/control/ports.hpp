@@ -87,6 +87,9 @@ struct HardwareBoard {
   bool fifo_empty = false;
   std::uint32_t fifo_words = 0;
   std::uint64_t fifo_overflows = 0;  // since the triggers were last switched on: lost data
+  // Chapter 24, register map 1.2: time markers on, and datagrams sent since the triggers went on.
+  bool markers = false;
+  std::optional<std::uint32_t> datagrams_sent;
 };
 
 class HardwarePort {

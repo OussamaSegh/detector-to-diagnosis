@@ -116,6 +116,11 @@ class CoincidenceSorter {
   // close only once a later single proves them complete, so the last
   // coincidences of a run come from flush().
   void push(std::span<const Single> in, std::vector<Coincidence>& out);
+  // A time marker of the readout (Chapter 24): no single earlier than t will
+  // follow. Closes every window that a single at t would prove complete, as
+  // if one had arrived; a later single earlier than t is out of order. A
+  // marker earlier than the latest single or marker changes nothing.
+  void advance(Picoseconds t, std::vector<Coincidence>& out);
   // Closes every open window, as at the end of a run, and starts afresh.
   void flush(std::vector<Coincidence>& out);
 

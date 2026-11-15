@@ -104,8 +104,13 @@ TEST(Registers, ATemperatureIsTwosComplementIn128thsOfADegree) {
 
 TEST(Registers, TheGeneratedMapMatchesItsSpecification) {
   // REQ: SRS-HW-008
-  EXPECT_EQ(feb::registers.size(), 12U);
+  EXPECT_EQ(feb::registers.size(), 14U);
   EXPECT_EQ(feb::FifoLevel::address, 0x014U) << "map 1.1";
+  EXPECT_EQ(feb::DatagramsSent::address, 0x018U) << "map 1.2";
+  EXPECT_EQ(feb::MarkerInterval::address, 0x01CU);
+  EXPECT_EQ(feb::MarkerInterval::reset, 100U);
+  EXPECT_EQ(feb::Control::MarkerEnable::mask, 0x4U);
+  EXPECT_EQ(feb::FwVersion::reset, 0x0103'0000U) << "firmware 1.3 is the first with map 1.2";
   EXPECT_EQ(feb::ErrorFlags::FifoOverflow::mask, 0x8U);
   EXPECT_EQ(feb::BoardId::Magic::get(feb::BoardId::reset), 0x4D51U);
   EXPECT_EQ(feb::Control::address, 0x008U);
@@ -207,6 +212,37 @@ TEST(FakeBoard, KeepsTheRulesOfEachRegister) {
   EXPECT_EQ(*read<feb::Control>(board), 0U);
   EXPECT_EQ(*read<feb::Threshold>(board), feb::Threshold::reset);
   EXPECT_EQ(board.read32(0x044).error().code, HwErrc::bad_address);
+}
+
+TEST(FakeBoard, HasTheRegistersOfMap12OnlyWithFirmware13) {
+  // REQ: SRS-HW-008
+  // REQ: SRS-HW-016
+  std::int64_t now = 0;
+  FakeBoard board{0, [&] { return now; }};
+  EXPECT_EQ(*read<feb::MarkerInterval>(board), 100U) << "reset";
+  ASSERT_TRUE(write<feb::MarkerInterval>(board, 0));
+  EXPECT_EQ(*read<feb::MarkerInterval>(board), 1U) << "0 reads back as 1";
+  ASSERT_TRUE(board.write32(feb::DatagramsSent::address, 77));
+  EXPECT_EQ(*read<feb::DatagramsSent>(board), 0U) << "read only";
+  // 1,000 words at 182 per datagram: 5 full datagrams and a partial one once the FIFO is empty.
+  board.set_data_rates(10'000.0, 1'000'000.0);
+  ASSERT_TRUE(write<feb::Control>(
+      board, feb::Control::TriggerEnable::mask | feb::Control::MarkerEnable::mask));
+  EXPECT_EQ(feb::Control::MarkerEnable::get(*read<feb::Control>(board)), 1U);
+  now += 100'000'000;
+  ASSERT_TRUE(write<feb::Control>(board, 0));
+  now += 1'000'000;
+  EXPECT_EQ(*read<feb::DatagramsSent>(board), 6U);
+  ASSERT_TRUE(write<feb::Control>(board, feb::Control::TriggerEnable::mask));
+  EXPECT_EQ(*read<feb::DatagramsSent>(board), 0U) << "from 0 at every trigger enable";
+
+  board.set_firmware(0x0102'0000U);  // map 1.1: none of it
+  ASSERT_TRUE(write<feb::Control>(
+      board, feb::Control::TriggerEnable::mask | feb::Control::MarkerEnable::mask));
+  EXPECT_EQ(feb::Control::MarkerEnable::get(*read<feb::Control>(board)), 0U);
+  EXPECT_EQ(*read<feb::MarkerInterval>(board), 0U);
+  now += 100'000'000;
+  EXPECT_EQ(*read<feb::DatagramsSent>(board), 0U);
 }
 
 TEST(FakeBoard, FailsLikeRealBoardsFail) {

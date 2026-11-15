@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 28 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
+Version 29 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -45,7 +45,8 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-FMT-010 | The packed single format MDQ-P1 shall pack crystal, energy code and time code into 64 bits without overlapping fields. | format | T |
 | SRS-FMT-011 | The packed single codec shall restore the crystal exactly and the time and energy within one quantization step of their codes. | format | T |
 | SRS-FMT-012 | The time unwrapper shall reconstruct the full time across any number of wraps of the time code, provided consecutive singles are less than half a wrap period apart. | format | T |
-| SRS-FMT-013 | The packed single decoder shall count and drop every word whose crystal ID is outside the scanner. | format | T |
+| SRS-FMT-013 | The packed single decoder shall count and drop every word whose crystal ID is outside the scanner, except a time marker (SRS-FMT-014). | format | T |
+| SRS-FMT-014 | The packed single decoder shall read a word with crystal ID 32767 and energy code 2047 as a time marker, not as a single: count it, unwrap its time like a single's, and report the latest marker time once. | format | T |
 
 ### 2.3 Readout link (RDO)
 
@@ -76,6 +77,7 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-PIPE-010 | The acquisition pipeline shall produce the same coincidences as the single-threaded reference implementation for the same input. | pipeline | T |
 | SRS-PIPE-011 | When a downstream stage cannot keep up, the acquisition pipeline shall drop data only at the source, by the configured overflow policy, and count every dropped word. | pipeline | T |
 | SRS-PIPE-012 | When a stop is requested, the acquisition pipeline shall process all data already read by the source before its stages finish. | pipeline | T |
+| SRS-PIPE-013 | The acquisition pipeline shall pass each time marker from the decode stage to the coincidence sorter, moved earlier by the largest time offset of the calibration in use, count the markers apart from the filtered words, and give the same coincidences as without the markers. | pipeline | T |
 
 ### 2.5 Real-time behavior (RT)
 
@@ -116,6 +118,7 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-SRT-011 | The coincidence sorter's delayed window shall estimate the randoms among the prompts to within 15% at 40 MBq. | sorter | T |
 | SRS-SRT-012 | When the take-winner-of-goods policy finds good pairs with equal summed energy, the coincidence sorter shall keep the pair with the earliest first single, and among those the earliest second single. | sorter | T |
 | SRS-SRT-013 | The coincidence sorter shall give the same coincidences, each with the same first and second single, whatever the order in which singles with equal times arrive, and take such singles in crystal order, and two of one crystal in energy order. | sorter | T |
+| SRS-SRT-014 | When told that no later single has a time earlier than a given time, the coincidence sorter shall close and judge every window that no single at or after that time can join, without waiting for a later single, and give the same coincidences and counters as without the promise. | sorter | T |
 | SRS-MRG-001 | The stream merger shall merge the time-ordered streams of several boards into one time-ordered stream, whatever the sizes of the chunks it receives. | merger | T |
 | SRS-MRG-002 | The stream merger shall release a single only when every board has delivered a later single or a time marker. | merger | T |
 | SRS-MRG-003 | When one board falls behind the others by more than the configured maximum skew in µs, the stream merger shall drop and count only that board's late singles. | merger | T |
@@ -291,7 +294,7 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | SRS-HW-004 | The slow-control loop shall latch a fault on a board, switch that board's bias and triggers off and record the cause in the flight recorder when the board does not answer in 3 cycles in a row, its identity is wrong, it reports overtemperature, its bias current exceeds the limit (500 uA), its supply cannot hold the setpoint, or its bias has not reached the setpoint within the ramp time plus 2 s. | hw | T |
 | SRS-HW-005 | The slow-control loop shall keep a fault latched until an operator acknowledges it, and then clear the board's sticky error flags and power the board up again; a fault whose cause remains latches again in the next cycle. | hw | T |
 | SRS-HW-006 | When a hardware port is given, the acquisition service shall refuse `start` with `device_error` while a board is not ready, and enter the fault state with a fault starting with "hw:" and the fault source `hardware` when a board's fault latches, in any state but fault. | service | T |
-| SRS-HW-007 | The status and the run record shall contain the field `hardware`: null without a hardware port, otherwise whether every board is ready and, for each board, its slot, state, temperature, temperature level, target, setpoint and measured bias, bias current and fault, and since control API 2.3 its firmware version, triggers, FIFO level, whether its FIFO is empty and its FIFO overflows, with the run's drain timeouts. | service | T |
+| SRS-HW-007 | The status and the run record shall contain the field `hardware`: null without a hardware port, otherwise whether every board is ready and, for each board, its slot, state, temperature, temperature level, target, setpoint and measured bias, bias current and fault, and since control API 2.3 its firmware version, triggers, FIFO level, whether its FIFO is empty and its FIFO overflows, with the run's drain timeouts, and since control API 2.5 whether its time markers are on and the datagrams it has sent (null with firmware older than version 1.3). | service | T |
 | SRS-HW-008 | The register definitions shall be generated from the register map specification and make code that writes a read-only register, reads a write-only one or does a read-modify-write of a write-1-to-clear register fail to compile. | hw | T |
 | SRS-HW-009 | The memory-mapped bus shall refuse an access that is not 4-byte aligned or lies outside the mapped region, and perform each register access as exactly one 32-bit load or store. | hw | T |
 | SRS-HW-010 | The server shall read the hardware description given with `--hardware` as strictly as an acquisition configuration: schema version 1.0 or version 1.1, every key known, every value in its range, 1 to 64 boards, each problem reported with its JSON Pointer. | config | T |
@@ -300,6 +303,8 @@ limits and alarm levels are book-level numbers (assumption: confirm with team).
 | SRS-HW-013 | When a hardware port is given and a run is stopped, the acquisition service shall switch the boards' triggers off and stop the pipeline only once every board, in a slow-control cycle after the switch, reports its triggers off and its output FIFO empty, or once the drain timeout (2 s by default) has passed. | service | T |
 | SRS-HW-014 | The acquisition service shall switch the boards' triggers off when a run ends on its own, enters the fault state or is reset. | service | T |
 | SRS-HW-015 | The run's integrity verdict shall count as losses each board's FIFO overflows since its triggers were switched on, which the slow-control loop counts and clears every cycle, and a drain that ran out of time (risk control RC-30). | service | T |
+| SRS-HW-016 | The slow-control loop shall, when it switches the triggers on of a board whose firmware is version 1.3 or later, write the time-marker interval (100 us by default) and switch the board's time markers on, and read every cycle the datagrams the board has sent since its triggers were switched on, and do neither for a board with older firmware. | hw | T |
+| SRS-HW-017 | When every board reports the datagrams it has sent, the run's integrity verdict shall count as a loss the datagrams the boards sent beyond those the readout link delivered or counted as lost (risk control RC-30). | service | T |
 
 ### 2.17 Platform and updates (PLT)
 
@@ -517,3 +522,4 @@ change.
 | 26 | Chapter 37: AI-assisted changes, SRS-AI-001 to SRS-AI-004 (ADR 0032, CR-0024). |
 | 27 | Release 1.0.0: SRS-PERF-022 holds in at least 99% of the 10 s intervals, not in every one; the reference machine's tail latency varies from day to day (CR-0025). |
 | 28 | Approved by the software lead for release 1.1.0; the content is that of version 27 (MDQ-PR-066). |
+| 29 | Release 1.3.0, Chapter 24: time markers in the readout stream, SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014 (problem report MDQ-PR-007); register map 1.2 of firmware 1.3, SRS-HW-016, and the datagrams the boards sent in the integrity verdict, SRS-HW-017; SRS-FMT-013 leaves markers out and SRS-HW-007 names the boards' new fields (ADR 0033, CR-0026); control API 2.5. |

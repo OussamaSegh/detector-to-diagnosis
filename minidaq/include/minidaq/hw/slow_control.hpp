@@ -71,6 +71,9 @@ struct SlowControlSettings {
   // least this minor version.
   std::uint32_t firmware_major = 1;
   std::uint32_t firmware_min_minor = 2;
+  // Register map 1.2 (firmware 1.3 and later, Chapter 24): the time between two time markers
+  // that the boards send while their triggers are on; 0 sends none.
+  std::uint32_t marker_interval_us = 100;
 };
 // [/snippet:settings]
 
@@ -108,6 +111,9 @@ struct BoardSnapshot {
   bool fifo_empty = false;  // false also when not known
   std::uint32_t fifo_words = 0;
   std::uint64_t fifo_overflows = 0;  // overflows seen since the triggers were last switched on
+  // Register map 1.2 (Chapter 24); a board with older firmware has neither.
+  bool markers = false;                         // MARKER_ENABLE, as this software last set it
+  std::optional<std::uint32_t> datagrams_sent;  // DATAGRAMS_SENT, read in the last good cycle
 };
 
 class SlowControl {

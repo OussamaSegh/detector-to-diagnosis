@@ -28,6 +28,14 @@ std::size_t StreamDecoder::decode(std::span<const std::uint64_t> words, std::spa
     const Fields f = unpack(words[i]);
     ++stats_.words;
     const Picoseconds t = unwrapper_.unwrap(f.time_code);
+    if (f.crystal == marker_crystal && f.energy_code == marker_energy_code) {
+      ++stats_.markers;  // a promise, not a single (Chapter 24)
+      if (!has_marker_ || t > marker_) {
+        marker_ = t;
+      }
+      has_marker_ = true;
+      continue;
+    }
     if (f.crystal >= num_crystals_) {
       ++stats_.invalid_crystal;
       continue;

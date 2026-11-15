@@ -57,11 +57,13 @@ std::vector<Coincidence> reference(const std::vector<std::uint64_t>& words, std:
   return out;
 }
 
-void expect_conservation(const std::array<StageSnapshot, num_stages>& st, const SorterStats& so) {
+void expect_conservation(const std::array<StageSnapshot, num_stages>& st, const SorterStats& so,
+                         std::uint64_t markers = 0) {
   const auto& [src, dec, srt, par, wri] = st;
   EXPECT_EQ(src.items_in, src.items_out + src.items_dropped) << "source";
   EXPECT_EQ(dec.items_in, src.items_out) << "decode received what source sent";
-  EXPECT_EQ(dec.items_in, dec.items_out + dec.items_dropped + dec.items_filtered) << "decode";
+  EXPECT_EQ(dec.items_in, dec.items_out + dec.items_dropped + dec.items_filtered + markers)
+      << "decode";
   EXPECT_EQ(srt.items_in, dec.items_out) << "sort";
   EXPECT_EQ(srt.items_out, srt.items_in);
   EXPECT_EQ(par.items_in, srt.items_out) << "pair";
@@ -383,6 +385,145 @@ TEST(Pipeline, CalibratesEverySingleAndTheCorrectionMakesNoneLate) {
   }
   expect_conservation(p.stats(), p.sorter_stats());
   EXPECT_EQ(p.sorter_stats().out_of_order, 0U);
+}
+
+namespace {
+
+// A table that moves two crystals' times by +1 ns and -1 ns and leaves the rest: a spread of
+// 2 ns, so the sort stage holds singles, and a largest offset of 1 ns.
+std::shared_ptr<const CalibrationTable> two_offsets(CrystalId plus, CrystalId minus) {
+  std::vector<CrystalCalibration> k(ScannerGeometry::num_crystals,
+                                    CrystalCalibration{0.0F, packed::energy_lsb_kev, 0.0F, 0});
+  k[plus.value()].time_offset_ps = 1'000;
+  k[minus.value()].time_offset_ps = -1'000;
+  auto t = CalibrationTable::make(CalibrationInfo{"CAL-TEST", 1, "MDQ-TEST", "2026-11-15T00:00:00Z",
+                                                  "2027-11-15T00:00:00Z", 25.0, "test"},
+                                  std::move(k));
+  return std::make_shared<const CalibrationTable>(std::move(*t));
+}
+
+// The words of `singles` with a marker after every `every` singles, each at the earliest time
+// still to come in reported time: the promise a board keeps.
+std::vector<std::uint64_t> with_markers(const std::vector<std::uint64_t>& words,
+                                        std::size_t every) {
+  std::vector<std::int64_t> times(words.size());
+  packed::TimeUnwrapper u;
+  for (std::size_t i = 0; i < words.size(); ++i) {
+    times[i] = u.unwrap(packed::unpack(words[i]).time_code).count();
+  }
+  std::vector<std::int64_t> earliest(words.size() + 1, std::numeric_limits<std::int64_t>::max());
+  for (std::size_t i = words.size(); i-- > 0;) {
+    earliest[i] = std::min(earliest[i + 1], times[i]);
+  }
+  std::vector<std::uint64_t> out;
+  for (std::size_t i = 0; i < words.size(); ++i) {
+    out.push_back(words[i]);
+    if ((i + 1) % every == 0 && i + 1 < words.size()) {
+      out.push_back(packed::marker(
+          static_cast<std::uint64_t>(earliest[i + 1] / packed::time_lsb_ps) & packed::time_mask));
+    }
+  }
+  return out;
+}
+
+}  // namespace
+
+TEST(Pipeline, AMarkerDeliversTheLastCoincidencesWhileTheSourceIsSilent) {
+  // REQ: SRS-PIPE-013
+  // A pair, then a marker 1 ms later, then nothing: the coincidence reaches the sink while the
+  // run goes on, without a stop (MDQ-PR-007). With and without a calibration that holds singles.
+  const CrystalId a = ScannerGeometry::make_crystal(0, 0);
+  const CrystalId b = ScannerGeometry::make_crystal(0, 192);
+  for (const bool calibrated : {false, true}) {
+    const std::vector<std::uint64_t> words = {
+        packed::encode(Single{Picoseconds{1'000'000}, a, KeV{511.0F}}),
+        packed::encode(Single{Picoseconds{1'000'500}, b, KeV{511.0F}}),
+        packed::marker(1'001'000'000 / packed::time_lsb_ps)};
+    PipelineConfig cfg = small_config(0);
+    if (calibrated) {
+      cfg.calibration = two_offsets(a, b);
+    }
+    std::atomic<bool> sent{false};
+    std::atomic<std::size_t> got{0};
+    AcquisitionPipeline p{cfg,
+                          [&](std::span<std::uint64_t> out) -> std::size_t {
+                            if (sent.exchange(true)) {
+                              return 0;  // the detector fell silent
+                            }
+                            std::copy(words.begin(), words.end(), out.begin());
+                            return words.size();
+                          },
+                          [&](std::span<const Coincidence> c) { got.fetch_add(c.size()); }};
+    p.start();
+    EXPECT_TRUE(test_support::eventually([&] { return got.load() == 1; }))
+        << "calibrated " << calibrated << ": the pair waits for data that never comes";
+    p.request_stop();
+    p.wait();
+    EXPECT_EQ(got.load(), 1U);
+    EXPECT_EQ(p.sorter_stats().out_of_order, 0U);
+    EXPECT_EQ(p.markers(), 1U);
+    expect_conservation(p.stats(), p.sorter_stats(), p.markers());
+  }
+}
+
+TEST(Pipeline, MarkersChangeNoCoincidence) {
+  // REQ: SRS-PIPE-013
+  // REQ: SRS-CAL-003
+  // A marker after every 511 words, at the earliest reported time still to come, so that each
+  // batch of 512 words ends with a marker and the singles just after it come in the next batch.
+  // The sort stage must move each marker back by the table's largest offset: a marker passed on
+  // unmoved would make the sorter drop the singles that the correction moves before it.
+  constexpr std::uint64_t n = 200'000;
+  std::vector<std::uint64_t> plain(n);
+  sim::SyntheticSource gen{{}};
+  gen.generate(plain);
+  const std::size_t batch = small_config(n).batch_size;
+  const auto words = with_markers(plain, batch - 1);
+  ASSERT_GT(words.size(), n + 300);
+  for (const bool calibrated : {false, true}) {
+    PipelineConfig cfg = small_config(words.size());
+    if (calibrated) {
+      cfg.calibration = skewed_table(11);
+    }
+    std::size_t pos = 0;
+    std::vector<Coincidence> got;
+    AcquisitionPipeline p{
+        cfg,
+        [&](std::span<std::uint64_t> out) {
+          const std::size_t k = std::min(out.size(), words.size() - pos);
+          std::copy_n(words.begin() + static_cast<std::ptrdiff_t>(pos), k, out.begin());
+          pos += k;
+          return k;
+        },
+        [&](std::span<const Coincidence> c) { got.insert(got.end(), c.begin(), c.end()); }};
+    p.start();
+    p.wait();
+    ASSERT_TRUE(p.finished());
+
+    std::vector<Single> singles(plain.size());
+    packed::StreamDecoder dec{ScannerGeometry::num_crystals};
+    singles.resize(dec.decode(plain, singles));
+    if (calibrated) {
+      cfg.calibration->apply(singles);
+    }
+    std::sort(singles.begin(), singles.end(), time_order);
+    std::vector<Coincidence> want;
+    CoincidenceSorter s{cfg.sorter};
+    s.push(singles, want);
+    s.flush(want);
+
+    EXPECT_EQ(p.sorter_stats().out_of_order, 0U) << "calibrated " << calibrated;
+    EXPECT_EQ(p.late_singles(), 0U);
+    ASSERT_EQ(got.size(), want.size()) << "calibrated " << calibrated;
+    for (std::size_t i = 0; i < want.size(); ++i) {
+      ASSERT_EQ(got[i], want[i]) << i;
+    }
+    const auto st = p.stats();
+    expect_conservation(st, p.sorter_stats(), p.markers());
+    EXPECT_EQ(p.markers(), words.size() - n);
+    EXPECT_EQ(st[1].items_filtered, 0U)
+        << "a marker is not a loss: the run's integrity counts filtered words";
+  }
 }
 
 TEST(Pipeline, MonitorsThePhotopeakOfTheCalibratedSingles) {

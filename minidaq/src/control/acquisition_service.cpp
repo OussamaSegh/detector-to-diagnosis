@@ -36,21 +36,24 @@ json interval_json(const LatencyHistogram& h, const HistogramCounts& before, con
 json hardware_json(const HardwarePort& hw) {
   json boards = json::array();
   for (const HardwareBoard& b : hw.boards()) {
-    boards.push_back({{"slot", b.slot},
-                      {"state", b.state},
-                      {"temperature_c", b.temperature_c},
-                      {"temperature", b.temp_level},
-                      {"target_v", b.target_v},
-                      {"setpoint_v", b.setpoint_v},
-                      {"monitor_v", b.monitor_v},
-                      {"current_ua", b.current_ua},
-                      {"at_limit", b.at_limit},
-                      {"fault", b.fault.empty() ? json(nullptr) : json(b.fault)},
-                      {"firmware", b.firmware},  // 2.3: Chapter 24
-                      {"triggers", b.triggers},
-                      {"fifo_empty", b.fifo_empty},
-                      {"fifo_words", b.fifo_words},
-                      {"fifo_overflows", b.fifo_overflows}});
+    boards.push_back(
+        {{"slot", b.slot},
+         {"state", b.state},
+         {"temperature_c", b.temperature_c},
+         {"temperature", b.temp_level},
+         {"target_v", b.target_v},
+         {"setpoint_v", b.setpoint_v},
+         {"monitor_v", b.monitor_v},
+         {"current_ua", b.current_ua},
+         {"at_limit", b.at_limit},
+         {"fault", b.fault.empty() ? json(nullptr) : json(b.fault)},
+         {"firmware", b.firmware},  // 2.3: Chapter 24
+         {"triggers", b.triggers},
+         {"fifo_empty", b.fifo_empty},
+         {"fifo_words", b.fifo_words},
+         {"fifo_overflows", b.fifo_overflows},
+         {"markers", b.markers},  // 2.5: Chapter 24
+         {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)}});
   }
   const auto not_ready = hw.not_ready();
   return json{{"describe", hw.describe()},
@@ -521,6 +524,9 @@ json AcquisitionService::status_locked() const {
                         {"dropped", st.items_dropped},
                         {"filtered", st.items_filtered},
                         {"batches", st.batches}});
+      if (st.name == std::string_view{"decode"}) {
+        stages.back()["markers"] = pipeline_->markers();  // 2.5: time markers, not singles
+      }
     }
     j["stages"] = std::move(stages);
     json lat;

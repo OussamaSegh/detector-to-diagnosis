@@ -10,13 +10,15 @@
 # rw (read and write), wo (write only, reads as 0), rw1c (read; writing 1 to a bit clears it).
 #
 # The map has its own version, separate from the firmware's: 1.1 added FIFO_EMPTY, FIFO_OVERFLOW
-# and FIFO_LEVEL (Chapter 24), and firmware 1.2 is the first that implements it. The interface
+# and FIFO_LEVEL (Chapter 24), and firmware 1.2 is the first that implements it; 1.2 added
+# MARKER_ENABLE, DATAGRAMS_SENT and MARKER_INTERVAL (Chapter 24, CR-0026), and firmware 1.3 is
+# the first that implements it. The interface
 # control document docs/hw/icd-feb.md records which firmware implements which map.
 
 [map]
 name = "feb"
 title = "MiniDAQ front-end board"
-version = "1.1"
+version = "1.2"
 width = 32
 
 [[register]]
@@ -35,7 +37,7 @@ fields = [
 name = "fw_version"
 address = 0x004
 access = "ro"
-reset = 0x01020000
+reset = 0x01030000
 description = "Firmware version; Chapter 24 checks it against the versions the software supports."
 fields = [
   { name = "major", lsb = 24, width = 8, description = "Incompatible changes of the register map or the data format" },
@@ -52,6 +54,7 @@ description = "Switches the bias and the trigger; a write of 1 to SOFT_RESET res
 fields = [
   { name = "bias_enable", lsb = 0, width = 1, description = "1: the bias supply drives BIAS_SETPOINT" },
   { name = "trigger_enable", lsb = 1, width = 1, description = "1: the board sends data" },
+  { name = "marker_enable", lsb = 2, width = 1, description = "1: while the triggers are on, the board sends a time marker every MARKER_INTERVAL (map 1.2)" },
   { name = "soft_reset", lsb = 31, width = 1, description = "Write 1 to reset; reads as 0" },
 ]
 
@@ -90,6 +93,26 @@ reset = 0x00000000
 description = "How full the board's output FIFO is (map 1.1, Chapter 24)."
 fields = [
   { name = "words", lsb = 0, width = 16, description = "Words waiting to be sent; the FIFO holds 4,096" },
+]
+
+[[register]]
+name = "datagrams_sent"
+address = 0x018
+access = "ro"
+reset = 0x00000000
+description = "Datagrams the board has sent since TRIGGER_ENABLE was last set (map 1.2, Chapter 24)."
+fields = [
+  { name = "count", lsb = 0, width = 32, description = "Counts from 0 at the trigger enable, as the datagrams' sequence numbers do; wraps after 2^32" },
+]
+
+[[register]]
+name = "marker_interval"
+address = 0x01C
+access = "rw"
+reset = 0x00000064
+description = "How often the board sends a time marker while MARKER_ENABLE is set (map 1.2, Chapter 24)."
+fields = [
+  { name = "microseconds", lsb = 0, width = 16, unit = "us", description = "1 to 65,535 us of board time; default 100 us; 0 reads back as 1" },
 ]
 
 [[register]]
