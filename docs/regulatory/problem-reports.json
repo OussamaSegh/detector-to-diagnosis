@@ -1338,7 +1338,7 @@
         "rationale": "The decoder stays far inside its budget (about 10% of a core at 30 million singles per second before the change); no single was lost and SRS-PERF-020 and SRS-PERF-021 passed. The gate is there to stop a cost that no functional test sees."
       },
       "resolution": {
-        "change": "The decoder's loop works on local copies of the unwrapper and the crystal count, which no store through the output span can alias, and compares the crystal ID once; a word at or above the crystal count (a marker or an invalid ID) goes to not_a_single, a cold function off the loop. The constructor takes a crystal count above 32767 as 32767, so the marker's crystal is never a single. The behavior is unchanged for every word. Chapter 24 says what the gate found and why the order of the tests matters; Chapter 2 says where the branch for rare IDs is.",
+        "change": "The decoder's loop works on local copies of the unwrapper and the crystal count, which no store through the output span can alias, and compares the crystal ID once; a word at or above the crystal count (a marker or an invalid ID) goes to not_a_single, a cold function off the loop. The constructor takes a crystal count above 32767 as 32767, so the marker's crystal is never a single. The behavior is unchanged for every word when the crystal count is below 32768, as for every scanner MiniDAQ knows (18,432 crystals); with a larger count, crystal 32767 at another energy than the marker's is now an invalid crystal, where it was a single (StreamDecoder.KeepsTheLatestOfSeveralMarkersAndNeverTakesTheMarkerForASingle; noted by the independent review of 1.3.0). Chapter 24 says what the gate found and why the order of the tests matters; Chapter 2 says where the branch for rare IDs is.",
         "verification": "tools/perf_ab.sh against book-v1.2.0, five interleaved rounds on the reference machine: BM_DecodePacked/65536 at a speed of 0.973, within the gate's 5%, every gated benchmark ok (it was 0.842 before the fix). Reordering the tests alone measured about 0.86: the loop reloaded the decoder's members for every word. The unit tests of the decoder and the time markers pass, and fuzz_decoder ran 60 s without a finding."
       },
       "root_cause": {
@@ -1356,13 +1356,27 @@
       "title": "verify-run ends with an exception on a signed record whose digest has a field of the wrong type",
       "found": "2026-11-15, the coverage review of release 1.3.0",
       "item": "output",
-      "status": "open",
+      "status": "closed",
+      "capa": "",
       "evaluation": {
         "safety_relevant": false,
         "rationale": "The record must first pass the Ed25519 check with a key the site installed, so only a trusted signer can make such a record, and the server writes the fields with the right types. The tool then stops with an uncaught nlohmann::json type_error instead of a refusal: no run is believed that should not be, and the failure is visible."
       },
-      "decision": "Release 1.3.0 with it: the defect needs a malformed record signed with a trusted key, and the release checks ran on the code as it is. Fix in milestone 2.0.0-dev: verify_signed_run checks that sha256 is a string and bytes an unsigned number before it reads them, with a test that signs such a record (the test of malformed signed records added in this review shows the pattern).",
-      "description": "verify_signed_run reads each digest with d.value(\"bytes\", 0) and d.value(\"sha256\", \"\"). nlohmann::json::value throws type_error.302 when the field exists with another type (checked: a sha256 that is a number throws \"type must be string, but is number\"). CAPA-0003 asked for checked accessors on untrusted input; the record is verified before it is parsed, so it was treated as trusted, but a signed record is not necessarily a well-formed one."
+      "decision": "Release 1.3.0 with it: the defect needs a malformed record signed with a trusted key, and the release checks ran on the code as it is. Fix in milestone 2.0.0-dev: verify_signed_run checks that sha256 is a string and bytes an unsigned number before it reads them, with a test that signs such a record (the test of malformed signed records added in this review shows the pattern). Fixed earlier than planned, by the independent review of 1.3.0, so that 2.0.0-dev starts without it.",
+      "description": "verify_signed_run reads each digest with d.value(\"bytes\", 0) and d.value(\"sha256\", \"\"). nlohmann::json::value throws type_error.302 when the field exists with another type (checked: a sha256 that is a number throws \"type must be string, but is number\"); d.value(\"file\", \"\") throws the same way. verify-run also accepted a file named \".\" or \"..\" with the size and digest of no bytes: on Linux a directory opens and reads as empty. The independent review of 1.3.0 found the same defect in the analysis package: verify_run let json.JSONDecodeError, AttributeError and TypeError through for a signed record that is not JSON, is not an object or names a file with a number. CAPA-0003 asked for checked accessors on untrusted input; the record is verified before it is parsed, so it was treated as trusted, but a signed record is not necessarily a well-formed one.",
+      "resolution": {
+        "change": "verify_signed_run checks the type of every field before it reads it: a digest's file and sha256 are strings and bytes an unsigned number, or the record is refused with its reason (\"has no digest\", \"its digest has no size or no SHA-256\"). A file name that is empty, \".\" or \"..\" is refused like a path, and a listed file that is not a regular file cannot be read. The analysis package's verify_run makes the same checks and turns a signed text that is not JSON into a SignatureError.",
+        "verification": "Signing.ASignedRecordThatDoesNotListItsFilesProperlyIsRefused signs, with a trusted key, records with a sha256 that is a number, a size that is a string or negative, no sha256, a digest whose file is a number, the names \"\", \".\" and \"..\", and a directory with the digest of no bytes; it ended with an exception before the change (checked) and passes after it, with the other 411 unit tests of the debug build. analysis/tests/test_signature.py::test_a_malformed_record_signed_by_a_trusted_key_is_refused does the same for the package (it failed with json.JSONDecodeError before the change); ruff and mypy pass."
+      },
+      "root_cause": {
+        "whys": [
+          "The record's fields were read with nlohmann::json::value, which throws when the field exists with another type, and in Python with dict.get and the / operator, which raise for a value of another type.",
+          "The record is checked with its signature before it is parsed, so the parser treated it as trusted input; a signature says who wrote the record, not that it is well formed."
+        ],
+        "cause": "Checked accessors (CAPA-0003) were not used on input that a signature had vouched for.",
+        "category": "code",
+        "escape": "CR-0027's tests changed bytes of signed runs, which the signature check refuses before any field is read; only a test that signs a malformed record reaches the parser. The coverage review of 1.3.0 wrote that test and found the defect after the release checks."
+      }
     }
   ]
 }

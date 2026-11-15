@@ -8,6 +8,17 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed (review of 1.3.0)
+
+- `minidaq_listmode verify-run` refuses a signed run record whose digest has a field of the
+  wrong type, instead of ending with an exception (MDQ-PR-071, closed), and refuses a file
+  named "", "." or "..", which read as an empty file. The analysis package's `verify_run` makes
+  the same checks and turns a signed text that is not JSON into a `SignatureError`.
+- `signing::verify` reads the trust store with the error_code forms of the directory iteration,
+  so an unreadable entry is a refusal, not an exception.
+- The sort stage's test whether a time marker may go had a condition that no input can take (the
+  cutoff is never before the marker); the code says so now. No change of behavior.
+
 ## [1.3.0] - 2026-11-15
 
 ### Added

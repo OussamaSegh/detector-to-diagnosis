@@ -80,3 +80,42 @@ def test_the_qc_refuses_a_run_it_cannot_verify_and_signs_its_report(
     refused = tmp_path / "refused"
     assert main([str(record), str(refused), "--keys", str(keys)]) == 2
     assert not (refused / "report.json").exists(), "no report of a run that does not verify"
+
+
+def test_a_malformed_record_signed_by_a_trusted_key_is_refused(
+        tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-007
+    # A trusted key can sign a record that is malformed: every case is a SignatureError, never
+    # another exception (MDQ-PR-071).
+    key, keys = make_test_key(tmp_path / "site")
+    record = signed_run(tmp_path, rng, key)
+    good = json.loads(record.read_text())
+    name = good["files"][0]
+
+    def refused(text: str, match: str) -> None:
+        record.write_text(text)
+        sign_file(record, key)
+        with pytest.raises(SignatureError, match=match):
+            verify_run(record, keys)
+
+    def with_digest(**fields: object) -> str:
+        doc = json.loads(json.dumps(good))
+        doc["file_digests"][0].update(fields)
+        return json.dumps(doc)
+
+    refused("not json", "not a run record")
+    refused("[1, 2]", "do not match")
+    refused(with_digest(sha256=7), "no size or no SHA-256")
+    refused(with_digest(bytes="12"), "no size or no SHA-256")
+    refused(with_digest(bytes=True), "no size or no SHA-256")
+    refused(with_digest(file=7), "has no digest")
+    doc = json.loads(json.dumps(good))
+    doc["files"][0] = doc["file_digests"][0]["file"] = 7
+    refused(json.dumps(doc), "has no digest")
+    for bad in ("", ".", ".."):
+        doc["files"][0] = doc["file_digests"][0]["file"] = bad
+        refused(json.dumps(doc), "not a path")
+    record.write_text(json.dumps(good))
+    sign_file(record, key)
+    assert (record.parent / name).is_file()
+    assert verify_run(record, keys) == "test.pem"

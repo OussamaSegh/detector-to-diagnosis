@@ -285,9 +285,9 @@ void AcquisitionPipeline::run_sort() {
     if (static_cast<std::size_t>(held.end() - end) > cfg_.batch_size) {
       end = held.end() - static_cast<std::ptrdiff_t>(cfg_.batch_size);
     }
-    // The marker can go only if every single before it went.
-    const bool marker_holds =
-        marker_ps != no_marker && (end == held.end() || end->time.count() >= marker_ps);
+    // Every single before the marker goes: the cutoff is at the marker or later, and the limit
+    // of a batch only sends more. So the marker goes with the last batch sent.
+    const bool marker_holds = marker_ps != no_marker;
     auto from = held.begin();
     if (from == end && marker_holds) {
       Batch<Single>* out = acquire_blocking(sorted_, s);

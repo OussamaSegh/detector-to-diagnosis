@@ -215,6 +215,37 @@ TEST_F(Signing, ASignedRecordThatDoesNotListItsFilesProperlyIsRefused) {
   j["files"][0] = "missing.lm";
   j["file_digests"][0]["file"] = "missing.lm";
   EXPECT_NE(refused(j, "a file that is not there").find("cannot read"), std::string::npos);
+  // MDQ-PR-071: a field of the wrong type is a refusal, not an exception.
+  const auto with_digest = [&](const char* field, const nlohmann::json& value) {
+    auto m = good;
+    m["file_digests"][0][field] = value;
+    return m;
+  };
+  EXPECT_NE(refused(with_digest("sha256", 7), "a SHA-256 that is a number").find("no SHA-256"),
+            std::string::npos);
+  EXPECT_NE(refused(with_digest("bytes", "12"), "a size that is a string").find("no size"),
+            std::string::npos);
+  EXPECT_NE(refused(with_digest("bytes", -1), "a negative size").find("no size"),
+            std::string::npos);
+  j = good;
+  j["file_digests"][0].erase("sha256");
+  EXPECT_NE(refused(j, "no SHA-256").find("no SHA-256"), std::string::npos);
+  EXPECT_NE(
+      refused(with_digest("file", 7), "a digest whose file is a number").find("has no digest"),
+      std::string::npos);
+  for (const char* name : {"", ".", ".."}) {
+    j = good;
+    j["files"][0] = name;
+    j["file_digests"][0]["file"] = name;
+    EXPECT_NE(refused(j, name).find("not a path"), std::string::npos) << '"' << name << '"';
+  }
+  fs::create_directory(record.parent_path() / "sub");
+  j = good;
+  j["files"][0] = "sub";
+  j["file_digests"][0]["file"] = "sub";
+  j["file_digests"][0]["bytes"] = 0;
+  j["file_digests"][0]["sha256"] = signing::Sha256{}.hex_digest();  // of no bytes
+  EXPECT_NE(refused(j, "a directory").find("cannot read"), std::string::npos);
   write(record, "not json");
   write(record.string() + ".sig", *k->sign("not json"));
   EXPECT_FALSE(verify_signed_run(record, dir_ / "keys")) << "a signed text that is not JSON";

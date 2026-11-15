@@ -54,13 +54,24 @@ def verify_run(record: pathlib.Path, keys: pathlib.Path) -> str:
     """Checks a signed run: the record's signature first, then every file it lists against the
     size and SHA-256 the record states. Returns the key's name; SignatureError otherwise."""
     key = verify_file(record, keys)
-    doc = json.loads(record.read_text(encoding="utf-8"))
-    files, digests = doc.get("files"), doc.get("file_digests")
+    # A signed record is not necessarily a well-formed one: every field is checked for its type
+    # before it is used, so a malformed record is a SignatureError, like in verify-run (MDQ-PR-071).
+    try:
+        doc = json.loads(record.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+        raise SignatureError(f"{record.name}: signed, but not a run record ({e})") from e
+    files = doc.get("files") if isinstance(doc, dict) else None
+    digests = doc.get("file_digests") if isinstance(doc, dict) else None
     if not isinstance(files, list) or not isinstance(digests, list) or len(files) != len(digests):
         raise SignatureError(f"{record.name}: signed, but its files and their digests do not match")
     for name, d in zip(files, digests, strict=True):
-        if not isinstance(d, dict) or d.get("file") != name or "/" in str(name):
+        if not isinstance(name, str) or not isinstance(d, dict) or d.get("file") != name:
             raise SignatureError(f"{record.name}: {name} has no digest")
+        if name in ("", ".", "..") or "/" in name:
+            raise SignatureError(f"{name}: a file name, not a path, is expected")
+        size, digest = d.get("bytes"), d.get("sha256")
+        if type(size) is not int or size < 0 or not isinstance(digest, str):
+            raise SignatureError(f"{name}: its digest has no size or no SHA-256")
         p = record.parent / name
         if not p.is_file():
             raise SignatureError(f"{name}: missing")

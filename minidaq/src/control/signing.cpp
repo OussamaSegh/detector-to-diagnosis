@@ -53,9 +53,12 @@ Expected<std::string, std::string> verify(std::string_view message, std::string_
                                           const fs::path& keys_dir) {
   std::error_code ec;
   std::vector<fs::path> keys;
-  for (const auto& e : fs::directory_iterator{keys_dir, ec}) {
-    if (e.path().extension() == ".pem" && e.is_regular_file()) {
-      keys.push_back(e.path());
+  // The error_code forms throughout: a trust store that cannot be read is a refusal, not an
+  // exception out of the check.
+  for (fs::directory_iterator it{keys_dir, ec}, end; !ec && it != end; it.increment(ec)) {
+    std::error_code type_ec;
+    if (it->path().extension() == ".pem" && it->is_regular_file(type_ec)) {
+      keys.push_back(it->path());
     }
   }
   if (ec || keys.empty()) {

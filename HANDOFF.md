@@ -5,15 +5,17 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-14: work toward 2.0.0 has started (thread "Build book version 2.0.0",
-branch claude/project-thread-fo39bu). VERSION is still 1.1.1-dev; the next release is 1.2.0.
+Last updated: 2026-11-15: release 1.3.0 is out (tag book-v1.3.0) and its independent review is
+in a PR; VERSION is 1.3.1-dev. The next milestone is 2.0.0-dev (Theme B's breaking items).
 
 ## Start here (toward 2.0.0)
 
 The roadmap (`docs/ROADMAP-2.0.0.md`) was renumbered on 2026-11-14: 1.1.0 became the interior,
 so **1.2.0 = Theme D (tooling), Theme A (book quality) and Theme F (web edition)**; 1.3.0 =
-Theme B's non-breaking items with Chapter 38; 1.4.0 = Chapter 39; then 2.0.0-dev and 2.0.0-rc.
-Theme C (Part X) waits for four to six weeks of errata after 1.0.0 (from about 2026-12-07).
+Theme B's non-breaking items; then 2.0.0-dev (Theme B's breaking items, and Chapters 38 and 39
+after the errata window) and 2.0.0-rc. The roadmap's table is the reference: an earlier plan put
+Chapter 38 in 1.3.0 and Chapter 39 in 1.4.0. Theme C (Part X) waits for four to six weeks of
+errata after 1.0.0 (from about 2026-12-07).
 
 Done for 1.2.0 (2026-11-14):
 
@@ -42,7 +44,7 @@ the software lead (review for 1.2), release checks in four parts on 31527cc with
 build checked, release record `docs/regulatory/releases/1.2.0.md` written with
 `release_record.py`, tag book-v1.2.0 through `.github/tags.txt`. No product source changed since
 1.1.0. Open: MDQ-PR-006, 007, 009, 064. No CAPA open. Next: the Opus review of 1.2.0, then
-milestone 1.3.0 (Theme B non-breaking items and Chapter 38; Theme C waits for errata until about
+milestone 1.3.0 (Theme B non-breaking items; Theme C waits for errata until about
 2026-12-07).
 
 **Review of 1.2.0 (2026-11-15, branch claude/project-thread-9gymzp, PR for the main thread to
@@ -72,6 +74,22 @@ review, then milestone 2.0.0-dev (plan in the project files, neurolf-book/plans/
 C++23 baseline, product build without the simulator, control API 3.0 and schema 2.0, and
 MDQ-PR-071). Long runs (release checks) must be harness-tracked background commands: the
 container restarts when the session idles.
+
+**Review of 1.3.0 (2026-11-15, branch claude/project-thread-a17bsw, PR for the main thread to
+merge locally).** MDQ-PR-070's fix holds: built here, `BM_DecodePacked/65536` of 1.3.0 and of
+1.2.0 interleaved (6 rounds of 4) gave medians of 481 and 478 M words/s. One claim of the
+report was too broad and is corrected: the behavior changed for a crystal count of 32768 (the
+constructor's clamp). MDQ-PR-071 is fixed now instead of in 2.0.0-dev: `verify_signed_run`
+checks every field's type, and also refuses the names "", "." and ".." (a directory read as an
+empty file and passed); the analysis package's `verify_run` had the same defect (a
+`JSONDecodeError` or `TypeError` instead of a `SignatureError`) and is fixed with it.
+`signing::verify` uses the error_code forms of the directory iteration. The coverage review
+classed `acquisition_pipeline.cpp:290` as accepted, but its untaken condition is infeasible
+(the cutoff is at the marker or later, and the batch limit only sends more), so the condition is
+now `marker_ps != no_marker`. Observations for 2.0.0-dev, not changed: `SigningKey::load`
+passes no passphrase callback, so an encrypted key makes OpenSSL prompt on the terminal; the
+`server` item's branch coverage fell from 73.8% to 66.9%, and the system test of the signing
+options is still to be written.
 
 ## Release 1.1.0 (for reference)
 

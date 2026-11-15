@@ -614,7 +614,11 @@ signature before anything in the record is believed, then every file against its
 
 The tests are mostly about what must fail: a byte of a data file changed, the record changed by
 one space, a file removed, the signature removed, a key the site never installed
-(`Signing.ASignedRunVerifiesUntilAFileOrItsRecordChanges`). Every key is made by the test that
+(`Signing.ASignedRunVerifiesUntilAFileOrItsRecordChanges`). A signature says who wrote the
+record, not that it is well formed, so a second test signs malformed records with a trusted key:
+a digest whose size is a string, a file named `..`. The first version read those fields
+unchecked and ended with an exception (MDQ-PR-071); every field's type is now checked before it
+is read. Every key is made by the test that
 uses it; no private key is in the repository, because a key that has been in a repository has to
 be treated as public.
 

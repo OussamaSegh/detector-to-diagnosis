@@ -496,16 +496,26 @@ Expected<std::string, std::string> verify_signed_run(const std::filesystem::path
     return Unexpected{record.filename().string() +
                       ": signed, but its files and their digests do not match"};
   }
+  // A signed record is not necessarily a well-formed one: every field is checked for its type
+  // before it is read, so a malformed record is a refusal, not an exception (MDQ-PR-071).
   for (std::size_t i = 0; i < j["files"].size(); ++i) {
     const auto& d = j["file_digests"][i];
-    if (!j["files"][i].is_string() || !d.is_object() ||
-        d.value("file", "") != j["files"][i].get<std::string>()) {
+    if (!j["files"][i].is_string() || !d.is_object() || !d.contains("file") ||
+        !d["file"].is_string() || d["file"] != j["files"][i]) {
       return Unexpected{record.filename().string() + ": file " + std::to_string(i) +
                         " has no digest"};
     }
     const std::string name = j["files"][i];
-    if (name.find('/') != std::string::npos) {
+    if (name.empty() || name == "." || name == ".." || name.find('/') != std::string::npos) {
       return Unexpected{name + ": a file name, not a path, is expected"};
+    }
+    if (!d.contains("bytes") || !d["bytes"].is_number_unsigned() || !d.contains("sha256") ||
+        !d["sha256"].is_string()) {
+      return Unexpected{name + ": its digest has no size or no SHA-256"};
+    }
+    std::error_code ec;
+    if (!std::filesystem::is_regular_file(record.parent_path() / name, ec)) {
+      return Unexpected{"cannot read " + name};  // not there, or a directory
     }
     std::ifstream in{record.parent_path() / name, std::ios::binary};
     if (!in) {
@@ -520,7 +530,8 @@ Expected<std::string, std::string> verify_signed_run(const std::filesystem::path
       h.update(std::span{reinterpret_cast<const std::byte*>(buf.data()), n});
       bytes += n;
     }
-    if (bytes != d.value("bytes", std::uint64_t{0}) || h.hex_digest() != d.value("sha256", "")) {
+    if (bytes != d["bytes"].get<std::uint64_t>() ||
+        h.hex_digest() != d["sha256"].get<std::string>()) {
       return Unexpected{name + ": its size or SHA-256 differs from the signed record"};
     }
   }
