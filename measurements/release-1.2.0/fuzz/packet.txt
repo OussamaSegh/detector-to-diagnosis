@@ -1,0 +1,27 @@
+# 2026-11-15T01:30:48Z commit 31527cc fuzz_packet 600 s on CPU 2 from fuzz/corpus/packet
+INFO: Seed: 3871340109
+#7	INITED cov: 100 ft: 213 corp: 6/1607b exec/s: 0 rss: 33Mb
+#9	NEW    cov: 101 ft: 230 corp: 7/2036b lim: 637 exec/s: 0 rss: 34Mb L: 429/637 MS: 2 ChangeBinInt-InsertRepeatedBytes-
+#11	NEW    cov: 103 ft: 236 corp: 8/2673b lim: 637 exec/s: 0 rss: 34Mb L: 637/637 MS: 2 ChangeByte-ChangeBit-
+#13	NEW    cov: 104 ft: 249 corp: 9/2880b lim: 637 exec/s: 0 rss: 34Mb L: 207/637 MS: 2 ShuffleBytes-InsertRepeatedBytes-
+#14	NEW    cov: 105 ft: 282 corp: 10/3031b lim: 637 exec/s: 0 rss: 34Mb L: 151/637 MS: 1 CopyPart-
+#16	NEW    cov: 106 ft: 292 corp: 12/3394b lim: 637 exec/s: 0 rss: 35Mb L: 152/637 MS: 1 InsertByte-
+#23	NEW    cov: 107 ft: 328 corp: 15/4410b lim: 637 exec/s: 0 rss: 35Mb L: 633/637 MS: 2 CrossOver-CopyPart-
+#79	NEW    cov: 108 ft: 404 corp: 30/9323b lim: 637 exec/s: 0 rss: 40Mb L: 378/637 MS: 5 ShuffleBytes-InsertByte-ChangeBit-ChangeBinInt-CrossOver-
+#145	NEW    cov: 111 ft: 418 corp: 36/12213b lim: 637 exec/s: 0 rss: 46Mb L: 558/637 MS: 1 ShuffleBytes-
+#266	NEW    cov: 112 ft: 421 corp: 38/12194b lim: 637 exec/s: 0 rss: 55Mb L: 91/637 MS: 3 EraseBytes-ChangeByte-ChangeBinInt-
+#762	NEW    cov: 113 ft: 432 corp: 45/14465b lim: 637 exec/s: 0 rss: 95Mb L: 314/637 MS: 2 CopyPart-CrossOver-
+#1290	NEW    cov: 114 ft: 436 corp: 49/15455b lim: 637 exec/s: 0 rss: 137Mb L: 156/637 MS: 4 ChangeBit-ChangeByte-ChangeBit-ChangeByte-
+#1548	NEW    cov: 116 ft: 442 corp: 52/16Kb lim: 637 exec/s: 0 rss: 157Mb L: 246/637 MS: 3 ChangeBit-ChangeBit-InsertRepeatedBytes-
+#1657	NEW    cov: 117 ft: 455 corp: 54/17Kb lim: 637 exec/s: 0 rss: 166Mb L: 637/637 MS: 2 ChangeByte-PersAutoDict- DE: "\012\000\001\000"-
+#4681	NEW    cov: 119 ft: 493 corp: 74/24Kb lim: 637 exec/s: 0 rss: 351Mb L: 637/637 MS: 1 CrossOver-
+#23365	NEW    cov: 120 ft: 536 corp: 103/30Kb lim: 637 exec/s: 0 rss: 353Mb L: 175/637 MS: 4 InsertRepeatedBytes-ChangeByte-ChangeBinInt-InsertByte-
+#71851	NEW    cov: 121 ft: 557 corp: 114/29Kb lim: 736 exec/s: 71851 rss: 356Mb L: 377/637 MS: 2 CopyPart-ChangeBinInt-
+#5276002	NEW    cov: 122 ft: 761 corp: 224/165Kb lim: 4096 exec/s: 18006 rss: 374Mb L: 397/4087 MS: 2 ChangeBit-CopyPart-
+#10847020	DONE   cov: 122 ft: 776 corp: 236/181Kb lim: 4096 exec/s: 18048 rss: 375Mb
+stat::number_of_executed_units: 10847020
+stat::average_exec_per_sec:     18048
+stat::new_units_added:          2933
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              375
+crash files: 0

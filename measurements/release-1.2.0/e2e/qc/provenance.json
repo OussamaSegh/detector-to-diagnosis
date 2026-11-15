@@ -1,0 +1,36 @@
+{
+  "inputs": {
+    "format": "minidaq-analysis manifest 1",
+    "files": [
+      {
+        "path": "qc-20261115T010552487Z-0000.mdql",
+        "bytes": 2197384,
+        "sha256": "41e3cad687806b0f07aff828c8f59d488ef04a2877ab54b8705bc8797106a18d"
+      },
+      {
+        "path": "qc-20261115T010552487Z.run.json",
+        "bytes": 236505,
+        "sha256": "4f53f7ee80333e8dc58dfcd78c20b709d33c9c0e9990902d0d63cc90df1ae91d"
+      }
+    ]
+  },
+  "inputs_id": "cfe5a135951b70b5353eab27543150934457010882b68645282084a44a5f75e5",
+  "environment": {
+    "package": "minidaq-analysis",
+    "version": "1.2.0.dev0",
+    "code_commit": "31527cca4e0c387746099a1a8af307cabcc82c56",
+    "python": "3.13.18",
+    "libraries": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2"
+    },
+    "platform": "Linux-6.18.44-fc-v470-x86_64-with-glibc2.39",
+    "command": [
+      "minidaq-qc",
+      "/tmp/minidaq-e2e-5_dz3kpe/qc/qc-20261115T010552487Z.run.json",
+      "/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120-out/e2e/qc"
+    ],
+    "created_utc": "2026-11-15T01:05:57Z"
+  }
+}

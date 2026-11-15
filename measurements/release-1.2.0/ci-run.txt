@@ -1,0 +1,8 @@
+# 2026-11-15 GitHub Actions runs, read with the GitHub API
+candidate 31527cca4e0c387746099a1a8af307cabcc82c56 (SOUP list approved for release 1.2.0):
+  ci run 251 (43650893106): success; gates run 125 (43650893076): success; codeql run 203
+  (43650893072): success; pages run 178 (43650893089): success
+the commit before it, fb3cfbe (internal audit before release 1.2.0): ci run 250 (43640297825):
+  success; gates run 124 (43640297832): success; codeql run 202: success; pages run 177: success
+80ec88e (the web edition's check): ci run 249 (43638591129): success; gates run 123
+  (43638591162): success; codeql run 201: success; pages run 176: success

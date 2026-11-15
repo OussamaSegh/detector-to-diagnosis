@@ -35,9 +35,15 @@ Done for 1.2.0 (2026-11-14):
 - CI: five OpenSSL CVEs of 2026-11-10 were triaged `not_affected` in
   `docs/regulatory/security/vulnerability-triage.json` (QUIC, AES-GCM-SIV, CMS not used).
 
-Left for 1.2.0: the release itself: `tools/post_release.py . 1.2.0-dev` with a dated SOUP review
-for 1.2, the internal audit, the release checks (`resume`), the record (`release_record.py`),
-the document approvals, the tag, then the Opus review of the release.
+**Release 1.2.0 (2026-11-15): Themes D, A and F.** Internal audit before the checks
+(`docs/regulatory/qms/internal-audit-2026-11-14.md`, no nonconformity), SOUP list v25 approved by
+the software lead (review for 1.2), release checks in four parts on 31527cc with `resume`
+(`measurements/release-1.2.0/`, 9 of 9 acceptance criteria, ACC-04 180 of 180), reproducible
+build checked, release record `docs/regulatory/releases/1.2.0.md` written with
+`release_record.py`, tag book-v1.2.0 through `.github/tags.txt`. No product source changed since
+1.1.0. Open: MDQ-PR-006, 007, 009, 064. No CAPA open. Next: the Opus review of 1.2.0, then
+milestone 1.3.0 (Theme B non-breaking items and Chapter 38; Theme C waits for errata until about
+2026-12-07).
 
 ## Release 1.1.0 (for reference)
 

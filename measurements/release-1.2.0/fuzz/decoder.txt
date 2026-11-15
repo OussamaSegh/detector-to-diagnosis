@@ -1,0 +1,18 @@
+# 2026-11-15T01:10:45Z commit 31527cc fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 3812146016
+#5	INITED cov: 83 ft: 190 corp: 4/2268b exec/s: 0 rss: 33Mb
+#6	NEW    cov: 84 ft: 195 corp: 5/2782b lim: 1601 exec/s: 0 rss: 33Mb L: 514/1601 MS: 1 InsertByte-
+#8	NEW    cov: 85 ft: 205 corp: 7/3425b lim: 1601 exec/s: 0 rss: 33Mb L: 128/1601 MS: 1 InsertRepeatedBytes-
+#10	NEW    cov: 86 ft: 231 corp: 8/3645b lim: 1601 exec/s: 0 rss: 33Mb L: 220/1601 MS: 2 ShuffleBytes-InsertRepeatedBytes-
+#51	NEW    cov: 87 ft: 304 corp: 29/20Kb lim: 1601 exec/s: 0 rss: 35Mb L: 68/1601 MS: 2 InsertByte-EraseBytes-
+#54	NEW    cov: 88 ft: 309 corp: 30/20Kb lim: 1601 exec/s: 0 rss: 35Mb L: 73/1601 MS: 3 CMP-ChangeBinInt-InsertByte- DE: "\377\377J\355"-
+#2536	NEW    cov: 89 ft: 423 corp: 71/38Kb lim: 1601 exec/s: 0 rss: 50Mb L: 11/1601 MS: 2 ChangeBit-EraseBytes-
+#5654	NEW    cov: 99 ft: 442 corp: 75/38Kb lim: 1601 exec/s: 0 rss: 66Mb L: 8/1601 MS: 1 PersAutoDict- DE: "\002\000\000\000\000\000\000\000"-
+#10952	NEW    cov: 101 ft: 448 corp: 80/36Kb lim: 1601 exec/s: 0 rss: 89Mb L: 1/1601 MS: 5 CopyPart-ShuffleBytes-EraseBytes-CopyPart-CrossOver-
+#15823372	DONE   cov: 101 ft: 460 corp: 90/28Kb lim: 4096 exec/s: 26328 rss: 458Mb
+stat::number_of_executed_units: 15823372
+stat::average_exec_per_sec:     26328
+stat::new_units_added:          815
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              458
+crash files: 0

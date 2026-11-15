@@ -39,6 +39,7 @@ ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in
     ("performance", ["performance regression gate"], "perf-gate.txt"),
     ("performance, SRS-PERF-020", ["pipeline benchmark ran"], "perf-pipeline.txt"),
     ("performance, SRS-PERF-021", ["writer benchmark ran"], "perf-writer.txt"),
+    ("performance, SRS-PERF-022", ["soak"], "soak.txt"),
     ("system tests", ["system test report"], "system-test-report.md"),
     ("soak, 30 minutes", ["soak"], "soak.txt"),
     ("end to end", ["end to end"], "e2e.txt"),
