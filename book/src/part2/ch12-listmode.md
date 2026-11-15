@@ -538,7 +538,8 @@ file and checks each time that only the block it belongs to is lost (SRS-LMF-006
 A CRC protects against accidents, not against people. Anyone who edits a file can recompute
 the CRC. With four free bytes they can even make the CRC come out as any value they like,
 which Exercise 12.4 does. A file that must be shown unchanged needs a keyed MAC or a
-signature (Chapter 17).
+signature (Chapter 17); since release 1.3.0 MiniDAQ can sign each run's record with the
+SHA-256 of every file (Chapter 25).
 
 ### The write path: page cache, fsync and rename
 
@@ -679,7 +680,9 @@ configuration, the link counters and every stage's counts (SRS-OUT-010).
 
 Together, the header and the run record let an analysis or a complaint investigation tell a
 clean run from one with losses without the DAQ's logs. A run without a run record ended in a
-crash or a fault, which is itself information. `minidaq_sim` uses the same mechanism to store
+crash or a fault, which is itself information. With a signing key the record also lists each
+file's size and SHA-256 and is signed, so that it vouches for the data too (Chapter 25).
+`minidaq_sim` uses the same mechanism to store
 the truth behind simulated data: the activity, the seed and the numbers of trues, scatters
 and randoms.
 

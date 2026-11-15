@@ -18,6 +18,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -54,6 +55,12 @@ struct ServiceOptions {
   // or after drain_timeout, which leaves the run incomplete.
   std::chrono::milliseconds trigger_timeout{2'000};
   std::chrono::milliseconds drain_timeout{2'000};
+  // Release 1.3.0 (threat T-54, ADR 0034): when set, configure() reads the calibration table's
+  // signature from <table>.sig and refuses the table unless this returns no error. The server
+  // sets it from --calibration-keys; empty: tables are checked as before, without a signature.
+  // Arguments: the table's exact bytes and the signature's; the result: why it is refused.
+  std::function<std::optional<std::string>(std::string_view table, std::string_view signature)>
+      calibration_verifier;
   std::chrono::milliseconds monitor_period{20};
   // status() reports latency percentiles over the last completed interval of
   // this length, as well as since the start of the run.

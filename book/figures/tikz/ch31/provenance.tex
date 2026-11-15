@@ -10,5 +10,5 @@
   \draw[flow] (run.east |- man) -- (man); \draw[flow] (man) -- (id); \draw[flow] (id) -- (id -| out.west);
   \draw[flow] (env.east) -- (env.east -| out.west);
   \node[note,text=d2dink,anchor=north,align=center] at (3.4,-1.35) {verify\_manifest later names every file missing or changed};
-  \node[note,text=d2dcat3,anchor=north,align=center] at (10.0,-0.9) {not signed: proves which\\bytes, not who wrote them};
+  \node[note,text=d2dcat3,anchor=north,align=center] at (10.0,-0.9) {proves which bytes; who wrote\\them only with \texttt{-{}-sign}};
 \end{tikzpicture}

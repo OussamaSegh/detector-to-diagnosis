@@ -4,6 +4,7 @@
 //   minidaq_server [--port 7700] [--bind 127.0.0.1] [--audit audit.jsonl] [--config acq.json]
 //                  [--tokens tokens.json] [--tls-cert cert.pem --tls-key key.pem] [--no-auth]
 //                  [--crash-report FILE] [--hardware FILE]
+//                  [--signing-key key.pem] [--calibration-keys DIR]
 //
 // Clients authenticate with a token (Chapter 17). With --tokens, the server
 // accepts the tokens whose hashes that file lists; without it, the server makes
@@ -20,6 +21,12 @@
 // (Chapter 22, minidaq/config/hardware_config.hpp) from start-up to shutdown: a run starts only
 // when every board is ready, the boards' triggers follow the run (Chapter 24), a hardware fault
 // stops it, and at shutdown every bias is switched off.
+//
+// Release 1.3.0 (ADR 0034): with --signing-key, an Ed25519 private key, every run's record lists
+// the SHA-256 of its list-mode files and is signed into <record>.sig, which
+// `minidaq_listmode verify-run --keys DIR` checks. With --calibration-keys, a directory of
+// Ed25519 public keys, a calibration table is used only with a signature in <table>.sig that one
+// of them verifies.
 //
 // Under systemd (Chapter 25, packaging/systemd/minidaq.service), the server says READY once its
 // control API is listening and STOPPING at shutdown, and, with WatchdogSec=, pings the watchdog
@@ -52,6 +59,7 @@
 #include "minidaq/control/file_ops.hpp"
 #include "minidaq/control/hardware.hpp"
 #include "minidaq/control/service_manager.hpp"
+#include "minidaq/control/signing.hpp"
 #include "minidaq/control/tls.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/rt/crash_report.hpp"
@@ -72,6 +80,8 @@ int main(int argc, char** argv) {
   std::string key_path;
   std::string crash_path;
   std::string hardware_path;
+  std::string signing_key_path;
+  std::string calibration_keys;
   bool no_auth = false;
   for (int i = 1; i < argc; ++i) {
     const std::string_view a{argv[i]};
@@ -101,11 +111,16 @@ int main(int argc, char** argv) {
       crash_path = v;
     } else if (a == "--hardware" && v) {
       hardware_path = v;
+    } else if (a == "--signing-key" && v) {
+      signing_key_path = v;
+    } else if (a == "--calibration-keys" && v) {
+      calibration_keys = v;
     } else {
       std::fprintf(stderr,
                    "usage: %s [--port N] [--bind ADDR] [--audit FILE] [--config FILE]\n"
                    "          [--tokens FILE] [--tls-cert FILE --tls-key FILE] [--no-auth]\n"
-                   "          [--crash-report FILE] [--hardware FILE]\n",
+                   "          [--crash-report FILE] [--hardware FILE]\n"
+                   "          [--signing-key FILE] [--calibration-keys DIR]\n",
                    argv[0]);
       return 2;
     }
@@ -182,7 +197,26 @@ int main(int argc, char** argv) {
   pthread_sigmask(SIG_BLOCK, &signals, nullptr);
 
   std::unique_ptr<control::JsonLinesAuditLog> audit;
-  control::ServiceOptions opt = control::with_default_adapters();
+  // Release 1.3.0 (ADR 0034): the key is read once, now, so that a missing or wrong key stops the
+  // server at start-up instead of the first run's end.
+  std::shared_ptr<const signing::SigningKey> run_key;
+  if (!signing_key_path.empty()) {
+    auto key = signing::SigningKey::load(signing_key_path);
+    if (!key) {
+      std::fprintf(stderr, "--signing-key: %s\n", key.error().c_str());
+      return 1;
+    }
+    run_key = std::make_shared<const signing::SigningKey>(std::move(*key));
+  }
+  control::ServiceOptions opt = control::with_default_adapters({}, run_key);
+  if (!calibration_keys.empty()) {
+    opt.calibration_verifier = [dir = std::filesystem::path{calibration_keys}](
+                                   std::string_view table,
+                                   std::string_view sig) -> std::optional<std::string> {
+      auto key = signing::verify(table, sig, dir);
+      return key ? std::nullopt : std::optional<std::string>{key.error()};
+    };
+  }
   if (!audit_path.empty()) {
     audit = std::make_unique<control::JsonLinesAuditLog>(audit_path);
     if (!audit->is_open()) {

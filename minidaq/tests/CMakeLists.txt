@@ -50,7 +50,8 @@ add_executable(minidaq_unit_tests
   unit/test_slow_control.cpp
   unit/test_hardware_service.cpp
   unit/test_health.cpp
-  unit/test_update.cpp)
+  unit/test_update.cpp
+  unit/test_signing.cpp)
 target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::update OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}"

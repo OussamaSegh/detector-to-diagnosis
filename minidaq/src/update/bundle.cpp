@@ -2,7 +2,6 @@
 #include "minidaq/update/bundle.hpp"
 
 #include <openssl/evp.h>
-#include <openssl/pem.h>
 
 #include <algorithm>
 #include <array>
@@ -13,6 +12,7 @@
 #include <sstream>
 #include <vector>
 
+#include "minidaq/control/signing.hpp"
 #include "minidaq/core/parse_number.hpp"
 
 namespace minidaq::update {
@@ -75,9 +75,6 @@ std::string read_file(const fs::path& p, bool& ok) {
   return text.str();
 }
 
-struct PkeyFree {
-  void operator()(EVP_PKEY* k) const { EVP_PKEY_free(k); }
-};
 struct MdCtxFree {
   void operator()(EVP_MD_CTX* c) const { EVP_MD_CTX_free(c); }
 };
@@ -141,45 +138,12 @@ Expected<Manifest, std::string> parse_manifest(std::string_view text) {
   return m;
 }
 
-// [snippet:verify]
+// The verification itself is shared with the server (minidaq/control/signing.hpp, ADR 0034).
 Expected<std::string, std::string> verify_signature(std::string_view message,
                                                     std::string_view signature,
                                                     const fs::path& keys_dir) {
-  std::error_code ec;
-  std::vector<fs::path> keys;
-  for (const auto& e : fs::directory_iterator{keys_dir, ec}) {
-    if (e.path().extension() == ".pem" && e.is_regular_file()) {
-      keys.push_back(e.path());
-    }
-  }
-  if (ec || keys.empty()) {
-    return Unexpected{"no public keys (*.pem) in " + keys_dir.string()};
-  }
-  std::ranges::sort(keys);
-  for (const auto& path : keys) {
-    const std::unique_ptr<std::FILE, FileClose> f{std::fopen(path.c_str(), "rb")};
-    if (!f) {
-      continue;
-    }
-    const std::unique_ptr<EVP_PKEY, PkeyFree> key{
-        PEM_read_PUBKEY(f.get(), nullptr, nullptr, nullptr)};
-    if (!key || EVP_PKEY_get_id(key.get()) != EVP_PKEY_ED25519) {
-      continue;  // not a public key, or not Ed25519: it vouches for nothing
-    }
-    const std::unique_ptr<EVP_MD_CTX, MdCtxFree> ctx{EVP_MD_CTX_new()};
-    // Ed25519 hashes the message itself: no digest is named, and the message goes in one call.
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): OpenSSL takes bytes
-    const auto* sig = reinterpret_cast<const unsigned char*>(signature.data());
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): OpenSSL takes bytes
-    const auto* msg = reinterpret_cast<const unsigned char*>(message.data());
-    if (ctx && EVP_DigestVerifyInit(ctx.get(), nullptr, nullptr, nullptr, key.get()) == 1 &&
-        EVP_DigestVerify(ctx.get(), sig, signature.size(), msg, message.size()) == 1) {
-      return path.filename().string();
-    }
-  }
-  return Unexpected{"the signature does not verify with any key in " + keys_dir.string()};
+  return signing::verify(message, signature, keys_dir);
 }
-// [/snippet:verify]
 
 Expected<SignedManifest, std::string> read_signed_manifest(const fs::path& dir,
                                                            const fs::path& keys_dir) {

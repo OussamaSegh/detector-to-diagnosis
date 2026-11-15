@@ -63,8 +63,10 @@ SRS-HW-016, SRS-HW-017; ICD-FEB v3; architecture v21; threat model v14; control 
 MDQ-PR-007 closed; Chapter 24 section "Register map 1.2", notes in Chapters 10, 23, 34 and the
 architecture appendix). The new documents are "draft for review": they need an approval before
 the release (ask the coordinator, which answers for the user). Simulated boards default to
-firmware 1.2.0 on purpose (ICD-FEB open item). Left for 1.3.0: Ed25519 signing of list-mode
-files, calibration tables and QC reports (T-27, T-54); the MDQ-PR-006 decision; Chapter 38
+firmware 1.2.0 on purpose (ICD-FEB open item). Signing done too (CR-0027, approved the same way; ADR 0034;
+SRS v30; threat model v15; SOUP list v26; architecture v22; `--signing-key`,
+`--calibration-keys`, `minidaq_listmode verify-run`, `minidaq-qc --keys/--sign`, `tools/calib --sign`;
+no private key in the repository, tests make their own). Left for 1.3.0: the MDQ-PR-006 decision; Chapter 38
 (after about 2026-12-07); VERSION to 1.3.0-dev with the SOUP review; audit, checks, record, tag.
 
 ## Release 1.1.0 (for reference)
@@ -209,7 +211,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-069, CR-0027, ADR 0034, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-069, CR-0028, ADR 0035, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 

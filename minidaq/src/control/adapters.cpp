@@ -49,9 +49,19 @@ std::unique_ptr<CoincidenceSinkPort> make_default_sink(const config::Acquisition
   return std::make_unique<CountingSink>();
 }
 
-ServiceOptions with_default_adapters(ServiceOptions o) {
+ServiceOptions with_default_adapters(ServiceOptions o,
+                                     std::shared_ptr<const signing::SigningKey> run_key) {
   if (!o.detector) {
     o.detector = make_default_detector;
+  }
+  if (!o.sink && run_key) {
+    o.sink = [run_key](const config::AcquisitionConfig& c,
+                       std::string& error) -> std::unique_ptr<CoincidenceSinkPort> {
+      if (c.output.type == "listmode") {
+        return make_listmode_sink(c, error, run_key);
+      }
+      return make_default_sink(c, error);
+    };
   }
   if (!o.sink) {
     o.sink = make_default_sink;

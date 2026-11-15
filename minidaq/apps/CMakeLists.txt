@@ -15,7 +15,7 @@ target_link_libraries(minidaq_ctl PRIVATE minidaq::control minidaq::warnings)
 add_executable(minidaq_sim minidaq_sim.cpp)
 target_link_libraries(minidaq_sim PRIVATE minidaq::control minidaq::warnings)
 add_executable(minidaq_listmode minidaq_listmode.cpp)
-target_link_libraries(minidaq_listmode PRIVATE minidaq::core nlohmann_json::nlohmann_json minidaq::warnings)
+target_link_libraries(minidaq_listmode PRIVATE minidaq::core minidaq::control nlohmann_json::nlohmann_json minidaq::warnings)
 
 # Chapter 25: signed updates with rollback, outside the slots it updates.
 add_executable(minidaq_update minidaq_update.cpp)

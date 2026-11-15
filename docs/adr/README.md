@@ -40,3 +40,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0031](0031-a-commit-policy-checked-in-ci-from-its-first-commit.md) | A commit policy checked in CI from its first commit, with git's own trailer rule and a trace at the level of a requirement | Accepted |
 | [0032](0032-ai-assisted-changes-recorded-in-trailers-and-verified-like-any-other.md) | AI-assisted changes: recorded in trailers, verified like any other change, with a test for each change of product code | Accepted |
 | [0033](0033-time-markers-in-the-readout-stream-and-a-count-of-datagrams-sent.md) | Time markers in the readout stream as words no single can be, and a count of the datagrams each board sent | Accepted |
+| [0034](0034-signed-run-records-calibration-tables-and-reports.md) | Signed run records with the digests of their files, signed calibration tables and reports | Accepted |

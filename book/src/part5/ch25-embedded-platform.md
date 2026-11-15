@@ -400,7 +400,7 @@ provides:
 On the acquisition PC, the updater verifies the signature before it parses a single byte of the
 manifest, with each public key in `/etc/minidaq/update-keys/` in turn; only Ed25519 keys count:
 
-```{.cpp include="minidaq/src/update/bundle.cpp" snippet="verify"}
+```{.cpp include="minidaq/src/control/signing.cpp" snippet="verify"}
 ```
 
 Then the manifest's product and platform are compared with the PC's, its version with the confirmed
@@ -585,6 +585,50 @@ it, which is why its own updater only touches `/opt/minidaq`.
 7. How are the platform's security fixes evaluated and delivered, and how long do they take to reach
    a site?
 :::
+
+## Signing what the scanner produces
+
+An update bundle is not the only file whose author matters. A run's list-mode files, its run
+record, the calibration table it was corrected with and the QC report that judged it are all
+read later by people who must trust them, and each carries only a CRC-32, which detects damage
+and not a deliberate change: whoever can write the file can recompute the CRC (threat model,
+T-27 and T-54). Release 1.3.0 signed them with the same Ed25519 code as the updates, moved into
+one place that the update tool, the server and `minidaq_listmode` share (CR-0027, ADR 0034).
+
+What to sign decides what a verifier can say. A signature per list-mode file would leave the run
+record, whose counters decide whether the run was complete, unprotected; a keyed hash would give
+every verifier the key it could forge with. MiniDAQ signs the **run record** and extends it: with
+`minidaq_server --signing-key`, the sink hashes each file in its own I/O thread as it writes it,
+so a run of gigabytes is not read a second time, and the record lists every file's size and
+SHA-256 before it is signed:
+
+```{.cpp include="minidaq/src/control/listmode_sink.cpp" snippet="sign_record"}
+```
+
+One signature then vouches for the whole run. The check is the update's order again, the
+signature before anything in the record is believed, then every file against its digest
+(`minidaq_listmode verify-run --keys DIR RECORD`, and the analysis package before it reports):
+
+```{.cpp include="minidaq/src/control/listmode_sink.cpp" snippet="verify_run"}
+```
+
+The tests are mostly about what must fail: a byte of a data file changed, the record changed by
+one space, a file removed, the signature removed, a key the site never installed
+(`Signing.ASignedRunVerifiesUntilAFileOrItsRecordChanges`). Every key is made by the test that
+uses it; no private key is in the repository, because a key that has been in a repository has to
+be treated as public.
+
+Calibration tables are signed by the procedure that makes them (`tools/calib --sign`), and a
+server started with `--calibration-keys` reads the signature before it parses the table and
+refuses a table no trusted key signed (SRS-CAL-008). The QC tool refuses a run it cannot verify
+(`minidaq-qc --keys`) and signs its own report (`--sign`). All of it is off unless the site
+installs keys: a site that does not keeps exactly the gap it had, which the threat model says.
+
+Two limits are worth saying out loud. The run key lies on the acquisition PC, readable by the
+server's account, so the signature shows that MiniDAQ's account wrote the run, not that nobody
+misused the account; a hardware key store raises the bar (assumption: confirm with team how keys
+are held). And a crash between the record and its signature leaves a run that does not verify:
+loud, which is the right failure, but someone has to decide what to do with that run.
 
 ## Exercises {.unnumbered}
 

@@ -3,10 +3,13 @@
 // (Chapter 12).
 //
 //   minidaq_listmode info run-0000.mdql           what is in the file, and is it complete
-//   minidaq_listmode verify run-*.mdql            exit 0 only if every block is intact and the run ends
-//   minidaq_listmode sino --out s run-*.mdql      SSRB sinograms and a Michelogram
+//   minidaq_listmode verify run-*.mdql            exit 0 only if every block is intact and the run
+//   ends minidaq_listmode sino --out s run-*.mdql      SSRB sinograms and a Michelogram
 //   minidaq_listmode sino --out s --tof-bins 13 --tof-bin-ps 100 --mrd 10 run-*.mdql
 //   minidaq_listmode info run-0000.mdql.part      after a crash: what can be recovered
+//   minidaq_listmode verify-run --keys DIR minidaq-RUN.run.json
+//                                                 exit 0 only if the run's signed record verifies
+//                                                 and every file it lists is unchanged (1.3.0)
 //
 // Files are read whole into memory; a 1 GiB file needs 1 GiB of RAM (a
 // production tool would map it instead).
@@ -23,6 +26,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/format/list_mode.hpp"
 #include "minidaq/processing/sinogram.hpp"
@@ -35,7 +39,9 @@ namespace lm = minidaq::listmode;
 constexpr const char* usage =
     "usage: minidaq_listmode info FILE...\n"
     "       minidaq_listmode verify FILE...\n"
-    "       minidaq_listmode sino --out PREFIX [--fov MM] [--mrd N] [--tof-bins N --tof-bin-ps PS] FILE...\n";
+    "       minidaq_listmode sino --out PREFIX [--fov MM] [--mrd N] [--tof-bins N --tof-bin-ps PS] "
+    "FILE...\n"
+    "       minidaq_listmode verify-run --keys DIR RECORD.run.json\n";
 
 std::vector<std::byte> read_file(const std::string& path) {
   std::ifstream in{path, std::ios::binary};
@@ -260,7 +266,9 @@ int run(int argc, char** argv) {
     const std::string_view a{argv[i]};
     const bool has_value = i + 1 < argc;
     const std::string_view v = has_value ? argv[i + 1] : "";
-    if (cmd == "sino" && a == "--out" && has_value) {
+    // sino: the output prefix; verify-run: the directory of public keys.
+    if ((cmd == "sino" && a == "--out" && has_value) ||
+        (cmd == "verify-run" && a == "--keys" && has_value)) {
       out = v;
     } else if (cmd == "sino" && a == "--fov" && has_value) {
       ok = parse_into(v, cfg.fov_radius_mm, 1.0, 149.0);
@@ -278,7 +286,7 @@ int run(int argc, char** argv) {
     }
     ++i;  // the option's value
   }
-  if (!ok || files.empty() || (cmd == "sino" && out.empty())) {
+  if (!ok || files.empty() || ((cmd == "sino" || cmd == "verify-run") && out.empty())) {
     std::fputs(usage, stderr);
     return 2;
   }
@@ -290,6 +298,19 @@ int run(int argc, char** argv) {
   }
   if (cmd == "sino") {
     return sino(files, out, cfg);
+  }
+  if (cmd == "verify-run") {
+    int status = 0;
+    for (const auto& f : files) {
+      const auto key = control::verify_signed_run(f, out);
+      if (key) {
+        std::printf("%s: signed by %s, every file unchanged\n", f.c_str(), key->c_str());
+      } else {
+        std::printf("%s: NOT VERIFIED: %s\n", f.c_str(), key.error().c_str());
+        status = 1;
+      }
+    }
+    return status;
   }
   std::fputs(usage, stderr);
   return 2;

@@ -169,11 +169,27 @@ class Procedure(unittest.TestCase):
 
     def test_writes_a_table_that_matches_the_detector(self):
         # REQ: SRS-CAL-007
+        # REQ: SRS-CAL-008
         # 140 photopeak singles per crystal: a few fits come out wide by chance, hence the 15%.
+        # Signed with a key made for this test (release 1.3.0): none is kept in the repository.
+        path = pathlib.Path(self.dir.name)
+        key, pub = path / "test.key", path / "test.pem"
+        subprocess.run(["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(key)], check=True)
+        subprocess.run(["openssl", "pkey", "-in", str(key), "-pubout", "-out", str(pub)], check=True)
         r, out = self.run_tool(acquisition(self.gain, self.delay, 200),
                                "--min-counts", "50", "--min-pairs", "30",
-                               "--max-residual-ps", "160", "--max-sigma-fraction", "0.15")
+                               "--max-residual-ps", "160", "--max-sigma-fraction", "0.15",
+                               "--sign", str(key))
         self.assertEqual(r.returncode, 0, r.stderr)
+        verify = ["openssl", "pkeyutl", "-verify", "-rawin", "-pubin", "-inkey", str(pub),
+                  "-in", str(out), "-sigfile", f"{out}.sig"]
+        self.assertEqual(subprocess.run(verify, capture_output=True).returncode, 0)
+        text = out.read_text()
+        self.assertIn('"version":2', text)
+        out.write_text(text.replace('"version":2', '"version":3'))
+        self.assertNotEqual(subprocess.run(verify, capture_output=True).returncode, 0,
+                            "a changed table no longer verifies")
+        out.write_text(text)
         doc, a, b, q, t = table.read(out)
         self.assertEqual(doc["valid_until_utc"], "2027-02-01T09:00:00Z")
         # Each crystal's photopeak, through its curve, lands near 511 keV.

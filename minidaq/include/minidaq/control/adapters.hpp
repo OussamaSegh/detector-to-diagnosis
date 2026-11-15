@@ -10,6 +10,7 @@
 
 #include "minidaq/control/acquisition_service.hpp"
 #include "minidaq/control/ports.hpp"
+#include "minidaq/control/signing.hpp"
 #include "minidaq/sim/paced_source.hpp"
 
 namespace minidaq::control {
@@ -52,7 +53,9 @@ class CountingSink final : public CoincidenceSinkPort {
                                                                   std::string& error);
 [[nodiscard]] std::unique_ptr<CoincidenceSinkPort> make_default_sink(const config::AcquisitionConfig& c,
                                                                      std::string& error);
-// `o` with any missing detector or sink factory set to the defaults above.
-[[nodiscard]] ServiceOptions with_default_adapters(ServiceOptions o = {});
+// `o` with any missing detector or sink factory set to the defaults above. With a signing key,
+// the list-mode sink signs each run's record (release 1.3.0, ADR 0034).
+[[nodiscard]] ServiceOptions with_default_adapters(
+    ServiceOptions o = {}, std::shared_ptr<const signing::SigningKey> run_key = nullptr);
 
 }  // namespace minidaq::control

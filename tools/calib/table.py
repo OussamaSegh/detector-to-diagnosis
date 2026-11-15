@@ -9,6 +9,7 @@ server's double-then-float conversion gives back the same bits, and the CRCs agr
 """
 import json
 import struct
+import subprocess
 import zlib
 
 import numpy as np
@@ -98,6 +99,16 @@ def write(path, doc):
     with open(path, "w", encoding="utf-8") as f:
         f.write(json.dumps(doc, separators=(",", ":")))
         f.write("\n")
+
+
+def sign(path, key):
+    """Writes <path>.sig, the Ed25519 signature of the table file's exact bytes, with the private
+    key `key` (release 1.3.0, ADR 0034): a server started with --calibration-keys uses the table
+    only if one of its keys verifies it. The openssl command line, as tools/make_update.py."""
+    sig = f"{path}.sig"
+    subprocess.run(["openssl", "pkeyutl", "-sign", "-rawin", "-inkey", str(key),
+                    "-in", str(path), "-out", sig], check=True, capture_output=True)
+    return sig
 
 
 def read(path):

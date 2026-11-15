@@ -28,7 +28,9 @@
 //  - The run's record goes with the data. close() stores the caller's record
 //    of the run (the service's counters, the link's losses) and the sink's
 //    own counters in <prefix>-<run_name>.run.json, so a file set says how
-//    it was acquired without the DAQ's logs.
+//    it was acquired without the DAQ's logs. With a signing key (release 1.3.0), the record
+//    also lists each file's size and SHA-256 and is signed: whoever changes a file or the record
+//    afterwards cannot make the signature verify (threat T-27).
 //  - Failure is a fault, not a silent loss. A failed write, fsync or rename
 //    (a full disk, an I/O error) makes fault() report it; the service stops
 //    the run. Blocks after a fault are counted as dropped.
@@ -41,6 +43,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -52,6 +55,7 @@
 
 #include "minidaq/control/file_ops.hpp"
 #include "minidaq/control/ports.hpp"
+#include "minidaq/control/signing.hpp"
 #include "minidaq/core/expected.hpp"
 #include "minidaq/format/list_mode.hpp"
 
@@ -75,6 +79,9 @@ struct ListModeSinkConfig {
   FsyncPolicy fsync = FsyncPolicy::close;
   std::uint32_t fsync_every_blocks = 256;  // policy "interval": 16 MiB with the default block
   std::chrono::milliseconds max_block_delay{100};
+  // Release 1.3.0 (ADR 0034): with a key, every file is hashed as it is written, the run record
+  // lists the files' sizes and SHA-256 and is signed into <run record>.sig. Without one, as before.
+  std::shared_ptr<const signing::SigningKey> signing_key;
 };
 // [/snippet:config]
 
@@ -139,6 +146,7 @@ class ListModeSink final : public CoincidenceSinkPort {
   void finish_file(std::uint32_t sequence, std::uint32_t flags);
   void write_bytes(std::span<const std::byte> data);
   void write_run_record(std::string_view run_record);
+  bool write_durably(const std::string& path, std::string_view text);
   void set_fault(std::string message);
   [[nodiscard]] bool faulted() const noexcept { return faulted_.load(std::memory_order_acquire); }
   [[nodiscard]] std::string part_path(std::uint32_t segment) const;
@@ -168,12 +176,15 @@ class ListModeSink final : public CoincidenceSinkPort {
   std::deque<Item> full_;
   std::string fault_;
   std::vector<std::string> files_;
+  nlohmann::json digests_ = nlohmann::json::array();  // with a signing key: one per completed file
   std::atomic<bool> faulted_{false};
 
   // I/O thread state.
   int fd_ = -1;
   std::uint32_t segment_ = 0;
   std::uint32_t blocks_since_sync_ = 0;
+  signing::Sha256 file_hash_;  // of the file being written, with a signing key
+  std::uint64_t file_size_ = 0;
   std::array<std::byte, listmode::block_header_bytes> closing_{};
 
   // Counters, written by one thread each and read by any.
@@ -189,7 +200,16 @@ class ListModeSink final : public CoincidenceSinkPort {
 // The sink for configuration section /output (schema 1.3) with type
 // "listmode": the run name is the UTC start time, the metadata the effective
 // configuration and the scanner geometry.
-[[nodiscard]] std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(const config::AcquisitionConfig& c,
-                                                                      std::string& error);
+// With a signing key, the run record is signed (release 1.3.0, ADR 0034).
+[[nodiscard]] std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(
+    const config::AcquisitionConfig& c, std::string& error,
+    std::shared_ptr<const signing::SigningKey> signing_key = nullptr);
+
+// Release 1.3.0 (SRS-LMF-008, ADR 0034): checks a run that the sink signed. The record's
+// signature, <record>.sig, must verify with a key in keys_dir; only then is the record parsed,
+// and every file it lists must have the size and SHA-256 that the record states, with no file
+// left out. Returns the key's file name, or what failed.
+[[nodiscard]] Expected<std::string, std::string> verify_signed_run(
+    const std::filesystem::path& record, const std::filesystem::path& keys_dir);
 
 }  // namespace minidaq::control

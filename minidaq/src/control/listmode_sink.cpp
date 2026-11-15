@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cstdio>
 #include <exception>
+#include <fstream>
+#include <iterator>
 
 #include "minidaq/config/calibration_file.hpp"
 #include "minidaq/control/audit.hpp"
@@ -229,13 +231,35 @@ void ListModeSink::write_run_record(std::string_view run_record) {
   j["run"] = parsed.is_discarded() ? (run_record.empty() ? nlohmann::json(nullptr) : nlohmann::json(run_record))
                                    : std::move(parsed);
   // [/snippet:run_record]
+  // Release 1.3.0 (ADR 0034): with a signing key, every file's size and SHA-256, hashed while it
+  // was written, and the key that signs this record. The signature then vouches for the data.
+  if (cfg_.signing_key) {
+    const std::lock_guard lock{mu_};
+    j["file_digests"] = digests_;
+    j["signature"] = {{"algorithm", "Ed25519"}, {"key_id", cfg_.signing_key->key_id()}};
+  }
   // Invalid UTF-8 in the caller's text is replaced, not an exception.
   const std::string text = j.dump(2, ' ', false, nlohmann::json::error_handler_t::replace) + "\n";
   const std::string path = cfg_.directory + "/" + cfg_.prefix + "-" + cfg_.run_name + ".run.json";
+  if (!write_durably(path, text) || !cfg_.signing_key) {
+    return;
+  }
+  // [snippet:sign_record]
+  auto sig = cfg_.signing_key->sign(text);
+  if (!sig) {
+    return set_fault("sign " + path + ": " + sig.error());
+  }
+  (void)write_durably(path + ".sig", *sig);
+  // [/snippet:sign_record]
+}
+
+// Writes `text` to <path>.part, makes it durable as the policy says and renames it to path.
+bool ListModeSink::write_durably(const std::string& path, std::string_view text) {
   const std::string part = path + ".part";
   const auto fd = ops_->create(part);
   if (!fd) {
-    return set_fault("create " + part + ": " + errno_message(fd.error()));
+    set_fault("create " + part + ": " + errno_message(fd.error()));
+    return false;
   }
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): the text's bytes
   std::span<const std::byte> data{reinterpret_cast<const std::byte*>(text.data()), text.size()};
@@ -243,7 +267,9 @@ void ListModeSink::write_run_record(std::string_view run_record) {
     const auto r = ops_->write(*fd, data);
     if (!r || *r == 0) {
       (void)ops_->close(*fd);
-      return set_fault("write " + part + ": " + (r ? std::string{"wrote nothing"} : errno_message(r.error())));
+      set_fault("write " + part + ": " +
+                (r ? std::string{"wrote nothing"} : errno_message(r.error())));
+      return false;
     }
     data = data.subspan(*r);
   }
@@ -253,16 +279,21 @@ void ListModeSink::write_run_record(std::string_view run_record) {
     n_.fsyncs.fetch_add(1, std::memory_order_relaxed);
   }
   if (const int e = ops_->close(*fd); sync_error != 0 || e != 0) {
-    return set_fault((sync_error != 0 ? "fsync " : "close ") + part + ": " + errno_message(sync_error != 0 ? sync_error : e));
+    set_fault((sync_error != 0 ? "fsync " : "close ") + part + ": " +
+              errno_message(sync_error != 0 ? sync_error : e));
+    return false;
   }
   if (const int e = ops_->rename_no_replace(part, path); e != 0) {
-    return set_fault("rename " + part + ": " + errno_message(e));
+    set_fault("rename " + part + ": " + errno_message(e));
+    return false;
   }
   if (cfg_.fsync != FsyncPolicy::none) {
     if (const int e = ops_->sync_directory(cfg_.directory); e != 0) {
       set_fault("fsync " + cfg_.directory + ": " + errno_message(e));
+      return false;
     }
   }
+  return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -282,6 +313,10 @@ void ListModeSink::write_bytes(std::span<const std::byte> data) {
     if (!r || *r == 0) {
       set_fault("write " + part_path(segment_) + ": " + (r ? std::string{"wrote nothing"} : errno_message(r.error())));
       return;
+    }
+    if (cfg_.signing_key) {
+      file_hash_.update(data.first(*r));  // the bytes as written (ADR 0034)
+      file_size_ += *r;
     }
     data = data.subspan(*r);  // a short write: write the rest
     n_.bytes.fetch_add(*r, std::memory_order_relaxed);
@@ -336,6 +371,12 @@ void ListModeSink::finish_file(std::uint32_t sequence, std::uint32_t flags) {
   }
   const std::lock_guard lock{mu_};
   files_.push_back(final_path);
+  if (cfg_.signing_key) {
+    digests_.push_back({{"file", final_path.substr(final_path.find_last_of('/') + 1)},
+                        {"bytes", file_size_},
+                        {"sha256", file_hash_.hex_digest()}});
+    file_size_ = 0;
+  }
   n_.files.fetch_add(1, std::memory_order_relaxed);
 }
 // [/snippet:finish_file]
@@ -428,10 +469,72 @@ std::vector<std::string> ListModeSink::files() const {
   return files_;
 }
 
+// [snippet:verify_run]
+Expected<std::string, std::string> verify_signed_run(const std::filesystem::path& record,
+                                                     const std::filesystem::path& keys_dir) {
+  const auto slurp = [](const std::filesystem::path& p, std::string& out) {
+    std::ifstream in{p, std::ios::binary};
+    out.assign(std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{});
+    return static_cast<bool>(in) || in.eof();
+  };
+  std::string text;
+  std::string sig;
+  if (!slurp(record, text)) {
+    return Unexpected{"cannot read " + record.string()};
+  }
+  if (!slurp(record.string() + ".sig", sig)) {
+    return Unexpected{"no signature " + record.string() + ".sig"};
+  }
+  auto key = signing::verify(text, sig, keys_dir);  // before the record is believed
+  if (!key) {
+    return Unexpected{record.filename().string() + ": " + key.error()};
+  }
+  const auto j = nlohmann::json::parse(text, nullptr, /*allow_exceptions=*/false);
+  if (!j.is_object() || !j.contains("files") || !j["files"].is_array() ||
+      !j.contains("file_digests") || !j["file_digests"].is_array() ||
+      j["files"].size() != j["file_digests"].size()) {
+    return Unexpected{record.filename().string() +
+                      ": signed, but its files and their digests do not match"};
+  }
+  for (std::size_t i = 0; i < j["files"].size(); ++i) {
+    const auto& d = j["file_digests"][i];
+    if (!j["files"][i].is_string() || !d.is_object() ||
+        d.value("file", "") != j["files"][i].get<std::string>()) {
+      return Unexpected{record.filename().string() + ": file " + std::to_string(i) +
+                        " has no digest"};
+    }
+    const std::string name = j["files"][i];
+    if (name.find('/') != std::string::npos) {
+      return Unexpected{name + ": a file name, not a path, is expected"};
+    }
+    std::ifstream in{record.parent_path() / name, std::ios::binary};
+    if (!in) {
+      return Unexpected{"cannot read " + name};
+    }
+    signing::Sha256 h;
+    std::uint64_t bytes = 0;
+    std::vector<char> buf(std::size_t{1} << 16U);
+    while (in.read(buf.data(), static_cast<std::streamsize>(buf.size())) || in.gcount() > 0) {
+      const auto n = static_cast<std::size_t>(in.gcount());
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): the file's bytes
+      h.update(std::span{reinterpret_cast<const std::byte*>(buf.data()), n});
+      bytes += n;
+    }
+    if (bytes != d.value("bytes", std::uint64_t{0}) || h.hex_digest() != d.value("sha256", "")) {
+      return Unexpected{name + ": its size or SHA-256 differs from the signed record"};
+    }
+  }
+  return *key;
+}
+// [/snippet:verify_run]
+
 // [snippet:factory]
-std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(const config::AcquisitionConfig& c, std::string& error) {
+std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(
+    const config::AcquisitionConfig& c, std::string& error,
+    std::shared_ptr<const signing::SigningKey> signing_key) {
   const auto& o = c.output;
   ListModeSinkConfig s;
+  s.signing_key = std::move(signing_key);
   s.directory = o.directory;
   s.prefix = o.prefix;
   // The run's UTC start time, to the millisecond, makes the name unique on one machine.

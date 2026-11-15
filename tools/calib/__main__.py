@@ -82,6 +82,7 @@ def parse_args(argv):
     p.add_argument("--valid-days", type=int, default=90, help="days until the table expires")
     p.add_argument("--procedure", default="CP-026 version 1")
     p.add_argument("--now", help="the creation time, YYYY-MM-DDTHH:MM:SSZ (default: now)")
+    p.add_argument("--sign", help="an Ed25519 private key (PEM): also write <out>.sig")
     for key, value in CRITERIA.items():
         p.add_argument("--" + key.replace("_", "-"), type=type(value), default=value)
     a = p.parse_args(argv)
@@ -203,6 +204,8 @@ def run(a):
             "reference_temperature_c": a.temperature, "procedure": a.procedure}
     table.write(a.out, table.build(info, ca, cb, cq, offsets))
     print(f"wrote {a.out}", file=sys.stderr)
+    if a.sign:
+        print(f"wrote {table.sign(a.out, a.sign)}", file=sys.stderr)
     return 0
 
 

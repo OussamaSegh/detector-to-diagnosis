@@ -185,7 +185,11 @@ reader. A CRC is not a signature: it detects damage and editing by hand, and any
 the file can also write a matching CRC. The table's authenticity rests on the permissions of the
 configuration directory, as the configuration's own does. ADR 0021 records why a signature was not
 chosen (it would need a signing key at every site that calibrates), and why SHA-256 was not either:
-the configuration layer does not use OpenSSL (Chapter 14, layers).
+the configuration layer does not use OpenSSL (Chapter 14, layers). Release 1.3.0 added the
+signature as an option a site switches on: `tools/calib --sign` signs the table, and a server
+started with `--calibration-keys` checks the signature before it parses the table, through a
+function the server hands to the service, so the configuration layer still knows nothing of
+OpenSSL (Chapter 25, ADR 0034).
 
 ### Which table, for which scanner, until when
 

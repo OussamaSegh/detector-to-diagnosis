@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 29 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
+Version 30 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -232,6 +232,8 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-OUT-010 | The list-mode sink shall store the run record, the service's final status, next to the run's files. | output | T |
 | SRS-OUT-011 | The list-mode sink shall store the run's integrity verdict in the run record. | output | T |
 | SRS-OUT-012 | The list-mode sink shall state in every file's metadata whether its data is simulated, and the effective configuration with its defaults. | output | T |
+| SRS-OUT-013 | When the server is given an Ed25519 signing key, the list-mode sink shall record in the run record the size and SHA-256 of every file of the run, as written, and the key's id, and write the Ed25519 signature of the run record's exact bytes to `<record>.sig`. | output | T |
+| SRS-OUT-014 | The verification of a signed run shall accept it only when the record's signature verifies with a key of the given trust store and every file the record lists has the size and SHA-256 that the record states. | output | T |
 
 ### 2.13 Security (SEC)
 
@@ -341,6 +343,7 @@ procedure writes (`tools/calib`, tool TL-29); its format is `docs/formats/calibr
 | SRS-CAL-005 | The run record and the list-mode file's metadata shall name the calibration table the run used: its id, version, scanner serial, creation time and the CRC-32 of its coefficients, or "identity" when none is configured. | output | T |
 | SRS-CAL-006 | The status shall give, for each detector block, the number of calibrated singles between 430 and 590 keV in the run and their mean energy, and name the blocks whose mean differs from 511 keV by more than the drift tolerance (2% by default) once they have at least 1,000 singles in that window. | service | T |
 | SRS-CAL-007 | The calibration tool shall write a table only when every crystal has at least the minimum number of photopeak counts (500 counts by default), a photopeak fit that converged with a sigma of 2 to 10% of its center, a gain of 0.6 to 1.6 times nominal, an energy curve within 1% of the response from 200 to 700 keV, at least 100 pairs in coincidence, partners in at least 40 crystals, and a delay within 5 ns, and when the residual of the timing solution is within its limit (400 ps rms by default); otherwise it reports each crystal that failed, and why, and writes no table. | tools | T |
+| SRS-CAL-008 | When the server is given a directory of calibration keys, the acquisition service shall refuse a calibration table unless `<table>.sig` holds an Ed25519 signature of the table's exact bytes that one of the keys verifies, checked before the table is parsed. | service | T |
 
 ### 2.19 Corrections (COR)
 
@@ -398,6 +401,8 @@ memory map, fits of histograms with uncertainties, and the acquisition quality c
 | SRS-ANA-004 | The analysis package shall test the prompt rate of a run for constancy (dispersion statistic against chi-square) and for a dip (the lowest bin's Poisson probability times the number of bins), and find the loss of 16% of one bin's counts at 1,000 counts per bin. | tools | T |
 | SRS-ANA-005 | The analysis package's QC report shall check every limit of its protocol file (photopeak position and resolution, time resolution and offset, fit quality, constancy, no dip, prompts in the files equal to the prompts the run record states, time order), write the result as JSON and Markdown with figures and the provenance of every input, exit with status `0` when every check passes, `1` when one fails and `2` when the run cannot be analyzed, and write no report for a damaged run. | tools | T |
 | SRS-ANA-006 | The analysis package shall record every input of a report by path, size and SHA-256 in a manifest whose own SHA-256 does not depend on the order of the inputs, and report every file of a manifest that is missing or whose size or SHA-256 differs. | tools | T |
+| SRS-ANA-007 | When given a directory of public keys, the analysis package shall make no report of a run whose signature or files do not verify. | tools | T |
+| SRS-ANA-008 | When given an Ed25519 private key, the analysis package shall write the signature of each file of the report next to it. | tools | T |
 
 ### 2.23 Build (BLD)
 
@@ -523,3 +528,4 @@ change.
 | 27 | Release 1.0.0: SRS-PERF-022 holds in at least 99% of the 10 s intervals, not in every one; the reference machine's tail latency varies from day to day (CR-0025). |
 | 28 | Approved by the software lead for release 1.1.0; the content is that of version 27 (MDQ-PR-066). |
 | 29 | Release 1.3.0, Chapter 24: time markers in the readout stream, SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014 (problem report MDQ-PR-007); register map 1.2 of firmware 1.3, SRS-HW-016, and the datagrams the boards sent in the integrity verdict, SRS-HW-017; SRS-FMT-013 leaves markers out and SRS-HW-007 names the boards' new fields (ADR 0033, CR-0026); control API 2.5. |
+| 30 | Release 1.3.0, Chapter 25: signed run records, SRS-OUT-013 and SRS-OUT-014 (threat T-27), signed calibration tables, SRS-CAL-008 (threat T-54), and the analysis package's check and signature, SRS-ANA-007 and SRS-ANA-008 (ADR 0034, CR-0027). |

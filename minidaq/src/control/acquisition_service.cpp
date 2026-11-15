@@ -186,6 +186,21 @@ CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg
       note(who, "configure", "rejected: " + problem, false);
       return result(false, "config_error", "/calibration/file: " + problem);
     }
+    if (opt_.calibration_verifier) {
+      // Release 1.3.0 (SRS-CAL-008): the signature first, so that an unsigned table is never
+      // parsed.
+      std::string sig;
+      std::string why = read_small_file(cfg.calibration.file + ".sig", sig, 4096);
+      if (why.empty()) {
+        why = opt_.calibration_verifier(text, sig).value_or("");
+      }
+      if (!why.empty()) {
+        why = "signature: " + why;
+        note(who, "configure", "rejected: calibration table " + cfg.calibration.file + ": " + why,
+             false);
+        return result(false, "config_error", "/calibration/file: " + why);
+      }
+    }
     auto parsed = config::parse_calibration(text);
     if (!parsed) {
       const std::string why = config::format_errors(parsed.error());

@@ -22,6 +22,15 @@ the patch version.
   `markers` in the decode stage. `minidaq_send --marker-interval-us`. SRS version 29
   (SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014, SRS-HW-016, SRS-HW-017), ICD-FEB version 3,
   architecture version 21, threat model version 14.
+- Signatures (CR-0027, ADR 0034, Chapter 25): `minidaq_server --signing-key` hashes every
+  list-mode file as it writes it, lists the files' sizes and SHA-256 in the run record and signs
+  it (`<record>.sig`); `minidaq_listmode verify-run --keys DIR` checks a run.
+  `tools/calib --sign` signs a calibration table and `minidaq_server --calibration-keys DIR` uses
+  only signed tables. `minidaq-qc --keys` refuses a run that does not verify and `--sign` signs
+  the report. One Ed25519 implementation (`control/signing`) for the server and the update tool.
+  Off unless a site installs keys. SRS version 30 (SRS-OUT-013, SRS-OUT-014, SRS-CAL-008,
+  SRS-ANA-007, SRS-ANA-008), threat model version 15, SOUP list version 26, architecture
+  version 22.
 - `.github/labels.txt` and the workflow `labels.yml`, which creates a listed issue label that
   the repository lacks: the `erratum` label that the erratum form applies did not exist.
 

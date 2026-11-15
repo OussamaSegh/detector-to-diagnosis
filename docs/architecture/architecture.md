@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 21 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
+Version 22 (MiniDAQ 1.2.1-dev, for release 1.3.0). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -65,6 +65,11 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   singles, and the integrity verdict compares the boards' datagrams with the link's (items format, sorter,
   processing, pipeline, hw and service, control API 2.5, Chapter 24,
   [ADR 0033](../adr/0033-time-markers-in-the-readout-stream-and-a-count-of-datagrams-sent.md)).
+- signatures: one implementation of Ed25519 and SHA-256 (`control/signing`, library
+  `minidaq_signing`, item access) shared by the update tool, the server and `minidaq_listmode`;
+  the server signs each run's record with the digests of its files and uses only signed
+  calibration tables when the site installs keys (items access, output, service and server,
+  [ADR 0034](../adr/0034-signed-run-records-calibration-tables-and-reports.md)).
 - the inputs of the corrections: a singles counter per crystal and per block in the pipeline and
   a `corrections` object in the run record (the windows, the singles, the prompts and delayeds),
   from which the corrections tool, `tools/recon`, computes the normalization, randoms, scatter,
@@ -334,7 +339,7 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 
 ## 12. Decisions and open issues
 
-Decisions: [the ADR index](../adr/README.md) (ADR 0001 to 0033 at version 21). Known anomalies, with their evaluation:
+Decisions: [the ADR index](../adr/README.md) (ADR 0001 to 0034 at version 22). Known anomalies, with their evaluation:
 [known-anomalies.md](../regulatory/known-anomalies.md).
 
 Open issues:
@@ -376,3 +381,4 @@ Open issues:
 | 19 | The architecture appendix of the book: corrects what earlier versions left stale, the range of decisions in section 12 (ADR 0001 to 0032, not 0020) and the slow-control thread missing from section 6 since Chapter 22. Chapters 33 to 37 added no item, layer or interface to the server (Chapter 35 added the preliminary hazard HZ-5, which no server item carries); their tools are in the tool list. |
 | 20 | Approved by the software lead for release 1.1.0; the content is that of version 19 (MDQ-PR-066). |
 | 21 | Release 1.3.0: time markers and the datagrams sent, register map 1.2, control API 2.5 (ADR 0033, CR-0026). |
+| 22 | Release 1.3.0: signed run records, calibration tables and reports, and the shared `minidaq_signing` library (ADR 0034, CR-0027). |

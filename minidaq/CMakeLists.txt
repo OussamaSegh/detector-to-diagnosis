@@ -33,6 +33,12 @@ target_compile_features(minidaq_core PUBLIC cxx_std_20)
 find_package(Threads REQUIRED)
 target_link_libraries(minidaq_core PUBLIC Threads::Threads PRIVATE minidaq::warnings)
 
+# Ed25519 signatures and SHA-256 (ADR 0020, ADR 0034): shared by the update tool, which verifies
+# bundles, and the server, which signs run records and verifies calibration tables.
+add_library(minidaq_signing src/control/signing.cpp)
+add_library(minidaq::signing ALIAS minidaq_signing)
+target_link_libraries(minidaq_signing PUBLIC minidaq::core PRIVATE OpenSSL::Crypto minidaq::warnings)
+
 # The control plane (Chapter 6): configuration, state machine, service, control
 # API. A separate library so that the hot-path core does not depend on JSON.
 add_library(minidaq_control
@@ -56,7 +62,7 @@ add_library(minidaq_control
   src/control/listmode_sink.cpp
   src/control/service_manager.cpp)
 add_library(minidaq::control ALIAS minidaq_control)
-target_link_libraries(minidaq_control PUBLIC minidaq::core nlohmann_json::nlohmann_json
+target_link_libraries(minidaq_control PUBLIC minidaq::core minidaq::signing nlohmann_json::nlohmann_json
                       PRIVATE OpenSSL::SSL OpenSSL::Crypto minidaq::warnings)
 target_compile_definitions(minidaq_control PRIVATE MINIDAQ_VERSION_STRING="${MINIDAQ_VERSION_FULL}")
 
@@ -67,7 +73,7 @@ add_library(minidaq_update_lib
   src/update/slots.cpp)
 add_library(minidaq::update ALIAS minidaq_update_lib)
 target_link_libraries(minidaq_update_lib PUBLIC minidaq::core
-                      PRIVATE nlohmann_json::nlohmann_json OpenSSL::Crypto minidaq::warnings)
+                      PRIVATE minidaq::signing nlohmann_json::nlohmann_json OpenSSL::Crypto minidaq::warnings)
 
 add_subdirectory(apps)
 

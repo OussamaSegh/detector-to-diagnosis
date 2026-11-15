@@ -525,12 +525,14 @@ Matplotlib, the platform, the command line and the time.
 
 This is what tools such as DVC automate for many datasets and pipelines; for a run of a few files
 the manifest alone is enough. It proves which bytes were read, not who wrote them: the threat
-model's new gap "QC reports are not signed" records that a report edited afterward, or computed from
-files changed with recomputed CRCs, looks like any other.
+model's gap "QC reports are not signed" recorded that a report edited afterward, or computed from
+files changed with recomputed CRCs, looks like any other. Release 1.3.0 narrowed it: with `--keys`
+the tool refuses a run whose signed record or files do not verify, and with `--sign` it signs the
+report's files (Chapter 25, ADR 0034).
 
 Figure [](#fig-ch31-provenance) shows what the report records.
 
-```{.figure #fig-ch31-provenance src="book/figures/tikz/ch31/provenance.tex" caption="A QC report's provenance. The manifest names the bytes that were read and the environment the code that read them; the manifest's own digest names the dataset in one string." alt="The run's files feed a manifest of each file's path, size and SHA-256, whose own SHA-256 is the dataset id. An environment record holds the package, the git commit and the library versions. Both go into provenance.json beside report.json, report.md and three figures. Notes say verify_manifest later names every missing or changed file, and that the report is not signed." width="90%"}
+```{.figure #fig-ch31-provenance src="book/figures/tikz/ch31/provenance.tex" caption="A QC report's provenance. The manifest names the bytes that were read and the environment the code that read them; the manifest's own digest names the dataset in one string." alt="The run's files feed a manifest of each file's path, size and SHA-256, whose own SHA-256 is the dataset id. An environment record holds the package, the git commit and the library versions. Both go into provenance.json beside report.json, report.md and three figures. Notes say verify_manifest later names every missing or changed file, and that the report is signed only when the tool is run with --sign." width="90%"}
 ```
 
 ## Is a loop worth compiling?
