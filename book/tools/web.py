@@ -143,21 +143,41 @@ class Epub:
 
 
 def page_name(href):
-    """text/ch005.xhtml -> ch005.html"""
+    """text/ch005.xhtml -> ch005.html, the name when a document has no chapter id."""
     return posixpath.basename(href).replace(".xhtml", ".html")
 
 
-def rewrite(body):
-    """A spine document's body markup, for a page in OUT_DIR."""
+def stable_name(doc):
+    """The page's file name from its first level-1 section's id: ch06.html, part-ii.html,
+    app-architecture.html, sol-ch06.html. Pandoc numbers its spine documents in order (ch010.xhtml
+    is Chapter 6), so those names would move for every chapter after a new one and break links
+    from outside; the ids are the book's own anchors and do not move. None if there is no id."""
+    for m in re.finditer(r"<section\b([^>]*)>", doc):
+        attrs = m.group(1)
+        ident = re.search(r'\bid="([^"]+)"', attrs)
+        if ident and re.search(r'\bclass="[^"]*\blevel1\b', attrs):
+            name = ident.group(1)
+            part = re.match(r"part-([ivxl]+)-", name)
+            name = f"part-{part.group(1)}" if part else name
+            return name + ".html" if re.fullmatch(r"[a-z0-9][a-z0-9._-]*", name) and name != "index" else None
+    return None
+
+
+def rewrite(body, names=None):
+    """A spine document's body markup, for a page in OUT_DIR. names maps an EPUB document's file
+    name (ch005.xhtml) to its page (ch01.html)."""
+    names = names or {}
     body = re.sub(r'(href|src)="(?:\.\./)?text/', r'\1="', body)
-    body = re.sub(r'(href)="([^"#:]+)\.xhtml', r'\1="\2.html', body)
+    body = re.sub(r'(href)="([^"#:/]+\.xhtml)',
+                  lambda m: f'{m.group(1)}="{names.get(m.group(2), page_name(m.group(2)))}', body)
     body = re.sub(r'(href|src)="\.\./(media|styles)/', r'\1="\2/', body)
     body = body.replace(' epub:type="', ' data-epub-type="')
     return body
 
 
-def nav_entries(nav):
+def nav_entries(nav, names=None):
     """[(level, href, label html)] of the EPUB's table of contents, in order."""
+    names = names or {}
     out, level = [], 0
     toc = re.search(r'<nav\b[^>]*epub:type="toc"[^>]*>(.*?)</nav>', nav, re.S)
     nav = toc.group(1) if toc else nav
@@ -167,8 +187,8 @@ def nav_entries(nav):
         elif m.group(0).startswith("</ol"):
             level -= 1
         elif m.group(2):
-            href = re.sub(r"^text/", "", m.group(2))
-            href = re.sub(r"\.xhtml", ".html", href)
+            file, _, anchor = re.sub(r"^text/", "", m.group(2)).partition("#")
+            href = names.get(file, page_name(file)) + ("#" + anchor if anchor else "")
             out.append((level, href, m.group(3).strip()))
     return out
 
@@ -185,6 +205,7 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>{title}</title>
 <meta name="generator" content="book/tools/web.py">
 <link rel="stylesheet" href="styles/epub.css">
@@ -271,9 +292,14 @@ def build(epub_path, out, version, downloads="../", others=()):
     (out / "media").mkdir(exist_ok=True)
     nav_href = next(h for h in ep.spine if "nav" in h) if any("nav" in h for h in ep.spine) else None
     nav = ep.read(nav_href or "nav.xhtml")
-    pages_set = {page_name(h) for h in ep.spine if h.startswith("text/ch")}
-    entries = [e for e in nav_entries(nav) if e[1].split("#")[0] in pages_set]
     pages = [h for h in ep.spine if h.startswith("text/ch") and h.endswith(".xhtml")]
+    docs = {h: ep.read(h) for h in pages}
+    files = {}  # ch005.xhtml -> ch01.html
+    for href in pages:
+        name = stable_name(docs[href])
+        files[posixpath.basename(href)] = page_name(href) if not name or name in files.values() else name
+    pages_set = set(files.values())
+    entries = [e for e in nav_entries(nav, files) if e[1].split("#")[0] in pages_set]
     css_links = []
     epub_css, highlight = "", ""
     for name in sorted(ep.names()):
@@ -285,13 +311,13 @@ def build(epub_path, out, version, downloads="../", others=()):
             epub_css += ep.zip.read(name).decode() + "\n"
     titles, bodies = {}, {}
     for href in pages:
-        doc = ep.read(href)
+        doc = docs[href]
         style = re.search(r"<style>(.*?)</style>", doc, re.S)
         if style and not highlight:
             highlight = style.group(1)
-        body = rewrite(re.search(r"<body\b[^>]*>(.*)</body>", doc, re.S).group(1))
+        body = rewrite(re.search(r"<body\b[^>]*>(.*)</body>", doc, re.S).group(1), files)
         h1 = re.search(r"<h1\b[^>]*>(.*?)</h1>", body, re.S)
-        name = page_name(href)
+        name = files[posixpath.basename(href)]
         titles[name] = label_text(h1.group(1)) if h1 else name
         bodies[name] = body
     (out / "styles/epub.css").write_text(epub_css)

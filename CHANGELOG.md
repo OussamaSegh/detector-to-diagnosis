@@ -14,6 +14,11 @@ the patch version.
   A.8 (erratum E-009, a regression of the appendix numbering in 1.2.0): `figures.lua` now counts
   the level-1 headings that `design.lua` numbers in the appendix. The EPUB's figure captions
   start with their number ("Figure 10.1."), as in the PDFs. Test `book.figure_numbers`.
+- Web edition: each page is named after its chapter's id (`ch06.html`, `part-ii.html`,
+  `app-architecture.html`, `sol-ch06.html`) instead of Pandoc's spine position (`ch010.html` was
+  Chapter 6), so a chapter added in 1.3.0 does not move every later page and break links to
+  them. Pages declare `color-scheme: light dark`, so form controls and scroll bars follow the
+  dark styles. The search ignores words that are only `Object.prototype` keys.
 
 ## [1.2.0] - 2026-11-15
 

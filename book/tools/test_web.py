@@ -111,17 +111,17 @@ class Build(unittest.TestCase):
 
     def test_one_page_per_chapter_and_a_clean_check(self):
         names = sorted(p.name for p in self.out.glob("*.html"))
-        self.assertEqual(names, ["ch001.html", "ch002.html", "index.html"])
+        self.assertEqual(names, ["ch01.html", "index.html", "second.html"])
         self.assertEqual(web.check(self.out), ([], 3))
 
     def test_links_media_and_navigation_are_rewritten(self):
-        page = (self.out / "ch001.html").read_text()
-        self.assertIn('href="ch002.html#end"', page)
+        page = (self.out / "ch01.html").read_text()
+        self.assertIn('href="second.html#end"', page)
         self.assertIn('src="media/fig.svg"', page)
         self.assertNotIn("xhtml", page.split("<main")[1])
         self.assertIn('aria-current="page"', page)
-        self.assertIn('href="ch001.html#sec-a"', page)  # the current chapter's sections
-        self.assertIn('rel="next" href="ch002.html"', page)
+        self.assertIn('href="ch01.html#sec-a"', page)  # the current chapter's sections
+        self.assertIn('rel="next" href="second.html"', page)
         self.assertIn('lang="en-US"', page)
         self.assertNotIn("Title</a>", page)  # the landmarks are not contents
         self.assertTrue((self.out / "media/fig.svg").exists())
@@ -131,10 +131,10 @@ class Build(unittest.TestCase):
     def test_the_search_index(self):
         index = json.loads((self.out / "search.json").read_text())
         sec = {tuple(s[:2]): i for i, s in enumerate(index["sections"])}
-        self.assertIn(sec[("ch001.html", "sec-a")], index["words"]["windowed"])
-        self.assertIn(sec[("ch002.html", "second")], index["words"]["necr"])
+        self.assertIn(sec[("ch01.html", "sec-a")], index["words"]["windowed"])
+        self.assertIn(sec[("second.html", "second")], index["words"]["necr"])
         self.assertIn("std", index["words"])
-        self.assertEqual(index["titles"]["ch002.html"], "Second")
+        self.assertEqual(index["titles"]["second.html"], "Second")
 
     def test_the_check_works_from_a_relative_path(self):
         import os
@@ -142,24 +142,43 @@ class Build(unittest.TestCase):
         try:
             os.chdir(self.base)
             self.assertEqual(web.check(pathlib.Path("read")), ([], 3))
-            (self.out / "ch001.html").write_text((self.out / "ch001.html").read_text().replace(
-                'href="ch002.html#end"', 'href="ch002.html#gone"'))
-            self.assertIn("ch002.html#gone: no such anchor", "\n".join(web.check(pathlib.Path("read"))[0]))
+            (self.out / "ch01.html").write_text((self.out / "ch01.html").read_text().replace(
+                'href="second.html#end"', 'href="second.html#gone"'))
+            self.assertIn("second.html#gone: no such anchor", "\n".join(web.check(pathlib.Path("read"))[0]))
         finally:
             os.chdir(cwd)
 
     def test_the_check_finds_each_fault(self):
-        page = self.out / "ch002.html"
+        page = self.out / "second.html"
         text = page.read_text()
         page.write_text(text.replace('<p id="end">', '<p id="end"><img src="media/fig.svg" alt=""><a href="ch009.html">x</a>'
-                                     '<a href="ch001.html#nowhere">y</a><span id="end"></span>')
+                                     '<a href="ch01.html#nowhere">y</a><span id="end"></span>')
                         .replace('lang="en-US"', ""))
         errors, _ = web.check(self.out)
         text = "\n".join(errors)
         for want in ("no alt text", "ch009.html: no such file", "#nowhere: no such anchor", "id end twice",
                      "no lang"):
             self.assertIn(want, text)
-        self.assertIn("ch001.html#sec-a", (self.out / "ch001.html").read_text())
+        self.assertIn("ch01.html#sec-a", (self.out / "ch01.html").read_text())
+
+    def test_page_names_follow_the_chapter_ids_not_the_spine(self):
+        # Review of 1.2.0: Pandoc's ch010.xhtml is Chapter 6; its page is ch06.html, so a new
+        # chapter does not move the pages after it.
+        self.assertEqual(web.stable_name('<section id="ch06" class="level1 part-1"><h1>x</h1>'), "ch06.html")
+        self.assertEqual(web.stable_name('<section id="part-ii-pet-physics" class="level1">'), "part-ii.html")
+        self.assertEqual(web.stable_name('<section id="sec-a" class="level2">'), None)
+        self.assertEqual(web.stable_name('<section id="index" class="level1">'), None)
+        self.assertEqual(web.stable_name("<p>no section</p>"), None)
+
+    def test_a_document_without_an_id_keeps_its_spine_name(self):
+        with tempfile.TemporaryDirectory() as d:
+            base = pathlib.Path(d)
+            epub(base / "b.epub", ch2=chapter("<h1>Second</h1>", '<p id="end">x</p>'))
+            web.build(base / "b.epub", base / "read", "9.9.0")
+            self.assertEqual(sorted(p.name for p in (base / "read").glob("*.html")),
+                             ["ch002.html", "ch01.html", "index.html"])
+            self.assertIn('href="ch002.html#end"', (base / "read/ch01.html").read_text())
+            self.assertEqual(web.check(base / "read"), ([], 3))
 
     def test_tokens(self):
         self.assertEqual(web.tokens("C++23, std::span and IEC 62304."), ["c++23", "std", "span", "and", "iec", "62304"])
