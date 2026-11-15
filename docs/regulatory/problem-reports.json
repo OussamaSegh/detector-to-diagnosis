@@ -1324,6 +1324,32 @@
         "category": "test",
         "escape": "The local ctest run before the commit excludes the fuzz label (it needs the fuzz preset); CI's fuzz-smoke job found it on the first push."
       }
+    },
+    {
+      "id": "MDQ-PR-070",
+      "title": "The stream decoder is 16% slower than in release 1.2.0",
+      "found": "2026-11-15, the release checks of 1.3.0 (performance regression gate, part 3)",
+      "item": "readout",
+      "status": "closed",
+      "capa": "",
+      "description": "CR-0026 added the time marker to StreamDecoder::decode as a test before the crystal-ID check, so every single paid a comparison of the crystal and the energy code before the one comparison it paid before. The regression gate against book-v1.2.0, both built and run interleaved on the reference machine, measured BM_DecodePacked/65536 at a speed of 0.842 (p = 0.0001) and failed the release checks.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The decoder stays far inside its budget (about 10% of a core at 30 million singles per second before the change); no single was lost and SRS-PERF-020 and SRS-PERF-021 passed. The gate is there to stop a cost that no functional test sees."
+      },
+      "resolution": {
+        "change": "The decoder's loop works on local copies of the unwrapper and the crystal count, which no store through the output span can alias, and compares the crystal ID once; a word at or above the crystal count (a marker or an invalid ID) goes to not_a_single, a cold function off the loop. The constructor takes a crystal count above 32767 as 32767, so the marker's crystal is never a single. The behavior is unchanged for every word. Chapter 24 says what the gate found and why the order of the tests matters; Chapter 2 says where the branch for rare IDs is.",
+        "verification": "tools/perf_ab.sh against book-v1.2.0, five interleaved rounds on the reference machine: BM_DecodePacked/65536 at a speed of 0.973, within the gate's 5%, every gated benchmark ok (it was 0.842 before the fix). Reordering the tests alone measured about 0.86: the loop reloaded the decoder's members for every word. The unit tests of the decoder and the time markers pass, and fuzz_decoder ran 60 s without a finding."
+      },
+      "root_cause": {
+        "whys": [
+          "The marker test was written in the order of the specification, a marker before a single, not in the order of frequency.",
+          "CR-0026's verification ran the functional tests and the fuzz targets; the benchmarks and the gate run only in the release checks and in CI's perf workflow, which nobody read before the release."
+        ],
+        "cause": "A new branch was put on the hot path of every word without a measurement before the commit.",
+        "category": "code",
+        "escape": "The perf workflow, which compares each push to main with its parent on a GitHub runner, failed on CR-0026's commit (run 43721772090) and was not read; the next push compared with an already slower parent and passed. The release checks' gate, which compares with the previous release, caught it as designed. Since then the author checks every workflow of a push, not only ci."
+      }
     }
   ]
 }

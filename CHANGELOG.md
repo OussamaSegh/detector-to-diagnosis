@@ -39,6 +39,8 @@ the patch version.
 - The decoder's fuzz target accounts for time markers (MDQ-PR-069): it counted a marker as a
   single or an invalid crystal and aborted on the first all-ones word. The input is kept as a seed.
 - The pre-commit hook no longer crashes on a staged file that is not UTF-8, such as a fuzz seed.
+- The stream decoder is as fast as in 1.2.0 again (MDQ-PR-070): the marker test had made it 16%
+  slower, which the release checks' regression gate found.
 
 ### Fixed (review of 1.2.0)
 

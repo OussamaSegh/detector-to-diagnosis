@@ -417,7 +417,8 @@ words it cannot use instead of throwing:
 ```{.cpp include="minidaq/src/format/packed_single.cpp" snippet="decode"}
 ```
 
-On the book's machine it decodes about 260 to 320 million words per second on one core
+The branch for rare crystal IDs is where Chapter 24 adds time markers; a single takes one
+comparison. On the book's machine it decodes about 260 to 320 million words per second on one core
 (`bm_decode`: 4 Mi words in 16.0 ms; 64 Ki words, which fit in L2, in 0.20 ms). At 30
 million singles per second that is about 10% of one core, leaving the budget for sorting.
 

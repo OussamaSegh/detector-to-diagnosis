@@ -148,7 +148,10 @@ struct DecodeStats {
 // Zero-allocation stream decoder: decodes words into caller-provided storage.
 class StreamDecoder {
  public:
-  explicit StreamDecoder(std::uint32_t num_crystals) noexcept : num_crystals_{num_crystals} {}
+  // Crystal ids from 0 to num_crystals - 1 are singles. The marker's crystal, 32767, is never one:
+  // a larger count is taken as 32767.
+  explicit StreamDecoder(std::uint32_t num_crystals) noexcept
+      : num_crystals_{num_crystals < marker_crystal ? num_crystals : marker_crystal} {}
 
   // Decodes min(words.size(), out.size()) words; words with an invalid crystal
   // id are counted and skipped, time markers are counted and remembered.
@@ -173,6 +176,9 @@ class StreamDecoder {
   }
 
  private:
+  [[gnu::noinline, gnu::cold]] void not_a_single(std::uint32_t crystal, std::uint32_t energy_code,
+                                                 Picoseconds t) noexcept;
+
   TimeUnwrapper unwrapper_;
   DecodeStats stats_;
   std::uint64_t truncated_bytes_ = 0;

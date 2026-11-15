@@ -486,6 +486,18 @@ markers would otherwise never be complete:
 ```{.cpp include="minidaq/src/format/packed_single.cpp" snippet="decode"}
 ```
 
+The first version tested for a marker before it tested the crystal ID, so every single paid two
+more comparisons. The release checks of 1.3.0 measured the decoder 16% slower than in 1.2.0 and
+failed the regression gate of Chapter 20 (MDQ-PR-070). Putting the marker test behind the
+crystal test, where only a word with a crystal ID above the scanner's takes it, was not enough:
+the loop was still more than 10% slower, because the new code in the loop changed what the compiler
+kept in registers. A store through `out` may write a member of the decoder, as far as the
+compiler knows (a `Single` holds a `std::uint32_t`, like `num_crystals_`), so it reloaded and
+stored the decoder's state for every word. The version above works on local copies, which no
+store through `out` can reach, and handles a word that is not a single in a function of its
+own, off the loop. The gate compares the candidate with the previous release, so a cost that
+no functional test sees still stops the release.
+
 The marker travels the pipeline beside the singles, as a field of the batch, so no stage after
 the decoder can take it for a single. The sort stage has one thing to do with it. A calibration
 moves each crystal's times by its offset, up to the table's largest one, and the board's promise
