@@ -56,20 +56,22 @@ trailer (the history rewrite to add it was refused): squash them when merging. O
 issue form's label `erratum` does not exist in the repository, so reports arrive unlabeled
 until it is created. (Merged as 98690f5; the label now exists, created by `labels.yml`.)
 
-**Milestone 1.3.0, in progress (branch claude/project-thread-fo39bu).** Done: time markers and
-register map 1.2 (CR-0026, approved 2026-11-15 under the user's standing delegation of that day,
-which the coordinator exercises; ADR 0033; SRS v29 with SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014,
-SRS-HW-016, SRS-HW-017; ICD-FEB v3; architecture v21; threat model v14; control API 2.5;
-MDQ-PR-007 closed; Chapter 24 section "Register map 1.2", notes in Chapters 10, 23, 34 and the
-architecture appendix). Simulated boards default to firmware 1.2.0 on purpose (ICD-FEB open
-item). Signing done too (CR-0027, approved the same way; ADR 0034; `--signing-key`,
-`--calibration-keys`, `minidaq_listmode verify-run`, `minidaq-qc --keys/--sign`, `tools/calib --sign`;
-no private key in the repository, tests make their own). MDQ-PR-006 decided again (stays open).
-Option A (coordinator, 2026-11-15): 1.3.0 is Theme B non-breaking only, Chapter 38 moves after
-2.0.0-dev's breaking items (roadmap updated). VERSION 1.3.0-dev, SOUP review for 1.3 done; the five
-documents approved by the coordinator under the delegation (SRS v31, ICD-FEB v4, threat model v16,
-architecture v23, SOUP list v27); internal audit 2026-11-15, no nonconformity. Left: release
-checks, record, release commit, tag book-v1.3.0, then message the coordinator for the Opus review.
+**Release 1.3.0, 2026-11-15 (branch claude/project-thread-fo39bu).** Theme B's non-breaking items
+(option A, chosen by the coordinator under the user's standing delegation): time markers and
+register map 1.2 (CR-0026, ADR 0033, control API 2.5, MDQ-PR-007 closed) and signed run
+records, calibration tables and QC reports (CR-0027, ADR 0034; no private key in the repository,
+tests make their own). MDQ-PR-006 decided again. Found on the way and fixed: the decoder's fuzz
+target stale after CR-0026 (MDQ-PR-069, CI fuzz-smoke) and the decoder 16% slower than 1.2.0
+(MDQ-PR-070, the release checks' gate; fixed with local copies in the loop and the rare word in
+a cold function). The coverage review found MDQ-PR-071 (open, fix in 2.0.0-dev: verify-run
+throws on a signed record whose digest field has the wrong type). Release checks passed on
+ced71e9 (`measurements/release-1.3.0/`, record `docs/regulatory/releases/1.3.0.md`). Documents
+approved by the coordinator under the delegation: SRS v31, ICD-FEB v4, threat model v16,
+architecture v23, SOUP list v27; internal audit 2026-11-15 v3. Next: tag book-v1.3.0, Opus
+review, then milestone 2.0.0-dev (plan in the project files, neurolf-book/plans/2.0.0-dev-plan.md:
+C++23 baseline, product build without the simulator, control API 3.0 and schema 2.0, and
+MDQ-PR-071). Long runs (release checks) must be harness-tracked background commands: the
+container restarts when the session idles.
 
 ## Release 1.1.0 (for reference)
 
