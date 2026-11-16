@@ -1,0 +1,33 @@
+== minidaq/apps/minidaq_ctl.cpp: 1 changed lines with an untaken branch (of 25 listed, 4 changed)
+  269: if (!conn.call(json{{"api", "3.0"}, {"id", id}, {"cmd", "status"}}, response)) {    [branch never true]
+== minidaq/include/minidaq/config/acquisition_config.hpp: 1 changed lines with an untaken branch (of 8 listed, 28 changed)
+  121: friend bool operator==(const TimingMonitorSettings&, const TimingMonitorSettings&) = default;    [branch never false]
+== minidaq/src/control/acquisition_service.cpp: 3 changed lines with an untaken branch (of 24 listed, 101 changed)
+   58: {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)},    [branch never true]
+  169: if (!with_simulator && cfg.source.type == "synthetic") {    [branch never taken; condition never shown to decide alone (MC/DC)]
+  475: (n == 1 ? " time" : " times") + " this run",    [branch never false]
+== minidaq/src/control/control_protocol.cpp: 1 changed lines with an untaken branch (of 3 listed, 17 changed)
+  164: if (!req.contains("api") || !req["api"].is_string() ||    [condition never shown to decide alone (MC/DC)]
+== minidaq/src/control/listmode_sink.cpp: 2 changed lines with an untaken branch (of 49 listed, 17 changed)
+  503: if (!j["files"][i].is_string() || !d.is_object() || !d.contains("file") ||    [branch never true; condition never shown to decide alone (MC/DC)]
+  512: if (!d.contains("bytes") || !d["bytes"].is_number_unsigned() || !d.contains("sha256") ||    [branch never true; condition never shown to decide alone (MC/DC)]
+== minidaq/src/control/run_integrity.cpp: 1 changed lines with an untaken branch (of 12 listed, 12 changed)
+   48: if (const auto it = status.find("sorter_counters"); it != status.end() && it->is_object()) {    [branch never false; condition never shown to decide alone (MC/DC)]
+== minidaq/src/hw/slow_control.cpp: 2 changed lines with an untaken branch (of 15 listed, 22 changed)
+  272: if (major > 1 || minor >= 4) {    [branch never true; condition never shown to decide alone (MC/DC)]
+  274: if (!clock) {    [branch never true]
+== minidaq/src/processing/timing_monitor.cpp: 10 changed lines with an untaken branch (of 10 listed, 359 changed)
+   30: if (c.delay.count() < 0) {    [branch never true]
+   37: switch (l) {    [branch never true]
+   42: case TimingLevel::warning:    [branch never true]
+   72: if (!(p.variance_ps2 > 0.0) || p.a == p.b || p.a >= blocks || p.b >= blocks) {    [branch never true; condition never shown to decide alone (MC/DC)]
+  108: if (std::abs(M[i * blocks + c]) > std::abs(M[pivot * blocks + c])) {    [branch never true]
+  112: if (pivot != c) {    [branch never true]
+  113: for (std::size_t j = 0; j < blocks; ++j) {    [branch never taken]
+  157: if (!(p.variance_ps2 > 0.0) || p.a == p.b || p.a >= blocks || p.b >= blocks) {    [branch never true; condition never shown to decide alone (MC/DC)]
+  219: if (!ScannerGeometry::valid(c.first.crystal) || !ScannerGeometry::valid(c.second.crystal)) {    [branch never true; condition never shown to decide alone (MC/DC)]
+  224: if (a == b) {    [branch never true]
+== minidaq/src/update/slots.cpp: 2 changed lines with an untaken branch (of 37 listed, 14 changed)
+  328: if (j.contains("good_version")) {    [branch never false]
+  334: if (j.contains("trial_version")) {    [branch never false]
+# 28 class B files changed since book-v1.3.0; 23 lines in 9 files; 19 files have none
