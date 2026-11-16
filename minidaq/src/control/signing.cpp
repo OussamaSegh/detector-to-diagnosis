@@ -87,6 +87,16 @@ Expected<std::string, std::string> verify(std::string_view message, std::string_
 }
 // [/snippet:verify]
 
+namespace {
+// OpenSSL's default answer to an encrypted key is a passphrase prompt on the terminal, where a
+// server started by the service manager waits for nobody (MDQ-PR-073). This callback gives no
+// passphrase, so that the read fails, and notes that one was asked for.
+int no_passphrase(char* /*buf*/, int /*size*/, int /*rwflag*/, void* asked) {
+  *static_cast<bool*>(asked) = true;
+  return -1;
+}
+}  // namespace
+
 struct SigningKey::Impl {
   std::unique_ptr<EVP_PKEY, PkeyFree> key;
 };
@@ -100,7 +110,14 @@ Expected<SigningKey, std::string> SigningKey::load(const fs::path& pem) {
     return Unexpected{"cannot open " + pem.string()};
   }
   auto impl = std::make_shared<Impl>();
-  impl->key.reset(PEM_read_PrivateKey(f.get(), nullptr, nullptr, nullptr));
+  bool asked = false;
+  impl->key.reset(PEM_read_PrivateKey(f.get(), nullptr, no_passphrase, &asked));
+  if (asked) {
+    return Unexpected{pem.string() +
+                      " is encrypted: the server reads only an unencrypted key, protected by the "
+                      "permissions of its "
+                      "file (write one with: openssl pkey -in KEY -out PLAIN)"};
+  }
   if (!impl->key || EVP_PKEY_get_id(impl->key.get()) != EVP_PKEY_ED25519) {
     return Unexpected{pem.string() + " is not an Ed25519 private key in PEM form"};
   }

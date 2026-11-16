@@ -605,6 +605,11 @@ SHA-256 before it is signed:
 ```{.cpp include="minidaq/src/control/listmode_sink.cpp" snippet="sign_record"}
 ```
 
+The key file is not encrypted; its permissions protect it, readable by the server's account
+only. A server that the service manager starts has nobody to type a passphrase, so it refuses
+an encrypted key with the reason instead of waiting at a prompt that no one sees (problem
+report MDQ-PR-073).
+
 One signature then vouches for the whole run. The check is the update's order again, the
 signature before anything in the record is believed, then every file against its digest
 (`minidaq_listmode verify-run --keys DIR RECORD`, and the analysis package before it reports):

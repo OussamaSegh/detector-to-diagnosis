@@ -1391,6 +1391,18 @@
       "evaluation": {"safety_relevant": false, "rationale": "It happens only at start-up, before the control API listens and before any bias is set: the server does not start, as it should, but with a crash report instead of the reason. No run is affected."},
       "resolution": {"change": "The destructor stops the slow control and switches the bias off only if the slow control exists.", "verification": "HardwareService.ABoardThatCannotBeOpenedIsAnErrorNotACrash opens a description whose mmio device does not exist: it ended with SIGSEGV before the change (checked) and passes after it. system.product's test of simulated boards in the product build, which found the defect, passes."},
       "root_cause": {"whys": ["The destructor assumed the invariant of a fully constructed adapter, but open() destroys a partly built one on its error paths.", "No test opened a description whose board fails to open: the mmio tests use the simulated board or a file that exists."], "cause": "An error path of a factory function ran a destructor that relied on the object being complete.", "category": "code", "escape": "The error path of MmioBus::open is reached only with a device that is missing at start-up; the unit tests of the configuration check the description, not its opening, and the system tests of the hardware use simulated boards."}
+    },
+    {
+      "id": "MDQ-PR-073",
+      "title": "The server waits for a passphrase on the terminal when its signing key is encrypted",
+      "found": "2026-11-15, review of release 1.3.0",
+      "item": "access",
+      "status": "closed",
+      "capa": "",
+      "description": "SigningKey::load read the key with PEM_read_PrivateKey and no passphrase callback, so OpenSSL's default callback asked for a passphrase on the terminal when the key file was encrypted. A server started by the service manager has no terminal: it waited at start-up, or, without a terminal at all, refused the key as 'not an Ed25519 private key in PEM form', which names the wrong cause.",
+      "evaluation": {"safety_relevant": false, "rationale": "It happens at start-up, before the control API listens: the server does not start, or names a wrong reason. No run is affected and nothing is signed with a wrong key."},
+      "resolution": {"change": "The key is read with a callback that gives no passphrase and notes that one was asked for; an encrypted key is refused with 'is encrypted: the server reads only an unencrypted key, protected by the permissions of its file' and the openssl command that writes one. Chapter 25 says how the key is stored.", "verification": "Signing.AnEncryptedKeyIsRefusedWithoutAskingForAPassphrase writes an AES-256 encrypted Ed25519 key and loads it: it failed before the change (checked) and passes after it, with stdin closed so that no prompt can answer."},
+      "root_cause": {"whys": ["The key loader passed no callback, and OpenSSL's default for an encrypted PEM is an interactive prompt.", "The tests wrote unencrypted keys only."], "cause": "A library default meant for interactive programs was used in a service.", "category": "code", "escape": "Every key the tests and the measurements made was unencrypted; the review of 1.3.0 found it by reading the call."}
     }
   ]
 }

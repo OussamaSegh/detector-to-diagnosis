@@ -52,6 +52,10 @@ the patch version.
 
 ### Fixed (2.0.0-dev)
 
+- `minidaq_server --signing-key` with an encrypted key asked for a passphrase on the terminal,
+  where a server started by the service manager waits for nobody, or without a terminal named
+  the wrong reason. It now refuses an encrypted key with "is encrypted" and the `openssl pkey`
+  command that writes an unencrypted one (MDQ-PR-073).
 - `minidaq_server --hardware` ended with SIGSEGV when a board of the description could not be
   opened (an mmio device that is not there): the destructor of the half-made adapter stopped a
   slow control that did not exist yet. It now prints the reason and exits with 1 (MDQ-PR-072,

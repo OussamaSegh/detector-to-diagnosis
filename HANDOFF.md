@@ -21,7 +21,8 @@ fixtures in tools/testdata/migrate_config are every 1.x config of the repo and t
 2.0. `docs.interfaces` (tools/check_interfaces.py) fails for a request older than 3.0 or a 1.x
 config in book/src or exercises; a block that shows one on purpose is fenced `{.text
 .old-interface}` (Chapter 17 does). Migration note docs/migration-2.0.md. `minidaq_sim --center`,
-`--max-file-mib`. Next: refuse an encrypted signing key clearly, server branch coverage, SOUP
+`--max-file-mib`. MDQ-PR-073 closed: an encrypted signing key is refused without a passphrase
+prompt. Next: server branch coverage, SOUP
 review for 2.0 with VERSION 2.0.0-dev. An existing
 build directory reconfigures to C++23 by itself (the cache variable is forced to 23).
 
@@ -250,7 +251,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-073, CR-0031, ADR 0037, RC-53, SRS-PLT-013, SRS-CFG-016, TL-50. A commit message has ONE trailer
+Next free numbers: MDQ-PR-074, CR-0031, ADR 0037, RC-53, SRS-PLT-013, SRS-CFG-016, TL-50. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 

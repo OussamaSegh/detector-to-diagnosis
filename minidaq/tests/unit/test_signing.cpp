@@ -252,6 +252,29 @@ TEST_F(Signing, ASignedRecordThatDoesNotListItsFilesProperlyIsRefused) {
   EXPECT_FALSE(verify_signed_run(dir_ / "data" / "none.run.json", dir_ / "keys")) << "no record";
 }
 
+TEST_F(Signing, AnEncryptedKeyIsRefusedWithoutAskingForAPassphrase) {
+  // REQ: SRS-OUT-013
+  // MDQ-PR-073: OpenSSL's default answer to an encrypted key is a passphrase prompt on the
+  // terminal, where a server started by systemd waits for nobody. The key is refused instead.
+  const std::unique_ptr<EVP_PKEY, PkeyFree> key{EVP_PKEY_Q_keygen(nullptr, nullptr, "ED25519")};
+  ASSERT_NE(key, nullptr);
+  const fs::path pem = dir_ / "encrypted.pem";
+  std::FILE* f = std::fopen(pem.c_str(), "wb");
+  ASSERT_NE(f, nullptr);
+  std::string pass = "a passphrase";
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): OpenSSL takes bytes
+  ASSERT_EQ(PEM_write_PrivateKey(f, key.get(), EVP_aes_256_cbc(),
+                                 reinterpret_cast<unsigned char*>(pass.data()),
+                                 static_cast<int>(pass.size()), nullptr, nullptr),
+            1);
+  (void)std::fclose(f);
+  const auto loaded = signing::SigningKey::load(pem);
+  ASSERT_FALSE(loaded);
+  EXPECT_NE(loaded.error().find("is encrypted"), std::string::npos) << loaded.error();
+  EXPECT_NE(loaded.error().find("openssl pkey"), std::string::npos)
+      << "says how to store it unencrypted";
+}
+
 TEST_F(Signing, WithoutAKeyTheRunRecordIsAsBefore) {
   // REQ: SRS-OUT-013
   const fs::path record = run(nullptr);
