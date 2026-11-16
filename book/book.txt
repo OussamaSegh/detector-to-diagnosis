@@ -47,4 +47,6 @@ src/part9/part9.md
 src/part9/ch35-dicom-and-pacs.md
 src/part9/ch36-git-and-team-workflow.md
 src/part9/ch37-ai-assisted-coding.md
+src/part10/part10.md
+src/part10/ch38-clock-distribution.md
 src/appendix/architecture.md

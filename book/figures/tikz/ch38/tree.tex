@@ -1,0 +1,24 @@
+% Chapter 38: how a scanner shares one time base. A reference oscillator and a start pulse go
+% through a fan-out to every board; each board's phase-locked loop multiplies the reference into
+% its sampling clock, which its counter and fine time measurement count.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[box=partcolor,minimum width=2.3cm,minimum height=1.0cm,align=center] (ref) at (0,0) {reference\\oscillator};
+  \node[box=partcolor,minimum width=2.3cm,minimum height=0.7cm,align=center] (sync) at (0,-1.5) {start pulse};
+  \node[box=d2dcat0,minimum width=1.7cm,minimum height=4.6cm,align=center] (fan) at (3.0,-0.75) {fan-out\\buffers};
+  \draw[flowp] (ref) -- (ref -| fan.west);
+  \draw[flowp] (sync) -- (sync -| fan.west);
+  \foreach \y/\n in {1.2/1,-0.75/2,-2.7/72} {
+    \node[box=d2dcat2,minimum width=1.5cm,minimum height=0.8cm,align=center] (pll\n) at (6.3,\y) {PLL\\$\times$N};
+    \node[box=d2dcat2,minimum width=2.2cm,minimum height=0.8cm,align=center] (cnt\n) at (8.9,\y) {counter +\\fine time};
+    \node[box=d2dcat1,minimum width=1.4cm,minimum height=0.8cm,align=center] (ts\n) at (11.3,\y) {time\\stamps};
+    \draw[flow] (fan.east |- pll\n) -- node[note,above,pos=0.45] {cable} (pll\n);
+    \draw[flow] (pll\n) -- (cnt\n);
+    \draw[flow] (cnt\n) -- (ts\n);
+  }
+  \node[title,anchor=south] at (8.9,1.75) {board 1 (block 0)};
+  \node[title,anchor=south] at (8.9,-0.2) {board 2 (block 1)};
+  \node[note] at (8.9,-1.55) {\dots};
+  \node[title,anchor=south] at (8.9,-2.15) {board 72 (block 71)};
+  \node[note,anchor=north,align=center,text=d2dcat3] at (6.3,-3.2) {lock lost, relocked elsewhere:\\the board's times move};
+  \node[note,anchor=north,align=center] at (3.0,-3.15) {cables of matched lengths,\\or delays measured once};
+\end{tikzpicture}

@@ -13,19 +13,21 @@
 
 local latex = FORMAT:match("latex") ~= nil
 
-local roman = { I = 1, II = 2, III = 3, IV = 4, V = 5, VI = 6, VII = 7, VIII = 8, IX = 9 }
+local roman = { I = 1, II = 2, III = 3, IV = 4, V = 5, VI = 6, VII = 7, VIII = 8, IX = 9, X = 10 }
 -- The stages each Part works on, lit on its opener's map (figures/tikz/pipeline-map.tex).
 local lit = {
   [1] = "cpp,ro,sort", [2] = "det,ro,sort,lm,sino", [3] = "reg", [4] = "test",
   [5] = "hw,ro", [6] = "det,corr,recon,qc", [7] = "py,qc",
   [8] = "det,ro,sort,lm,sino,corr,recon,qc,dicom,cpp,reg,test,hw,py",
   [9] = "dicom,team",
+  [10] = "det,ro,sort,hw,recon,reg",
 }
 
 local function part_of_chapter(n)
   if n <= 7 then return 1 elseif n <= 12 then return 2 elseif n <= 17 then return 3
   elseif n <= 21 then return 4 elseif n <= 25 then return 5 elseif n <= 30 then return 6
-  elseif n <= 32 then return 7 elseif n <= 34 then return 8 else return 9 end
+  elseif n <= 32 then return 7 elseif n <= 34 then return 8 elseif n <= 37 then return 9
+  else return 10 end
 end
 
 local latex_map = {
@@ -45,7 +47,7 @@ local opener_heads = {
   ["Learning objectives"] = true,
   ["Prerequisites and estimated time"] = true,
 }
-local part_roman = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" }
+local part_roman = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" }
 
 local function kicker_of(part, chapter_n)
   if part == "A" then return "Appendix" end

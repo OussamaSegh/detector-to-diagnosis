@@ -1,0 +1,26 @@
+% Chapter 38: why block clocks leave a signature. A shift of block B's clock by x moves every pair
+% with B by x; around any loop of pairs the shifts sum to zero. A fault of one pair, such as two
+% swapped cables, does not, and chi2 shows it.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{blk/.style={circle,draw=#1,fill=#1!15!white,line width=1pt,minimum size=0.9cm,font=\sffamily\small\bfseries}}
+  \begin{scope}
+    \node[title,text=partcolor] at (1.5,2.6) {a block's clock moves};
+    \node[blk=d2dmuted] (a) at (0,0) {A};
+    \node[blk=d2dcat3] (b) at (1.5,1.9) {B};
+    \node[blk=d2dmuted] (c) at (3,0) {C};
+    \draw[line width=1pt,draw=d2dcat3] (a) -- node[lab,left] {$+x$} (b);
+    \draw[line width=1pt,draw=d2dcat3] (b) -- node[lab,right] {$-x$} (c);
+    \draw[line width=1pt,draw=d2dmuted] (a) -- node[lab,below] {$0$} (c);
+    \node[note,align=center,text=d2dink] at (1.5,-1.1) {around the loop: $x - x + 0 = 0$\\one offset per block explains it};
+  \end{scope}
+  \begin{scope}[xshift=6cm]
+    \node[title,text=partcolor] at (1.5,2.6) {one pair is wrong};
+    \node[blk=d2dmuted] (a) at (0,0) {A};
+    \node[blk=d2dmuted] (b) at (1.5,1.9) {B};
+    \node[blk=d2dmuted] (c) at (3,0) {C};
+    \draw[line width=1pt,draw=d2dcat3] (a) -- node[lab,left] {$+y$} (b);
+    \draw[line width=1pt,draw=d2dmuted] (b) -- node[lab,right] {$0$} (c);
+    \draw[line width=1pt,draw=d2dmuted] (a) -- node[lab,below] {$0$} (c);
+    \node[note,align=center,text=d2dink] at (1.5,-1.1) {around the loop: $y \neq 0$\\no offsets explain it: chi2 grows};
+  \end{scope}
+\end{tikzpicture}

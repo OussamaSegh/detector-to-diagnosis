@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_ptp_offset)
+minidaq_python_exercise(e2_clock_servo)
+minidaq_python_exercise(e3_closure)
