@@ -187,6 +187,13 @@ with them alone, and the breaking items come next instead of after Chapters 38 a
 chapters are then written once, against the interfaces of 2.0.0, rather than written against
 the 1.x interfaces and rewritten. Release 1.4.0 is not planned any more.
 
+Timing changed on 2026-11-16 (decided by the coordinator under the author's standing delegation
+of 2026-11-15): Chapters 38 and 39 start as soon as the breaking items are done, not after the
+errata window. The window was kept so that readers' feedback could change the Part X list, but
+no edition has gone to readers through a channel that returns feedback (no KDP upload), and the
+author had already decided the list and its order (section 8). Waiting would stop the work
+without anything to wait for.
+
 ## 5. Out of scope for 2.0.0
 
 - A translation, a video course or a hardcover edition.
