@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/minidaq/acquisition-config-2.0.schema.json",
-  "title": "MiniDAQ acquisition configuration, schema version 2.0",
-  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). Version 2.0 (CR-0030) renamed and moved fields of 1.4 and made the source required; tools/migrate_config.py converts a 1.x file and docs/migration-2.0.md lists every change. The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "$id": "https://example.invalid/minidaq/acquisition-config-2.1.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 2.1",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). Version 2.1 (CR-0031) adds timing_monitor. Version 2.0 (CR-0030) renamed and moved fields of 1.4 and made the source required; tools/migrate_config.py converts a 1.x file and docs/migration-2.0.md lists every change. The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
   "type": "object",
   "required": ["schema_version", "source"],
   "additionalProperties": false,
@@ -96,6 +96,20 @@
         "file": { "type": "string" },
         "scanner_serial": { "type": "string" },
         "drift_tolerance_percent": { "description": "a block whose photopeak mean is further from 511 keV is named in the status", "type": "number", "minimum": 0.1, "maximum": 50 }
+      }
+    },
+    "timing_monitor": {
+      "description": "The monitor of the detector blocks' clocks (Chapter 38): per interval of acquisition time, each block's clock offset from the coincidences, against the pairs' reference of the first baseline_intervals intervals. A block is at warning or alarm when its offset is above the limit and above significance standard deviations. alarm_ps must not be below warning_ps.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interval_s": { "type": "number", "minimum": 0.1, "maximum": 3600 },
+        "baseline_intervals": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "min_trues": { "description": "a pair with fewer true coincidences in an interval is not used", "type": "number", "minimum": 1, "maximum": 1000000000 },
+        "half_window_ps": { "description": "only time differences within this of zero are used", "type": "integer", "minimum": 100, "maximum": 1000000 },
+        "warning_ps": { "type": "number", "minimum": 1, "maximum": 1000000 },
+        "alarm_ps": { "type": "number", "minimum": 1, "maximum": 1000000 },
+        "significance": { "type": "number", "minimum": 0, "maximum": 100 }
       }
     }
   }

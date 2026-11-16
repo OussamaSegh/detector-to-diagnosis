@@ -9,6 +9,7 @@ add_library(minidaq_core
   src/pipeline/acquisition_pipeline.cpp
   src/processing/energy_filter.cpp
   src/processing/calibration.cpp
+  src/processing/timing_monitor.cpp
   src/processing/singles_counter.cpp
   src/processing/coincidence_sorter.cpp
   src/processing/sinogram.cpp

@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 33 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 34 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -179,6 +179,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CFG-013 | The configuration reader shall reject a document without a `source` section or without `source.type`, so that no source of data is ever assumed. | config | T |
 | SRS-CFG-014 | The configuration reader shall reject a document of schema version 1.x, and the keys that version 2.0 renamed, with a message that names the migration tool `tools/migrate_config.py`. | config | T |
 | SRS-CFG-015 | The migration tool `tools/migrate_config.py` shall turn every 1.x acquisition configuration that the repository and the book have shown into a document that validates against schema 2.0 and keeps every value of the old document at its new place. | tools | T |
+| SRS-CFG-016 | The acquisition configuration shall accept, from schema 2.1 on, an optional `timing_monitor` object with the interval, the baseline intervals, the minimum of true coincidences, the half window, the warning and alarm limits and the significance of the time base monitor, each within its range, an alarm limit below the warning limit being an error. | config | T |
 
 ### 2.10 Control (CTL)
 
@@ -485,6 +486,17 @@ change.
 | SRS-AI-003 | The provenance report shall give the number of commits, merges and assisted commits of a range, the assisted commits per item, the assisted commits with a review trailer git parses, and the list of assisted commits that change product code without changing a test, as text and as JSON. | tools | T |
 | SRS-AI-004 | The commit policy check shall report every assisted commit other than a merge that changes the code of an item with a safety class and neither changes a test nor has a `Tests` trailer that names the tests covering the change. | tools | T |
 
+### 2.28 Time base (TIM)
+
+The agreement of the detector blocks' clocks during a run (Chapter 38, ADR 0037, CR-0031): risk
+controls RC-53 and RC-54 of hazard H-02, for a time error that keeps the order of the singles.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-TIM-001 | For each interval of acquisition time (1 s by default), the pair stage shall compute, for each pair of detector blocks, the shift of the mean time difference of its true coincidences (its prompt coincidences less its delayed coincidences, over the differences within the half window of 2 ns by default) from the pair's reference, which the first 2 intervals of the run give by default, leaving out a pair with fewer than 50 trues (true coincidences) by default in the interval or in the baseline. | processing | T |
+| SRS-TIM-002 | The pair stage shall estimate one clock offset per detector block, with its standard deviation, as the weighted least squares solution of the pairs' shifts with a mean of zero over each group of blocks connected by pairs, report a block in no group of two or more blocks as unobserved, and give the fit's chi-square per degree of freedom. | processing | T |
+| SRS-TIM-003 | The time base monitor shall put a block at alarm when its offset exceeds the alarm limit (250 ps by default) and 5 times its standard deviation by default, at warning when it exceeds the warning limit (100 ps by default) and that multiple of its standard deviation, and at normal otherwise, counting per block and for the scanner the intervals at alarm and giving the end of each block's first interval at alarm (risk control RC-53). | processing | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -536,3 +548,4 @@ change.
 | 31 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 30. |
 | 32 | SRS-PLT-012: the product build without the simulator (CR-0029, MDQ-PR-009). |
 | 33 | Control API 3.0 and configuration schema 2.0 (CR-0030): SRS-CTL-022 and SRS-CFG-001 changed; SRS-CFG-013, SRS-CFG-014 and SRS-CFG-015 added. |
+| 34 | The time base monitor (CR-0031, ADR 0037, Chapter 38): SRS-TIM-001 to SRS-TIM-003 and SRS-CFG-016 added. |

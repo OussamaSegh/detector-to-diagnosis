@@ -53,6 +53,7 @@ add_executable(minidaq_unit_tests
   unit/test_paced_source.cpp
   unit/test_energy_filter.cpp
   unit/test_calibration.cpp
+  unit/test_timing_monitor.cpp
   unit/test_calibration_file.cpp
   unit/test_singles_counter.cpp
   unit/test_physics.cpp

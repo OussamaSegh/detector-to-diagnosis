@@ -30,13 +30,14 @@
 #include <thread>
 
 #include "minidaq/core/single.hpp"
+#include "minidaq/metrics/latency_histogram.hpp"
 #include "minidaq/pipeline/backoff.hpp"
 #include "minidaq/pipeline/channel.hpp"
-#include "minidaq/metrics/latency_histogram.hpp"
 #include "minidaq/pipeline/stage_stats.hpp"
 #include "minidaq/processing/calibration.hpp"
 #include "minidaq/processing/coincidence_sorter.hpp"
 #include "minidaq/processing/singles_counter.hpp"
+#include "minidaq/processing/timing_monitor.hpp"
 #include "minidaq/rt/realtime.hpp"
 
 namespace minidaq {
@@ -63,6 +64,8 @@ struct PipelineConfig {
   // The per-crystal corrections that the decode stage applies (Chapter 26); none: the boards'
   // energies and times are used as they come, which is the identity table.
   std::shared_ptr<const CalibrationTable> calibration;
+  // The time base monitor of the pair stage (Chapter 38); its delay is taken from `sorter`.
+  TimingMonitorConfig timing{};
 };
 
 // [snippet:order]
@@ -135,6 +138,8 @@ class AcquisitionPipeline {
   [[nodiscard]] const PhotopeakMonitor& photopeak() const noexcept { return photopeak_; }
   // The singles of each crystal in the sorter's energy window, for the corrections (Chapter 27).
   [[nodiscard]] const SinglesCounter& singles() const noexcept { return singles_; }
+  // The clock offset of each detector block, from the coincidences (Chapter 38).
+  [[nodiscard]] const TimingMonitor& timing() const noexcept { return *timing_; }
   [[nodiscard]] const PipelineConfig& config() const noexcept { return cfg_; }
   // Valid after start() returns.
   [[nodiscard]] const std::array<rt::StageRtStatus, num_stages>& rt_status() const noexcept { return rt_status_; }
@@ -166,6 +171,7 @@ class AcquisitionPipeline {
   std::unique_ptr<CoincidenceSorter> sorter_;  // used by the pair thread only
   PhotopeakMonitor photopeak_;                 // written by the decode thread only
   SinglesCounter singles_;                     // written by the decode thread only
+  std::unique_ptr<TimingMonitor> timing_;      // written by the pair thread only
   static constexpr std::size_t sorter_fields = 11;
   alignas(cache_line_size) std::array<std::atomic<std::uint64_t>, sorter_fields> sorter_stats_{};
   std::atomic<std::size_t> finished_stages_{0};

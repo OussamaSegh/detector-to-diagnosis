@@ -46,17 +46,18 @@
       "id": "H-02",
       "preliminary": "HZ-1",
       "hazard": "Wrong event times",
-      "sequence": "Time unwrapping fails across a wrap of the time code, or singles reach the sorter out of time order.",
+      "sequence": "Time unwrapping fails across a wrap of the time code, or singles reach the sorter out of time order; or the time base of one detector block moves during a run (its phase-locked loop loses lock and locks again elsewhere, the board resets its counter, its reference drifts), which keeps the order of the singles.",
       "hazardous_situation": "Coincidences are formed from the wrong singles and their time-of-flight positions are wrong.",
       "harm": "Artifacts contribute to a delayed or incorrect diagnosis.",
       "severity": "S2",
       "probability_before": "P4",
       "controls": [
         {"id": "RC-06", "type": "inherent", "description": "Times are unwrapped across any number of wraps, with the limit on the gap between singles stated.", "requirements": ["SRS-FMT-012"], "effectiveness": {"method": "test", "evidence": "TimeUnwrapper.ReconstructsAcrossManyWraps"}},
-        {"id": "RC-07", "type": "protective", "description": "Singles out of time order are counted and dropped, and the service ends the run in a fault.", "requirements": ["SRS-CTL-012", "SRS-SRT-005", "SRS-MRG-004"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.OutOfOrderSinglesAreAFault"}}
+        {"id": "RC-07", "type": "protective", "description": "Singles out of time order are counted and dropped, and the service ends the run in a fault.", "requirements": ["SRS-CTL-012", "SRS-SRT-005", "SRS-MRG-004"], "effectiveness": {"method": "test", "evidence": "AcquisitionService.OutOfOrderSinglesAreAFault"}},
+        {"id": "RC-53", "type": "protective", "description": "The time base monitor measures each detector block's clock offset from the coincidences in every interval of the run and names a block that moved beyond the limits (ADR 0037).", "requirements": ["SRS-TIM-001", "SRS-TIM-002", "SRS-TIM-003"], "effectiveness": {"method": "test", "evidence": "TimingMonitor.AStepInOneBlockClockIsFoundInThatBlockAndNoOther"}}
       ],
       "probability_after": "P2",
-      "residual": "A time error that keeps the order (a constant offset of one board) is not detected by these controls; the timing calibration of Chapter 26 controls it. RC-07 trades wrong coincidences for an interrupted scan, which H-05 analyzes.",
+      "residual": "A constant offset of one block present from the start keeps the order and is no change the monitor sees; the timing calibration of Chapter 26 controls it. A shift common to every block changes no coincidence. A shift below the warning limit, or the data of the interval in which a shift is found (1 s by default), is not corrected. RC-07 trades wrong coincidences for an interrupted scan, which H-05 analyzes.",
       "status": "closed"
     },
     {

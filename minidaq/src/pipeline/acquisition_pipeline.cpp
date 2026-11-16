@@ -12,7 +12,8 @@
 
 namespace minidaq {
 
-AcquisitionPipeline::AcquisitionPipeline(const PipelineConfig& cfg, WordSource source, CoincidenceSink sink)
+AcquisitionPipeline::AcquisitionPipeline(const PipelineConfig& cfg, WordSource source,
+                                         CoincidenceSink sink)
     : cfg_{cfg},
       source_{std::move(source)},
       sink_{std::move(sink)},
@@ -22,6 +23,11 @@ AcquisitionPipeline::AcquisitionPipeline(const PipelineConfig& cfg, WordSource s
       pairs_{cfg.batches_per_channel, cfg.batch_size},
       sorter_{std::make_unique<CoincidenceSorter>(cfg.sorter)},
       singles_{cfg.sorter.energy_low_kev, cfg.sorter.energy_high_kev},
+      timing_{std::make_unique<TimingMonitor>([&] {
+        TimingMonitorConfig t = cfg.timing;
+        t.delay = cfg.sorter.delay;  // a delayed pair's difference includes it
+        return t;
+      }())},
       end_to_end_{std::make_unique<LatencyHistogram>()} {
   for (auto& h : stage_latency_) {
     h = std::make_unique<LatencyHistogram>();
@@ -445,6 +451,7 @@ void AcquisitionPipeline::run_pair() {
   // Copies what the sorter found into output batches; returns the time spent
   // waiting for free batches, which is not the stage's own work.
   auto publish = [&] {
+    timing_->record(found);  // the clocks of the blocks, from the pairs (SRS-TIM-001)
     std::int64_t waited_ns = 0;
     std::size_t i = 0;
     while (i < found.size()) {
@@ -505,6 +512,7 @@ void AcquisitionPipeline::run_pair() {
   }
   sorter.flush(found);  // end of the run: close every open window
   (void)publish();
+  timing_->flush();
   pairs_.close();
   finished_stages_.fetch_add(1);
 }

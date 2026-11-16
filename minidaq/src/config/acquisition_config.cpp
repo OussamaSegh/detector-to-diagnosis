@@ -146,8 +146,23 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
       errors.push_back({"/calibration/scanner_serial", "is required with /calibration/file"});
     }
   }
+  if (const json* tm = top.object("timing_monitor")) {
+    ObjectReader r{*tm, top.child("timing_monitor"), errors};
+    auto& m = c.timing_monitor;
+    r.get("interval_s", m.interval_s, 0.1, 3600.0);
+    r.get("baseline_intervals", m.baseline_intervals, std::uint32_t{1}, std::uint32_t{1000});
+    r.get("min_trues", m.min_trues, 1.0, 1e9);
+    r.get("half_window_ps", m.half_window_ps, std::int64_t{100}, std::int64_t{1'000'000});
+    r.get("warning_ps", m.warning_ps, 1.0, 1e6);
+    r.get("alarm_ps", m.alarm_ps, 1.0, 1e6);
+    r.get("significance", m.significance, 0.0, 100.0);
+    r.finish();
+  }
   top.finish();
   // Rules that involve two values, reported at the value a user would change.
+  if (c.timing_monitor.alarm_ps < c.timing_monitor.warning_ps) {
+    errors.push_back({"/timing_monitor/alarm_ps", "must not be below /timing_monitor/warning_ps"});
+  }
   if (c.sorter.delay_ps != 0 && c.sorter.delay_ps <= c.sorter.window_ps) {
     errors.push_back({"/sorter/delay_ps", "must be 0 (off) or more than /sorter/window_ps"});
   }
@@ -222,6 +237,14 @@ json to_json(const AcquisitionConfig& c) {
        {{"file", c.calibration.file},
         {"scanner_serial", c.calibration.scanner_serial},
         {"drift_tolerance_percent", c.calibration.drift_tolerance_percent}}},
+      {"timing_monitor",
+       {{"interval_s", c.timing_monitor.interval_s},
+        {"baseline_intervals", c.timing_monitor.baseline_intervals},
+        {"min_trues", c.timing_monitor.min_trues},
+        {"half_window_ps", c.timing_monitor.half_window_ps},
+        {"warning_ps", c.timing_monitor.warning_ps},
+        {"alarm_ps", c.timing_monitor.alarm_ps},
+        {"significance", c.timing_monitor.significance}}},
       {"rt_profile_file", c.rt_profile_file},
   };
 }
@@ -250,6 +273,13 @@ PipelineConfig to_pipeline_config(const AcquisitionConfig& c) {
   p.source_overflow = c.pipeline.overflow;
   p.max_batch_delay = std::chrono::microseconds{c.pipeline.max_batch_delay_us};
   p.calibration = c.calibration.loaded;
+  p.timing.interval = Picoseconds{std::llround(c.timing_monitor.interval_s * 1e12)};
+  p.timing.baseline_intervals = c.timing_monitor.baseline_intervals;
+  p.timing.min_trues = c.timing_monitor.min_trues;
+  p.timing.half_window = Picoseconds{c.timing_monitor.half_window_ps};
+  p.timing.warning_ps = c.timing_monitor.warning_ps;
+  p.timing.alarm_ps = c.timing_monitor.alarm_ps;
+  p.timing.significance = c.timing_monitor.significance;
   if (c.source.stop_after_s > 0) {
     p.total_words =
         static_cast<std::uint64_t>(std::llround(c.source.stop_after_s * c.source.rate_hz));

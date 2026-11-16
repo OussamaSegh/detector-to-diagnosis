@@ -36,7 +36,8 @@ inline constexpr int supported_major = 2;
 // 1.4: "calibration" (Chapter 26). 2.0 (CR-0030): /source/type required, /stop_after_s in
 // /source, /pipeline/coincidence_window_ps is /sorter/window_ps, /output/max_file_mb is
 // max_file_mib, /rt_profile is /rt_profile_file. tools/migrate_config.py converts a 1.x file.
-inline constexpr int supported_minor = 0;
+// 2.1 (CR-0031): "timing_monitor" (Chapter 38).
+inline constexpr int supported_minor = 1;
 // What a refused 1.x file is told.
 inline constexpr const char* migration_hint =
     "convert it with tools/migrate_config.py (docs/migration-2.0.md)";
@@ -108,6 +109,18 @@ struct CalibrationSettings {
   friend bool operator==(const CalibrationSettings&, const CalibrationSettings&) = default;
 };
 
+// The monitor of the detector blocks' clocks (Chapter 38, minidaq/processing/timing_monitor.hpp).
+struct TimingMonitorSettings {
+  double interval_s = 1.0;
+  std::uint32_t baseline_intervals = 2;
+  double min_trues = 50.0;
+  std::int64_t half_window_ps = 2'000;
+  double warning_ps = 100.0;
+  double alarm_ps = 250.0;
+  double significance = 5.0;
+  friend bool operator==(const TimingMonitorSettings&, const TimingMonitorSettings&) = default;
+};
+
 struct AcquisitionConfig {
   int schema_major = supported_major;
   int schema_minor = supported_minor;
@@ -117,6 +130,7 @@ struct AcquisitionConfig {
   SorterSettings sorter;
   OutputSettings output;
   CalibrationSettings calibration;
+  TimingMonitorSettings timing_monitor;
   std::string rt_profile_file;  // path of a real-time profile file (Chapter 4); empty: none
 
   friend bool operator==(const AcquisitionConfig&, const AcquisitionConfig&) = default;

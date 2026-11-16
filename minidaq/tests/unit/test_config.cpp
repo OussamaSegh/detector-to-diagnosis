@@ -36,7 +36,7 @@ std::string read(const std::string& path) {
 
 TEST(Config, MinimalDocumentGetsDefaults) {
   // REQ: SRS-CFG-001
-  const auto c = parse_config(R"({"schema_version": "2.0", "source": {"type": "synthetic"}})");
+  const auto c = parse_config(R"({"schema_version": "2.1", "source": {"type": "synthetic"}})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(*c, AcquisitionConfig{});
 }
@@ -71,6 +71,29 @@ TEST(Config, RenamedFieldsAreUnknownInTheirOldPlaces) {
   EXPECT_TRUE(has(e, "/output/max_file_mb", "did you mean \"max_file_mib\""));
 }
 
+TEST(Config, TheTimingMonitorIsReadFromSchema21) {
+  // REQ: SRS-CFG-016
+  const auto c = parse_config(R"({"schema_version": "2.1", "source": {"type": "synthetic"},
+      "timing_monitor": {"interval_s": 0.5, "baseline_intervals": 4, "min_trues": 20,
+      "half_window_ps": 1500, "warning_ps": 80, "alarm_ps": 200, "significance": 4}})");
+  ASSERT_TRUE(c) << format_errors(c.error());
+  const auto p = minidaq::config::to_pipeline_config(*c);
+  EXPECT_EQ(p.timing.interval, Picoseconds{500'000'000'000});
+  EXPECT_EQ(p.timing.baseline_intervals, 4U);
+  EXPECT_EQ(p.timing.min_trues, 20.0);
+  EXPECT_EQ(p.timing.half_window, Picoseconds{1'500});
+  EXPECT_EQ(p.timing.warning_ps, 80.0);
+  EXPECT_EQ(p.timing.alarm_ps, 200.0);
+  EXPECT_EQ(p.timing.significance, 4.0);
+  EXPECT_TRUE(minidaq::validate(p.timing).has_value());
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.1", "source": {"type": "synthetic"},
+      "timing_monitor": {"warning_ps": 300, "alarm_ps": 200}})"),
+                  "/timing_monitor/alarm_ps", "must not be below"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.1", "source": {"type": "synthetic"},
+      "timing_monitor": {"interval": 1}})"),
+                  "/timing_monitor/interval", "unknown key"));
+}
+
 TEST(Config, ShippedConfigurationsAreValid) {
   for (const char* f : {"default.json", "short-run.json"}) {
     const auto c = parse_config(read(std::string{MINIDAQ_SOURCE_DIR "/minidaq/configs/"} + f));
@@ -95,7 +118,7 @@ TEST(Config, SchemaVersionRules) {
   // REQ: SRS-CFG-002
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "3.0"})"), "/schema_version", "major version 3"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.1"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2"})"), "/schema_version", "newer MiniDAQ"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": ""})"), "/schema_version", "must look like"))
       << "an empty version is not a version (MDQ-PR-042)";
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
@@ -192,6 +215,10 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
           doc["sorter"]["energy_low_kev"] = 0.0;
         } else if (path == "/sorter/window_ps") {
           doc["sorter"]["delay_ps"] = 0;  // the delay must exceed the window
+        } else if (path == "/timing_monitor/warning_ps") {
+          doc["timing_monitor"]["alarm_ps"] = 1e6;  // the alarm must not be below the warning
+        } else if (path == "/timing_monitor/alarm_ps") {
+          doc["timing_monitor"]["warning_ps"] = 1.0;
         }
         doc[nlohmann::json::json_pointer{path}] = v;
         return parse_config(doc.dump()).has_value();

@@ -52,6 +52,17 @@ the patch version.
 - VERSION is 2.0.0-dev, with the Python packages; SOUP list v28 holds the known-anomaly review
   for MiniDAQ 2.0 (no item added, no new advisory, the lock file audit clean).
 
+### Added (2.0.0-dev)
+
+- **Time base monitor** (CR-0031, ADR 0037, Chapter 38; risk control RC-53 of H-02). For each
+  interval of acquisition time (1 s by default) the pair stage measures, per pair of detector
+  blocks, the shift of the mean time difference of the true coincidences (prompts less delayeds,
+  within +-2 ns) from the pair's reference of the first two intervals, and solves for one clock
+  offset per block by weighted least squares with a mean of zero per group of connected blocks.
+  A block above the warning (100 ps) or alarm (250 ps) limit and 5 standard deviations is named.
+  Configuration schema 2.1 adds the optional `timing_monitor` object. SRS-TIM-001 to SRS-TIM-003,
+  SRS-CFG-016 (SRS version 34).
+
 ### Fixed (2.0.0-dev)
 
 - `minidaq_server --signing-key` with an encrypted key asked for a passphrase on the terminal,
