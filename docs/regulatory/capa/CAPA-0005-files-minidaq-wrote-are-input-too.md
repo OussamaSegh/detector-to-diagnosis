@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-11-16, by the software lead (internal audit before release 2.0.0) |
-| Source | MDQ-PR-071; at the audit, MDQ-PR-074, MDQ-PR-075 and MDQ-PR-076 |
+| Source | MDQ-PR-071; at the audit, MDQ-PR-074, MDQ-PR-075 and MDQ-PR-076; at the review of release 2.0.0, MDQ-PR-078 |
 | Owner | software lead |
 | Effectiveness check | release 2.1.0 |
 
@@ -69,6 +69,9 @@ MDQ-PR-071 was fixed by the review of 1.3.0.
   update store's `state.json`. Its seeds hold the inputs of MDQ-PR-071 and MDQ-PR-074. It runs in
   CI's `fuzz-smoke` job, as every target in `fuzz/CMakeLists.txt` does, and for ten minutes in
   the release checks (`tools/release_checks.sh`, part 4).
+- Added by the review of release 2.0.0 (MDQ-PR-078): the reader of MDQ-PR-075 was still in
+  `minidaq_listmode`'s main, where no fuzz target can call it, so rule 3.4 was not met for it.
+  It is `control::metadata_delayed_window_ps` now, and `fuzz_documents` reads it as mode 5.
 
 ## Preventive action
 

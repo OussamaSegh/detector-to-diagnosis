@@ -8,6 +8,24 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed (review of release 2.0.0)
+
+- MDQ-PR-078: the reader of a list-mode file's delayed window (MDQ-PR-075) is
+  `control::metadata_delayed_window_ps` in the library, and `fuzz_documents` reads it as mode 5
+  (seeds `metadata`, `metadata-mdq-pr-075`), as coding standard rule 3.4 asks (CAPA-0005).
+- MDQ-PR-079: SRS-CTL-022's test sends a 2.x request and checks that the refusal names
+  `docs/migration-2.0.md`.
+- MDQ-PR-080: the download page and the web edition are built from the latest release tag
+  (`.github/tags.txt`), with main's errata, instead of main's development version.
+
+### Changed (review of release 2.0.0)
+
+- `tools/soak.py` samples every second the steal time and each server thread's run-queue wait
+  (`/proc/PID/task/*/schedstat`) and records each interval's largest one-second values, the
+  finer measure that MDQ-PR-064's decision asks for.
+- SDP version 20 (draft): section 8 says when a failed check of the release checks may run
+  again (MDQ-PR-077).
+
 ## [2.0.0] - 2026-11-16
 
 The Second Edition. Release notes: two changes break what worked with 1.x, each with its

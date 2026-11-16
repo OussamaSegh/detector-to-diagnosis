@@ -19,6 +19,12 @@ is above --latency-limit ms (default 10, SRS-PERF-022), and tools/acceptance.py 
 (ACC-04). Each sample also records the share of the machine's CPU time that the hypervisor took
 for other guests in the interval (steal, from /proc/stat), so that a latency peak can be told
 from a machine that was not running the server (CR-0025).
+
+The finer measure of MDQ-PR-064: a second thread samples every second the machine's steal time
+and, for each of the server's threads, the time it waited on a run queue (the second field of
+/proc/PID/task/TID/schedstat). Each interval records the largest one-second steal and the largest
+one-second run-queue wait of any thread, with that thread's name: a 30 ms stall that a 10 s
+average over four CPUs hides is a 30 ms wait in one second of one thread.
 """
 import argparse
 import csv
@@ -27,6 +33,7 @@ import os
 import pathlib
 import sys
 import tempfile
+import threading
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "minidaq/tests/system"))
@@ -66,6 +73,51 @@ def steal_pct(before, after):
     return round(100.0 * steal / total, 2) if total > 0 else 0.0
 
 
+def thread_waits(pid):
+    """Each thread's run-queue wait so far, in ns, and its name, from /proc/PID/task/*/schedstat."""
+    out = {}
+    for task in pathlib.Path(f"/proc/{pid}/task").iterdir():
+        try:
+            wait = int((task / "schedstat").read_text().split()[1])
+            name = (task / "comm").read_text().strip()
+        except (OSError, IndexError, ValueError):
+            continue  # the thread ended between the listing and the read
+        out[task.name] = (wait, name)
+    return out
+
+
+class PerSecond(threading.Thread):
+    """Samples every second the steal time and the server's threads' run-queue waits (MDQ-PR-064),
+    and keeps, until take() is called, the largest one-second value of each."""
+
+    def __init__(self, pid):
+        super().__init__(daemon=True)
+        self.pid, self.lock, self.done = pid, threading.Lock(), threading.Event()
+        self.steal_max, self.wait_max_ms, self.wait_thread = 0.0, 0.0, ""
+
+    def run(self):
+        ticks, waits = cpu_ticks(), thread_waits(self.pid)
+        while not self.done.wait(1.0):
+            try:
+                now_ticks, now_waits = cpu_ticks(), thread_waits(self.pid)
+            except OSError:
+                return  # the server has ended
+            steal = steal_pct(ticks, now_ticks)
+            worst = max(((w - waits[t][0], n) for t, (w, n) in now_waits.items() if t in waits),
+                        default=(0, ""))
+            with self.lock:
+                self.steal_max = max(self.steal_max, steal)
+                if worst[0] / 1e6 > self.wait_max_ms:
+                    self.wait_max_ms, self.wait_thread = worst[0] / 1e6, worst[1]
+            ticks, waits = now_ticks, now_waits
+
+    def take(self):
+        with self.lock:
+            out = (round(self.steal_max, 2), round(self.wait_max_ms, 3), self.wait_thread)
+            self.steal_max, self.wait_max_ms, self.wait_thread = 0.0, 0.0, ""
+        return out
+
+
 def losses(status):
     stages = sum(s["dropped"] for s in status["stages"])
     return stages + status["late_singles"] + status["sink_counters"].get("blocks_dropped", 0)
@@ -98,6 +150,8 @@ def main():
             ctl.ok("start")
             t0 = time.monotonic()
             ticks = cpu_ticks()
+            per_second = PerSecond(server.proc.pid)
+            per_second.start()
             end = t0 + args.minutes * 60
             while True:
                 now = time.monotonic()
@@ -105,14 +159,18 @@ def main():
                 # The recent window is missing until the run has completed its first interval.
                 e2e = (st.get("recent_latency_ns") or {}).get("end_to_end") or {"p99": 0, "max": 0}
                 ticks, before = cpu_ticks(), ticks
+                steal_1s, wait_1s, wait_thread = per_second.take()
                 rows.append({"t_s": round(now - t0, 1), "rss_kib": rss_kib(server.proc.pid),
                              "singles_in": st["sorter_counters"]["singles_in"], "losses": losses(st),
                              "state": st["state"], "fault": st["fault"] or "",
                              "p99_ms": round(e2e["p99"] / 1e6, 3), "max_ms": round(e2e["max"] / 1e6, 3),
-                             "steal_pct": steal_pct(before, ticks)})
+                             "steal_pct": steal_pct(before, ticks), "steal_1s_max_pct": steal_1s,
+                             "runq_wait_1s_max_ms": wait_1s, "runq_wait_thread": wait_thread})
                 if st["state"] != "running" or now >= end:
                     break
                 time.sleep(max(0.0, args.interval - (time.monotonic() - now)))  # sleep: device
+            per_second.done.set()
+            per_second.join()
             ctl.ok("stop")
             systest.eventually(lambda: ctl.status()["state"] == "configured", 60, "the end of the run")
             final = ctl.status()
@@ -161,6 +219,11 @@ def main():
         f"steal time over each interval: max {max(steal):.2f}%, mean {sum(steal) / len(steal):.2f}%"
         + (", in the intervals above the limit: " + ", ".join(f"{r['steal_pct']:g}%" for r in above)
            if above else ""),
+        f"per second (MDQ-PR-064): steal max {max(r['steal_1s_max_pct'] for r in intervals or rows):.2f}%, "
+        f"run-queue wait of one thread max {max(r['runq_wait_1s_max_ms'] for r in intervals or rows):.2f} ms"
+        + (", in the intervals above the limit: " + ", ".join(
+            f"{r['runq_wait_1s_max_ms']:g} ms ({r['runq_wait_thread']}), steal {r['steal_1s_max_pct']:g}%"
+            for r in above) if above else ""),
         "result: " + ("PASS" if not problems else "FAIL: " + "; ".join(problems)),
     ]
     (args.out / "summary.txt").write_text("\n".join(lines) + "\n")

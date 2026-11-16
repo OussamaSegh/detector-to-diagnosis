@@ -600,4 +600,17 @@ std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(
 }
 // [/snippet:factory]
 
+std::optional<std::int64_t> metadata_delayed_window_ps(std::string_view metadata) {
+  const auto meta = nlohmann::json::parse(metadata, nullptr, /*allow_exceptions=*/false);
+  // Each type is checked before the value is read (coding standard rule 3.5, MDQ-PR-075).
+  if (!meta.is_object() || !meta.contains("records") || !meta["records"].is_object()) {
+    return std::nullopt;
+  }
+  const auto& records = meta["records"];
+  if (!records.contains("delayed_window_ps") || !records["delayed_window_ps"].is_number_integer()) {
+    return std::nullopt;
+  }
+  return records["delayed_window_ps"].get<std::int64_t>();
+}
+
 }  // namespace minidaq::control

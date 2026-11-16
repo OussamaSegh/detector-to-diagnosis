@@ -1,11 +1,19 @@
 # The book's download page on GitHub Pages: the EPUB, the PDF and the Boox PDF (10.3 inch 4:3
-# E Ink screen) of the book and of the solutions manual, built from the commit by book/build.sh
-# and listed by book/tools/site.py with their SHA-256. Every listing in the book is included from
-# the repository, so the page is rebuilt on every push to main.
+# E Ink screen) of the book and of the solutions manual, built by book/build.sh and listed by
+# book/tools/site.py with their SHA-256, and the web edition. Since the review of release 2.0.0
+# the page is built from the latest release tag (the last book-v line of .github/tags.txt), not
+# from main: after a release, main's VERSION is the next -dev version, and readers of the page
+# are to get the edition that was released (and printed). The errata are main's
+# (book/errata.json), since they are written after the release they correct. Until the tag
+# exists (tags.yml makes it), the page is built from this commit, as before; the run that
+# tags.yml ends triggers the page again.
 name: pages
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: [tags]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -23,6 +31,20 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Check out the latest release, with main's errata
+        run: |
+          tag="$(awk '/^book-v/ {t = $1} END {print t}' .github/tags.txt)"
+          if [ -n "$tag" ] && git rev-parse -q --verify "refs/tags/$tag^{commit}" > /dev/null; then
+            cp book/errata.json "$RUNNER_TEMP/errata.json"
+            git checkout --detach "$tag"
+            cp "$RUNNER_TEMP/errata.json" book/errata.json
+            echo "The page is built from $tag ($(git rev-parse --short HEAD)), version $(cat VERSION)."
+          else
+            echo "::warning::tag $tag does not exist yet; the page is built from main ($(git rev-parse --short HEAD))"
+          fi
       - name: Install Pandoc, XeLaTeX and the fonts
         # About 300 MB. A slow mirror once took over 50 minutes for it, so the step has its own
         # limit, and a download that stalls is retried instead of waited for.
