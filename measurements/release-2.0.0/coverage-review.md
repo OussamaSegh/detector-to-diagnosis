@@ -98,6 +98,6 @@ only; the programs are those of the checks). They found no defect.
   both fields, so such a state was not written by MiniDAQ. It opens with an empty version, as it
   did before MDQ-PR-074's fix (`value(..., "")`). With no installed version, the next install
   is not compared with it for a downgrade (`slots.cpp:402`); the bundle must still carry a
-  valid signature from a trusted key.
+  valid signature from a trusted key, and the state is writable by root only (threat T-44).
   Kept as it is: a store that lost its versions can still be updated. `Update.OpenRefusesAStoreItCannotTrust` checks that a
   field of another type is refused (MDQ-PR-074).
