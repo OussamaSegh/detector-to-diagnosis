@@ -52,3 +52,6 @@ book-v1.0.0 33aa5badd379f7b0c65812d890433dbf7ba48fe1 Release 1.0.0: the complete
 book-v1.1.0 19c6364d6406c7610bde1bcffafc3fc494446281 Release 1.1.0: the illustrated interior (231 figures), checks on 9b9e96d, CAPA-0002 closed. ci, gates, codeql and pages green on GitHub.
 book-v1.2.0 41c0173d1434ab69c3248dcd39859f5593decd65 Release 1.2.0: release tools, book checks and errata, the web edition; checks on 31527cc after the internal audit of 2026-11-14. ci, gates, codeql and pages green on GitHub.
 book-v1.3.0 648bf4d0f4b627daab22240663add8aa55176970 Release 1.3.0: time markers and register map 1.2, signed run records, calibration tables and reports; checks on ced71e9 after the internal audit of 2026-11-15. ci, gates, codeql, pages and perf green on GitHub.
+ch38 f4aaf96e186c5420595aceaae5976ebe69dfc7ce Chapter 38: clock distribution and the scanner's time base (on the commit that records CR-0031, the first after the chapter). ci and gates green on GitHub.
+ch39 7ebfbb90920ae9f01b69d79986493aac7f0b7403 Chapter 39: time of flight (on the commit that records CR-0032). ci, gates, codeql and pages green on GitHub.
+ch40 0a1de8ac2b5a433c137f32e70150d4d9f193d77f Chapter 40: maintenance and post-market (on the commit that records CR-0033, the first green one). ci, gates, codeql and pages green on GitHub.

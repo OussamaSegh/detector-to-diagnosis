@@ -11,7 +11,7 @@ this book is published separately under the MIT License, given in the file `LICE
 companion repository, and may be used under that license. That license does not cover the text,
 the figures or the covers of this book, nor their sources in the repository (see `book/LICENSE`).
 
-Version {{version}}, {{date}}.
+Second Edition. Version {{version}}, {{date}}.
 
 **Disclaimer.** This book is for learning. The information in it is provided "as is", without
 warranty of any kind, and neither the author nor the publisher is liable for any loss or damage
