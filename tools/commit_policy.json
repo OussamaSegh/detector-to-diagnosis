@@ -32,6 +32,7 @@
     ]
   },
   "accepted": [
+    {"commit": "b4daafe78904", "rule": "review", "reason": "The Tests: trailer of the commit wrapped onto a second line, so git did not parse Review: as a trailer. The review was done (change control checklist, items 1 to 6); the commit is already on main."},
     {"commit": "b54db07897df", "rule": "identity", "reason": "GitHub merge of pull request 10. The merge button set the author; the commit is already on main."},
     {"commit": "5bff4b3bc741", "rule": "identity", "reason": "GitHub merge of pull request 12. The merge button set the author; the commit is already on main."},
     {"commit": "2e9ecee9b3d2", "rule": "identity", "reason": "GitHub merge of pull request 11. The merge button set the author; the commit is already on main."},
