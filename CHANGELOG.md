@@ -80,6 +80,19 @@ the patch version.
   alarm, whose board clock lost its lock, or that has no verdict, and `chain.tof_sinograms`, the
   tool's one way to bin a run with TOF, calls it first. SRS-REC-007, SRS-REC-008 (SRS
   version 35).
+- **Software maintenance plan** (CR-0033, ADR 0039): `docs/regulatory/maintenance-plan.md`
+  (feedback, evaluation, supported releases, kinds of release, maintenance branches with
+  `git cherry-pick -x`, SOUP over the years, trends, retirement); SDP section 10 points to it
+  (SDP version 18). Every open problem report, and every one from MDQ-PR-065 on, records the
+  released versions it affects (`affects`, checked by `docs.anomalies`); the known anomalies show
+  them. Every shipped SOUP item records when its support ends, and one that ends within the
+  support period records an end-of-support plan (`docs.soup`; SOUP list version 29, OpenSSL 3.0).
+  `tools/pr_trends.py` (TL-50) analyzes the problem reports per release window with a u-chart
+  (`measurements/ch40/trends.txt`). SRS-MNT-001 to SRS-MNT-003 (SRS version 36), tests
+  `tools.maintenance`.
+- **Chapter 40** (maintenance and post-market): field reports to decisions, affected releases,
+  patch, minor and major releases and maintenance branches, SOUP end of support, problem report
+  trends, MiniDAQ's history from 1.0 to 2.0, and exercises 40.1 to 40.3 with their solutions.
 - **Chapter 39** (time of flight): the sign of tau and its end-to-end test, the TOF kernel and
   projector, measurements of the timing resolution, of convergence and background variability with
   and without TOF, of a clock offset in a TOF image and of the projector's cost

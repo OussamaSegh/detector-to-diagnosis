@@ -9,6 +9,12 @@ For every FetchContent dependency, docs/regulatory/soup-list.md must
   dated YYYY-MM-DD for the current MiniDAQ minor version: "| Last review | 2026-10-25, for
   MiniDAQ 0.3 ...". A new minor version therefore needs a new review before its release.
 
+Every item of section 1 (the shipped software, platform libraries included) must also say when
+its supplier stops supporting it (Chapter 40, the maintenance plan): "| Support ends | ..." with
+a date YYYY-MM-DD or "no announced end". A date before the end of the support period that the
+maintenance plan promises after the item's last review (SUPPORT_MONTHS) needs a row
+"| End-of-support plan | ..." that says what MiniDAQ does about it.
+
 Usage: check_soup.py ROOT. Exit status 0 if the list matches the build, 1 otherwise.
 """
 import pathlib
@@ -18,6 +24,8 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from make_sbom import KNOWN, dependencies  # noqa: E402  (one parser for the SBOM and this check)
 
+SUPPORT_MONTHS = 24  # docs/regulatory/maintenance-plan.md, section 3
+SUPPORT = re.compile(r"^\|\s*Support ends\s*\|\s*(.+?)\s*\|\s*$", re.M)
 REVIEW = re.compile(r"^\|\s*Last review\s*\|\s*(\d{4}-\d{2}-\d{2}), for MiniDAQ (\d+\.\d+)\b", re.M)
 
 
@@ -27,6 +35,44 @@ def sections(text):
     for m in re.finditer(r"^\| Field \| (.+?) \|\n((?:\|.*\n)+)", text, re.M):
         out[m.group(1).strip()] = m.group(2)
     return out
+
+
+def shipped_tables(text):
+    """{name: table} of the per-item tables in section 1, the shipped software."""
+    start = text.find("## 1.")
+    end = text.find("## 2.", start)
+    return sections(text[start:end] if start >= 0 else "")
+
+
+def months_later(date, months):
+    """The ISO date `months` calendar months after `date`, on the same day (the 28th at most)."""
+    y, m, d = (int(x) for x in date.split("-"))
+    m += months
+    y, m = y + (m - 1) // 12, (m - 1) % 12 + 1
+    return f"{y:04d}-{m:02d}-{min(d, 28):02d}"
+
+
+# [snippet:support]
+def support_problems(name, table):
+    """An item names its end of support; one that ends within the support period MiniDAQ
+    promises after the item's last review has a plan for it."""
+    m = SUPPORT.search(table)
+    if not m:
+        return [f"{name}: no '| Support ends | YYYY-MM-DD or no announced end |' row"]
+    ends = re.match(r"(\d{4}-\d{2}-\d{2})", m.group(1))
+    if not ends:
+        if m.group(1).startswith("no announced end"):
+            return []
+        return [f"{name}: 'Support ends' begins with a date YYYY-MM-DD or 'no announced end'"]
+    review = re.search(r"^\|\s*Last review\s*\|\s*(\d{4}-\d{2}-\d{2})", table, re.M)
+    if not review:
+        return [f"{name}: support ends {ends.group(1)}, and no dated review to measure it from"]
+    horizon = months_later(review.group(1), SUPPORT_MONTHS)
+    if ends.group(1) < horizon and not re.search(r"^\|\s*End-of-support plan\s*\|\s*\S", table, re.M):
+        return [f"{name}: support ends {ends.group(1)}, before {horizon} ({SUPPORT_MONTHS} months "
+                "after its last review): add an 'End-of-support plan' row"]
+    return []
+# [/snippet:support]
 
 
 def check(cmake_text, soup_text, minidaq_version):
@@ -51,6 +97,8 @@ def check(cmake_text, soup_text, minidaq_version):
             errors.append(f"{name}: no dated known-anomaly review ('| Last review | YYYY-MM-DD, for MiniDAQ X.Y')")
         elif m.group(2) != minor:
             errors.append(f"{name}: last review was for MiniDAQ {m.group(2)}, this is {minor}: review again")
+    for name, table in shipped_tables(soup_text).items():
+        errors += support_problems(name, table)
     return errors
 
 

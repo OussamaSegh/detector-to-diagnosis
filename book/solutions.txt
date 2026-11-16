@@ -39,3 +39,4 @@ solutions/ch36.md
 solutions/ch37.md
 solutions/ch38.md
 solutions/ch39.md
+solutions/ch40.md

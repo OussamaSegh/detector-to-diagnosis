@@ -45,3 +45,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0036](0036-control-api-3-every-request-names-its-api.md) | Control API 3.0: renamed fields, and every request names its API | Accepted |
 | [0037](0037-watch-the-time-base-from-the-data-and-the-hardware.md) | Watch the time base from the data and from the hardware's lock status | Accepted |
 | [0038](0038-time-of-flight-in-the-projector-and-only-on-a-trusted-time-base.md) | Time of flight in the projector, and only on a time base the run says held | Accepted |
+| [0039](0039-maintain-releases-from-the-records-the-project-already-keeps.md) | Maintain releases from the records the project already keeps | Accepted |

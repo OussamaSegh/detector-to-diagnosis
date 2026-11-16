@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 28 (MiniDAQ 2.0.0-dev, for release 2.0.0). Status: draft for review.
+Version 29 (MiniDAQ 2.0.0-dev, for release 2.0.0). Status: draft for review.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -15,8 +15,9 @@ fails if the SBOM does not validate, and `make_sbom.py` refuses a dependency
 that has no entry with a license and a scope, so a new FetchContent dependency
 cannot reach a release without someone adding it here and there. The test `docs.soup`
 (`tools/check_soup.py`) fails if a pin or version in `cmake/Dependencies.cmake` is missing
-from this list, or if a shipped item's known-anomaly review is not dated for the current
-MiniDAQ minor version.
+from this list, if a shipped item's known-anomaly review is not dated for the current
+MiniDAQ minor version, or if a shipped item does not say when its support ends, or ends within
+the support period of the [maintenance plan](maintenance-plan.md) without a plan for it.
 
 ## 1. Items in the shipped software
 
@@ -37,6 +38,7 @@ MiniDAQ minor version.
 | Anomalies found by MiniDAQ | Numbers outside the range of `double`, such as `6e688`, raise `json::out_of_range` (406), not `json::parse_error`. MiniDAQ's reader caught only `parse_error`, and the configuration fuzzer found the resulting crash within seconds. This is documented library behavior, not a library defect; the reader now catches `json::exception` (test `Config.NumberOverflowIsAnErrorNotACrash`). |
 | Known-anomaly review | Before each release: read the library's issue tracker and release notes for the pinned version and any later ones, and evaluate each reported defect against the requirements above. Record the result below. |
 | Last review | 2026-11-16, for MiniDAQ 2.0 (record in [section 4](#4-known-anomaly-reviews)), and before it 2026-11-15, for MiniDAQ 1.3, and 2026-11-14, for MiniDAQ 1.2: 3.12.0 is still the latest release, with no published security advisory (record in [section 4](#4-known-anomaly-reviews)). Result: no change since the review for MiniDAQ 0.3; none of the known defects affects a requirement above. |
+| Support ends | no announced end (2026-11-16): the project maintains its latest release only and publishes no support dates; a defect is fixed in a new release, which MiniDAQ adopts by a change request (CR-0002 did for 3.12.0). |
 
 | Field | OpenSSL (platform library) |
 |---|---|
@@ -56,6 +58,8 @@ MiniDAQ minor version.
 | Anomalies found by MiniDAQ | None. A write to a connection that the peer had closed raised `SIGPIPE` and ended the process; this is the documented behavior of `write(2)` on a socket, not an OpenSSL defect, and MiniDAQ blocks or ignores the signal (Chapter 17). |
 | Known-anomaly review | Before each release: read the security advisories of OpenSSL 3.0 and the changelog of the platform's package, and evaluate each fix against the features used above. Record the result below. Between releases: the vulnerability scan of the SBOM (CI job `vulnerability-scan`). |
 | Last review | 2026-11-16, for MiniDAQ 2.0 (record in [section 4](#4-known-anomaly-reviews)), and before it 2026-11-15, for MiniDAQ 1.3, and 2026-11-14, for MiniDAQ 1.2: the Ubuntu package `3.0.13-0ubuntu3.16` is still the archive's candidate. The OpenSSL advisories of 2026-11-10 add one vulnerability of 3.0, CVE-2026-107496 in `CMS_encrypt()`, which MiniDAQ does not call; Ubuntu has not yet evaluated it for 24.04 (record in [section 4](#4-known-anomaly-reviews), decisions in `security/vulnerability-triage.json`). Result: as for 0.5; MiniDAQ 1.2 needs that package version or later. |
+| Support ends | 2026-09-07 for OpenSSL 3.0 from the OpenSSL project (its release strategy: 3.0 was a long-term support release of five years). The platform's package is maintained by Canonical for Ubuntu 24.04 LTS: security updates in standard support until 2029-05, and with Expanded Security Maintenance until 2034-04 (assumption: confirm with team which support the product's platform contract includes). |
+| End-of-support plan | Decided 2026-11-16 (CR-0033): the project's own support for 3.0 has ended, so its fixes reach MiniDAQ only through the distribution's backports; the known-anomaly review reads Ubuntu's security notices for `openssl` as the primary source from now on, and the project's advisories as information. The move to OpenSSL 3.5 (a long-term support release, supported by the project until 2030-04-08) is made with the next platform definition, minidaq-platform-2, on the next Ubuntu LTS, as a SOUP change with its own change request, whose impact analysis checks every OpenSSL call that MiniDAQ makes against 3.5. |
 
 The rest of the platform that the shipped programs run on (C++ standard library, C
 library, Linux kernel interfaces, systemd, GNU tar, which `minidaq_update` runs) is also
@@ -515,3 +519,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 26 | OpenSSL: Ed25519 signing of run records, verification of calibration tables and the shared `minidaq_signing` library (CR-0027, ADR 0034). No new SOUP item. The review for MiniDAQ 1.3 (section 4). |
 | 27 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 26. |
 | 28 | The review for MiniDAQ 2.0, after release 1.3.0: C++23 (CR-0028), the product build (CR-0029), API 3.0 and schema 2.0 (CR-0030), and the passphrase callback of the signing key (MDQ-PR-073). No new SOUP item. |
+| 29 | Each shipped item says when its supplier's support ends, and OpenSSL, whose project ended its support of 3.0 on 2026-09-07, has an end-of-support plan (CR-0033, Chapter 40); `docs.soup` checks both. |

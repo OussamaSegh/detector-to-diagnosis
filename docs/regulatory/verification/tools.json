@@ -336,6 +336,24 @@
         "tools/testdata/migrate_config"
       ],
       "shown_to_fail": "Conversion.test_what_is_not_a_1x_acquisition_configuration_is_refused"
+    },
+    {
+      "id": "TL-50",
+      "name": "Problem report trends (tools/pr_trends.py)",
+      "kind": "in-house",
+      "class": "T2",
+      "version": "the commit; Python 3.12 or later, git",
+      "use": "Counts the problem reports per release window, against the window's commits, with a u-chart's upper control limit, and by how they were found, their root cause category and whether they reached a release (CR-0033); its output is the data analysis of the problem reports that each minor release's record and internal audit read (maintenance plan, section 6).",
+      "failure": "A trend that is there is not shown, or a window is blamed for reports that belong to another: a report counted in the wrong release, a rate with the wrong exposure, a found-by rule that hides a source of reports. A CAPA that should start does not.",
+      "confidence": [
+        "tools/test_maintenance.py checks the found-by rules on the report texts of each kind, the u-chart's limits against their formula, and the windows and commit counts on a repository made for the test, with two releases whose dates could not separate them.",
+        "The output lists every window and every report count, so the person who reads it at a release can add them up against problem-reports.json."
+      ],
+      "evidence": [
+        "tools/test_maintenance.py",
+        "measurements/ch40/trends.txt"
+      ],
+      "shown_to_fail": "Trends.test_a_report_counts_in_the_first_release_that_contains_its_record"
     }
   ]
 }

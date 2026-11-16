@@ -7,7 +7,10 @@ and a status. Every report, open or closed, says whether it is relevant to safet
 A closed report names the change and how it was verified; an open one records the decision
 taken about it. From MDQ-PR-019 on, a closed report also records its root cause analysis
 (Chapter 21): the chain of whys from the symptom down, the cause, its category, and why the
-defect escaped the checks that should have caught it. docs/regulatory/known-anomalies.md, the list a release states as its known
+defect escaped the checks that should have caught it. From MDQ-PR-065, the first report after
+release 1.0.0, and for every open report, a report names the released versions that contain the
+defect in "affects" (Chapter 40): a list of versions from CHANGELOG.md, or [] when no release
+had it. docs/regulatory/known-anomalies.md, the list a release states as its known
 residual anomalies, is generated from the open reports.
 
 Usage: anomalies.py ROOT [--write | --check]
@@ -24,6 +27,36 @@ OUT = pathlib.Path("docs/regulatory/known-anomalies.md")
 # Chapter 21: from MDQ-PR-019 on, a closed report records its root cause analysis.
 RCA_FROM = 19
 CATEGORIES = ("requirements", "design", "code", "test", "tool", "environment", "process")
+# Chapter 40: from MDQ-PR-065 on (the first report after release 1.0.0), and for every open
+# report, the released versions that contain the defect.
+AFFECTS_FROM = 65
+CHANGELOG = pathlib.Path("CHANGELOG.md")
+
+
+def released_versions(changelog_text):
+    """The versions CHANGELOG.md records as released, oldest first."""
+    found = re.findall(r"^## \[(\d+\.\d+\.\d+)\] - \d{4}-\d{2}-\d{2}", changelog_text, re.M)
+    return sorted(found, key=lambda v: tuple(int(x) for x in v.split(".")))
+
+
+# [snippet:affects]
+def affects_problems(rid, r, releases):
+    """A report that must say which releases contain its defect does, with versions that were
+    released; [] says no release had it (found before the release that would have shipped it)."""
+    number = int(rid[-3:]) if re.fullmatch(r"MDQ-PR-\d{3}", rid) else 0
+    if "affects" not in r:
+        if number >= AFFECTS_FROM or r.get("status") == "open":
+            return [f"{rid}: names the released versions that contain the defect in 'affects' "
+                    "([] when none did)"]
+        return []
+    affects = r["affects"]
+    if not isinstance(affects, list) or not all(isinstance(v, str) for v in affects):
+        return [f"{rid}: affects is a list of versions"]
+    unknown = [v for v in affects if v not in releases]
+    if unknown:
+        return [f"{rid}: affects names versions that were never released: {', '.join(unknown)}"]
+    return []
+# [/snippet:affects]
 
 
 # [snippet:root_cause]
@@ -48,7 +81,7 @@ def root_cause_problems(rid, r):
 
 
 # [snippet:validate]
-def problems(reports):
+def problems(reports, releases=()):
     errors = []
     seen = set()
     for r in reports:
@@ -75,8 +108,18 @@ def problems(reports):
         else:
             errors.append(f"{rid}: status must be 'open' or 'closed'")
         errors += root_cause_problems(rid, r)
+        errors += affects_problems(rid, r, releases)
     return errors
 # [/snippet:validate]
+
+
+def span(versions):
+    """The versions as a reader scans them: "0.8.0 to 1.3.0" for a run of five, else a list."""
+    if not versions:
+        return "none"
+    if len(versions) <= 2:
+        return ", ".join(versions)
+    return f"{versions[0]} to {versions[-1]} ({len(versions)} releases)"
 
 
 def render(reports):
@@ -90,12 +133,13 @@ def render(reports):
         f"{len(open_)} open problem reports, "
         f"{sum(1 for r in open_ if r['evaluation']['safety_relevant'])} of them relevant to safety.",
         "",
-        "| ID | Item | Anomaly | Relevant to safety | Why | Decision |",
-        "|---|---|---|---|---|---|",
+        "| ID | Item | Anomaly | In releases | Relevant to safety | Why | Decision |",
+        "|---|---|---|---|---|---|---|",
     ]
     for r in open_:
         ev = r["evaluation"]
-        lines.append(f"| {r['id']} | {r['item']} | {r['title']} | {'yes' if ev['safety_relevant'] else 'no'} | "
+        lines.append(f"| {r['id']} | {r['item']} | {r['title']} | {span(r['affects'])} | "
+                     f"{'yes' if ev['safety_relevant'] else 'no'} | "
                      f"{ev['rationale']} | {r['decision']} |")
     return "\n".join(lines) + "\n"
 
@@ -103,7 +147,7 @@ def render(reports):
 def main(argv):
     root = pathlib.Path(argv[1]).resolve()
     reports = json.loads((root / REPORTS).read_text())["reports"]
-    errors = problems(reports)
+    errors = problems(reports, released_versions((root / CHANGELOG).read_text()))
     text = render(reports) if not errors else ""
     mode = argv[2] if len(argv) > 2 else ""
     if errors:

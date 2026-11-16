@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 35 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 36 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -502,6 +502,18 @@ controls RC-53 and RC-54 of hazard H-02, for a time error that keeps the order o
 | SRS-TIM-005 | The detector simulator shall stamp each single with the clock error of its block (an offset, a drift in parts per billion and a step at a given time, each configured per block, also with `minidaq_send --block-clock`), leaving the decays, crystals and energies those of the same seed without clock errors and refusing a clock error above 1 us or a drift above 100,000 parts per billion. | sim | T |
 | SRS-TIM-006 | The slow-control loop shall read every cycle the clock status of a board whose firmware is version 1.4 or later, reporting whether its phase-locked loop is locked and how many times it lost lock since the triggers were last switched on, keeping an acquisition from starting while a board's clock is not locked, recording an audit event when a board's count of lock losses grows during a run, and counting those losses in the integrity verdict (risk control RC-54). | hw | T |
 
+### 2.29 Maintenance (MNT)
+
+The records and checks of the software maintenance plan (Chapter 40, CR-0033,
+[maintenance-plan.md](maintenance-plan.md)): the tools that keep MiniDAQ's own records, not the
+shipped programs.
+
+| ID | Requirement | Item | Method |
+|---|---|---|---|
+| SRS-MNT-001 | The problem report check shall require, of every open report and every report from MDQ-PR-065 on, the list of released versions that contain the defect, empty when none did, and refuse a version that CHANGELOG.md does not record as released, and write each open report's released versions into the known anomalies. | tools | T |
+| SRS-MNT-002 | The SOUP check shall require, of every item of the shipped software, the date its supplier's support ends or "no announced end", and refuse an item whose support ends within 24 months of its last review unless it records an end-of-support plan. | tools | T |
+| SRS-MNT-003 | The problem report trends shall count each report in the first release whose tag contains the commit that recorded it, and give per release window the commits, the reports, the reports per 100 commits against a u-chart's upper control limit, how the reports were found, their root causes' categories and the reports whose defect reached a release. | tools | T |
+
 ## 3. Verification other than test
 
 | ID | Method | Evidence |
@@ -555,3 +567,4 @@ controls RC-53 and RC-54 of hazard H-02, for a time error that keeps the order o
 | 33 | Control API 3.0 and configuration schema 2.0 (CR-0030): SRS-CTL-022 and SRS-CFG-001 changed; SRS-CFG-013, SRS-CFG-014 and SRS-CFG-015 added. |
 | 34 | The time base monitor (CR-0031, ADR 0037, Chapter 38): SRS-TIM-001 to SRS-TIM-006 and SRS-CFG-016 added. |
 | 35 | Time of flight in the reconstruction tool (CR-0032, ADR 0038, Chapter 39): SRS-REC-007 and SRS-REC-008 added. |
+| 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |

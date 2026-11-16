@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_kind_of_release)
+minidaq_python_exercise(e2_support_matrix)
+minidaq_python_exercise(e3_affected_releases)

@@ -13,7 +13,7 @@ the product is in use.
   difference of the two photons' arrival times places each annihilation along its line of
   response. The list mode has carried it since 1.0; the chapter adds it to the reconstruction's
   projector, measures what it gives, and refuses it for a run whose clocks were not shown to hold.
-- **The third chapter** follows the product after its release: problem reports from the field, patch
+- **Chapter 40** follows the product after its release: problem reports from the field, patch
   releases under the maintenance process of IEC 62304, SOUP that reaches its end of life, and the
   judgment of a change request years later, with MiniDAQ's own history from 1.0 to 2.0 as the
   worked example.

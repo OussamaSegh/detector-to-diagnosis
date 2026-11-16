@@ -20,9 +20,9 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 | 7.3.8 | Design and development transfer | `docs/regulatory/sdp.md`<br>`tools/make_sbom.py`<br>`tools/release_bundle.py`<br>`tools/repro_check.sh`<br>`docs/regulatory/releases/` | Release process and record (SDP section 8): tagged source, book files, SBOM and the release record of each version; since Chapter 20 a reproducible product archive and an evidence archive bound to it by its SHA-256. |
 | 7.3.9 | Control of design and development changes | `docs/regulatory/changes/`<br>`tools/check_changes.py`<br>`docs/migration-2.0.md`<br>`tools/migrate_config.py` | Change requests with impact analysis and approval (Chapter 16); the migration note and tool of the one breaking change of the interfaces (CR-0030). |
 | 7.3.10 | Design and development files | `docs/regulatory/qms/` | This index. |
-| 7.4 | Purchasing (SOUP) | `docs/regulatory/soup-list.md`<br>`cmake/Dependencies.cmake` | Every SOUP item identified by its pin, with its requirements and its known-anomaly review. |
+| 7.4 | Purchasing (SOUP) | `docs/regulatory/soup-list.md`<br>`cmake/Dependencies.cmake` | Every SOUP item identified by its pin, with its requirements, its known-anomaly review and its supplier's end of support (Chapter 40). |
 | 7.5.3 | Installation activities | `docs/platform/installation.md`<br>`platform/platform.json`<br>`tools/platform_check.py`<br>`packaging/` | Chapter 25: the platform the software is installed on, how it is installed and updated, and the installation qualification whose records (facts, platform SBOM, exposure score) are kept with each installation. |
-| 8.2.1 | Feedback | `docs/regulatory/problem-reports.json` | In MiniDAQ, problems found by tests, fuzzing, measurements and reviews; at the scanner, complaints and service reports as well. From MDQ-PR-019 on, each closed report records its root cause analysis (Chapter 21). |
+| 8.2.1 | Feedback | `docs/regulatory/problem-reports.json`<br>`docs/regulatory/maintenance-plan.md`<br>`tools/pr_trends.py`<br>`measurements/ch40/` | In MiniDAQ, problems found by tests, fuzzing, measurements and reviews; at the scanner, complaints and service reports as well. From MDQ-PR-019 on, each closed report records its root cause analysis (Chapter 21); from MDQ-PR-065 on, the releases it affects, and the reports are analyzed for trends at each minor release (Chapter 40). |
 | 8.2.4 | Internal audit | `docs/regulatory/qms/internal-audit-2026-10-25.md`<br>`docs/regulatory/qms/internal-audit-2026-11-09.md`<br>`docs/regulatory/qms/internal-audit-2026-11-10.md`<br>`docs/regulatory/qms/internal-audit-2026-11-14.md`<br>`docs/regulatory/qms/internal-audit-2026-11-15.md` | The audit of Chapter 16, the audit after release 1.0.0 (MDQ-PR-065), the audits before releases 1.1.0, 1.2.0 and 1.3.0, by the author (no independent auditor in a teaching project). |
 | 8.3 | Control of nonconforming product | `docs/regulatory/problem-reports.json`<br>`docs/regulatory/known-anomalies.md` | Every problem evaluated for safety; the open ones are stated by each release. |
 | 8.5.2 | Corrective action | `docs/regulatory/capa/`<br>`tools/check_capa.py` | CAPA records with investigation, actions and effectiveness check (Chapter 16). |
@@ -38,6 +38,7 @@ both, and CI checks that a document changed since the last release has a new ver
 - `docs/regulatory/sdp.md`
 - `docs/regulatory/srs.md`
 - `docs/regulatory/soup-list.md`
+- `docs/regulatory/maintenance-plan.md`
 - `docs/regulatory/risk/risk-management-plan.md`
 - `docs/architecture/architecture.md`
 - `docs/coding-standard.md`

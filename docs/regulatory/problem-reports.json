@@ -58,6 +58,7 @@
       "found": "2026-10-24, Chapter 6 design",
       "item": "service",
       "status": "open",
+      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0"],
       "description": "The service's monitor polls the ports every 20 ms, so a run continues for up to 20 ms after a detector or sink fault.",
       "evaluation": {"safety_relevant": true, "rationale": "Data acquired in those 20 ms after a fault is part of a run that ends in a fault anyway; the fault is reported and the run is not used. No data is presented as complete."},
       "decision": "Release with it. Reviewed against the risk file for release 0.3.0: a faulted run is incomplete in its integrity verdict whatever the delay (assess_integrity, RC-01), and H-05 covers the interrupted scan; 20 ms more data in a run that ends in a fault changes neither sequence of events nor harm, so no hazard needs a faster reaction. Chapter 15 was to decide this and did not; the release review did. Decided again for release 1.3.0 (roadmap 2.0.0, theme B), with the cost of the fix weighed: a faster reaction needs every port to wake the monitor from its own thread (the UDP receiver, the sink's I/O thread, the slow control), a callback into the service across the layers and a new lock order to prove, in class B code, to shorten by at most 20 ms a run that ends in a fault anyway. Kept open as a known anomaly, deliberately, because the behavior exists and a release must state it; RunIntegrity.AFaultMakesTheRunIncompleteWithoutALossCounter and AcquisitionService.DetectorFaultStopsTheRunAndNeedsAReset verify the two properties the decision rests on. To be decided again only if a hazard analysis finds a harm that depends on the delay."
@@ -1187,6 +1188,7 @@
       "found": "2026-11-08, release checks of 1.0.0, part 3: ACC-04 failed with 178 of 180 intervals within 10 ms",
       "item": "pipeline",
       "status": "open",
+      "affects": ["0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0"],
       "capa": "",
       "description": "The soak of release 1.0.0 had two 10 s intervals whose 99th percentile was above 10 ms (32.2 ms at 350 s, 23.2 ms at 880 s); the programs of release 0.9.0 on the same machine the same evening had two as well (up to 38.8 ms), and releases 0.8.0 and 0.9.0 had 15 and 1. No source of the product changed since 0.8.0. The steal time the soak records (CR-0025) was 0.5% to 0.9% in those intervals, like the others; averaged over 10 s and four CPUs it cannot show a stall of 30 ms, so the machine is neither shown nor ruled out as the cause.",
       "evaluation": {
@@ -1201,6 +1203,7 @@
       "found": "2026-11-09, the independent review of release 1.0.0 (finding H3) and the internal audit of 2026-11-09 (A-1)",
       "item": "release",
       "status": "closed",
+      "affects": ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0"],
       "capa": "CAPA-0002",
       "description": "CAPA-0002 (status implemented) set its effectiveness check for release 0.4.0. Releases 0.4.0 to 1.0.0 were made without it, the internal audit per Part that its preventive action asked for was not held for Parts IV to IX, and the release records of 0.9.0 and 1.0.0 say \"No CAPA is open\". tools/check_capa.py checked the fields and sections of a CAPA, not whether its check was due.",
       "evaluation": {
@@ -1228,6 +1231,7 @@
       "found": "2026-11-09, the independent review of release 1.0.0 (finding M4) and the internal audit of 2026-11-09 (A-2)",
       "item": "release",
       "status": "closed",
+      "affects": ["1.0.0"],
       "capa": "",
       "description": "Fifteen of the nineteen controlled documents in the design file (the SDP, the SRS, the risk management plan and the threat model among them) begin with \"Status: draft for review\" at release 1.0.0. The release record approves the release, but no record approves each document at its version, so the status line contradicts the release.",
       "evaluation": {
@@ -1255,6 +1259,7 @@
       "found": "2026-11-10, the second full review (PR #9)",
       "item": "docs",
       "status": "closed",
+      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0"],
       "capa": "",
       "description": "The root LICENSE grants the MIT License on \"this software and associated documentation files\" with no scope, while the book's copyright page reserves all rights in the text. The book's sources (book/src, book/solutions, book/figures, book/assets) are in the same public repository, so a reader could take the text and figures to be under the MIT License.",
       "evaluation": {
@@ -1281,6 +1286,7 @@
       "found": "2026-11-10, the second full review (PR #9)",
       "item": "docs",
       "status": "closed",
+      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0"],
       "capa": "",
       "description": "The book's rule is that a measured number comes from a file in measurements/, written by a script from the code it describes. Chapters 2 and 3 quote benchmark tables and Chapter 8 a table of simulated rates with no such file: the first runs of Chapters 2 and 3 were not kept, and Chapter 8's table was copied from a run of minidaq_sim. The review's fix only reworded the rule to name the exception.",
       "evaluation": {
@@ -1307,6 +1313,7 @@
       "found": "2026-11-15, CI on main (fuzz-smoke) after CR-0026",
       "item": "tests",
       "status": "closed",
+      "affects": [],
       "capa": "",
       "description": "CR-0026 taught the stream decoder to count a time marker (crystal 32767, energy code 2047) in DecodeStats::markers instead of invalid_crystal. The fuzz target fuzz_decoder checks that every word is accounted for as words == decoded + invalid_crystal; it was not updated, so the first input with an all-ones word aborted it within a second. The decoder is right: the property was stale.",
       "evaluation": {
@@ -1333,6 +1340,7 @@
       "found": "2026-11-15, the release checks of 1.3.0 (performance regression gate, part 3)",
       "item": "readout",
       "status": "closed",
+      "affects": [],
       "capa": "",
       "description": "CR-0026 added the time marker to StreamDecoder::decode as a test before the crystal-ID check, so every single paid a comparison of the crystal and the energy code before the one comparison it paid before. The regression gate against book-v1.2.0, both built and run interleaved on the reference machine, measured BM_DecodePacked/65536 at a speed of 0.842 (p = 0.0001) and failed the release checks.",
       "evaluation": {
@@ -1359,6 +1367,7 @@
       "found": "2026-11-15, the coverage review of release 1.3.0",
       "item": "output",
       "status": "closed",
+      "affects": ["1.3.0"],
       "capa": "",
       "evaluation": {
         "safety_relevant": false,
@@ -1386,6 +1395,7 @@
       "found": "2026-11-15, CR-0029, the product build's system test",
       "item": "hw",
       "status": "closed",
+      "affects": ["0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0"],
       "capa": "",
       "description": "SlowControlHardware::open returns an error before it creates the slow control when a board's bus cannot be opened (an mmio device that does not exist, or since CR-0029 a simulated board in a product build). The half-made adapter is then destroyed, and its destructor called stop() and power_down() on the slow control, which did not exist: minidaq_server --hardware ended with SIGSEGV instead of the message 'hardware: ...'.",
       "evaluation": {"safety_relevant": false, "rationale": "It happens only at start-up, before the control API listens and before any bias is set: the server does not start, as it should, but with a crash report instead of the reason. No run is affected."},
@@ -1398,6 +1408,7 @@
       "found": "2026-11-15, review of release 1.3.0",
       "item": "access",
       "status": "closed",
+      "affects": ["1.3.0"],
       "capa": "",
       "description": "SigningKey::load read the key with PEM_read_PrivateKey and no passphrase callback, so OpenSSL's default callback asked for a passphrase on the terminal when the key file was encrypted. A server started by the service manager has no terminal: it waited at start-up, or, without a terminal at all, refused the key as 'not an Ed25519 private key in PEM form', which names the wrong cause.",
       "evaluation": {"safety_relevant": false, "rationale": "It happens at start-up, before the control API listens: the server does not start, or names a wrong reason. No run is affected and nothing is signed with a wrong key."},

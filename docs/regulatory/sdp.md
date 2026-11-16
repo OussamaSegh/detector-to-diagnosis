@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 17 (MiniDAQ 1.3.1-dev). Status: draft for review.
+Version 18 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -235,11 +235,13 @@ without contradicting it. The rest of this plan already applies to all items.
 
 ## 10. Maintenance
 
-After a release, changes follow the same process (sections 3 to 8). The SOUP list is
-reviewed for new anomalies at each minor release and whenever a SOUP supplier announces a
-security fix; field feedback becomes problem reports. A real quality system adds the
-software maintenance plan's link to post-market surveillance and to the change assessment
-of Chapter 13.
+After a release, changes follow the same process (sections 3 to 8). What only exists after a
+release is in the [software maintenance plan](maintenance-plan.md) (Chapter 40, CR-0033): the
+sources of feedback and their evaluation, which releases are supported and for how long, what a
+patch release may contain and how a fix reaches a maintenance branch, each SOUP item's end of
+support, and the analysis of the problem reports for trends at each minor release. A real
+quality system adds the plan's link to post-market surveillance, vigilance and the change
+assessment of Chapter 13.
 
 ## 11. Changes to this plan
 
@@ -262,3 +264,4 @@ of Chapter 13.
 | 15 | After release 1.0.0: section 8, item 9, the internal audit before each minor release and the state of every CAPA that is not closed (internal audit of 2026-11-09, MDQ-PR-065, CAPA-0002). |
 | 16 | Approved by the software lead for release 1.1.0; the content is that of version 15 (MDQ-PR-066). |
 | 17 | Section 4: C++23 is the language standard (CR-0028, ADR 0035). Section 6: the `release` preset replaces `gcc-cxx23`, and the `product` preset, the shipped build without the simulator, is built and tested on every change and packaged (CR-0029). |
+| 18 | Section 10 points to the software maintenance plan (Chapter 40, CR-0033, ADR 0039). |

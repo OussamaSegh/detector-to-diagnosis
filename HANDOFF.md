@@ -35,8 +35,10 @@ CR-0031 implemented. Chapter 39 (time of flight) written 2026-11-16 with CR-0032
 RC-55, SRS-REC-007/008): TOF projector in numpy and C++, the guard `chain.tof_sinograms` /
 `check_time_base_for_tof`, `measurements/ch39/` (at 300 ps background variability 1.69 times lower
 after 12 iterations; unfiltered pixel noise is higher with TOF, so compare at a lesion's scale), and
-exercises 39.1 to 39.3. Part X's intro names Chapter 40 only as "the third chapter" until it exists
-(book.xrefs refuses a reference to a missing chapter). Next: chapter 40, then the
+exercises 39.1 to 39.3. Chapter 40 (maintenance and post-market) written 2026-11-16 with CR-0033
+(ADR 0039, SRS-MNT-001 to 003, TL-50): `docs/regulatory/maintenance-plan.md`, `affects` in the
+problem reports, `Support ends` in the SOUP list (v29, still draft: approve before 2.0.0),
+`tools/pr_trends.py` and `measurements/ch40/`, exercises 40.1 to 40.3. Next: the
 2.0.0 coverage review, internal audit and release (release notes name CR-0029 and CR-0030 as
 breaking). An existing
 build directory reconfigures to C++23 by itself (the cache variable is forced to 23).
@@ -266,7 +268,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-074, CR-0032, ADR 0038, RC-55, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, TL-50. A commit message has ONE trailer
+Next free numbers: MDQ-PR-074, CR-0034, ADR 0040, RC-56, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, SRS-REC-009, SRS-MNT-004, TL-51. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 

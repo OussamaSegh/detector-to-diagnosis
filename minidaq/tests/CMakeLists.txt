@@ -209,6 +209,10 @@ if(Python3_Interpreter_FOUND)
            ${PROJECT_SOURCE_DIR} --check)
   set_tests_properties(tools.acceptance tools.req_baseline tools.survey docs.baseline PROPERTIES
     LABELS "unit")
+  # Chapter 40: the records of the maintenance plan (affected releases, SOUP end of support,
+  # problem report trends; CR-0033).
+  add_test(NAME tools.maintenance COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_maintenance.py)
+  set_tests_properties(tools.maintenance PROPERTIES LABELS "unit")
   # Chapter 35: the export of images to an archive (DICOM files, C-STORE, the outbox). Its
   # independent checks need pydicom and pynetdicom (analysis/requirements.lock); CI's job python
   # sets MINIDAQ_DICOM_ORACLE_REQUIRED=1 so that they cannot be skipped there.
