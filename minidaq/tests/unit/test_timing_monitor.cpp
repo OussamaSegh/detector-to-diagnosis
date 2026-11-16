@@ -162,6 +162,65 @@ TEST(BlockOffsets, ShiftsThatNoBlockClockExplainsGiveALargeChi2) {
   EXPECT_GT(fit.chi2 / fit.dof, 100.0);
 }
 
+TEST(BlockOffsets, PairsThatCannotBeUsedAreLeftOut) {
+  // REQ: SRS-TIM-002
+  // The chain of two blocks above, with pairs that carry no measurement: a variance that is not
+  // positive or not a number, a block paired with itself, a block beyond the scanner's.
+  const std::vector<PairShift> pairs{{0, 1, 300.0, 400.0},        {0, 1, 900.0, 0.0},
+                                     {0, 1, 900.0, std::nan("")}, {1, 1, 900.0, 1.0},
+                                     {0, 2, 900.0, 1.0},          {2, 1, 900.0, 1.0}};
+  const BlockOffsets fit = solve_block_offsets(2, pairs);
+  EXPECT_NEAR(fit.offset_ps[0], -150.0, 1e-9);
+  EXPECT_NEAR(fit.offset_ps[1], 150.0, 1e-9);
+  EXPECT_NEAR(fit.sigma_ps[0], 10.0, 1e-9);
+  EXPECT_EQ(fit.dof, 0U);
+  EXPECT_NEAR(fit.chi2, 0.0, 1e-9);
+}
+
+TEST(TimingMonitor, NamesEachLevel) {
+  // REQ: SRS-TIM-004
+  EXPECT_EQ(minidaq::to_string(TimingLevel::unobserved), "unobserved");
+  EXPECT_EQ(minidaq::to_string(TimingLevel::normal), "normal");
+  EXPECT_EQ(minidaq::to_string(TimingLevel::warning), "warning");
+  EXPECT_EQ(minidaq::to_string(TimingLevel::alarm), "alarm");
+}
+
+TEST(TimingMonitor, IgnoresCoincidencesWithinOneBlockOrOfACrystalThatDoesNotExist) {
+  // REQ: SRS-TIM-001
+  // The same scan twice, once with a coincidence within one block and one of a crystal beyond
+  // the scanner after every coincidence: the two monitors see the same pairs and offsets.
+  TimingMonitor plain{config()};
+  TimingMonitor mixed{config()};
+  Scan scan;
+  const CrystalId nowhere{ScannerGeometry::num_crystals};
+  for (int s = 0; s < 4; ++s) {
+    const auto found = scan.second(
+        s * second_ps, [](std::uint32_t b, std::int64_t) { return b == 3 ? 400.0 : 0.0; });
+    std::vector<Coincidence> with;
+    for (const Coincidence& c : found) {
+      with.push_back(c);
+      Coincidence same = c;
+      same.second.crystal = c.first.crystal;
+      with.push_back(same);
+      Coincidence bad = c;
+      bad.second.crystal = nowhere;
+      with.push_back(bad);
+    }
+    plain.record(found);
+    mixed.record(with);
+  }
+  plain.flush();
+  mixed.flush();
+  const TimingSnapshot a = plain.snapshot();
+  const TimingSnapshot b = mixed.snapshot();
+  EXPECT_GT(a.pairs, 0U);
+  EXPECT_EQ(a.pairs, b.pairs);
+  EXPECT_EQ(a.intervals, b.intervals);
+  for (std::size_t k = 0; k < a.blocks.size(); ++k) {
+    EXPECT_EQ(a.blocks[k].offset_ps, b.blocks[k].offset_ps) << k;
+  }
+}
+
 TEST(TimingMonitor, RefusesAConfigurationThatCannotWork) {
   // REQ: SRS-TIM-001
   for (auto change : {+[](TimingMonitorConfig& c) { c.interval = Picoseconds{0}; },
@@ -170,7 +229,8 @@ TEST(TimingMonitor, RefusesAConfigurationThatCannotWork) {
                       +[](TimingMonitorConfig& c) { c.warning_ps = 0.0; },
                       +[](TimingMonitorConfig& c) { c.alarm_ps = c.warning_ps - 1.0; },
                       +[](TimingMonitorConfig& c) { c.significance = -1.0; },
-                      +[](TimingMonitorConfig& c) { c.half_window = Picoseconds{0}; }}) {
+                      +[](TimingMonitorConfig& c) { c.half_window = Picoseconds{0}; },
+                      +[](TimingMonitorConfig& c) { c.delay = Picoseconds{-1}; }}) {
     TimingMonitorConfig c;
     change(c);
     EXPECT_FALSE(minidaq::validate(c).has_value());

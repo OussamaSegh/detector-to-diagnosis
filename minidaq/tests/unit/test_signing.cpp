@@ -233,6 +233,15 @@ TEST_F(Signing, ASignedRecordThatDoesNotListItsFilesProperlyIsRefused) {
   EXPECT_NE(
       refused(with_digest("file", 7), "a digest whose file is a number").find("has no digest"),
       std::string::npos);
+  j = good;
+  j["file_digests"][0] = "run-0000.mdql";
+  EXPECT_NE(refused(j, "a digest that is not an object").find("has no digest"), std::string::npos);
+  j = good;
+  j["file_digests"][0].erase("file");
+  EXPECT_NE(refused(j, "a digest without its file").find("has no digest"), std::string::npos);
+  j = good;
+  j["file_digests"][0].erase("bytes");
+  EXPECT_NE(refused(j, "no size").find("no size"), std::string::npos);
   for (const char* name : {"", ".", ".."}) {
     j = good;
     j["files"][0] = name;

@@ -116,6 +116,24 @@ class RefusedWrites final : public RegisterBus {
   std::uint32_t address_;
 };
 
+// A board on which reads of one register fail, as on a bus that loses some transactions.
+class RefusedReads final : public RegisterBus {
+ public:
+  RefusedReads(RegisterBus& inner, std::uint32_t address) : inner_{inner}, address_{address} {}
+  bool refuse = false;
+  Expected<std::uint32_t, HwError> read32(std::uint32_t a) override {
+    if (refuse && a == address_) {
+      return Unexpected{HwError{HwErrc::bus_error, a}};
+    }
+    return inner_.read32(a);
+  }
+  HwStatus write32(std::uint32_t a, std::uint32_t v) override { return inner_.write32(a, v); }
+
+ private:
+  RegisterBus& inner_;
+  std::uint32_t address_;
+};
+
 }  // namespace
 
 TEST(SlowControl, KeepsTheOvervoltageConstantAsTheTemperatureMoves) {
@@ -517,6 +535,24 @@ TEST(SlowControl, ReadsEachBoardsClockAndStartsNoRunWithoutALock) {
   rig.sc.step(rig.now + 200 * ms);
   EXPECT_EQ(rig.state().clock_lock_losses, std::optional<std::uint32_t>{1U})
       << "the run's count stays after the triggers go off";
+
+  // A clock status that cannot be read is a failed access, as any other register's.
+  {
+    std::int64_t now = 0;
+    FakeBoard board{0, [&] { return now; }};
+    RefusedReads bus{board, feb::ClockStatus::address};
+    SlowControl sc{{}, {&bus}};
+    for (; now <= 45 * s; now += 100 * ms) {
+      sc.step(now);
+    }
+    ASSERT_EQ(sc.snapshot().at(0).state, BoardState::ready);
+    bus.refuse = true;
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).failed_accesses, 1U);
+    sc.step(now);
+    sc.step(now);
+    EXPECT_EQ(sc.snapshot().at(0).state, BoardState::fault);
+  }
 
   // Firmware 1.3 (map 1.2) has no clock status: nothing is reported and nothing is refused.
   Rig old;

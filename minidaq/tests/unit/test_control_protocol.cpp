@@ -115,6 +115,8 @@ TEST(ControlProtocol, VersioningAndMalformedInput) {
   EXPECT_EQ(raw(svc, R"({"api":"3.7","id":1,"cmd":"status","priority":"high"})")["ok"], true)
       << "newer minor version and unknown fields are accepted";
   EXPECT_EQ(raw(svc, R"({"api":3,"cmd":"status"})")["error"]["code"], "unsupported_api");
+  EXPECT_EQ(raw(svc, R"({"id":1,"cmd":"status"})")["error"]["code"], "unsupported_api")
+      << "3.0 (ADR 0036): a request without an API version is refused, as a 2.x client sends";
   EXPECT_EQ(raw(svc, "not json")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, "[1,2]")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, "")["error"]["code"], "bad_request");
