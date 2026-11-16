@@ -1,0 +1,27 @@
+# 2026-11-16T15:06:45Z commit c977dd9 fuzz_packet 600 s on CPU 2 from fuzz/corpus/packet
+INFO: Seed: 1334884201
+#7	INITED cov: 100 ft: 213 corp: 6/1607b exec/s: 0 rss: 33Mb
+#9	NEW    cov: 100 ft: 220 corp: 7/1971b lim: 637 exec/s: 0 rss: 34Mb L: 364/637 MS: 2 ChangeByte-ChangeByte-
+#10	NEW    cov: 101 ft: 258 corp: 8/2182b lim: 637 exec/s: 0 rss: 34Mb L: 211/637 MS: 1 InsertByte-
+#12	NEW    cov: 102 ft: 294 corp: 10/2824b lim: 637 exec/s: 0 rss: 34Mb L: 381/637 MS: 1 CopyPart-
+#14	NEW    cov: 103 ft: 298 corp: 12/3354b lim: 637 exec/s: 0 rss: 34Mb L: 156/637 MS: 1 CopyPart-
+#16	NEW    cov: 104 ft: 303 corp: 14/4092b lim: 637 exec/s: 0 rss: 35Mb L: 364/637 MS: 1 ChangeByte-
+#40	NEW    cov: 105 ft: 359 corp: 20/6134b lim: 637 exec/s: 0 rss: 37Mb L: 637/637 MS: 3 CrossOver-ChangeByte-ShuffleBytes-
+#57	NEW    cov: 106 ft: 376 corp: 24/7150b lim: 637 exec/s: 0 rss: 38Mb L: 152/637 MS: 5 PersAutoDict-ChangeBinInt-ChangeBinInt-PersAutoDict-ChangeBinInt- DE: "H\000\000\000\000\000\000\000"-"H\000\000\000\000\000\000\000"-
+#67	NEW    cov: 109 ft: 384 corp: 27/8180b lim: 637 exec/s: 0 rss: 39Mb L: 637/637 MS: 2 ChangeByte-ChangeBinInt-
+#93	NEW    cov: 110 ft: 388 corp: 31/9815b lim: 637 exec/s: 0 rss: 41Mb L: 71/637 MS: 2 ChangeBinInt-ShuffleBytes-
+#200	NEW    cov: 112 ft: 426 corp: 42/12423b lim: 637 exec/s: 0 rss: 50Mb L: 156/637 MS: 1 CMP- DE: "\000\000P0\000\001\271\210"-
+#363	NEW    cov: 114 ft: 445 corp: 47/14075b lim: 637 exec/s: 0 rss: 63Mb L: 568/637 MS: 3 ChangeBinInt-ChangeBinInt-CrossOver-
+#1144	NEW    cov: 116 ft: 469 corp: 62/20Kb lim: 637 exec/s: 0 rss: 125Mb L: 592/637 MS: 3 ShuffleBytes-CrossOver-InsertRepeatedBytes-
+#1517	NEW    cov: 117 ft: 480 corp: 70/24Kb lim: 637 exec/s: 0 rss: 155Mb L: 381/637 MS: 4 ShuffleBytes-InsertRepeatedBytes-ChangeBit-ChangeByte-
+#1671	NEW    cov: 118 ft: 485 corp: 73/26Kb lim: 637 exec/s: 0 rss: 167Mb L: 469/637 MS: 5 ChangeBit-InsertByte-CrossOver-ChangeByte-ChangeBit-
+#10012	NEW    cov: 119 ft: 515 corp: 101/32Kb lim: 637 exec/s: 0 rss: 353Mb L: 365/637 MS: 2 PersAutoDict-InsertByte- DE: "\001\000\000\010"-
+#131856	NEW    cov: 121 ft: 567 corp: 131/31Kb lim: 817 exec/s: 65928 rss: 357Mb L: 733/733 MS: 5 ChangeBit-CMP-InsertRepeatedBytes-InsertByte-EraseBytes- DE: "\377\377\377\377\377\377\377\003"-
+#456925	NEW    cov: 122 ft: 657 corp: 178/75Kb lim: 2197 exec/s: 38077 rss: 364Mb L: 2167/2167 MS: 1 CopyPart-
+#12413406	DONE   cov: 123 ft: 773 corp: 245/163Kb lim: 4096 exec/s: 20654 rss: 370Mb
+stat::number_of_executed_units: 12413406
+stat::average_exec_per_sec:     20654
+stat::new_units_added:          3321
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              370
+crash files: 0

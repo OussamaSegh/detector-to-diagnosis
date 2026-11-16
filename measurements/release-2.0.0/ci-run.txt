@@ -1,0 +1,15 @@
+# 2026-11-16 GitHub Actions runs, read with the GitHub API
+candidate c977dd967a3f39870efa8042bb9c2c7a0dfcece9 (the reconstruction tool built without coverage counters):
+  ci run 304 (43865092443): success, every job, fuzz-smoke with fuzz_documents among them;
+  codeql run 252 (43865092423): success; pages run 223 (43865092433): success
+the commit before it, d38fd04 (eight documents approved): ci run 303 (43848130724): success;
+  gates run 160 (43848130726): success; codeql run 250: success; pages run 222: success
+after the candidate, commits that change no product code:
+  763946a (the coverage review's tests): ci run 305 (43883502865): failure, docs.trace in every
+    build-test job (the trace matrix was not regenerated for the new tests' REQ tags), fixed in
+    114a9e8; perf run 62: success; codeql run 253: success; kdp run 132: success; pages run 224:
+    success
+  6d290ee (the coverage review): codeql run 254 (43897023066): failure before the build, the
+    runner's apt found no ninja-build and no python3-numpy (the Ubuntu archive was not in its
+    sources at that moment); the next commit's run is the evidence
+The release commit's own runs are checked before the tag is made (SDP section 8).

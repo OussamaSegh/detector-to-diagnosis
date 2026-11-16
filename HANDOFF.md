@@ -5,7 +5,21 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-16: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
+Last updated: 2026-11-16: **release 2.0.0, the Second Edition, is made** (record
+`docs/regulatory/releases/2.0.0.md`, evidence `measurements/release-2.0.0/`; release checks on
+c977dd9, all four parts; acceptance 9 of 9; tag book-v2.0.0 via `.github/tags.txt` once CI is
+green on the release commit). Breaking: CR-0029 and CR-0030, named in the CHANGELOG's release
+notes. Found on the way: the coverage build ran `tools.recon_cpp` past its timeout (fixed in
+c977dd9, the tool is not instrumented there); the gate flagged `BM_HistogramRecord` once with
+identical machine code (rerun passed; see the evidence README); the coverage review found that no
+test sent a request without an API version (tested now); the threat model had no review of
+CR-0028 to CR-0033 before the release (version 17, approved as 18). CAPA-0005 is open until its
+effectiveness check at 2.1.0. Next: VERSION 2.0.1-dev with `tools/post_release.py`, the packages
+in the project files (neurolf-book/v2.0.0/), the Opus review of 2.0.0, `affects` 2.0.0 for
+MDQ-PR-006 and MDQ-PR-064, and MDQ-PR-064's finer measure. After every commit that adds REQ
+tags to tests, run `tools/trace_matrix.py . --write` (docs.trace failed CI once on 763946a).
+
+Earlier on 2026-11-16: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
 (143407e); VERSION is 2.0.0-dev (SOUP list v28, review for 2.0, 2026-11-16). Milestone 2.0.0-dev (Theme B's breaking items) has started:
 CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;
 `minidaq::Expected` stays an alias on GCC and the shim on Clang 18, whose libstdc++ 13 hides
@@ -281,7 +295,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-074, CR-0034, ADR 0040, RC-56, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, SRS-REC-009, SRS-MNT-004, TL-51. A commit message has ONE trailer
+Next free numbers: MDQ-PR-077, CAPA-0006, CR-0034, ADR 0040, RC-56, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, SRS-REC-009, SRS-MNT-004, TL-51. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 

@@ -6,7 +6,20 @@ All notable changes to the book and to MiniDAQ are recorded here. The format fol
 (Part I = 0.1.0 ... Part VIII = 0.8.0, packaged release = 1.0.0); fixes after review bump
 the patch version.
 
-## [Unreleased]
+## [2.0.0] - 2026-11-16
+
+The Second Edition. Release notes: two changes break what worked with 1.x, each with its
+migration path in `docs/migration-2.0.md`. **CR-0029**: the shipped server is the `product`
+build, without the simulator, and refuses a synthetic source or simulated boards. **CR-0030**:
+control API 3.0 (every request names its API; renamed status fields) and configuration schema
+2.0 (`tools/migrate_config.py` converts a 1.x file). Also new: the C++23 baseline (CR-0028), the
+time base monitor and the boards' clock status (CR-0031, Chapter 38), time of flight in the
+reconstruction tool (CR-0032, Chapter 39), the software maintenance plan (CR-0033, Chapter 40).
+Fixed: MDQ-PR-072 and MDQ-PR-073, and three readers of files that MiniDAQ writes and reads again
+that stopped with an exception on a field of another type: the update store's `state.json`
+(MDQ-PR-074), `minidaq_listmode sino` on list-mode metadata (MDQ-PR-075) and the QC report
+(MDQ-PR-076), found by the internal audit of 2026-11-16 (CAPA-0005). Record:
+`docs/regulatory/releases/2.0.0.md`.
 
 ### Changed (2.0.0-dev, breaking)
 

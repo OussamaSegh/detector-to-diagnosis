@@ -1,0 +1,18 @@
+# 2026-11-16T14:46:42Z commit c977dd9 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 1200814082
+#6	INITED cov: 96 ft: 225 corp: 5/2277b exec/s: 0 rss: 33Mb
+#10	NEW    cov: 98 ft: 237 corp: 6/2287b lim: 1601 exec/s: 0 rss: 33Mb L: 10/1601 MS: 4 ChangeBit-CopyPart-ChangeByte-InsertByte-
+#13	NEW    cov: 100 ft: 239 corp: 7/2416b lim: 1601 exec/s: 0 rss: 33Mb L: 129/1601 MS: 3 ChangeASCIIInt-ChangeASCIIInt-ShuffleBytes-
+#15	NEW    cov: 101 ft: 258 corp: 9/2873b lim: 1601 exec/s: 0 rss: 34Mb L: 362/1601 MS: 1 EraseBytes-
+#43	NEW    cov: 103 ft: 371 corp: 25/14448b lim: 1601 exec/s: 0 rss: 35Mb L: 802/1601 MS: 1 InsertRepeatedBytes-
+#90	NEW    cov: 113 ft: 410 corp: 37/18Kb lim: 1601 exec/s: 0 rss: 36Mb L: 6/1601 MS: 5 PersAutoDict-CrossOver-ChangeBit-ChangeBit-EraseBytes- DE: "\260&"-
+#113	NEW    cov: 114 ft: 421 corp: 41/19Kb lim: 1601 exec/s: 0 rss: 36Mb L: 1233/1601 MS: 3 ChangeBinInt-CrossOver-CopyPart-
+#166	NEW    cov: 115 ft: 434 corp: 47/23Kb lim: 1601 exec/s: 0 rss: 36Mb L: 830/1601 MS: 3 ChangeByte-ChangeByte-CopyPart-
+#7424	NEW    cov: 117 ft: 503 corp: 86/34Kb lim: 1601 exec/s: 0 rss: 69Mb L: 1479/1601 MS: 2 ChangeBinInt-CopyPart-
+#30115571	DONE   cov: 117 ft: 523 corp: 102/30Kb lim: 4096 exec/s: 50109 rss: 484Mb
+stat::number_of_executed_units: 30115571
+stat::average_exec_per_sec:     50109
+stat::new_units_added:          1214
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              484
+crash files: 0

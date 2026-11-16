@@ -1,0 +1,29 @@
+# 2026-11-16T13:30:11Z commit c977dd9 Exercise 18.3 in the coverage build
+Internal ctest changing into directory: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage
+Test project /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage
+    Start 1119: ch18/e3_branch_coverage/solution/coverage
+1/1 Test #1119: ch18/e3_branch_coverage/solution/coverage ...   Passed    0.49 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Label Time Summary:
+solution    =   0.49 sec*proc (1 test)
+
+Total Test time (real) =   0.54 sec
+Internal ctest changing into directory: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage
+Test project /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage
+    Start 1120: ch18/e3_branch_coverage/starter/coverage
+1/1 Test #1120: ch18/e3_branch_coverage/starter/coverage ...***Failed    0.16 sec
+
+0% tests passed, 1 tests failed out of 1
+
+Label Time Summary:
+starter    =   0.16 sec*proc (1 test)
+
+Total Test time (real) =   0.20 sec
+
+The following tests FAILED:
+	1120 - ch18/e3_branch_coverage/starter/coverage (Failed)
+Errors while running CTest
+Output from these tests are in: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
