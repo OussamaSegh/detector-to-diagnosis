@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-16, by the software lead |
 | Source | roadmap 2.0.0, theme C (Chapter 40); IEC 62304 clause 6.1, for which the SDP had four lines; OpenSSL 3.0's end of support by its project on 2026-09-07, which no record noticed |
 | Decision | approved, 2026-11-16, under the software lead's standing delegation of 2026-11-15 |
-| Commits | listed when the change is implemented |
+| Commits | 6b14a6a (plan, records, tools, tests and Chapter 40) and the commit that records this |
 
 ## Description
 
