@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 27 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 28 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -406,3 +406,4 @@ Open issues:
 | 25 | Control API 3.0 and configuration schema 2.0 (ADR 0036, CR-0030). |
 | 26 | Chapter 38: the time base monitor and the boards' clock status, configuration schema 2.1, control API 3.1, register map 1.3 (ADR 0037, CR-0031). |
 | 27 | The external interfaces name the versions of release 2.0.0: control API 3.1, configuration schema 2.1, register map 1.3 (review of 2.0.0). |
+| 28 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 27. |

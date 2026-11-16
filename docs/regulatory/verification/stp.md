@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 4 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 5 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -137,3 +137,4 @@ release and per change of the readout, not per commit.
 | 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |
 | 3 | The product build's system tests (CR-0029). |
 | 4 | CI runs seven presets, `product` among them; the libraries under test. The table lists every system test file: the time base cases of Readout (CR-0031), start-up files and signed runs of Startup, and Hardware, Diagnostics and Platform, which earlier versions left out (review of 2.0.0). |
+| 5 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 4. |

@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 29 (MiniDAQ 2.0.0-dev, for release 2.0.0). Status: draft for review.
+Version 30 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -520,3 +520,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 27 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 26. |
 | 28 | The review for MiniDAQ 2.0, after release 1.3.0: C++23 (CR-0028), the product build (CR-0029), API 3.0 and schema 2.0 (CR-0030), and the passphrase callback of the signing key (MDQ-PR-073). No new SOUP item. |
 | 29 | Each shipped item says when its supplier's support ends, and OpenSSL, whose project ended its support of 3.0 on 2026-09-07, has an end-of-support plan (CR-0033, Chapter 40); `docs.soup` checks both. |
+| 30 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 29. |

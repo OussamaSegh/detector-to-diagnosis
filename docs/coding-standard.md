@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 9 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 10 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -164,3 +164,4 @@ must report nothing before a change is merged.
 | 7 | Approved by the software lead for release 1.1.0; the content is that of version 6 (MDQ-PR-066). |
 | 8 | Rule 1: C++23, and when `std::unreachable` may not be used (CR-0028, ADR 0035). |
 | 9 | Rule 3: a file MiniDAQ wrote earlier is untrusted input; rule 3.4 names `fuzz_documents` (CAPA-0005, MDQ-PR-074, MDQ-PR-075). |
+| 10 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 9. |

@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 18 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 19 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -265,3 +265,4 @@ assessment of Chapter 13.
 | 16 | Approved by the software lead for release 1.1.0; the content is that of version 15 (MDQ-PR-066). |
 | 17 | Section 4: C++23 is the language standard (CR-0028, ADR 0035). Section 6: the `release` preset replaces `gcc-cxx23`, and the `product` preset, the shipped build without the simulator, is built and tested on every change and packaged (CR-0029). |
 | 18 | Section 10 points to the software maintenance plan (Chapter 40, CR-0033, ADR 0039). |
+| 19 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 18. |

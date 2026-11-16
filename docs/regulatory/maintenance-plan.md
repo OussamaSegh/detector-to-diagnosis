@@ -1,6 +1,6 @@
 # MiniDAQ software maintenance plan
 
-Version 1 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 2 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This plan says how MiniDAQ is maintained after a release: where feedback comes from, how it is
 evaluated, which releases are supported and for how long, what a patch release may contain,
@@ -108,3 +108,4 @@ table), so that data from a retired release can still be read and verified.
 | Version | Change |
 |---|---|
 | 1 | First version (Chapter 40, CR-0033, ADR 0039). |
+| 2 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 1. |

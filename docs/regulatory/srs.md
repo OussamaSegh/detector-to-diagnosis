@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 36 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 37 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -568,3 +568,4 @@ shipped programs.
 | 34 | The time base monitor (CR-0031, ADR 0037, Chapter 38): SRS-TIM-001 to SRS-TIM-006 and SRS-CFG-016 added. |
 | 35 | Time of flight in the reconstruction tool (CR-0032, ADR 0038, Chapter 39): SRS-REC-007 and SRS-REC-008 added. |
 | 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |
+| 37 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 36. |
