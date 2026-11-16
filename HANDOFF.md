@@ -14,6 +14,10 @@ checks. Then **2.1.0**, planned in `docs/ROADMAP-2.1.0.md` (accepted 2026-11-16)
 rerun rule in `release_checks.sh`), theme G (room: 819 of 828 pages), theme I (MDQ-PR-064, ACC-04
 without a deviation), theme H (Chapters 29 and 28 deeper, one new exercise in each chapter 26 to
 40, measurement folders for Chapters 1, 6 and 22).
+The author asked for a major version plan (2026-11-16 21:15 Paris): `docs/ROADMAP-3.0.0.md`,
+**proposed**, with five questions in its section 7 (two volumes; Part XI on the acquisition at
+scale, Chapters 41 to 43; GPU out; API 4.0 with pushed events, schema 3.0, list-mode MDQ-P2;
+Ubuntu 26.04 and C++23 in full). 3.0.0 work starts after 2.1.0, with 2.2.0 as groundwork.
 
 Earlier on 2026-11-16: **release 2.0.0, the Second Edition, is made** (record
 `docs/regulatory/releases/2.0.0.md`, evidence `measurements/release-2.0.0/`; release checks on
