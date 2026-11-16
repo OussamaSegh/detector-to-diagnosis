@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 26 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 27 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -113,9 +113,9 @@ pipeline does not use it yet). The control API's security is described in the
 |---|---|---|---|
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity; the run record's `corrections` object is what `tools/recon` (tool TL-30) reads with the files |
-| Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
-| Operator, scripts, test harness | Control protocol 3.0 (every request names its version, ADR 0036): newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
-| Configuration files | JSON, schema version 2.0 ([schema](acquisition-config.schema.json); 1.x files refused, converted by `tools/migrate_config.py`) | in | Comments allowed; validated before use |
+| Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md) 1.3, the contract [ICD-FEB](../hw/icd-feb.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
+| Operator, scripts, test harness | Control protocol 3.1 (major version 3: every request names its version, ADR 0036): newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Configuration files | JSON, schema version 2.1 ([schema](acquisition-config.schema.json); 1.x files refused, converted by `tools/migrate_config.py`) | in | Comments allowed; validated before use |
 | Calibration table | JSON, schema version 1.0 ([format](../formats/calibration.md)), written by `tools/calib` and named by the configuration | in | Checked against its CRC-32, the scanner serial, its expiry and the limits of a working detector before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile_file` (Chapter 4); the platform is defined in `platform/platform.json` and checked at installation (Chapter 25) |
@@ -405,3 +405,4 @@ Open issues:
 | 24 | The product build without the simulator: the library `minidaq_simulation`, item sim not shipped (CR-0029). |
 | 25 | Control API 3.0 and configuration schema 2.0 (ADR 0036, CR-0030). |
 | 26 | Chapter 38: the time base monitor and the boards' clock status, configuration schema 2.1, control API 3.1, register map 1.3 (ADR 0037, CR-0031). |
+| 27 | The external interfaces name the versions of release 2.0.0: control API 3.1, configuration schema 2.1, register map 1.3 (review of 2.0.0). |

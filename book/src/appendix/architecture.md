@@ -495,7 +495,7 @@ failure; it is a new ADR that supersedes the old one, as ADR 0012 superseded ADR
 | Control transport (0003) | NDJSON over TCP | gRPC, REST | Own framing and server loop | Many clients in other languages, streaming needs |
 | JSON (0004) | nlohmann/json | simdjson, Boost.JSON | Allocation, exceptions | JSON on the hot path (it must not be) |
 | State machine (0005) | `constexpr` table | State pattern, library | Actions outside the table | Data-dependent guards in many states |
-| Language level (0006) | C++20 and a shim | C++23 with GCC only | A small header to maintain | Both compilers' libraries ship `std::expected` |
+| Language level (0035) | C++23, and a shim of `std::expected` for Clang 18 | C++23 with GCC only | A small header to maintain | A Clang whose libstdc++ provides `std::expected` (Clang 19 or later) |
 | Readout link (0009) | UDP with sequence numbers | TCP, a dedicated link | Loss possible, made visible | A loss rate the counters show is too high |
 | List mode (0012) | Own block format | HDF5, PETSIRD | A format to specify and keep | A reconstruction that reads a standard format |
 | Control security (0014) | Tokens over TLS 1.3 | Mutual TLS, Unix sockets | Tokens to store and rotate | A site that runs its own certificate authority |

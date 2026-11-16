@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 3 (MiniDAQ 1.3.1-dev). Status: draft for review.
+Version 4 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -11,7 +11,8 @@ system and does not reproduce the standard. Unit verification is in the
 ## 1. Scope
 
 - **Under test:** `minidaq_server` and `minidaq_ctl`, built from one commit with one preset,
-  with the libraries they link (`minidaq_core`, `minidaq_control`).
+  with the libraries they link (`minidaq_core`, `minidaq_control`, `minidaq_signing`, and
+  `minidaq_simulation` in every preset but `product`).
 - **Test tools, not under test:** `minidaq_send` (plays a readout board: simulates singles,
   cuts them into MDQ-R1 packets, injects loss, delays and duplicates, and reports what it did),
   `minidaq_listmode` (checks the files), the harness `minidaq/tests/system/systest.py`, the
@@ -26,9 +27,9 @@ system and does not reproduce the standard. Unit verification is in the
 
 | Level | What it verifies | Where | Runs |
 |---|---|---|---|
-| Unit | one unit against its specification in its header, through its interface | `minidaq/tests/unit/`, label `unit` | every change, six presets |
-| Integration | units put together in one process: the pipeline with its stages, the service with its ports, the control server with the service | `minidaq/tests/unit/` (for example `test_pipeline.cpp`, `test_acquisition_service.cpp`, `test_service_interactions.cpp`), label `unit` | every change, six presets |
-| System | the shipped programs in their own processes, through their real interfaces: options, signals, TCP and TLS, UDP, files, exit status | `minidaq/tests/system/`, label `system` | every change, six presets |
+| Unit | one unit against its specification in its header, through its interface | `minidaq/tests/unit/`, label `unit` | every change, seven presets |
+| Integration | units put together in one process: the pipeline with its stages, the service with its ports, the control server with the service | `minidaq/tests/unit/` (for example `test_pipeline.cpp`, `test_acquisition_service.cpp`, `test_service_interactions.cpp`), label `unit` | every change, seven presets |
+| System | the shipped programs in their own processes, through their real interfaces: options, signals, TCP and TLS, UDP, files, exit status | `minidaq/tests/system/`, label `system` | every change, seven presets |
 | Soak | one long acquisition: memory, counters and latency over time | `tools/soak.py` | each release, 30 minutes on the reference machine |
 | Hardware in the loop | the system with a real readout board instead of `minidaq_send` | a test bench (section 6) | each release of the product (assumption: confirm with team) |
 
@@ -62,11 +63,14 @@ requirement, and the [test report](#8-records) lists them per execution.
 | `test_control_system.py` ClientAndServer | an acquisition run by an operator with the client; the client's exit status; `wait`; a wrong token | as stated in each assertion; exit status `0`, `1` or `2` as SRS-CTL-040 defines |
 | `test_control_system.py` Roles | the observer and operator roles from a token file | the observer reads the status and is refused `configure` with `forbidden` |
 | `test_control_system.py` Tls | TLS with the right CA; two impostor servers, one signed by another CA, one certified for another address | the impostor servers receive no byte of application data; the client exits with `2` |
-| `test_control_system.py` Shutdown, Startup | a signal during a run; refused options | the run is drained and recorded before the shutdown; exit status `0`; invalid options refused |
+| `test_control_system.py` Shutdown, Startup | a signal during a run; refused options; each start-up file that cannot be used; a server with a signing key | the run is drained and recorded before the shutdown; exit status `0`; invalid options and unusable files refused with their reason; each run's record signed and verified |
 | `test_acquisition_system.py` Accounting | every coincidence counted is in the files; the run record | equal counts in status, run record and files; files verify |
 | `test_acquisition_system.py` GoldenExact | seed 1 against the golden records, also with small batches and short batch delays | identical SHA-256 of the records |
 | `test_acquisition_system.py` GoldenStatistical | seed 2 against the golden run; a negative control with a narrower energy window | p-value above `0.001` for each comparison; the negative control below it |
-| `test_readout_system.py` Readout | a clean stream, a damaged stream, a sequence wrap | every packet accounted for exactly; a damaged run reported incomplete |
+| `test_readout_system.py` Readout | a clean stream, a damaged stream, a sequence wrap; a step of 600 ps in one block's clock and a healthy time base (Chapter 38) | every packet accounted for exactly; a damaged run reported incomplete; the stepped block alone at alarm, from the expected interval, and the run incomplete; no alarm in the healthy run, every block in one group |
+| `test_hardware_system.py` Hardware | simulated boards: a hot board, a board that does not answer, a wrong hardware description | the run stops until the board has cooled and the fault is acknowledged; no run starts; the server refuses to start with the reason |
+| `test_diagnostics_system.py` Diagnostics | the flight recorder through the client; a server that crashes | the client shows the server's last events; the crash leaves a report and the server dies of the signal |
+| `test_platform_system.py` Platform | the service manager's notifications, with a fake manager | READY once the server listens, watchdog pings while healthy, STOPPING; no pings once a loop hangs, with the reason |
 | `test_product_system.py` Product | the product build (preset `product`) against the synthetic source, simulated boards and its own symbols; in a development build the same checks the other way | the product refuses both with the reason and holds no `minidaq::sim` symbol; the development build accepts both and its symbols are found |
 | `test_stats.py` | the statistics the comparisons use | tabulated values; p-values uniform under the null hypothesis |
 
@@ -132,3 +136,4 @@ release and per change of the readout, not per commit.
 | 1 | First version (Chapter 19). |
 | 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |
 | 3 | The product build's system tests (CR-0029). |
+| 4 | CI runs seven presets, `product` among them; the libraries under test. The table lists every system test file: the time base cases of Readout (CR-0031), start-up files and signed runs of Startup, and Hardware, Diagnostics and Platform, which earlier versions left out (review of 2.0.0). |

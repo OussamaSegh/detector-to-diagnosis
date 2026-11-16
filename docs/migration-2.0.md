@@ -37,7 +37,7 @@ without `api`, or with another major version, is refused:
 
 ```text
 -> {"id": 1, "cmd": "status"}
-<- {"api":"3.0","error":{"code":"unsupported_api","message":"this server speaks API 3.0 and
+<- {"api":"3.1","error":{"code":"unsupported_api","message":"this server speaks API 3.1 and
     every request names it (\"api\"); see docs/migration-2.0.md"},"id":1,"ok":false,"state":"idle"}
 ```
 

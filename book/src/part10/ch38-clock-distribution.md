@@ -9,8 +9,9 @@ together. When that stops being true in the middle of a run, the singles stay in
 check of the data path is satisfied, and the scan is stored as if nothing happened. This chapter
 follows the clock from the reference oscillator to the time stamp, shows how networks synchronize
 clocks when no dedicated cable can, and makes MiniDAQ watch its own time base during a run: from
-the coincidences it already finds, and from each board's lock status. A step of 300 ps in one
-block's clock is named at the end of the next half second; ten healthy runs raise no alarm.
+the coincidences it already finds, and from each board's lock status. With intervals of half a
+second, a step of 300 ps in one block's clock is named at the end of the next interval; ten
+healthy runs raise no alarm.
 :::
 
 **A day in the life.** A short dip of the mains voltage during an afternoon list resets nothing
@@ -313,8 +314,8 @@ for both:
 
 A block is at alarm when its offset is above 250 ps and above 5 standard deviations, at warning
 above 100 ps and the same significance, and normal otherwise. The limits are assumptions, chosen
-for a scanner without time of flight: 250 ps is a sixth of the trues' spread in time and moves a
-time-of-flight position by 37 mm. A scanner with time of flight needs tighter limits and, for
+for a scanner without time of flight: 250 ps is well inside the 1.3 ns over which the trues
+spread, and moves a time-of-flight position by 37 mm. A scanner with time of flight needs tighter limits and, for
 those, more counts per interval (assumption: confirm with team the limits for the product). The
 status reports, per block, the level, the latest offset and its standard deviation, the largest
 offset of the run, the intervals at alarm and the time of the first; for the scanner, the worst
@@ -341,12 +342,13 @@ before anything that the software sees.
 | step of 200 ps | warning | 207 ± 26 | never | 100 | 1.08 |
 | step of 300 ps | alarm | 305 ± 26 | 2.5 | 100 | 1.08 |
 | step of 600 ps | alarm | 601 ± 26 | 2.5 | 104 | 1.08 |
-| drift of 0.1 ppb (100 ps/s) | alarm | 327 ± 26 | 3.5 | 100 | 1.08 |
+| drift of 0.1 ppb (100 ps/s) from the start | alarm | 327 ± 26 | 3.5 | 100 | 1.08 |
 
 The offsets are within one standard deviation of the steps, and Figure [](#fig-ch38-steps) shows
 them against the limits. A step of 300 ps or more at 2.0 s is at alarm at 2.5 s, the end of the
 first interval after it; the steps of 150 and 200 ps are at warning, the smaller ones normal.
-The drift reaches the alarm limit at 3.5 s. No other block reaches a warning: the largest offset
+The drift runs from the start of the run, so the reference of the first second already holds
+50 ps of it; measured against that reference, it reaches the alarm limit at 3.5 s. No other block reaches a warning: the largest offset
 of the other 71, about 100 ps, is within their 5 standard deviations. Chi-square per degree of
 freedom stays near 1: a single block's clock explains the shifts, as it should. The runs use the
 same seed, so the noise of the other blocks is the same in every row.

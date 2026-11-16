@@ -19,7 +19,7 @@ their text. MiniDAQ does not claim conformance to any of them.
    compiler extensions (`CMAKE_CXX_EXTENSIONS OFF`). `std::unreachable` is not used where the
    value can come from outside the program (a register, a file, a datagram): a switch over
    such a value ends in a defined fallback, because an unexpected value must not become
-   undefined behaviour. *Enforced:* CMake, both compilers in CI; review for `std::unreachable`.
+   undefined behavior. *Enforced:* CMake, both compilers in CI; review for `std::unreachable`.
 2. The code compiles without warnings under GCC and Clang with the flags in
    `cmake/Warnings.cmake`, including `-Wconversion -Wsign-conversion
    -Wold-style-cast -Wshadow -Wformat=2`. *Enforced:* `-Werror`.
