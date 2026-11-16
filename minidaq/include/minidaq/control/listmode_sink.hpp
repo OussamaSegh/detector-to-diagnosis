@@ -48,6 +48,7 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
 
@@ -211,5 +212,11 @@ class ListModeSink final : public CoincidenceSinkPort {
 // left out. Returns the key's file name, or what failed.
 [[nodiscard]] Expected<std::string, std::string> verify_signed_run(
     const std::filesystem::path& record, const std::filesystem::path& keys_dir);
+
+// The sorter's delay that the sink recorded in a list-mode file's metadata
+// (/records/delayed_window_ps), or nothing when the metadata is not JSON, or the field is
+// missing or not an integer. The metadata is read from a file, so it is untrusted input
+// (coding standard rule 3, CAPA-0005, MDQ-PR-075); fuzz_documents reads it as mode 5.
+[[nodiscard]] std::optional<std::int64_t> metadata_delayed_window_ps(std::string_view metadata);
 
 }  // namespace minidaq::control

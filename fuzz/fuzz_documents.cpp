@@ -11,6 +11,8 @@
 //      record written by a site's own key would (MDQ-PR-071). The run's directory holds one data
 //      file, run-0000.mdql, of three bytes.
 //   4: the update store's state, update::SlotStore::open with the text as state.json (Chapter 25).
+//   5: a list-mode file's metadata, control::metadata_delayed_window_ps, which minidaq_listmode
+//      sino reads (MDQ-PR-075; added by the review of release 2.0.0).
 //
 // Properties besides "no crash and no exception": a refusal always says why; an accepted signed
 // run names the key that signed it and lists only files that exist with their stated size.
@@ -146,7 +148,7 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
   }
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): libFuzzer's bytes as text
   const std::string_view text{reinterpret_cast<const char*>(data + 1), size - 1};
-  switch (data[0] % 5) {
+  switch (data[0] % 6) {
     case 0: {
       const auto c = minidaq::config::parse_hardware_config(text);
       if (!c && c.error().empty()) {
@@ -174,8 +176,11 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
     case 3:
       signed_run(w, text);
       break;
-    default:
+    case 4:
       slot_state(w, text);
+      break;
+    default:
+      (void)minidaq::control::metadata_delayed_window_ps(text);
       break;
   }
   return 0;

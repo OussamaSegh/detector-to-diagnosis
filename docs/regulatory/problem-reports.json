@@ -1190,7 +1190,7 @@
       "status": "open",
       "affects": ["0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0"],
       "capa": "",
-      "description": "The soak of release 1.0.0 had two 10 s intervals whose 99th percentile was above 10 ms (32.2 ms at 350 s, 23.2 ms at 880 s); the programs of release 0.9.0 on the same machine the same evening had two as well (up to 38.8 ms), and releases 0.8.0 and 0.9.0 had 15 and 1. No source of the product changed since 0.8.0. The steal time the soak records (CR-0025) was 0.5% to 0.9% in those intervals, like the others; averaged over 10 s and four CPUs it cannot show a stall of 30 ms, so the machine is neither shown nor ruled out as the cause.",
+      "description": "The soak of release 1.0.0 had two 10 s intervals whose 99th percentile was above 10 ms (32.2 ms at 350 s, 23.2 ms at 880 s); the programs of release 0.9.0 on the same machine the same evening had two as well (up to 38.8 ms), and releases 0.8.0 and 0.9.0 had 15 and 1. No source of the product changed since 0.8.0. The steal time the soak records (CR-0025) was 0.5% to 0.9% in those intervals, like the others; averaged over 10 s and four CPUs it cannot show a stall of 30 ms, so the machine is neither shown nor ruled out as the cause. The finer measure exists since the review of 2.0.0 (tools/soak.py, one-second steal and run-queue wait per server thread); its first 30-minute run (measurements/review-2.0.0/) had no interval above 10 ms, a median largest wait of 31 ms per second and up to 204 ms with a 99th percentile of 3 ms (correlation 0.13), so waits of that size alone do not explain a peak; the cause is still to be found in a run that has one.",
       "evaluation": {
         "safety_relevant": false,
         "rationale": "No single was lost or arrived after the sorter's window in those intervals (the soak counts no loss), the latency is not a risk control of a hazard, and the delay before a fault is noticed is MDQ-PR-006, which does not depend on it."
@@ -1453,6 +1453,135 @@
       "evaluation": {"safety_relevant": false, "rationale": "The tool writes no report when it stops, so no wrong QC result can be used; only a file changed after the run reaches it."},
       "resolution": {"change": "fill checks that scanner and records are objects and that the crystal counts and the delayed window are integers, and raises FormatError otherwise, which the tool reports with status 2.", "verification": "test_report.py::test_metadata_with_a_field_of_another_type_is_an_error_not_a_crash writes runs whose window is a list, a string, null and a boolean: it failed before the change (checked) and passes after it."},
       "root_cause": {"whys": ["fill read the fields with subscripts and int(), which raise TypeError or AttributeError for another type, and the tool catches only the errors a reader of a valid file raises.", "The metadata is written by MiniDAQ's own sink, so its reader was written for the files the sink makes."], "cause": "Files written by MiniDAQ's own programs were not counted as external input (CAPA-0005).", "category": "process", "escape": "No test changed a field's type in the metadata."}
+    },
+    {
+      "id": "MDQ-PR-077",
+      "title": "The plan does not say when a failed check of the release checks may run again",
+      "found": "2026-11-16, independent review of release 2.0.0 (the gate's first verdict on BM_HistogramRecord)",
+      "item": "release",
+      "status": "closed",
+      "affects": [
+        "2.0.0"
+      ],
+      "capa": "",
+      "description": "Part 3 of the release checks of 2.0.0 failed on the regression gate (BM_HistogramRecord at 0.917 of 1.3.0, p = 0.0057), was investigated (identical machine code but for addresses, no source changed, alternate runs by hand within the same range), and was run again in full; the second result passed and is the one recorded, with the first kept in perf-ab-first/. The investigation was sound, but SDP section 8 has no rule for it: nothing limits how often a failed check may run again or what must be shown before, so a check could be repeated until it passes. tools/release_checks.sh's resume runs a failed part again by design.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A rule of the release process. The one case so far was investigated before the rerun and both results are in the evidence; a gate that measures a 2 ns benchmark against an unchanged machine code cannot hide a defect of the product."
+      },
+      "resolution": {
+        "change": "SDP version 20 (draft, approved with the next release's documents) adds the rule to section 8: investigate first; run again only when the cause is not in the commit (for the gate, the benchmark's machine code compared) or is of the machine or the tool with its own report; keep both results in the record; at most once per release, and a second failure is a problem report against the commit.",
+        "verification": "The 2.0.0 record's handling of BM_HistogramRecord meets the rule (investigation before the rerun, both results kept), so no release is affected in its outcome."
+      },
+      "root_cause": {
+        "whys": [
+          "tools/release_checks.sh resume was added (Theme D) to continue a run that stopped, and runs a failed part again by design.",
+          "The plan's section 8 asks that every check pass, and says nothing of a check that failed once."
+        ],
+        "cause": "A tool gained a way to repeat a check before the plan said when that is allowed.",
+        "category": "process",
+        "escape": "The first release that used it was 2.0.0; its record explained the rerun, and no review compared that with the plan."
+      }
+    },
+    {
+      "id": "MDQ-PR-078",
+      "title": "CAPA-0005's fuzz target leaves out the reader of MDQ-PR-075, so rule 3.4 is not met",
+      "found": "2026-11-16, independent review of release 2.0.0 (CAPA-0005 against coding standard rule 3.4)",
+      "item": "output",
+      "status": "closed",
+      "affects": [
+        "2.0.0"
+      ],
+      "capa": "CAPA-0005",
+      "description": "Coding standard version 9, rule 3.4, says that a reader of a JSON file joins fuzz_documents as a mode of its own. fuzz_documents has five modes; the reader of a list-mode file's delayed window, fixed for MDQ-PR-075, is not one of them, because it was written inside minidaq_listmode's main, where no fuzz target can call it. CAPA-0005's investigation table says 'none for the field' and its corrective action does not name the exception.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The reader is checked since MDQ-PR-075 and tools.listmode tests a field of another type; the gap is that no fuzzer keeps it checked."
+      },
+      "resolution": {
+        "change": "The read moved into the library: control::metadata_delayed_window_ps (listmode_sink.hpp), which minidaq_listmode sino calls. fuzz_documents gains mode 5 for it, with the seeds metadata and metadata-mdq-pr-075; fuzz/README.md lists it.",
+        "verification": "ListModeSink.ReadsTheDelayedWindowFromMetadataAsUntrustedInput (ten inputs of other types and one good one) and tools.listmode pass; the fuzz build compiles the new mode and runs its seeds."
+      },
+      "root_cause": {
+        "whys": [
+          "The fix of MDQ-PR-075 kept the read where it was, in the tool's main.",
+          "The CAPA's corrective action listed the modes that existed, not the readers of its own investigation table."
+        ],
+        "cause": "The corrective action was checked against its list of modes, not against the rule it wrote.",
+        "category": "process",
+        "escape": "The internal audit and the release checks ran fuzz_documents; nothing compares its modes with the readers the CAPA lists."
+      }
+    },
+    {
+      "id": "MDQ-PR-079",
+      "title": "SRS-CTL-022's test does not send a 2.x request or check that the refusal names the migration note",
+      "found": "2026-11-16, independent review of release 2.0.0 (the coverage review's added test)",
+      "item": "protocol",
+      "status": "closed",
+      "affects": [
+        "2.0.0"
+      ],
+      "capa": "",
+      "description": "SRS-CTL-022 (changed by CR-0030) asks that a request of another major version be refused naming the migration note. ControlProtocol.VersioningAndMalformedInput sends 4.0, 1.1, a number and, since the coverage review, no version, but no 2.x request, the clients that CR-0030 breaks, and checks only the error code, not the message.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The server does what the requirement asks (the message is built from api_migration_hint for every refusal of a version); only its verification was incomplete."
+      },
+      "resolution": {
+        "change": "The test sends {\"api\":\"2.1\"} and checks the code unsupported_api and that the message contains docs/migration-2.0.md.",
+        "verification": "ControlProtocol.VersioningAndMalformedInput passes on the debug build."
+      },
+      "root_cause": {
+        "whys": [
+          "The coverage review added the case whose branch was untaken, a request without a version.",
+          "A 2.x version takes the same branch as 1.1 and 4.0, so coverage could not show it missing."
+        ],
+        "cause": "A requirement's clauses were checked against branch coverage, not read one by one against the test.",
+        "category": "test",
+        "escape": "Branch coverage was complete for the line; the requirement's clause about the message had no assertion."
+      }
+    },
+    {
+      "id": "MDQ-PR-080",
+      "title": "The download page offers main's development build after a release, not the released edition",
+      "found": "2026-11-16, independent review of release 2.0.0 (pages run 231 on cb30b81, VERSION 2.0.1-dev)",
+      "item": "release",
+      "status": "closed",
+      "affects": [
+        "0.1.0",
+        "0.2.0",
+        "0.3.0",
+        "0.4.0",
+        "0.5.0",
+        "0.6.0",
+        "0.7.0",
+        "0.8.0",
+        "0.9.0",
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0"
+      ],
+      "capa": "",
+      "description": "pages.yml builds the book from every push to main. Right after a release tools/post_release.py sets VERSION to the next -dev version, so the download page and the web edition show 'Version 2.0.1-dev' and offer detector-to-diagnosis-v2.0.1-dev.pdf, which is not the released 2.0.0 that the record, the archive and the printed edition hold. Between releases the page also shows unreleased chapters and changes.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The book, not the product; the dev build carries its version in every file name."
+      },
+      "resolution": {
+        "change": "pages.yml builds from the last book-v tag of .github/tags.txt, with main's book/errata.json; until that tag exists it builds main as before, and the end of the tags workflow triggers it again.",
+        "verification": "To be seen on the first run after the merge: the run's log names the tag, and the page says Version 2.0.0 (the session cannot reach github.io)."
+      },
+      "root_cause": {
+        "whys": [
+          "The page was made when every push was a step toward the next release.",
+          "The post-release bump (Theme D) came later and nobody looked at the page after it."
+        ],
+        "cause": "The publication of the book had no rule for which version it serves.",
+        "category": "process",
+        "escape": "Release checks end at the tag; nothing checks the public page after the post-release commit."
+      }
     }
   ]
 }

@@ -19,6 +19,15 @@ in the project files (neurolf-book/v2.0.0/), the Opus review of 2.0.0, `affects`
 MDQ-PR-006 and MDQ-PR-064, and MDQ-PR-064's finer measure. After every commit that adds REQ
 tags to tests, run `tools/trace_matrix.py . --write` (docs.trace failed CI once on 763946a).
 
+Review of release 2.0.0 (2026-11-16, independent, PR from branch claude/project-thread-8eqlo1):
+MDQ-PR-077 (no rule for running a failed release check again; SDP v20 draft adds it; approve v20
+with the next release's documents), MDQ-PR-078 (CAPA-0005's `fuzz_documents` lacked the reader of MDQ-PR-075; now
+`control::metadata_delayed_window_ps`, mode 5), MDQ-PR-079 (SRS-CTL-022's test had no 2.x request
+and no check of the migration note) and MDQ-PR-080 (`pages.yml` served main's -dev build after a
+release; it now builds the last `book-v` tag of `.github/tags.txt` with main's errata). `tools/soak.py`
+records per second the steal time and each server thread's run-queue wait, MDQ-PR-064's finer
+measure; its first 30-minute run is `measurements/review-2.0.0/soak/`. Next free MDQ-PR-081.
+
 Earlier on 2026-11-16: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
 (143407e); VERSION is 2.0.0-dev (SOUP list v28, review for 2.0, 2026-11-16). Milestone 2.0.0-dev (Theme B's breaking items) has started:
 CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;

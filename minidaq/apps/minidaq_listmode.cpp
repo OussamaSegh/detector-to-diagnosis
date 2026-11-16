@@ -196,12 +196,9 @@ int sino(const std::vector<std::string>& files, const std::string& prefix, sino:
                    std::string{lm::to_string(h.error())}.c_str());
       return 1;
     }
-    const auto meta = nlohmann::json::parse(h->metadata, nullptr, /*allow_exceptions=*/false);
-    // Each type is checked before the value is read (coding standard rule 3.5, MDQ-PR-075).
-    if (meta.is_object() && meta.contains("records") && meta["records"].is_object() &&
-        meta["records"].contains("delayed_window_ps") &&
-        meta["records"]["delayed_window_ps"].is_number_integer()) {
-      cfg.delayed_window_ps = meta["records"]["delayed_window_ps"].get<std::int64_t>();
+    // The metadata comes from a file: read as untrusted input (MDQ-PR-075, CAPA-0005).
+    if (const auto delay = minidaq::control::metadata_delayed_window_ps(h->metadata)) {
+      cfg.delayed_window_ps = *delay;
     } else {
       std::fprintf(
           stderr,

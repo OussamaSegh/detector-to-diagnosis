@@ -117,6 +117,11 @@ TEST(ControlProtocol, VersioningAndMalformedInput) {
   EXPECT_EQ(raw(svc, R"({"api":3,"cmd":"status"})")["error"]["code"], "unsupported_api");
   EXPECT_EQ(raw(svc, R"({"id":1,"cmd":"status"})")["error"]["code"], "unsupported_api")
       << "3.0 (ADR 0036): a request without an API version is refused, as a 2.x client sends";
+  const auto v2 = raw(svc, R"({"api":"2.1","id":1,"cmd":"status"})");
+  EXPECT_EQ(v2["error"]["code"], "unsupported_api") << "a 2.x client, which CR-0030 breaks";
+  EXPECT_NE(v2["error"]["message"].get<std::string>().find("docs/migration-2.0.md"),
+            std::string::npos)
+      << "the refusal of a version names the migration note (SRS-CTL-022)";
   EXPECT_EQ(raw(svc, "not json")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, "[1,2]")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, "")["error"]["code"], "bad_request");
