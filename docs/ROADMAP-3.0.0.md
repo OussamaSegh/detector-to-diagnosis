@@ -1,6 +1,7 @@
 # Roadmap for release 3.0.0
 
-Status: proposed. The author asked for it on 2026-11-16. Section 7 holds the questions that only
+Status: proposed; question 2 answered (section 8). The author asked for it on 2026-11-16.
+Section 7 holds the questions that only
 the author can answer, each with a recommendation. Work on 3.0.0 starts after release 2.1.0
 (`docs/ROADMAP-2.1.0.md`). Nothing here changes 2.0.1 or 2.1.0.
 
@@ -174,3 +175,9 @@ The rhythm stays as before:
 
 Until the author answers, the work goes on with the recommendations, and nothing that cannot
 be undone is done. Theme K is decided only before the KDP files are made, at 3.0.0-rc.
+
+## 8. Answers (author)
+
+2. **Part XI on the acquisition at scale** (chosen on 2026-11-16 by the author on a decision
+   card): Chapters 41 to 43 as in Theme L. The other questions follow their recommendations
+   until the author answers them.
