@@ -23,7 +23,15 @@ config in book/src or exercises; a block that shows one on purpose is fenced `{.
 .old-interface}` (Chapter 17 does). Migration note docs/migration-2.0.md. `minidaq_sim --center`,
 `--max-file-mib`. MDQ-PR-073 closed: an encrypted signing key is refused without a passphrase
 prompt. Server branch coverage 66.9% to 83.1% (system tests of start-up refusals and signed
-runs; reasons for what stays uncovered in the 2.0.0-dev plan). Next: chapters 38 and 39, then the
+runs; reasons for what stays uncovered in the 2.0.0-dev plan). Chapter 38 started 2026-11-16
+(CR-0031, ADR 0037; the coordinator moved it ahead of the roadmap's window): the time base monitor
+in the pair stage (RC-53, configuration schema 2.1 `timing_monitor`, control API 3.1
+`status.timing`, integrity `/timing/alarm_intervals`, simulator `--block-clock`), and register map
+1.3 of firmware 1.4, each board's `clock_status` (RC-54; no run without a lock, audit event
+`clock_lock_lost`, integrity `/hardware/boards/N/clock_lock_losses`; ICD-FEB version 5 draft). The
+monitor costs the pipeline benchmark about 3% on one CPU (the perf gate allows 5%). Left for
+Chapter 38: `measurements/ch38/` and the chapter's text in Part X, then CR-0031 implemented.
+Next: chapters 38 and 39, then the
 2.0.0 coverage review, internal audit and release (release notes name CR-0029 and CR-0030 as
 breaking). An existing
 build directory reconfigures to C++23 by itself (the cache variable is forced to 23).
@@ -253,7 +261,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-074, CR-0031, ADR 0037, RC-53, SRS-PLT-013, SRS-CFG-016, TL-50. A commit message has ONE trailer
+Next free numbers: MDQ-PR-074, CR-0032, ADR 0038, RC-55, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, TL-50. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
