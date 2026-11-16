@@ -12,7 +12,7 @@ import re
 import subprocess
 import unittest
 
-from systest import Ctl, Server, SystemTest, app, eventually, write_json
+from systest import SLOW, Ctl, Server, SystemTest, app, eventually, write_json
 
 UDP_PORT = re.compile(r"UDP readout on [\d.]+:(\d+)")
 RECEIVE_BUFFER = re.compile(r"receive buffer (\d+) B")
@@ -46,6 +46,12 @@ def send(port, *args):
         report.update(lost=int(m.group(1)), delayed=int(m.group(2)), duplicated=int(m.group(3)),
                       both=int(m.group(4)))
     return report
+
+
+# The time base tests send 1.5 MBq in real time; a server slowed down by a sanitizer cannot take
+# that and its receive buffer overflows, so they send as much slower as the server is. The
+# monitor works in detector time and finds the same offsets.
+PACE = str(1.0 / SLOW)
 
 
 class Readout(SystemTest):
@@ -90,7 +96,7 @@ class Readout(SystemTest):
         # prompts per second over some hundreds of pairs of blocks: intervals of 0.5 s.
         timing = {"schema_version": "2.1", "timing_monitor": {"interval_s": 0.5}}
         _, status = self.acquire("clock-step", "--activity", "1.5e6", "--seconds", "2.5", "--seed", "5",
-                                 "--speed", "1", "--block-clock", "29:0:0:1.5:600", extra=timing)
+                                 "--speed", PACE, "--block-clock", "29:0:0:1.5:600", extra=timing)
         t = status["timing"]
         self.assertEqual(t["alarm_blocks"], [29], {k: v for k, v in t.items() if k != "blocks"})
         self.assertEqual(t["blocks"][29]["level"], "alarm")
@@ -103,7 +109,7 @@ class Readout(SystemTest):
         # REQ: SRS-TIM-004
         timing = {"schema_version": "2.1", "timing_monitor": {"interval_s": 0.5}}
         _, status = self.acquire("clock-healthy", "--activity", "1.5e6", "--seconds", "2.5", "--seed", "6",
-                                 "--speed", "1", extra=timing)
+                                 "--speed", PACE, extra=timing)
         t = status["timing"]
         self.assertEqual(t["alarm_intervals"], 0, t)
         self.assertEqual(t["groups"], 1, "a cylinder source connects every block")
