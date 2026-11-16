@@ -6,7 +6,7 @@
 | Requested | 2026-11-16, by the software lead |
 | Source | hazard H-02, whose residual named a time error that keeps the order of the singles; roadmap 2.0.0, theme C (Chapter 38) |
 | Decision | approved, 2026-11-16, under the software lead's standing delegation of 2026-11-15 |
-| Commits | ddb3ab4, 6b4c067, 159fb3f and the register map's; in progress, listed in full when the change is implemented |
+| Commits | ddb3ab4, 6b4c067, 159fb3f, 077f06a and the documents'; Chapter 38 in progress, listed in full when the change is implemented |
 
 ## Description
 

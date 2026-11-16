@@ -450,19 +450,19 @@ the session ran with a temporary one.) When the server stops, it removes the tok
 A program that does not authenticate meets the protocol. Authentication came with API 2.0, and
 a client of an older major version is refused, because it would otherwise appear to connect and
 then fail on every command; the session below was recorded against today's server, which speaks
-API 3.0, so the old client it shows is one of 2.x (the block shows that request on purpose):
+API 3.1, so the old client it shows is one of 2.x (the block shows that request on purpose):
 
 ```{.text .old-interface}
--> {"api": "3.0", "id": 1, "cmd": "stop"}
-<- {"api":"3.0","error":{"code":"unauthenticated","message":"authenticate first (\"auth\")"},
+-> {"api": "3.1", "id": 1, "cmd": "stop"}
+<- {"api":"3.1","error":{"code":"unauthenticated","message":"authenticate first (\"auth\")"},
     "id":1,"ok":false,"state":"idle"}
 -> {"api": "2.5", "id": 2, "cmd": "status"}
-<- {"api":"3.0","error":{"code":"unsupported_api","message":"this server speaks API 3.0 and
+<- {"api":"3.1","error":{"code":"unsupported_api","message":"this server speaks API 3.1 and
     every request names it (\"api\"); see docs/migration-2.0.md"},"id":2,"ok":false,"state":"idle"}
--> {"api": "3.0", "id": 3, "cmd": "auth", "token": "mdq_0000...0000"}
-<- {"api":"3.0","error":{"code":"unauthenticated","message":"unknown token; the connection is
+-> {"api": "3.1", "id": 3, "cmd": "auth", "token": "mdq_0000...0000"}
+<- {"api":"3.1","error":{"code":"unauthenticated","message":"unknown token; the connection is
     closed"},"id":3,"ok":false,"state":"idle"}
--> {"api": "3.0", "id": 4, "cmd": "stop"}
+-> {"api": "3.1", "id": 4, "cmd": "stop"}
 <- (connection closed)                                     (line breaks added, token shortened)
 ```
 
@@ -474,7 +474,7 @@ the audit trail names it:
 
 ```text
 $ minidaq_ctl --port 7712 --token-file dash.token stop
-{ "api": "3.0", "error": { "code": "forbidden", "message": "\"stop\" needs the role operator" },
+{ "api": "3.1", "error": { "code": "forbidden", "message": "\"stop\" needs the role operator" },
   "id": 1, "ok": false, "state": "idle" }                       (exit status 1; reformatted)
 $ grep refused audit.jsonl
 {"action":"stop","detail":"refused: role","ok":false,"time":"2026-10-25T12:06:43.736Z",

@@ -51,7 +51,19 @@ without `api`, or with another major version, is refused:
 | `configure` with a 1.x configuration | `configure` with a 2.0 configuration |
 
 The commands, their parameters, the error codes and the other status fields do not change.
-`minidaq_ctl` of 2.0 speaks 3.0.
+`minidaq_ctl` of 2.0 speaks 3.1.
+
+## Additions in 2.0 that need no migration
+
+Minor versions add and never rename, so a client of 3.0 and a file of 2.0 work unchanged with
+these (ADR 0003):
+
+| Interface | Addition |
+|---|---|
+| Control API 3.1 | `status.timing`: the time base monitor's limits and its latest evaluation, each block's level and offset, the blocks at alarm (Chapter 38, CR-0031); `status.hardware.boards[].clock_locked` and `clock_lock_losses` (register map 1.3); the integrity loss counters `/timing/alarm_intervals` and `/hardware/boards/N/clock_lock_losses` |
+| Configuration schema 2.1 | the optional `timing_monitor` object; a 2.0 file is read as before |
+| Register map 1.3 (firmware 1.4) | `clock_status` at 0x034; boards with firmware 1.2 and 1.3 are supported as before (ICD-FEB) |
+| Audit trail | the event `clock_lock_lost` |
 
 ## Command-line options
 

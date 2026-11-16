@@ -458,12 +458,12 @@ minidaq_ctl --port 44685 diagnostics 5
 ```
 
 ```json
-{ "api": "3.0", "diagnostics": {
+{ "api": "3.1", "diagnostics": {
     "build_id": "21b019cf50d9c1f2fc5bdf9f79df36ed5314ed0a",
     "events": [
       { "a": 7, "b": 1, "code": "command", "ring": 0, "seq": 1, "t_ns": 24103080525489 } ],
     "recorder": { "dropped": 0, "recorded": 1, "torn": 0 },
-    "server": "minidaq 1.3.1-dev" },
+    "server": "minidaq 2.0.0-dev" },
   "id": 1, "ok": true }                                               (reformatted)
 ```
 

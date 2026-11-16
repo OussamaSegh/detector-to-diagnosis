@@ -247,13 +247,13 @@ versions at this edition:
 
 | Interface | Version | Rule for a reader |
 |---|---|---|
-| Control protocol (NDJSON over TCP) | API 2.5 | A request whose major version differs is refused with `unsupported_api`; the status fields are part of the API (ADR 0013) |
-| Acquisition configuration | schema 1.4 | Its own major version and any minor up to its own; a newer minor is refused, not half understood; unknown keys are errors |
+| Control protocol (NDJSON over TCP) | API 3.1 | Every request names its API; one whose major version differs, or that names none, is refused with `unsupported_api` (ADR 0036); the status fields are part of the API (ADR 0013) |
+| Acquisition configuration | schema 2.1 | Its own major version and any minor up to its own; a newer minor is refused, not half understood; unknown keys are errors |
 | Hardware description | schema 1.1 | As the configuration |
 | Calibration table | format 1.0 | Version, CRC-32, scanner serial, expiry and the limits of a working detector, checked before use |
 | Readout packets | MDQ-R1, words MDQ-P1 revision 1.1 | A sequence number per source; a bad packet is counted by reason, never silently dropped; a time marker is a word no single can be, which an older reader drops as invalid |
 | List-mode files | MDQ-L1 | A versioned header with JSON metadata; CRC-32 per block header and payload |
-| Firmware contract | ICD-FEB version 3, register map 1.2 | The firmware's identity and version checked every slow-control cycle (ADR 0019); the registers of map 1.2 used only with firmware 1.3 or later (ADR 0033) |
+| Firmware contract | ICD-FEB version 5, register map 1.3 | The firmware's identity and version checked every slow-control cycle (ADR 0019); the registers of map 1.2 used only with firmware 1.3 or later (ADR 0033), the clock status of map 1.3 only with firmware 1.4 or later (ADR 0037) |
 | Update bundles | Ed25519-signed manifest | Trusted only through the keys installed by the platform |
 | DICOM export | the conformance of Chapter 35 | The archive's status per instance decides delivery |
 
@@ -266,7 +266,7 @@ can still be interpreted.
 
 Figure [](#fig-app-interfaces) puts the nine on one page.
 
-```{.figure #fig-app-interfaces src="book/figures/tikz/appendix/interfaces.tex" caption="The external interfaces MiniDAQ owns, each with the version its readers check." alt="MiniDAQ in the center with nine interfaces around it: control protocol API 2.5; acquisition configuration schema 1.4; hardware description schema 1.1; calibration table format 1.0 with a CRC; readout packets MDQ-R1; list-mode files MDQ-L1; firmware contract ICD-FEB 3; update bundles with an Ed25519 manifest; DICOM export to the conformance of Chapter 35. A note says a reader refuses what it does not understand and the version is in the data, not the file name." width="80%"}
+```{.figure #fig-app-interfaces src="book/figures/tikz/appendix/interfaces.tex" caption="The external interfaces MiniDAQ owns, each with the version its readers check." alt="MiniDAQ in the center with nine interfaces around it: control protocol API 3.1; acquisition configuration schema 2.1; hardware description schema 1.1; calibration table format 1.0 with a CRC; readout packets MDQ-R1; list-mode files MDQ-L1; firmware contract ICD-FEB 5; update bundles with an Ed25519 manifest; DICOM export to the conformance of Chapter 35. A note says a reader refuses what it does not understand and the version is in the data, not the file name." width="80%"}
 ```
 
 ## Concurrency architecture

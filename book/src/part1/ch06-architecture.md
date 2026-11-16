@@ -401,24 +401,24 @@ A session, recorded against `minidaq_server` started with `--no-auth` (line brea
 responses shortened only where marked):
 
 ```text
--> {"api": "3.0", "id": 1, "cmd": "hello"}
-<- {"api":"3.0","auth":"none","commands":["hello","auth","configure","start","stop","reset",
+-> {"api": "3.1", "id": 1, "cmd": "hello"}
+<- {"api":"3.1","auth":"none","commands":["hello","auth","configure","start","stop","reset",
     "status","diagnostics"],"id":1,"ok":true,"server":"minidaq ...","simulator":true}
--> {"api": "3.0", "id": 2, "cmd": "start"}
-<- {"api":"3.0","error":{"code":"illegal_transition","message":"cannot start in state idle"},
+-> {"api": "3.1", "id": 2, "cmd": "start"}
+<- {"api":"3.1","error":{"code":"illegal_transition","message":"cannot start in state idle"},
     "id":2,"ok":false,"state":"idle"}
--> {"api": "3.0", "id": 3, "cmd": "configure",
-    "config": {"schema_version": "2.0", "source": {"type": "synthetic", "rate_hz": 1e6}}}
-<- {"api":"3.0","id":3,"ok":true,"state":"configured"}
--> {"api": "3.0", "id": 4, "cmd": "start"}
-<- {"api":"3.0","id":4,"ok":true,"state":"running"}
+-> {"api": "3.1", "id": 3, "cmd": "configure",
+    "config": {"schema_version": "2.1", "source": {"type": "synthetic", "rate_hz": 1e6}}}
+<- {"api":"3.1","id":3,"ok":true,"state":"configured"}
+-> {"api": "3.1", "id": 4, "cmd": "start"}
+<- {"api":"3.1","id":4,"ok":true,"state":"running"}
 -> {"api": "4.0", "id": 5, "cmd": "status"}
-<- {"api":"3.0","error":{"code":"unsupported_api","message":"this server speaks API 3.0 and every
+<- {"api":"3.1","error":{"code":"unsupported_api","message":"this server speaks API 3.1 and every
     request names it (\"api\"); see docs/migration-2.0.md"},"id":5,"ok":false,"state":"running"}
 ```
 
 The chapter's commands are those of the first version of the API; the server you build speaks
-API 3.0, whose later commands (`auth` from Chapter 17, `diagnostics` from Chapter 21) the
+API 3.1, whose later commands (`auth` from Chapter 17, `diagnostics` from Chapter 21) the
 `hello` response lists. A server started without `--no-auth` asks a client to authenticate
 before anything but `hello`; `minidaq_ctl` does that for you, so the commands of this chapter
 work as shown.
@@ -465,10 +465,10 @@ client, or the same operator reconnecting, sees it in `status` and can stop it. 
 session above with a second client after the first one disconnected:
 
 ```text
--> {"api": "3.0", "id": 1, "cmd": "status"}
-<- {"api":"3.0","id":1,"ok":true,"status":{...,"state":"running",...}}    (shortened)
--> {"api": "3.0", "id": 2, "cmd": "stop"}
-<- {"api":"3.0","id":2,"ok":true,"state":"stopping"}
+-> {"api": "3.1", "id": 1, "cmd": "status"}
+<- {"api":"3.1","id":1,"ok":true,"status":{...,"state":"running",...}}    (shortened)
+-> {"api": "3.1", "id": 2, "cmd": "stop"}
+<- {"api":"3.1","id":2,"ok":true,"state":"stopping"}
 ```
 
 The alternative, stopping on disconnect, is sometimes right: a motion controller that keeps

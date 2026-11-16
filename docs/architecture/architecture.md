@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 25 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 26 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -70,6 +70,11 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   the server signs each run's record with the digests of its files and uses only signed
   calibration tables when the site installs keys (items access, output, service and server,
   [ADR 0034](../adr/0034-signed-run-records-calibration-tables-and-reports.md)).
+- the time base: a monitor in the pair stage that estimates each detector block's clock offset,
+  interval by interval, from the true coincidences, and each board's clock status of register
+  map 1.3 (firmware 1.4); a block at alarm or a lock lost during a run makes the run incomplete
+  (items processing, pipeline, config, hw and service, configuration schema 2.1, control API 3.1,
+  Chapter 38, [ADR 0037](../adr/0037-watch-the-time-base-from-the-data-and-the-hardware.md)).
 - the inputs of the corrections: a singles counter per crystal and per block in the pipeline and
   a `corrections` object in the run record (the windows, the singles, the prompts and delayeds),
   from which the corrections tool, `tools/recon`, computes the normalization, randoms, scatter,
@@ -273,7 +278,8 @@ took to be `"synthetic"` when a file left it out (hazard H-06); moves `stop_afte
 `output.max_file_mb` to `max_file_mib` and `rt_profile` to `rt_profile_file`. No default
 changed. A 1.x file is refused with a message that names `tools/migrate_config.py`, which
 converts it and validates the result against the schema document; `docs/migration-2.0.md`
-lists the changes of the configuration and of control API 3.0 together.
+lists the changes of the configuration and of control API 3.0 together, and the additions of
+schema 2.1 and API 3.1 that need no migration.
 
 ## 8. Observability
 
@@ -398,3 +404,4 @@ Open issues:
 | 23 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 22. |
 | 24 | The product build without the simulator: the library `minidaq_simulation`, item sim not shipped (CR-0029). |
 | 25 | Control API 3.0 and configuration schema 2.0 (ADR 0036, CR-0030). |
+| 26 | Chapter 38: the time base monitor and the boards' clock status, configuration schema 2.1, control API 3.1, register map 1.3 (ADR 0037, CR-0031). |
