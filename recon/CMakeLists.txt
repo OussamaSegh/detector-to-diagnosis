@@ -52,6 +52,18 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/reconConfig.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/recon COMPONENT recon_dev)
 # [/snippet:install]
 
+# The coverage report measures MiniDAQ's code under minidaq/ only (tools/coverage.py), not this
+# tool. Its counters cost the projector's inner loop, shared by four threads, a factor of more
+# than thirty: tools.recon_cpp outran its timeout once the time-of-flight tests came (CR-0032).
+if(CMAKE_CXX_FLAGS MATCHES "-fprofile-instr-generate")
+  foreach(t recon_projector recon_cpp)
+    if(TARGET ${t})
+      target_compile_options(${t} PRIVATE
+        -fno-profile-instr-generate -fno-coverage-mapping -fno-coverage-mcdc)
+    endif()
+  endforeach()
+endif()
+
 # Code for the module, a shared object, is built without the hardened preset's -fPIE and -pie.
 minidaq_as_shared_object(recon_projector)
 if(TARGET recon_cpp)

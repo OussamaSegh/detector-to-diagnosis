@@ -109,6 +109,10 @@ the patch version.
 
 ### Fixed (2.0.0-dev)
 
+- The coverage build compiled the reconstruction tool's projector with its counters, which the
+  report never reads: `tools.recon_cpp` ran more than thirty times slower there and outran its
+  timeout once the time-of-flight tests came. The projector and its module are now built without
+  them in that build (found by the release checks of 2.0.0).
 - Readers of files that MiniDAQ writes and reads again stopped with a library exception or a
   traceback on a field of another type, instead of naming the damaged file: `minidaq_update` on a
   `state.json` whose version is not a string (MDQ-PR-074), `minidaq_listmode sino` on metadata
