@@ -14,10 +14,15 @@ checks. Then **2.1.0**, planned in `docs/ROADMAP-2.1.0.md` (accepted 2026-11-16)
 rerun rule in `release_checks.sh`), theme G (room: 819 of 828 pages), theme I (MDQ-PR-064, ACC-04
 without a deviation), theme H (Chapters 29 and 28 deeper, one new exercise in each chapter 26 to
 40, measurement folders for Chapters 1, 6 and 22).
-The author asked for a major version plan (2026-11-16 21:15 Paris): `docs/ROADMAP-3.0.0.md`,
-**proposed**, with five questions in its section 7 (two volumes; Part XI on the acquisition at
-scale, Chapters 41 to 43; GPU out; API 4.0 with pushed events, schema 3.0, list-mode MDQ-P2;
-Ubuntu 26.04 and C++23 in full). 3.0.0 work starts after 2.1.0, with 2.2.0 as groundwork.
+The author asked for a major version plan (2026-11-16): `docs/ROADMAP-3.0.0.md`, **proposed**,
+revised the same evening at the author's direction ("engineer in the agentic AI era"). Third
+Edition aim: train the skills that matter when agents write much of the code (specify, verify,
+architecture, risk, AI tools under the QMS, debug/measure, run agent workflows, domain physics).
+Theme P agent workbench (`tools/agent_gate.py` with a known-bad library, recorded agent sessions,
+controlled context files, provenance, workflow validation); Part XI = four chapters 41 to 44 that
+build the multi-PC acquisition (the author's card choice) with agents; Theme Q one audit exercise
+(A) per Part plus Appendix B skills map; API 4.0/schema 3.0/MDQ-P2; Ubuntu 26.04; two volumes.
+2.2.0 is groundwork; section 9 is the long-term plan (3.1, 3.2, 4.0 AI in the device).
 
 Earlier on 2026-11-16: **release 2.0.0, the Second Edition, is made** (record
 `docs/regulatory/releases/2.0.0.md`, evidence `measurements/release-2.0.0/`; release checks on
