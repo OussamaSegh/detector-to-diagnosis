@@ -27,3 +27,5 @@ minidaq_fuzzer(fuzz_protocol LIBS minidaq::control)
 minidaq_fuzzer(fuzz_sorter LIBS minidaq::core)
 minidaq_fuzzer(fuzz_listmode LIBS minidaq::core)
 minidaq_fuzzer(fuzz_calibration LIBS minidaq::control)
+minidaq_fuzzer(fuzz_documents LIBS minidaq::control minidaq::update minidaq::signing
+               nlohmann_json::nlohmann_json OpenSSL::Crypto)

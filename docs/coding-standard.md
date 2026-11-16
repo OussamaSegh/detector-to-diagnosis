@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 8 (MiniDAQ 1.3.1-dev). Status: draft for review.
+Version 9 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -57,7 +57,9 @@ their text. MiniDAQ does not claim conformance to any of them.
 
 Everything that crosses the process boundary is untrusted: configuration
 files, control requests, file paths named in them, command-line arguments,
-detector data.
+detector data. So is every file that MiniDAQ's own programs wrote earlier and
+read again (run records, signed or not, list-mode metadata, the update store's
+state): a person, a disk or another version may have changed it (CAPA-0005).
 
 1. Parse strictly and completely. A number is valid only if the whole text is
    a number of the target type within its range: `minidaq::parse_number`,
@@ -69,8 +71,9 @@ detector data.
    descriptor (regular file, size), not checked and then opened, which leaves
    a window for the file to be swapped [CERT FIO45-C]. *Enforced:* review;
    test `ProfilePathMustBeASmallRegularFile`.
-4. Each parser of external input has a fuzz target that runs in CI.
-   *Enforced:* `fuzz/`, CI job `fuzz-smoke`.
+4. Each parser of external input has a fuzz target that runs in CI; a reader
+   of a JSON file joins `fuzz_documents` as a mode of its own.
+   *Enforced:* `fuzz/`, CI job `fuzz-smoke`; review.
 5. A value from an untrusted JSON document is read after its type is
    checked (`find` or `contains`, then `is_string()` and the like), never
    with `value(key, default)` or `get<T>()` alone, which throw on another
@@ -160,3 +163,4 @@ must report nothing before a change is merged.
 | 6 | Rules 5.5 and 5.6: clock reads and thread starts in tests state their kind, checked by `tests.waits` (CAPA-0001, MDQ-PR-047, MDQ-PR-048). |
 | 7 | Approved by the software lead for release 1.1.0; the content is that of version 6 (MDQ-PR-066). |
 | 8 | Rule 1: C++23, and when `std::unreachable` may not be used (CR-0028, ADR 0035). |
+| 9 | Rule 3: a file MiniDAQ wrote earlier is untrusted input; rule 3.4 names `fuzz_documents` (CAPA-0005, MDQ-PR-074, MDQ-PR-075). |

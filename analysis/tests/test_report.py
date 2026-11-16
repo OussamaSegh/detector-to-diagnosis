@@ -100,6 +100,17 @@ def test_a_damaged_run_is_an_error_not_a_report(tmp_path: pathlib.Path,
     assert not (tmp_path / "qc" / "report.json").exists()
 
 
+def test_metadata_with_a_field_of_another_type_is_an_error_not_a_crash(
+        tmp_path: pathlib.Path, rng: np.random.Generator) -> None:
+    # REQ: SRS-ANA-005
+    # A file changed after the run (CAPA-0005): the tool reports it and writes no report.
+    for i, window in enumerate(([1], "x", None, True)):
+        r = synthetic(rng, 1_000)
+        record = mdql.write_run(tmp_path / f"run{i}", [r], delayed_window_ps=window)  # type: ignore[arg-type]
+        assert main([str(record), str(tmp_path / f"qc{i}")]) == 2, window
+        assert not (tmp_path / f"qc{i}" / "report.json").exists()
+
+
 @pytest.mark.slow
 @pytest.mark.skipif(not os.environ.get("MINIDAQ_APPS"), reason="MINIDAQ_APPS not set")
 def test_a_simulated_point_source_passes_with_the_simulators_resolutions(

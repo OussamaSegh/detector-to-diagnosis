@@ -5,16 +5,19 @@
 minidaq_sim writes a short point-source run with the DAQ's list-mode sink, in
 several files; minidaq_listmode verify accepts it; one flipped byte makes
 verify fail and costs exactly one block; a removed last file and a truncated
-file are reported; sino writes sinograms whose counts add up to the prompts.
+file are reported; sino writes sinograms whose counts add up to the prompts, and falls back to its default delayed
+window when the metadata gives it as another type (MDQ-PR-075).
 
     python3 tools/test_listmode_tools.py build/debug/minidaq/apps
 """
 import glob
 import os
+import re
 import struct
 import subprocess
 import sys
 import tempfile
+import zlib
 
 
 def run(*args, check=True):
@@ -69,6 +72,21 @@ def main():
         assert sum(struct.unpack(f"<{len(raw) // 4}I", raw)) == binned
         header = open(out + ".hdr").read()
         assert "matrix size [radial] := 227" in header and "!END OF INTERFILE :=" in header, header
+
+        # Metadata whose delayed window is a string of the same length, with the header's CRC
+        # made again: sino warns and uses its default instead of stopping with an exception.
+        data = bytearray(open(files[0], "rb").read())
+        header_bytes, meta_bytes = struct.unpack_from("<II", data, 12)
+        meta = data[32:32 + meta_bytes].decode()
+        m = re.search(r'"delayed_window_ps":\s*(\d+)', meta)
+        assert m and len(m.group(1)) >= 3, meta
+        meta = meta[:m.start(1)] + '"' + "x" * (len(m.group(1)) - 2) + '"' + meta[m.end(1):]
+        data[32:32 + meta_bytes] = meta.encode()
+        struct.pack_into("<I", data, header_bytes - 8, zlib.crc32(bytes(data[:header_bytes - 8])))
+        odd = os.path.join(d, "odd.mdql")
+        open(odd, "wb").write(data)
+        p = run(lm, "sino", "--out", os.path.join(d, "o"), odd, check=False)
+        assert p.returncode == 0 and "using" in p.stderr, (p.returncode, p.stderr)
     print("list-mode tools: ok")
 
 

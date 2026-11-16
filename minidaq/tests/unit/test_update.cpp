@@ -505,8 +505,11 @@ TEST_F(Update, OpenRefusesAStoreItCannotTrust) {
     ASSERT_TRUE(store->install(bundle("0.5.0"), options()).has_value());
   }
   const std::string state = read(root() / "state.json");
-  for (const char* damaged : {"not json", "[]", R"({"trial": null})",
-                              R"({"good": 1, "trial": null})", R"({"good": "a"})"}) {
+  for (const char* damaged :
+       {"not json", "[]", R"({"trial": null})", R"({"good": 1, "trial": null})", R"({"good": "a"})",
+        // A field of another type is damage too, not an exception (MDQ-PR-074).
+        R"({"good": "a", "good_version": 5, "trial": null})", R"({"good": "a", "trial": 7})",
+        R"({"good": "a", "trial": "b", "trial_version": []})"}) {
     write(root() / "state.json", damaged);
     refused("state.json is damaged");
   }

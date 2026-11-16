@@ -17,13 +17,13 @@ import math
 import pathlib
 import tomllib
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeGuard
 
 import numpy as np
 
 from . import fitting, plots, provenance
 from .histograms import RunHistograms
-from .listmode import ListModeFile, Run
+from .listmode import FormatError, ListModeFile, Run
 from .rates import check_rate
 
 # [snippet:protocol]
@@ -70,9 +70,20 @@ def load_protocol(path: pathlib.Path | None) -> dict[str, Any]:
 def fill(run: Run, rate_bin_ms: float, max_records: int = 1 << 20) -> RunHistograms:
     with ListModeFile(run.files[0], verify=False) as first:
         meta = first.metadata
-    scanner = meta["scanner"]
-    crystals = int(scanner["crystals_per_ring"]) * int(scanner["crystal_rings"])
-    delayed = int(meta["records"].get("delayed_window_ps") or 0)
+    # Every field's type is checked before it is used (coding standard rule 3.5, CAPA-0005): a
+    # file changed after the run is a FormatError, not a TypeError from deep inside.
+    def whole(v: Any) -> TypeGuard[int]:
+        return isinstance(v, int) and not isinstance(v, bool)
+
+    scanner, records = meta.get("scanner"), meta.get("records")
+    if not isinstance(scanner, dict) or not isinstance(records, dict):
+        raise FormatError(f"{run.files[0]}: the metadata has no scanner or records object")
+    per_ring, rings = scanner.get("crystals_per_ring"), scanner.get("crystal_rings")
+    delayed = records.get("delayed_window_ps", 0)
+    if not (whole(per_ring) and whole(rings) and per_ring > 0 and rings > 0 and whole(delayed)):
+        raise FormatError(f"{run.files[0]}: the metadata's scanner or records has a field of "
+                          "another type")
+    crystals = per_ring * rings
     h = RunHistograms(crystals, delayed, rate_bin_ps=round(rate_bin_ms * 1e9))
     for chunk, tags in run.chunks(max_records):
         h.add(chunk, tags)

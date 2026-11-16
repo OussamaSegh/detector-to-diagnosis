@@ -313,16 +313,27 @@ Expected<SlotStore, std::string> SlotStore::open(fs::path root, StepHook hook) {
   std::ifstream in{s.root_ / "state.json"};
   if (in) {
     const auto j = json::parse(in, nullptr, false);
-    if (!j.is_object() || !j.contains("good") || !j["good"].is_string() || !j.contains("trial")) {
+    // Every field's type is checked before it is read (coding standard rule 3.5, MDQ-PR-074): a
+    // version that is not a string, or a trial that is neither a slot nor null, is damage too.
+    const auto string_or_absent = [&j](const char* key) {
+      return !j.contains(key) || j[key].is_string();
+    };
+    if (!j.is_object() || !j.contains("good") || !j["good"].is_string() || !j.contains("trial") ||
+        !(j["trial"].is_string() || j["trial"].is_null()) || !string_or_absent("good_version") ||
+        !string_or_absent("trial_version")) {
       return Unexpected{"state.json is damaged: a person must look at " + s.root_.string()};
     }
     SlotState st;
     st.good = j["good"].get<std::string>();
-    st.good_version = j.value("good_version", "");
+    if (j.contains("good_version")) {
+      st.good_version = j["good_version"].get<std::string>();
+    }
     if (j["trial"].is_string()) {
       st.trial = j["trial"].get<std::string>();
     }
-    st.trial_version = j.value("trial_version", "");
+    if (j.contains("trial_version")) {
+      st.trial_version = j["trial_version"].get<std::string>();
+    }
     s.state_ = st;
   }
   const auto target = fs::read_symlink(s.root_ / "current", ec);

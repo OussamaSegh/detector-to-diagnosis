@@ -1368,7 +1368,7 @@
       "item": "output",
       "status": "closed",
       "affects": ["1.3.0"],
-      "capa": "",
+      "capa": "CAPA-0005",
       "evaluation": {
         "safety_relevant": false,
         "rationale": "The record must first pass the Ed25519 check with a key the site installed, so only a trusted signer can make such a record, and the server writes the fields with the right types. The tool then stops with an uncaught nlohmann::json type_error instead of a refusal: no run is believed that should not be, and the failure is visible."
@@ -1414,6 +1414,45 @@
       "evaluation": {"safety_relevant": false, "rationale": "It happens at start-up, before the control API listens: the server does not start, or names a wrong reason. No run is affected and nothing is signed with a wrong key."},
       "resolution": {"change": "The key is read with a callback that gives no passphrase and notes that one was asked for; an encrypted key is refused with 'is encrypted: the server reads only an unencrypted key, protected by the permissions of its file' and the openssl command that writes one. Chapter 25 says how the key is stored.", "verification": "Signing.AnEncryptedKeyIsRefusedWithoutAskingForAPassphrase writes an AES-256 encrypted Ed25519 key and loads it: it failed before the change (checked) and passes after it, with stdin closed so that no prompt can answer."},
       "root_cause": {"whys": ["The key loader passed no callback, and OpenSSL's default for an encrypted PEM is an interactive prompt.", "The tests wrote unencrypted keys only."], "cause": "A library default meant for interactive programs was used in a service.", "category": "code", "escape": "Every key the tests and the measurements made was unencrypted; the review of 1.3.0 found it by reading the call."}
+    },
+    {
+      "id": "MDQ-PR-074",
+      "title": "minidaq_update stops with a library exception on a state.json whose version is not a string",
+      "found": "2026-11-16, internal audit before release 2.0.0 (CAPA-0005, reading every parser of a file)",
+      "item": "platform",
+      "status": "closed",
+      "affects": ["0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0"],
+      "capa": "CAPA-0005",
+      "description": "SlotStore::open checked that state.json's good is a string and that trial is present, then read good_version and trial_version with nlohmann's value(key, \"\"), which throws when the key is there with another type, and took a trial of any type other than a string for no trial. A state.json changed by a person or by the disk ended minidaq_update with '[json.exception.type_error.302] type must be string, but is number' instead of 'state.json is damaged: a person must look at ...', and a trial of 7 was silently forgotten.",
+      "evaluation": {"safety_relevant": false, "rationale": "minidaq_update is a one-shot tool whose main reports the exception and exits with an error, so nothing is installed or switched; the message names the library's error rather than the damaged file, and a site would need a person either way (coding standard rule 3.5 allows a one-shot tool this). No run or acquisition is affected."},
+      "resolution": {"change": "Every field of state.json is type-checked before it is read: the versions must be strings when present, and the trial a string or null; anything else is 'state.json is damaged'.", "verification": "Update.OpenRefusesAStoreItCannotTrust gains three damaged states (a number as good_version, 7 as trial, an array as trial_version): it failed before the change (checked) and passes after it. fuzz_documents, whose seed state-mdq-pr-074 is this input, ended with the exception before the change and runs clean after it."},
+      "root_cause": {"whys": ["The state file is written by minidaq_update itself, so its reader was written for the files the writer makes.", "Rule 3.4 asks for a fuzz target for each parser of external input; the files of the update store, the hardware description, the token file and the signed run record had none, so nothing fed them a field of another type."], "cause": "Files written by MiniDAQ's own programs or by a site's administrator were not counted as external input, so their parsers had no fuzz target (CAPA-0005).", "category": "process", "escape": "No test or fuzz target changed a field's type in state.json; the unit tests damage the file with whole-document cases."}
+    },
+    {
+      "id": "MDQ-PR-075",
+      "title": "minidaq_listmode sino stops with a library exception when the delayed window in the metadata is not an integer",
+      "found": "2026-11-16, internal audit before release 2.0.0 (CAPA-0005, reading every parser of a file)",
+      "item": "output",
+      "status": "closed",
+      "affects": ["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0"],
+      "capa": "CAPA-0005",
+      "description": "minidaq_listmode sino reads records.delayed_window_ps from the first file's metadata with get<std::int64_t>() after checking only that the key exists. Metadata whose window is a string, or whose records is not an object, ended the tool with '[json.exception.type_error.302] type must be number, but is string' and status 2, instead of the warning it gives when the key is missing and its default window.",
+      "evaluation": {"safety_relevant": false, "rationale": "minidaq_listmode is a one-shot tool whose main reports the exception and exits with an error; no sinogram is written, so no wrong image can follow. The server always writes the window as an integer, so only a file changed after the run reaches it."},
+      "resolution": {"change": "The tool checks that records is an object and the window an integer before reading it; otherwise it warns 'no integer records.delayed_window_ps in the metadata' and uses its default, as for a missing key.", "verification": "tools/test_listmode_tools.py (tools.listmode) writes a copy of a run's first file whose window is a string of the same length, with the header CRC made again, and runs sino: it failed with the exception before the change (checked) and passes after it."},
+      "root_cause": {"whys": ["The metadata is written by MiniDAQ's own sink, so its reader was written for the files the sink makes.", "The list-mode fuzz target checks the reader of the format, not the tool's use of the metadata's fields."], "cause": "Files written by MiniDAQ's own programs were not counted as external input, so the reads of their fields were not checked as rule 3.5 asks (CAPA-0005).", "category": "process", "escape": "No test changed a field's type in the metadata; the tools' tests change bytes of blocks, which the CRCs catch."}
+    },
+    {
+      "id": "MDQ-PR-076",
+      "title": "The QC report stops with a Python traceback when the metadata's scanner or records has a field of another type",
+      "found": "2026-11-16, internal audit before release 2.0.0 (CAPA-0005, its preventive action)",
+      "item": "tools",
+      "status": "closed",
+      "affects": ["0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0"],
+      "capa": "CAPA-0005",
+      "description": "report.fill read the first file's metadata with meta['scanner'] and meta['records'].get(...) and int(...). A list as delayed_window_ps, or records that is not an object, raised TypeError or AttributeError, which python -m minidaq_analysis does not catch: the tool ended with a traceback instead of 'error: ...' and status 2.",
+      "evaluation": {"safety_relevant": false, "rationale": "The tool writes no report when it stops, so no wrong QC result can be used; only a file changed after the run reaches it."},
+      "resolution": {"change": "fill checks that scanner and records are objects and that the crystal counts and the delayed window are integers, and raises FormatError otherwise, which the tool reports with status 2.", "verification": "test_report.py::test_metadata_with_a_field_of_another_type_is_an_error_not_a_crash writes runs whose window is a list, a string, null and a boolean: it failed before the change (checked) and passes after it."},
+      "root_cause": {"whys": ["fill read the fields with subscripts and int(), which raise TypeError or AttributeError for another type, and the tool catches only the errors a reader of a valid file raises.", "The metadata is written by MiniDAQ's own sink, so its reader was written for the files the sink makes."], "cause": "Files written by MiniDAQ's own programs were not counted as external input (CAPA-0005).", "category": "process", "escape": "No test changed a field's type in the metadata."}
     }
   ]
 }

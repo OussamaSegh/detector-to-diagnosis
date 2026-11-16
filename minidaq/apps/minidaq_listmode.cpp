@@ -197,11 +197,16 @@ int sino(const std::vector<std::string>& files, const std::string& prefix, sino:
       return 1;
     }
     const auto meta = nlohmann::json::parse(h->metadata, nullptr, /*allow_exceptions=*/false);
-    if (meta.is_object() && meta.contains("records") && meta["records"].contains("delayed_window_ps")) {
+    // Each type is checked before the value is read (coding standard rule 3.5, MDQ-PR-075).
+    if (meta.is_object() && meta.contains("records") && meta["records"].is_object() &&
+        meta["records"].contains("delayed_window_ps") &&
+        meta["records"]["delayed_window_ps"].is_number_integer()) {
       cfg.delayed_window_ps = meta["records"]["delayed_window_ps"].get<std::int64_t>();
     } else {
-      std::fprintf(stderr, "minidaq_listmode: no records.delayed_window_ps in the metadata; using %lld ps\n",
-                   static_cast<long long>(cfg.delayed_window_ps));
+      std::fprintf(
+          stderr,
+          "minidaq_listmode: no integer records.delayed_window_ps in the metadata; using %lld ps\n",
+          static_cast<long long>(cfg.delayed_window_ps));
     }
   }
   if (auto v = sino::validate(cfg); !v) {

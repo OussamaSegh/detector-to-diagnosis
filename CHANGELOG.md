@@ -109,6 +109,16 @@ the patch version.
 
 ### Fixed (2.0.0-dev)
 
+- Readers of files that MiniDAQ writes and reads again stopped with a library exception or a
+  traceback on a field of another type, instead of naming the damaged file: `minidaq_update` on a
+  `state.json` whose version is not a string (MDQ-PR-074), `minidaq_listmode sino` on metadata
+  whose delayed window is not an integer (MDQ-PR-075), and the QC report on metadata whose scanner
+  or records has a field of another type (MDQ-PR-076). Found by the internal audit of 2026-11-16;
+  CAPA-0005 adds the fuzz target `fuzz_documents` (hardware description, update manifest, token
+  file, signed run record, update state) to CI and the release checks, and coding standard
+  version 9 counts every file MiniDAQ wrote earlier as untrusted input.
+- CR-0028 to CR-0030 recorded as implemented, with their commits and tests; `docs.changes` reads
+  the system tests' names. `Geometry.AxialPositionsAreCenterd` is spelled `...Centered`.
 - `minidaq_server --signing-key` with an encrypted key asked for a passphrase on the terminal,
   where a server started by the service manager waits for nobody, or without a terminal named
   the wrong reason. It now refuses an encrypted key with "is encrypted" and the `openssl pkey`
