@@ -1,6 +1,6 @@
 # Interface control document: MiniDAQ software and the front-end board firmware
 
-Version 4 (MiniDAQ 1.3.0-dev). Status: approved for release 1.3.0, 2026-11-15, given by the coordinator under the software lead's standing delegation of 2026-11-15; the firmware lead's co-signature is not recorded (assumption: confirm with team).
+Version 5 (MiniDAQ 2.0.0-dev). Status: draft for review, for release 2.0.0; version 4 was approved for release 1.3.0.
 Document ID: ICD-FEB. Owner: the software lead; the firmware lead co-signs every version.
 
 This document is the contract between the two sides of the front-end board (FEB): the firmware
@@ -20,7 +20,8 @@ confirm or correct.
 | Sequences: power-up, run start, run stop, fault, acknowledgment | both | section 5 |
 | Versions and compatibility | both | section 3 |
 
-Out of scope: the board's power supplies, its clock distribution, the SiPM front-end analog
+Out of scope: the board's power supplies, its clock distribution (only the lock of its sampling
+clock's phase-locked loop is part of this contract, register map 1.3), the SiPM front-end analog
 chain and the firmware's internal design, which are the firmware team's own documents.
 
 ## 2. Terms
@@ -63,7 +64,8 @@ Which firmware implements which map, and what this software accepts:
 |---|---|---|---|
 | 1.0.x, 1.1.x | 1.0 (no FIFO status) | 1 | refused: the run stop cannot know when the board has drained |
 | 1.2.x | 1.1 | 1 | supported |
-| 1.3.x and later 1.x | 1.2 (time markers, datagrams sent) | 1, with MDQ-P1 revision 1.1 words | supported; markers and the datagram count used |
+| 1.3.x | 1.2 (time markers, datagrams sent) | 1, with MDQ-P1 revision 1.1 words | supported; markers and the datagram count used |
+| 1.4.x and later 1.x | 1.3 (clock status) | 1, with MDQ-P1 revision 1.1 words | supported; the clock status used as well |
 | 2.x | not defined | not defined | refused |
 
 The software checks the firmware version of every board in every cycle, not once at start-up,
@@ -162,6 +164,17 @@ without them (`measurements/ch24/run_sequence.txt`).
   the datagrams sent beyond those the link delivered or counted as lost as a loss (SRS-HW-017,
   `/hardware/datagrams_unaccounted`). This finds the datagrams lost on the network after the last
   one that reached the software, which no sequence gap can show (the residual of ADR 0018).
+- `clock_status` (firmware 1.4 and later) gives the lock of the phase-locked loop that makes the
+  board's sampling clock from the reference, and counts the times the loop lost lock since
+  `trigger_enable` was last set (at most 65,535). A board's time stamps count that clock: a loop
+  that loses lock and locks again can come back a few hundred picoseconds away, which keeps the
+  order of the board's words and moves every coincidence of its block (hazard H-02). The software
+  reads it every cycle after it switches the triggers; it starts no run while a board's loop is
+  not locked, records an audit event `clock_lock_lost` when a count grows during a run, and the
+  run's integrity verdict counts the losses (SRS-TIM-006, risk control RC-54). A lost lock is not
+  a fault: the bias stays on. The firmware must count a loss even when the loop locks again
+  before the next read (assumption: confirm with team that the count is kept in the loop's own
+  clock domain, not sampled).
 - When the output FIFO is full, the board drops the new event, not words already in the FIFO, and
   sets `error_flags.fifo_overflow`. It never sends a partial event.
 - The software counts each cycle that finds `fifo_overflow` set, clears the flag, and the run's
@@ -183,6 +196,7 @@ without them (`measurements/ch24/run_sequence.txt`).
 | Triggers not on after start | | Faults the run after the trigger timeout |
 | FIFO not empty after stop | Keeps sending | Stops the pipeline after the drain timeout; the run is incomplete |
 | Datagrams sent that never arrived (firmware 1.3) | Counts every datagram it sends | Counts the difference as a loss; the run is incomplete |
+| Sampling clock not locked (firmware 1.4) | Clears `pll_locked`, counts the loss | Starts no run; during a run, an audit event and a loss; the run is incomplete |
 
 ## 8. Open items
 
@@ -207,6 +221,7 @@ without them (`measurements/ch24/run_sequence.txt`).
 | Markers enabled with the triggers on firmware 1.3, never on 1.2; `datagrams_sent` read every cycle | `SlowControl.SwitchesTheTimeMarkersOnWithTheTriggersAndReadsTheDatagramsSent`, `FakeBoard.HasTheRegistersOfMap12OnlyWithFirmware13` |
 | A marker is no single and closes the windows before it, with no change to any coincidence | `TimeMarker.IsAWordThatNoSingleOfTheScannerCanBe`, `StreamDecoder.ReadsAMarkerAsAPromiseNotASingle`, `CoincidenceSorter.MarkersChangeNoCoincidence`, `Pipeline.MarkersChangeNoCoincidence`, `Pipeline.AMarkerDeliversTheLastCoincidencesWhileTheSourceIsSilent` |
 | Datagrams sent and never seen are a loss | `RunIntegrity.DatagramsTheBoardsSentButTheLinkNeverSawAreALoss` |
+| The clock status read every cycle on firmware 1.4, never on 1.3; no run without a lock; a loss during a run is an audit event and a loss | `FakeBoard.HasTheClockStatusOfMap13OnlyWithFirmware14`, `SlowControl.ReadsEachBoardsClockAndStartsNoRunWithoutALock`, `HardwareService.AClockThatLosesLockDuringARunIsAnAuditEventAndALoss`, `RunIntegrity.ABoardClockThatLostLockMakesTheRunIncomplete` |
 | The register map is generated and checked | `docs.regmap`, `Registers.TheGeneratedMapMatchesItsSpecification` |
 
 ## 10. Changes
@@ -217,3 +232,4 @@ without them (`measurements/ch24/run_sequence.txt`).
 | 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |
 | 3 | Register map 1.2 of firmware 1.3: time markers (`control.marker_enable`, `marker_interval`, MDQ-P1 revision 1.1) and `datagrams_sent`; the open item on datagrams sent closed (Chapter 24, CR-0026, ADR 0033). |
 | 4 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 3. |
+| 5 | Register map 1.3 of firmware 1.4: `clock_status`, the sampling clock's lock and its lock losses per run (Chapter 38, CR-0031, ADR 0037). |

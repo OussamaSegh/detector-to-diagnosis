@@ -21,6 +21,11 @@
 // off when the service asks, and reports what each board's output FIFO holds and how often it
 // overflowed, so that the service can end a run only once the boards have sent everything.
 //
+// Since Chapter 38 (register map 1.3, firmware 1.4) it reads each board's clock status every
+// cycle: a board whose phase-locked loop is not locked keeps an acquisition from starting, and
+// the loop's lock losses since the triggers went on are reported for the run's integrity
+// (risk control RC-54). A lost lock is not a fault of the board: its bias stays on.
+//
 // One thread writes the boards' state (the cycle, step()); any thread reads a copy of it.
 #pragma once
 
@@ -114,6 +119,9 @@ struct BoardSnapshot {
   // Register map 1.2 (Chapter 24); a board with older firmware has neither.
   bool markers = false;                         // MARKER_ENABLE, as this software last set it
   std::optional<std::uint32_t> datagrams_sent;  // DATAGRAMS_SENT, read in the last good cycle
+  // Register map 1.3 (Chapter 38); a board with older firmware has neither.
+  std::optional<bool> clock_locked;                // CLOCK_STATUS.PLL_LOCKED
+  std::optional<std::uint32_t> clock_lock_losses;  // since the triggers were last switched on
 };
 
 class SlowControl {

@@ -37,11 +37,17 @@ void FakeBoard::soft_reset_locked() {
   fifo_words_ = 0;
   words_sent_ = 0;
   marker_interval_us_ = feb::MarkerInterval::reset;
+  lock_losses_ = 0;  // the loop itself keeps its state: a reset of the logic does not relock it
 }
 
 bool FakeBoard::has_map_1_2() const noexcept {
   const std::uint32_t major = feb::FwVersion::Major::get(fw_version_);
   return major > 1 || (major == 1 && feb::FwVersion::Minor::get(fw_version_) >= 3);
+}
+
+bool FakeBoard::has_map_1_3() const noexcept {
+  const std::uint32_t major = feb::FwVersion::Major::get(fw_version_);
+  return major > 1 || (major == 1 && feb::FwVersion::Minor::get(fw_version_) >= 4);
 }
 
 // [snippet:fake-physics]
@@ -144,6 +150,13 @@ std::uint32_t FakeBoard::read_locked(std::uint32_t address) const {
       const auto q7 = static_cast<std::int32_t>(std::lround(temperature_c_ * 128.0));
       return static_cast<std::uint32_t>(q7) & feb::Temperature::CelsiusQ7::mask;
     }
+    case feb::ClockStatus::address: {
+      if (!has_map_1_3()) {
+        return 0;
+      }
+      const std::uint32_t c = feb::ClockStatus::PllLocked::set(0, pll_locked_ ? 1 : 0);
+      return feb::ClockStatus::LockLosses::set(c, std::min<std::uint32_t>(lock_losses_, 0xFFFF));
+    }
     case feb::Threshold::address:
       return threshold_;
     default:
@@ -195,10 +208,12 @@ HwStatus FakeBoard::write32(std::uint32_t address, std::uint32_t value) {
         soft_reset_locked();
         break;
       }
-      // DATAGRAMS_SENT counts from 0 at every trigger enable, as the sequence numbers do.
+      // DATAGRAMS_SENT counts from 0 at every trigger enable, as the sequence numbers do;
+      // so does the count of lock losses.
       if (feb::Control::TriggerEnable::get(value) != 0 &&
           feb::Control::TriggerEnable::get(control_) == 0) {
         words_sent_ = 0;
+        lock_losses_ = 0;  // and CLOCK_STATUS.LOCK_LOSSES (map 1.3)
       }
       // The board keeps the bias off while it is too hot, whatever software writes.
       control_ = value & (feb::Control::BiasEnable::mask | feb::Control::TriggerEnable::mask |
@@ -253,6 +268,14 @@ void FakeBoard::set_fault(BoardFault f) {
 void FakeBoard::set_firmware(std::uint32_t fw_version) {
   const std::lock_guard lock{mu_};
   fw_version_ = fw_version;
+}
+
+void FakeBoard::set_clock_locked(bool locked) {
+  const std::lock_guard lock{mu_};
+  if (pll_locked_ && !locked) {
+    ++lock_losses_;
+  }
+  pll_locked_ = locked;
 }
 
 void FakeBoard::set_data_rates(double fill_words_per_s, double drain_words_per_s) {

@@ -111,11 +111,11 @@ void SlowControlHardware::update_simulation() {
 std::vector<HardwareBoard> SlowControlHardware::boards() const {
   std::vector<HardwareBoard> out;
   for (const hw::BoardSnapshot& b : sc_->snapshot()) {
-    out.push_back(HardwareBoard{b.slot, hw::to_string(b.state), hw::to_string(b.temp_level),
-                                b.temperature_c, b.target_mv / 1000.0, b.setpoint_mv / 1000.0,
-                                b.monitor_mv / 1000.0, b.current_ua, b.at_limit, b.fault,
-                                b.firmware, b.triggers, b.fifo_empty, b.fifo_words,
-                                b.fifo_overflows, b.markers, b.datagrams_sent});
+    out.push_back(HardwareBoard{
+        b.slot, hw::to_string(b.state), hw::to_string(b.temp_level), b.temperature_c,
+        b.target_mv / 1000.0, b.setpoint_mv / 1000.0, b.monitor_mv / 1000.0, b.current_ua,
+        b.at_limit, b.fault, b.firmware, b.triggers, b.fifo_empty, b.fifo_words, b.fifo_overflows,
+        b.markers, b.datagrams_sent, b.clock_locked, b.clock_lock_losses});
   }
   return out;
 }

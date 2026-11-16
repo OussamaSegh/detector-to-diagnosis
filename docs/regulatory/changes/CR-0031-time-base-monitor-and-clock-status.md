@@ -6,7 +6,7 @@
 | Requested | 2026-11-16, by the software lead |
 | Source | hazard H-02, whose residual named a time error that keeps the order of the singles; roadmap 2.0.0, theme C (Chapter 38) |
 | Decision | approved, 2026-11-16, under the software lead's standing delegation of 2026-11-15 |
-| Commits | in progress; listed when the change is implemented |
+| Commits | ddb3ab4, 6b4c067, 159fb3f and the register map's; in progress, listed in full when the change is implemented |
 
 ## Description
 
@@ -25,9 +25,11 @@ and from the boards' phase-locked loops, and reports a run whose times cannot be
 3. **Configuration schema 2.1.** An optional `timing_monitor` object (SRS-CFG-016).
 4. **Status and integrity** (control API 3.1, new fields only). `timing`: the monitor's snapshot;
    the integrity verdict counts the intervals at alarm.
-5. **Register map 1.3** (firmware 1.4). Each board's clock status: the phase-locked loop's lock
-   and a count of lock losses. Slow control reads it every cycle; each board in `hardware` reports
-   it; a lock loss during a run is an audit event and counts in the integrity verdict.
+5. **Register map 1.3** (firmware 1.4). Each board's clock status (`clock_status` at 0x034): the
+   phase-locked loop's lock and a count of lock losses since the triggers were last switched on.
+   Slow control reads it every cycle; no acquisition starts while a board's clock is not locked;
+   each board in `hardware` reports `clock_locked` and `clock_lock_losses`; a lock loss during a
+   run is an audit event (`clock_lock_lost`) and counts in the integrity verdict (SRS-TIM-006).
 6. **Simulation.** The detector simulator gives each block a clock error (offset, drift, a step at
    a given time), and `minidaq_send` sets it, so that the system tests and the measurements inject
    known faults.
@@ -47,8 +49,7 @@ reconstructed as if nothing happened.
 ### Requirements
 
 Added: SRS-TIM-001, SRS-TIM-002, SRS-TIM-003, SRS-TIM-004 (status and integrity), SRS-TIM-005
-(simulator), SRS-CFG-016 (SRS version 34); the requirements of the clock status are added with
-their code. Verification
+(simulator), SRS-TIM-006 (clock status), SRS-CFG-016 (SRS version 34). Verification
 repeated: the whole unit suite (the pair stage changes) and the system tests of the acquisition.
 
 ### Software items and safety class
@@ -60,14 +61,14 @@ the coincidences with and without it.
 
 ### Risk
 
-Hazard H-02: RC-53 (the time base monitor) and a second control for the clock status, added with
-its code, are new protective measures for the sequence "the time base of one block moves during a run", added to H-02's
-sequence. The probability after the controls stays P2; the residual names what the monitor cannot
-see (a constant offset from the start, which the timing calibration controls; a shift common to
-all blocks, which changes no coincidence; a shift below the warning limit; the interval in which
-a shift is found). A new failure mode is a false alarm, which stores a good run as incomplete: the
-levels need both the limit and 5 standard deviations, and `measurements/ch38/` measures the false
-alarm rate of a healthy run.
+Hazard H-02: RC-53 (the time base monitor) and RC-54 (the boards' clock status) are new
+protective measures for the sequence "the time base of one block moves during a run", added to
+H-02's sequence. The probability after the controls stays P2; the residual names what the monitor
+cannot see (a constant offset from the start, which the timing calibration controls; a shift
+common to all blocks, which changes no coincidence; a shift below the warning limit; the interval
+in which a shift is found) and that RC-54 needs firmware 1.4. A new failure mode is a false alarm,
+which stores a good run as incomplete: the levels need both the limit and 5 standard deviations,
+and `measurements/ch38/` measures the false alarm rate of a healthy run.
 
 ### SOUP
 
@@ -105,11 +106,14 @@ Tests: `BlockOffsets.ExactShiftsGiveTheOffsetsWithAMeanOfZero`,
 `AcquisitionService.ReportsTheTimeBaseOfEachBlock`,
 `RunIntegrity.IntervalsWithABlockClockAtAlarmMakeTheRunIncomplete`,
 `BlockClocks.EachBlockStampsWithItsClockAndNothingElseChanges`, `BlockClocks.AClockThatCannotBeIsRefused`,
-`ControlProtocol.StatusFieldsMatchTheApiVersion`; the system tests
+`ControlProtocol.StatusFieldsMatchTheApiVersion`, `Registers.TheGeneratedMapMatchesItsSpecification`,
+`FakeBoard.HasTheClockStatusOfMap13OnlyWithFirmware14`,
+`SlowControl.ReadsEachBoardsClockAndStartsNoRunWithoutALock`,
+`RunIntegrity.ABoardClockThatLostLockMakesTheRunIncomplete`,
+`HardwareService.AClockThatLosesLockDuringARunIsAnAuditEventAndALoss`; the system tests
 `test_a_block_whose_clock_steps_is_named_and_the_run_is_incomplete` and
 `test_a_healthy_time_base_raises_no_alarm` (system.readout);
-`docs.trace`, `docs.baseline`, `docs.changes`, `docs.risk`; the whole ctest; the tests of the
-status, the clock status and the simulator are added with their code.
+`docs.trace`, `docs.baseline`, `docs.changes`, `docs.risk`, `docs.regmap`; the whole ctest.
 
 ## Decision
 

@@ -90,6 +90,10 @@ struct HardwareBoard {
   // Chapter 24, register map 1.2: time markers on, and datagrams sent since the triggers went on.
   bool markers = false;
   std::optional<std::uint32_t> datagrams_sent;
+  // Chapter 38, register map 1.3: the sampling clock's lock, and its lock losses since the
+  // triggers went on.
+  std::optional<bool> clock_locked;
+  std::optional<std::uint32_t> clock_lock_losses;
 };
 
 class HardwarePort {

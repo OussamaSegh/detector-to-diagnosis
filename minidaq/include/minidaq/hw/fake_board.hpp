@@ -16,6 +16,9 @@
 // counts come from this model, not from datagrams anyone receives: a simulated board's counter
 // matches no real link (assumption: confirm with team that the firmware counts marker datagrams
 // too).
+// Since Chapter 38 (register map 1.3, firmware 1.4) it reports its sampling clock in CLOCK_STATUS:
+// whether its phase-locked loop is locked, and how often it lost lock since the triggers went on.
+// A scenario unlocks and relocks it; a firmware older than 1.4 reads the register as 0.
 //
 // Time is a function the owner gives, so a test moves it by hand and the server uses the steady
 // clock. The board brings its state up to that time at every access. Thread-safe.
@@ -52,7 +55,9 @@ class FakeBoard final : public RegisterBus {
   void set_temperature(double celsius);
   void set_fault(BoardFault f);
   void set_dark_current_ua(double ua);          // at 2.7 V overvoltage and 25 C; scales with both
-  void set_firmware(std::uint32_t fw_version);  // the FW_VERSION register; reset 1.3.0
+  void set_firmware(std::uint32_t fw_version);  // the FW_VERSION register; reset 1.4.0
+  // The phase-locked loop of the sampling clock; a change from locked to unlocked is a lock loss.
+  void set_clock_locked(bool locked);
   // Words per second that events put into the output FIFO while the triggers are on, and that
   // the data link takes out of it.
   void set_data_rates(double fill_words_per_s, double drain_words_per_s);
@@ -72,6 +77,7 @@ class FakeBoard final : public RegisterBus {
   [[nodiscard]] std::uint32_t read_locked(std::uint32_t address) const;
   [[nodiscard]] std::uint32_t status_locked() const;
   [[nodiscard]] bool has_map_1_2() const noexcept;  // firmware 1.3 or later
+  [[nodiscard]] bool has_map_1_3() const noexcept;  // firmware 1.4 or later
   void soft_reset_locked();
   // With hung_bus, waits until hang_time has passed or the fault has changed; true if it hung.
   bool hang_locked(std::unique_lock<std::mutex>& lock);
@@ -99,6 +105,8 @@ class FakeBoard final : public RegisterBus {
   double fifo_words_ = 0;
   double words_sent_ = 0;  // since the triggers were last switched on
   std::uint32_t marker_interval_us_ = 0;
+  bool pll_locked_ = true;
+  std::uint32_t lock_losses_ = 0;  // since the triggers were last switched on
   std::uint64_t accesses_ = 0;
 };
 

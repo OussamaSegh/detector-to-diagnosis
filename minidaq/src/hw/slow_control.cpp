@@ -266,6 +266,22 @@ void SlowControl::step_board(Board& b, std::int64_t now_ns) {
     s.markers = false;
   }
   // [/snippet:triggers]
+  // [snippet:clock-status]
+  // Register map 1.3 (Chapter 38, CR-0031): the board's sampling clock. Read after the triggers
+  // are switched, so that the count of lock losses is the run's from the first cycle of the run.
+  if (major > 1 || minor >= 4) {
+    auto clock = b.bus->read32(feb::ClockStatus::address);
+    if (!clock) {
+      failed_cycle(clock.error());
+      return;
+    }
+    s.clock_locked = feb::ClockStatus::PllLocked::get(*clock) != 0;
+    s.clock_lock_losses = feb::ClockStatus::LockLosses::get(*clock);
+  } else {
+    s.clock_locked.reset();
+    s.clock_lock_losses.reset();
+  }
+  // [/snippet:clock-status]
 
   // The bias for this temperature, inside the limits; the setpoint is written before the
   // supply is enabled, so that it never drives an old value.
@@ -441,6 +457,11 @@ std::optional<std::string> SlowControl::not_ready() const {
     if (s.state != BoardState::ready) {
       return "board " + std::to_string(s.index) + " (slot " + std::to_string(s.slot) + ") is " +
              to_string(s.state);
+    }
+    // A clock that is not locked stamps times that drift against the other boards' (RC-54).
+    if (s.clock_locked == false) {
+      return "board " + std::to_string(s.index) + " (slot " + std::to_string(s.slot) +
+             ") has no locked clock";
     }
   }
   return std::nullopt;

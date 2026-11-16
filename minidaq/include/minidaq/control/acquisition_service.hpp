@@ -25,6 +25,7 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <vector>
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -132,6 +133,8 @@ class AcquisitionService {
   std::optional<std::chrono::steady_clock::time_point> triggers_on_by_;
   std::optional<std::chrono::steady_clock::time_point> drain_by_;
   std::uint64_t drain_timeouts_ = 0;
+  // Each board's clock lock losses this run already noted in the audit trail (Chapter 38).
+  std::vector<std::uint32_t> clock_losses_noted_;
   // Latency histogram counts (one per stage, then end to end) at the start of
   // the last two intervals, for "recent" percentiles. Monitor thread writes.
   struct LatencySnapshot {

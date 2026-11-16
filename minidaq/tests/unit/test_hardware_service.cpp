@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <fstream>
 #include <mutex>
@@ -364,6 +365,34 @@ class DeafToTriggers final : public HardwarePort {
   std::shared_ptr<HardwarePort> inner_;
 };
 
+// Boards whose second one's clock has lost lock `losses` times this run (register map 1.3).
+class LosingLock final : public HardwarePort {
+ public:
+  explicit LosingLock(std::shared_ptr<HardwarePort> inner) : inner_{std::move(inner)} {}
+  std::atomic<std::uint32_t> losses{0};
+  [[nodiscard]] std::optional<std::string> not_ready() const override {
+    return inner_->not_ready();
+  }
+  [[nodiscard]] std::optional<std::string> fault() const override { return inner_->fault(); }
+  void acknowledge() override { inner_->acknowledge(); }
+  [[nodiscard]] std::vector<HardwareBoard> boards() const override {
+    std::vector<HardwareBoard> b = inner_->boards();
+    for (HardwareBoard& x : b) {
+      x.clock_locked = true;
+      x.clock_lock_losses = 0U;
+    }
+    b.at(1).clock_lock_losses = losses.load();
+    return b;
+  }
+  [[nodiscard]] std::string describe() const override { return inner_->describe(); }
+  void set_triggers(bool on) override { inner_->set_triggers(on); }
+  [[nodiscard]] bool triggers_are(bool on) const override { return inner_->triggers_are(on); }
+  [[nodiscard]] bool drained() const override { return inner_->drained(); }
+
+ private:
+  std::shared_ptr<HardwarePort> inner_;
+};
+
 // Two boards that ramp in half a second; the second one with the given changes.
 config::HardwareConfig two_boards_with(const json& second) {
   json board{{"slot", 4}};
@@ -462,4 +491,47 @@ TEST(HardwareService, AStopWaitsForTheBoardsAndADrainThatRunsOutOfTimeIsALoss) {
   const std::lock_guard lock_audit{audit_mu};
   EXPECT_TRUE(std::ranges::any_of(
       audit, [](const AuditRecord& r) { return r.action == "drain_timeout" && !r.ok; }));
+}
+
+TEST(HardwareService, AClockThatLosesLockDuringARunIsAnAuditEventAndALoss) {
+  // REQ: SRS-TIM-006
+  Records records;
+  std::vector<AuditRecord> audit;
+  std::mutex audit_mu;
+  auto port = std::make_shared<LosingLock>(open(two_boards_with(json::object())));
+  ServiceOptions o = options(port, &records);
+  o.audit = [&](const AuditRecord& r) {
+    const std::lock_guard lock{audit_mu};
+    audit.push_back(r);
+  };
+  const auto noted = [&] {
+    const std::lock_guard lock{audit_mu};
+    return std::ranges::count_if(
+        audit, [](const AuditRecord& r) { return r.action == "clock_lock_lost"; });
+  };
+  AcquisitionService svc{o};
+  ASSERT_TRUE(svc.configure(small(), "test").ok);
+  ASSERT_TRUE(test_support::eventually([&] { return svc.start("test").ok; }));
+  ASSERT_TRUE(test_support::eventually(
+      [&] { return svc.status()["hardware"]["boards"][1]["triggers"].get<bool>(); }));
+  port->losses = 1;
+  ASSERT_TRUE(test_support::eventually([&] { return noted() == 1; }));
+  {
+    const std::lock_guard lock{audit_mu};
+    const auto it = std::ranges::find(audit, std::string{"clock_lock_lost"}, &AuditRecord::action);
+    EXPECT_FALSE(it->ok);
+    EXPECT_EQ(it->detail, "run 1: board 1 (slot 4) lost its clock's lock, 1 time this run");
+  }
+  EXPECT_EQ(svc.status()["hardware"]["boards"][1]["clock_lock_losses"], 1);
+  ASSERT_TRUE(svc.stop("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
+  EXPECT_EQ(noted(), 1) << "one event per loss, not per monitor pass";
+  const std::lock_guard lock{records.mu};
+  const json record = json::parse(records.last);
+  EXPECT_FALSE(record["integrity"]["complete"].get<bool>());
+  bool counted = false;
+  for (const json& l : record["integrity"]["losses"]) {
+    counted = counted || l["counter"] == "/hardware/boards/1/clock_lock_losses";
+  }
+  EXPECT_TRUE(counted) << record["integrity"].dump();
 }

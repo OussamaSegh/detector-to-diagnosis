@@ -65,6 +65,18 @@ the patch version.
   integrity verdict counts `/timing/alarm_intervals`. The detector simulator gives each block a
   clock (offset, drift, a step at a time) and `minidaq_send --block-clock` sets it.
   SRS-TIM-001 to SRS-TIM-005, SRS-CFG-016 (SRS version 34).
+- **Register map 1.3** (firmware 1.4; CR-0031, risk control RC-54 of H-02; ICD-FEB version 5).
+  `clock_status` at 0x034 gives the lock of the board's sampling clock and its lock losses since
+  the triggers went on. The slow control reads it every cycle, starts no run while a board's clock
+  is not locked, and reports `clock_locked` and `clock_lock_losses` per board in `hardware`; a
+  lock loss during a run is an audit event (`clock_lock_lost`) and counts in the integrity verdict
+  (`/hardware/boards/N/clock_lock_losses`). The simulated board's firmware is 1.4.0 at reset.
+  SRS-TIM-006.
+
+### Changed (2.0.0-dev)
+
+- The time base monitor accumulates each pair's counts and sums in whole picoseconds and looks
+  the pair up in a table: it cost the pipeline benchmark 7.4% on one CPU and now about 3%.
 
 ### Fixed (2.0.0-dev)
 

@@ -399,7 +399,7 @@ TEST(SlowControl, RefusesFirmwareItWasNotWrittenFor) {
   Rig rig;
   rig.run_for(45 * s);
   ASSERT_EQ(rig.state().state, BoardState::ready);
-  EXPECT_EQ(rig.state().firmware, "1.3.0");
+  EXPECT_EQ(rig.state().firmware, "1.4.0");
   rig.board.set_firmware(0x0101'0003U);
   rig.sc.step(rig.now);
   EXPECT_EQ(rig.state().fault,
@@ -482,6 +482,50 @@ TEST(SlowControl, SwitchesTheTimeMarkersOnWithTheTriggersAndReadsTheDatagramsSen
   quiet.sc.step(quiet.now);
   EXPECT_EQ(*read_field<feb::Control::MarkerEnable>(quiet.board), 0U);
   EXPECT_TRUE(quiet.state().datagrams_sent.has_value());
+}
+
+TEST(SlowControl, ReadsEachBoardsClockAndStartsNoRunWithoutALock) {
+  // REQ: SRS-TIM-006
+  // Firmware 1.4 (register map 1.3): the clock status is read every cycle.
+  Rig rig;
+  rig.run_for(45 * s);
+  ASSERT_EQ(rig.state().state, BoardState::ready);
+  EXPECT_EQ(rig.state().clock_locked, std::optional<bool>{true});
+  EXPECT_EQ(rig.state().clock_lock_losses, std::optional<std::uint32_t>{0U});
+  EXPECT_FALSE(rig.sc.not_ready().has_value());
+
+  // A loop that is not locked keeps a run from starting; it is not a fault of the board.
+  rig.board.set_clock_locked(false);
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().state, BoardState::ready) << "the bias stays on";
+  EXPECT_FALSE(rig.sc.fault().has_value());
+  EXPECT_EQ(rig.sc.not_ready(), std::optional<std::string>{"board 0 (slot 2) has no locked clock"});
+  rig.board.set_clock_locked(true);
+  rig.sc.step(rig.now);
+  EXPECT_FALSE(rig.sc.not_ready().has_value());
+
+  // The losses count from the trigger enable, in the cycle that switches the triggers on.
+  EXPECT_EQ(rig.state().clock_lock_losses, std::optional<std::uint32_t>{1U}) << "before the run";
+  rig.sc.set_triggers(true);
+  rig.sc.step(rig.now);
+  EXPECT_EQ(rig.state().clock_lock_losses, std::optional<std::uint32_t>{0U});
+  rig.board.set_clock_locked(false);
+  rig.board.set_clock_locked(true);
+  rig.sc.step(rig.now + 100 * ms);
+  EXPECT_EQ(rig.state().clock_lock_losses, std::optional<std::uint32_t>{1U});
+  rig.sc.set_triggers(false);
+  rig.sc.step(rig.now + 200 * ms);
+  EXPECT_EQ(rig.state().clock_lock_losses, std::optional<std::uint32_t>{1U})
+      << "the run's count stays after the triggers go off";
+
+  // Firmware 1.3 (map 1.2) has no clock status: nothing is reported and nothing is refused.
+  Rig old;
+  old.board.set_firmware(0x0103'0000U);
+  old.board.set_clock_locked(false);
+  old.run_for(45 * s);
+  EXPECT_FALSE(old.state().clock_locked.has_value());
+  EXPECT_FALSE(old.state().clock_lock_losses.has_value());
+  EXPECT_FALSE(old.sc.not_ready().has_value());
 }
 
 TEST(SlowControl, SaysDrainedOnlyOnceTheFifoIsEmpty) {

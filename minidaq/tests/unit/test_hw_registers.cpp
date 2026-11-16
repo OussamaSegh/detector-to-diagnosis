@@ -104,13 +104,16 @@ TEST(Registers, ATemperatureIsTwosComplementIn128thsOfADegree) {
 
 TEST(Registers, TheGeneratedMapMatchesItsSpecification) {
   // REQ: SRS-HW-008
-  EXPECT_EQ(feb::registers.size(), 14U);
+  EXPECT_EQ(feb::registers.size(), 15U);
   EXPECT_EQ(feb::FifoLevel::address, 0x014U) << "map 1.1";
   EXPECT_EQ(feb::DatagramsSent::address, 0x018U) << "map 1.2";
   EXPECT_EQ(feb::MarkerInterval::address, 0x01CU);
   EXPECT_EQ(feb::MarkerInterval::reset, 100U);
   EXPECT_EQ(feb::Control::MarkerEnable::mask, 0x4U);
-  EXPECT_EQ(feb::FwVersion::reset, 0x0103'0000U) << "firmware 1.3 is the first with map 1.2";
+  EXPECT_EQ(feb::FwVersion::reset, 0x0104'0000U) << "firmware 1.4 is the first with map 1.3";
+  EXPECT_EQ(feb::ClockStatus::address, 0x034U) << "map 1.3";
+  EXPECT_EQ(feb::ClockStatus::PllLocked::mask, 0x1U);
+  EXPECT_EQ(feb::ClockStatus::LockLosses::mask, 0xFFFF'0000U);
   EXPECT_EQ(feb::ErrorFlags::FifoOverflow::mask, 0x8U);
   EXPECT_EQ(feb::BoardId::Magic::get(feb::BoardId::reset), 0x4D51U);
   EXPECT_EQ(feb::Control::address, 0x008U);
@@ -243,6 +246,34 @@ TEST(FakeBoard, HasTheRegistersOfMap12OnlyWithFirmware13) {
   EXPECT_EQ(*read<feb::MarkerInterval>(board), 0U);
   now += 100'000'000;
   EXPECT_EQ(*read<feb::DatagramsSent>(board), 0U);
+}
+
+TEST(FakeBoard, HasTheClockStatusOfMap13OnlyWithFirmware14) {
+  // REQ: SRS-TIM-006
+  std::int64_t now = 0;
+  FakeBoard board{0, [&] { return now; }};
+  EXPECT_EQ(*read<feb::ClockStatus>(board), feb::ClockStatus::reset) << "locked, no losses";
+  board.set_clock_locked(false);
+  board.set_clock_locked(false);  // still the same loss
+  auto c = read<feb::ClockStatus>(board);
+  EXPECT_EQ(feb::ClockStatus::PllLocked::get(*c), 0U);
+  EXPECT_EQ(feb::ClockStatus::LockLosses::get(*c), 1U);
+  board.set_clock_locked(true);
+  board.set_clock_locked(false);
+  board.set_clock_locked(true);
+  c = read<feb::ClockStatus>(board);
+  EXPECT_EQ(feb::ClockStatus::PllLocked::get(*c), 1U);
+  EXPECT_EQ(feb::ClockStatus::LockLosses::get(*c), 2U);
+  ASSERT_TRUE(board.write32(feb::ClockStatus::address, 0));
+  EXPECT_EQ(feb::ClockStatus::LockLosses::get(*read<feb::ClockStatus>(board)), 2U) << "read only";
+  ASSERT_TRUE(write<feb::Control>(board, feb::Control::TriggerEnable::mask));
+  EXPECT_EQ(*read<feb::ClockStatus>(board), 1U) << "the losses count from the trigger enable";
+  board.set_clock_locked(false);
+  ASSERT_TRUE(write<feb::Control>(board, feb::Control::SoftReset::mask));
+  EXPECT_EQ(*read<feb::ClockStatus>(board), 0U) << "a reset of the logic does not relock the loop";
+
+  board.set_firmware(0x0103'0000U);  // map 1.2: no clock status
+  EXPECT_EQ(*read<feb::ClockStatus>(board), 0U);
 }
 
 TEST(FakeBoard, FailsLikeRealBoardsFail) {

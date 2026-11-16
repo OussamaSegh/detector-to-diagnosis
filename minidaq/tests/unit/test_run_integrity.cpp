@@ -153,3 +153,20 @@ TEST(RunIntegrity, IntervalsWithABlockClockAtAlarmMakeTheRunIncomplete) {
   s["timing"] = nullptr;
   EXPECT_EQ(assess_integrity(s)["complete"], true) << "not configured: nothing to count";
 }
+
+TEST(RunIntegrity, ABoardClockThatLostLockMakesTheRunIncomplete) {
+  // REQ: SRS-TIM-006
+  json s = clean_status();
+  s["hardware"] = {{"drain_timeouts", 0U},
+                   {"boards", json::array({{{"fifo_overflows", 0U}, {"clock_lock_losses", 0U}},
+                                           {{"fifo_overflows", 0U}, {"clock_lock_losses", 0U}}})}};
+  EXPECT_EQ(assess_integrity(s)["complete"], true);
+  s["hardware"]["boards"][0]["clock_lock_losses"] = 2U;
+  const json v = assess_integrity(s);
+  EXPECT_EQ(v["complete"], false);
+  ASSERT_EQ(v["losses"].size(), 1U);
+  EXPECT_EQ(v["losses"][0]["counter"], "/hardware/boards/0/clock_lock_losses");
+  EXPECT_EQ(v["losses"][0]["count"], 2U);
+  s["hardware"]["boards"][0]["clock_lock_losses"] = nullptr;  // a board with map 1.2
+  EXPECT_EQ(assess_integrity(s)["complete"], true);
+}

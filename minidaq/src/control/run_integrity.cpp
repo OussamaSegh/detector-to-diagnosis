@@ -65,6 +65,11 @@ json assess_integrity(const json& status) {
       for (std::size_t i = 0; i < boards->size(); ++i) {
         add(losses, "/hardware/boards/" + std::to_string(i) + "/fifo_overflows",
             (*boards)[i].value("fifo_overflows", json(0U)));
+        // Register map 1.3 (Chapter 38): a clock that lost lock during the run moved that
+        // block's time base (risk control RC-54); null on a board with an older map.
+        const json losses_of_lock = (*boards)[i].value("clock_lock_losses", json(0U));
+        add(losses, "/hardware/boards/" + std::to_string(i) + "/clock_lock_losses",
+            losses_of_lock.is_null() ? json(0U) : losses_of_lock);
       }
     }
     add(losses, "/hardware/drain_timeouts", it->value("drain_timeouts", json(0U)));

@@ -55,7 +55,10 @@ json hardware_json(const HardwarePort& hw) {
          {"fifo_words", b.fifo_words},
          {"fifo_overflows", b.fifo_overflows},
          {"markers", b.markers},  // 2.5: Chapter 24
-         {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)}});
+         {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)},
+         {"clock_locked",
+          b.clock_locked ? json(*b.clock_locked) : json(nullptr)},  // 3.1: Chapter 38
+         {"clock_lock_losses", b.clock_lock_losses ? json(*b.clock_lock_losses) : json(nullptr)}});
   }
   const auto not_ready = hw.not_ready();
   return json{{"description", hw.describe()},
@@ -303,6 +306,7 @@ CommandResult AcquisitionService::start(std::string_view who) {
   pipeline_->start();
   drain_timeouts_ = 0;
   drain_by_.reset();
+  clock_losses_noted_.clear();
   if (opt_.hardware) {
     opt_.hardware->set_triggers(true);
     triggers_on_by_ = std::chrono::steady_clock::now() + opt_.trigger_timeout;
@@ -454,6 +458,26 @@ void AcquisitionService::check_run_locked() {
     }
   }
   // [/snippet:board-sequence]
+  // [snippet:clock-audit]
+  // A board's clock that lost lock during the run (register map 1.3, RC-54): an audit event when
+  // it happens, and the count in the integrity verdict. Only once the triggers are on: before,
+  // the boards' counts may still be the previous run's.
+  if (opt_.hardware && !triggers_on_by_) {
+    const std::vector<HardwareBoard> boards = opt_.hardware->boards();
+    clock_losses_noted_.resize(boards.size(), 0);
+    for (std::size_t i = 0; i < boards.size(); ++i) {
+      const std::uint32_t n = boards[i].clock_lock_losses.value_or(0);
+      if (n > clock_losses_noted_[i]) {
+        clock_losses_noted_[i] = n;
+        note("service", "clock_lock_lost",
+             "run " + std::to_string(run_id_) + ": board " + std::to_string(i) + " (slot " +
+                 std::to_string(boards[i].slot) + ") lost its clock's lock, " + std::to_string(n) +
+                 (n == 1 ? " time" : " times") + " this run",
+             false);
+      }
+    }
+  }
+  // [/snippet:clock-audit]
   if (snapshot_latest_ && now - snapshot_latest_->taken >= opt_.interval_period) {
     take_latency_snapshot_locked();
   }

@@ -22,7 +22,8 @@ namespace minidaq::control {
 // the decoder; singles out of time
 // order (sort stage and sorter); coincidences the sink could not encode, whose
 // energy it clamped, or that it dropped after a fault; intervals in which a detector block's
-// clock was at alarm (Chapter 38), which altered the times. A counter that is
+// clock was at alarm (Chapter 38), which altered the times; lock losses of a board's
+// sampling clock during the run (register map 1.3, Chapter 38). A counter that is
 // missing from the status (no such port) counts as 0.
 [[nodiscard]] nlohmann::json assess_integrity(const nlohmann::json& status);
 // [/snippet:api]
