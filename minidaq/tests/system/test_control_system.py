@@ -9,6 +9,7 @@ problem report MDQ-PR-015 for the items ctl and server.
 """
 import json
 import os
+import pathlib
 import socket
 import ssl
 import subprocess
@@ -259,6 +260,70 @@ class Startup(SystemTest):
                                MINIDAQ_RUNTIME_DIR=str(self.tmp)))
             self.assertNotEqual(p.returncode, 0, path)
             self.assertIn(str(path), p.stderr)
+
+    def refused(self, *args):
+        """Runs the server with args; it must exit at start-up with a nonzero status. Returns stderr."""
+        p = subprocess.run([app("minidaq_server"), "--port", "0", *map(str, args)], capture_output=True,
+                           text=True, timeout=30, stdin=subprocess.DEVNULL,
+                           env=dict(os.environ, MINIDAQ_RUNTIME_DIR=str(self.tmp)))
+        self.assertNotEqual(p.returncode, 0, args)
+        return p.stderr
+
+    def ed25519(self, name, passphrase=None):
+        """A new Ed25519 key, encrypted with passphrase if given, and a directory with its public key."""
+        key = self.tmp / f"{name}.pem"
+        secret = ["-aes-256-cbc", "-pass", f"pass:{passphrase}"] if passphrase else []
+        subprocess.run(["openssl", "genpkey", "-algorithm", "ed25519", *secret, "-out", str(key)],
+                       check=True, capture_output=True, stdin=subprocess.DEVNULL, timeout=30)
+        keys = self.tmp / f"{name}-keys"
+        keys.mkdir()
+        subprocess.run(["openssl", "pkey", "-in", str(key), *(["-passin", f"pass:{passphrase}"] if passphrase else []),
+                        "-pubout", "-out", str(keys / f"{name}.pub.pem")],
+                       check=True, capture_output=True, stdin=subprocess.DEVNULL, timeout=30)
+        return key, keys
+
+    def test_each_start_up_file_that_cannot_be_used_stops_the_server_with_its_reason(self):
+        # REQ: SRS-CTL-043
+        # Each file the server needs is read before the control API listens: a wrong one stops it
+        # with the reason, never with a crash, a prompt or a server that runs without the file.
+        missing = self.tmp / "missing"
+        bad_hw = write_json(self.tmp / "hw.json", {"schema_version": "1.1", "boards": []})
+        cal = write_json(self.tmp / "cal.json", run_config(
+            self.tmp, calibration={"file": str(missing), "scanner_serial": "MDQ-REF-0001"}))
+        encrypted, _ = self.ed25519("encrypted", passphrase="a passphrase")
+        _, public = self.ed25519("site")
+        for args, reason in (
+                (["--colour", "blue"], "usage"),
+                (["--audit"], "usage"),
+                (["--tokens", missing], "tokens:"),
+                (["--tls-cert", missing, "--tls-key", missing], "TLS:"),
+                (["--crash-report", missing / "crash.txt"], "cannot open the crash report"),
+                (["--audit", missing / "audit.jsonl"], "cannot open audit trail"),
+                (["--hardware", missing], "cannot read"),
+                (["--hardware", bad_hw], "/boards"),
+                (["--signing-key", missing], "--signing-key: cannot open"),
+                (["--signing-key", encrypted], "is encrypted"),
+                (["--signing-key", public / "site.pub.pem"], "not an Ed25519 private key"),
+                (["--config", cal], str(missing))):
+            with self.subTest(args=[str(a) for a in args]):
+                self.assertIn(reason, self.refused(*args))
+
+    def test_a_server_with_a_signing_key_signs_each_run(self):
+        # REQ: SRS-OUT-013, SRS-OUT-014
+        key, keys = self.ed25519("site")
+        cfg = write_json(self.tmp / "run.json", run_config(self.tmp, seconds=0.2))
+        with Server(self.tmp, "--signing-key", str(key), "--calibration-keys", str(keys)) as server:
+            Ctl(server).run(cfg)
+            self.assertEqual(server.stop(), 0, server.output)
+        records = list(self.tmp.glob("st-*.run.json"))
+        self.assertEqual(len(records), 1)
+        self.assertTrue(pathlib.Path(f"{records[0]}.sig").exists())
+        verify = [app("minidaq_listmode"), "verify-run", "--keys", str(keys), str(records[0])]
+        p = subprocess.run(verify, capture_output=True, text=True, timeout=60)
+        self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+        _, other = self.ed25519("other")
+        p = subprocess.run([*verify[:3], str(other), str(records[0])], capture_output=True, text=True, timeout=60)
+        self.assertNotEqual(p.returncode, 0, "a key the site did not install does not vouch for the run")
 
 
 if __name__ == "__main__":
