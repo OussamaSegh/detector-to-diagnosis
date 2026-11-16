@@ -128,6 +128,35 @@ the patch version.
   slow control that did not exist yet. It now prints the reason and exits with 1 (MDQ-PR-072,
   found by the product build's system test).
 
+### Fixed (review of the 2.0.0 release candidate)
+
+- Chapter 39: the measured timing resolution is a little more than the set value at 200 and
+  300 ps only (497 ps for 500); at 500 ps the background variability with time of flight is
+  higher for the first six iterations, not five, and the curves meet at the sixth; the cost of a
+  projection with time of flight is about 44 times, not 45, and only the forward projection
+  scales better on four cores (3.7 against 2.4; the back projection 3.3 either way); Exercise
+  39.2's bin of 300 ps holds 99.96% of a centered point, as its test says, not 99.98%.
+  `measurements/ch39/tof.py` and `tof.txt` say the same about the resolution.
+- Chapter 40: the found-by counts add up to 73 (9 by tests and 9 during development); 0.3.0's
+  window holds nine problems found in Chapters 6 to 12 and five from Part III, not thirteen;
+  MDQ-PR-006's decision was made again once, for 1.3.0; the reports that reached a release are
+  nine of the eleven with `affects`, seven of them closed with an escape; the release records
+  that said "No CAPA is open" were those of 0.9.0 and 1.0.0.
+- Chapter 38: the drift row of the time base table runs from the start of the run, which is why
+  the reference already holds 50 ps of it; the alarm limit is no longer called "a sixth" of the
+  trues' spread.
+- About this edition: Part X's title matches the Part; `std::expected` replaces the shim with
+  GCC only (the shim stays for Clang 18, Chapter 1); the control API and the schema are 3.1 and
+  2.1 at this release. Chapter 6 marks ADR 0006 superseded by 0035; Appendix A's trade-off table
+  names ADR 0035. `docs/migration-2.0.md` shows the 3.1 server's reply.
+- Tool list: TL-31 (the reconstruction tool) names time of flight in its use, its failure and
+  its confidence, with `measurements/ch39/tof.txt` as evidence (CR-0032 had left it out).
+- Architecture description version 27: the external interfaces name control API 3.1,
+  configuration schema 2.1 and register map 1.3. System test plan version 4: every system test
+  file is in its table (the time base cases, start-up files and signed runs; Hardware,
+  Diagnostics and Platform, which earlier versions left out), and CI's seven presets.
+- American spelling in four places ("behavior", "traveled").
+
 ### Fixed (review of 1.3.0)
 
 - `minidaq_listmode verify-run` refuses a signed run record whose digest has a field of the

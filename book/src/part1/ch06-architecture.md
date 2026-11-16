@@ -478,7 +478,8 @@ connection drops", because connections drop for harmless reasons. It is an expli
 client holds the run by sending a heartbeat, and the service stops when the lease expires,
 which is visible, configurable and testable.
 
-Figure [](#fig-ch06-session) traces the default behaviour: the run belongs to the service, not to the connection that started it.
+Figure [](#fig-ch06-session) traces the default behavior: the run belongs to the service, not to the
+connection that started it.
 
 ```{.figure #fig-ch06-session src="book/figures/tikz/ch06/session.tex" caption="A control session. Client A configures and starts a run, then disconnects; the run continues and client B stops it." alt="Sequence diagram with lifelines for client A, service and client B. Client A sends hello, start (rejected as illegal in idle), configure and start; the service replies running. Client A disconnects, the service audits it and keeps running, then client B asks status and sends stop." width="85%"}
 ```
@@ -592,7 +593,7 @@ in `docs/adr/`, and this chapter wrote the first seven:
 | 0003 | Control protocol: NDJSON over TCP; the service owns the run | Accepted |
 | 0004 | nlohmann/json, in the control plane only | Accepted |
 | 0005 | A table-driven acquisition state machine | Accepted |
-| 0006 | C++20 with a `std::expected` shim (Chapter 1) | Accepted |
+| 0006 | C++20 with a `std::expected` shim (Chapter 1) | Accepted (superseded by 0035 in 2.0) |
 | 0007 | List-mode file format | Proposed |
 
 The most valuable section is *Options*. A record with one option is a description, not a

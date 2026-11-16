@@ -279,8 +279,10 @@ First, what the simulator gives. A point source at the center, in air, for three
 | 500 | 497 | 67,292 |
 
 The width is that of τ over every line through the center, read from a histogram of 20 ps bins. It
-is within a few percent of the set value, a little more because the photons interact at different
-depths in their crystals, which changes the path lengths of each pair. On a real scanner this is
+is within a few percent of the set value. At 200 and 300 ps it is a little more, because the photons
+interact at different depths in their crystals, which changes the path lengths of each pair; added
+in quadrature, that is about 65 ps, which at 500 ps changes the width by 4 ps, less than the
+histogram's bins can show. On a real scanner this is
 how the CTR is measured (NEMA NU 2 specifies the details); the reconstruction needs the value, and
 the timing calibration should report it (assumption: confirm with team where the product's CTR
 comes from and how it is kept current).
@@ -339,14 +341,15 @@ and the regions here are spread over the whole background. It is an estimate of 
 magnitude, and the measurement is what goes into a document.
 
 At 500 ps the gain shrinks, as it should: the filtered noise falls by 1.26 and the background
-variability by 1.11 after 12 iterations, against an estimate of 1.63. For the first five
+variability by 1.11 after 12 iterations, against an estimate of 1.63. For the first six
 iterations the background variability is even higher with time of flight, because the image with
-time of flight is further along in its convergence, and the two curves cross at the sixth. A
+time of flight is further along in its convergence; the two curves meet at the sixth (3.00% and
+2.99%) and cross before the seventh. A
 comparison at equal iterations, early, would have said time of flight at 500 ps hurts; at equal
 contrast, it helps a little. The two runs are separate simulations, so the images without time of
 flight differ too, by their noise.
 
-```{.figure #fig-ch39-noise src="book/figures/plots/ch39/noise.py" caption="The background variability of the cylinder at each OSEM iteration, without and with time of flight, at 300 ps and 500 ps. At 300 ps it stops growing after about five iterations with time of flight and keeps climbing without; at 500 ps the curves cross at the sixth iteration and the gain is small." alt="Two line plots side by side, background variability in percent against the OSEM iteration from 1 to 12. Left, timing resolution 300 ps: without TOF rises from 1.8 to 4.3 percent; TOF 300 ps rises from 2.0 to about 2.6 percent by iteration 4 and stays flat. Right, timing resolution 500 ps: without TOF rises from 1.3 to 3.5 percent; TOF 500 ps starts higher, 1.5 percent, crosses the curve without TOF at iteration 6 near 3.0 percent, and ends at 3.1 percent." width="100%" inputs="measurements/ch39/tof.txt"}
+```{.figure #fig-ch39-noise src="book/figures/plots/ch39/noise.py" caption="The background variability of the cylinder at each OSEM iteration, without and with time of flight, at 300 ps and 500 ps. At 300 ps it stops growing after about five iterations with time of flight and keeps climbing without; at 500 ps the curves meet at the sixth iteration and the gain after it is small." alt="Two line plots side by side, background variability in percent against the OSEM iteration from 1 to 12. Left, timing resolution 300 ps: without TOF rises from 1.8 to 4.3 percent; TOF 300 ps rises from 2.0 to about 2.6 percent by iteration 4 and stays flat. Right, timing resolution 500 ps: without TOF rises from 1.3 to 3.5 percent; TOF 500 ps starts higher, 1.5 percent, meets the curve without TOF at iteration 6 near 3.0 percent, stays below it after, and ends at 3.1 percent." width="100%" inputs="measurements/ch39/tof.txt"}
 ```
 
 The mean of the background agrees between the two reconstructions within 0.7% at 300 ps and
@@ -460,12 +463,13 @@ of 128 × 128 pixels onto all 192 views, with 21 TOF bins:
 | TOF, 21 bins | 1 | 0.977 | 0.983 |
 | TOF, 21 bins | 4 | 0.265 | 0.294 |
 
-About 45 times the time without time of flight on one thread. The erf calls dominate: about 17 per
-step, against one multiplication and one addition per pixel for the projection itself. The threads
-scale better with time of flight (3.7 against 2.5 on four cores), since there is more work per
-line and the same memory traffic. The sinograms are K times larger: 21 times, for a 2D sinogram
-of MiniDAQ's size (192 views of 227 radial bins) about 7 MB instead of 0.35 MB in double precision, and a fully 3D TOF sinogram of
-a clinical scanner is gigabytes.
+About 43 to 44 times the time without time of flight on one thread. The erf calls dominate: about 17
+per step, against one multiplication and one addition per pixel for the projection itself. The
+forward projection scales better with time of flight on four cores (3.7 against 2.4), since there is
+more work per line and the same memory traffic; the back projection, which ends by summing one image
+per thread, scales about the same with and without (3.3). The sinograms are K times larger: 21
+times, for a 2D sinogram of MiniDAQ's size (192 views of 227 radial bins) about 7 MB instead of 0.35
+MB in double precision, and a fully 3D TOF sinogram of a clinical scanner is gigabytes.
 
 The cost has well-known remedies, none of which MiniDAQ needs yet: tabulate the kernel once,
 since it depends only on the distance from a bin's center and the bin's width (a table of a few
@@ -571,7 +575,7 @@ timing error. *Starter:* `exercises/ch39/e2_tof_kernel/starter/kernel.py`, which
 picoseconds to millimeters with c instead of c / 2 and samples the Gaussian at each bin's center.
 *Acceptance:* `tests/test_kernel.py` passes: 300 ps is 19.1 mm; the probabilities of a point well
 inside the bins add up to one to 10^−12^ and are symmetric for a point at the middle; with bins of
-300 ps and a resolution of 100 ps, a point at the middle of a bin puts 99.98% in it; 200,000
+300 ps and a resolution of 100 ps, a point at the middle of a bin puts 99.96% in it; 200,000
 simulated timing errors fall in the bins as the probabilities say. *Time:* 2 hours.
 
 **Exercise 39.3 (H): Block clock offsets from a point source.** *Goal:* measure each block's clock
@@ -621,8 +625,8 @@ sanitizer and static analysis builds are clean; every starter of the chapter fai
 7. Which test ties the projector with time of flight to the one without it?
 8. Why can the unfiltered pixel noise be higher with time of flight while the background
    variability is lower?
-9. At 500 ps, the background variability with time of flight is higher for five iterations and
-   lower after. Why, and what comparison avoids the confusion?
+9. At 500 ps, the background variability with time of flight is higher for the first six
+   iterations and lower after. Why, and what comparison avoids the confusion?
 10. Why does a clock offset of one block barely change a point source's image, and why is that no
     comfort?
 11. Why does the tool refuse time of flight for a run with no time base verdict, rather than
@@ -648,7 +652,7 @@ sanitizer and static analysis builds are clean; every starter of the chapter fai
   moved 14% of a point's image away from the point.
 - The tool refuses time of flight for a run with no time base verdict, an interval at alarm or a
   lost lock (RC-55), and reconstructs such a run without it.
-- A projection with time of flight costs about 45 times one without, dominated by the erf calls.
+- A projection with time of flight costs about 44 times one without, dominated by the erf calls.
 
 ## Further reading {.unnumbered}
 

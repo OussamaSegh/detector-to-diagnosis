@@ -126,6 +126,19 @@ passes no passphrase callback, so an encrypted key makes OpenSSL prompt on the t
 `server` item's branch coverage fell from 73.8% to 66.9%, and the system test of the signing
 options is still to be written.
 
+
+**Review of the 2.0.0 release candidate (2026-11-16, branch claude/project-thread-cdm7xr, PR for
+the main thread to merge locally).** Part X, the chapters changed by CR-0028 to CR-0030, the
+migration note and the controlled documents of 2.0.0-dev, against `measurements/` and the code.
+The Chapter 6 session was replayed against the server built here and matches. Fixed: numbers of
+Chapters 38 to 40 that the measurements do not support (CHANGELOG, "review of the 2.0.0 release
+candidate"), the edition page (Part X's title, the shim, API 3.1 and schema 2.1), TL-31 without
+time of flight, architecture description v27 (interfaces at 3.1, 2.1, map 1.3) and system test
+plan v4 (every system test file, seven presets). Every starter of Chapters 38 to 40 fails and
+every solution passes; the `docs`, `book` and `tools` tests pass. Not changed, for the release:
+every 2.0.0-dev controlled document is still a draft (approve before the release); the coding
+standard's header still says 1.3.1-dev; `ci/run_all.sh` runs six presets by default, CI seven;
+TL-31's version names numpy 1.26 while `measurements/ch39` ran on numpy 2.5.3.
 ## Release 1.1.0 (for reference)
 
 **Release 1.1.0 (2026-11-10): the illustrated interior.** Internal audit before the checks

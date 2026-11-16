@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Runs the same gates as the CI pipeline, locally. Usage:
-#   ci/run_all.sh            # all presets
+#   ci/run_all.sh            # the six development presets
+#   ci/run_all.sh product    # the product build without the simulator (CR-0029)
 #   ci/run_all.sh debug tsan # selected presets
+# CI runs all seven; the release checks run the six, then the product with its own record row.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

@@ -150,9 +150,9 @@ one most easily lost when the fix is quick.
 
 **What is decided?** Fix it, in which kind of release; or release with it as a known anomaly, with
 the decision and its reason recorded in the report. MDQ-PR-006, a port fault noticed up to 20 ms
-late, has been open since Chapter 6 on purpose, and its decision has been made again twice with
-the cost of the fix weighed. An open report with a recorded decision is not a failure of the
-process; an open report without one is.
+late, has been open since Chapter 6 on purpose: its decision was made for release 0.3.0 and made
+again for 1.3.0, with the cost of the fix weighed. An open report with a recorded decision is not a
+failure of the process; an open report without one is.
 
 The first three answers are the software team's; the quality system takes them from there.
 Whether a problem is a complaint, whether it must be reported to a regulator and in what time,
@@ -351,10 +351,10 @@ The limit is wider for a small window, where a few reports are a large rate by c
 Two windows are above their limits, and neither says that the product got worse.
 
 **0.3.0** is an artifact of recording. The problem reports file was created in Chapter 14, during
-0.3.0's development, and the thirteen problems found before it, in Chapters 6 to 12, were recorded
-then. The windows of 0.1.0 and 0.2.0 have no reports because there was no file, not because there
-were no problems. A trend tool counts records, and a change in how records are kept looks exactly
-like a change in what they record.
+0.3.0's development, and the nine problems found before it, in Chapters 6 to 12, were recorded then,
+beside the five that Part III's own work found. The windows of 0.1.0 and 0.2.0 have no reports
+because there was no file, not because there were no problems. A trend tool counts records, and a
+change in how records are kept looks exactly like a change in what they record.
 
 **0.4.0** is a change in the checks. Part IV added property-based tests, the coverage review of
 each software item, system tests through the real server and the release checks run as one script
@@ -365,13 +365,15 @@ known and good.
 
 The other tables of `measurements/ch40/trends.txt` say more about the process than about the code.
 Of the 73 reports, 24 were found by the release checks, 18 by CI, 10 by reviews and audits, 9 by
-tests during development, and 3 by measurements. The release checks, run a dozen times, found a
+tests, 9 during development (in a chapter's design or its code, by none of these) and 3 by
+measurements. The release checks, run a dozen times, found a
 third of everything: the long, slow checks that run before a release, the soak, the regression
 gate, the stress run under ThreadSanitizer, the coverage review, find what the checks of every
 commit do not. By root cause, process (16) and test (13) outnumber code (12) and tool (12): most
-problems were in how the work was checked, not in what it did. Nine reports since MDQ-PR-006
-reached at least one release, and the escape fields of those reports name the check that would
-have caught each.
+problems were in how the work was checked, not in what it did. Nine of the eleven reports
+with an `affects` field reached at least one release. The seven of them that are closed name, in
+their escape fields, the check that would have caught each; the other two, MDQ-PR-006 and
+MDQ-PR-064, are open known anomalies with recorded decisions.
 
 The maintenance plan's rules (section 6) turn this into decisions at each minor release: a window
 above its limit, a root cause category with three or more reports in one window, or a problem
@@ -397,8 +399,9 @@ with a finer measure before judging the limit again. A known anomaly with a deci
 legitimate state of a release; the record is what makes it legitimate.
 
 **The independent review of 1.0.0** found that CAPA-0002's effectiveness check, due at 0.4.0, had
-never been made, and that release records from 0.9.0 said "No CAPA is open" (MDQ-PR-065). It also
-found fifteen controlled documents released with the status "draft for review" (MDQ-PR-066). Both
+never been made, and that the release records of 0.9.0 and 1.0.0 said "No CAPA is open"
+(MDQ-PR-065). It also found fifteen controlled documents released with the status "draft for
+review" (MDQ-PR-066). Both
 were process problems in releases already made. Their fixes were checks: `tools/check_capa.py`
 fails on an overdue effectiveness check, and the design file check fails on a draft document in a
 release. Their `affects` fields say which releases carry the wrong records, which is all a fix of

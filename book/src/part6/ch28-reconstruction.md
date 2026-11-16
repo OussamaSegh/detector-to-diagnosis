@@ -325,7 +325,7 @@ noisy data are mostly noise; the maximum-likelihood image of noisy counts is its
 In practice the reconstruction is stopped early, at a number of iterations chosen for the task,
 and often followed by a smoothing filter.
 
-Figure [](#fig-ch28-montage) shows the same behaviour in images.
+Figure [](#fig-ch28-montage) shows the same behavior in images.
 
 ```{.figure #fig-ch28-montage src="book/figures/plots/ch28/montage.py" caption="A phantom like the measurement's, simulated in numpy at about its counts and reconstructed with the chapter's own projector and osem(), 8 subsets. The shape is there by iteration 2 and the small rod by iteration 4; after that, mostly noise is added." alt="Eight panels. The phantom: a disc with three bright rods of 12, 8 and 5 mm. Its sinogram: three sinusoids over a broad band. Reconstructions at iterations 1, 2, 4, 8, 16 and 32, with background noise of about 8, 11, 20, 35, 56 and 78%: the rods sharpen by iteration 4 and the background becomes grainier with every iteration." width="100%" inputs="tools/recon/mlem.py"}
 ```

@@ -162,8 +162,9 @@ def main():
                        -c["dt_ps"], c["dt_ps"])[prompt]
         hist, _ = np.histogram(tau, bins=np.arange(-1500, 1501, 20))
         print(f"| {ctr} | {fwhm(hist, 20.0):.0f} | {prompt.sum():,} |")
-    print("\nThe width is that of tau over every line through the center; a little more than the "
-          "set resolution, since the photons interact at different depths in their crystals.")
+    print("\nThe width is that of tau over every line through the center, within a few percent of the "
+          "set resolution: a little more at 200 and 300 ps, since the photons interact at different "
+          "depths in their crystals, an effect lost in the 20 ps bins at 500 ps.")
 
     # 2. Noise.
     section("2. Noise: a uniform cylinder of radius 100 mm in air, with a hot rod")

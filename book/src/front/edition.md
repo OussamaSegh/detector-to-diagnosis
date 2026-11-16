@@ -23,7 +23,7 @@ this file is printed on the title page and in every output file name.
 | IX. Imaging IT, team workflow and AI-assisted coding | 35 to 37 | 0.9.0 | complete |
 | Appendix A. Software architecture and design | | 0.9.0 | complete |
 | The first edition, complete and packaged | 1 to 37, Appendix A | 1.0.0 | complete |
-| X. Time, time of flight and maintenance | 38 to 40 | 2.0.0 | complete |
+| X. Time, flight and the years after release | 38 to 40 | 2.0.0 | complete |
 | The Second Edition | 1 to 40, Appendix A | 2.0.0 | complete |
 
 **For readers of the first edition.** What changed between 1.0.0 and 2.0.0, in the order of the
@@ -34,15 +34,16 @@ releases (the CHANGELOG of the companion repository lists every change):
   edition, one page per chapter.
 - **1.3.0** added time markers to the front-end boards' data (register map 1.2) and signed run
   records, calibration tables and reports.
-- **2.0.0** is the breaking release. C++23 is the baseline (GCC 13, Clang 18), and `std::expected`
-  replaces the first edition's shim. The shipped server is built without the simulator and
-  refuses simulated data. The control API is version 3.0 and the acquisition configuration
-  schema version 2.0, with renamed fields: a 1.x configuration or a 2.x request is refused with a
-  message that names `docs/migration-2.0.md`, and `tools/migrate_config.py` converts a
-  configuration. Every listing, exercise and solution uses the new interfaces. Part X adds
-  Chapter 38, on clock distribution and a monitor of the scanner's time base, Chapter 39, time of
-  flight in the reconstruction, and Chapter 40, the maintenance of a released product, with
-  MiniDAQ's own history from 1.0 to 2.0 as its example.
+- **2.0.0** is the breaking release. C++23 is the baseline (GCC 13, Clang 18): with GCC,
+  `minidaq::Expected` is now `std::expected` itself, and the first edition's shim remains only for
+  Clang 18, whose standard library hides `std::expected`. The shipped server is built without the
+  simulator and refuses simulated data. The control API moves to major version 3 and the acquisition
+  configuration to schema 2 (3.1 and 2.1 at this release), with renamed fields: a 1.x configuration
+  or a 2.x request is refused with a message that names `docs/migration-2.0.md`, and
+  `tools/migrate_config.py` converts a configuration. Every listing, exercise and solution uses the
+  new interfaces. Part X adds Chapter 38, on clock distribution and a monitor of the scanner's time
+  base, Chapter 39, time of flight in the reconstruction, and Chapter 40, the maintenance of a
+  released product, with MiniDAQ's own history from 1.0 to 2.0 as its example.
 
 The companion repository (`minidaq-vX.Y.Z.zip`) contains MiniDAQ with one git tag per
 chapter (`ch00` is the empty starting point, then `ch01`, `ch02` and so on, to `ch40`),
