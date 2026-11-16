@@ -401,3 +401,34 @@ TEST(AcquisitionService, ProfilePathMustBeASmallRegularFile) {
   EXPECT_EQ(svc.state(), AcqState::idle);
   std::remove(big.c_str());
 }
+
+TEST(AcquisitionService, ReportsTheTimeBaseOfEachBlock) {
+  // REQ: SRS-TIM-004
+  AcquisitionService svc{with_default_adapters()};
+  EXPECT_TRUE(svc.status()["timing"].is_null()) << "nothing configured";
+  config::AcquisitionConfig c;
+  c.source.rate_hz = 2e6;
+  c.source.stop_after_s = 0.6;
+  c.timing_monitor.interval_s = 0.1;
+  ASSERT_TRUE(svc.configure(c, "test").ok);
+  EXPECT_EQ(svc.status()["timing"]["alarm_ps"], 250.0);
+  EXPECT_FALSE(svc.status()["timing"].contains("blocks")) << "no run yet";
+  ASSERT_TRUE(svc.start("test").ok);
+  ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
+  const auto st = svc.status();
+  const auto& t = st["timing"];
+  ASSERT_EQ(t["blocks"].size(), ScannerGeometry::num_blocks) << t.dump();
+  EXPECT_GE(t["intervals"].get<std::uint64_t>(), 5U);
+  EXPECT_EQ(t["baseline_done"], true);
+  // The synthetic source pairs each crystal with the opposite one of its ring: 36 groups of two
+  // blocks, every block observed, and a healthy run raises no alarm.
+  EXPECT_EQ(t["groups"], 36);
+  EXPECT_EQ(t["level"], "normal") << t.dump();
+  EXPECT_EQ(t["alarm_intervals"], 0);
+  EXPECT_TRUE(t["alarm_blocks"].empty());
+  for (const auto& b : t["blocks"]) {
+    EXPECT_EQ(b["level"], "normal");
+    EXPECT_TRUE(b["first_alarm_s"].is_null());
+  }
+  EXPECT_EQ(st["integrity"]["complete"], true) << st["integrity"].dump();
+}

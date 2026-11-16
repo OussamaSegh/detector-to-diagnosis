@@ -46,8 +46,9 @@ reconstructed as if nothing happened.
 
 ### Requirements
 
-Added: SRS-TIM-001, SRS-TIM-002, SRS-TIM-003, SRS-CFG-016 (SRS version 34); the requirements of the status,
-the integrity verdict, the clock status and the simulator are added with their code. Verification
+Added: SRS-TIM-001, SRS-TIM-002, SRS-TIM-003, SRS-TIM-004 (status and integrity), SRS-TIM-005
+(simulator), SRS-CFG-016 (SRS version 34); the requirements of the clock status are added with
+their code. Verification
 repeated: the whole unit suite (the pair stage changes) and the system tests of the acquisition.
 
 ### Software items and safety class
@@ -100,7 +101,13 @@ Tests: `BlockOffsets.ExactShiftsGiveTheOffsetsWithAMeanOfZero`,
 `TimingMonitor.AStepInOneBlockClockIsFoundInThatBlockAndNoOther`,
 `TimingMonitor.TheRandomsDoNotDiluteTheShift`, `TimingMonitor.ADriftIsFoundOnceItPassesTheLimits`,
 `TimingMonitor.TooFewTruesLeaveTheBlocksUnobserved`,
-`TimingMonitor.ASnapshotCanBeTakenWhileTheMonitorRecords`, `Config.TheTimingMonitorIsReadFromSchema21`;
+`TimingMonitor.ASnapshotCanBeTakenWhileTheMonitorRecords`, `Config.TheTimingMonitorIsReadFromSchema21`,
+`AcquisitionService.ReportsTheTimeBaseOfEachBlock`,
+`RunIntegrity.IntervalsWithABlockClockAtAlarmMakeTheRunIncomplete`,
+`BlockClocks.EachBlockStampsWithItsClockAndNothingElseChanges`, `BlockClocks.AClockThatCannotBeIsRefused`,
+`ControlProtocol.StatusFieldsMatchTheApiVersion`; the system tests
+`test_a_block_whose_clock_steps_is_named_and_the_run_is_incomplete` and
+`test_a_healthy_time_base_raises_no_alarm` (system.readout);
 `docs.trace`, `docs.baseline`, `docs.changes`, `docs.risk`; the whole ctest; the tests of the
 status, the clock status and the simulator are added with their code.
 

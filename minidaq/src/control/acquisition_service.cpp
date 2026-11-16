@@ -589,6 +589,7 @@ json AcquisitionService::status_locked() const {
     j["hardware"]["drain_timeouts"] = drain_timeouts_;  // 2.3: Chapter 24
   }
   j["calibration"] = calibration_json_locked();  // 2.4: Chapter 26
+  j["timing"] = timing_json_locked();            // 3.1: Chapter 38
   j["integrity"] = assess_integrity(j);  // risk control RC-01
   return j;
 }
@@ -625,5 +626,52 @@ json AcquisitionService::calibration_json_locked() const {
   return j;
 }
 // [/snippet:calibration-status]
+
+// [snippet:timing-status]
+// The time base monitor's latest evaluation (SRS-TIM-004): its settings, each block's clock offset
+// against the run's first intervals with its level, and the blocks at alarm. Null before the first
+// configuration; without a run, the settings only.
+json AcquisitionService::timing_json_locked() const {
+  if (!config_) {
+    return nullptr;
+  }
+  const auto& m = config_->timing_monitor;
+  json j{{"interval_s", m.interval_s},
+         {"warning_ps", m.warning_ps},
+         {"alarm_ps", m.alarm_ps},
+         {"significance", m.significance}};
+  if (!pipeline_) {
+    return j;
+  }
+  const TimingSnapshot snap = pipeline_->timing().snapshot();
+  json blocks = json::array();
+  json alarm_blocks = json::array();
+  for (std::size_t b = 0; b < snap.blocks.size(); ++b) {
+    const TimingBlock& k = snap.blocks[b];
+    blocks.push_back(
+        {{"level", to_string(k.level)},
+         {"offset_ps", k.offset_ps},
+         {"sigma_ps", k.sigma_ps},
+         {"worst_ps", k.worst_ps},
+         {"alarm_intervals", k.alarm_intervals},
+         {"first_alarm_s", k.first_alarm_ps < 0
+                               ? json(nullptr)
+                               : json(static_cast<double>(k.first_alarm_ps) * 1e-12)}});
+    if (k.alarm_intervals > 0) {
+      alarm_blocks.push_back(b);
+    }
+  }
+  j["intervals"] = snap.intervals;
+  j["baseline_done"] = snap.baseline_done;
+  j["level"] = to_string(snap.level);
+  j["pairs"] = snap.pairs;
+  j["groups"] = snap.groups;
+  j["chi2_per_dof"] = snap.chi2_per_dof;
+  j["alarm_intervals"] = snap.alarm_intervals;
+  j["alarm_blocks"] = std::move(alarm_blocks);
+  j["blocks"] = std::move(blocks);
+  return j;
+}
+// [/snippet:timing-status]
 
 }  // namespace minidaq::control

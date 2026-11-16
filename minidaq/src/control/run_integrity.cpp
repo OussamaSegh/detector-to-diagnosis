@@ -48,6 +48,11 @@ json assess_integrity(const json& status) {
   if (const auto it = status.find("sorter_counters"); it != status.end() && it->is_object()) {
     add(losses, "/sorter_counters/out_of_order", it->value("out_of_order", json(0U)));
   }
+  // The time base (Chapter 38): an interval in which a block's clock was at alarm altered the
+  // time differences of that block's coincidences (risk control RC-53).
+  if (const auto it = status.find("timing"); it != status.end() && it->is_object()) {
+    add(losses, "/timing/alarm_intervals", it->value("alarm_intervals", json(0U)));
+  }
   if (const auto it = status.find("sink_counters"); it != status.end() && it->is_object()) {
     for (const char* name : {"invalid", "energies_clamped", "blocks_dropped"}) {
       add(losses, std::string{"/sink_counters/"} + name, it->value(name, json(0U)));

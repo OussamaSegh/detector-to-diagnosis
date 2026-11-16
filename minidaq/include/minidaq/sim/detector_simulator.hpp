@@ -45,6 +45,19 @@ struct Phantom {
 // What the detector does with a photon that reaches it. The defaults are
 // typical of a LYSO/SiPM brain scanner (assumption: confirm with team for
 // your scanner's actual values).
+// The clock of one detector block's readout (Chapter 38). The block stamps an event that happens
+// at t with t + offset + drift * t + (step if t >= step_at): a board that starts late, an
+// oscillator that runs fast, and a phase-locked loop that loses lock and locks again elsewhere. A
+// block that no entry names keeps a perfect clock. No random number is drawn for it, so the decays
+// and their singles are those of the same seed without clock errors, only stamped differently.
+struct BlockClock {
+  std::uint32_t block = 0;  // ScannerGeometry::block_of
+  double offset_ps = 0.0;   // at most 1 us either way
+  double drift_ppb = 0.0;   // parts per billion, 1 ppb = 1 ps per ms; at most 100,000
+  double step_at_s = -1.0;  // negative: no step
+  double step_ps = 0.0;     // at most 1 us either way
+};
+
 struct DetectorModel {
   double crystal_mu_per_mm = 0.087;     // LYSO at 511 keV, used for all energies
   double photofraction = 0.6;           // interacting photons depositing their full energy
@@ -73,6 +86,8 @@ struct DetectorModel {
   // A scanner keeps its crystals from scan to scan: two runs with different seeds and one crystal
   // seed are two scans of one scanner, as a normalization scan and the scan it corrects are.
   std::uint64_t crystal_seed = 0;
+  // Each block's clock (Chapter 38): at most one entry per block; the others are perfect.
+  std::vector<BlockClock> block_clocks;
 };
 
 struct SimulatorConfig {
@@ -132,6 +147,8 @@ class DetectorSimulator {
   [[nodiscard]] std::span<const double> crystal_skews_ps() const noexcept { return skews_ps_; }
   // Each crystal's detection probability (1 when the model has no efficiency spread).
   [[nodiscard]] std::span<const double> crystal_efficiencies() const noexcept { return efficiencies_; }
+  // The clock error of a block at time t in ps (0 for a perfect clock), as BlockClock defines it.
+  [[nodiscard]] double clock_error_ps(std::uint32_t block, double t_ps) const noexcept;
 
  private:
   void simulate_next_decay();
@@ -158,6 +175,14 @@ class DetectorSimulator {
   std::vector<double> skews_ps_;
   std::vector<double> efficiencies_;
   double early_skew_ps_ = 0.0;  // the most negative delay, as a positive number
+  // Per block (Chapter 38): offset, drift as a fraction, step time and size; all 0 / -1 if none.
+  std::vector<double> clock_offset_ps_;
+  std::vector<double> clock_drift_;
+  std::vector<double> clock_step_at_ps_;
+  std::vector<double> clock_step_ps_;
+  bool has_clocks_ = false;
+  // How much earlier than its true time a block can stamp an event at t or later (>= 0).
+  [[nodiscard]] double clock_early_ps(double t_ps) const noexcept;
   SimulatorStats stats_{};
 };
 

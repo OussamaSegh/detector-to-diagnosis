@@ -49,9 +49,9 @@ def send(port, *args):
 
 
 class Readout(SystemTest):
-    def acquire(self, prefix, *send_args, **udp):
+    def acquire(self, prefix, *send_args, extra=None, **udp):
         """Configures a UDP run, sends one stream, stops the run; returns (sender report, status)."""
-        cfg = write_json(self.tmp / f"{prefix}.json", udp_config(self.tmp, prefix, **udp))
+        cfg = write_json(self.tmp / f"{prefix}.json", {**udp_config(self.tmp, prefix, **udp), **(extra or {})})
         with Server(self.tmp) as server:
             ctl = Ctl(server)
             ctl.ok("configure", str(cfg))
@@ -82,6 +82,33 @@ class Readout(SystemTest):
         self.assertEqual(link["words_delivered"], sent["singles"])
         self.assertEqual(status["sorter_counters"]["singles_in"], sent["singles"])
         self.assertTrue(status["integrity"]["complete"], status["integrity"])
+
+    # [snippet:clock-step]
+    def test_a_block_whose_clock_steps_is_named_and_the_run_is_incomplete(self):
+        # REQ: SRS-TIM-004, SRS-TIM-005
+        # Block 29's phase-locked loop locks again 600 ps away at 1.5 s of detector time. About 20,000
+        # prompts per second over some hundreds of pairs of blocks: intervals of 0.5 s.
+        timing = {"schema_version": "2.1", "timing_monitor": {"interval_s": 0.5}}
+        _, status = self.acquire("clock-step", "--activity", "1.5e6", "--seconds", "2.5", "--seed", "5",
+                                 "--speed", "1", "--block-clock", "29:0:0:1.5:600", extra=timing)
+        t = status["timing"]
+        self.assertEqual(t["alarm_blocks"], [29], {k: v for k, v in t.items() if k != "blocks"})
+        self.assertEqual(t["blocks"][29]["level"], "alarm")
+        self.assertAlmostEqual(t["blocks"][29]["first_alarm_s"], 2.0, delta=0.01)
+        self.assertLess(t["chi2_per_dof"], 2.0, "one block's clock explains the shifts")
+        self.assertFalse(status["integrity"]["complete"])
+        self.assertIn("/timing/alarm_intervals", [x["counter"] for x in status["integrity"]["losses"]])
+
+    def test_a_healthy_time_base_raises_no_alarm(self):
+        # REQ: SRS-TIM-004
+        timing = {"schema_version": "2.1", "timing_monitor": {"interval_s": 0.5}}
+        _, status = self.acquire("clock-healthy", "--activity", "1.5e6", "--seconds", "2.5", "--seed", "6",
+                                 "--speed", "1", extra=timing)
+        t = status["timing"]
+        self.assertEqual(t["alarm_intervals"], 0, t)
+        self.assertEqual(t["groups"], 1, "a cylinder source connects every block")
+        self.assertTrue(status["integrity"]["complete"], status["integrity"])
+    # [/snippet:clock-step]
 
     # [snippet:damaged]
     def check_accounting(self, sent, status):

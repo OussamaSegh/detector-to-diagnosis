@@ -418,3 +418,66 @@ TEST(DetectorSimulator, EachCrystalDetectsWithItsOwnEfficiency) {
   }
   EXPECT_NEAR((low_b / low_a) / (high_b / high_a), low_e / high_e, 0.02);
 }
+
+TEST(BlockClocks, EachBlockStampsWithItsClockAndNothingElseChanges) {
+  // REQ: SRS-TIM-005
+  SimulatorConfig base;
+  base.activity_bq = 5e6;
+  base.source = {SourceShape::Kind::cylinder, {0.0, 0.0, 0.0}, 60.0, 100.0};
+  base.seed = 11;
+  SimulatorConfig faulty = base;
+  faulty.detector.block_clocks = {
+      {.block = 5, .offset_ps = 300.0},
+      {.block = 40, .offset_ps = -200.0, .drift_ppb = -50.0},  // 50 ps per ms, slow
+      {.block = 60, .step_at_s = 0.002, .step_ps = 500.0}};
+  DetectorSimulator a{base};
+  DetectorSimulator b{faulty};
+  const Picoseconds end{4'000'000'000};  // 4 ms
+  auto sa = a.generate_until(end);
+  auto sb = b.generate_until(end - Picoseconds{1'000'000});  // the clocks move stamps by < 1 us
+  ASSERT_TRUE(std::is_sorted(sb.begin(), sb.end(), [](const TruthSingle& x, const TruthSingle& y) {
+    return x.single.time < y.single.time;
+  }));
+  const auto key = [](const TruthSingle& s) { return std::pair{s.decay, s.photon}; };
+  const auto by_key = [&](const TruthSingle& x, const TruthSingle& y) { return key(x) < key(y); };
+  std::sort(sa.begin(), sa.end(), by_key);
+  std::sort(sb.begin(), sb.end(), by_key);
+  std::size_t matched = 0;
+  std::size_t shifted = 0;
+  auto it = sa.begin();
+  for (const TruthSingle& s : sb) {
+    it = std::lower_bound(it, sa.end(), s, by_key);
+    ASSERT_NE(it, sa.end());
+    ASSERT_EQ(key(*it), key(s)) << "the same decays and photons";
+    EXPECT_EQ(it->single.crystal, s.single.crystal);
+    EXPECT_EQ(it->single.energy, s.single.energy);
+    const auto t = static_cast<double>(it->single.time.count());
+    const std::uint32_t block = ScannerGeometry::block_of(s.single.crystal);
+    const double want = b.clock_error_ps(block, t);
+    EXPECT_NEAR(static_cast<double>((s.single.time - it->single.time).count()), want, 1.0)
+        << "block " << block << " at " << t;
+    ++matched;
+    shifted += want != 0.0 ? 1 : 0;
+  }
+  EXPECT_GT(matched, 1'000U);
+  EXPECT_GT(shifted, 30U);
+  EXPECT_EQ(b.clock_error_ps(60, 1.9e9), 0.0);
+  EXPECT_EQ(b.clock_error_ps(60, 2.0e9), 500.0);
+  EXPECT_DOUBLE_EQ(b.clock_error_ps(40, 1e9), -200.0 - 50.0);
+  EXPECT_EQ(b.clock_error_ps(0, 1e9), 0.0);
+}
+
+TEST(BlockClocks, AClockThatCannotBeIsRefused) {
+  // REQ: SRS-TIM-005
+  for (const BlockClock& k :
+       {BlockClock{.block = ScannerGeometry::num_blocks}, BlockClock{.block = 1, .offset_ps = 2e6},
+        BlockClock{.block = 1, .drift_ppb = 2e5},
+        BlockClock{.block = 1, .step_at_s = 0.0, .step_ps = -2e6}}) {
+    SimulatorConfig c;
+    c.detector.block_clocks = {k};
+    EXPECT_FALSE(validate(c).has_value()) << k.block;
+  }
+  SimulatorConfig twice;
+  twice.detector.block_clocks = {{.block = 3}, {.block = 3}};
+  EXPECT_FALSE(validate(twice).has_value());
+}

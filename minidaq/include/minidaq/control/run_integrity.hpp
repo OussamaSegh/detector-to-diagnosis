@@ -21,7 +21,8 @@ namespace minidaq::control {
 // the readout link; words dropped by any pipeline stage or found invalid by
 // the decoder; singles out of time
 // order (sort stage and sorter); coincidences the sink could not encode, whose
-// energy it clamped, or that it dropped after a fault. A counter that is
+// energy it clamped, or that it dropped after a fault; intervals in which a detector block's
+// clock was at alarm (Chapter 38), which altered the times. A counter that is
 // missing from the status (no such port) counts as 0.
 [[nodiscard]] nlohmann::json assess_integrity(const nlohmann::json& status);
 // [/snippet:api]

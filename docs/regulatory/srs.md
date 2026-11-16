@@ -493,9 +493,11 @@ controls RC-53 and RC-54 of hazard H-02, for a time error that keeps the order o
 
 | ID | Requirement | Item | Method |
 |---|---|---|---|
-| SRS-TIM-001 | For each interval of acquisition time (1 s by default), the pair stage shall compute, for each pair of detector blocks, the shift of the mean time difference of its true coincidences (its prompt coincidences less its delayed coincidences, over the differences within the half window of 2 ns by default) from the pair's reference, which the first 2 intervals of the run give by default, leaving out a pair with fewer than 50 trues (true coincidences) by default in the interval or in the baseline. | processing | T |
+| SRS-TIM-001 | For each interval of acquisition time (1 s by default), the pair stage shall compute, for each pair of detector blocks, the shift of the mean time difference of its true coincidences (its prompt coincidences less its delayed coincidences, over the differences within the half window of 2 ns by default) from the pair's reference, which the first 2 intervals of the run give by default, leaving out a pair with fewer than 10 trues (true coincidences) by default in the interval or in the baseline. | processing | T |
 | SRS-TIM-002 | The pair stage shall estimate one clock offset per detector block, with its standard deviation, as the weighted least squares solution of the pairs' shifts with a mean of zero over each group of blocks connected by pairs, report a block in no group of two or more blocks as unobserved, and give the fit's chi-square per degree of freedom. | processing | T |
 | SRS-TIM-003 | The time base monitor shall put a block at alarm when its offset exceeds the alarm limit (250 ps by default) and 5 times its standard deviation by default, at warning when it exceeds the warning limit (100 ps by default) and that multiple of its standard deviation, and at normal otherwise, counting per block and for the scanner the intervals at alarm and giving the end of each block's first interval at alarm (risk control RC-53). | processing | T |
+| SRS-TIM-004 | The status shall give, once configured, the time base monitor's limits and, during and after a run, its latest evaluation: per block the level, offset, standard deviation, largest offset, intervals at alarm and the time of the first, and for the scanner the level, the pairs and groups used, chi-square per degree of freedom, the intervals at alarm and the blocks that were at alarm; the integrity verdict counting the intervals at alarm as a loss (risk control RC-53). | service | T |
+| SRS-TIM-005 | The detector simulator shall stamp each single with the clock error of its block (an offset, a drift in parts per billion and a step at a given time, each configured per block, also with `minidaq_send --block-clock`), leaving the decays, crystals and energies those of the same seed without clock errors and refusing a clock error above 1 us or a drift above 100,000 parts per billion. | sim | T |
 
 ## 3. Verification other than test
 
@@ -548,4 +550,4 @@ controls RC-53 and RC-54 of hazard H-02, for a time error that keeps the order o
 | 31 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 30. |
 | 32 | SRS-PLT-012: the product build without the simulator (CR-0029, MDQ-PR-009). |
 | 33 | Control API 3.0 and configuration schema 2.0 (CR-0030): SRS-CTL-022 and SRS-CFG-001 changed; SRS-CFG-013, SRS-CFG-014 and SRS-CFG-015 added. |
-| 34 | The time base monitor (CR-0031, ADR 0037, Chapter 38): SRS-TIM-001 to SRS-TIM-003 and SRS-CFG-016 added. |
+| 34 | The time base monitor (CR-0031, ADR 0037, Chapter 38): SRS-TIM-001 to SRS-TIM-005 and SRS-CFG-016 added. |

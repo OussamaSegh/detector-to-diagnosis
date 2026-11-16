@@ -73,6 +73,19 @@ Expected<SimulatorConfig, std::string> validate(const SimulatorConfig& cfg) {
   if (!in_range(cfg.non_collinearity_fwhm_deg, 0.0, 10.0) || cfg.non_collinearity_fwhm_deg == 10.0) {
     return fail("non_collinearity_fwhm_deg must be in [0, 10)");
   }
+  std::vector<bool> named(G::num_blocks, false);
+  for (const BlockClock& k : cfg.detector.block_clocks) {
+    if (k.block >= G::num_blocks || named[k.block]) {
+      return fail("block_clocks: block " + std::to_string(k.block) +
+                  " is not a block of the scanner or is named twice");
+    }
+    named[k.block] = true;
+    if (!in_range(k.offset_ps, -1e6, 1e6) || !in_range(k.drift_ppb, -1e5, 1e5) ||
+        !in_range(k.step_ps, -1e6, 1e6) || !std::isfinite(k.step_at_s)) {
+      return fail("block_clocks: block " + std::to_string(k.block) +
+                  ": offset and step within 1 us, drift within 100,000 ppb");
+    }
+  }
   return cfg;
 }
 
@@ -93,6 +106,20 @@ DetectorSimulator::DetectorSimulator(const SimulatorConfig& cfg)
       gains_(ScannerGeometry::num_crystals, 1.0),
       skews_ps_(ScannerGeometry::num_crystals, 0.0),
       efficiencies_(ScannerGeometry::num_crystals, 1.0) {
+  // Chapter 38: each block's clock; no random number is drawn for it.
+  if (!cfg_.detector.block_clocks.empty()) {
+    has_clocks_ = true;
+    clock_offset_ps_.assign(ScannerGeometry::num_blocks, 0.0);
+    clock_drift_.assign(ScannerGeometry::num_blocks, 0.0);
+    clock_step_at_ps_.assign(ScannerGeometry::num_blocks, -1.0);
+    clock_step_ps_.assign(ScannerGeometry::num_blocks, 0.0);
+    for (const BlockClock& k : cfg_.detector.block_clocks) {
+      clock_offset_ps_[k.block] = k.offset_ps;
+      clock_drift_[k.block] = k.drift_ppb * 1e-9;
+      clock_step_at_ps_[k.block] = k.step_at_s < 0.0 ? -1.0 : k.step_at_s * 1e12;
+      clock_step_ps_[k.block] = k.step_at_s < 0.0 ? 0.0 : k.step_ps;
+    }
+  }
   // Chapter 26: the crystals of an uncalibrated detector, from a stream of their own.
   const auto& d = cfg_.detector;
   const std::uint64_t crystal_seed = d.crystal_seed != 0 ? d.crystal_seed : cfg_.seed;
@@ -120,12 +147,39 @@ DetectorSimulator::DetectorSimulator(const SimulatorConfig& cfg)
 // A single can be returned once no future decay can produce an earlier one.
 // Flight times are positive, and the time blur is clamped to +-6 sigma, so a
 // decay at time t produces singles no earlier than t - time_clamp_ps_ (less the most negative
-// channel delay of an uncalibrated detector, Chapter 26).
+// channel delay of an uncalibrated detector, Chapter 26, and the most a block's clock stamps
+// early, Chapter 38).
 bool DetectorSimulator::ready() const noexcept {
   return !pending_.empty() && static_cast<double>(pending_.front().single.time.count()) <
-                                  std::floor(next_decay_ps_ - time_clamp_ps_ - early_skew_ps_);
+                                  std::floor(next_decay_ps_ - time_clamp_ps_ - early_skew_ps_ -
+                                             clock_early_ps(next_decay_ps_));
 }
 // [/snippet:order]
+
+double DetectorSimulator::clock_error_ps(std::uint32_t block, double t_ps) const noexcept {
+  if (!has_clocks_ || block >= clock_offset_ps_.size()) {
+    return 0.0;
+  }
+  const double step = clock_step_at_ps_[block] >= 0.0 && t_ps >= clock_step_at_ps_[block]
+                          ? clock_step_ps_[block]
+                          : 0.0;
+  return clock_offset_ps_[block] + clock_drift_[block] * t_ps + step;
+}
+
+// The error of a block at t or later is at least offset + drift * t + min(0, step) while the drift
+// is not negative, and decreases with t when it is, so its value at t bounds the future ones.
+double DetectorSimulator::clock_early_ps(double t_ps) const noexcept {
+  if (!has_clocks_) {
+    return 0.0;
+  }
+  double early = 0.0;
+  for (std::size_t b = 0; b < clock_offset_ps_.size(); ++b) {
+    const double lowest = clock_offset_ps_[b] + std::min(0.0, clock_drift_[b] * t_ps) +
+                          std::min(0.0, clock_step_ps_[b]);
+    early = std::max(early, -lowest);
+  }
+  return std::ceil(early) + 1.0;
+}
 
 TruthSingle DetectorSimulator::pop() {
   std::pop_heap(pending_.begin(), pending_.end(), later);
@@ -300,8 +354,10 @@ void DetectorSimulator::track_photon(Vec3 p, Vec3 d, std::uint8_t photon) {
 
   // 5. Time: decay time, flight time, and the detector's time blur.
   const double blur = std::clamp(time_sigma_ps_ * gauss_(rng_), -time_clamp_ps_, time_clamp_ps_);
-  const double t =
-      current_decay_ps_ + path_mm / physics::speed_of_light_mm_per_ps + blur + skews_ps_[crystal.value()];
+  double t = current_decay_ps_ + path_mm / physics::speed_of_light_mm_per_ps + blur +
+             skews_ps_[crystal.value()];
+  // The block's clock stamps that time (Chapter 38).
+  t += clock_error_ps(G::block_of(crystal), t);
 
   // 6. What the board reports for an uncalibrated crystal (Chapter 26).
   double reported = measured;

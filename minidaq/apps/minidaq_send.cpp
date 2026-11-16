@@ -34,9 +34,39 @@ constexpr const char* usage =
     "                    [--words-per-packet N] [--first-sequence N] [--source-id N] [--seed N]\n"
     "                    [--loss P] [--reorder P] [--duplicate P] [--speed F] "
     "[--marker-interval-us N]\n"
+    "                    [--block-clock BLOCK:OFFSET_PS:DRIFT_PPB[:STEP_AT_S:STEP_PS]]...\n"
     "  --speed 1 sends in real time (detector time), 2 twice as fast, 0 as fast as possible\n"
     "  --marker-interval-us N sends a time marker every N us of detector time (register map 1.2);\n"
-    "    0, the default, sends none, as a board with an older map\n";
+    "    0, the default, sends none, as a board with an older map\n"
+    "  --block-clock gives one detector block a clock error (Chapter 38): an offset, a drift in\n"
+    "    parts per billion (1 ppb = 1 ps per ms) and, optionally, a step at a time; repeatable\n";
+
+// BLOCK:OFFSET_PS:DRIFT_PPB[:STEP_AT_S:STEP_PS]
+bool parse_block_clock(std::string_view v, minidaq::sim::BlockClock& k) {
+  std::vector<std::string_view> f;
+  for (std::size_t from = 0;;) {
+    const std::size_t colon = v.find(':', from);
+    f.push_back(
+        v.substr(from, colon == std::string_view::npos ? std::string_view::npos : colon - from));
+    if (colon == std::string_view::npos) {
+      break;
+    }
+    from = colon + 1;
+  }
+  if (f.size() != 3 && f.size() != 5) {
+    return false;
+  }
+  std::uint64_t block = 0;
+  bool ok = minidaq::parse_into(f[0], block, std::uint64_t{0}, std::uint64_t{0xFFFF}) &&
+            minidaq::parse_into(f[1], k.offset_ps, -1e6, 1e6) &&
+            minidaq::parse_into(f[2], k.drift_ppb, -1e5, 1e5);
+  k.block = static_cast<std::uint32_t>(block);
+  if (ok && f.size() == 5) {
+    ok = minidaq::parse_into(f[3], k.step_at_s, 0.0, 1e4) &&
+         minidaq::parse_into(f[4], k.step_ps, -1e6, 1e6);
+  }
+  return ok;
+}
 
 struct Options {
   std::string host = "127.0.0.1";
@@ -88,6 +118,10 @@ bool parse(int argc, char** argv, Options& o) {
       ok = minidaq::parse_into(v, o.marker_interval_us, 0.0, 1e6);
     } else if (a == "--speed") {
       ok = minidaq::parse_into(v, o.speed, 0.0, 1000.0);
+    } else if (a == "--block-clock") {
+      minidaq::sim::BlockClock k;
+      ok = parse_block_clock(v, k);
+      o.sim.detector.block_clocks.push_back(k);
     } else {
       ok = false;
     }

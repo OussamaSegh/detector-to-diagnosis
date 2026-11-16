@@ -113,7 +113,7 @@ struct CalibrationSettings {
 struct TimingMonitorSettings {
   double interval_s = 1.0;
   std::uint32_t baseline_intervals = 2;
-  double min_trues = 50.0;
+  double min_trues = 10.0;
   std::int64_t half_window_ps = 2'000;
   double warning_ps = 100.0;
   double alarm_ps = 250.0;

@@ -213,7 +213,7 @@ TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
   for (const auto& f : status_fields) {
     EXPECT_TRUE(seen.contains(std::string{f.name})) << "status_fields lists '" << f.name << "', which never appeared";
   }
-  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "3.0");
+  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "3.1");
 }
 // [/snippet:status_fields_test]
 

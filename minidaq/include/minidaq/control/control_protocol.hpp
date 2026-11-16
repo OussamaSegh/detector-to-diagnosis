@@ -46,7 +46,8 @@ namespace minidaq::control {
 // 3.0: CR-0030 (ADR 0036): every request names its API; status.hardware.describe is
 // "description", each board's "temperature" is "temperature_level", status.sorter is
 // "sorter_counters"; configure takes the configuration schema 2.0.
-inline constexpr std::string_view api_version = "3.0";
+// 3.1: CR-0031 (Chapter 38): status.timing, each board's clock status; schema 2.1.
+inline constexpr std::string_view api_version = "3.1";
 // What a refused client is told.
 inline constexpr std::string_view api_migration_hint = "see docs/migration-2.0.md";
 
@@ -73,6 +74,7 @@ inline constexpr std::array status_fields{
     StatusField{"integrity", true},           // 1.1: Chapter 15, risk control RC-01
     StatusField{"hardware", true},            // 2.2: Chapter 22, null without hardware
     StatusField{"calibration", true},         // 2.4: Chapter 26, null until configured
+    StatusField{"timing", true},              // 3.1: Chapter 38, null until configured
     StatusField{"detector_counters", false},  // 1.1: Chapter 9
     StatusField{"sink_counters", false},      // 1.1: Chapter 12
     StatusField{"run", false},

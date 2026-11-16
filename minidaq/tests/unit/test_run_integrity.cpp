@@ -138,3 +138,18 @@ TEST(RunIntegrity, DatagramsTheBoardsSentButTheLinkNeverSawAreALoss) {
   s["detector_counters"].erase("packets_delivered");  // a simulated detector: no link
   EXPECT_EQ(assess_integrity(s)["complete"], true);
 }
+
+TEST(RunIntegrity, IntervalsWithABlockClockAtAlarmMakeTheRunIncomplete) {
+  // REQ: SRS-TIM-004
+  json s = clean_status();
+  s["timing"] = {{"alarm_intervals", 0U}, {"level", "normal"}};
+  EXPECT_EQ(assess_integrity(s)["complete"], true);
+  s["timing"]["alarm_intervals"] = 3U;
+  const json v = assess_integrity(s);
+  EXPECT_EQ(v["complete"], false);
+  ASSERT_EQ(v["losses"].size(), 1U);
+  EXPECT_EQ(v["losses"][0]["counter"], "/timing/alarm_intervals");
+  EXPECT_EQ(v["losses"][0]["count"], 3U);
+  s["timing"] = nullptr;
+  EXPECT_EQ(assess_integrity(s)["complete"], true) << "not configured: nothing to count";
+}

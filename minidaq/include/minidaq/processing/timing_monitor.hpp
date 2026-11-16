@@ -53,7 +53,10 @@ struct TimingMonitorConfig {
   // a scanner of 300 mm are within about +-1 ns plus the resolution; each random adds noise in
   // proportion to the square of its difference, and the sorter's window is wider.
   Picoseconds half_window{2'000};
-  double min_trues = 50.0;    // a pair with fewer true coincidences in an interval is not used
+  // A pair with fewer true coincidences in an interval is not used. A scanner of 72 blocks at a
+  // clinical rate gives each pair some tens of trues per second; the weights of the fit give a
+  // pair with few of them little say.
+  double min_trues = 10.0;
   double warning_ps = 100.0;  // assumption: confirm with team; a TOF scanner needs tighter limits
   double alarm_ps = 250.0;
   double significance = 5.0;  // and |offset| above this many standard deviations

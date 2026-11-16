@@ -60,8 +60,11 @@ the patch version.
   within +-2 ns) from the pair's reference of the first two intervals, and solves for one clock
   offset per block by weighted least squares with a mean of zero per group of connected blocks.
   A block above the warning (100 ps) or alarm (250 ps) limit and 5 standard deviations is named.
-  Configuration schema 2.1 adds the optional `timing_monitor` object. SRS-TIM-001 to SRS-TIM-003,
-  SRS-CFG-016 (SRS version 34).
+  Configuration schema 2.1 adds the optional `timing_monitor` object. **Control API 3.1**: the
+  status gains `timing` (each block's level, offset and uncertainty, the blocks at alarm), and the
+  integrity verdict counts `/timing/alarm_intervals`. The detector simulator gives each block a
+  clock (offset, drift, a step at a time) and `minidaq_send --block-clock` sets it.
+  SRS-TIM-001 to SRS-TIM-005, SRS-CFG-016 (SRS version 34).
 
 ### Fixed (2.0.0-dev)
 
