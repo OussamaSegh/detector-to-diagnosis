@@ -134,18 +134,17 @@ class TimingMonitor {
   [[nodiscard]] const TimingMonitorConfig& config() const noexcept { return cfg_; }
 
  private:
+  // Per pair, the counts and the sums of d and of d^2 of the prompts ([0]) and the delayeds ([1]),
+  // in whole picoseconds: exact, and cheaper per coincidence than doubles.
   struct Sums {
-    double n_prompt = 0.0;
-    double n_delayed = 0.0;
-    double sum_prompt = 0.0;
-    double sum_delayed = 0.0;
-    double sq_prompt = 0.0;
-    double sq_delayed = 0.0;
+    std::array<std::int64_t, 2> n{};
+    std::array<std::int64_t, 2> sum{};
+    std::array<std::int64_t, 2> sq{};
     void add(const Sums& o) noexcept;
+    [[nodiscard]] double trues() const noexcept { return static_cast<double>(n[0] - n[1]); }
   };
   void close_interval();
   void try_publish();
-  static std::size_t pair_index(std::uint32_t a, std::uint32_t b) noexcept;
 
   TimingMonitorConfig cfg_;
   std::vector<Sums> current_;    // the interval in progress

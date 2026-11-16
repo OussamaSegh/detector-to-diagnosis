@@ -169,13 +169,32 @@ BlockOffsets solve_block_offsets(std::size_t blocks, std::span<const PairShift> 
 // [/snippet:solver]
 
 void TimingMonitor::Sums::add(const Sums& o) noexcept {
-  n_prompt += o.n_prompt;
-  n_delayed += o.n_delayed;
-  sum_prompt += o.sum_prompt;
-  sum_delayed += o.sum_delayed;
-  sq_prompt += o.sq_prompt;
-  sq_delayed += o.sq_delayed;
+  for (std::size_t k = 0; k < 2; ++k) {
+    n[k] += o.n[k];
+    sum[k] += o.sum[k];
+    sq[k] += o.sq[k];
+  }
 }
+
+namespace {
+
+// The index of the pair of blocks (a, b) among the pairs a < b, for either order, looked up rather
+// than computed: record() needs it for every coincidence.
+constexpr std::size_t kBlocks = ScannerGeometry::num_blocks;
+constexpr std::array<std::uint16_t, kBlocks * kBlocks> kPairIndex = [] {
+  std::array<std::uint16_t, kBlocks * kBlocks> t{};
+  std::size_t i = 0;
+  for (std::size_t a = 0; a < kBlocks; ++a) {
+    for (std::size_t b = a + 1; b < kBlocks; ++b, ++i) {
+      t[a * kBlocks + b] = static_cast<std::uint16_t>(i);
+      t[b * kBlocks + a] = static_cast<std::uint16_t>(i);
+    }
+  }
+  return t;
+}();
+static_assert(kBlocks * (kBlocks - 1) / 2 <= 0xFFFF);
+
+}  // namespace
 
 TimingMonitor::TimingMonitor(const TimingMonitorConfig& cfg)
     : cfg_{cfg}, current_(pairs), reference_(pairs) {
@@ -183,11 +202,6 @@ TimingMonitor::TimingMonitor(const TimingMonitorConfig& cfg)
     throw std::invalid_argument("timing monitor: " + ok.error());
   }
   shifts_.reserve(pairs);
-}
-
-std::size_t TimingMonitor::pair_index(std::uint32_t a, std::uint32_t b) noexcept {
-  // a < b: the pairs of row a start after the a rows above it, of blocks - 1, blocks - 2, ...
-  return a * (2 * blocks - a - 1) / 2 + (b - a - 1);
 }
 
 // [snippet:record]
@@ -205,32 +219,24 @@ void TimingMonitor::record(std::span<const Coincidence> found) {
     if (!ScannerGeometry::valid(c.first.crystal) || !ScannerGeometry::valid(c.second.crystal)) {
       continue;
     }
-    std::uint32_t a = ScannerGeometry::block_of(c.first.crystal);
-    std::uint32_t b = ScannerGeometry::block_of(c.second.crystal);
+    const std::uint32_t a = ScannerGeometry::block_of(c.first.crystal);
+    const std::uint32_t b = ScannerGeometry::block_of(c.second.crystal);
     if (a == b) {
       continue;
     }
-    const bool delayed = c.kind == CoincidenceKind::delayed;
+    const std::size_t k = c.kind == CoincidenceKind::delayed ? 1 : 0;
     // t_second - t_first, without the delayed window's offset: the same range for both kinds.
-    double d =
-        static_cast<double>(c.time_difference().count() - (delayed ? cfg_.delay.count() : 0));
-    if (a > b) {
-      std::swap(a, b);
-      d = -d;  // t_b - t_a with a < b
-    }
-    if (std::abs(d) > static_cast<double>(cfg_.half_window.count())) {
+    std::int64_t d = c.time_difference().count() - (k != 0 ? cfg_.delay.count() : 0);
+    if (d > cfg_.half_window.count() || d < -cfg_.half_window.count()) {
       continue;
     }
-    Sums& s = current_[pair_index(a, b)];
-    if (delayed) {
-      s.n_delayed += 1.0;
-      s.sum_delayed += d;
-      s.sq_delayed += d * d;
-    } else {
-      s.n_prompt += 1.0;
-      s.sum_prompt += d;
-      s.sq_prompt += d * d;
+    if (a > b) {
+      d = -d;  // t_b - t_a with a < b
     }
+    Sums& s = current_[kPairIndex[a * blocks + b]];
+    s.n[k] += 1;
+    s.sum[k] += d;
+    s.sq[k] += d * d;
   }
   try_publish();
 }
@@ -239,8 +245,8 @@ void TimingMonitor::record(std::span<const Coincidence> found) {
 void TimingMonitor::flush() {
   // The interval in progress counts only if one of its pairs has enough trues: a run that ends
   // just after an interval closed must not report its blocks unobserved.
-  const bool enough = std::ranges::any_of(
-      current_, [&](const Sums& s) { return s.n_prompt - s.n_delayed >= cfg_.min_trues; });
+  const bool enough =
+      std::ranges::any_of(current_, [&](const Sums& s) { return s.trues() >= cfg_.min_trues; });
   if (started_ && enough) {
     close_interval();
   }
@@ -267,13 +273,14 @@ void TimingMonitor::close_interval() {
   // The mean of the trues' time differences and its variance: m = (S_p - S_d) / (n_p - n_d), and,
   // for counts that are Poisson, var(m) = (sum over prompts and delayeds of (d - m)^2) / n^2.
   const auto mean_and_variance = [](const Sums& s, double min_trues, double& m, double& v) {
-    const double n = s.n_prompt - s.n_delayed;
+    const double n = s.trues();
     if (n < min_trues) {
       return false;
     }
-    m = (s.sum_prompt - s.sum_delayed) / n;
-    const double spread = (s.sq_prompt + s.sq_delayed) - 2.0 * m * (s.sum_prompt + s.sum_delayed) +
-                          m * m * (s.n_prompt + s.n_delayed);
+    const auto f = [](std::int64_t x) { return static_cast<double>(x); };
+    m = f(s.sum[0] - s.sum[1]) / n;
+    const double spread =
+        f(s.sq[0] + s.sq[1]) - 2.0 * m * f(s.sum[0] + s.sum[1]) + m * m * f(s.n[0] + s.n[1]);
     v = spread / (n * n);
     return v > 0.0;
   };
@@ -337,7 +344,7 @@ void TimingMonitor::try_publish() {
     return;
   }
   // Never wait for a reader: if one holds the lock, the next call publishes.
-  std::unique_lock<std::mutex> hold{lock_, std::try_to_lock};
+  const std::unique_lock<std::mutex> hold{lock_, std::try_to_lock};
   if (hold.owns_lock()) {
     published_ = state_;
     dirty_ = false;
