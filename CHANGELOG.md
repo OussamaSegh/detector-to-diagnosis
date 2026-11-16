@@ -72,6 +72,10 @@ the patch version.
   lock loss during a run is an audit event (`clock_lock_lost`) and counts in the integrity verdict
   (`/hardware/boards/N/clock_lock_losses`). The simulated board's firmware is 1.4.0 at reset.
   SRS-TIM-006.
+- **Part X and Chapter 38** (clock distribution and the scanner's time base): the clock tree,
+  PTP and White Rabbit, register map 1.3 and the time base monitor, with measurements of its
+  detection, false alarms and cost (`measurements/ch38/`, benchmark `bm_timing_monitor`) and
+  exercises 38.1 to 38.3 with their solutions. The thumb tabs divide the page edge into eleven.
 
 ### Changed (2.0.0-dev)
 

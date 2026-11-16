@@ -29,9 +29,11 @@ in the pair stage (RC-53, configuration schema 2.1 `timing_monitor`, control API
 `status.timing`, integrity `/timing/alarm_intervals`, simulator `--block-clock`), and register map
 1.3 of firmware 1.4, each board's `clock_status` (RC-54; no run without a lock, audit event
 `clock_lock_lost`, integrity `/hardware/boards/N/clock_lock_losses`; ICD-FEB version 5 draft). The
-monitor costs the pipeline benchmark about 3% on one CPU (the perf gate allows 5%). Left for
-Chapter 38: `measurements/ch38/` and the chapter's text in Part X, then CR-0031 implemented.
-Next: chapters 38 and 39, then the
+monitor costs the pipeline benchmark about 3% on one CPU (the perf gate allows 5%). Chapter 38
+written 2026-11-16 (Part X opens; `measurements/ch38/`, exercises 38.1 to 38.3, solutions), and
+CR-0031 implemented. Part X's intro names Chapters 39 and 40 only as "the second" and "the third
+chapter" until they exist (book.xrefs refuses a reference to a missing chapter); number them when
+they are written. Next: chapter 39 (time of flight), then 40, then the
 2.0.0 coverage review, internal audit and release (release notes name CR-0029 and CR-0030 as
 breaking). An existing
 build directory reconfigures to C++23 by itself (the cache variable is forced to 23).

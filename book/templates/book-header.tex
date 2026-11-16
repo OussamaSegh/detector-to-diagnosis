@@ -24,7 +24,7 @@
 \newcommand{\dcurpart}{0}
 \newcommand{\dtabpos}{0}
 \newcommand{\dsetpart}[1]{\renewcommand{\dcurpart}{#1}\colorlet{partcolor}{d2dpart#1}%
-  \ifstrequal{#1}{A}{\renewcommand{\dtabpos}{10}}{\ifstrequal{#1}{S}{\renewcommand{\dtabpos}{0}}{\renewcommand{\dtabpos}{#1}}}}
+  \ifstrequal{#1}{A}{\renewcommand{\dtabpos}{11}}{\ifstrequal{#1}{S}{\renewcommand{\dtabpos}{0}}{\renewcommand{\dtabpos}{#1}}}}
 \newcommand{\dpartroman}[1]{\ifcase#1 \or I\or II\or III\or IV\or V\or VI\or VII\or VIII\or IX\or X\fi}
 % Bleed: on screen the Part band runs to the page edge; in the black ink interior (bw) it
 % stays inside KDP's 0.125 in safety margin, since that interior has no bleed.
@@ -222,7 +222,7 @@
 \newcommand{\dthumbtab}{%
   \ifnum\dtabpos>0 \ifdefstring{\dprofile}{bw}{}{%
     \begin{tikzpicture}[remember picture,overlay]
-      \pgfmathsetmacro{\dtabstep}{(\paperheight/72.27-1.8)/10}
+      \pgfmathsetmacro{\dtabstep}{(\paperheight/72.27-1.8)/11}
       \pgfmathsetmacro{\dtaby}{0.9+(\dtabpos-1)*\dtabstep}
       \pgfmathsetmacro{\dtabh}{0.88*\dtabstep}
       \ifodd\value{page}
