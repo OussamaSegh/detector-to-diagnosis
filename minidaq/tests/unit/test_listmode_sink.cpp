@@ -369,10 +369,10 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
   AcquisitionService svc{with_default_adapters()};
   config::AcquisitionConfig c;
   c.source.rate_hz = 2e6;
-  c.stop_after_s = 0.1;
+  c.source.stop_after_s = 0.1;
   c.output.type = "listmode";
   c.output.directory = dir.string();
-  c.output.max_file_mb = 1;
+  c.output.max_file_mib = 1;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience)) << svc.status().dump();
@@ -415,15 +415,16 @@ TEST(ListModeSink, WritesRealFilesThroughTheService) {
   ASSERT_TRUE(cor.is_object()) << "no corrections in the run record";
   EXPECT_FALSE(st.contains("corrections")) << "only in the record, not in every status report";
   EXPECT_EQ(cor["energy_window_kev"][0], c.sorter.energy_low_kev);
-  EXPECT_EQ(cor["coincidence_window_ps"], c.pipeline.coincidence_window_ps);
+  EXPECT_EQ(cor["coincidence_window_ps"], c.sorter.window_ps);
   ASSERT_EQ(cor["singles_per_crystal"].size(), ScannerGeometry::num_crystals);
   std::uint64_t sum = 0;
   for (const auto& n : cor["singles_per_crystal"]) {
     sum += n.get<std::uint64_t>();
   }
   EXPECT_EQ(sum, cor["singles_in_window"].get<std::uint64_t>());
-  EXPECT_EQ(sum, st["sorter"]["singles_in"].get<std::uint64_t>() - st["sorter"]["energy_rejected"].get<std::uint64_t>());
-  EXPECT_EQ(cor["prompts"], st["sorter"]["prompts"]);
+  EXPECT_EQ(sum, st["sorter_counters"]["singles_in"].get<std::uint64_t>() -
+                     st["sorter_counters"]["energy_rejected"].get<std::uint64_t>());
+  EXPECT_EQ(cor["prompts"], st["sorter_counters"]["prompts"]);
   EXPECT_LT(cor["singles_first_ps"].get<std::int64_t>(), cor["singles_last_ps"].get<std::int64_t>());
   EXPECT_GT(written, 0U);
   EXPECT_EQ(read, written);
@@ -478,7 +479,7 @@ TEST(ListModeSink, NamesTheCalibrationTableInTheFilesAndTheRunRecord) {
   AcquisitionService svc{with_default_adapters()};
   config::AcquisitionConfig c;
   c.source.rate_hz = 2e6;
-  c.stop_after_s = 0.05;
+  c.source.stop_after_s = 0.05;
   c.output.type = "listmode";
   c.output.directory = dir.string();
   c.calibration.file = table.string();

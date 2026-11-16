@@ -106,8 +106,8 @@ def server_check(tmp, table):
         results = []
         for serial in (SERIAL, "MDQ-OTHER-0002"):
             cfg = tmp / f"config-{serial}.json"
-            cfg.write_text(json.dumps({"schema_version": "1.4", "source": {"rate_hz": 1e6},
-                                       "stop_after_s": 2,
+            cfg.write_text(json.dumps({"schema_version": "2.0",
+                                       "source": {"type": "synthetic", "rate_hz": 1e6, "stop_after_s": 2},
                                        "calibration": {"file": str(table),
                                                        "scanner_serial": serial}}))
             subprocess.run([*ctl, "reset"], capture_output=True)

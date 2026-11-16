@@ -1,12 +1,19 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "description": "Synthetic source at 10 M singles/s, until stopped",
-  "source": { "type": "synthetic", "rate_hz": 10e6, "pair_fraction": 0.3, "seed": 1 },
+  "source": {
+    "type": "synthetic",
+    "rate_hz": 10000000.0,
+    "pair_fraction": 0.3,
+    "seed": 1
+  },
   "pipeline": {
     "batch_size": 4096,
     "batches_per_channel": 64,
-    "coincidence_window_ps": 4000,
     "overflow": "block",
     "max_batch_delay_us": 500
+  },
+  "sorter": {
+    "window_ps": 4000
   }
 }

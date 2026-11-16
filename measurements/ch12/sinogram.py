@@ -22,7 +22,7 @@ import zlib
 BUILD = sys.argv[1] if len(sys.argv) > 1 else "build/release"
 HERE = os.path.dirname(os.path.abspath(__file__))
 RUNS = {
-    "point": ["--source", "point", "--centre", "40,-25,0", "--phantom", "0", "--activity", "2e6", "--seconds", "1"],
+    "point": ["--source", "point", "--center", "40,-25,0", "--phantom", "0", "--activity", "2e6", "--seconds", "1"],
     "cylinder": ["--source", "cylinder", "--phantom", "100", "--activity", "20e6", "--seconds", "2"],
 }
 

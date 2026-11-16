@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.1",
+  "source": {
+    "type": "udp",
+    "udp": { "address": "127.0.0.1", "port": 7701, "receive_buffer_bytes": 8388608,
+             "reorder_window_packets": 64, "max_hold_us": 1000 }
+  }
+}

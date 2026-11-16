@@ -83,7 +83,7 @@ def main():
         shutil.rmtree(DIR, ignore_errors=True)
         os.makedirs(DIR)
         p = subprocess.Popen([tool, "--dir", DIR, "--forever", "1", "--fsync", "interval", "--every", "16",
-                              "--max-file-mb", "64"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                              "--max-file-mib", "64"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         delay = random.uniform(0.2, 2.0)
         time.sleep(delay)
         p.send_signal(signal.SIGKILL)

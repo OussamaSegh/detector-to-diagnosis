@@ -49,7 +49,7 @@ class Product(SystemTest):
             self.assertIn(f'hardware: hardware backend "simulated": {REFUSAL}', p.stderr)
         else:
             with Server(self.tmp, "--hardware", str(description)) as server:
-                self.assertIn("simulated", Ctl(server).status()["hardware"]["describe"])
+                self.assertIn("simulated", Ctl(server).status()["hardware"]["description"])
 
     @unittest.skipUnless(shutil.which("nm"), "needs nm (GNU binutils)")
     def test_the_product_server_contains_no_code_of_the_simulator(self):

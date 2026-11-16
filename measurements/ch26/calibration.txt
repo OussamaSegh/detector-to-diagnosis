@@ -15,7 +15,7 @@ Delay error against the truth (common constant removed): rms 20.9 ps, worst 90 p
 Summed spectrum, as reported (0.5 keV per code): photopeak at 435 keV, FWHM 23.0% (fit ok).
 Summed spectrum, calibrated: photopeak at 511 keV, FWHM 12.0% (fit ok).
 
-## 2. Point source at the centre, 3 s
+## 2. Point source at the center, 3 s
 
 Exit status 1; failed crystals 18432; least partners 7, median 13; residual 129.3 ps rms; 740 iterations.
 First lines of its report:
@@ -31,7 +31,7 @@ Exit status 1; table written: False; failed crystals 18432 of 18432.
    18432 crystals: N coincident pairs, N needed
     3384 crystals: paired with N other crystals, N needed
        3 crystals: the photopeak fit did not converge
-       2 crystals: photopeak sigma N% of its centre, N to N% expected
+       2 crystals: photopeak sigma N% of its center, N to N% expected
        1 crystals: gain N N to N expected
 Last lines of its report:
     and 18412 more crystals

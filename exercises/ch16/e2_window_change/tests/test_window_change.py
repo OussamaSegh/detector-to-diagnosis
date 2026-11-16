@@ -59,7 +59,7 @@ class WindowChange(unittest.TestCase):
 
     def test_old_documents_keep_their_meaning(self):
         self.assertIn("schema", self.body["Interfaces and data formats"])
-        self.assertIn("1.4", self.body["Interfaces and data formats"])
+        self.assertIn("2.1", self.body["Interfaces and data formats"])
 
     def test_the_documents_that_state_the_old_window(self):
         for d in ("minidaq/configs/default.json", "known-anomalies.md", "architecture.md"):

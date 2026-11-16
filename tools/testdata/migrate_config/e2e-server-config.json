@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.4",
+  "description": "end to end, phantom",
+  "source": {"type": "udp", "udp": {"address": "127.0.0.1", "port": 0, "receive_buffer_bytes": 16777216}},
+  "pipeline": {"coincidence_window_ps": 4000},
+  "sorter": {"delay_ps": 100000, "energy_low_kev": 435, "energy_high_kev": 585, "multiples": "kill_all",
+             "min_sector_difference": 1, "mode": "fixed"},
+  "output": {"type": "listmode", "directory": "/tmp/e2e", "prefix": "phantom"}
+}

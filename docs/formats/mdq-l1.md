@@ -1,6 +1,6 @@
 # MDQ-L1: MiniDAQ list-mode file format, version 1.0
 
-Version 3 of this specification (MiniDAQ 0.6.0-dev), for format version 1.0.
+Version 4 of this specification (MiniDAQ 2.0.0-dev), for format version 1.0.
 Status: Accepted (ADR 0012). Implementation: `minidaq/include/minidaq/format/list_mode.hpp`
 (C++), with an independent reader in `measurements/ch12/crash.py` and
 `exercises/ch12/e2_sinogram` (Python). Requirements: SRS-LMF-001 to 008 (format) and
@@ -152,7 +152,7 @@ members it does not know, and a writer MAY add more.
 | `file` | `{"segment": N, "run_name": "..."}` |
 | `scanner` | model; `crystals_per_ring`, `crystal_rings`, `inner_radius_mm`, `axial_pitch_mm`; how crystal ids and angles are defined |
 | `records` | `time_unit` (`"ps"`), `energy_lsb_kev` (0.03125), `delayed_window_ps`, `coincidence_window_ps` |
-| `configuration` | the complete effective acquisition configuration (schema 1.3) |
+| `configuration` | the complete effective acquisition configuration (schema 2.0 since MiniDAQ 2.0; files written earlier hold the 1.x names) |
 
 The configuration is copied whole, not summarized, so that a file can be interpreted
 without the machine that wrote it. Calibration tables are referenced by identifier and
@@ -233,3 +233,4 @@ identifies calibration sets).
 | 1 | First controlled version (Chapter 16); the text is that of Chapter 12. The specification's version is not the format's: a change to this text that does not change the format gets a new document version and keeps format version 1.0. |
 | 2 | The book's new title: statements about a particular product are now about "your scanner"; the format is unchanged (format version 1.0). |
 | 3 | Chapter 27: the run record's `corrections` object (CR-0013); the list-mode files are unchanged (format version 1.0). |
+| 4 | The metadata's copied configuration is of schema 2.0 from MiniDAQ 2.0 (CR-0030); the list-mode files are unchanged (format version 1.0). |

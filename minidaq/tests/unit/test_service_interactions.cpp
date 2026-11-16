@@ -51,7 +51,7 @@ ServiceOptions with_sink(std::unique_ptr<CoincidenceSinkPort>& next) {
 
 config::AcquisitionConfig short_run() {
   config::AcquisitionConfig c;
-  c.stop_after_s = 0.05;  // the service ends the run by itself
+  c.source.stop_after_s = 0.05;  // the service ends the run by itself
   return c;
 }
 

@@ -266,7 +266,7 @@ can still be interpreted.
 
 Figure [](#fig-app-interfaces) puts the nine on one page.
 
-```{.figure #fig-app-interfaces src="book/figures/tikz/appendix/interfaces.tex" caption="The external interfaces MiniDAQ owns, each with the version its readers check." alt="MiniDAQ in the centre with nine interfaces around it: control protocol API 2.5; acquisition configuration schema 1.4; hardware description schema 1.1; calibration table format 1.0 with a CRC; readout packets MDQ-R1; list-mode files MDQ-L1; firmware contract ICD-FEB 3; update bundles with an Ed25519 manifest; DICOM export to the conformance of Chapter 35. A note says a reader refuses what it does not understand and the version is in the data, not the file name." width="80%"}
+```{.figure #fig-app-interfaces src="book/figures/tikz/appendix/interfaces.tex" caption="The external interfaces MiniDAQ owns, each with the version its readers check." alt="MiniDAQ in the center with nine interfaces around it: control protocol API 2.5; acquisition configuration schema 1.4; hardware description schema 1.1; calibration table format 1.0 with a CRC; readout packets MDQ-R1; list-mode files MDQ-L1; firmware contract ICD-FEB 3; update bundles with an Ed25519 manifest; DICOM export to the conformance of Chapter 35. A note says a reader refuses what it does not understand and the version is in the data, not the file name." width="80%"}
 ```
 
 ## Concurrency architecture
@@ -276,7 +276,7 @@ which data is shared, who may block whom, and what a failure on one thread does 
 MiniDAQ's server has a fixed set of threads, decided at start:
 
 - **Five pipeline stages** (source, decode, sort, pair, write), joined by batched SPSC channels
-  (ADR 0002), each optionally real-time from an `rt_profile` (Chapter 4).
+  (ADR 0002), each optionally real-time from an `rt_profile_file` (Chapter 4).
 - **The service's monitor**, every 20 ms: port faults, late singles, the end of the run, latency
   snapshots.
 - **One list-mode I/O thread per run**, which writes blocks, calls fsync by policy and returns

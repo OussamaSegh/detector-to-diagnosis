@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/minidaq/acquisition-config-1.4.schema.json",
-  "title": "MiniDAQ acquisition configuration, schema version 1.4",
-  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6; version 1.1 adds the UDP source of Chapter 9, 1.2 the coincidence sorter settings of Chapter 10, 1.3 the list-mode output of Chapter 12, 1.4 the calibration table of Chapter 26). The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "$id": "https://example.invalid/minidaq/acquisition-config-2.0.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 2.0",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). Version 2.0 (CR-0030) renamed and moved fields of 1.4 and made the source required; tools/migrate_config.py converts a 1.x file and docs/migration-2.0.md lists every change. The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
   "type": "object",
-  "required": ["schema_version"],
+  "required": ["schema_version", "source"],
   "additionalProperties": false,
   "properties": {
     "schema_version": {
@@ -13,26 +13,28 @@
       "pattern": "^[0-9]+\\.[0-9]+$"
     },
     "description": { "type": "string" },
-    "rt_profile": {
+    "rt_profile_file": {
       "description": "Path of a real-time profile (Chapter 4); empty for none. Read when the configuration is applied.",
       "type": "string"
     },
-    "stop_after_s": {
-      "description": "Stop after this many seconds of data at source.rate_hz; 0 runs until stopped. Synthetic source only.",
-      "type": "number",
-      "minimum": 0,
-      "maximum": 604800
-    },
     "source": {
+      "description": "Where the data comes from. type is required: no source is taken by default.",
       "type": "object",
+      "required": ["type"],
       "additionalProperties": false,
       "properties": {
         "type": { "enum": ["synthetic", "udp"] },
+        "stop_after_s": {
+          "description": "Stop after this many seconds of data at rate_hz; 0 runs until stopped. Synthetic source only.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 604800
+        },
         "rate_hz": { "description": "synthetic only", "type": "number", "minimum": 1, "maximum": 1e9 },
         "pair_fraction": { "description": "synthetic only", "type": "number", "minimum": 0, "maximum": 1 },
         "seed": { "description": "synthetic only", "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
         "udp": {
-          "description": "udp only (schema 1.1): the MDQ-R1 readout link of Chapter 9",
+          "description": "udp only: the MDQ-R1 readout link of Chapter 9",
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -51,16 +53,16 @@
       "properties": {
         "batch_size": { "type": "integer", "minimum": 1, "maximum": 1048576 },
         "batches_per_channel": { "type": "integer", "minimum": 2, "maximum": 4096 },
-        "coincidence_window_ps": { "type": "integer", "minimum": 1, "maximum": 1000000 },
         "overflow": { "enum": ["block", "drop"] },
         "max_batch_delay_us": { "type": "integer", "minimum": 1, "maximum": 1000000 }
       }
     },
     "sorter": {
-      "description": "The coincidence sorter (Chapter 10). The window is /pipeline/coincidence_window_ps. delay_ps must be 0 or more than the window; energy_low_kev must not exceed energy_high_kev.",
+      "description": "The coincidence sorter (Chapter 10). delay_ps must be 0 or more than window_ps; energy_low_kev must not exceed energy_high_kev.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "window_ps": { "description": "the coincidence window", "type": "integer", "minimum": 1, "maximum": 1000000 },
         "delay_ps": { "type": "integer", "minimum": 0, "maximum": 1000000000 },
         "mode": { "enum": ["fixed", "per_single"] },
         "multiples": { "enum": ["kill_all", "take_all_goods", "take_winner_of_goods", "keep_if_only_one_good"] },
@@ -71,14 +73,14 @@
       }
     },
     "output": {
-      "description": "Where the coincidences go (schema 1.3, Chapter 12). type none counts and discards them; listmode writes MDQ-L1 files <directory>/<prefix>-<UTC start>-<NNNN>.mdql (docs/formats/mdq-l1.md). directory must not be empty; prefix must be non-empty and contain no '/'.",
+      "description": "Where the coincidences go (Chapter 12). type none counts and discards them; listmode writes MDQ-L1 files <directory>/<prefix>-<UTC start>-<NNNN>.mdql (docs/formats/mdq-l1.md). directory must not be empty; prefix must be non-empty and contain no '/'.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "type": { "enum": ["none", "listmode"] },
         "directory": { "type": "string" },
         "prefix": { "type": "string" },
-        "max_file_mb": { "description": "MiB per file before the next one starts", "type": "integer", "minimum": 1, "maximum": 1048576 },
+        "max_file_mib": { "description": "MiB (2^20 bytes) per file before the next one starts", "type": "integer", "minimum": 1, "maximum": 1048576 },
         "fsync": { "description": "none: never; close: once per file, before the rename; interval: also every fsync_every_blocks blocks", "enum": ["none", "close", "interval"] },
         "fsync_every_blocks": { "type": "integer", "minimum": 1, "maximum": 1048576 },
         "records_per_block": { "type": "integer", "minimum": 1, "maximum": 65536 },
@@ -87,7 +89,7 @@
       }
     },
     "calibration": {
-      "description": "The calibration table the run applies (schema 1.4, Chapter 26; docs/formats/calibration.md). file empty: the identity table. scanner_serial is required with a file and must match the table's.",
+      "description": "The calibration table the run applies (Chapter 26; docs/formats/calibration.md). file empty: the identity table. scanner_serial is required with a file and must match the table's.",
       "type": "object",
       "additionalProperties": false,
       "properties": {

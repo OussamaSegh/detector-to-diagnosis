@@ -253,7 +253,7 @@ of 8 subsets on 2 mm pixels.
 
 Figure [](#fig-ch33-image) shows the image the checks are run on.
 
-```{.figure #fig-ch33-image src="book/figures/plots/ch33/image.py" caption="The image at the end of the chain, from the run's own image.npy: the phantom reconstructed with the C++ projector, and its profiles through the centre. The edge is where it should be and the inside is flat within the noise." alt="Left, a reconstructed disc of about 80 mm radius, grainy, with a dotted circle at 80 mm. Right, horizontal and vertical profiles through the centre over 8 mm bands, scaled to the mean inside 60 mm: both rise at minus 80 mm, stay around 1 with noise up to about 2, and fall at plus 80 mm." width="100%" inputs="measurements/ch33/e2e/image.npy"}
+```{.figure #fig-ch33-image src="book/figures/plots/ch33/image.py" caption="The image at the end of the chain, from the run's own image.npy: the phantom reconstructed with the C++ projector, and its profiles through the center. The edge is where it should be and the inside is flat within the noise." alt="Left, a reconstructed disc of about 80 mm radius, grainy, with a dotted circle at 80 mm. Right, horizontal and vertical profiles through the center over 8 mm bands, scaled to the mean inside 60 mm: both rise at minus 80 mm, stay around 1 with noise up to about 2, and fall at plus 80 mm." width="100%" inputs="measurements/ch33/e2e/image.npy"}
 ```
 
 ```{.python include="tools/e2e.py" snippet="image"}
@@ -288,7 +288,7 @@ run of the same code, and a change in them is a change in the code.
 
 Figure [](#fig-ch33-flatness) shows the two populations and the limits.
 
-```{.figure #fig-ch33-flatness src="book/figures/plots/ch33/flatness.py" caption="The end-to-end image checks over five seeds, with and without attenuation correction. The limits (shaded) sit between the two populations with a margin on both sides." alt="Left: radius at half level for seeds 33 to 37, near 80.2 to 80.5 mm with correction and 82.6 to 82.8 without, against a shaded band from 78 to 82. Right: centre over periphery, 0.94 to 1.04 with correction and 0.76 to 0.86 without, against a shaded band from 0.9 to 1.1." width="100%" inputs="measurements/ch33/flatness.txt"}
+```{.figure #fig-ch33-flatness src="book/figures/plots/ch33/flatness.py" caption="The end-to-end image checks over five seeds, with and without attenuation correction. The limits (shaded) sit between the two populations with a margin on both sides." alt="Left: radius at half level for seeds 33 to 37, near 80.2 to 80.5 mm with correction and 82.6 to 82.8 without, against a shaded band from 78 to 82. Right: center over periphery, 0.94 to 1.04 with correction and 0.76 to 0.86 without, against a shaded band from 0.9 to 1.1." width="100%" inputs="measurements/ch33/flatness.txt"}
 ```
 
 ### Two speeds

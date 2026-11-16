@@ -220,6 +220,12 @@ if(Python3_Interpreter_FOUND)
   # Chapter 37: the provenance of assisted changes and the commit policy's rule assisted.
   add_test(NAME tools.ai_provenance COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_ai_provenance.py)
   set_tests_properties(tools.ai_provenance PROPERTIES LABELS "unit")
+  # CR-0030: the migration of 1.x configurations to schema 2.0, and no request of another API
+  # version or 1.x configuration left in the book and the exercises.
+  add_test(NAME tools.migrate_config COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_migrate_config.py)
+  add_test(NAME docs.interfaces COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/check_interfaces.py
+           ${PROJECT_SOURCE_DIR})
+  set_tests_properties(tools.migrate_config docs.interfaces PROPERTIES LABELS "unit")
   set_tests_properties(tools.postmortem PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 300)
   # Chapter 25: update bundles built and signed by the release tool, installed by minidaq_update.
   add_test(NAME tools.make_update

@@ -291,7 +291,7 @@ steps: each crystal's photopeak, its energy curve, the delays, and the acceptanc
 
 Figure [](#fig-ch26-procedure) is the order of the steps.
 
-```{.figure #fig-ch26-procedure src="book/figures/tikz/ch26/procedure.tex" caption="The calibration procedure. The energy comes first, because the pairs for the delays are chosen in the calibrated window; the acceptance criteria decide whether a table is written at all." alt="Flow: acquisition of a centred cylinder at 20 MBq for 3 s, photopeak per crystal, energy curve, isolated pairs in the calibrated window, delays by least squares with outliers trimmed, acceptance criteria per crystal. If all pass, a table with id, version and CRC is written; if one fails, no table, and a report names each crystal. A note lists the criteria: counts, fit, curve error, gain limits, pairs and at least 40 partners." width="65%"}
+```{.figure #fig-ch26-procedure src="book/figures/tikz/ch26/procedure.tex" caption="The calibration procedure. The energy comes first, because the pairs for the delays are chosen in the calibrated window; the acceptance criteria decide whether a table is written at all." alt="Flow: acquisition of a centerd cylinder at 20 MBq for 3 s, photopeak per crystal, energy curve, isolated pairs in the calibrated window, delays by least squares with outliers trimmed, acceptance criteria per crystal. If all pass, a table with id, version and CRC is written; if one fails, no table, and a report names each crystal. A note lists the criteria: counts, fit, curve error, gain limits, pairs and at least 40 partners." width="65%"}
 ```
 
 ### Photopeaks
@@ -440,7 +440,7 @@ crystals across the ring, and the groups cannot form.
 
 Figure [](#fig-ch26-graph) draws the two graphs.
 
-```{.figure #fig-ch26-graph src="book/figures/tikz/ch26/graph.tex" caption="The graph of pairs for three crystals of a 24-crystal ring. A centred cylinder gives each crystal a fan of partners across the ring, which ties every delay to every other; a point source at the centre gives each crystal only the crystals opposite, and the graph falls into groups." alt="Two rings of 24 crystals. Left, uniform cylinder: three crystals each joined by lines to nine crystals across the ring, forming a dense web. Right, point source: the same three crystals each joined only to the three crystals directly opposite. Notes give the measured numbers: least partners 178 and delays right to 21 ps for the cylinder; at most 13 partners, 740 iterations and delays 130 ps wrong for the point source." width="70%"}
+```{.figure #fig-ch26-graph src="book/figures/tikz/ch26/graph.tex" caption="The graph of pairs for three crystals of a 24-crystal ring. A centerd cylinder gives each crystal a fan of partners across the ring, which ties every delay to every other; a point source at the center gives each crystal only the crystals opposite, and the graph falls into groups." alt="Two rings of 24 crystals. Left, uniform cylinder: three crystals each joined by lines to nine crystals across the ring, forming a dense web. Right, point source: the same three crystals each joined only to the three crystals directly opposite. Notes give the measured numbers: least partners 178 and delays right to 21 ps for the cylinder; at most 13 partners, 740 iterations and delays 130 ps wrong for the point source." width="70%"}
 ```
 
 The criterion that catches it counts each crystal's distinct partners: at least 40. The cylinder

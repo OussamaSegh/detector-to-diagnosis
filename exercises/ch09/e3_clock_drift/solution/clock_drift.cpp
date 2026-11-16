@@ -62,7 +62,7 @@ double estimate_relative_drift_ppm(std::span<const std::pair<std::int64_t, std::
   if (pairs.size() < 2) {
     return 0.0;
   }
-  const double x0 = static_cast<double>(pairs.front().first);  // centre for numerical stability
+  const double x0 = static_cast<double>(pairs.front().first);  // center for numerical stability
   double sx = 0;
   double sy = 0;
   double sxx = 0;

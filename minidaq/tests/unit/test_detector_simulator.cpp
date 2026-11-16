@@ -49,7 +49,7 @@ TEST(DetectorSimulator, RejectsImpossibleConfigurations) {
   c.activity_bq = 0.0;
   EXPECT_FALSE(validate(c));
   c = point_in_air();
-  c.source.centre_mm = {200.0, 0.0, 0.0};  // outside the ring
+  c.source.center_mm = {200.0, 0.0, 0.0};  // outside the ring
   EXPECT_FALSE(validate(c));
   c = point_in_air();
   c.phantom = {160.0, 100.0};  // larger than the ring
@@ -71,8 +71,8 @@ TEST(DetectorSimulator, RejectsNaNInEveryNumericField) {
   const double nan = std::numeric_limits<double>::quiet_NaN();
   const std::vector<void (*)(SimulatorConfig&, double)> fields{
       [](SimulatorConfig& c, double v) { c.activity_bq = v; },
-      [](SimulatorConfig& c, double v) { c.source.centre_mm.x = v; },
-      [](SimulatorConfig& c, double v) { c.source.centre_mm.z = v; },
+      [](SimulatorConfig& c, double v) { c.source.center_mm.x = v; },
+      [](SimulatorConfig& c, double v) { c.source.center_mm.z = v; },
       [](SimulatorConfig& c, double v) { c.source.radius_mm = v; },
       [](SimulatorConfig& c, double v) { c.source.length_mm = v; },
       [](SimulatorConfig& c, double v) { c.phantom.radius_mm = v; },
@@ -137,7 +137,7 @@ TEST(DetectorSimulator, DecayRateMatchesActivity) {
 
 TEST(DetectorSimulator, AxialAcceptanceOfAPointSource) {
   // REQ: SRS-SIM-015
-  // A photon from the centre reaches the crystals if |cos(theta)| < h / sqrt(R^2 + h^2),
+  // A photon from the center reaches the crystals if |cos(theta)| < h / sqrt(R^2 + h^2),
   // where h is half the axial length and R the inner radius; isotropic emission
   // makes that fraction equal to the bound itself.
   DetectorSimulator sim{point_in_air()};
@@ -169,7 +169,7 @@ TEST(DetectorSimulator, EnergyResolutionAt511) {
 
 TEST(DetectorSimulator, CoincidenceTimeResolution) {
   // REQ: SRS-SIM-017
-  // Photons from the centre travel equal distances to the ring; with a very
+  // Photons from the center travel equal distances to the ring; with a very
   // short attenuation length both interact at the crystal face, so the time
   // difference of a true pair has the detector's CTR as its FWHM.
   SimulatorConfig c = point_in_air();

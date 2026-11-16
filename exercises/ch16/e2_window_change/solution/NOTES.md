@@ -2,7 +2,7 @@
 
 **"It is only a default."** A default is the value of every configuration that omits the key, so
 changing it changes the acquisition of documents that nobody edited, which is hazard H-04; that is
-why version 1.0 to 1.3 documents keep 4 ns and the new value comes with schema 1.4. The number
+why version 2.0 documents keep 4 ns and the new value comes with schema 2.1. The number
 appears in more places than the one constant (the shipped `default.json` sets 4000 explicitly, so
 changing only the constant would leave the default configuration at 4 ns), and several tests and a
 measurement assume it. And the new value must be shown to keep every true pair for the real

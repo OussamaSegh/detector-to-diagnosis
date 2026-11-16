@@ -1,6 +1,9 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "description": "Two seconds at 1 M singles/s, then the run ends by itself",
-  "source": { "rate_hz": 1e6 },
-  "stop_after_s": 2
+  "source": {
+    "type": "synthetic",
+    "rate_hz": 1000000.0,
+    "stop_after_s": 2
+  }
 }

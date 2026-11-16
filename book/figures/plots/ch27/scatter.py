@@ -31,7 +31,7 @@ def main(dst):
     ax.set_yticks([0.7, 1, 1.5, 2, 3, 4])
     ax.set_yticklabels(["0.7", "1", "1.5", "2", "3", "4"])
     ax.minorticks_off()
-    ax.set_xlabel("s, mm from the centre")
+    ax.set_xlabel("s, mm from the center")
     ax.set_ylabel("estimate / true scatter")
     ax.axvspan(92, 100, color=d2d.tint(d2d.PART, 0.15), lw=0)
     ax.text(96, 3.6, "tails", ha="center", fontsize=d2d.FONT_PT - 1, color=d2d.PART)

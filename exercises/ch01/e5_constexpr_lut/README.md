@@ -1,7 +1,7 @@
 # Exercise 1.5 (M, extra): A crystal geometry table built by the compiler
 
 **Goal.** Write `ex::make_ring_table<N>(radius_mm)`, a `consteval` function that returns a
-`std::array<ex::Point2, N>` with the centre of each of N crystals evenly spaced on a
+`std::array<ex::Point2, N>` with the center of each of N crystals evenly spaced on a
 ring (crystal i at angle (i + 0.5) * 2*pi/N). Use `minidaq::cmath::sincos`, because
 `std::sin` is not `constexpr` in C++20. Then declare
 `inline constexpr auto ring384 = ex::make_ring_table<384>(150.0);` and prove with

@@ -27,7 +27,7 @@ SENT = {"singles": 1000, "packets": 10, "lost": 0, "delayed": 0, "duplicated": 0
 STATUS = {
     "detector_counters": {"packets_delivered": 10, "packets_lost": 0, "packets_received": 10,
                           "packets_stale": 0, "words_delivered": 1000},
-    "sorter": {"singles_in": 1000, "energy_rejected": 498, "out_of_order": 2, "singles_alone": 370,
+    "sorter_counters": {"singles_in": 1000, "energy_rejected": 498, "out_of_order": 2, "singles_alone": 370,
                "pair_windows": 62, "singles_in_multiples": 6, "prompts": 60,
                "geometry_rejected": 2, "delayed": 5},
     "sink_counters": {"coincidences": 65},
@@ -49,7 +49,7 @@ class Accounting(unittest.TestCase):
 
     def test_every_counter_off_by_one_fails_a_check(self):
         # REQ: SRS-SYS-007
-        for section in ("detector_counters", "sorter", "sink_counters"):
+        for section in ("detector_counters", "sorter_counters", "sink_counters"):
             for key in STATUS[section]:
                 for delta in (-1, 1):
                     status = copy.deepcopy(STATUS)
@@ -80,7 +80,7 @@ class Accounting(unittest.TestCase):
         status = copy.deepcopy(STATUS)
         status["detector_counters"].update(packets_delivered=9, packets_lost=1, packets_received=9,
                                            words_delivered=900)
-        status["sorter"].update(singles_in=900, energy_rejected=398)
+        status["sorter_counters"].update(singles_in=900, energy_rejected=398)
         status["integrity"]["complete"] = False
         self.assertEqual(failed(sent=sent, status=status), [])
         status["integrity"]["complete"] = True

@@ -44,7 +44,7 @@ class ClientAndServer(SystemTest):
             self.assertEqual(ctl.status()["state"], "idle")
             status = ctl.run(cfg)
             self.assertTrue(status["integrity"]["complete"], status["integrity"])
-            self.assertEqual(status["sorter"]["singles_in"], 500_000)
+            self.assertEqual(status["sorter_counters"]["singles_in"], 500_000)
             self.assertEqual(server.stop(), 0, server.output)
         self.assertFalse(server.token_file.exists(), "the start-up token outlived the server")
 
@@ -210,7 +210,7 @@ class Shutdown(SystemTest):
             ctl = Ctl(server)
             ctl.ok("configure", str(cfg))
             ctl.ok("start")
-            eventually(lambda: ctl.status()["sorter"]["singles_in"] > 0, 20, "the first singles")
+            eventually(lambda: ctl.status()["sorter_counters"]["singles_in"] > 0, 20, "the first singles")
             self.assertEqual(server.stop(), 0, server.output)
             self.assertIn("shutting down", server.output)
         audit = [json.loads(line) for line in (self.tmp / "audit.jsonl").read_text().splitlines()]

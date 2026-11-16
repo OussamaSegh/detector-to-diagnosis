@@ -159,9 +159,14 @@ std::string handle_request(std::string_view line, AcquisitionService& service, S
     return dump(error_response(nullptr, service.state(), "bad_request", "a request is one JSON object per line"));
   }
   const json id = req.contains("id") ? req["id"] : json(nullptr);
-  if (req.contains("api") && (!req["api"].is_string() || !major_matches(req["api"].get<std::string>()))) {
+  // 3.0 (ADR 0036): a request without "api" is refused too, so that a client written for 2.x,
+  // which could leave it out, does not read the renamed status fields without noticing.
+  if (!req.contains("api") || !req["api"].is_string() ||
+      !major_matches(req["api"].get<std::string>())) {
     return dump(error_response(id, service.state(), "unsupported_api",
-                               "this server speaks API " + std::string{api_version}));
+                               "this server speaks API " + std::string{api_version} +
+                                   " and every request names it (\"api\"); " +
+                                   std::string{api_migration_hint}));
   }
   if (!req.contains("cmd") || !req["cmd"].is_string()) {
     return dump(error_response(id, service.state(), "bad_request", "missing \"cmd\""));

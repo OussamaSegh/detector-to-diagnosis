@@ -88,8 +88,8 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="minidaq-soak-") as tmp:
         cfg = systest.write_json(pathlib.Path(tmp) / "soak.json", {
-            "schema_version": "1.3", "description": "soak test",
-            "source": {"rate_hz": args.rate, "seed": 1}, "stop_after_s": 0,
+            "schema_version": "2.0", "description": "soak test",
+            "source": {"type": "synthetic", "rate_hz": args.rate, "seed": 1, "stop_after_s": 0},
             "output": {"type": "none"}})
         rows = []
         with systest.Server(tmp) as server:
@@ -106,7 +106,7 @@ def main():
                 e2e = (st.get("recent_latency_ns") or {}).get("end_to_end") or {"p99": 0, "max": 0}
                 ticks, before = cpu_ticks(), ticks
                 rows.append({"t_s": round(now - t0, 1), "rss_kib": rss_kib(server.proc.pid),
-                             "singles_in": st["sorter"]["singles_in"], "losses": losses(st),
+                             "singles_in": st["sorter_counters"]["singles_in"], "losses": losses(st),
                              "state": st["state"], "fault": st["fault"] or "",
                              "p99_ms": round(e2e["p99"] / 1e6, 3), "max_ms": round(e2e["max"] / 1e6, 3),
                              "steal_pct": steal_pct(before, ticks)})
@@ -146,7 +146,7 @@ def main():
     intervals = [r for r in rows if r["t_s"] >= args.interval]
     above = [r for r in intervals if r["p99_ms"] > args.latency_limit]
     steal = [r["steal_pct"] for r in intervals] or [0.0]
-    singles = final["sorter"]["singles_in"]
+    singles = final["sorter_counters"]["singles_in"]
     lines = [
         f"soak: {args.rate:g} singles/s for {elapsed / 60:.1f} min, {len(rows)} samples every {args.interval:g} s",
         f"machine: {os.uname().nodename}, {os.cpu_count()} CPUs; programs {args.apps}",

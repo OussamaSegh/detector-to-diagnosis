@@ -46,7 +46,7 @@ def main():
     try:
         for name, send_args, udp in SCENARIOS:
             settings = {"address": "127.0.0.1", "port": UDP_PORT, "receive_buffer_bytes": 8 << 20, **udp}
-            cfg = {"schema_version": "1.1", "description": name, "source": {"type": "udp", "udp": settings}}
+            cfg = {"schema_version": "2.0", "description": name, "source": {"type": "udp", "udp": settings}}
             with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
                 json.dump(cfg, f)
             r = ctl("configure", f.name)

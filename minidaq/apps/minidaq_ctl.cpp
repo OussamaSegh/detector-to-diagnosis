@@ -245,7 +245,7 @@ int run(int argc, char** argv) {
   }
   json response;
   if (!token.empty()) {
-    if (!conn.call(json{{"api", "2.0"}, {"id", 0}, {"cmd", "auth"}, {"token", token}}, response)) {
+    if (!conn.call(json{{"api", "3.0"}, {"id", 0}, {"cmd", "auth"}, {"token", token}}, response)) {
       std::fprintf(stderr, "%s\n", conn.error().c_str());
       return 2;
     }
@@ -266,7 +266,7 @@ int run(int argc, char** argv) {
     }
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::duration<double>(*seconds);
     for (int id = 1;; ++id) {
-      if (!conn.call(json{{"api", "2.0"}, {"id", id}, {"cmd", "status"}}, response)) {
+      if (!conn.call(json{{"api", "3.0"}, {"id", id}, {"cmd", "status"}}, response)) {
         std::fprintf(stderr, "%s\n", conn.error().c_str());
         return 2;
       }
@@ -284,7 +284,8 @@ int run(int argc, char** argv) {
       std::this_thread::sleep_for(std::chrono::milliseconds{100});
     }
   }
-  json request{{"api", "2.0"}, {"id", 1}, {"cmd", cmd}};  // any 2.x server accepts it (ADR 0003)
+  json request{
+      {"api", "3.0"}, {"id", 1}, {"cmd", cmd}};  // any 3.x server accepts it (ADR 0003, 0036)
   if (cmd == "configure") {
     if (i + 1 >= argc) {
       return usage(argv[0]);
@@ -299,7 +300,6 @@ int run(int argc, char** argv) {
     }
   }
   if (cmd == "diagnostics") {
-    request["api"] = "2.1";  // a 2.0 server answers unknown_command
     if (i + 1 < argc) {
       const auto n = minidaq::parse_number<std::uint64_t>(argv[i + 1], 0, 1024);
       if (!n) {

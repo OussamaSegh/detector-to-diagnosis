@@ -67,7 +67,7 @@ def simulate(work, name, args, seed, scanner=SCANNER):
 
 def rod_args(radius, x, y):
     extra = (CONTRAST - 1.0) * BACKGROUND_BQ * (radius / SOURCE_RADIUS) ** 2
-    return ["--activity", f"{extra:.6g}", "--seconds", "5", "--centre", f"{x},{y},0",
+    return ["--activity", f"{extra:.6g}", "--seconds", "5", "--center", f"{x},{y},0",
             "--source-radius", str(radius), "--source-length", "100"]
 
 
@@ -125,7 +125,7 @@ def main():
         simulate(work, f"norm{k}", NORM, k)
     simulate(work, "phantom", PHANTOM, 1000)
     simulate(work, "scatter_model", PHANTOM, 2000, scanner=[])
-    simulate(work, "point", ["--source", "point", "--centre", f"{POINT[0]},{POINT[1]},0",
+    simulate(work, "point", ["--source", "point", "--center", f"{POINT[0]},{POINT[1]},0",
                              "--phantom", "0", "--activity", "1e6", "--seconds", "2"], 5000)
     for k, rod in enumerate(RODS):
         simulate(work, f"rod{k}", rod_args(*rod), 4001 + k)

@@ -76,7 +76,7 @@ def run(name, board, run_s, drain_ms):
             json.dump(hw, f)
         files.append(f.name)
         args += ["--hardware", f.name]
-    cfg = {"schema_version": "1.1", "description": name,
+    cfg = {"schema_version": "2.0", "description": name,
            "source": {"type": "synthetic", "rate_hz": 1e6, "seed": 1}}
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
         json.dump(cfg, f)

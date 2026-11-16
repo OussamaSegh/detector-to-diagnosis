@@ -45,8 +45,8 @@ json assess_integrity(const json& status) {
     }
   }
   add(losses, "/late_singles", status.value("late_singles", json(0U)));
-  if (const auto it = status.find("sorter"); it != status.end() && it->is_object()) {
-    add(losses, "/sorter/out_of_order", it->value("out_of_order", json(0U)));
+  if (const auto it = status.find("sorter_counters"); it != status.end() && it->is_object()) {
+    add(losses, "/sorter_counters/out_of_order", it->value("out_of_order", json(0U)));
   }
   if (const auto it = status.find("sink_counters"); it != status.end() && it->is_object()) {
     for (const char* name : {"invalid", "energies_clamped", "blocks_dropped"}) {

@@ -186,7 +186,7 @@ TEST(Sinogram, APointSourceDrawsASinusoid) {
   // REQ: SRS-SNO-005
   sim::SimulatorConfig sc;
   sc.activity_bq = 2e5;
-  sc.source.centre_mm = {40.0, -25.0, 0.0};
+  sc.source.center_mm = {40.0, -25.0, 0.0};
   sc.non_collinearity_fwhm_deg = 0.0;
   sim::DetectorSimulator sim{sc};
   SorterConfig so;

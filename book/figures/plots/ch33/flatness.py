@@ -16,7 +16,7 @@ def main(dst):
     rows = [[c.strip() for c in l.split("|")[1:-1]] for l in SRC.read_text().splitlines() if l.startswith("| ") and l[2].isdigit()]
     fig, (ax, bx) = d2d.figure(height=1.9, width=1.0, ncols=2)
     seeds = [int(r[0]) for r in rows]
-    for a, ki, kn, lo, hi, lab in ((ax, 2, 4, 78, 82, "radius at half level, mm"), (bx, 3, 5, 0.9, 1.1, "centre over periphery")):
+    for a, ki, kn, lo, hi, lab in ((ax, 2, 4, 78, 82, "radius at half level, mm"), (bx, 3, 5, 0.9, 1.1, "center over periphery")):
         val = lambda v: float(v.replace(" mm", ""))  # noqa: E731
         a.axhspan(lo, hi, color=d2d.tint(d2d.CAT[2], 0.18), lw=0)
         a.plot(seeds, [val(r[ki]) for r in rows], color=d2d.PART, marker="o", ms=4, lw=0, label="attenuation corrected")

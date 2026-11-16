@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 32 (MiniDAQ 1.3.1-dev). Status: draft for review.
+Version 33 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -169,13 +169,16 @@ server today (section 4 of the architecture description explains the consequence
 
 | ID | Requirement | Item | Method |
 |---|---|---|---|
-| SRS-CFG-001 | The configuration reader shall give every key that a document omits its documented default, and accept every older minor schema version of the same major version. | config | T |
+| SRS-CFG-001 | The configuration reader shall give every key that a document omits its documented default, except the source type, which has none, and accept every older minor schema version of the same major version. | config | T |
 | SRS-CFG-002 | The configuration reader shall reject a document without a schema version, with another major version, with a newer minor version, or with a version that is not a string of the form MAJOR.MINOR. | config | T |
 | SRS-CFG-003 | The configuration reader shall reject every unknown key, with a suggestion when a known key is close to it. | config | T |
 | SRS-CFG-004 | The configuration reader shall report every type and range error of a document at once, each with the JSON Pointer of the value. | config | T |
 | SRS-CFG-010 | The configuration reader shall read the UDP source settings and reject a port number above `65535`, a reorder window that is not a power of two, and a run duration for a non-synthetic source. | config | T |
 | SRS-CFG-011 | The configuration reader shall accept only sorter settings that form a valid coincidence sorter configuration, and apply them to the sorter. | config | T |
 | SRS-CFG-012 | The configuration reader shall read the output settings, select no output when the section is absent, and reject an unknown fsync policy, a prefix containing '/', and an empty directory. | config | T |
+| SRS-CFG-013 | The configuration reader shall reject a document without a `source` section or without `source.type`, so that no source of data is ever assumed. | config | T |
+| SRS-CFG-014 | The configuration reader shall reject a document of schema version 1.x, and the keys that version 2.0 renamed, with a message that names the migration tool `tools/migrate_config.py`. | config | T |
+| SRS-CFG-015 | The migration tool `tools/migrate_config.py` shall turn every 1.x acquisition configuration that the repository and the book have shown into a document that validates against schema 2.0 and keeps every value of the old document at its new place. | tools | T |
 
 ### 2.10 Control (CTL)
 
@@ -189,7 +192,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CTL-013 | When the sink cannot make a run durable at its close, the acquisition service shall end the run in the fault state instead of reporting a clean stop. | service | T |
 | SRS-CTL-020 | The control protocol shall answer every command with `ok`, the state and the request's `id` unchanged, and give errors a code from the protocol's list with details. | protocol | T |
 | SRS-CTL-021 | The control server shall answer a request longer than the 64 KiB limit with an error, close only that connection, and keep serving other clients. | protocol | T |
-| SRS-CTL-022 | The control protocol shall reject another major API version, malformed JSON, invalid UTF-8 and requests without a command, and accept newer minor versions and unknown fields. | protocol | T |
+| SRS-CTL-022 | The control protocol shall reject a request without an API version, another major API version, malformed JSON, invalid UTF-8 and requests without a command, naming the migration note in the refusal of a version, and accept newer minor versions and unknown fields. | protocol | T |
 | SRS-CTL-023 | When a control client disconnects during a run, the acquisition service shall continue the run. | protocol | T |
 | SRS-CTL-030 | The acquisition service shall report in its status whether the run's data is complete, list every nonzero loss counter, and report a run with a fault as incomplete. | service | T |
 | SRS-CTL-031 | When a run ends without a fault but with a nonzero loss counter, the acquisition service shall record every nonzero loss counter in the audit trail. | service | T |
@@ -532,3 +535,4 @@ change.
 | 30 | Release 1.3.0, Chapter 25: signed run records, SRS-OUT-013 and SRS-OUT-014 (threat T-27), signed calibration tables, SRS-CAL-008 (threat T-54), and the analysis package's check and signature, SRS-ANA-007 and SRS-ANA-008 (ADR 0034, CR-0027). |
 | 31 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 30. |
 | 32 | SRS-PLT-012: the product build without the simulator (CR-0029, MDQ-PR-009). |
+| 33 | Control API 3.0 and configuration schema 2.0 (CR-0030): SRS-CTL-022 and SRS-CFG-001 changed; SRS-CFG-013, SRS-CFG-014 and SRS-CFG-015 added. |

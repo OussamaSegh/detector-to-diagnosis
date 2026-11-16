@@ -2,7 +2,7 @@
 % in the calibrated energy window; acceptance criteria decide whether a table is written at all.
 \begin{tikzpicture}[x=1cm,y=1cm,node distance=0.35cm]
   \tikzset{st/.style={draw=#1,fill=#1!12!white,line width=0.9pt,rounded corners=2pt,minimum width=2.3cm,minimum height=0.9cm,font=\sffamily\scriptsize,align=center}}
-  \node[st=d2dmuted] (acq) at (0,0) {acquisition:\\centred cylinder,\\20 MBq, 3 s};
+  \node[st=d2dmuted] (acq) at (0,0) {acquisition:\\centerd cylinder,\\20 MBq, 3 s};
   \node[st=d2dcat0,right=of acq] (pk) {photopeak per\\crystal (fit)};
   \node[st=d2dcat0,right=of pk] (cv) {energy curve\\a + b c + q c\textsuperscript{2}};
   \node[st=d2dcat2,below=0.6cm of cv] (pr) {isolated pairs in\\the calibrated window};

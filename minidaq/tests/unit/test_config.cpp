@@ -36,13 +36,39 @@ std::string read(const std::string& path) {
 
 TEST(Config, MinimalDocumentGetsDefaults) {
   // REQ: SRS-CFG-001
-  const auto c = parse_config(R"({"schema_version": "1.4"})");
+  const auto c = parse_config(R"({"schema_version": "2.0", "source": {"type": "synthetic"}})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(*c, AcquisitionConfig{});
-  // An older minor version is accepted; only the recorded version differs.
-  const auto old = parse_config(R"({"schema_version": "1.0"})");
-  ASSERT_TRUE(old);
-  EXPECT_EQ(old->schema_minor, 0);
+}
+
+TEST(Config, TheSourceIsNeverADefault) {
+  // REQ: SRS-CFG-013
+  // 2.0 (CR-0030): 1.x took a forgotten source to be the simulator (H-06).
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0"})"), "/source", "is required"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0", "source": {"rate_hz": 1000}})"),
+                  "/source/type", "is required"));
+}
+
+TEST(Config, AVersion1FileIsRefusedWithTheWayToConvertIt) {
+  // REQ: SRS-CFG-014
+  for (const char* v : {"1.0", "1.4"}) {
+    const auto e = errors_of(std::string{R"({"schema_version": ")"} + v +
+                             R"(", "source": {"type": "synthetic"}})");
+    EXPECT_TRUE(has(e, "/schema_version", "major version 1")) << v;
+    EXPECT_TRUE(has(e, "/schema_version", "tools/migrate_config.py"))
+        << v << ": " << format_errors(e);
+  }
+}
+
+TEST(Config, RenamedFieldsAreUnknownInTheirOldPlaces) {
+  // REQ: SRS-CFG-014
+  const auto e =
+      errors_of(R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "stop_after_s": 1,
+      "rt_profile": "rt.json", "pipeline": {"coincidence_window_ps": 3000}, "output": {"max_file_mb": 4}})");
+  EXPECT_TRUE(has(e, "/stop_after_s", "unknown key")) << format_errors(e);
+  EXPECT_TRUE(has(e, "/rt_profile", "unknown key"));
+  EXPECT_TRUE(has(e, "/pipeline/coincidence_window_ps", "unknown key"));
+  EXPECT_TRUE(has(e, "/output/max_file_mb", "did you mean \"max_file_mib\""));
 }
 
 TEST(Config, ShippedConfigurationsAreValid) {
@@ -59,7 +85,7 @@ TEST(Config, EffectiveConfigurationRoundTrips) {
   c.source.seed = 42;
   c.pipeline.batch_size = 512;
   c.pipeline.overflow = OverflowPolicy::drop;
-  c.stop_after_s = 3.5;
+  c.source.stop_after_s = 3.5;
   const auto back = config_from_json(to_json(c));
   ASSERT_TRUE(back) << format_errors(back.error());
   EXPECT_EQ(*back, c);
@@ -68,8 +94,8 @@ TEST(Config, EffectiveConfigurationRoundTrips) {
 TEST(Config, SchemaVersionRules) {
   // REQ: SRS-CFG-002
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.0"})"), "/schema_version", "major version 2"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.5"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "3.0"})"), "/schema_version", "major version 3"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.1"})"), "/schema_version", "newer MiniDAQ"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": ""})"), "/schema_version", "must look like"))
       << "an empty version is not a version (MDQ-PR-042)";
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
@@ -78,7 +104,8 @@ TEST(Config, SchemaVersionRules) {
 
 TEST(Config, UnknownKeysAreErrorsWithSuggestions) {
   // REQ: SRS-CFG-003
-  const auto e = errors_of(R"({"schema_version": "1.0", "pipeline": {"batchsize": 512}, "colour": 1})");
+  const auto e = errors_of(
+      R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "pipeline": {"batchsize": 512}, "colour": 1})");
   EXPECT_TRUE(has(e, "/pipeline/batchsize", "did you mean \"batch_size\"")) << format_errors(e);
   EXPECT_TRUE(has(e, "/colour", "unknown key"));
   EXPECT_FALSE(has(e, "/colour", "did you mean")) << "no suggestion when nothing is close";
@@ -87,10 +114,9 @@ TEST(Config, UnknownKeysAreErrorsWithSuggestions) {
 TEST(Config, TypesAndRangesAreCheckedAndAllErrorsReported) {
   // REQ: SRS-CFG-004
   const auto e = errors_of(R"({
-    "schema_version": "1.0",
-    "source": {"rate_hz": "fast", "pair_fraction": 1.5, "type": "tcp", "seed": -1},
-    "pipeline": {"batch_size": 0, "batches_per_channel": 2.5, "overflow": "ignore"},
-    "stop_after_s": -1
+    "schema_version": "2.0",
+    "source": {"rate_hz": "fast", "pair_fraction": 1.5, "type": "tcp", "seed": -1, "stop_after_s": -1},
+    "pipeline": {"batch_size": 0, "batches_per_channel": 2.5, "overflow": "ignore"}
   })");
   EXPECT_EQ(e.size(), 8U) << format_errors(e);
   EXPECT_TRUE(has(e, "/source/rate_hz", "must be a number"));
@@ -100,29 +126,31 @@ TEST(Config, TypesAndRangesAreCheckedAndAllErrorsReported) {
   EXPECT_TRUE(has(e, "/pipeline/batch_size", "between 1 and 1048576"));
   EXPECT_TRUE(has(e, "/pipeline/batches_per_channel", "non-negative integer"));
   EXPECT_TRUE(has(e, "/pipeline/overflow", "\"block\", \"drop\""));
-  EXPECT_TRUE(has(e, "/stop_after_s", "between"));
+  EXPECT_TRUE(has(e, "/source/stop_after_s", "between"));
 }
 
 TEST(Config, SyntaxErrorsAndWrongDocumentTypes) {
-  const auto e = errors_of(R"({"schema_version": "1.0",)");
+  const auto e = errors_of(R"({"schema_version": "2.0",)");
   ASSERT_EQ(e.size(), 1U);
   EXPECT_NE(e[0].message.find("not valid JSON"), std::string::npos);
   EXPECT_TRUE(has(errors_of("[1, 2]"), "", "must be an object"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.0", "source": 3})"), "/source", "must be an object"));
+  EXPECT_TRUE(
+      has(errors_of(R"({"schema_version": "2.0", "source": 3})"), "/source", "must be an object"));
 }
 
 TEST(Config, CommentsAreAllowed) {
   // Operators annotate configuration files; JSON has no comments, the parser allows them.
-  EXPECT_TRUE(parse_config("// site A\n{\"schema_version\": \"1.0\" /* v1 */}"));
+  EXPECT_TRUE(parse_config(
+      "// site A\n{\"schema_version\": \"2.0\" /* v2 */, \"source\": {\"type\": \"udp\"}}"));
 }
 
 TEST(Config, PipelineSettingsAreApplied) {
   AcquisitionConfig c;
   c.pipeline.batch_size = 1024;
-  c.pipeline.coincidence_window_ps = 3000;
+  c.sorter.window_ps = 3000;
   c.pipeline.max_batch_delay_us = 250;
   c.source.rate_hz = 2e6;
-  c.stop_after_s = 1.5;
+  c.source.stop_after_s = 1.5;
   const PipelineConfig p = to_pipeline_config(c);
   EXPECT_EQ(p.batch_size, 1024U);
   EXPECT_EQ(p.sorter.window, Picoseconds{3000});
@@ -137,7 +165,8 @@ TEST(Config, PipelineSettingsAreApplied) {
 TEST(Config, SchemaDocumentAgreesWithTheReader) {
   const auto schema = nlohmann::json::parse(read(MINIDAQ_SOURCE_DIR "/docs/architecture/acquisition-config.schema.json"));
   const auto effective = to_json(AcquisitionConfig{});
-  const auto base = nlohmann::json::parse(R"({"schema_version": "1.3"})");
+  const auto base =
+      nlohmann::json::parse(R"({"schema_version": "2.0", "source": {"type": "synthetic"}})");
 
   // Walks the schema and the effective configuration together, at any depth:
   // the same keys at every level, and every leaf's enum and range accepted
@@ -161,7 +190,7 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
           doc["sorter"]["energy_high_kev"] = 10'000.0;
         } else if (path == "/sorter/energy_high_kev") {
           doc["sorter"]["energy_low_kev"] = 0.0;
-        } else if (path == "/pipeline/coincidence_window_ps") {
+        } else if (path == "/sorter/window_ps") {
           doc["sorter"]["delay_ps"] = 0;  // the delay must exceed the window
         }
         doc[nlohmann::json::json_pointer{path}] = v;
@@ -200,7 +229,7 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
 
 TEST(Config, UdpSource) {
   // REQ: SRS-CFG-010
-  const auto c = parse_config(R"({"schema_version": "1.1",
+  const auto c = parse_config(R"({"schema_version": "2.0",
       "source": {"type": "udp", "udp": {"address": "0.0.0.0", "port": 9000, "reorder_window_packets": 128}}})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(c->source.type, "udp");
@@ -208,20 +237,25 @@ TEST(Config, UdpSource) {
   EXPECT_EQ(c->source.udp.port, 9000);
   EXPECT_EQ(c->source.udp.reorder_window_packets, 128U);
   EXPECT_EQ(c->source.udp.max_hold_us, 1000);  // default
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"reorder_window_packets": 100}}})"),
-                  "/source/udp/reorder_window_packets", "power of two"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"port": 70000}}})"), "/source/udp/port",
-                  "between 0 and 65535"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "stop_after_s": 2, "source": {"type": "udp"}})"),
-                  "/stop_after_s", "synthetic"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.1", "source": {"udp": {"prot": 1}}})"), "/source/udp/prot",
-                  "did you mean \"port\""));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "udp", "udp": {"reorder_window_packets": 100}}})"),
+      "/source/udp/reorder_window_packets", "power of two"));
+  EXPECT_TRUE(has(
+      errors_of(R"({"schema_version": "2.0", "source": {"type": "udp", "udp": {"port": 70000}}})"),
+      "/source/udp/port", "between 0 and 65535"));
+  EXPECT_TRUE(
+      has(errors_of(R"({"schema_version": "2.0", "source": {"type": "udp", "stop_after_s": 2}})"),
+          "/source/stop_after_s", "synthetic"));
+  EXPECT_TRUE(
+      has(errors_of(R"({"schema_version": "2.0", "source": {"type": "udp", "udp": {"prot": 1}}})"),
+          "/source/udp/prot", "did you mean \"port\""));
 }
 
 TEST(Config, SorterSettings) {
   // REQ: SRS-CFG-011
-  const auto c = parse_config(R"({"schema_version": "1.2", "pipeline": {"coincidence_window_ps": 3000},
-      "sorter": {"delay_ps": 50000, "mode": "per_single", "multiples": "take_winner_of_goods",
+  const auto c = parse_config(R"({"schema_version": "2.0", "source": {"type": "synthetic"},
+      "sorter": {"window_ps": 3000, "delay_ps": 50000, "mode": "per_single", "multiples": "take_winner_of_goods",
                  "energy_low_kev": 400, "energy_high_kev": 650, "min_sector_difference": 2, "fov_radius_mm": 125}})");
   ASSERT_TRUE(c) << format_errors(c.error());
   const PipelineConfig p = to_pipeline_config(*c);
@@ -233,44 +267,67 @@ TEST(Config, SorterSettings) {
   EXPECT_EQ(p.sorter.min_sector_difference, 2U);
   EXPECT_EQ(p.sorter.fov_radius_mm, 125.0);
   EXPECT_TRUE(validate(p.sorter)) << "every configuration the parser accepts is a valid sorter";
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"delay_ps": 2000}})"), "/sorter/delay_ps",
-                  "coincidence_window_ps"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"energy_low_kev": 600}})"),
-                  "/sorter/energy_low_kev", "must not exceed"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"multiples": "keep_all"}})"), "/sorter/multiples",
-                  "take_all_goods"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.2", "sorter": {"min_sector_difference": 4294967297}})"),
-                  "/sorter/min_sector_difference", "between 0 and 12"))
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "sorter": {"delay_ps": 2000}})"),
+      "/sorter/delay_ps", "window_ps"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "sorter": {"energy_low_kev": 600}})"),
+      "/sorter/energy_low_kev", "must not exceed"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "sorter": {"multiples": "keep_all"}})"),
+      "/sorter/multiples", "take_all_goods"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "sorter": {"min_sector_difference": 4294967297}})"),
+      "/sorter/min_sector_difference", "between 0 and 12"))
       << "2^32 + 1 must not wrap to 1";
-  EXPECT_TRUE(parse_config(R"({"schema_version": "1.2", "sorter": {"delay_ps": 0}})")) << "0 turns the delayed window off";
+  EXPECT_TRUE(parse_config(
+      R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "sorter": {"delay_ps": 0}})"))
+      << "0 turns the delayed window off";
 }
 
 TEST(Config, OutputSettings) {
   // REQ: SRS-CFG-012
-  const auto c = parse_config(R"({"schema_version": "1.3", "output": {"type": "listmode", "directory": "/data/run",
-      "prefix": "pet", "max_file_mb": 256, "fsync": "interval", "fsync_every_blocks": 32,
+  const auto c = parse_config(
+      R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "output": {"type": "listmode",
+      "directory": "/data/run", "prefix": "pet", "max_file_mib": 256, "fsync": "interval", "fsync_every_blocks": 32,
       "records_per_block": 1024, "buffers": 8, "max_block_delay_ms": 20}})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(c->output.type, "listmode");
   EXPECT_EQ(c->output.directory, "/data/run");
-  EXPECT_EQ(c->output.max_file_mb, 256U);
+  EXPECT_EQ(c->output.max_file_mib, 256U);
   EXPECT_EQ(c->output.fsync, "interval");
   EXPECT_EQ(c->output.records_per_block, 1024U);
-  EXPECT_EQ(AcquisitionConfig{}.output.type, "none") << "without an output section nothing is written, as before 1.3";
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"fsync": "always"}})"), "/output/fsync",
-                  "\"interval\""));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"prefix": "a/b"}})"), "/output/prefix", "'/'"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"directory": ""}})"), "/output/directory",
-                  "must not be empty"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "1.3", "output": {"records_per_block": 4294967297}})"),
-                  "/output/records_per_block", "between 1 and 65536"))
+  EXPECT_EQ(AcquisitionConfig{}.output.type, "none")
+      << "without an output section nothing is written";
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "output": {"fsync": "always"}})"),
+      "/output/fsync", "\"interval\""));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "output": {"prefix": "a/b"}})"),
+      "/output/prefix", "'/'"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "output": {"directory": ""}})"),
+      "/output/directory", "must not be empty"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "output": {"records_per_block": 4294967297}})"),
+      "/output/records_per_block", "between 1 and 65536"))
       << "2^32 + 1 must not wrap to 1";
 }
 
 TEST(Config, NumberOverflowIsAnErrorNotACrash) {
   // Regression: fuzz/fuzz_config found that "6e688" escaped parse_config as an
   // nlohmann out_of_range exception and terminated the program.
-  for (const char* text : {"6e688", R"({"schema_version": "1.0", "source": {"rate_hz": 1e999}})"}) {
+  for (const char* text :
+       {"6e688",
+        R"({"schema_version": "2.0", "source": {"type": "synthetic", "rate_hz": 1e999}})"}) {
     const auto r = parse_config(text);
     ASSERT_FALSE(r.has_value()) << text;
     ASSERT_EQ(r.error().size(), 1U);

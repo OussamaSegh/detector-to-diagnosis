@@ -731,7 +731,7 @@ binary, and every build can produce a validated SBOM that agrees with a SOUP lis
 3. Add `fuzz/` with the four targets, their seed corpora and CTest smoke runs; the
    `MINIDAQ_BUILD_FUZZERS` option and the `fuzz` preset. Fix what they find, with regression
    tests (`Config.NumberOverflowIsAnErrorNotACrash`).
-4. Read the `rt_profile` file through the descriptor checks of `read_small_file`, with
+4. Read the `rt_profile_file` through the descriptor checks of `read_small_file`, with
    `ProfilePathMustBeASmallRegularFile`.
 5. Add `cmake/Hardening.cmake`, the `MINIDAQ_HARDENING` option, the `hardened` preset and
    `tools/check_hardening.py` as the test `build.hardening`; ADR 0008.

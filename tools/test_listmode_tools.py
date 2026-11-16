@@ -29,8 +29,8 @@ def main():
     sim = os.path.join(apps, "minidaq_sim")
     lm = os.path.join(apps, "minidaq_listmode")
     with tempfile.TemporaryDirectory() as d:
-        run(sim, "--source", "point", "--centre", "40,-25,0", "--phantom", "0", "--fov", "120",
-            "--activity", "2e6", "--seconds", "0.7", "--listmode", d, "--max-file-mb", "1")
+        run(sim, "--source", "point", "--center", "40,-25,0", "--phantom", "0", "--fov", "120",
+            "--activity", "2e6", "--seconds", "0.7", "--listmode", d, "--max-file-mib", "1")
         files = sorted(glob.glob(os.path.join(d, "*.mdql")))
         assert len(files) >= 2, f"expected a rotation, got {files}"
         assert not glob.glob(os.path.join(d, "*.part")), "a clean run leaves no .part file"

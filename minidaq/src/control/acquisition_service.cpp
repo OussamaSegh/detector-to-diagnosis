@@ -42,7 +42,7 @@ json hardware_json(const HardwarePort& hw) {
         {{"slot", b.slot},
          {"state", b.state},
          {"temperature_c", b.temperature_c},
-         {"temperature", b.temp_level},
+         {"temperature_level", b.temp_level},
          {"target_v", b.target_v},
          {"setpoint_v", b.setpoint_v},
          {"monitor_v", b.monitor_v},
@@ -58,7 +58,7 @@ json hardware_json(const HardwarePort& hw) {
          {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)}});
   }
   const auto not_ready = hw.not_ready();
-  return json{{"describe", hw.describe()},
+  return json{{"description", hw.describe()},
               {"ready", !not_ready.has_value()},
               {"not_ready", not_ready ? json(*not_ready) : json(nullptr)},
               {"boards", std::move(boards)}};
@@ -169,15 +169,15 @@ CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg
                   std::string{"/source/type: \"synthetic\": "} + no_simulator_in_product);
   }
   std::optional<rt::RtProfile> profile;
-  if (!cfg.rt_profile.empty()) {
+  if (!cfg.rt_profile_file.empty()) {
     std::string text;
-    if (const std::string problem = read_small_file(cfg.rt_profile, text); !problem.empty()) {
+    if (const std::string problem = read_small_file(cfg.rt_profile_file, text); !problem.empty()) {
       note(who, "configure", "rejected: " + problem, false);
       return result(false, "config_error", "/rt_profile: " + problem);
     }
     auto parsed = rt::parse_profile(text);
     if (!parsed) {
-      note(who, "configure", "rejected: bad profile " + cfg.rt_profile, false);
+      note(who, "configure", "rejected: bad profile " + cfg.rt_profile_file, false);
       return result(false, "config_error", "/rt_profile: " + parsed.error().message);
     }
     profile = *parsed;
@@ -560,17 +560,17 @@ json AcquisitionService::status_locked() const {
     j["latency_ns"] = std::move(lat);
     j["late_singles"] = pipeline_->late_singles();
     const SorterStats so = pipeline_->sorter_stats();
-    j["sorter"] = {{"singles_in", so.singles_in},
-                   {"energy_rejected", so.energy_rejected},
-                   {"out_of_order", so.out_of_order},
-                   {"singles_alone", so.singles_alone},
-                   {"pair_windows", so.pair_windows},
-                   {"multiple_windows", so.multiple_windows},
-                   {"singles_in_multiples", so.singles_in_multiples},
-                   {"geometry_rejected", so.geometry_rejected},
-                   {"prompts", so.prompts},
-                   {"prompts_from_multiples", so.prompts_from_multiples},
-                   {"delayed", so.delayed}};
+    j["sorter_counters"] = {{"singles_in", so.singles_in},
+                            {"energy_rejected", so.energy_rejected},
+                            {"out_of_order", so.out_of_order},
+                            {"singles_alone", so.singles_alone},
+                            {"pair_windows", so.pair_windows},
+                            {"multiple_windows", so.multiple_windows},
+                            {"singles_in_multiples", so.singles_in_multiples},
+                            {"geometry_rejected", so.geometry_rejected},
+                            {"prompts", so.prompts},
+                            {"prompts_from_multiples", so.prompts_from_multiples},
+                            {"delayed", so.delayed}};
     if (snapshot_previous_ && snapshot_latest_) {
       // The last completed interval: between the two most recent snapshots.
       json recent;

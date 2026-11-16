@@ -292,7 +292,7 @@ Exercise 35.2, pixels that are not square.
 
 Figure [](#fig-ch35-coords) draws the three frames side by side.
 
-```{.figure #fig-ch35-coords src="book/figures/tikz/ch35/coords.tex" caption="Where the pixel is. The reconstruction's gantry frame, the patient's LPS frame for a patient on their back, head first, and the slice as written, with the first pixel's position and the row and column directions." alt="Left, the gantry seen from the front with x to the right, y up and z into the gantry. Middle, a patient lying supine with x to the patient's left, y posterior and z toward the head. Right, a 4 by 4 grid with a dot at the top-left pixel's centre, labelled Image Position, an arrow along the row (1, 0, 0), an arrow down the column (0, 1, 0), and a 2 mm spacing." width="100%"}
+```{.figure #fig-ch35-coords src="book/figures/tikz/ch35/coords.tex" caption="Where the pixel is. The reconstruction's gantry frame, the patient's LPS frame for a patient on their back, head first, and the slice as written, with the first pixel's position and the row and column directions." alt="Left, the gantry seen from the front with x to the right, y up and z into the gantry. Middle, a patient lying supine with x to the patient's left, y posterior and z toward the head. Right, a 4 by 4 grid with a dot at the top-left pixel's center, labelled Image Position, an arrow along the row (1, 0, 0), an arrow down the column (0, 1, 0), and a 2 mm spacing." width="100%"}
 ```
 
 ## Identifiers: which patient, which study, which object

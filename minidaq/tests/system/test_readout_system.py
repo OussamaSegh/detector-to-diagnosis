@@ -24,7 +24,7 @@ MIN_RECEIVE_BUFFER = 4 << 20
 
 def udp_config(directory, prefix, **udp):
     return {
-        "schema_version": "1.3",
+        "schema_version": "2.0",
         "description": "system test, UDP readout",
         "source": {"type": "udp", "udp": {"address": "127.0.0.1", "port": 0, **udp}},
         "output": {"type": "listmode", "directory": str(directory), "prefix": prefix},
@@ -80,7 +80,7 @@ class Readout(SystemTest):
         self.assertEqual(link["packets_delivered"], sent["packets"])
         self.assertEqual(link["packets_lost"], 0)
         self.assertEqual(link["words_delivered"], sent["singles"])
-        self.assertEqual(status["sorter"]["singles_in"], sent["singles"])
+        self.assertEqual(status["sorter_counters"]["singles_in"], sent["singles"])
         self.assertTrue(status["integrity"]["complete"], status["integrity"])
 
     # [snippet:damaged]

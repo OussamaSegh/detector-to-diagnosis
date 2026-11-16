@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.1",
+  "description": "Receive MDQ-R1 packets on the loopback interface (Chapter 9); send them with minidaq_send",
+  "source": {
+    "type": "udp",
+    "udp": { "address": "127.0.0.1", "port": 7701, "receive_buffer_bytes": 8388608 }
+  },
+  "pipeline": { "max_batch_delay_us": 500 }
+}

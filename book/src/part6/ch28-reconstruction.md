@@ -145,7 +145,7 @@ projection then takes 54 ms and a backprojection 44 ms on the reference machine.
 2D and much too slow in 3D, where the oblique planes multiply the lines by the number of ring
 differences; Chapter 29 moves the projector to C++. Figure [](#fig-ch28-joseph) shows the steps on a small grid.
 
-```{.figure #fig-ch28-joseph src="book/figures/tikz/ch28/joseph.tex" caption="Joseph's method on a small grid. The line takes one step per column; at each step it reads the image between the two nearest pixel centres of that column and weights it by the step's length." alt="A grid of 7 by 5 pixels with their centres as dots. A rising line crosses it; in each column a dot marks where the line passes, joined by a dotted segment to the two nearest pixel centres above and below. Notes say each step takes the interpolated image times the step length, and that back() uses the same weights in reverse." width="75%"}
+```{.figure #fig-ch28-joseph src="book/figures/tikz/ch28/joseph.tex" caption="Joseph's method on a small grid. The line takes one step per column; at each step it reads the image between the two nearest pixel centers of that column and weights it by the step's length." alt="A grid of 7 by 5 pixels with their centers as dots. A rising line crosses it; in each column a dot marks where the line passes, joined by a dotted segment to the two nearest pixel centers above and below. Notes say each step takes the interpolated image times the step length, and that back() uses the same weights in reverse." width="75%"}
 ```
 
 ### The adjoint and the dot-product test
@@ -282,7 +282,7 @@ validated with it.
 
 Figure [](#fig-ch28-subsets) shows what interleaved subsets look like.
 
-```{.figure #fig-ch28-subsets src="book/figures/tikz/ch28/subsets.tex" caption="OSEM's subsets, drawn with 24 view directions in 4 subsets; MiniDAQ uses 192 views in 8. Every k-th view goes into a subset, so each subset spans the whole half turn." alt="Four circles, each crossed by six lines through its centre at angles 30 degrees apart, offset by 7.5 degrees from one circle to the next, in four colors. Labels name subset 1 with views 0, 4, 8 and so on through subset 4 with views 3, 7, 11." width="80%"}
+```{.figure #fig-ch28-subsets src="book/figures/tikz/ch28/subsets.tex" caption="OSEM's subsets, drawn with 24 view directions in 4 subsets; MiniDAQ uses 192 views in 8. Every k-th view goes into a subset, so each subset spans the whole half turn." alt="Four circles, each crossed by six lines through its center at angles 30 degrees apart, offset by 7.5 degrees from one circle to the next, in four colors. Labels name subset 1 with views 0, 4, 8 and so on through subset 4 with views 3, 7, 11." width="80%"}
 ```
 
 ## A phantom, iteration by iteration
@@ -381,7 +381,7 @@ within 4% from the center to 70 mm.
 
 Figure [](#fig-ch28-model) draws the rows of the table.
 
-```{.figure #fig-ch28-model src="book/figures/plots/ch28/model.py" caption="The background's profile with a correction left out of the model, from the table above. Without attenuation the centre sinks and the edge rises; without scatter the profile tilts the other way and the contrast falls." alt="Ring mean over the mean of the rings at 5, 25, 45 and 65 mm. All corrections stays near 1. No attenuation rises from 0.66 to 1.62. No scatter falls from 1.09 to 0.90. No normalization rises from 0.94 to 1.11. None rises from 0.71 to 1.47. The legend gives the 12 mm rod's contrast recovery for each." width="80%" inputs="measurements/ch28/reconstruct.txt"}
+```{.figure #fig-ch28-model src="book/figures/plots/ch28/model.py" caption="The background's profile with a correction left out of the model, from the table above. Without attenuation the center sinks and the edge rises; without scatter the profile tilts the other way and the contrast falls." alt="Ring mean over the mean of the rings at 5, 25, 45 and 65 mm. All corrections stays near 1. No attenuation rises from 0.66 to 1.62. No scatter falls from 1.09 to 0.90. No normalization rises from 0.94 to 1.11. None rises from 0.71 to 1.47. The legend gives the 12 mm rod's contrast recovery for each." width="80%" inputs="measurements/ch28/reconstruct.txt"}
 ```
 
 ### When to stop, and a filter

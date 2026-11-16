@@ -86,10 +86,10 @@ class Signing : public ::testing::Test {
     AcquisitionService svc{with_default_adapters({}, k)};
     config::AcquisitionConfig c;
     c.source.rate_hz = 2e6;
-    c.stop_after_s = 0.05;
+    c.source.stop_after_s = 0.05;
     c.output.type = "listmode";
     c.output.directory = (dir_ / "data").string();
-    c.output.max_file_mb = 1;
+    c.output.max_file_mib = 1;
     EXPECT_TRUE(svc.configure(c, "test").ok);
     EXPECT_TRUE(svc.start("test").ok);
     EXPECT_TRUE(svc.wait_for(AcqState::configured, test_support::patience)) << svc.status().dump();

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-"""Figure for Chapter 31: the time difference that does not fold. Prompts of a centred point source,
+"""Figure for Chapter 31: the time difference that does not fold. Prompts of a centerd point source,
 drawn with a fixed seed: a timing peak of 300 ps FWHM on a flat randoms background, histogrammed as
 MDQ-L1's dt_ps (later minus earlier, never negative) and as the signed difference (lower-numbered
 crystal minus higher-numbered).
@@ -27,7 +27,7 @@ def main(dst):
     half = hs.max() / 2
     ax.annotate("", xy=(-150, half), xytext=(150, half), arrowprops={"arrowstyle": "<->", "color": d2d.PART, "lw": 0.8})
     ax.text(-960, half, "FWHM 300 ps: the CTR", fontsize=d2d.FONT_PT - 1, color=d2d.PART, va="center")
-    ax.text(260, hf.max() * 0.93, "twice as high, half as wide,\nno centre to measure", fontsize=d2d.FONT_PT - 1, color=d2d.INK)
+    ax.text(260, hf.max() * 0.93, "twice as high, half as wide,\nno center to measure", fontsize=d2d.FONT_PT - 1, color=d2d.INK)
     ax.set_xlabel("time difference, ps")
     ax.set_ylabel("prompts per 20 ps")
     ax.set_xlim(-1000, 1000)

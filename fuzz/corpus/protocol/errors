@@ -1,5 +1,6 @@
-{"api": "2.0", "cmd": "stop"}
+{"api": "3.0", "cmd": "stop"}
 not json
-{"cmd": 7}
-{"cmd": "auth", "token": "mdq_wrong"}
+{"api": "3.0", "cmd": 7}
+{"api": "3.0", "cmd": "auth", "token": "mdq_wrong"}
 {"cmd": "status"}
+{"api": "2.5", "cmd": "status"}

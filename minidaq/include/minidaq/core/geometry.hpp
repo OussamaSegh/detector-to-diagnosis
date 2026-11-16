@@ -61,7 +61,7 @@ struct Point2 {
 };
 
 // [snippet:table]
-// Centre of the front face of every transaxial crystal position, in mm.
+// Center of the front face of every transaxial crystal position, in mm.
 // Built entirely at compile time; the binary contains the finished table.
 inline constexpr std::array<Point2, ScannerGeometry::crystals_per_ring> crystal_xy_table = [] {
   std::array<Point2, ScannerGeometry::crystals_per_ring> t{};
@@ -77,7 +77,7 @@ inline constexpr std::array<Point2, ScannerGeometry::crystals_per_ring> crystal_
 // [/snippet:table]
 
 [[nodiscard]] constexpr double crystal_z_mm(std::uint32_t ring) noexcept {
-  // Axial centre of the scanner is z = 0.
+  // Axial center of the scanner is z = 0.
   const double half = static_cast<double>(ScannerGeometry::crystal_rings) / 2.0;
   return (static_cast<double>(ring) + 0.5 - half) * ScannerGeometry::axial_pitch_mm;
 }

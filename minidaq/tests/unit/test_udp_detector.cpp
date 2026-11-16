@@ -229,7 +229,7 @@ TEST(UdpDetector, RunsAnAcquisitionThroughTheService) {
   // The service picks the UDP adapter from the configuration; the words come
   // from the network and the link counters appear in the status report.
   AcquisitionService svc{with_default_adapters()};
-  const char* cfg = R"({"schema_version": "1.1", "source": {"type": "udp", "udp": {"port": 0}},
+  const char* cfg = R"({"schema_version": "2.0", "source": {"type": "udp", "udp": {"port": 0}},
                         "pipeline": {"max_batch_delay_us": 200}})";
   const auto parsed = config::parse_config(cfg);
   ASSERT_TRUE(parsed) << config::format_errors(parsed.error());

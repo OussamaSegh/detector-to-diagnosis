@@ -69,7 +69,7 @@ struct TempFile {
 config::AcquisitionConfig with_table(const TempFile& f, std::string serial = "MDQ-REF-0001") {
   config::AcquisitionConfig c;
   c.source.rate_hz = 2e6;
-  c.stop_after_s = 0.2;
+  c.source.stop_after_s = 0.2;
   c.calibration.file = f.path.string();
   c.calibration.scanner_serial = std::move(serial);
   return c;
@@ -209,7 +209,7 @@ TEST(CalibrationService, NamesNoBlockWhenTheTableIsRight) {
   control::AcquisitionService svc{control::with_default_adapters()};
   config::AcquisitionConfig c;
   c.source.rate_hz = 2e6;
-  c.stop_after_s = 0.2;
+  c.source.stop_after_s = 0.2;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   EXPECT_EQ(svc.status()["calibration"]["id"], "identity");
   ASSERT_TRUE(svc.start("test").ok);
@@ -257,15 +257,16 @@ TEST(CalibrationService, RefusesAMissingOrDamagedFile) {
 
 TEST(CalibrationConfig, NeedsTheScannerSerialWithATable) {
   // REQ: SRS-CAL-004
-  auto c = config::parse_config(R"({"schema_version": "1.4", "calibration": {"file": "t.json"}})");
+  auto c = config::parse_config(
+      R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "calibration": {"file": "t.json"}})");
   ASSERT_FALSE(c);
   EXPECT_TRUE(has(c.error(), "/calibration/scanner_serial", "is required"));
   c = config::parse_config(
-      R"({"schema_version": "1.4", "calibration": {"drift_tolerance_percent": 0}})");
+      R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "calibration": {"drift_tolerance_percent": 0}})");
   ASSERT_FALSE(c);
   EXPECT_TRUE(has(c.error(), "/calibration/drift_tolerance_percent", "between"));
   c = config::parse_config(
-      R"({"schema_version": "1.4", "calibration": {"file": "t.json", "scanner_serial": "S1", "drift_tolerance_percent": 3}})");
+      R"({"schema_version": "2.0", "source": {"type": "synthetic"}, "calibration": {"file": "t.json", "scanner_serial": "S1", "drift_tolerance_percent": 3}})");
   ASSERT_TRUE(c);
   EXPECT_EQ(c->calibration.file, "t.json");
   EXPECT_EQ(config::to_json(*c)["calibration"]["drift_tolerance_percent"], 3.0);

@@ -33,7 +33,7 @@ struct Rig {
   void run() {
     minidaq::config::AcquisitionConfig c;
     c.source.rate_hz = 1e6;
-    c.stop_after_s = 0.2;
+    c.source.stop_after_s = 0.2;
     c.pipeline.batch_size = 512;
     c.pipeline.batches_per_channel = 16;
     ASSERT_TRUE(service->configure(c, "test").ok);

@@ -555,7 +555,7 @@ std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(
       s.run_name += ch;
     }
   }
-  s.max_file_bytes = o.max_file_mb << 20U;
+  s.max_file_bytes = o.max_file_mib << 20U;
   s.records_per_block = o.records_per_block;
   s.buffers = o.buffers;
   s.fsync = o.fsync == "none" ? FsyncPolicy::none : o.fsync == "interval" ? FsyncPolicy::interval : FsyncPolicy::close;
@@ -585,7 +585,7 @@ std::unique_ptr<CoincidenceSinkPort> make_listmode_sink(
        {{"time_unit", "ps"},
         {"energy_lsb_kev", 1.0 / 32.0},
         {"delayed_window_ps", c.sorter.delay_ps},
-        {"coincidence_window_ps", c.pipeline.coincidence_window_ps}}},
+        {"coincidence_window_ps", c.sorter.window_ps}}},
       {"configuration", config::to_json(c)},
       // Chapter 26: which calibration made these energies and times (SRS-CAL-005).
       {"calibration", c.calibration.loaded ? config::to_json(*c.calibration.loaded)

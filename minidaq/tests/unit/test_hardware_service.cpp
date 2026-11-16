@@ -318,20 +318,20 @@ TEST(HardwareService, StatusAndRunRecordShowEachBoard) {
   EXPECT_TRUE(AcquisitionService{with_default_adapters()}.status()["hardware"].is_null())
       << "a service without hardware says so";
   auto c = small();
-  c.stop_after_s = 0.01;
+  c.source.stop_after_s = 0.01;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(test_support::eventually([&] { return svc.start("test").ok; }));
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   const std::lock_guard lock{records.mu};
   const json record = json::parse(records.last);
   const json& hw = record["hardware"];
-  EXPECT_EQ(hw["describe"], "2 boards, simulated");
+  EXPECT_EQ(hw["description"], "2 boards, simulated");
   EXPECT_EQ(hw["ready"], true);
   ASSERT_EQ(hw["boards"].size(), 2U);
   const json& b = hw["boards"][0];
   EXPECT_EQ(b["slot"], 3);
   EXPECT_EQ(b["state"], "ready");
-  EXPECT_EQ(b["temperature"], "normal");
+  EXPECT_EQ(b["temperature_level"], "normal");
   EXPECT_DOUBLE_EQ(b["temperature_c"].get<double>(), 30.0);
   EXPECT_DOUBLE_EQ(b["target_v"].get<double>(), 40.87);
   EXPECT_DOUBLE_EQ(b["setpoint_v"].get<double>(), 40.87);
@@ -406,7 +406,7 @@ TEST(HardwareService, TheTriggersAreOnOnlyWhileARunTakesData) {
 
   // A run that ends on its own switches them off too, and so does a fault.
   auto finite = small();
-  finite.stop_after_s = 0.01;
+  finite.source.stop_after_s = 0.01;
   ASSERT_TRUE(svc.configure(finite, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));

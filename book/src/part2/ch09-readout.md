@@ -533,12 +533,12 @@ warning when it is smaller than requested:
 The detector's counters reach the operator through a new, optional method of the
 `DetectorPort` interface, `counters()`, which the service copies into the status report under
 `detector_counters`. The configuration gains a source type and a section for the link. That
-is a new minor version of the schema, 1.1, and Chapter 6's rule applies: a 1.1 reader accepts
-1.0 files, and a 1.0 reader refuses 1.1 files.
+was a new minor version of the schema, 1.1, and Chapter 6's rule applied: a 1.1 reader accepts
+1.0 files, and a 1.0 reader refuses 1.1 files. In today's schema, 2.0, the section reads:
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "2.0",
   "source": {
     "type": "udp",
     "udp": { "address": "127.0.0.1", "port": 7701, "receive_buffer_bytes": 8388608,

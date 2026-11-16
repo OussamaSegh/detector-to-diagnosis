@@ -16,7 +16,7 @@ physics lead sent: short, confident, and wrong in several places.
   in the Verification section that does not exist (whatever the status). `tests/known.json`
   lists MiniDAQ's requirement IDs, risk file IDs and test names at tag `ch15`.
 - The request passes the rules and is still `proposed`. It names SRS-CFG-001, SRS-SRT-001 and
-  SRS-SRT-011 under Requirements; H-04, H-07, RC-12 and RC-16 under Risk; schema version 1.4
+  SRS-SRT-011 under Requirements; H-04, H-07, RC-12 and RC-16 under Risk; schema version 2.1
   under Interfaces and data formats; `minidaq/configs/default.json`, the architecture and the
   known anomalies under Documents; the tests that use the default window and the randoms
   measurement under Verification; and marks its physics assumption `assumption: confirm`.

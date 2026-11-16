@@ -37,11 +37,12 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
     errors.push_back({"/schema_version", "is required"});
   } else if (doc.is_object() && doc["schema_version"].is_string()) {  // "" too (MDQ-PR-042)
     if (!parse_version(version, c.schema_major, c.schema_minor)) {
-      errors.push_back({"/schema_version", "must look like \"1.0\""});
+      errors.push_back({"/schema_version", "must look like \"2.0\""});
     } else if (c.schema_major != supported_major) {
       errors.push_back({"/schema_version", "major version " + std::to_string(c.schema_major) +
-                                                " is not supported (this program reads " +
-                                                std::to_string(supported_major) + ".x)"});
+                                               " is not supported (this program reads " +
+                                               std::to_string(supported_major) +
+                                               ".x): " + migration_hint});
     } else if (c.schema_minor > supported_minor) {
       errors.push_back({"/schema_version", "written for a newer MiniDAQ (" + version + " > " +
                                                 std::to_string(supported_major) + "." +
@@ -50,12 +51,18 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
   }
   // [/snippet:version]
   top.get("description", c.description);
-  top.get("rt_profile", c.rt_profile);
-  top.get("stop_after_s", c.stop_after_s, 0.0, 7.0 * 24 * 3600);
+  top.get("rt_profile_file", c.rt_profile_file);
 
+  if (doc.is_object() && !doc.contains("source")) {
+    errors.push_back({"/source", "is required: a configuration says where its data comes from"});
+  }
   if (const json* src = top.object("source")) {
     ObjectReader r{*src, top.child("source"), errors};
+    if (!src->contains("type")) {
+      errors.push_back({"/source/type", R"(is required ("synthetic" or "udp"))"});
+    }
     r.get("type", c.source.type, {"synthetic", "udp"});
+    r.get("stop_after_s", c.source.stop_after_s, 0.0, 7.0 * 24 * 3600);
     r.get("rate_hz", c.source.rate_hz, 1.0, max_rate_hz);
     r.get("pair_fraction", c.source.pair_fraction, 0.0, 1.0);
     r.get("seed", c.source.seed, std::uint64_t{0}, std::numeric_limits<std::uint64_t>::max());
@@ -82,7 +89,6 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
     ObjectReader r{*p, top.child("pipeline"), errors};
     r.get("batch_size", c.pipeline.batch_size, std::size_t{1}, std::size_t{1} << 20);
     r.get("batches_per_channel", c.pipeline.batches_per_channel, std::size_t{2}, std::size_t{4096});
-    r.get("coincidence_window_ps", c.pipeline.coincidence_window_ps, std::int64_t{1}, std::int64_t{1'000'000});
     std::string overflow = c.pipeline.overflow == OverflowPolicy::block ? "block" : "drop";
     r.get("overflow", overflow, {"block", "drop"});
     c.pipeline.overflow = overflow == "drop" ? OverflowPolicy::drop : OverflowPolicy::block;
@@ -92,6 +98,7 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
   if (const json* so = top.object("sorter")) {
     ObjectReader r{*so, top.child("sorter"), errors};
     auto& st = c.sorter;
+    r.get("window_ps", st.window_ps, std::int64_t{1}, std::int64_t{1'000'000});
     r.get("delay_ps", st.delay_ps, std::int64_t{0}, std::int64_t{1'000'000'000});
     r.get("mode", st.mode, {"fixed", "per_single"});
     r.get("multiples", st.multiples, {"kill_all", "take_all_goods", "take_winner_of_goods", "keep_if_only_one_good"});
@@ -109,7 +116,7 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
     r.get("type", out.type, {"none", "listmode"});
     r.get("directory", out.directory);
     r.get("prefix", out.prefix);
-    r.get("max_file_mb", out.max_file_mb, std::uint64_t{1}, std::uint64_t{1} << 20);
+    r.get("max_file_mib", out.max_file_mib, std::uint64_t{1}, std::uint64_t{1} << 20);
     r.get("fsync", out.fsync, {"none", "close", "interval"});
     std::uint64_t every = out.fsync_every_blocks;
     r.get("fsync_every_blocks", every, std::uint64_t{1}, std::uint64_t{1} << 20);
@@ -141,16 +148,16 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
   }
   top.finish();
   // Rules that involve two values, reported at the value a user would change.
-  if (c.sorter.delay_ps != 0 && c.sorter.delay_ps <= c.pipeline.coincidence_window_ps) {
-    errors.push_back({"/sorter/delay_ps", "must be 0 (off) or more than /pipeline/coincidence_window_ps"});
+  if (c.sorter.delay_ps != 0 && c.sorter.delay_ps <= c.sorter.window_ps) {
+    errors.push_back({"/sorter/delay_ps", "must be 0 (off) or more than /sorter/window_ps"});
   }
   if (c.sorter.energy_low_kev > c.sorter.energy_high_kev) {
     errors.push_back({"/sorter/energy_low_kev", "must not exceed /sorter/energy_high_kev"});
   }
-  if (c.source.type == "udp" && c.stop_after_s > 0) {
+  if (c.source.type == "udp" && c.source.stop_after_s > 0) {
     // stop_after_s is turned into a word count from rate_hz, which a network
     // source does not have: stop a UDP run with the stop command.
-    errors.push_back({"/stop_after_s", "is supported only for source type \"synthetic\""});
+    errors.push_back({"/source/stop_after_s", "is supported only for source type \"synthetic\""});
   }
   if (!errors.empty()) {
     return Unexpected{std::move(errors)};
@@ -180,6 +187,7 @@ json to_json(const AcquisitionConfig& c) {
         {"rate_hz", c.source.rate_hz},
         {"pair_fraction", c.source.pair_fraction},
         {"seed", c.source.seed},
+        {"stop_after_s", c.source.stop_after_s},
         {"udp",
          {{"address", c.source.udp.address},
           {"port", c.source.udp.port},
@@ -189,11 +197,11 @@ json to_json(const AcquisitionConfig& c) {
       {"pipeline",
        {{"batch_size", c.pipeline.batch_size},
         {"batches_per_channel", c.pipeline.batches_per_channel},
-        {"coincidence_window_ps", c.pipeline.coincidence_window_ps},
         {"overflow", c.pipeline.overflow == OverflowPolicy::drop ? "drop" : "block"},
         {"max_batch_delay_us", c.pipeline.max_batch_delay_us}}},
       {"sorter",
-       {{"delay_ps", c.sorter.delay_ps},
+       {{"window_ps", c.sorter.window_ps},
+        {"delay_ps", c.sorter.delay_ps},
         {"mode", c.sorter.mode},
         {"multiples", c.sorter.multiples},
         {"energy_low_kev", c.sorter.energy_low_kev},
@@ -204,7 +212,7 @@ json to_json(const AcquisitionConfig& c) {
        {{"type", c.output.type},
         {"directory", c.output.directory},
         {"prefix", c.output.prefix},
-        {"max_file_mb", c.output.max_file_mb},
+        {"max_file_mib", c.output.max_file_mib},
         {"fsync", c.output.fsync},
         {"fsync_every_blocks", c.output.fsync_every_blocks},
         {"records_per_block", c.output.records_per_block},
@@ -214,8 +222,7 @@ json to_json(const AcquisitionConfig& c) {
        {{"file", c.calibration.file},
         {"scanner_serial", c.calibration.scanner_serial},
         {"drift_tolerance_percent", c.calibration.drift_tolerance_percent}}},
-      {"rt_profile", c.rt_profile},
-      {"stop_after_s", c.stop_after_s},
+      {"rt_profile_file", c.rt_profile_file},
   };
 }
 
@@ -231,7 +238,7 @@ PipelineConfig to_pipeline_config(const AcquisitionConfig& c) {
   PipelineConfig p;
   p.batch_size = c.pipeline.batch_size;
   p.batches_per_channel = c.pipeline.batches_per_channel;
-  p.sorter.window = Picoseconds{c.pipeline.coincidence_window_ps};
+  p.sorter.window = Picoseconds{c.sorter.window_ps};
   p.sorter.delay = Picoseconds{c.sorter.delay_ps};
   // The parser accepted only known names, so these cannot fail.
   p.sorter.mode = parse_window_mode(c.sorter.mode).value();
@@ -243,8 +250,9 @@ PipelineConfig to_pipeline_config(const AcquisitionConfig& c) {
   p.source_overflow = c.pipeline.overflow;
   p.max_batch_delay = std::chrono::microseconds{c.pipeline.max_batch_delay_us};
   p.calibration = c.calibration.loaded;
-  if (c.stop_after_s > 0) {
-    p.total_words = static_cast<std::uint64_t>(std::llround(c.stop_after_s * c.source.rate_hz));
+  if (c.source.stop_after_s > 0) {
+    p.total_words =
+        static_cast<std::uint64_t>(std::llround(c.source.stop_after_s * c.source.rate_hz));
   }
   return p;
 }

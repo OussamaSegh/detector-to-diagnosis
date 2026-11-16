@@ -39,13 +39,13 @@ TEST(Physics, WaterAttenuation) {
 }
 
 TEST(Physics, CylinderExit) {
-  const ph::Vec3 centre{0, 0, 0};
-  EXPECT_NEAR(*ph::exit_distance_cylinder(centre, {1, 0, 0}, 150.0), 150.0, 1e-9);
+  const ph::Vec3 center{0, 0, 0};
+  EXPECT_NEAR(*ph::exit_distance_cylinder(center, {1, 0, 0}, 150.0), 150.0, 1e-9);
   // At 45 degrees to the axis the path to the side is r / sin(theta).
   const double s = std::numbers::sqrt2 / 2.0;
-  EXPECT_NEAR(*ph::exit_distance_cylinder(centre, {s, 0, s}, 150.0), 150.0 / s, 1e-9);
-  EXPECT_FALSE(ph::exit_distance_cylinder(centre, {0, 0, 1}, 150.0).has_value());
-  // From an off-centre point, back across the centre.
+  EXPECT_NEAR(*ph::exit_distance_cylinder(center, {s, 0, s}, 150.0), 150.0 / s, 1e-9);
+  EXPECT_FALSE(ph::exit_distance_cylinder(center, {0, 0, 1}, 150.0).has_value());
+  // From an off-center point, back across the center.
   EXPECT_NEAR(*ph::exit_distance_cylinder({100, 0, 0}, {-1, 0, 0}, 150.0), 250.0, 1e-9);
   EXPECT_NEAR(ph::exit_distance_slab({0, 0, 10}, {0, 0, -1}, 50.0), 60.0, 1e-9);
 }

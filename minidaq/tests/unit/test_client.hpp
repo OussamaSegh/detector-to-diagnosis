@@ -18,6 +18,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "minidaq/control/control_protocol.hpp"
 #include "minidaq/control/tls.hpp"
 
 namespace minidaq::test_support {
@@ -88,7 +89,12 @@ class Client {
     buf_.erase(0, nl + 1);
     return l;
   }
-  nlohmann::json call(const nlohmann::json& req) {
+  // Every request of API 3.0 names its API (ADR 0036); call() adds it when the test leaves it out,
+  // so that a test says only what it is about. send() sends exactly what it is given.
+  nlohmann::json call(nlohmann::json req) {
+    if (req.is_object() && !req.contains("api")) {
+      req["api"] = minidaq::control::api_version;
+    }
     send(req.dump() + "\n");
     const std::string l = line();
     return l.empty() ? nlohmann::json{} : nlohmann::json::parse(l);

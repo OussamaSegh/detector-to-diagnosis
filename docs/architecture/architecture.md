@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 24 (MiniDAQ 1.3.1-dev). Status: draft for review.
+Version 25 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -109,11 +109,11 @@ pipeline does not use it yet). The control API's security is described in the
 | Detector readout | MDQ-P1 words (`minidaq/format/packed_single.hpp`) through `DetectorPort`: in-process (`SimulatedDetector`) or in MDQ-R1 packets over UDP (`UdpDetector`, `minidaq/format/readout_packet.hpp`) | in | One link per adapter; the readout network must be dedicated (no authentication, [ADR 0009](../adr/0009-udp-readout-link.md)) |
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity; the run record's `corrections` object is what `tools/recon` (tool TL-30) reads with the files |
 | Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
-| Operator, scripts, test harness | Control protocol 2.5: newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
-| Configuration files | JSON, schema version 1.4 ([schema](acquisition-config.schema.json)) | in | Comments allowed; validated before use |
+| Operator, scripts, test harness | Control protocol 3.0 (every request names its version, ADR 0036): newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
+| Configuration files | JSON, schema version 2.0 ([schema](acquisition-config.schema.json); 1.x files refused, converted by `tools/migrate_config.py`) | in | Comments allowed; validated before use |
 | Calibration table | JSON, schema version 1.0 ([format](../formats/calibration.md)), written by `tools/calib` and named by the configuration | in | Checked against its CRC-32, the scanner serial, its expiry and the limits of a working detector before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
-| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile` (Chapter 4); the platform is defined in `platform/platform.json` and checked at installation (Chapter 25) |
+| Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile_file` (Chapter 4); the platform is defined in `platform/platform.json` and checked at installation (Chapter 25) |
 | Service manager (systemd) | sd_notify(3) datagrams to `NOTIFY_SOCKET`: READY, STOPPING, STATUS, and WATCHDOG while healthy (`packaging/systemd/minidaq.service`) | out | Restarts the server on a crash or a missed watchdog; starts the rollback unit after repeated failure ([ADR 0020](../adr/0020-platform-watchdog-and-signed-updates.md)) |
 | Release process | Update bundles: Ed25519-signed manifest and archive, read by `minidaq_update` | in | Trusted only through the keys in `/etc/minidaq/update-keys` |
 
@@ -216,7 +216,7 @@ The software system is class B: its highest item.
 
 | Thread | Count | Created by | Real-time | Work |
 |---|---|---|---|---|
-| Pipeline stages | 5 | `AcquisitionPipeline::start` | Optional, from `rt_profile` | Source, decode, sort, pair, write |
+| Pipeline stages | 5 | `AcquisitionPipeline::start` | Optional, from `rt_profile_file` | Source, decode, sort, pair, write |
 | Service monitor | 1 | `AcquisitionService` | No | Every 20 ms: port faults, late singles, end of run, latency snapshots |
 | List-mode I/O | 1 per run | `ListModeSink` | No | Writes blocks, calls fsync by policy, rotates and renames files, returns buffers to the writer |
 | Control server | 1 | `ControlServer::start` | No | `poll()` over up to 8 clients |
@@ -236,13 +236,13 @@ which a unit test compares with the transition table in the code.
 
 ### A run
 
-1. `configure`: the configuration is validated (and its `rt_profile` read) before the state
+1. `configure`: the configuration is validated (and its `rt_profile_file` read) before the state
    changes; an invalid configuration changes nothing.
 2. `start`: the service releases the previous run's pipeline and ports (a port may hold an
    exclusive resource, such as a UDP port), creates fresh ports from the factories, builds a
    pipeline and starts it. A factory failure is a `device_error` and leaves the state at
    configured.
-3. The run ends when the source has delivered `stop_after_s` worth of data, or on `stop`
+3. The run ends when the source has delivered `source.stop_after_s` worth of data, or on `stop`
    (state stopping while the stages drain). The monitor sees all stages finished, closes the
    sink with the run record (the final status) and applies `drained`: back to configured,
    ready for another run with the same configuration. A sink that cannot make the run durable
@@ -265,7 +265,15 @@ sector difference and field of view. Files of 1.0 and 1.1 remain valid and get t
 defaults, which include an energy gate and a delayed window that the earlier placeholder
 pair stage did not have. Schema 1.3 (Chapter 12) adds the `output` section: the sink type
 (`none` or `listmode`), directory, file prefix and size, fsync policy, block size, buffers and
-the maximum block delay.
+the maximum block delay. Schema 1.4 (Chapter 26) adds the `calibration` section.
+
+Schema 2.0 (CR-0030) is the one major change so far. It requires `source.type`, which 1.x
+took to be `"synthetic"` when a file left it out (hazard H-06); moves `stop_after_s` into
+`source` and `pipeline.coincidence_window_ps` to `sorter.window_ps`; and renames
+`output.max_file_mb` to `max_file_mib` and `rt_profile` to `rt_profile_file`. No default
+changed. A 1.x file is refused with a message that names `tools/migrate_config.py`, which
+converts it and validates the result against the schema document; `docs/migration-2.0.md`
+lists the changes of the configuration and of control API 3.0 together.
 
 ## 8. Observability
 
@@ -278,7 +286,7 @@ the maximum block delay.
   link, datagrams, packets delivered, lost, reordered and stale, rejections by reason,
   resyncs, the granted receive buffer, the datagrams dropped at the socket, and the host's and
   the network card's drop counters since the run began), the front-end boards (`hardware`:
-  state, temperature, bias and fault of each board), and the sorter's eleven counters (`sorter`: singles
+  state, temperature, bias and fault of each board), and the sorter's eleven counters (`sorter_counters`: singles
   in, rejected by energy and order, windows by size, geometry rejections, prompts, delayed),
   and the sink's counters (`sink_counters`: for list mode, coincidences, blocks, bytes, files,
   buffer waits, fsyncs and their longest duration, dropped blocks after a fault).
@@ -389,3 +397,4 @@ Open issues:
 | 22 | Release 1.3.0: signed run records, calibration tables and reports, and the shared `minidaq_signing` library (ADR 0034, CR-0027). |
 | 23 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 22. |
 | 24 | The product build without the simulator: the library `minidaq_simulation`, item sim not shipped (CR-0029). |
+| 25 | Control API 3.0 and configuration schema 2.0 (ADR 0036, CR-0030). |

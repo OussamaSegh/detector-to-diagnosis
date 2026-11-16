@@ -78,7 +78,7 @@ def main():
             for _ in range(repeats):
                 fresh()
                 out = subprocess.run([TOOL, "--dir", DIR, "--coincidences", n, "--fsync", fsync, "--every",
-                                      str(every), "--buffers", str(buffers), "--max-file-mb", "1024"],
+                                      str(every), "--buffers", str(buffers), "--max-file-mib", "1024"],
                                      capture_output=True, text=True, check=True).stdout
                 print("  " + out.strip())
                 rates.append(float(re.search(r"([0-9.]+) M/s", out).group(1)))

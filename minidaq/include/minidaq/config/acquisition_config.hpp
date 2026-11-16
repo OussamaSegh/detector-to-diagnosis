@@ -31,10 +31,15 @@
 
 namespace minidaq::config {
 
-inline constexpr int supported_major = 1;
+inline constexpr int supported_major = 2;
 // 1.1: source type "udp" (Chapter 9); 1.2: "sorter" (Chapter 10); 1.3: "output" (Chapter 12);
-// 1.4: "calibration" (Chapter 26)
-inline constexpr int supported_minor = 4;
+// 1.4: "calibration" (Chapter 26). 2.0 (CR-0030): /source/type required, /stop_after_s in
+// /source, /pipeline/coincidence_window_ps is /sorter/window_ps, /output/max_file_mb is
+// max_file_mib, /rt_profile is /rt_profile_file. tools/migrate_config.py converts a 1.x file.
+inline constexpr int supported_minor = 0;
+// What a refused 1.x file is told.
+inline constexpr const char* migration_hint =
+    "convert it with tools/migrate_config.py (docs/migration-2.0.md)";
 
 // The UDP readout link (Chapter 9, minidaq/control/udp_detector.hpp).
 struct UdpSettings {
@@ -47,10 +52,11 @@ struct UdpSettings {
 };
 
 struct SourceSettings {
-  std::string type = "synthetic";  // "synthetic" or "udp"
+  std::string type = "synthetic";  // "synthetic" or "udp"; a file must name it (2.0)
   double rate_hz = 10e6;           // synthetic: singles per second
   double pair_fraction = 0.3;      // synthetic
   std::uint64_t seed = 1;          // synthetic
+  double stop_after_s = 0.0;       // synthetic: end the run after this time; 0: run until stop
   UdpSettings udp;                 // udp
   friend bool operator==(const SourceSettings&, const SourceSettings&) = default;
 };
@@ -58,15 +64,15 @@ struct SourceSettings {
 struct PipelineSettings {
   std::size_t batch_size = 4096;
   std::size_t batches_per_channel = 64;
-  std::int64_t coincidence_window_ps = 4'000;
   OverflowPolicy overflow = OverflowPolicy::block;
   std::int64_t max_batch_delay_us = 500;
   friend bool operator==(const PipelineSettings&, const PipelineSettings&) = default;
 };
 
 // The coincidence sorter (Chapter 10, minidaq/processing/coincidence_sorter.hpp).
-// The window itself stays /pipeline/coincidence_window_ps, as in 1.0.
 struct SorterSettings {
+  std::int64_t window_ps =
+      4'000;  // the coincidence window (in 1.x /pipeline/coincidence_window_ps)
   std::int64_t delay_ps = 100'000;  // 0: no delayed window
   std::string mode = "fixed";       // "fixed" or "per_single"
   std::string multiples = "kill_all";
@@ -82,7 +88,7 @@ struct OutputSettings {
   std::string type = "none";        // "none": count and discard; "listmode": MDQ-L1 files
   std::string directory = ".";
   std::string prefix = "minidaq";
-  std::uint64_t max_file_mb = 1024;  // MiB per file before the next one starts
+  std::uint64_t max_file_mib = 1024;  // MiB per file before the next one starts
   std::string fsync = "close";      // "none", "close" or "interval"
   std::uint32_t fsync_every_blocks = 256;
   std::uint32_t records_per_block = 4096;
@@ -111,8 +117,7 @@ struct AcquisitionConfig {
   SorterSettings sorter;
   OutputSettings output;
   CalibrationSettings calibration;
-  std::string rt_profile;   // path of a real-time profile file (Chapter 4); empty: none
-  double stop_after_s = 0;  // 0: run until stopped
+  std::string rt_profile_file;  // path of a real-time profile file (Chapter 4); empty: none
 
   friend bool operator==(const AcquisitionConfig&, const AcquisitionConfig&) = default;
 };

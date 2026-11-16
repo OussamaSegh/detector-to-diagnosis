@@ -32,7 +32,7 @@ TEST(Geometry, CrystalsLieOnTheRing) {
   EXPECT_NEAR(std::hypot(a.x - b.x, a.y - b.y), G::transaxial_pitch_mm, 1e-3);
 }
 
-TEST(Geometry, AxialPositionsAreCentred) {
+TEST(Geometry, AxialPositionsAreCenterd) {
   EXPECT_NEAR(crystal_z_mm(0), -crystal_z_mm(G::crystal_rings - 1), 1e-12);
 }
 

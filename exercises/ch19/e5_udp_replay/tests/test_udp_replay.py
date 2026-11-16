@@ -138,7 +138,7 @@ class AgainstTheServer(systest.SystemTest):
 
     def acquire(self, prefix, capture):
         cfg = systest.write_json(self.tmp / f"{prefix}.json", {
-            "schema_version": "1.3", "description": "Exercise 19.5, a replayed capture",
+            "schema_version": "2.0", "description": "Exercise 19.5, a replayed capture",
             # A gap is given up after the reorder window, not after a time (see the README).
             "source": {"type": "udp", "udp": {"address": "127.0.0.1", "port": 0, "max_hold_us": 1_000_000}},
             "output": {"type": "listmode", "directory": str(self.tmp), "prefix": prefix}})
@@ -161,7 +161,7 @@ class AgainstTheServer(systest.SystemTest):
         # socket of the host. They describe the server and the host, not the data.
         link = {k: v for k, v in status["detector_counters"].items()
                 if k not in ("receive_batches", "socket_queue_bytes") and not k.startswith(("host_", "nic_"))}
-        return link, status["sorter"], records
+        return link, status["sorter_counters"], records
 
     def test_a_replay_gives_the_same_run_every_time(self):
         capture = self.tmp / "damaged.cap"

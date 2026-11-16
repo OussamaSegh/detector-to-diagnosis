@@ -404,7 +404,7 @@ file in the wrong place shows here.
 
 Figure [](#fig-ch31-fold) shows the difference on simulated prompts.
 
-```{.figure #fig-ch31-fold src="book/figures/plots/ch31/fold.py" caption="The time difference that does not fold, on prompts drawn with a fixed seed. Stored as later minus earlier, the peak is folded onto its other half; ordered by crystal number, it is whole, with its centre and its width." alt="Two histograms of time difference from minus 1000 to 1000 ps. The folded one, in grey, starts at 0 and is twice as high and half as wide. The signed one is a symmetric peak centred on 0 with a 300 ps FWHM marked by a double arrow." width="80%"}
+```{.figure #fig-ch31-fold src="book/figures/plots/ch31/fold.py" caption="The time difference that does not fold, on prompts drawn with a fixed seed. Stored as later minus earlier, the peak is folded onto its other half; ordered by crystal number, it is whole, with its center and its width." alt="Two histograms of time difference from minus 1000 to 1000 ps. The folded one, in grey, starts at 0 and is twice as high and half as wide. The signed one is a symmetric peak centerd on 0 with a 300 ps FWHM marked by a double arrow." width="80%"}
 ```
 
 ## Is the rate constant?

@@ -34,7 +34,7 @@ int run(int argc, char** argv) {
   double total = 20e6;
   bool forever = false;
   std::string fsync = "close";
-  std::uint64_t max_file_mb = 1024;
+  std::uint64_t max_file_mib = 1024;
   for (int i = 1; i < argc; i += 2) {
     const std::string_view a{argv[i]};
     const std::string_view v = i + 1 < argc ? argv[i + 1] : "";
@@ -52,8 +52,8 @@ int run(int argc, char** argv) {
       ok = parse_into(v, cfg.records_per_block, std::size_t{1}, std::size_t{65536});
     } else if (a == "--buffers") {
       ok = parse_into(v, cfg.buffers, std::size_t{2}, std::size_t{65536});
-    } else if (a == "--max-file-mb") {
-      ok = parse_into(v, max_file_mb, std::uint64_t{1}, std::uint64_t{1} << 20);
+    } else if (a == "--max-file-mib") {
+      ok = parse_into(v, max_file_mib, std::uint64_t{1}, std::uint64_t{1} << 20);
     } else if (a == "--forever") {
       ok = v == "0" || v == "1";
       forever = v == "1";
@@ -61,16 +61,19 @@ int run(int argc, char** argv) {
       ok = false;
     }
     if (!ok) {
-      std::fputs("usage: writer_throughput --dir DIR [--coincidences N] [--fsync none|close|interval] [--every N]\n"
-                 "                         [--records N] [--buffers N] [--max-file-mb N] [--forever 0|1]\n",
-                 stderr);
+      std::fputs(
+          "usage: writer_throughput --dir DIR [--coincidences N] [--fsync none|close|interval] "
+          "[--every N]\n"
+          "                         [--records N] [--buffers N] [--max-file-mib N] [--forever "
+          "0|1]\n",
+          stderr);
       return 2;
     }
   }
   cfg.fsync = fsync == "none" ? control::FsyncPolicy::none
               : fsync == "interval" ? control::FsyncPolicy::interval
                                     : control::FsyncPolicy::close;
-  cfg.max_file_bytes = max_file_mb << 20U;
+  cfg.max_file_bytes = max_file_mib << 20U;
   cfg.run_name = std::to_string(Clock::now().time_since_epoch().count());
 
   // A pool of one million coincidences with random crystals, replayed with
@@ -125,16 +128,20 @@ int run(int argc, char** argv) {
   const auto s = (*sink)->stats();
   const double secs = std::chrono::duration<double>(t_closed - t0).count();
   const double close_s = std::chrono::duration<double>(t_closed - t_written).count();
-  std::printf("writer fsync=%s every=%u records=%zu buffers=%zu file_mb=%llu: %llu coincidences, %.1f MB in %.3f s "
-              "(close %.3f s): %.2f M/s, %.0f MB/s; files %llu, waits %llu (%.0f ms), fsyncs %llu, max fsync %.1f ms, "
-              "max block write %.2f ms\n",
-              fsync.c_str(), cfg.fsync_every_blocks, cfg.records_per_block, cfg.buffers,
-              static_cast<unsigned long long>(max_file_mb), static_cast<unsigned long long>(s.coincidences),
-              static_cast<double>(s.bytes) / 1e6, secs, close_s, static_cast<double>(s.coincidences) / secs / 1e6,
-              static_cast<double>(s.bytes) / secs / 1e6, static_cast<unsigned long long>(s.files),
-              static_cast<unsigned long long>(s.buffer_waits), static_cast<double>(s.buffer_wait_ns) / 1e6,
-              static_cast<unsigned long long>(s.fsyncs), static_cast<double>(s.max_fsync_ns) / 1e6,
-              static_cast<double>(s.max_write_ns) / 1e6);
+  std::printf(
+      "writer fsync=%s every=%u records=%zu buffers=%zu file_mb=%llu: %llu coincidences, %.1f MB "
+      "in %.3f s "
+      "(close %.3f s): %.2f M/s, %.0f MB/s; files %llu, waits %llu (%.0f ms), fsyncs %llu, max "
+      "fsync %.1f ms, "
+      "max block write %.2f ms\n",
+      fsync.c_str(), cfg.fsync_every_blocks, cfg.records_per_block, cfg.buffers,
+      static_cast<unsigned long long>(max_file_mib),
+      static_cast<unsigned long long>(s.coincidences), static_cast<double>(s.bytes) / 1e6, secs,
+      close_s, static_cast<double>(s.coincidences) / secs / 1e6,
+      static_cast<double>(s.bytes) / secs / 1e6, static_cast<unsigned long long>(s.files),
+      static_cast<unsigned long long>(s.buffer_waits), static_cast<double>(s.buffer_wait_ns) / 1e6,
+      static_cast<unsigned long long>(s.fsyncs), static_cast<double>(s.max_fsync_ns) / 1e6,
+      static_cast<double>(s.max_write_ns) / 1e6);
   return 0;
 }
 

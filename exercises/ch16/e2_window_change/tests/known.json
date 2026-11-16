@@ -252,7 +252,7 @@
   "Expected.StringValueMoves",
   "Expected.ValueAndError",
   "Expected.Void",
-  "Geometry.AxialPositionsAreCentred",
+  "Geometry.AxialPositionsAreCenterd",
   "Geometry.CrystalsLieOnTheRing",
   "Geometry.IdDecomposition",
   "HistogramInterval.PercentilesOfOnlyTheValuesBetweenTwoSnapshots",

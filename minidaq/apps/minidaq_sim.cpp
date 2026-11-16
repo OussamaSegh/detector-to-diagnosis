@@ -10,8 +10,9 @@
 //   minidaq_sim --activity 5e6 --seconds 0.5 --phantom 90 --truth singles.csv
 //   minidaq_sim --activity 20e6 --policy take_winner_of_goods --fov 120
 //   minidaq_sim --nema 1 --activity 100e6 --deadtime paralyzable --tau 200 --pileup 1
-//   minidaq_sim --source point --centre 40,-25,0 --phantom 0 --fov 120 --listmode out/
-//   minidaq_sim --gain-spread 0.1 --saturation 4000 --time-skew 300 --words raw.bin --crystal-truth k.csv
+//   minidaq_sim --source point --center 40,-25,0 --phantom 0 --fov 120 --listmode out/
+//   minidaq_sim --gain-spread 0.1 --saturation 4000 --time-skew 300 --words raw.bin --crystal-truth
+//   k.csv
 //
 // The last form simulates an uncalibrated detector (Chapter 26): each crystal its own gain and
 // channel delay, and a saturating SiPM; --crystal-truth writes what a calibration should find.
@@ -60,14 +61,18 @@ struct FileCloser {
 using File = std::unique_ptr<std::FILE, FileCloser>;
 
 constexpr const char* usage =
-    "usage: minidaq_sim [--activity BQ] [--seconds S] [--source point|cylinder] [--phantom RADIUS_MM]\n"
+    "usage: minidaq_sim [--activity BQ] [--seconds S] [--source point|cylinder] [--phantom "
+    "RADIUS_MM]\n"
     "                   [--window PS] [--elow KEV] [--ehigh KEV] [--ctr PS] [--seed N]\n"
     "                   [--words FILE] [--truth FILE.csv]\n"
-    "                   [--mode fixed|per_single] [--policy NAME] [--delay PS] [--sectors N] [--fov MM]\n"
+    "                   [--mode fixed|per_single] [--policy NAME] [--delay PS] [--sectors N] "
+    "[--fov MM]\n"
     "                   [--deadtime none|non_paralyzable|paralyzable] [--tau NS] [--pileup 0|1]\n"
     "                   [--deadtime-unit block|crystal] [--nema 0|1]\n"
-    "                   [--centre X,Y,Z] [--listmode DIR] [--max-file-mb N] [--fsync none|close|interval]\n"
-    "                   [--gain-spread F] [--saturation KEV] [--time-skew PS] [--crystal-truth FILE.csv]\n"
+    "                   [--center X,Y,Z] [--listmode DIR] [--max-file-mib N] [--fsync "
+    "none|close|interval]\n"
+    "                   [--gain-spread F] [--saturation KEV] [--time-skew PS] [--crystal-truth "
+    "FILE.csv]\n"
     "                   [--efficiency-spread F] [--truth-sino PREFIX]\n"
     "                   [--source-radius MM] [--source-length MM] [--crystal-seed N]\n";
 // Chapter 33.
@@ -228,8 +233,8 @@ int run(int argc, char** argv) {
   DeadTimeConfig dead;
   bool nema = false;
   bool link = false;  // Chapter 33: quantize the singles as the readout link does
-  bool centre_given = false;
-  physics::Vec3 centre{0.0, 0.0, 0.0};
+  bool center_given = false;
+  physics::Vec3 center{0.0, 0.0, 0.0};
   minidaq::config::AcquisitionConfig listmode;  // its output section, and the metadata of the files
   for (int i = 1; i < argc; i += 2) {  // every option takes a value
     const std::string_view a{argv[i]};
@@ -289,19 +294,21 @@ int run(int argc, char** argv) {
     } else if (a == "--nema") {
       ok = v == "0" || v == "1";
       nema = v == "1";
-    } else if (a == "--centre") {
+    } else if (a == "--center") {
       // x,y,z in mm
       const auto c1 = v.find(',');
       const auto c2 = c1 == std::string_view::npos ? c1 : v.find(',', c1 + 1);
-      ok = c2 != std::string_view::npos && minidaq::parse_into(v.substr(0, c1), centre.x, -140.0, 140.0) &&
-           minidaq::parse_into(v.substr(c1 + 1, c2 - c1 - 1), centre.y, -140.0, 140.0) &&
-           minidaq::parse_into(v.substr(c2 + 1), centre.z, -100.0, 100.0);
-      centre_given = true;
+      ok = c2 != std::string_view::npos &&
+           minidaq::parse_into(v.substr(0, c1), center.x, -140.0, 140.0) &&
+           minidaq::parse_into(v.substr(c1 + 1, c2 - c1 - 1), center.y, -140.0, 140.0) &&
+           minidaq::parse_into(v.substr(c2 + 1), center.z, -100.0, 100.0);
+      center_given = true;
     } else if (a == "--listmode" && !v.empty()) {
       listmode.output.type = "listmode";
       listmode.output.directory = v;
-    } else if (a == "--max-file-mb") {
-      ok = minidaq::parse_into(v, listmode.output.max_file_mb, std::uint64_t{1}, std::uint64_t{1} << 20);
+    } else if (a == "--max-file-mib") {
+      ok = minidaq::parse_into(v, listmode.output.max_file_mib, std::uint64_t{1},
+                               std::uint64_t{1} << 20);
     } else if (a == "--fsync") {
       ok = v == "none" || v == "close" || v == "interval";
       listmode.output.fsync = v;
@@ -354,8 +361,8 @@ int run(int argc, char** argv) {
   if (phantom_mm > 0.0) {
     cfg.phantom = {phantom_mm, 180.0};
   }
-  if (centre_given) {
-    cfg.source.centre_mm = centre;
+  if (center_given) {
+    cfg.source.center_mm = center;
   }
   if (nema) {
     // NEMA NU 2-style count-rate phantom: a 203 mm diameter, 700 mm long
@@ -453,7 +460,7 @@ int run(int argc, char** argv) {
   if (listmode.output.type == "listmode") {
     // The metadata records the sorter that made these coincidences.
     listmode.description = "minidaq_sim";
-    listmode.pipeline.coincidence_window_ps = sorter.window.count();
+    listmode.sorter.window_ps = sorter.window.count();
     listmode.sorter.delay_ps = sorter.delay.count();
     listmode.sorter.energy_low_kev = sorter.energy_low_kev;
     listmode.sorter.energy_high_kev = sorter.energy_high_kev;

@@ -10,6 +10,25 @@ the patch version.
 
 ### Changed (2.0.0-dev, breaking)
 
+- **Control API 3.0** (CR-0030, ADR 0036). Every request names its API: a request without
+  `"api"`, or with a major version other than 3, is refused with `unsupported_api` and a message
+  that names `docs/migration-2.0.md`. Renamed status fields: `sorter` is `sorter_counters`,
+  `hardware.describe` is `hardware.description`, each board's `temperature` (the level) is
+  `temperature_level`; the integrity loss counter `/sorter/out_of_order` is
+  `/sorter_counters/out_of_order`. `minidaq_ctl` speaks 3.0.
+- **Acquisition configuration schema 2.0** (CR-0030). `source` and `source.type` are required
+  (1.x took a missing source to be the simulator, hazard H-06); `stop_after_s` moves into
+  `source`; `pipeline.coincidence_window_ps` is `sorter.window_ps`; `output.max_file_mb` is
+  `output.max_file_mib`; `rt_profile` is `rt_profile_file`. No default changes. A 1.x file is
+  refused with a message that names the new `tools/migrate_config.py` (tool TL-49), which
+  converts it, prints what it changed and validates the result against the schema document.
+  SRS-CTL-022 and SRS-CFG-001 changed; SRS-CFG-013 to SRS-CFG-015 added. Every configuration of
+  the repository, the fuzz seeds, the book's listings (re-recorded against the 3.0 server) and
+  the exercises are converted; `docs.interfaces` (`tools/check_interfaces.py`) fails for a
+  request older than 3.0 or a 1.x configuration left in the book or the exercises.
+- `minidaq_sim --centre` and the simulator's `centre_mm` are `--center` and `center_mm`, the
+  book's spelling everywhere else; `--max-file-mb` of `minidaq_sim` and `writer_throughput` is
+  `--max-file-mib`.
 - **The shipped server refuses the simulator** (CR-0029, closes MDQ-PR-009). The product is the
   new `product` preset: the hardened build without the simulator, the build that
   `tools/repro_check.sh` and `tools/release_bundle.py` package. Its server contains no simulator

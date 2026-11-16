@@ -24,7 +24,7 @@ radial bin. `fit_point` is complete; it fails only because of what it is given.
 1. Draw the sinogram: `python3 solution/sino2d.py tests/point_source.mdql sino.png`
    (needs matplotlib). Where is the sinusoid's amplitude, and its phase?
 2. The fitted point is about 3.6% closer to the axis than the source. Run
-   `minidaq_sim --source point --centre X,0,0 --phantom 0 --fov 120 --listmode DIR` for
+   `minidaq_sim --source point --center X,0,0 --phantom 0 --fov 120 --listmode DIR` for
    X = 0, 20, 47, 80, 100 and fit each. Is the error a shift or a scale? What in the
    detector model explains it, and what radius would remove it? Answer in `NOTES.md`.
 

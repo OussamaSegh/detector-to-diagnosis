@@ -42,3 +42,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0033](0033-time-markers-in-the-readout-stream-and-a-count-of-datagrams-sent.md) | Time markers in the readout stream as words no single can be, and a count of the datagrams each board sent | Accepted |
 | [0034](0034-signed-run-records-calibration-tables-and-reports.md) | Signed run records with the digests of their files, signed calibration tables and reports | Accepted |
 | [0035](0035-cpp23-baseline.md) | C++23 as the baseline, keeping the Expected alias for Clang | Accepted |
+| [0036](0036-control-api-3-every-request-names-its-api.md) | Control API 3.0: renamed fields, and every request names its API | Accepted |

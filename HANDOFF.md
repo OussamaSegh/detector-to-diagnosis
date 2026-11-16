@@ -5,15 +5,24 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-15: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
+Last updated: 2026-11-16: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
 (143407e); VERSION is 1.3.1-dev. Milestone 2.0.0-dev (Theme B's breaking items) has started:
 CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;
 `minidaq::Expected` stays an alias on GCC and the shim on Clang 18, whose libstdc++ 13 hides
 `<expected>`; clang-tidy's use-std-print off; cppcheck 2.13 parses as C++20). CR-0029, product build without the simulator, done (closes MDQ-PR-009):
 library `minidaq_simulation`, option `MINIDAQ_WITH_SIMULATOR`, preset `product` (what ships and
 what repro_check/release_bundle package; its tests are system.product, system.readout and
-build.hardening; CI matrix and release checks part 1 run it); it found MDQ-PR-072 (fixed). Next:
-CR-0030 (API 3.0 and schema 2.0). An existing
+build.hardening; CI matrix and release checks part 1 run it); it found MDQ-PR-072 (fixed).
+CR-0030 done (2026-11-16, ADR 0036): control API 3.0 (every request names "api"; status
+`sorter_counters`, `hardware.description`, boards' `temperature_level`) and configuration schema
+2.0 (`source.type` required, `source.stop_after_s`, `sorter.window_ps`, `max_file_mib`,
+`rt_profile_file`; 1.x refused). `tools/migrate_config.py` (TL-49) converts 1.x files; its
+fixtures in tools/testdata/migrate_config are every 1.x config of the repo and the book before
+2.0. `docs.interfaces` (tools/check_interfaces.py) fails for a request older than 3.0 or a 1.x
+config in book/src or exercises; a block that shows one on purpose is fenced `{.text
+.old-interface}` (Chapter 17 does). Migration note docs/migration-2.0.md. `minidaq_sim --center`,
+`--max-file-mib`. Next: refuse an encrypted signing key clearly, server branch coverage, SOUP
+review for 2.0 with VERSION 2.0.0-dev. An existing
 build directory reconfigures to C++23 by itself (the cache variable is forced to 23).
 
 ## Start here (toward 2.0.0)
@@ -241,7 +250,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-073, CR-0030, ADR 0036, RC-53, SRS-PLT-013, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-073, CR-0031, ADR 0037, RC-53, SRS-PLT-013, SRS-CFG-016, TL-50. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
@@ -851,8 +860,8 @@ Chapter 27 (corrections), 2026-11-03:
 - CR-0013, ADR 0022, SRS v16 (SRS-COR-001 to 003, SRS-SIM-023), H-12 with RC-39 and RC-40,
   architecture v13. Exercises 27.1 to 27.3 (Python). **Chapter 27 is done** (2026-11-03); tag
   ch27 once GitHub CI is green on its last commit.
-- Old code still says "centre" (sim `centre_mm`, the `--centre` option): renaming is an API change,
-  left for a decision.
+- Old code said "centre" (sim `centre_mm`, the `--centre` option): renamed to center in 2.0.0-dev
+  (CR-0030).
 
 Chapter 28 (reconstruction), 2026-11-03:
 - `tools/recon` (TL-31, same package as TL-30): `project.bin_lines` (each bin's own angle: a view

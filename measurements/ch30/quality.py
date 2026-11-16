@@ -69,11 +69,11 @@ def simulate_all(work):
         jobs += [(f"rod_r{m}_{k}", ch28.rod_args(*r), 4001 + 100 * m + k)
                  for k, r in enumerate(RODS)]
     for x in POINTS_X:
-        jobs.append((f"point_x{x:g}", ["--source", "point", "--centre", f"{x:g},0,0",
+        jobs.append((f"point_x{x:g}", ["--source", "point", "--center", f"{x:g},0,0",
                                         "--phantom", "0", "--activity", "1e6", "--seconds", "2"],
                      6000 + int(round(100 * x))))
     for x in WARM_X:
-        jobs.append((f"wpoint_x{x:g}", ["--source", "point", "--centre", f"{x:g},0,0",
+        jobs.append((f"wpoint_x{x:g}", ["--source", "point", "--center", f"{x:g},0,0",
                                         "--activity", "2e6", "--seconds", "5"], 7000 + int(x)))
     with ThreadPoolExecutor(max(1, min(4, os.cpu_count() or 1))) as ex:
         return sum(ex.map(lambda j: ch28.simulate(work, *j), jobs))

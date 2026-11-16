@@ -32,7 +32,7 @@ def main(dst):
     truth = data[5]
     ax.plot(xs, truth[1], color=d2d.INK, lw=0.9, ls=":", label=f"{truth[0]} (rms {truth[2]})")
     ax.axhline(1, color=d2d.INK, lw=0.5)
-    ax.set_xlabel("s, mm from the centre (the source's edge is at 80 mm)")
+    ax.set_xlabel("s, mm from the center (the source's edge is at 80 mm)")
     ax.set_ylabel("profile / chord, mean 1")
     ax.set_ylim(0.6, 1.95)
     ax.legend(loc="upper left", fontsize=d2d.FONT_PT - 1.3, frameon=False, ncol=1)

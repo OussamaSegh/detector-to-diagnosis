@@ -32,7 +32,7 @@ temporary directory):
 On the starter, five tests pass and four fail.
 
 **Then, by hand.**
-1. Run `writer_throughput --dir DIR --forever 1 --max-file-mb 16 --fsync interval
+1. Run `writer_throughput --dir DIR --forever 1 --max-file-mib 16 --fsync interval
    --every 16` (Chapter 12's benchmark), kill it with `kill -9` after a second, run
    `python3 solution/recover.py DIR`, and check the result with `minidaq_listmode
    verify`. What did the last file look like before, and after?

@@ -131,7 +131,7 @@ TEST(AcquisitionService, AFiniteRunEndsByItself) {
   AcquisitionService svc{options(script)};
   auto c = small();
   c.source.rate_hz = 1e6;
-  c.stop_after_s = 0.05;  // 50,000 words
+  c.source.stop_after_s = 0.05;  // 50,000 words
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
@@ -211,12 +211,12 @@ TEST(AcquisitionService, MissingRealTimeProfileIsAConfigurationError) {
   Script script;
   AcquisitionService svc{options(script)};
   auto c = small();
-  c.rt_profile = "/nonexistent/rt.conf";
+  c.rt_profile_file = "/nonexistent/rt.conf";
   const auto r = svc.configure(c, "test");
   EXPECT_FALSE(r.ok);
   EXPECT_EQ(r.code, "config_error");
   EXPECT_EQ(svc.state(), AcqState::idle);
-  c.rt_profile = MINIDAQ_SOURCE_DIR "/minidaq/profiles/default.conf";
+  c.rt_profile_file = MINIDAQ_SOURCE_DIR "/minidaq/profiles/default.conf";
   EXPECT_TRUE(svc.configure(c, "test").ok);
 }
 
@@ -235,7 +235,7 @@ TEST(AcquisitionService, DefaultAdaptersRunAtTheConfiguredRate) {
   AcquisitionService svc{with_default_adapters()};
   auto c = small();
   c.source.rate_hz = 2e6;
-  c.stop_after_s = 0.1;
+  c.source.stop_after_s = 0.1;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
@@ -282,8 +282,8 @@ TEST(AcquisitionService, OutOfOrderSinglesAreAFault) {
   const auto st = svc.status();
   EXPECT_EQ(st["fault"], "sort: 512 singles arrived out of time order");
   EXPECT_EQ(st["late_singles"], 512);
-  ASSERT_TRUE(st.contains("sorter")) << "the sorter's counters are part of the status";
-  EXPECT_TRUE(st["sorter"].contains("out_of_order"));
+  ASSERT_TRUE(st.contains("sorter_counters")) << "the sorter's counters are part of the status";
+  EXPECT_TRUE(st["sorter_counters"].contains("out_of_order"));
 }
 
 // [snippet:effectiveness]
@@ -294,7 +294,7 @@ TEST(AcquisitionService, ALossMakesTheRunIncomplete) {
   AcquisitionService svc{options(script, &audit)};
   auto c = small();
   c.source.rate_hz = 1e6;
-  c.stop_after_s = 0.02;
+  c.source.stop_after_s = 0.02;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
@@ -360,7 +360,7 @@ TEST(AcquisitionService, ASinkThatCannotCloseEndsTheRunInAFault) {
   AcquisitionService svc{o};
   auto c = small();
   c.source.rate_hz = 1e6;
-  c.stop_after_s = 0.01;
+  c.source.stop_after_s = 0.01;
   ASSERT_TRUE(svc.configure(c, "test").ok);
   ASSERT_TRUE(svc.start("test").ok);
   ASSERT_TRUE(svc.wait_for(AcqState::fault, test_support::patience)) << to_string(svc.state());
@@ -381,12 +381,12 @@ TEST(AcquisitionService, ProfilePathMustBeASmallRegularFile) {
   AcquisitionService svc{options(script)};
   auto c = small();
   for (const char* path : {"/dev/zero", "/tmp", "/nonexistent/rt.conf"}) {
-    c.rt_profile = path;
+    c.rt_profile_file = path;
     const auto r = svc.configure(c, "test");
     EXPECT_EQ(r.code, "config_error") << path;
     EXPECT_EQ(svc.state(), AcqState::idle);
   }
-  c.rt_profile = "/dev/zero";
+  c.rt_profile_file = "/dev/zero";
   EXPECT_NE(svc.configure(c, "test").message.find("not a regular file"), std::string::npos);
   // A regular file one byte over the limit of 64 KiB.
   const std::string big = ::testing::TempDir() + "minidaq_big_rt_profile.conf";
@@ -394,7 +394,7 @@ TEST(AcquisitionService, ProfilePathMustBeASmallRegularFile) {
     std::ofstream f{big, std::ios::binary | std::ios::trunc};
     f << std::string(std::size_t{64} * 1024 + 1, '#');
   }
-  c.rt_profile = big;
+  c.rt_profile_file = big;
   const auto r = svc.configure(c, "test");
   EXPECT_EQ(r.code, "config_error");
   EXPECT_NE(r.message.find("larger than 64 KiB"), std::string::npos) << r.message;

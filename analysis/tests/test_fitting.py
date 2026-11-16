@@ -27,7 +27,7 @@ def test_bin_integrated_gaussian_holds_its_area() -> None:
     edges = np.arange(-50.0, 50.5, 0.5)
     counts = F.gaussian_counts(edges[:-1], edges[1:], 1000.0, 1.3, 4.0)
     assert counts.sum() == pytest.approx(1000.0, rel=1e-9)
-    # Bins as wide as the peak: exact integration still holds, where centre * width would not.
+    # Bins as wide as the peak: exact integration still holds, where center * width would not.
     wide = np.arange(-40.0, 41.0, 8.0)
     assert F.gaussian_counts(wide[:-1], wide[1:], 1000.0, 1.3, 4.0).sum() == pytest.approx(1000.0)
 

@@ -451,20 +451,20 @@ event, the data path could afford a few events a batch, but 256 events would the
 milliseconds instead of minutes. A recorder that keeps everything keeps nothing for long.
 
 The control API gives a running server's events to an observer, with `diagnostics` (control API
-2.1, SRS-DIAG-003). Against a server that has just started, on the reference machine:
+2.1, SRS-DIAG-003). Against a server that has just started:
 
 ```bash
 minidaq_ctl --port 44685 diagnostics 5
 ```
 
 ```json
-{ "api": "2.1", "diagnostics": {
-    "build_id": "381db68009df56ebd612f8c26dcdb7522dfbf211",
+{ "api": "3.0", "diagnostics": {
+    "build_id": "21b019cf50d9c1f2fc5bdf9f79df36ed5314ed0a",
     "events": [
-      { "a": 7, "b": 1, "code": "command", "ring": 0, "seq": 1, "t_ns": 61239173266387 } ],
+      { "a": 7, "b": 1, "code": "command", "ring": 0, "seq": 1, "t_ns": 24103080525489 } ],
     "recorder": { "dropped": 0, "recorded": 1, "torn": 0 },
-    "server": "minidaq 0.4.0-dev" },
-  "id": 1, "ok": true }
+    "server": "minidaq 1.3.1-dev" },
+  "id": 1, "ok": true }                                               (reformatted)
 ```
 
 The one event is command 7, `auth`, with outcome 1: the client's own authentication, which the

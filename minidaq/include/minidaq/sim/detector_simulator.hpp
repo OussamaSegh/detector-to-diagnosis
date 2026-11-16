@@ -26,17 +26,17 @@
 namespace minidaq::sim {
 
 // [snippet:config]
-// Where the activity is. Coordinates in mm, origin at the scanner centre,
+// Where the activity is. Coordinates in mm, origin at the scanner center,
 // z along the scanner axis.
 struct SourceShape {
   enum class Kind : std::uint8_t { point, cylinder };
   Kind kind = Kind::point;
-  physics::Vec3 centre_mm{0.0, 0.0, 0.0};
+  physics::Vec3 center_mm{0.0, 0.0, 0.0};
   double radius_mm = 0.0;  // cylinder only: uniform activity inside
   double length_mm = 0.0;  // cylinder only
 };
 
-// A water cylinder centred on the scanner axis; radius 0 means none.
+// A water cylinder centerd on the scanner axis; radius 0 means none.
 struct Phantom {
   double radius_mm = 0.0;
   double length_mm = 0.0;

@@ -97,7 +97,8 @@ struct Tokens {
   }
 };
 
-const json configure{{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}}}};
+const json configure{{"cmd", "configure"},
+                     {"config", {{"schema_version", "2.0"}, {"source", {{"type", "synthetic"}}}}}};
 
 }  // namespace
 
@@ -337,7 +338,12 @@ TEST(ControlServer, ServesOnlyTls13Clients) {
   ASSERT_TRUE(c.auth(t.op));
   EXPECT_EQ(c.call(configure)["ok"], true);
   // Three requests in one TLS record: three responses, in order.
-  c.send("{\"id\":1,\"cmd\":\"hello\"}\n{\"id\":2,\"cmd\":\"status\"}\n{\"id\":3,\"cmd\":\"reset\"}\n");
+  c.send(R"({"api":"3.0","id":1,"cmd":"hello"})"
+         "\n"
+         R"({"api":"3.0","id":2,"cmd":"status"})"
+         "\n"
+         R"({"api":"3.0","id":3,"cmd":"reset"})"
+         "\n");
   EXPECT_EQ(json::parse(c.line())["id"], 1);
   EXPECT_EQ(json::parse(c.line())["id"], 2);
   EXPECT_EQ(json::parse(c.line())["id"], 3);
@@ -402,7 +408,8 @@ TEST(ControlProtocol, AuthenticationInTheProtocolLayer) {
   const std::string token = new_token();
   const TokenStore tokens = TokenStore::single("console", Role::operator_, token);
   Session s{"tcp:192.0.2.7:4000", {}};
-  auto call_as = [&](Session& session, const json& req) {
+  auto call_as = [&](Session& session, json req) {
+    req["api"] = api_version;
     return json::parse(handle_request(req.dump(), svc, session, &tokens));
   };
   auto call = [&](const json& req) { return call_as(s, req); };
@@ -417,7 +424,10 @@ TEST(ControlProtocol, AuthenticationInTheProtocolLayer) {
     EXPECT_TRUE(sb.failed_auth) << bad.dump();
   }
   Session s2{"tcp:192.0.2.7:4001", {}};
-  EXPECT_EQ(json::parse(handle_request(json{{"cmd", "auth"}, {"token", token}}.dump(), svc, s2, &tokens))["ok"], true);
+  EXPECT_EQ(json::parse(
+                handle_request(json{{"api", api_version}, {"cmd", "auth"}, {"token", token}}.dump(),
+                               svc, s2, &tokens))["ok"],
+            true);
   EXPECT_EQ(s2.who(), "console@tcp:192.0.2.7:4001");
   EXPECT_EQ(required_role("launch"), Role::operator_) << "a command added later needs an operator until decided";
   EXPECT_EQ(required_role("diagnostics"), Role::observer) << "API 2.1, ADR 0016: it reads, like status";
@@ -437,7 +447,10 @@ TEST(ControlServer, AnIntruderCannotStopARunningScan) {
   ASSERT_TRUE(port);
   Client console{*port};
   ASSERT_TRUE(console.auth(t.op));
-  ASSERT_EQ(console.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}, {"source", {{"rate_hz", 1e6}}}}}})["ok"],
+  ASSERT_EQ(console.call({{"cmd", "configure"},
+                          {"config",
+                           {{"schema_version", "2.0"},
+                            {"source", {{"type", "synthetic"}, {"rate_hz", 1e6}}}}}})["ok"],
             true);
   ASSERT_EQ(console.call({{"cmd", "start"}})["state"], "running");
 

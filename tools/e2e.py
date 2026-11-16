@@ -75,7 +75,7 @@ def accounting(sent, status, records, sino):
     minidaq_listmode sino reported. Each stage's input must be the previous stage's output, and each
     stage's output must be split exactly into what it passed on and what it set aside and counted.
     """
-    link, s, sink = status["detector_counters"], status["sorter"], status["sink_counters"]
+    link, s, sink = status["detector_counters"], status["sorter_counters"], status["sink_counters"]
     damaged = sent["lost"] + sent["delayed"] + sent["duplicated"] > 0
     out = []
     if not damaged:
@@ -169,12 +169,11 @@ def source_args(kind):
 
 def server_config(directory, prefix):
     return {
-        "schema_version": "1.4",
+        "schema_version": "2.0",
         "description": f"end to end, {prefix}",
         "source": {"type": "udp", "udp": {"address": "127.0.0.1", "port": 0,
                                           "receive_buffer_bytes": 16 << 20}},
-        "pipeline": {"coincidence_window_ps": WINDOW_PS},
-        "sorter": {"delay_ps": DELAY_PS, "energy_low_kev": ENERGY_KEV[0],
+        "sorter": {"window_ps": WINDOW_PS, "delay_ps": DELAY_PS, "energy_low_kev": ENERGY_KEV[0],
                    "energy_high_kev": ENERGY_KEV[1], "multiples": "kill_all",
                    "min_sector_difference": 1, "mode": "fixed"},
         "output": {"type": "listmode", "directory": str(directory), "prefix": prefix},
@@ -253,7 +252,7 @@ def acquire(apps, work, name, kind, args):
                             ref_digest, "SHA-256 of the records = SHA-256 of the reference's"))
     latency = status.get("latency_ns", {}).get("end_to_end", {})
     return {"name": name, "source": kind, "directory": str(d), "record": str(record["run_name"]),
-            "sent": sent, "sorter": status["sorter"], "link": status["detector_counters"],
+            "sent": sent, "sorter": status["sorter_counters"], "link": status["detector_counters"],
             "sink": status["sink_counters"], "records": {"prompts": prompts, "delayed": delayed},
             "reference": {"prompts": ref_prompts, "delayed": ref_delayed},
             "sinogram": sino, "latency_ms": {k: latency[k] / 1e6 for k in ("p50", "p99", "max")

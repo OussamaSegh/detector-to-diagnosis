@@ -99,7 +99,7 @@ with known answers.
 
 Figure [](#fig-ch30-width) shows both steps on a sampled peak.
 
-```{.figure #fig-ch30-width src="book/figures/plots/ch30/width.py" caption="Measuring a width the way NEMA NU 2 does, with the chapter's own functions, on a Gaussian of 3.5 samples FWHM centred between two samples. The parabola recovers the maximum the samples miss; the interpolated crossings give a FWHM of 3.60 samples for a true 3.5." alt="Samples of a Gaussian profile as stems, the true profile dotted, and a parabola through the three highest samples whose vertex at 0.988 is above the highest sample at 0.945. Horizontal lines mark the FWHM at half the maximum, 3.60 samples, and the FWTM at a tenth, 6.60 samples." width="75%" inputs="tools/recon/quality.py"}
+```{.figure #fig-ch30-width src="book/figures/plots/ch30/width.py" caption="Measuring a width the way NEMA NU 2 does, with the chapter's own functions, on a Gaussian of 3.5 samples FWHM centerd between two samples. The parabola recovers the maximum the samples miss; the interpolated crossings give a FWHM of 3.60 samples for a true 3.5." alt="Samples of a Gaussian profile as stems, the true profile dotted, and a parabola through the three highest samples whose vertex at 0.988 is above the highest sample at 0.945. Horizontal lines mark the FWHM at half the maximum, 3.60 samples, and the FWTM at a tenth, 6.60 samples." width="75%" inputs="tools/recon/quality.py"}
 ```
 
 `width` refuses a profile that does not fall below the level on both sides, which happens when

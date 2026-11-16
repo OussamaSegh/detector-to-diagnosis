@@ -3,16 +3,17 @@
 //
 // One request per line, one response per line, in order:
 //
-//   -> {"api": "2.1", "id": 1, "cmd": "auth", "token": "mdq_..."}
-//   <- {"api": "2.1", "id": 1, "ok": true, "identity": "console", "role": "operator"}
-//   -> {"api": "2.1", "id": 7, "cmd": "start"}
-//   <- {"api": "2.1", "id": 7, "ok": true, "state": "running"}
-//   <- {"api": "2.1", "id": 8, "ok": false, "state": "running",
+//   -> {"api": "3.0", "id": 1, "cmd": "auth", "token": "mdq_..."}
+//   <- {"api": "3.0", "id": 1, "ok": true, "identity": "console", "role": "operator"}
+//   -> {"api": "3.0", "id": 7, "cmd": "start"}
+//   <- {"api": "3.0", "id": 7, "ok": true, "state": "running"}
+//   <- {"api": "3.0", "id": 8, "ok": false, "state": "running",
 //       "error": {"code": "illegal_transition", "message": "cannot start in state running"}}
 //
 // Commands: hello, auth (with "token"), configure (with "config"), start,
 // stop, reset, status, diagnostics (with an optional "events" count). Compatibility rules
-// (docs/adr/0003): a request whose "api" major version differs is refused with "unsupported_api";
+// (docs/adr/0003, ADR 0036): a request must name its API, and one without "api" or whose major
+// version differs is refused with "unsupported_api";
 // unknown fields are ignored, so a newer client may send fields an older server does not know; new
 // commands and new response fields are added only in minor versions; "id" is echoed unchanged so a
 // client can match responses to requests. The status object is part of the versioned API too (ADR
@@ -42,7 +43,12 @@
 
 namespace minidaq::control {
 
-inline constexpr std::string_view api_version = "2.5";
+// 3.0: CR-0030 (ADR 0036): every request names its API; status.hardware.describe is
+// "description", each board's "temperature" is "temperature_level", status.sorter is
+// "sorter_counters"; configure takes the configuration schema 2.0.
+inline constexpr std::string_view api_version = "3.0";
+// What a refused client is told.
+inline constexpr std::string_view api_migration_hint = "see docs/migration-2.0.md";
 
 // diagnostics: how many flight-recorder events it returns without "events", and at most.
 inline constexpr std::size_t diagnostics_default_events = 64;
@@ -58,18 +64,23 @@ struct StatusField {
 };
 // [snippet:status_fields]
 inline constexpr std::array status_fields{
-    StatusField{"state", true},           StatusField{"run_id", true},
-    StatusField{"fault", true},           StatusField{"config", true},
-    StatusField{"detector", true},        StatusField{"sink", true},
-    StatusField{"integrity", true},       // 1.1: Chapter 15, risk control RC-01
-    StatusField{"hardware", true},        // 2.2: Chapter 22, null without hardware
-    StatusField{"calibration", true},     // 2.4: Chapter 26, null until configured
+    StatusField{"state", true},
+    StatusField{"run_id", true},
+    StatusField{"fault", true},
+    StatusField{"config", true},
+    StatusField{"detector", true},
+    StatusField{"sink", true},
+    StatusField{"integrity", true},           // 1.1: Chapter 15, risk control RC-01
+    StatusField{"hardware", true},            // 2.2: Chapter 22, null without hardware
+    StatusField{"calibration", true},         // 2.4: Chapter 26, null until configured
     StatusField{"detector_counters", false},  // 1.1: Chapter 9
-    StatusField{"sink_counters", false},  // 1.1: Chapter 12
-    StatusField{"run", false},            StatusField{"stages", false},
-    StatusField{"latency_ns", false},     StatusField{"recent_latency_ns", false},
+    StatusField{"sink_counters", false},      // 1.1: Chapter 12
+    StatusField{"run", false},
+    StatusField{"stages", false},
+    StatusField{"latency_ns", false},
+    StatusField{"recent_latency_ns", false},
     StatusField{"late_singles", false},
-    StatusField{"sorter", false},         // 1.1: Chapter 10
+    StatusField{"sorter_counters", false},  // 1.1: Chapter 10 ("sorter" before 3.0)
 };
 // [/snippet:status_fields]
 inline constexpr std::size_t max_request_bytes = std::size_t{64} * 1024;

@@ -635,14 +635,15 @@ them from another thread while the stage runs. Two `static_assert`s check that t
 copied fields has one entry per field and that the structure holds nothing else, so a
 counter added later cannot be forgotten.
 
-The acquisition service's status report gains a `"sorter"` object with all eleven counters.
+The acquisition service's status report gains an object with all eleven counters, named
+`"sorter_counters"` since API 3.0, beside `detector_counters` and `sink_counters`.
 Singles that the sorter drops before windowing (energy and order) are counted as the
 stage's `items_filtered`, so the stage's conservation check from Chapter 3 still holds.
 
-### The configuration, version 1.2
+### The configuration's sorter section
 
-The configuration file gains a `sorter` object, and the schema version becomes 1.2: a
-minor version, because every 1.0 and 1.1 file is still valid. It does not run quite as
+The configuration file gains a `sorter` object. When it came, the schema version became 1.2:
+a minor version, because every 1.0 and 1.1 file was still valid. It does not run quite as
 before, and the changelog says so: the placeholder pair stage of earlier versions had no
 energy gate and no delayed window, and a file without a `sorter` object now gets the
 sorter's defaults, which include both. The format is compatible; the pipeline's behavior
@@ -650,6 +651,7 @@ changed, as it was meant to.
 
 ```json
 "sorter": {
+  "window_ps": 4000,
   "delay_ps": 100000,
   "mode": "fixed",
   "multiples": "take_winner_of_goods",
@@ -660,9 +662,10 @@ changed, as it was meant to.
 }
 ```
 
-The window itself stays `/pipeline/coincidence_window_ps`, as in 1.0. Two rules involve two
-values, and the reader reports them at the value a user would change: a delay that is not
-more than the window is reported at `/sorter/delay_ps`, and an energy window with low above
+The window itself was `/pipeline/coincidence_window_ps` until schema 2.0 moved it to
+`/sorter/window_ps`, beside the delay and the energy window that belong with it (CR-0030).
+Two rules involve two values, and the reader reports them at the value a user would change:
+a delay that is not more than the window is reported at `/sorter/delay_ps`, and an energy window with low above
 high at `/sorter/energy_low_kev`. The JSON Schema document in
 `docs/architecture/acquisition-config.schema.json` describes the new object, and the
 configuration test that walks the schema checks that every property the schema names is

@@ -73,7 +73,7 @@ class Accounting(SystemTest):
         # REQ: SRS-SYS-001, SRS-OUT-009, SRS-OUT-010
         status, files, record = acquire(self, "acc", seed=3, seconds=1.0)
         s = summarize(files)
-        sorter, sink = status["sorter"], status["sink_counters"]
+        sorter, sink = status["sorter_counters"], status["sink_counters"]
         self.assertEqual(sorter["singles_in"], 1_000_000)
         self.assertEqual(s["prompts"], sorter["prompts"])
         self.assertEqual(s["delayed"], sorter["delayed"])
@@ -85,7 +85,7 @@ class Accounting(SystemTest):
         self.assertTrue(status["integrity"]["complete"])
         # The run record holds the service's status as the run ended, and the sink's own counters
         # after it closed the files; only the fsync of the record itself is missing from them.
-        for key in ("sorter", "stages", "integrity", "run_id", "config"):
+        for key in ("sorter_counters", "stages", "integrity", "run_id", "config"):
             self.assertEqual(record["run"][key], status[key], key)
         final = dict(status["sink_counters"], fsyncs=status["sink_counters"]["fsyncs"] - 1)
         self.assertEqual(record["sink_counters"], final)

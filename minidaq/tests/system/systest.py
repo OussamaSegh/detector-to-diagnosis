@@ -166,10 +166,9 @@ def write_json(path, value):
 def run_config(directory, prefix="st", rate_hz=1e6, seconds=1.0, seed=1, **sections):
     """A configuration for a synthetic run that writes list mode into directory."""
     cfg = {
-        "schema_version": "1.3",
+        "schema_version": "2.0",
         "description": "system test",
-        "source": {"rate_hz": rate_hz, "seed": seed},
-        "stop_after_s": seconds,
+        "source": {"type": "synthetic", "rate_hz": rate_hz, "seed": seed, "stop_after_s": seconds},
         "output": {"type": "listmode", "directory": str(directory), "prefix": prefix},
     }
     for key, value in sections.items():

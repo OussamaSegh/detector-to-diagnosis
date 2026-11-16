@@ -396,7 +396,7 @@ validation with phantoms (Chapter 30).
 
 Figure [](#fig-ch27-scatter) plots the four estimates across the projection.
 
-```{.figure #fig-ch27-scatter src="book/figures/plots/ch27/scatter.py" caption="Scatter estimates by tail fitting over the true scatter, at five positions across the projection. The Gaussian is fitted where the tails are and is wrong everywhere else; the model's shape is right, and its remaining 14% comes from the randoms left in the tails." alt="Ratio of estimate to true scatter on a log scale against s from 0 to 95 mm. The Gaussian runs from 3.8 at the centre down to 0.76 at 80 mm. The model with a scale per slice and with one scale stay near 1.15. The model with the true randoms subtracted stays near 1.0. The tail region near 95 mm is shaded." width="85%" inputs="measurements/ch27/corrections.txt"}
+```{.figure #fig-ch27-scatter src="book/figures/plots/ch27/scatter.py" caption="Scatter estimates by tail fitting over the true scatter, at five positions across the projection. The Gaussian is fitted where the tails are and is wrong everywhere else; the model's shape is right, and its remaining 14% comes from the randoms left in the tails." alt="Ratio of estimate to true scatter on a log scale against s from 0 to 95 mm. The Gaussian runs from 3.8 at the center down to 0.76 at 80 mm. The model with a scale per slice and with one scale stay near 1.15. The model with the true randoms subtracted stays near 1.0. The tail region near 95 mm is shaded." width="85%" inputs="measurements/ch27/corrections.txt"}
 ```
 
 ## Dead time and decay
@@ -471,7 +471,7 @@ not show at this scale; it shows as noise and patterns in an image (Chapter 28).
 
 Figure [](#fig-ch27-profile) draws the rows of the table as profiles.
 
-```{.figure #fig-ch27-profile src="book/figures/plots/ch27/profile.py" caption="The radial profile of the phantom's central slices after each correction, scaled to a mean of 1. Only the attenuation correction makes it flat, to 1.9% rms against the truth's 1.1%; the drop at 75 mm is the detector's resolution at the source's edge, in the truth too." alt="Profile against s from 0 to 75 mm for six steps. Prompts as measured, minus randoms and normalized rise from about 0.85 at the centre to 1.25 at 60 mm; minus scatter is steeper, 0.79 to 1.32. Attenuation corrected is flat near 1 to 60 mm, then drops to 0.70 at 75 mm, following the dotted truth." width="85%" inputs="measurements/ch27/corrections.txt"}
+```{.figure #fig-ch27-profile src="book/figures/plots/ch27/profile.py" caption="The radial profile of the phantom's central slices after each correction, scaled to a mean of 1. Only the attenuation correction makes it flat, to 1.9% rms against the truth's 1.1%; the drop at 75 mm is the detector's resolution at the source's edge, in the truth too." alt="Profile against s from 0 to 75 mm for six steps. Prompts as measured, minus randoms and normalized rise from about 0.85 at the center to 1.25 at 60 mm; minus scatter is steeper, 0.79 to 1.32. Attenuation corrected is flat near 1 to 60 mm, then drops to 0.70 at 75 mm, following the dotted truth." width="85%" inputs="measurements/ch27/corrections.txt"}
 ```
 
 Two things are not in this table and no test of the software can give them: a patient whose outline

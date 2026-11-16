@@ -21,7 +21,7 @@ json clean_status() {
     "stages": [{"name": "source", "dropped": 0, "filtered": 0}, {"name": "decode", "dropped": 0, "filtered": 0},
                {"name": "sort", "dropped": 0, "filtered": 4}],
     "late_singles": 0,
-    "sorter": {"singles_in": 20, "energy_rejected": 4, "out_of_order": 0}
+    "sorter_counters": {"singles_in": 20, "energy_rejected": 4, "out_of_order": 0}
   })");
 }
 
@@ -36,12 +36,12 @@ TEST(RunIntegrity, ACleanRunIsComplete) {
 
 TEST(RunIntegrity, EveryLossCounterMakesTheRunIncomplete) {
   // REQ: SRS-CTL-030, SRS-RDO-015
-  for (const char* ptr : {"/detector_counters/packets_lost", "/detector_counters/sequence_resyncs",
-                          "/detector_counters/socket_drops",
-                          "/detector_counters/rejected_bad_magic", "/stages/0/dropped", "/stages/1/dropped",
-                          "/stages/1/filtered", "/stages/2/dropped",
-                          "/late_singles", "/sorter/out_of_order", "/sink_counters/invalid",
-                          "/sink_counters/energies_clamped", "/sink_counters/blocks_dropped"}) {
+  for (const char* ptr :
+       {"/detector_counters/packets_lost", "/detector_counters/sequence_resyncs",
+        "/detector_counters/socket_drops", "/detector_counters/rejected_bad_magic",
+        "/stages/0/dropped", "/stages/1/dropped", "/stages/1/filtered", "/stages/2/dropped",
+        "/late_singles", "/sorter_counters/out_of_order", "/sink_counters/invalid",
+        "/sink_counters/energies_clamped", "/sink_counters/blocks_dropped"}) {
     json s = clean_status();
     s[json::json_pointer{ptr}] = 2U;
     const json v = assess_integrity(s);
@@ -60,7 +60,7 @@ TEST(RunIntegrity, CountersThatAreNotLossesDoNotCount) {
   json s = clean_status();
   s["stages"][2]["filtered"] = 100U;
   s["detector_counters"]["packets_stale"] = 100U;
-  s["sorter"]["energy_rejected"] = 100U;
+  s["sorter_counters"]["energy_rejected"] = 100U;
   s["sink_counters"]["time_resets"] = 100U;
   EXPECT_EQ(assess_integrity(s)["complete"], true);
 }

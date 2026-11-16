@@ -40,13 +40,13 @@ Expected<SimulatorConfig, std::string> validate(const SimulatorConfig& cfg) {
     return fail("activity_bq must be in (0, 1e10]");
   }
   const auto& s = cfg.source;
-  const double s_xy = std::hypot(s.centre_mm.x, s.centre_mm.y);
+  const double s_xy = std::hypot(s.center_mm.x, s.center_mm.y);
   const double s_radius = s.kind == SourceShape::Kind::cylinder ? s.radius_mm : 0.0;
   const double s_half = s.kind == SourceShape::Kind::cylinder ? 0.5 * s.length_mm : 0.0;
   if (s.kind == SourceShape::Kind::cylinder && (!positive(s.radius_mm) || !positive(s.length_mm))) {
     return fail("a cylinder source needs radius_mm > 0 and length_mm > 0");
   }
-  if (!(s_xy + s_radius < G::inner_radius_mm) || !std::isfinite(s.centre_mm.z)) {
+  if (!(s_xy + s_radius < G::inner_radius_mm) || !std::isfinite(s.center_mm.z)) {
     return fail("the source must lie inside the detector ring");
   }
   const auto& p = cfg.phantom;
@@ -57,7 +57,7 @@ Expected<SimulatorConfig, std::string> validate(const SimulatorConfig& cfg) {
     if (!positive(p.length_mm)) {
       return fail("a phantom needs length_mm > 0");
     }
-    if (s_xy + s_radius > p.radius_mm || std::abs(s.centre_mm.z) + s_half > 0.5 * p.length_mm) {
+    if (s_xy + s_radius > p.radius_mm || std::abs(s.center_mm.z) + s_half > 0.5 * p.length_mm) {
       return fail("the source must lie inside the phantom");
     }
   }
@@ -167,12 +167,12 @@ Vec3 DetectorSimulator::sample_isotropic() {
 Vec3 DetectorSimulator::sample_emission_point() {
   const auto& s = cfg_.source;
   if (s.kind == SourceShape::Kind::point) {
-    return s.centre_mm;
+    return s.center_mm;
   }
   const double r = s.radius_mm * std::sqrt(unit_(rng_));  // uniform over the disc
   const double phi = two_pi * unit_(rng_);
   const double z = (unit_(rng_) - 0.5) * s.length_mm;
-  return s.centre_mm + Vec3{r * std::cos(phi), r * std::sin(phi), z};
+  return s.center_mm + Vec3{r * std::cos(phi), r * std::sin(phi), z};
 }
 
 // [snippet:kn]

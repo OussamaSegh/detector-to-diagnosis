@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 """Figure for Chapter 30: measuring a width the way NEMA NU 2 does, with the chapter's own
-tools/recon/quality.py. A Gaussian of 3.5 samples FWHM, centred between two samples: the parabola
+tools/recon/quality.py. A Gaussian of 3.5 samples FWHM, centerd between two samples: the parabola
 through the highest sample and its neighbours gives the maximum, and each side's crossing of half
 (and a tenth) of it is interpolated linearly between the samples around it.
 

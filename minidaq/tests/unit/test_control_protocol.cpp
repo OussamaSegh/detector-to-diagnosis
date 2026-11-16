@@ -59,32 +59,46 @@ TEST(LineFramer, AnOverlongLineIsFatal) {
 }
 
 namespace {
-// The protocol layer alone, for a session that is already an operator.
-json call(AcquisitionService& svc, std::string_view line) {
+// The protocol layer alone, for a session that is already an operator. Every request of API 3.0
+// names its API (ADR 0036): call() adds it when a request leaves it out, raw() sends the line as
+// is.
+json raw(AcquisitionService& svc, std::string_view line) {
   Session s{"test", {"test", Role::operator_}};
   return json::parse(handle_request(line, svc, s, nullptr));
+}
+json call(AcquisitionService& svc, std::string_view line) {
+  json req = json::parse(line, nullptr, false);
+  if (!req.is_object() || req.contains("api")) {
+    return raw(svc, line);
+  }
+  req["api"] = api_version;
+  return raw(svc, req.dump());
 }
 }  // namespace
 
 TEST(ControlProtocol, CommandsAndErrors) {
   // REQ: SRS-CTL-020
   AcquisitionService svc{with_default_adapters()};
-  auto r = call(svc, R"({"api":"2.0","id":"a1","cmd":"hello"})");
+  auto r = call(svc, R"({"api":"3.0","id":"a1","cmd":"hello"})");
   EXPECT_EQ(r["ok"], true);
   EXPECT_EQ(r["id"], "a1") << "id echoed unchanged";
   EXPECT_NE(r["server"].get<std::string>().find("minidaq"), std::string::npos);
 
-  r = call(svc, R"({"api":"2.0","id":2,"cmd":"start"})");
+  r = call(svc, R"({"api":"3.0","id":2,"cmd":"start"})");
   EXPECT_EQ(r["ok"], false);
   EXPECT_EQ(r["error"]["code"], "illegal_transition");
   EXPECT_EQ(r["state"], "idle");
 
-  r = call(svc, R"({"id":3,"cmd":"configure","config":{"schema_version":"1.0","pipeline":{"batchsize":1}}})");
+  r = call(
+      svc,
+      R"({"id":3,"cmd":"configure","config":{"schema_version":"2.0","source":{"type":"synthetic"},"pipeline":{"batchsize":1}}})");
   EXPECT_EQ(r["error"]["code"], "config_error");
   ASSERT_EQ(r["error"]["details"].size(), 1U);
   EXPECT_EQ(r["error"]["details"][0]["path"], "/pipeline/batchsize");
 
-  r = call(svc, R"({"id":4,"cmd":"configure","config":{"schema_version":"1.0","stop_after_s":0.01,"source":{"rate_hz":1e6}}})");
+  r = call(
+      svc,
+      R"({"id":4,"cmd":"configure","config":{"schema_version":"2.0","source":{"type":"synthetic","stop_after_s":0.01,"rate_hz":1e6}}})");
   EXPECT_EQ(r["ok"], true);
   EXPECT_EQ(r["state"], "configured");
   r = call(svc, R"({"id":5,"cmd":"status"})");
@@ -95,20 +109,20 @@ TEST(ControlProtocol, CommandsAndErrors) {
 TEST(ControlProtocol, VersioningAndMalformedInput) {
   // REQ: SRS-CTL-022
   AcquisitionService svc{with_default_adapters()};
-  EXPECT_EQ(call(svc, R"({"api":"3.0","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api");
-  EXPECT_EQ(call(svc, R"({"api":"1.1","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api")
-      << "a 1.x client does not authenticate, so 2.0 refuses it (ADR 0014)";
-  EXPECT_EQ(call(svc, R"({"api":"2.7","id":1,"cmd":"status","priority":"high"})")["ok"], true)
+  EXPECT_EQ(raw(svc, R"({"api":"4.0","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api");
+  EXPECT_EQ(raw(svc, R"({"api":"1.1","id":1,"cmd":"status"})")["error"]["code"], "unsupported_api")
+      << "a 1.x client does not authenticate, so 2.0 refused it (ADR 0014)";
+  EXPECT_EQ(raw(svc, R"({"api":"3.7","id":1,"cmd":"status","priority":"high"})")["ok"], true)
       << "newer minor version and unknown fields are accepted";
-  EXPECT_EQ(call(svc, R"({"api":2,"cmd":"status"})")["error"]["code"], "unsupported_api");
-  EXPECT_EQ(call(svc, "not json")["error"]["code"], "bad_request");
+  EXPECT_EQ(raw(svc, R"({"api":3,"cmd":"status"})")["error"]["code"], "unsupported_api");
+  EXPECT_EQ(raw(svc, "not json")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, "[1,2]")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, "")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, R"({"id":9})")["error"]["code"], "bad_request");
   EXPECT_EQ(call(svc, R"({"id":9,"cmd":"launch"})")["error"]["code"], "unknown_command");
   EXPECT_EQ(call(svc, R"({"cmd":"configure"})")["error"]["code"], "bad_request");
-  const std::string bad_utf8 = "{\"cmd\":\"\xff\xfe\"}";
-  EXPECT_EQ(call(svc, bad_utf8)["ok"], false) << "invalid UTF-8 is rejected, not a crash";
+  const std::string bad_utf8 = "{\"api\":\"3.0\",\"cmd\":\"\xff\xfe\"}";
+  EXPECT_EQ(raw(svc, bad_utf8)["ok"], false) << "invalid UTF-8 is rejected, not a crash";
 }
 
 // [snippet:type_confusion]
@@ -121,15 +135,24 @@ TEST(ControlProtocol, EveryFieldOfEveryTypeIsAnswered) {
   const std::vector<std::string> commands{"hello", "auth", "status", "configure", "start",
                                           "stop",  "reset", "launch", "diagnostics"};
   const std::vector<std::string> fields{"api", "id", "cmd", "token", "config", "events"};
-  const std::vector<json> values{5, -1, 1.5, "x", "2.0", nullptr, true,
-                                 json::array(), json::array({1}), json::object(), json{{"a", 1}}};
+  const std::vector<json> values{5,
+                                 -1,
+                                 1.5,
+                                 "x",
+                                 "3.0",
+                                 nullptr,
+                                 true,
+                                 json::array(),
+                                 json::array({1}),
+                                 json::object(),
+                                 json{{"a", 1}}};
   const std::vector<Identity> clients{{}, {"op", Role::operator_}, {"obs", Role::observer}};
   int requests = 0;
   for (const auto& cmd : commands) {
     for (const auto& field : fields) {
       for (const auto& value : values) {
         for (std::size_t k = 0; k <= clients.size(); ++k) {
-          json req{{"api", "2.0"}, {"id", 1}, {"cmd", cmd}};
+          json req{{"api", "3.0"}, {"id", 1}, {"cmd", cmd}};
           req[field] = value;
           const bool no_auth = k == clients.size();  // the last: a server started with --no-auth
           Session s{"test", no_auth ? Identity{"local", Role::operator_} : clients[k]};
@@ -170,7 +193,12 @@ TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
     }
   };
   check(call(svc, R"({"cmd":"status"})")["status"], "idle");
-  ASSERT_EQ(call(svc, R"({"cmd":"configure","config":{"schema_version":"1.0","source":{"rate_hz":1e6}}})")["ok"], true);
+  ASSERT_EQ(
+      call(
+          svc,
+          R"({"cmd":"configure","config":{"schema_version":"2.0","source":{"type":"synthetic","rate_hz":1e6}}})")
+          ["ok"],
+      true);
   check(call(svc, R"({"cmd":"status"})")["status"], "configured");
   ASSERT_EQ(call(svc, R"({"cmd":"start"})")["ok"], true);
   json running;
@@ -185,14 +213,19 @@ TEST(ControlProtocol, StatusFieldsMatchTheApiVersion) {
   for (const auto& f : status_fields) {
     EXPECT_TRUE(seen.contains(std::string{f.name})) << "status_fields lists '" << f.name << "', which never appeared";
   }
-  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "2.5");
+  EXPECT_EQ(call(svc, R"({"cmd":"hello"})")["api"], "3.0");
 }
 // [/snippet:status_fields_test]
 
 TEST(ControlProtocol, DiagnosticsReturnTheNewestEventsOfTheFlightRecorder) {
   // REQ: SRS-DIAG-003, SRS-DIAG-004
   AcquisitionService svc{with_default_adapters()};
-  ASSERT_EQ(call(svc, R"({"cmd":"configure","config":{"schema_version":"1.0","stop_after_s":0.01}})")["ok"], true);
+  ASSERT_EQ(
+      call(
+          svc,
+          R"({"cmd":"configure","config":{"schema_version":"2.0","source":{"type":"synthetic","stop_after_s":0.01}}})")
+          ["ok"],
+      true);
   ASSERT_EQ(call(svc, R"({"cmd":"start"})")["ok"], true);
   ASSERT_TRUE(svc.wait_for(AcqState::configured, test_support::patience));
   const json r = call(svc, R"({"cmd":"diagnostics","events":1024})");
@@ -254,7 +287,12 @@ TEST(ControlServer, PipelinedRequestsAndManyClients) {
   ASSERT_TRUE(a.ok() && b.ok());
   ASSERT_TRUE(a.auth(sec.token) && b.auth(sec.token));
   // Three requests in one write: three responses, in order.
-  a.send("{\"id\":1,\"cmd\":\"hello\"}\n{\"id\":2,\"cmd\":\"status\"}\n{\"id\":3,\"cmd\":\"start\"}\n");
+  a.send(R"({"api":"3.0","id":1,"cmd":"hello"})"
+         "\n"
+         R"({"api":"3.0","id":2,"cmd":"status"})"
+         "\n"
+         R"({"api":"3.0","id":3,"cmd":"start"})"
+         "\n");
   EXPECT_EQ(json::parse(a.line())["id"], 1);
   EXPECT_EQ(json::parse(a.line())["id"], 2);
   EXPECT_EQ(json::parse(a.line())["id"], 3);
@@ -271,7 +309,10 @@ TEST(ControlServer, AClientThatDisconnectsDoesNotStopTheAcquisition) {
   {
     Client c{*port};
     ASSERT_TRUE(c.auth(sec.token));
-    ASSERT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}, {"source", {{"rate_hz", 1e6}}}}}})["ok"],
+    ASSERT_EQ(c.call({{"cmd", "configure"},
+                      {"config",
+                       {{"schema_version", "2.0"},
+                        {"source", {{"type", "synthetic"}, {"rate_hz", 1e6}}}}}})["ok"],
               true);
     ASSERT_EQ(c.call({{"cmd", "start"}})["state"], "running");
   }  // the client goes away mid-run
@@ -304,8 +345,13 @@ TEST(ControlServer, RecordsEveryCommandWithTheClientsAddress) {
   ASSERT_TRUE(c.ok());
   ASSERT_TRUE(c.auth(sec.token));
   EXPECT_EQ(c.call({{"cmd", "start"}})["ok"], false);  // rejected: not configured
-  EXPECT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}}}})["ok"], true);
-  EXPECT_EQ(c.call({{"cmd", "configure"}, {"config", {{"schema_version", "1.0"}, {"sorce", {}}}}})["ok"], false);
+  EXPECT_EQ(
+      c.call({{"cmd", "configure"},
+              {"config", {{"schema_version", "2.0"}, {"source", {{"type", "synthetic"}}}}}})["ok"],
+      true);
+  EXPECT_EQ(
+      c.call({{"cmd", "configure"}, {"config", {{"schema_version", "2.0"}, {"sorce", {}}}}})["ok"],
+      false);
   EXPECT_EQ(c.call({{"cmd", "reset"}})["ok"], true);
   const std::lock_guard lock{mu};
   std::vector<std::pair<std::string, bool>> seen;

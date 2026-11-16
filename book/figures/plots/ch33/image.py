@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 """Figure for Chapter 33: the image at the end of the chain, the phantom acquisition reconstructed by
 OSEM (C++ projector, 4 iterations of 8 subsets, 128 x 128 pixels of 2 mm), from
-measurements/ch33/e2e/image.npy, with its horizontal and vertical profiles through the centre.
+measurements/ch33/e2e/image.npy, with its horizontal and vertical profiles through the center.
 
     python3 book/tools/figures.py build book/figures/plots/ch33/image.py screen 8 pdf measurements/ch33/e2e/image.npy
 """

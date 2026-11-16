@@ -208,7 +208,7 @@ next `start` from a script that did not check.
 
 Events have two origins. *Operator* events (configure, start, stop, reset) arrive from the
 control API. *System* events arrive from inside: `drained` when every pipeline stage has
-finished (a finite run that reached its `stop_after_s`, or a stopped run that has emptied its
+finished (a finite run that reached its `source.stop_after_s`, or a stopped run that has emptied its
 channels), and `error` when a port reports a fault or the sort stage has seen out-of-order
 singles. Modeling both kinds as events of the same machine is what makes "a fault during
 stopping" or "the run ended while the operator was pressing stop" well-defined instead of a
@@ -307,7 +307,7 @@ Here is what a server says to a file with five mistakes, captured from `minidaq_
 bad.json`:
 
 ```text
-/schema_version: written for a newer MiniDAQ (1.1 > 1.0)
+/schema_version: written for a newer MiniDAQ (2.1 > 2.0)
 /source/rate_hz: must be between 1.0 and 1000000000.0
 /source/pair_fracton: unknown key (did you mean "pair_fraction"?)
 /pipeline/batch_size: must be between 1 and 1048576
@@ -336,11 +336,18 @@ changing a unit, is a *major* change: the program refuses other major versions o
 conversion tool or a documented manual migration moves old files forward. Because unknown keys
 are errors, a minor-version mismatch cannot slip through as "an unknown key nobody noticed".
 
+MiniDAQ has made one such change. Schema 2.0 (CR-0030) moved `stop_after_s` into `source`
+and the coincidence window into `sorter`, renamed two keys to say their units and their
+meaning, and made `source.type` required, where 1.x had taken a forgotten source to be the
+simulator. A 2.0 reader refuses a 1.x file with a message that names
+`tools/migrate_config.py`, which converts it, says what it changed and checks the result
+against the schema document; `docs/migration-2.0.md` lists every change.
+
 ### The schema document, and keeping it honest
 
 People and other tools (an editor, a GUI, a Python script that generates configurations) need
 the format as a document. `docs/architecture/acquisition-config.schema.json` is a JSON Schema
-(draft 2020-12) of version 1.0. Two descriptions of the same format will drift apart unless
+(draft 2020-12) of version 2.0. Two descriptions of the same format will drift apart unless
 something compares them, so the unit test `Config.SchemaDocumentAgreesWithTheReader` reads the
 schema and, for every property, checks that the reader knows the key, accepts every enum
 value and rejects others, and accepts the minimum and maximum and rejects values just outside
@@ -390,28 +397,37 @@ in.
 
 ### The protocol
 
-A session, recorded against `minidaq_server` (responses shortened only where marked):
+A session, recorded against `minidaq_server` started with `--no-auth` (line breaks added,
+responses shortened only where marked):
 
 ```text
--> {"api": "1.0", "id": 1, "cmd": "hello"}
-<- {"api":"1.0","commands":["hello","configure","start","stop","reset","status"],
-    "id":1,"ok":true,"server":"minidaq 0.1.0-dev"}    (line break added)
--> {"api": "1.0", "id": 2, "cmd": "start"}
-<- {"api":"1.0","error":{"code":"illegal_transition","message":"cannot start in state idle"},"id":2,"ok":false,"state":"idle"}
--> {"api": "1.0", "id": 3, "cmd": "configure", "config": {"schema_version": "1.0", "source": {"rate_hz": 1e6}}}
-<- {"api":"1.0","id":3,"ok":true,"state":"configured"}
--> {"api": "1.0", "id": 4, "cmd": "start"}
-<- {"api":"1.0","id":4,"ok":true,"state":"running"}
--> {"api": "2.0", "id": 5, "cmd": "status"}
-<- {"api":"1.0","error":{"code":"unsupported_api","message":"this server speaks API 1.0"},"id":5,"ok":false,"state":"running"}
+-> {"api": "3.0", "id": 1, "cmd": "hello"}
+<- {"api":"3.0","auth":"none","commands":["hello","auth","configure","start","stop","reset",
+    "status","diagnostics"],"id":1,"ok":true,"server":"minidaq ...","simulator":true}
+-> {"api": "3.0", "id": 2, "cmd": "start"}
+<- {"api":"3.0","error":{"code":"illegal_transition","message":"cannot start in state idle"},
+    "id":2,"ok":false,"state":"idle"}
+-> {"api": "3.0", "id": 3, "cmd": "configure",
+    "config": {"schema_version": "2.0", "source": {"type": "synthetic", "rate_hz": 1e6}}}
+<- {"api":"3.0","id":3,"ok":true,"state":"configured"}
+-> {"api": "3.0", "id": 4, "cmd": "start"}
+<- {"api":"3.0","id":4,"ok":true,"state":"running"}
+-> {"api": "4.0", "id": 5, "cmd": "status"}
+<- {"api":"3.0","error":{"code":"unsupported_api","message":"this server speaks API 3.0 and every
+    request names it (\"api\"); see docs/migration-2.0.md"},"id":5,"ok":false,"state":"running"}
 ```
 
-This session was recorded with API 1.0. Since Chapter 17 the server speaks API 2.0, in which a
-client authenticates with an `auth` command before anything but `hello`; `minidaq_ctl` does
-that for you, so the commands of this chapter work unchanged.
+The chapter's commands are those of the first version of the API; the server you build speaks
+API 3.0, whose later commands (`auth` from Chapter 17, `diagnostics` from Chapter 21) the
+`hello` response lists. A server started without `--no-auth` asks a client to authenticate
+before anything but `hello`; `minidaq_ctl` does that for you, so the commands of this chapter
+work as shown.
 
 The compatibility rules are few and strict. Every response carries the server's `api`
-version. A request whose major version differs is refused. Unknown fields in a request are
+version, and every request names the version it was written for. A request whose major
+version differs is refused, and so is a request that names none: until API 3.0 a request
+without `api` was accepted, and a client written for 2.x would have read the renamed status
+fields of 3.0 without noticing (ADR 0036). Unknown fields in a request are
 ignored, so a newer client may send fields an older server does not know, and new response
 fields and new commands appear only in minor versions, so an older client never meets a
 response it cannot parse. The request's `id` is echoed unchanged. Every response says `ok`;
@@ -449,10 +465,10 @@ client, or the same operator reconnecting, sees it in `status` and can stop it. 
 session above with a second client after the first one disconnected:
 
 ```text
--> {"api": "1.0", "id": 1, "cmd": "status"}
-<- {"api":"1.0","id":1,"ok":true,"status":{...,"state":"running",...}}    (shortened)
--> {"api": "1.0", "id": 2, "cmd": "stop"}
-<- {"api":"1.0","id":2,"ok":true,"state":"stopping"}
+-> {"api": "3.0", "id": 1, "cmd": "status"}
+<- {"api":"3.0","id":1,"ok":true,"status":{...,"state":"running",...}}    (shortened)
+-> {"api": "3.0", "id": 2, "cmd": "stop"}
+<- {"api":"3.0","id":2,"ok":true,"state":"stopping"}
 ```
 
 The alternative, stopping on disconnect, is sometimes right: a motion controller that keeps
