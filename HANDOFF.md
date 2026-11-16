@@ -5,7 +5,17 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-16: **release 2.0.0, the Second Edition, is made** (record
+Last updated: 2026-11-16, evening: **2.0.0 is released and its review merged** (63661d4; the
+first pages run after it built book-v2.0.0). The author asked that the work never stop. Next:
+patch release **2.0.1** from main (main holds only the review's fixes since the tag; maintenance
+plan v3 draft says when a patch is made from main), with SDP v20 and maintenance plan v3
+approved under the delegation, and a 100-minute measured soak for MDQ-PR-064 before the release
+checks. Then **2.1.0**, planned in `docs/ROADMAP-2.1.0.md` (accepted 2026-11-16): theme J (the
+rerun rule in `release_checks.sh`), theme G (room: 819 of 828 pages), theme I (MDQ-PR-064, ACC-04
+without a deviation), theme H (Chapters 29 and 28 deeper, one new exercise in each chapter 26 to
+40, measurement folders for Chapters 1, 6 and 22).
+
+Earlier on 2026-11-16: **release 2.0.0, the Second Edition, is made** (record
 `docs/regulatory/releases/2.0.0.md`, evidence `measurements/release-2.0.0/`; release checks on
 c977dd9, all four parts; acceptance 9 of 9; tag book-v2.0.0 via `.github/tags.txt` once CI is
 green on the release commit). Breaking: CR-0029 and CR-0030, named in the CHANGELOG's release

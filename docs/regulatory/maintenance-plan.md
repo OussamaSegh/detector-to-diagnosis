@@ -1,6 +1,6 @@
 # MiniDAQ software maintenance plan
 
-Version 2 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 3 (MiniDAQ 2.0.1-dev). Status: draft for review.
 
 This plan says how MiniDAQ is maintained after a release: where feedback comes from, how it is
 evaluated, which releases are supported and for how long, what a patch release may contain,
@@ -76,6 +76,12 @@ full release checks of that branch; the change request lists every branch it rea
 that cannot be cherry-picked cleanly is written again for the branch and reviewed as a new
 change. Every patch release has its release record and known anomalies, as any other.
 
+While the main branch holds only changes that a patch release may contain since the tag of
+`X.Y.0`, the patch release is made from the main branch itself, and `release/X.Y` is cut from the
+tag of the last patch release when the first change for the next minor or major release reaches
+the main branch. The release record of such a patch says so and lists the commits since the
+previous tag, each with the kind of change it is (release 2.0.1 was the first).
+
 ## 5. SOUP over the years
 
 At each minor release, and when a supplier announces a security fix, each SOUP item's known
@@ -109,3 +115,4 @@ table), so that data from a retired release can still be read and verified.
 |---|---|
 | 1 | First version (Chapter 40, CR-0033, ADR 0039). |
 | 2 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 1. |
+| 3 | Section 4: a patch release is made from the main branch while it holds only changes a patch may contain; when `release/X.Y` is cut (release 2.0.1, roadmap 2.1.0 theme J). |
