@@ -347,7 +347,7 @@ candidate for 4.0.0 (section 9).
 
 ### Theme K: the Third Edition's format
 
-- Two volumes:
+- Two volumes (decided by the author, section 8, answer 5):
   - Volume 1, "The System and the Process", holds Parts I to V.
   - Volume 2, "From Data to Diagnosis", holds Parts VI to XI and Appendices A to C.
 - Each volume has its own index.
@@ -391,7 +391,7 @@ The rhythm stays as before:
 
 ## 7. Questions for the author
 
-1. **Format.** Two volumes in print (recommended)?
+1. **Format.** Decided: two volumes (section 8, answer 5).
 2. **Part XI.** Five chapters where the multi-PC acquisition is the worked project and the
    agentic-era skills are the subject (recommended)? The alternatives:
    - Part XI on scaling alone, with the skills only in Theme Q.
@@ -424,6 +424,8 @@ undone is done.
    delegation of 2026-11-15): standard library only, no new dependency. Chapter 44 adds a short
    sidebar that shows the same server written with the official MCP SDK, printed and not built,
    so that readers recognize the common pattern.
+5. **Format, 2026-11-16:** "3.0.0 is a two volumes book." The Third Edition is printed in two
+   volumes, as in Theme K.
 
 ## 9. After 3.0.0: the long-term plan
 
