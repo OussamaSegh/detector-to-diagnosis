@@ -44,6 +44,15 @@ def check_time_base_for_tof(record):
     if lost:
         raise TimeBaseError(f"the clock of boards {lost} lost its lock during the run: "
                             "reconstruct it without time of flight")
+
+
+def tof_sinograms(run_dir, header, tof_bins, tof_bin_ps):
+    """(prompts, delayeds) of the run in run_dir with time of flight, the only way the tool bins a
+    run with it: the run record is checked first, and TimeBaseError raised before any event is
+    placed along its line."""
+    record, c = run_record(run_dir)
+    check_time_base_for_tof(record)
+    return sg.bin_2d(c, header, tof_bins, tof_bin_ps)
 # [/snippet:tof-guard]
 
 

@@ -1,0 +1,3 @@
+minidaq_python_exercise(e1_where_on_the_line)
+minidaq_python_exercise(e2_tof_kernel)
+minidaq_python_exercise(e3_block_offsets)

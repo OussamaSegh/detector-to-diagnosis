@@ -49,4 +49,5 @@ src/part9/ch36-git-and-team-workflow.md
 src/part9/ch37-ai-assisted-coding.md
 src/part10/part10.md
 src/part10/ch38-clock-distribution.md
+src/part10/ch39-time-of-flight.md
 src/appendix/architecture.md

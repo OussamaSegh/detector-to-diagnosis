@@ -77,8 +77,13 @@ the patch version.
   (`recon_cpp.TofProjector`) weight each step of a line by the probability of each TOF bin for a
   Gaussian timing error; `sinogram.bin_2d` bins list mode into 2D TOF sinograms as the
   histogrammer does; `chain.check_time_base_for_tof` refuses TOF for a run whose time base was at
-  alarm, whose board clock lost its lock, or that has no verdict. SRS-REC-007, SRS-REC-008 (SRS
+  alarm, whose board clock lost its lock, or that has no verdict, and `chain.tof_sinograms`, the
+  tool's one way to bin a run with TOF, calls it first. SRS-REC-007, SRS-REC-008 (SRS
   version 35).
+- **Chapter 39** (time of flight): the sign of tau and its end-to-end test, the TOF kernel and
+  projector, measurements of the timing resolution, of convergence and background variability with
+  and without TOF, of a clock offset in a TOF image and of the projector's cost
+  (`measurements/ch39/`), and exercises 39.1 to 39.3 with their solutions.
 - **Part X and Chapter 38** (clock distribution and the scanner's time base): the clock tree,
   PTP and White Rabbit, register map 1.3 and the time base monitor, with measurements of its
   detection, false alarms and cost (`measurements/ch38/`, benchmark `bm_timing_monitor`) and

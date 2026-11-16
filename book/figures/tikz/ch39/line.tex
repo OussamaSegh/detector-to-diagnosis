@@ -1,0 +1,47 @@
+% Chapter 39: what time of flight adds to a line of response. Left: without TOF the event is
+% anywhere on the chord through the object. Right: tau = t_a - t_b places it at c tau / 2 from the
+% middle, towards b, within a Gaussian of FWHM c times the resolution over 2 (45 mm at 300 ps).
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{crys/.style={draw=d2dink,fill=d2dink!70!white,minimum width=0.32cm,minimum height=0.32cm,inner sep=0pt,rotate=#1}}
+  % Left: without TOF.
+  \begin{scope}
+    \node[title,text=d2dmuted] at (0,2.75) {without time of flight};
+    \draw[line width=0.8pt,draw=d2drule] (0,0) circle (2.3);
+    \fill[d2dcat2!14!white,draw=d2dcat2!60!white,line width=0.6pt] (0.15,-0.1) circle (1.25);
+    \node[note,text=d2dcat2] at (0.15,-1.6) {the patient};
+    \draw[line width=1pt,draw=d2dmuted] (-2.25,0.45) -- (2.25,-0.45);
+    \node[crys=-11] at (-2.25,0.45) {};
+    \node[crys=-11] at (2.25,-0.45) {};
+    \node[lab,anchor=east] at (-2.4,0.45) {$a$};
+    \node[lab,anchor=west] at (2.4,-0.45) {$b$};
+    \draw[line width=4pt,draw=d2dmuted!45!white,opacity=0.9] (-1.03,0.21) -- (1.33,-0.27);
+    \node[note,align=center] at (0.1,1.75) {the event is somewhere\\on the whole chord};
+  \end{scope}
+  % Right: with TOF.
+  \begin{scope}[xshift=6.6cm]
+    \node[title,text=partcolor] at (0,2.75) {with time of flight};
+    \draw[line width=0.8pt,draw=d2drule] (0,0) circle (2.3);
+    \fill[d2dcat2!14!white,draw=d2dcat2!60!white,line width=0.6pt] (0.15,-0.1) circle (1.25);
+    \draw[line width=1pt,draw=d2dmuted] (-2.25,0.45) -- (2.25,-0.45);
+    \node[crys=-11] (ca) at (-2.25,0.45) {};
+    \node[crys=-11] (cb) at (2.25,-0.45) {};
+    \node[lab,anchor=east] at (-2.4,0.45) {$a$};
+    \node[lab,anchor=west] at (2.4,-0.45) {$b$};
+    % The middle and the event, 0.75 along the line towards b.
+    \coordinate (mid) at (0,0);
+    \coordinate (ev) at (0.74,-0.148);
+    \fill[d2dink] (mid) circle (1.3pt);
+    \node[note,anchor=south east] at (-0.05,0.02) {middle};
+    % The Gaussian along the line, drawn perpendicular to it.
+    \begin{scope}[shift={(ev)},rotate=-11.31]
+      \fill[partcolor!25!white,draw=partcolor,line width=0.9pt,domain=-1.0:1.0,smooth,samples=61]
+        (-1.0,0) -- plot (\x,{0.95*exp(-(\x*\x)/(2*0.28*0.28))}) -- (1.0,0) -- cycle;
+      \draw[dimline,draw=partcolor] (-0.33,0.475) -- (0.33,0.475);
+      \node[lab,anchor=west,text=partcolor] at (0.42,0.6) {45 mm};
+    \end{scope}
+    \fill[partcolor] (ev) circle (1.6pt);
+    \draw[dimline] ($(mid)+(-0.06,-0.3)$) -- node[lab,below=-1pt] {$c\,\tau/2$} ($(ev)+(-0.06,-0.3)$);
+    \node[lab,align=left,anchor=west] at (2.55,1.35) {$\tau = t_a - t_b$\\$\tau > 0$: nearer $b$};
+    \node[note,align=center] at (0.1,-1.9) {a Gaussian of FWHM $c\,\Delta t/2$\\($\Delta t = 300$ ps: 45 mm)};
+  \end{scope}
+\end{tikzpicture}

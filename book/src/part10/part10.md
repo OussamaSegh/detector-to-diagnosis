@@ -9,9 +9,10 @@ the product is in use.
   to it. The chapter follows the clock from the reference oscillator to the time stamp, explains
   how networks synchronize clocks when no cable can, and makes MiniDAQ watch its own time base
   during a run: from the coincidences it already finds, and from each board's lock status.
-- **The second chapter** uses that time base for its most demanding reader, time of flight: the
+- **Chapter 39** uses that time base for its most demanding reader, time of flight: the
   difference of the two photons' arrival times places each annihilation along its line of
-  response, which changes the list-mode format, the sorter and the projector.
+  response. The list mode has carried it since 1.0; the chapter adds it to the reconstruction's
+  projector, measures what it gives, and refuses it for a run whose clocks were not shown to hold.
 - **The third chapter** follows the product after its release: problem reports from the field, patch
   releases under the maintenance process of IEC 62304, SOUP that reaches its end of life, and the
   judgment of a change request years later, with MiniDAQ's own history from 1.0 to 2.0 as the

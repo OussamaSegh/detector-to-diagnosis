@@ -19,9 +19,10 @@ The reconstruction tool (`tools/recon`, tool TL-31) reconstructs with time of fl
 2. **TOF bins from list mode** (`tools/recon/sinogram.py` `bin_2d`): the histogrammer's lines,
    TOF bins and sign of tau, every slice added, so that a measurement does not need the 3D TOF
    sinogram files.
-3. **Guard** (`tools/recon/chain.py` `check_time_base_for_tof`): a reconstruction with TOF is
-   refused for a run whose record has no time base verdict, an interval at alarm, or a board
-   clock that lost its lock (SRS-REC-008).
+3. **Guard** (`tools/recon/chain.py` `check_time_base_for_tof`, called by `tof_sinograms`, the
+   tool's one way to bin a run with TOF): a reconstruction with TOF is refused for a run whose
+   record has no time base verdict, an interval at alarm, or a board clock that lost its lock
+   (SRS-REC-008).
 
 ## Reason
 

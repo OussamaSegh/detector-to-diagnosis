@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zlib
 
 try:
@@ -534,6 +535,15 @@ class TofGuard(unittest.TestCase):
             chain.check_time_base_for_tof(r)
         with self.assertRaisesRegex(chain.TimeBaseError, "no time base verdict"):
             chain.check_time_base_for_tof({"run": {"corrections": {}}})
+
+    def test_binning_a_run_with_tof_checks_its_record_first(self):
+        # REQ: SRS-REC-008
+        r = self.run_record(timing={"alarm_intervals": 1, "blocks": [{"alarm_intervals": 1}]})
+        with mock.patch.object(chain, "run_record", return_value=(r, None)), \
+                mock.patch.object(chain.sg, "bin_2d") as binned:
+            with self.assertRaises(chain.TimeBaseError):
+                chain.tof_sinograms("run", None, 21, 100.0)
+            binned.assert_not_called()
 
 
 class ImageQuality(unittest.TestCase):
