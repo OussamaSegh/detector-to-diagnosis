@@ -30,6 +30,8 @@ The engineer who leads a data acquisition system now does more of the following:
    context files and records (IEC 62304, ISO 13485).
 6. **Debug and measure systems**, including parts that nobody on the team wrote by hand.
 7. **Run agent workflows**: specifications, context, permissions, guardrails and CI gates.
+   This includes building the team's own agent tooling: subagents, skills, hooks, commands,
+   tool servers and context files, composed, tested and kept under control.
 8. **Know the domain physics** well enough to see a plausible result that is wrong.
 
 They do less of this:
@@ -72,6 +74,8 @@ spine of the book instead of one chapter.
   - Missing: a gate that an agent's change must pass before a person reviews it.
   - Missing: context and prompt files under document control.
   - Missing: a validation argument for an agent workflow, as opposed to a single assistant.
+  - Missing: any agent tooling of the team's own. The repository has no subagent, skill, hook,
+    command or tool server, and the book does not teach how to build one.
 
 ## 3. What 3.0.0 is for
 
@@ -135,6 +139,31 @@ implements and the gate report it passed (`tools/ai_provenance.py`).
 - verify: the current FDA guidance on computer software assurance and ISO/TR 80002-2 before the
   text cites them.
 
+**The team's own agent tooling**, kept in the repository as worked examples of Chapter 44.
+
+- **A review subagent for IEC 62304 traceability.** Given a change, it checks that each new
+  requirement has a test, each test a requirement tag, and each risk control its verification.
+  It reports, and does not edit.
+- **A release-check skill.** It runs `tools/release_checks.sh` with `resume`, reads
+  `release-checks.txt`, applies the rerun rule of SDP section 8, and drafts the release record
+  with `tools/release_record.py`. Every step it takes is a command a person could run.
+- **Hooks.** A hook before each command refuses writes outside the repository and pushes to
+  protected branches. A hook after each edit runs the formatter and the fast tests of the
+  changed item.
+- **Commands.** Slash commands for the recurring steps, such as a change request, a problem
+  report and a post-release bump, each a thin wrapper over a tested tool.
+- **A tool server over the run records (MCP).** It gives read-only access to the run records,
+  integrity verdicts and problem reports, so an agent can answer "which runs did MDQ-PR-064
+  affect" without shell access. It speaks JSON-RPC over standard input and output, and is
+  written with the standard library unless the author approves an SDK (section 7, question 7).
+- **Evals and checks for all of them.**
+  - A static check, run in CI, of every agent file: frontmatter, the paths and tests it names,
+    the tools it may use, and least privilege (Exercise 37.2's checker, extended).
+  - Evals with recorded inputs and expected findings for the subagent and the skill. They run
+    by hand with an agent, and their results are kept as evidence for each version.
+- **Under document control.** Each agent file has a version, an owner and a change history,
+  and the tool list records each one's class.
+
 **Records.**
 
 - A change request and an ADR.
@@ -143,7 +172,7 @@ implements and the gate report it passed (`tools/ai_provenance.py`).
 - A threat model review of an agent with shell access: its permissions, secrets and network,
   and the supply chain of what it installs.
 
-### Theme L: Part XI, building the acquisition at scale with agents (four chapters)
+### Theme L: Part XI, building the acquisition at scale with agents (five chapters)
 
 Each chapter adds part of the multi-PC scanner to MiniDAQ and teaches one or two skills of
 section 1 by doing them. In each chapter the reader:
@@ -192,11 +221,39 @@ namespaces.
     written as an ADR before any agent writes code against them.
   - How a migration note and a refusal test protect existing clients.
 
-**Chapter 44, the agent workflow under the quality system.**
+**Chapter 44, building your own agent tooling.**
+
+- *Worked example:* the team's own agent tooling of Theme P, built step by step for MiniDAQ:
+  - the review subagent for traceability;
+  - the release-check skill;
+  - the hooks and commands;
+  - the tool server over the run records.
+- *Skill:* building agents and skills, and composing them.
+  - Context files that stay true.
+  - A subagent with one job, its own context and the fewest tools that do the job.
+  - A skill as a procedure that the team already trusts, written down so an agent can follow
+    it.
+  - Hooks as guardrails that do not depend on the agent's judgment.
+  - A tool server that gives data, not a shell.
+- *Best practices,* each shown on MiniDAQ:
+  - narrow scope and least privilege;
+  - read-only by default;
+  - deterministic tools underneath and the agent on top;
+  - tested and versioned agent files;
+  - evals with recorded cases;
+  - review of an agent file like code;
+  - no secrets or patient data in context;
+  - knowing when a script is better than an agent.
+- The formats are Claude Code's, as the book's example (verify: the current formats of
+  subagents, skills, hooks and MCP before writing). The principles are stated so that they
+  apply to other agents.
+
+**Chapter 45, the agent workflow under the quality system.**
 
 - *Worked example:* the whole workflow of Part XI, recorded as evidence.
   - Theme P's gate.
-  - Context files under document control.
+  - Chapter 44's tooling, with its evals as validation evidence.
+  - Context and agent files under document control.
   - Permissions and guardrails.
   - Provenance and the validation argument.
   - An incident: an agent's change that passed the gate and failed in a soak. It is analyzed
@@ -229,6 +286,13 @@ code.
 - It maps the eight skills to the chapters, exercises and records that train them.
 - It ends with a self-assessment: what a reviewer of your work should be able to see.
 - The front matter's reading path gets a second route through the book, ordered by skill.
+
+**An appendix of agent patterns (new Appendix C).**
+
+- A catalog of the patterns in Chapter 44 and their best practices.
+- For each pattern: when to use it, its least-privilege tool list, how to test it, and how to
+  put it under document control.
+- Templates for a subagent, a skill, a hook, a command and a tool server, each with its check.
 
 **Chapter 37, revised.** It becomes the bridge from an assistant that suggests to an agent that
 acts, and it points ahead to Part XI.
@@ -284,7 +348,7 @@ candidate for 4.0.0 (section 9).
 
 - Two volumes:
   - Volume 1, "The System and the Process", holds Parts I to V.
-  - Volume 2, "From Data to Diagnosis", holds Parts VI to XI and Appendices A and B.
+  - Volume 2, "From Data to Diagnosis", holds Parts VI to XI and Appendices A to C.
 - Each volume has its own index.
 - A cross-reference to the other volume names that volume.
 - The solutions manual and the web edition stay single.
@@ -295,11 +359,11 @@ candidate for 4.0.0 (section 9).
 | Milestone | Content | Exit criterion |
 |---|---|---|
 | 2.1.0 | Its own roadmap | Released |
-| 2.2.0 | Groundwork that breaks nothing: Theme P's gate with its known-bad library, context files under document control, extended provenance, the simulator with several nodes, and the merge inside one process | The gate rejects every known-bad change; release checks pass |
+| 2.2.0 | Groundwork that breaks nothing: Theme P's gate with its known-bad library, context files under document control, extended provenance, the first agent tooling (the traceability subagent, the release-check skill, the hooks) with their static check, the simulator with several nodes, and the merge inside one process | The gate rejects every known-bad change; every agent file passes its check; release checks pass |
 | 3.0.0-dev, first | Theme N | Every preset green on the new compiler; Part I updated |
 | 3.0.0-dev, second | Theme M, with the earlier chapters updated | `docs.interfaces` passes; migration note complete |
-| 3.0.0-dev, third | Chapters 41 to 44 (Theme L), each with its recorded agent sessions | Chapter recipe complete; the gate's report in each chapter's record |
-| 3.0.0-dev, fourth | Theme Q: ten audit exercises, milestones written specification first, Appendix B, Chapter 37 revised | Each audit exercise's acceptance rejects the bad change and accepts the fixed one |
+| 3.0.0-dev, third | Chapters 41 to 45 (Theme L), each with its recorded agent sessions; the tool server over the run records | Chapter recipe complete; the gate's report in each chapter's record |
+| 3.0.0-dev, fourth | Theme Q: ten audit exercises, milestones written specification first, Appendices B and C, Chapter 37 revised | Each audit exercise's acceptance rejects the bad change and accepts the fixed one |
 | 3.0.0-rc | Theme O, Theme K, the review of the whole book | Each volume within 828 pages; KDP files built |
 | 3.0.0 | Third Edition: internal audit and the full release checks | CI green on the release commit; tag `book-v3.0.0` |
 
@@ -316,16 +380,18 @@ The rhythm stays as before:
 | Recorded sessions date as agents improve | The examples look old | What the book teaches is the audit, not the agent. The changes are kept for the defects they hold, and the text names the agent and version that made each one |
 | A reader has no agent, or a different one | Exercises cannot be done | Every audit exercise works from the recorded session alone. Running one's own agent is optional, and the same gate judges it |
 | Seeded defects are artificial | Readers learn to find planted bugs | Defects are taken from MiniDAQ's own history (80 problem reports). One session per chapter keeps defects that the agent made itself |
-| The gate gives false confidence | Wrong changes pass | The gate is verified against the known-bad library. Chapter 44's incident shows what it misses. A person's review stays required (SRS-AI) |
+| The gate gives false confidence | Wrong changes pass | The gate is verified against the known-bad library. Chapter 45's incident shows what it misses. A person's review stays required (SRS-AI) |
 | The book reads as one vendor's manual | No longer generic | The text and the records are vendor-neutral. Claude Code is named only as an example |
 | Partitioning loses coincidences at the boundaries | Wrong counts, which is a hazard | Specified first (Chapter 41), tested against the single-node oracle, and measured |
 | One machine hides network effects | The text is contradicted by real clusters | Network namespaces with delay and loss (verify: that CI's runners allow them). The text states the limits |
-| Scope grows | The edition never ships | The Part XI list and the ten audit exercises are fixed at the start. Anything else goes to 3.1.0 |
+| Agent file formats change quickly | Chapter 44's examples break | The principles are taught first and the formats second; the static check fails CI when a format changes; Appendix C's templates are updated in minor releases |
+| An agent file has more power than it needs | A subagent or hook changes what it should only read | Least privilege is checked statically; the tool server is read-only; the threat model reviews each agent file |
+| Scope grows | The edition never ships | The Part XI list (five chapters) and the ten audit exercises are fixed at the start. Anything else goes to 3.1.0 |
 
 ## 7. Questions for the author
 
 1. **Format.** Two volumes in print (recommended)?
-2. **Part XI.** Four chapters where the multi-PC acquisition is the worked project and the
+2. **Part XI.** Five chapters where the multi-PC acquisition is the worked project and the
    agentic-era skills are the subject (recommended)? The alternatives:
    - Part XI on scaling alone, with the skills only in Theme Q.
    - A separate Part on agents.
@@ -335,6 +401,10 @@ The rhythm stays as before:
 5. **Breaking changes.** API 4.0, schema 3.0 and MDQ-P2, grouped in one milestone (recommended)?
 6. **Platform.** Ubuntu 26.04 and the full C++23 (recommended, if the runner image is available
    in time)?
+
+7. **The tool server.** Write the MCP server over the run records with the standard library
+   (recommended, no new dependency), or approve the MCP SDK for Python as a test-and-tooling
+   dependency?
 
 Until the author answers, the work follows the recommendations, and nothing that cannot be
 undone is done.
@@ -348,6 +418,11 @@ undone is done.
    - The acquisition at scale stays Part XI's system work.
    - The Part's subject becomes the engineer's skills when agents write much of the code
      (sections 1 and 4).
+3. **Addition, 2026-11-16:** "How to create agents and skills, nest practices..etc." This is
+   read as best practices: the book teaches readers to build their own agent tooling, not only
+   to use and audit agents. That is Chapter 44 (subagents, skills, hooks, commands, tool servers
+   and context files, composed, tested and under document control, on MiniDAQ), Appendix C
+   (patterns and templates), and the MiniDAQ agent tooling of Theme P.
 
 ## 9. After 3.0.0: the long-term plan
 

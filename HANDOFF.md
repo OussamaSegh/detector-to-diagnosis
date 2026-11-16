@@ -19,9 +19,11 @@ revised the same evening at the author's direction ("engineer in the agentic AI 
 Edition aim: train the skills that matter when agents write much of the code (specify, verify,
 architecture, risk, AI tools under the QMS, debug/measure, run agent workflows, domain physics).
 Theme P agent workbench (`tools/agent_gate.py` with a known-bad library, recorded agent sessions,
-controlled context files, provenance, workflow validation); Part XI = four chapters 41 to 44 that
+controlled context files, provenance, workflow validation, own agent tooling: traceability
+subagent, release-check skill, hooks, commands, read-only MCP server over run records); Part XI =
+five chapters 41 to 45 (44 = building agents, skills, hooks, MCP, best practices) that
 build the multi-PC acquisition (the author's card choice) with agents; Theme Q one audit exercise
-(A) per Part plus Appendix B skills map; API 4.0/schema 3.0/MDQ-P2; Ubuntu 26.04; two volumes.
+(A) per Part, Appendix B skills map, Appendix C agent patterns; API 4.0/schema 3.0/MDQ-P2; Ubuntu 26.04; two volumes.
 2.2.0 is groundwork; section 9 is the long-term plan (3.1, 3.2, 4.0 AI in the device).
 
 Earlier on 2026-11-16: **release 2.0.0, the Second Edition, is made** (record
