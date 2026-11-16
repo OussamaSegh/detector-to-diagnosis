@@ -103,6 +103,91 @@ class Projector:
         return np.meshgrid(c, c, indexing="xy")
 
 
+# [snippet:tof]
+C_MM_PER_PS = 0.299792458
+
+
+def tof_bins_mm(tof_bins, tof_bin_ps):
+    """The centers along the line, in mm, of the TOF bins of MiniDAQ's histogrammer: bin k holds
+    tau = t_a - t_b in [(k - K/2) w, (k + 1 - K/2) w), and an annihilation at l along the line
+    (from a towards b, 0 at the line's middle) arrives with tau = 2 l / c."""
+    k = np.arange(tof_bins)
+    return (k - (tof_bins - 1) / 2.0) * tof_bin_ps * C_MM_PER_PS / 2.0
+
+
+class TofProjector(Projector):
+    """A @ x and A.T @ y with time of flight: each line is split into tof_bins bins along its
+    length, and a step of the line at l contributes to bin k with the probability that its tau
+    falls in that bin, for a Gaussian timing error of FWHM ctr_fwhm_ps (the coincidence time
+    resolution). Arrays (views, radial, tof_bins); the sum over the TOF bins is the projection
+    without TOF, less what falls outside the outer bins, which the histogrammer drops too.
+
+    The direction along each line is (-sin phi, cos phi) for the bin's own angle phi, and endpoint
+    a of the histogrammer's bins lies at negative l (Chapter 39)."""
+
+    def __init__(self, s_mm, phi, n=128, pixel_mm=2.0, tof_bins=13, tof_bin_ps=100.0,
+                 ctr_fwhm_ps=300.0):
+        super().__init__(s_mm, phi, n=n, pixel_mm=pixel_mm)
+        if tof_bins < 1 or tof_bin_ps <= 0 or ctr_fwhm_ps <= 0:
+            raise ValueError("tof_bins, tof_bin_ps and ctr_fwhm_ps must be positive")
+        self.tof_bins = int(tof_bins)
+        self.shape = (*s_mm.shape, self.tof_bins)
+        centers = tof_bins_mm(self.tof_bins, tof_bin_ps)
+        half = tof_bin_ps * C_MM_PER_PS / 4.0
+        self._edges = np.append(centers - half, centers[-1] + half)  # the bins touch: K + 1 edges
+        self._sigma_mm = ctr_fwhm_ps / (2.0 * np.sqrt(2.0 * np.log(2.0))) * C_MM_PER_PS / 2.0
+        self._along = [self._positions(s_mm[v], phi[v]) for v in range(s_mm.shape[0])]
+
+    def _positions(self, s, phi):
+        """l of each step of each line of a view, (lines, n): where the step's point lies along
+        the line, measured from the foot of the normal (the line's middle on the scanner)."""
+        n, p = self.n, self.pixel_mm
+        dx, dy = -np.sin(phi), np.cos(phi)
+        centers = (np.arange(n) - (n - 1) / 2.0) * p
+        if np.mean(np.abs(dx)) >= np.mean(np.abs(dy)):
+            return (centers[None, :] - (s * np.cos(phi))[:, None]) / dx[:, None]
+        return (centers[None, :] - (s * np.sin(phi))[:, None]) / dy[:, None]
+
+    def _kernel(self, v):
+        """(lines, n, tof_bins): the probability of each TOF bin for each step of view v."""
+        z = np.sqrt(2.0) * self._sigma_mm
+        return 0.5 * np.diff(erf((self._edges - self._along[v][..., None]) / z), axis=-1)
+
+    def forward(self, image, views=None):
+        flat = np.asarray(image, dtype=np.float64).ravel()
+        vs = range(self.shape[0]) if views is None else views
+        out = np.zeros((len(vs), self.shape[1], self.tof_bins))
+        for k, v in enumerate(vs):
+            idx, w = self._views[v]
+            per_step = (flat[idx] * w).sum(axis=2)                # (lines, n)
+            out[k] = np.einsum("ls,lsk->lk", per_step, self._kernel(v))
+        return out
+
+    def back(self, sino, views=None):
+        vs = range(self.shape[0]) if views is None else views
+        out = np.zeros(self.n * self.n)
+        for k, v in enumerate(vs):
+            idx, w = self._views[v]
+            per_step = np.einsum("lk,lsk->ls", np.asarray(sino[k], dtype=np.float64), self._kernel(v))
+            out += np.bincount(idx.ravel(), (w * per_step[:, :, None]).ravel(), self.n * self.n)
+        return out.reshape(self.n, self.n)
+
+
+def erf(x):
+    """The error function, elementwise: Abramowitz and Stegun 7.1.26, within 1.5e-7 of the exact
+    value (numpy has no erf, and scipy is not a dependency of the tool). The projector and its
+    adjoint use the same values, so the adjoint holds to rounding whatever the approximation."""
+    x = np.asarray(x, dtype=np.float64)
+    a = np.abs(x)
+    t = 1.0 / (1.0 + 0.3275911 * a)
+    poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027
+                                                                          + t * 1.061405429))))
+    return np.sign(x) * (1.0 - poly * np.exp(-a * a))
+
+
+# [/snippet:tof]
+
+
 def _pixel_centers(n, pixel_mm):
     c = (np.arange(n) - (n - 1) / 2.0) * pixel_mm
     return np.meshgrid(c, c, indexing="xy")
@@ -136,3 +221,15 @@ class CppProjector:
     def pixel_centers(self):
         return _pixel_centers(self.n, self.pixel_mm)
 # [/snippet:cpp]
+
+
+class CppTofProjector(CppProjector):
+    """TofProjector's interface on the C++ projector (Chapter 39)."""
+
+    def __init__(self, s_mm, phi, n=128, pixel_mm=2.0, tof_bins=13, tof_bin_ps=100.0,
+                 ctr_fwhm_ps=300.0, threads=0):
+        self._p = load_cpp().TofProjector(s_mm, phi, n, pixel_mm, tof_bins, tof_bin_ps,
+                                          ctr_fwhm_ps, threads)
+        self.n, self.pixel_mm = n, float(pixel_mm)
+        self.tof_bins = int(tof_bins)
+        self.shape = (*np.shape(s_mm), self.tof_bins)

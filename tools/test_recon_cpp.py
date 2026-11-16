@@ -43,6 +43,18 @@ class CppImageQuality(base.ImageQuality):
     make = staticmethod(cpp)
 
 
+def cpp_tof(s, phi, n=128, pixel_mm=2.0, **tof):
+    return project.CppTofProjector(s, phi, n=n, pixel_mm=pixel_mm, threads=4, **tof)
+
+
+class CppTofProjection(base.TofProjection):
+    make = staticmethod(cpp_tof)
+
+
+class CppTofReconstruction(base.TofReconstruction):
+    make = staticmethod(cpp_tof)
+
+
 class SameAsNumpy(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -71,6 +83,26 @@ class SameAsNumpy(unittest.TestCase):
         a = mlem.osem(y, self.py, mult, 0.3, 3, n_subsets=8)
         b = mlem.osem(y, self.cc, mult, 0.3, 3, n_subsets=8)
         self.assertLess(np.abs(a - b).max() / a.max(), 1e-5)
+
+
+class TofSameAsNumpy(unittest.TestCase):
+    def test_the_tof_projections_agree_line_by_line(self):
+        # REQ: SRS-REC-004, SRS-REC-007
+        s, phi = project.bin_lines(header(), radius_mm=156.0)
+        tof = {"tof_bins": 15, "tof_bin_ps": 120.0, "ctr_fwhm_ps": 350.0}
+        py = project.TofProjector(s, phi, n=64, pixel_mm=3.0, **tof)
+        cc = cpp_tof(s, phi, n=64, pixel_mm=3.0, **tof)
+        self.assertEqual(py.shape, tuple(cc.shape))
+        rng = np.random.default_rng(13)
+        x = rng.random((64, 64))
+        a, b = py.forward(x), cc.forward(x)
+        # float32 weights and an erf within 1.5e-7 on the numpy side.
+        self.assertLess(np.abs(a - b).max() / np.abs(a).max(), 1e-6)
+        y = rng.random(a.shape)
+        a, b = py.back(y), cc.back(y)
+        self.assertLess(np.abs(a - b).max() / np.abs(a).max(), 1e-6)
+        with self.assertRaises(ValueError):  # a sinogram without its TOF bins
+            cc.back(y[..., 0])
 
 
 class TheBoundary(unittest.TestCase):

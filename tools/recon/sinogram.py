@@ -147,3 +147,48 @@ def ring_pairs_per_slice(max_ring_difference=RINGS - 1):
     """How many (ring_a, ring_b) pairs each SSRB slice holds."""
     ones = np.ones(RINGS)
     return np.rint(axial_sum(ones, ones, max_ring_difference)).astype(np.int64)
+
+
+# [snippet:tof-bins]
+def bin_2d(c, header, tof_bins=1, tof_bin_ps=0.0, delayed_window_ps=100_000):
+    """(prompts, delayeds): the coincidences c (listmode.read_file's arrays) in 2D sinograms of
+    (views, radial_bins), or (views, radial_bins, tof_bins) with time of flight, every slice
+    added; the lines and the TOF bins of minidaq_listmode sino (Chapter 39).
+
+    Endpoint a of a bin is its lower transaxial crystal unless the bin's angle wrapped past 180
+    degrees (lor_bin()); tau = t_a - t_b. dt_ps is the later single's time less the earlier's,
+    and crystal_a is the earlier single, so tau = -dt when crystal_a is endpoint a. A delayed
+    pair's dt is a delay late: the delay comes off first. Bin k of K holds tau in
+    [(k - K/2) w, (k + 1 - K/2) w); a coincidence outside every bin is dropped."""
+    n = CRYSTALS_PER_RING
+    ta, tb = transaxial_of(c["crystal_a"]), transaxial_of(c["crystal_b"])
+    ra, rb = ring_of(c["crystal_a"]), ring_of(c["crystal_b"])
+    lo, hi = np.minimum(ta, tb), np.maximum(ta, tb)
+    k = lo + hi + 1
+    d = hi - lo
+    wrapped = k >= n
+    k = np.where(wrapped, k - n, k)
+    d = np.where(wrapped, n - d, d)
+    col = d - n // 2 - header.first_r
+    ok = (ta != tb) & (col >= 0) & (col < header.radial_bins)
+    ok &= np.abs(ra - rb) <= header.max_ring_difference
+    a_is_first = (ta < tb) == ~wrapped
+    dt = c["dt_ps"].astype(np.int64) - np.where(c["delayed"], delayed_window_ps, 0)
+    tau = np.where(a_is_first, -dt, dt)
+    shape = (header.views, header.radial_bins)
+    index = [k // 2, col]
+    if tof_bins > 1:
+        w = int(tof_bin_ps)
+        num = 2 * tau + tof_bins * w
+        tof = num // (2 * w)
+        ok &= (num >= 0) & (tof < tof_bins)
+        shape = (*shape, tof_bins)
+        index.append(tof)
+    out = []
+    for sel in (~c["delayed"], c["delayed"]):
+        m = ok & sel
+        h = np.zeros(shape)
+        np.add.at(h, tuple(i[m] for i in index), 1.0)
+        out.append(h)
+    return tuple(out)
+# [/snippet:tof-bins]

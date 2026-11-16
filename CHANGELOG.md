@@ -72,6 +72,13 @@ the patch version.
   lock loss during a run is an audit event (`clock_lock_lost`) and counts in the integrity verdict
   (`/hardware/boards/N/clock_lock_losses`). The simulated board's firmware is 1.4.0 at reset.
   SRS-TIM-006.
+- **Time of flight in the reconstruction tool** (CR-0032, ADR 0038, Chapter 39; risk control
+  RC-55 of H-13). `tools/recon/project.py` `TofProjector` and the C++ projector with `recon::Tof`
+  (`recon_cpp.TofProjector`) weight each step of a line by the probability of each TOF bin for a
+  Gaussian timing error; `sinogram.bin_2d` bins list mode into 2D TOF sinograms as the
+  histogrammer does; `chain.check_time_base_for_tof` refuses TOF for a run whose time base was at
+  alarm, whose board clock lost its lock, or that has no verdict. SRS-REC-007, SRS-REC-008 (SRS
+  version 35).
 - **Part X and Chapter 38** (clock distribution and the scanner's time base): the clock tree,
   PTP and White Rabbit, register map 1.3 and the time base monitor, with measurements of its
   detection, false alarms and cost (`measurements/ch38/`, benchmark `bm_timing_monitor`) and

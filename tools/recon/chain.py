@@ -15,6 +15,38 @@ def run_record(run_dir):
     return listmode.read_run(next(pathlib.Path(run_dir).glob("*.run.json")))
 
 
+# [snippet:tof-guard]
+class TimeBaseError(ValueError):
+    """A run whose time base cannot be trusted for time of flight."""
+
+
+def check_time_base_for_tof(record):
+    """Raises TimeBaseError unless the run record says its time base held: a time of flight puts
+    each event c tau / 2 along its line, so a block clock 400 ps off moves its events by 60 mm,
+    where a reconstruction without TOF only loses a few coincidences (Chapters 38 and 39).
+
+    A run of the server must carry the time base monitor's verdict (control API 3.1) with no
+    interval at alarm and no lock loss of a board's clock. A simulation (its record has
+    "simulation") has the clocks it was given and passes; a run without the verdict does not."""
+    run = record.get("run", {})
+    if "simulation" in run:
+        return
+    timing = run.get("timing")
+    if timing is None:
+        raise TimeBaseError("the run record has no time base verdict (a server before 2.0, or the "
+                            "monitor was off): reconstruct it without time of flight")
+    if timing.get("alarm_intervals", 0) > 0:
+        blocks = [i for i, b in enumerate(timing.get("blocks", [])) if b.get("alarm_intervals", 0)]
+        raise TimeBaseError(f"the time base was at alarm in {timing['alarm_intervals']} intervals "
+                            f"(blocks {blocks}): reconstruct it without time of flight")
+    lost = [i for i, b in enumerate(run.get("hardware", {}).get("boards", []))
+            if b.get("clock_lock_losses", 0)]
+    if lost:
+        raise TimeBaseError(f"the clock of boards {lost} lost its lock during the run: "
+                            "reconstruct it without time of flight")
+# [/snippet:tof-guard]
+
+
 def normalization(norm_dirs, source_radius_mm):
     """n for every bin, and the crystal efficiencies, from the normalization scans in norm_dirs (a
     cylinder of activity in air of source_radius_mm, centered)."""

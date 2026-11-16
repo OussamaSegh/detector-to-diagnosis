@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 34 (MiniDAQ 2.0.0-dev). Status: draft for review.
+Version 35 (MiniDAQ 2.0.0-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -377,6 +377,8 @@ after the acquisition (`tools/recon`, tool TL-31).
 | SRS-REC-004 | The reconstruction tool's compiled projector `recon_cpp` shall give the forward and back projections of its numpy projector to 1e-6 relative to the largest value, and pass the same tests. | tools | T |
 | SRS-REC-005 | The reconstruction tool's compiled projector `recon_cpp` and its Python module shall refuse lines, images, sinograms and views that do not fit the geometry with an error that names the sizes, convert arrays of another dtype or memory layout instead of reading them as they are, and leave their inputs unchanged. | tools | T |
 | SRS-REC-006 | The reconstruction tool's compiled projector `recon_cpp` shall give the same forward projection for every number of threads, and a backprojection that is the same in every run with the same number of threads and within 1e-12 relative between numbers of threads. | tools | T |
+| SRS-REC-007 | The reconstruction tool's projectors with time of flight shall weight each step of a line by the probability that a Gaussian timing error of the stated resolution puts its time difference in each TOF bin, with the histogrammer's TOF bins and its sign of tau (t_a - t_b, endpoint a at negative positions along the line), so that the TOF bins of a line add up to its projection without TOF and the dot-product test holds to 1e-6 relative. | tools | T |
+| SRS-REC-008 | The reconstruction tool shall refuse a reconstruction with time of flight of a run whose record has no time base verdict, an interval at alarm or a board clock that lost its lock, with a message that names the intervals, blocks or boards; a simulated run is accepted. | tools | T |
 
 ### 2.21 Image quality (IQ)
 
@@ -552,3 +554,4 @@ controls RC-53 and RC-54 of hazard H-02, for a time error that keeps the order o
 | 32 | SRS-PLT-012: the product build without the simulator (CR-0029, MDQ-PR-009). |
 | 33 | Control API 3.0 and configuration schema 2.0 (CR-0030): SRS-CTL-022 and SRS-CFG-001 changed; SRS-CFG-013, SRS-CFG-014 and SRS-CFG-015 added. |
 | 34 | The time base monitor (CR-0031, ADR 0037, Chapter 38): SRS-TIM-001 to SRS-TIM-006 and SRS-CFG-016 added. |
+| 35 | Time of flight in the reconstruction tool (CR-0032, ADR 0038, Chapter 39): SRS-REC-007 and SRS-REC-008 added. |

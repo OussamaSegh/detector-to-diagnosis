@@ -39,6 +39,20 @@ void require_shape(const Array& a, const char* what, std::size_t rows, std::size
   }
 }
 
+void require_shape3(const Array& a, const char* what, std::size_t d0, std::size_t d1,
+                    std::size_t d2) {
+  if (a.ndim() != 3 || static_cast<std::size_t>(a.shape(0)) != d0 ||
+      static_cast<std::size_t>(a.shape(1)) != d1 || static_cast<std::size_t>(a.shape(2)) != d2) {
+    std::string got;
+    for (py::ssize_t d = 0; d < a.ndim(); ++d) {
+      got += (d != 0 ? " x " : "") + std::to_string(a.shape(d));
+    }
+    throw py::value_error(std::string(what) + " must be " + std::to_string(d0) + " x " +
+                          std::to_string(d1) + " x " + std::to_string(d2) + ", got " +
+                          (got.empty() ? "a scalar" : got));
+  }
+}
+
 std::vector<std::size_t> view_list(const recon::JosephProjector& p,
                                    const std::optional<std::vector<long long>>& views) {
   std::vector<std::size_t> out;
@@ -60,14 +74,15 @@ std::vector<std::size_t> view_list(const recon::JosephProjector& p,
 
 class Projector {
  public:
-  Projector(const Array& s_mm, const Array& phi, std::size_t n, double pixel_mm, unsigned threads)
-      : p_(make(s_mm, phi, n, pixel_mm)), threads_(threads) {}
+  Projector(const Array& s_mm, const Array& phi, std::size_t n, double pixel_mm, unsigned threads,
+            recon::Tof tof = {})
+      : p_(make(s_mm, phi, n, pixel_mm, tof)), threads_(threads) {}
 
   // [snippet:forward]
   Array forward(const Array& image, const std::optional<std::vector<long long>>& views) const {
     require_shape(image, "image", p_.n(), p_.n());
     const std::vector<std::size_t> vs = view_list(p_, views);
-    Array out({static_cast<py::ssize_t>(vs.size()), static_cast<py::ssize_t>(p_.bins())});
+    Array out = sinogram(vs.size());
     {
       // The arrays stay alive (this call holds them); no Python object is touched meanwhile.
       py::gil_scoped_release release;
@@ -80,7 +95,11 @@ class Projector {
 
   Array back(const Array& sino, const std::optional<std::vector<long long>>& views) const {
     const std::vector<std::size_t> vs = view_list(p_, views);
-    require_shape(sino, "sinogram", vs.size(), p_.bins());
+    if (p_.tof_bins() == 1) {
+      require_shape(sino, "sinogram", vs.size(), p_.bins());
+    } else {
+      require_shape3(sino, "sinogram", vs.size(), p_.bins(), p_.tof_bins());
+    }
     Array out({static_cast<py::ssize_t>(p_.n()), static_cast<py::ssize_t>(p_.n())});
     {
       py::gil_scoped_release release;
@@ -92,19 +111,32 @@ class Projector {
 
   std::size_t n() const { return p_.n(); }
   double pixel_mm() const { return p_.pixel_mm(); }
-  py::tuple shape() const { return py::make_tuple(p_.views(), p_.bins()); }
+  py::tuple shape() const {
+    if (p_.tof_bins() == 1) {
+      return py::make_tuple(p_.views(), p_.bins());
+    }
+    return py::make_tuple(p_.views(), p_.bins(), p_.tof_bins());
+  }
   unsigned threads() const { return threads_; }
 
  private:
+  Array sinogram(std::size_t views) const {
+    if (p_.tof_bins() == 1) {
+      return Array({static_cast<py::ssize_t>(views), static_cast<py::ssize_t>(p_.bins())});
+    }
+    return Array({static_cast<py::ssize_t>(views), static_cast<py::ssize_t>(p_.bins()),
+                  static_cast<py::ssize_t>(p_.tof_bins())});
+  }
+
   static recon::JosephProjector make(const Array& s_mm, const Array& phi, std::size_t n,
-                                     double pixel_mm) {
+                                     double pixel_mm, recon::Tof tof) {
     if (s_mm.ndim() != 2) {
       throw py::value_error("s_mm must be views x bins");
     }
     const auto views = static_cast<std::size_t>(s_mm.shape(0));
     const auto bins = static_cast<std::size_t>(s_mm.shape(1));
     require_shape(phi, "phi", views, bins);
-    return {{s_mm.data(), views * bins}, {phi.data(), views * bins}, views, bins, n, pixel_mm};
+    return {{s_mm.data(), views * bins}, {phi.data(), views * bins}, views, bins, n, pixel_mm, tof};
   }
 
   recon::JosephProjector p_;
@@ -126,5 +158,18 @@ PYBIND11_MODULE(recon_cpp, m) {
       .def_property_readonly("pixel_mm", &Projector::pixel_mm)
       .def_property_readonly("shape", &Projector::shape)
       .def_property_readonly("threads", &Projector::threads);
+  // [snippet:tof-binding]
+  // Chapter 39: the same projector with time of flight; sinograms are views x bins x tof_bins.
+  m.def(
+      "TofProjector",
+      [](const Array& s_mm, const Array& phi, std::size_t n, double pixel_mm, std::size_t tof_bins,
+         double tof_bin_ps, double ctr_fwhm_ps, unsigned threads) {
+        return Projector(s_mm, phi, n, pixel_mm, threads,
+                         recon::Tof{tof_bins, tof_bin_ps, ctr_fwhm_ps});
+      },
+      py::arg("s_mm"), py::arg("phi"), py::arg("n") = 128, py::arg("pixel_mm") = 2.0,
+      py::arg("tof_bins") = 13, py::arg("tof_bin_ps") = 100.0, py::arg("ctr_fwhm_ps") = 300.0,
+      py::arg("threads") = 0, "A Projector with time of flight.");
+  // [/snippet:tof-binding]
   // std::invalid_argument and std::out_of_range from the C++ become ValueError and IndexError.
 }

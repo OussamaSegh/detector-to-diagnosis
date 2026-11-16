@@ -24,7 +24,7 @@ except ImportError:  # ctest counts exit status 77 as skipped
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from tools.recon import corrections as cor, fbp, listmode, mlem, project  # noqa: E402
+from tools.recon import chain, corrections as cor, fbp, listmode, mlem, project  # noqa: E402
 from tools.recon import quality, sinogram as sg  # noqa: E402
 
 BIN_DIR = None
@@ -417,6 +417,125 @@ class Reconstruction(unittest.TestCase):
         self.assertTrue(np.array_equal(noisy, keep))  # the counts are left as measured
 
 
+class TofProjection(unittest.TestCase):
+    """The projector with time of flight (Chapter 39); tools/test_recon_cpp.py runs these tests on
+    the C++ projector too."""
+    make = project.TofProjector
+
+    @classmethod
+    def setUpClass(cls):
+        cls.h = header()
+        cls.s, cls.phi = project.bin_lines(cls.h)
+        # 25 bins of 100 ps cover +-187 mm along every line: the whole field of view.
+        cls.A = cls.make(cls.s, cls.phi, n=96, pixel_mm=2.5, tof_bins=25, tof_bin_ps=100.0,
+                         ctr_fwhm_ps=300.0)
+        cls.plain = project.Projector(cls.s, cls.phi, n=96, pixel_mm=2.5)
+
+    def test_the_backprojector_is_the_adjoint(self):
+        # REQ: SRS-REC-007
+        rng = np.random.default_rng(39)
+        x = rng.random((96, 96))
+        y = rng.random((*self.s.shape, 25))
+        lhs = (self.A.forward(x) * y).sum()
+        rhs = (x * self.A.back(y)).sum()
+        self.assertAlmostEqual(lhs / rhs, 1.0, delta=1e-6)
+
+    def test_the_tof_bins_add_up_to_the_projection_without_tof(self):
+        # REQ: SRS-REC-007
+        # An object within 110 mm of the axis: every step of it lies inside the TOF bins' range
+        # with 3 standard deviations to spare.
+        xs, ys = self.A.pixel_centers()
+        x = np.random.default_rng(40).random((96, 96)) * (np.hypot(xs, ys) < 110.0)
+        got = self.A.forward(x).sum(axis=2)
+        want = self.plain.forward(x)
+        self.assertLess(np.abs(got - want).max() / want.max(), 1e-5)
+
+    def test_a_point_lies_where_its_time_of_flight_says(self):
+        # REQ: SRS-REC-007
+        # Along each line, from endpoint a (negative l) towards b, the TOF profile of a small blob
+        # peaks at the blob's own position on the line, l = p . (-sin phi, cos phi).
+        xs, ys = self.A.pixel_centers()
+        px, py = 40.0, -25.0
+        blob = np.exp(-0.5 * ((xs - px) ** 2 + (ys - py) ** 2) / 2.0 ** 2)
+        got = self.A.forward(blob)
+        centers = project.tof_bins_mm(25, 100.0)
+        through = got.sum(axis=2).argmax(axis=1)
+        for v in range(0, self.s.shape[0], 12):
+            profile = got[v, through[v]]
+            phi = self.phi[v, through[v]]
+            want = -px * np.sin(phi) + py * np.cos(phi)
+            mean = (profile * centers).sum() / profile.sum()
+            self.assertAlmostEqual(mean, want, delta=2.0, msg=f"view {v}")
+
+    def test_the_kernel_has_the_width_of_the_timing_resolution(self):
+        # REQ: SRS-REC-007
+        # A point at the center: the profile along every line is a Gaussian of FWHM c * 300 ps / 2
+        # = 45 mm, sampled by bins of 15 mm (and blurred by them a little).
+        xs, ys = self.A.pixel_centers()
+        point = (np.hypot(xs, ys) < 2.0).astype(float)  # the four central pixels
+        got = self.A.forward(point)
+        centers = project.tof_bins_mm(25, 100.0)
+        profile = got[0, got[0].sum(axis=1).argmax()]
+        mean = (profile * centers).sum() / profile.sum()
+        sd = np.sqrt((profile * (centers - mean) ** 2).sum() / profile.sum())
+        want = np.sqrt((45.0 / 2.3548) ** 2 + 15.0 ** 2 / 12.0)
+        self.assertAlmostEqual(sd, want, delta=1.0)
+
+    def test_refuses_a_timing_that_cannot_be(self):
+        # REQ: SRS-REC-007
+        for bad in ({"tof_bins": 0}, {"tof_bin_ps": 0.0}, {"ctr_fwhm_ps": -1.0}):
+            with self.assertRaises(ValueError, msg=bad):
+                self.make(self.s, self.phi, n=16, pixel_mm=10.0, **bad)
+
+
+class TofReconstruction(unittest.TestCase):
+    make = project.TofProjector
+
+    def test_noiseless_tof_data_give_the_object(self):
+        # REQ: SRS-REC-002, SRS-REC-007
+        s, phi = project.bin_lines(header())
+        A = self.make(s, phi, n=64, pixel_mm=3.75, tof_bins=13, tof_bin_ps=200.0,
+                      ctr_fwhm_ps=400.0)
+        xs, ys = A.pixel_centers()
+        x = ((xs ** 2 + ys ** 2) <= 80.0 ** 2).astype(float)
+        x[(xs - 35.0) ** 2 + ys ** 2 <= 15.0 ** 2] = 4.0
+        mult = np.random.default_rng(41).uniform(0.3, 1.0, s.shape)[..., None]
+        mean = mlem.expected(x, A, mult, 0.05)
+        got = mlem.osem(mean, A, mult, 0.05, 20, n_subsets=8)
+        inside = (xs ** 2 + ys ** 2 <= 70.0 ** 2) & ((xs - 35.0) ** 2 + ys ** 2 > 20.0 ** 2)
+        hot = (xs - 35.0) ** 2 + ys ** 2 <= 10.0 ** 2
+        self.assertAlmostEqual(got[inside].mean(), 1.0, delta=0.02)
+        self.assertAlmostEqual(got[hot].mean(), 4.0, delta=0.12)
+
+
+class TofGuard(unittest.TestCase):
+    """What a run record must say before its events are placed along their lines."""
+
+    def run_record(self, **run):
+        return {"run": {"timing": {"alarm_intervals": 0, "blocks": [{"alarm_intervals": 0}] * 3},
+                        "hardware": {"boards": [{"clock_lock_losses": 0}] * 2}, **run}}
+
+    def test_a_run_whose_time_base_held_passes(self):
+        # REQ: SRS-REC-008
+        chain.check_time_base_for_tof(self.run_record())
+        chain.check_time_base_for_tof({"run": {"simulation": {}}})
+
+    def test_a_run_at_alarm_is_refused_and_its_blocks_are_named(self):
+        # REQ: SRS-REC-008
+        r = self.run_record(timing={"alarm_intervals": 2, "blocks": [
+            {"alarm_intervals": 0}, {"alarm_intervals": 2}, {"alarm_intervals": 0}]})
+        with self.assertRaisesRegex(chain.TimeBaseError, r"2 intervals \(blocks \[1\]\)"):
+            chain.check_time_base_for_tof(r)
+
+    def test_a_lock_loss_or_no_verdict_is_refused(self):
+        # REQ: SRS-REC-008
+        r = self.run_record(hardware={"boards": [{"clock_lock_losses": 0}, {"clock_lock_losses": 1}]})
+        with self.assertRaisesRegex(chain.TimeBaseError, r"boards \[1\]"):
+            chain.check_time_base_for_tof(r)
+        with self.assertRaisesRegex(chain.TimeBaseError, "no time base verdict"):
+            chain.check_time_base_for_tof({"run": {"corrections": {}}})
+
+
 class ImageQuality(unittest.TestCase):
     make = project.Projector
 
@@ -563,6 +682,43 @@ class EndToEnd(unittest.TestCase):
             self.assertEqual(len(k["singles_per_crystal"]), sg.RINGS * N)
             self.assertEqual(sum(k["singles_per_crystal"]), k["singles_in_window"])
             self.assertEqual(k["prompts"], int((~c["delayed"]).sum()))
+
+    def test_tof_bins_agree_with_the_histogrammer(self):
+        # REQ: SRS-REC-007
+        # A point source 60 mm off center, so that tau is far from 0 on most lines; the Python
+        # binning, the histogrammer and the projector must agree on which end is which.
+        if BIN_DIR is None:
+            self.skipTest("no program directory given")
+        with tempfile.TemporaryDirectory() as d:
+            d = pathlib.Path(d)
+            (d / "lm").mkdir()
+            subprocess.run([str(BIN_DIR / "minidaq_sim"), "--activity", "2e6", "--seconds", "0.1",
+                            "--source", "point", "--center", "60,-30,0", "--seed", "39",
+                            "--listmode", str(d / "lm")], check=True, capture_output=True)
+            files = sorted((d / "lm").glob("*.mdql"))
+            subprocess.run([str(BIN_DIR / "minidaq_listmode"), "sino", "--out", str(d / "s"),
+                            "--tof-bins", "5", "--tof-bin-ps", "250", *map(str, files)],
+                           check=True, capture_output=True)
+            h = sg.read_header(d / "s.hdr")
+            _, c = listmode.read_run(next((d / "lm").glob("*.run.json")))
+            mine = sg.bin_2d(c, h, tof_bins=5, tof_bin_ps=250)
+            for k, got in zip(("prompts", "delayeds"), mine):
+                theirs = sg.read(h, k).sum(axis=1)                 # (tof, views, radial)
+                self.assertTrue(np.array_equal(got, np.moveaxis(theirs, 0, -1)), k)
+            # Along the lines through the point, the mean TOF position is the point's.
+            prompts = mine[0]
+            _, phi = project.bin_lines(h)
+            centers = project.tof_bins_mm(5, 250.0)
+            through = prompts.sum(axis=2).argmax(axis=1)
+            v = np.arange(h.views)
+            profile = prompts[v, through]
+            mean = (profile * centers).sum(axis=1) / profile.sum(axis=1)
+            want = -60.0 * np.sin(phi[v, through]) - 30.0 * np.cos(phi[v, through])
+            # Five bins of 37 mm cut the Gaussian's tails off, which pulls the mean towards the
+            # middle a little: a slope just below 1. The wrong end would give a slope of -1.
+            slope = (mean * want).sum() / (want * want).sum()
+            self.assertAlmostEqual(slope, 0.95, delta=0.08)
+            self.assertGreater(np.corrcoef(mean, want)[0, 1], 0.95)
 
 
 if __name__ == "__main__":
