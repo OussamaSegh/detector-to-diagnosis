@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 2 (MiniDAQ 1.1.0). Status: approved by the software lead for release 1.1.0, 2026-11-10.
+Version 3 (MiniDAQ 1.3.1-dev). Status: draft for review.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -67,11 +67,15 @@ requirement, and the [test report](#8-records) lists them per execution.
 | `test_acquisition_system.py` GoldenExact | seed 1 against the golden records, also with small batches and short batch delays | identical SHA-256 of the records |
 | `test_acquisition_system.py` GoldenStatistical | seed 2 against the golden run; a negative control with a narrower energy window | p-value above `0.001` for each comparison; the negative control below it |
 | `test_readout_system.py` Readout | a clean stream, a damaged stream, a sequence wrap | every packet accounted for exactly; a damaged run reported incomplete |
+| `test_product_system.py` Product | the product build (preset `product`) against the synthetic source, simulated boards and its own symbols; in a development build the same checks the other way | the product refuses both with the reason and holds no `minidaq::sim` symbol; the development build accepts both and its symbols are found |
 | `test_stats.py` | the statistics the comparisons use | tabulated values; p-values uniform under the null hypothesis |
 
 Negative controls are part of the plan, not extras: a comparison that cannot fail proves
-nothing. The impostor servers, the narrower energy window and `test_stats.py`'s power tests
-show that the checks can fail.
+nothing. The impostor servers, the narrower energy window, `test_stats.py`'s power tests and
+the symbol check run on a development build show that the checks can fail.
+
+In the product build, only `test_product_system.py` and `test_readout_system.py` run: the
+other files need the simulator in the server (CR-0029).
 
 ## 5. Golden data and statistical comparison
 
@@ -127,3 +131,4 @@ release and per change of the readout, not per commit.
 |---|---|
 | 1 | First version (Chapter 19). |
 | 2 | Approved by the software lead for release 1.1.0; the content is that of version 1 (MDQ-PR-066). |
+| 3 | The product build's system tests (CR-0029). |

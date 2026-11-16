@@ -238,6 +238,18 @@ TEST(HardwareConfig, RefusesEachFieldOutsideItsRangeOnItsOwn) {
           "/temperature");
 }
 
+TEST(HardwareService, ABoardThatCannotBeOpenedIsAnErrorNotACrash) {
+  // REQ: SRS-HW-010
+  // MDQ-PR-072: open() returned before the slow control existed, and the destructor of the
+  // half-made adapter called it. A device that is not there is an error message.
+  auto cfg = config::parse_hardware_config(R"({"schema_version": "1.0", "backend": "mmio",
+    "boards": [{"device": "/nonexistent/minidaq-uio"}]})");
+  ASSERT_TRUE(cfg) << config::format_errors(cfg.error());
+  auto h = SlowControlHardware::open(*cfg);
+  ASSERT_FALSE(h);
+  EXPECT_NE(h.error().find("/nonexistent/minidaq-uio"), std::string::npos) << h.error();
+}
+
 TEST(HardwareService, DoesNotStartARunWhileABoardIsNotReady) {
   // REQ: SRS-HW-006
   const TemperatureFile file;

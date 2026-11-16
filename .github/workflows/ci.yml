@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [debug, clang-release, release, hardened, asan-ubsan, tsan]
+        preset: [debug, clang-release, release, hardened, asan-ubsan, tsan, product]
     steps:
       - uses: actions/checkout@v5
         with:
@@ -281,9 +281,9 @@ jobs:
           sudo apt-get install -y ninja-build libssl-dev python3-numpy python3-dev
       - name: Build the shipped programs and package them
         run: |
-          cmake --preset hardened -DMINIDAQ_BUILD_TESTS=OFF -DMINIDAQ_BUILD_BENCHMARKS=OFF -DMINIDAQ_BUILD_EXERCISES=OFF
-          cmake --build --preset hardened --target minidaq_server minidaq_ctl
-          python3 tools/release_bundle.py make build/hardened package
+          cmake --preset product -DMINIDAQ_BUILD_TESTS=OFF
+          cmake --build --preset product --target minidaq_server minidaq_ctl
+          python3 tools/release_bundle.py make build/product package
           python3 tools/release_bundle.py verify package/*.tar
           sha256sum package/*.tar
       - uses: actions/upload-artifact@v4

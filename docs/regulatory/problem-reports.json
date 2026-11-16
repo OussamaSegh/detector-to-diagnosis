@@ -93,10 +93,12 @@
       "title": "Simulation code is linked into the shipped server",
       "found": "2026-10-25, Chapter 14 software item classification",
       "item": "sim",
-      "status": "open",
+      "status": "closed",
       "description": "The synthetic source and the detector simulator are part of minidaq_core, so minidaq_server contains them and a configuration can select them.",
       "evaluation": {"safety_relevant": true, "rationale": "A clinical acquisition configured with a simulated source would produce plausible but invented data. The run record states the source type and metadata carries 'simulated', so the data is identifiable."},
-      "decision": "Release with it for 0.3.0 (MiniDAQ is a teaching project); a product build excludes the simulator or refuses it outside service mode."
+      "decision": "Release with it for 0.3.0 (MiniDAQ is a teaching project); a product build excludes the simulator or refuses it outside service mode.",
+      "capa": "",
+      "resolution": {"change": "CR-0029: the simulator (src/sim and the simulated board) is its own library, minidaq_simulation. With the CMake option MINIDAQ_WITH_SIMULATOR off, as in the new preset product that the reproducible build and the release bundle use, the server does not link it: the service refuses a configuration with the synthetic source at configure, and the server refuses a hardware description with simulated boards at start-up, both with the reason ('this is a product build: the simulator is not part of it'). The hello reply says whether the build has the simulator. Hazard H-06 gains RC-52 (SRS-PLT-012); item sim is no longer shipped.", "verification": "The product preset builds and passes its tests: system.product (the refusals, and nm finds no minidaq::sim:: symbol and no FakeBoard in minidaq_server), system.readout (UDP runs fed by minidaq_send) and build.hardening. In the development build the same system test checks the opposite (the simulator is accepted and its symbols are found), so the symbol check is shown to find what it looks for. CI builds the product preset on every push."}
     },
     {
       "id": "MDQ-PR-010",
@@ -1377,6 +1379,18 @@
         "category": "code",
         "escape": "CR-0027's tests changed bytes of signed runs, which the signature check refuses before any field is read; only a test that signs a malformed record reaches the parser. The coverage review of 1.3.0 wrote that test and found the defect after the release checks."
       }
+    },
+    {
+      "id": "MDQ-PR-072",
+      "title": "The server crashes when a board of the hardware description cannot be opened",
+      "found": "2026-11-15, CR-0029, the product build's system test",
+      "item": "hw",
+      "status": "closed",
+      "capa": "",
+      "description": "SlowControlHardware::open returns an error before it creates the slow control when a board's bus cannot be opened (an mmio device that does not exist, or since CR-0029 a simulated board in a product build). The half-made adapter is then destroyed, and its destructor called stop() and power_down() on the slow control, which did not exist: minidaq_server --hardware ended with SIGSEGV instead of the message 'hardware: ...'.",
+      "evaluation": {"safety_relevant": false, "rationale": "It happens only at start-up, before the control API listens and before any bias is set: the server does not start, as it should, but with a crash report instead of the reason. No run is affected."},
+      "resolution": {"change": "The destructor stops the slow control and switches the bias off only if the slow control exists.", "verification": "HardwareService.ABoardThatCannotBeOpenedIsAnErrorNotACrash opens a description whose mmio device does not exist: it ended with SIGSEGV before the change (checked) and passes after it. system.product's test of simulated boards in the product build, which found the defect, passes."},
+      "root_cause": {"whys": ["The destructor assumed the invariant of a fully constructed adapter, but open() destroys a partly built one on its error paths.", "No test opened a description whose board fails to open: the mmio tests use the simulated board or a file that exists."], "cause": "An error path of a factory function ran a destructor that relied on the object being complete.", "category": "code", "escape": "The error path of MmioBus::open is reached only with a device that is missing at start-up; the unit tests of the configuration check the description, not its opening, and the system tests of the hardware use simulated boards."}
     }
   ]
 }

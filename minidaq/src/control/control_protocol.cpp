@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 
 #include "minidaq/config/acquisition_config.hpp"
+#include "minidaq/control/build.hpp"
 #include "minidaq/core/flight_recorder.hpp"
 #include "minidaq/rt/crash_report.hpp"
 
@@ -167,12 +168,15 @@ std::string handle_request(std::string_view line, AcquisitionService& service, S
   }
   const auto& cmd = req["cmd"].get_ref<const std::string&>();
   if (cmd == "hello") {
-    return dump(json{{"api", api_version},
-                     {"id", id},
-                     {"ok", true},
-                     {"server", std::string{"minidaq "} + MINIDAQ_VERSION_STRING},
-                     {"auth", tokens != nullptr ? "token" : "none"},
-                     {"commands", {"hello", "auth", "configure", "start", "stop", "reset", "status", "diagnostics"}}});
+    return dump(
+        json{{"api", api_version},
+             {"id", id},
+             {"ok", true},
+             {"server", std::string{"minidaq "} + MINIDAQ_VERSION_STRING},
+             {"simulator", with_simulator},
+             {"auth", tokens != nullptr ? "token" : "none"},
+             {"commands",
+              {"hello", "auth", "configure", "start", "stop", "reset", "status", "diagnostics"}}});
   }
   if (cmd == "auth") {
     return traced(cmd, authenticate(req, id, service, session, tokens));

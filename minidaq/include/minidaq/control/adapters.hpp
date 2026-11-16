@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // MiniDAQ - adapters for the ports (Chapter 6): a simulated detector and a
 // counting sink. Chapter 9 adds a UDP detector, Chapter 12 a list-mode file
-// sink; the core does not change.
+// sink; the core does not change. A product build (MINIDAQ_WITH_SIMULATOR
+// off, CR-0029) has no simulated detector and refuses the synthetic source.
 #pragma once
 
 #include <atomic>
@@ -9,26 +10,11 @@
 #include <string>
 
 #include "minidaq/control/acquisition_service.hpp"
+#include "minidaq/control/build.hpp"
 #include "minidaq/control/ports.hpp"
 #include "minidaq/control/signing.hpp"
-#include "minidaq/sim/paced_source.hpp"
 
 namespace minidaq::control {
-
-// Synthetic singles delivered at the configured rate, with due times.
-class SimulatedDetector final : public DetectorPort {
- public:
-  explicit SimulatedDetector(const config::SourceSettings& s);
-  std::size_t read(std::span<std::uint64_t> out) override { return source_(out); }
-  [[nodiscard]] std::function<std::int64_t(std::uint64_t)> due_times() override {
-    return [this](std::uint64_t i) { return source_.due_ns(i); };
-  }
-  [[nodiscard]] std::string describe() const override { return description_; }
-
- private:
-  sim::PacedSource source_;
-  std::string description_;
-};
 
 // Counts what it receives and throws it away (a stand-in for the file writer).
 class CountingSink final : public CoincidenceSinkPort {

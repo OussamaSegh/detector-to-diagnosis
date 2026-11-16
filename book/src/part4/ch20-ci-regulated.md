@@ -341,15 +341,15 @@ two compilers disagree about why: when both match a file in the build directory,
 last map given and Clang 18 the longest prefix. With the build directory's map second, both
 choose it. You find such details by testing them, not by reading the manuals once.
 
-The option `MINIDAQ_REPRODUCIBLE` is on in the `hardened` preset, the build that ships, which
-now also has `-g`. It is off elsewhere, because two tools rely on absolute paths: the coverage
+The option `MINIDAQ_REPRODUCIBLE` is on in the `hardened` preset, which now also has `-g`, and so
+in the `product` preset that inherits from it and is the build that ships since 2.0 (the hardened
+build without the simulator, CR-0029). It is off elsewhere, because two tools rely on absolute paths: the coverage
 report maps profiles to files by their paths, and two exercise tests found their fixture
 directories through `__FILE__`. Those now get the directory from a compile definition instead,
 which is the honest way to say where a test's data lives.
 
 `tools/repro_check.sh` makes the check repeatable. It adds two git worktrees of the commit in
-directories of different names, configures the `hardened` preset in each with tests and
-benchmarks off, builds the two shipped programs, packages each build with the release tool of
+directories of different names, configures the `product` preset in each with tests off, builds the two shipped programs, packages each build with the release tool of
 the next section, and compares the two archives byte for byte:
 
 ```{.bash include="tools/repro_check.sh" snippet="twice"}

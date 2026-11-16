@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 23 (MiniDAQ 1.3.0-dev). Status: approved for release 1.3.0, 2026-11-15, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 24 (MiniDAQ 1.3.1-dev). Status: draft for review.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -142,7 +142,7 @@ enforces it on every `#include` as part of the unit tests (`architecture.layers`
 
 | Layer | Items | Responsibility | May use |
 |---|---|---|---|
-| core (`minidaq_core`) | core types, format, pipeline, metrics, processing, rt, sim, hw, the host counters (`net/`) | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
+| core (`minidaq_core`, and `minidaq_simulation` for sim and the simulated board) | core types, format, pipeline, metrics, processing, rt, sim, hw, the host counters (`net/`) | The hot path: decode, sort, pair, count, measure. No JSON, no sockets, no allocation after start | core |
 | application (`minidaq_control`) | `AcquisitionService`, `StateMachine`, `AcquisitionConfig`, ports (`DetectorPort`, `CoincidenceSinkPort`, `AuditSink`) | Policy: what an acquisition is, which commands are allowed, how faults end a run | core, application |
 | adapters (`minidaq_control`) | `SimulatedDetector`, `UdpDetector`, `SlowControlHardware`, `CountingSink`, `ListModeSink`, `FileOps`, `JsonLinesAuditLog`, control protocol, `ControlServer`, `TokenStore`, `TlsStream`, `ServiceManagerLink` and `Watchdog`; `minidaq_update_lib` (bundles, slots) | Details: where words come from, where results and records go, how commands arrive | core, application, adapters |
 | apps | `minidaq_server`, `minidaq_ctl`, `minidaq_update`, `minidaq_jitter`, `minidaq_latency`, `minidaq_sim`, `minidaq_send`, `minidaq_listmode` | Wiring: choose adapters, parse command lines, handle signals | everything |
@@ -151,6 +151,11 @@ The application layer depends on interfaces (ports) that it owns; adapters imple
 This is dependency inversion: the policy does not depend on the details, so the service can be
 tested with scripted detectors and fault-injecting sinks, and a real receiver replaces the
 simulator without changing the service.
+
+The product build (preset `product`, CMake option `MINIDAQ_WITH_SIMULATOR` off, CR-0029) does not
+link `minidaq_simulation` into the server: `SimulatedDetector` and the simulated boards of
+`SlowControlHardware` are compiled out, and the service refuses the synthetic source at
+`configure` (SRS-PLT-012). The development programs, the tests and the benchmarks link it.
 
 ### Software items and safety classes
 
@@ -174,13 +179,13 @@ assume risk controls outside the software (assumption: confirm with team).
 | processing | energy filter, sinogram, count rates, calibration table, photopeak monitor and singles counter | server | B | Hot-path filter and quality-control views; applies each crystal's calibration (H-11); counts the singles the randoms and dead-time corrections need (H-12) |
 | sorter | `CoincidenceSorter` | server | B | Decides every coincidence |
 | merger | `StreamMerger` | server | B | Orders many boards' singles |
-| sim | `sim/` | server | B | Test sources linked into the server ([MDQ-PR-009](../regulatory/known-anomalies.md)) |
+| sim | `sim/`, the simulated board | development programs and tests | not shipped | The product build leaves it out of the server (CR-0029) |
 | config | `config/`, including the calibration table file | server | B | Validates the acquisition settings and the calibration table |
 | service | service, state machine, ports | server | B | Owns the run and its faults |
 | protocol | control protocol and server | server | B | Accepts commands from the network |
 | access | tokens, roles, start-up token, TLS (`control/access`, `control/tls`) | server, ctl | B | Decides who may control the acquisition |
 | readout | UDP detector, default adapters, host counters (`net/`) | server | B | Receives the readout link and counts its losses, the kernel's drops included |
-| hw | registers, buses, simulated board, slow control, hardware description and its adapter | server | B | Sets the detectors' bias and switches it off on a fault (H-10) |
+| hw | registers, buses, slow control, hardware description and its adapter | server | B | Sets the detectors' bias and switches it off on a fault (H-10) |
 | output | list-mode sink, file operations | server | B | Makes the data durable with its run record |
 | audit | JSON Lines audit log | server | B | Records actions (A alone); B for the same reason as metrics |
 | platform | `ServiceManagerLink`, `Watchdog` (`control/service_manager`) | server | B | Tells systemd the server is ready and, while its loops beat, alive (Chapter 25) |
@@ -383,3 +388,4 @@ Open issues:
 | 21 | Release 1.3.0: time markers and the datagrams sent, register map 1.2, control API 2.5 (ADR 0033, CR-0026). |
 | 22 | Release 1.3.0: signed run records, calibration tables and reports, and the shared `minidaq_signing` library (ADR 0034, CR-0027). |
 | 23 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 22. |
+| 24 | The product build without the simulator: the library `minidaq_simulation`, item sim not shipped (CR-0029). |

@@ -14,6 +14,7 @@
 #include <nlohmann/json.hpp>
 
 #include "minidaq/config/calibration_file.hpp"
+#include "minidaq/control/build.hpp"
 #include "minidaq/control/corrections_record.hpp"
 #include "minidaq/control/run_integrity.hpp"
 #include "minidaq/core/flight_recorder.hpp"
@@ -159,6 +160,13 @@ CommandResult AcquisitionService::configure(const config::AcquisitionConfig& cfg
   if (!next_state(machine_.state(), AcqEvent::configure)) {
     note(who, "configure", "rejected: " + IllegalTransition{machine_.state(), AcqEvent::configure}.message(), false);
     return illegal(AcqEvent::configure);
+  }
+  // A product build has no simulator (CR-0029): a synthetic source is refused here, before the
+  // run is configured, not when it would start.
+  if (!with_simulator && cfg.source.type == "synthetic") {
+    note(who, "configure", std::string{"rejected: "} + no_simulator_in_product, false);
+    return result(false, "config_error",
+                  std::string{"/source/type: \"synthetic\": "} + no_simulator_in_product);
   }
   std::optional<rt::RtProfile> profile;
   if (!cfg.rt_profile.empty()) {

@@ -119,13 +119,16 @@ Three of MiniDAQ's boundaries show the rule at work.
   boards' bias right for their temperature and switching it off on a fault (hazard H-10 of the risk
   analysis). Layers and items answer different questions. A layer says what code may depend on
   what; an item says what is classified and changed together. Nothing requires them to coincide.
-- **`sim` is an item of the shipped server, not a tool.** The simulated detector is linked into
-  `minidaq_server`, and known anomaly MDQ-PR-009 records what that costs: code meant for tests runs
-  in the process that acquires patient data, so it carries the server's class and its verification,
-  and an acquisition configured with a simulated source would produce plausible but invented data
-  (HZ-3). The run record names the source, so such data is identifiable. The anomaly's own
-  resolution is the architectural one: a product build leaves the simulator out, or refuses it
-  outside a service mode.
+- **`sim` was an item of the shipped server, and is now a tool.** Until 2.0 the simulated
+  detector was linked into `minidaq_server`, and problem report MDQ-PR-009 recorded what that
+  cost: code meant for tests ran in the process that acquires patient data, so it carried the
+  server's class and its verification, and an acquisition configured with a simulated source
+  would produce plausible but invented data (HZ-3). The run record names the source, so such data
+  is identifiable, but that is a control by information. CR-0029 made it a control by design: the
+  simulator and the simulated board are the library `minidaq_simulation`, the `product` preset
+  (option `MINIDAQ_WITH_SIMULATOR` off) does not link it into the server, the service refuses the
+  synthetic source at `configure`, and a system test reads the product's symbols to show that no
+  simulator code is in it. The development builds keep it for the tests.
 
 Figure [](#fig-app-items) draws every item with the hazards the item list gives it.
 

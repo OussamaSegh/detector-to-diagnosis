@@ -10,6 +10,17 @@ the patch version.
 
 ### Changed (2.0.0-dev, breaking)
 
+- **The shipped server refuses the simulator** (CR-0029, closes MDQ-PR-009). The product is the
+  new `product` preset: the hardened build without the simulator, the build that
+  `tools/repro_check.sh` and `tools/release_bundle.py` package. Its server contains no simulator
+  code and refuses a configuration with source type `synthetic` (at `configure`,
+  `config_error`) and a hardware description with backend `simulated` (at start-up), with the
+  reason "this is a product build: the simulator is not part of it". A site that ran the shipped
+  server with the synthetic source must use a development build. The simulator and the
+  simulated board are the library `minidaq_simulation` (CMake option `MINIDAQ_WITH_SIMULATOR`,
+  on by default); the `hello` reply gains `"simulator"`. Hazard H-06 gains RC-52
+  (SRS-PLT-012); item `sim` is no longer shipped. CI and the release checks build and test the
+  product (`system.product`, `system.readout`, `build.hardening`).
 - C++23 is the language standard of every build, within what GCC 13 and Clang 18 with
   libstdc++ 13 both accept (CR-0028, ADR 0035, which supersedes ADR 0006); a C++20 build is no
   longer supported. `minidaq::Expected` stays an alias of `std::expected` with GCC and the shim
@@ -19,6 +30,13 @@ the patch version.
   (libstdc++ 13 has no `<print>`); cppcheck 2.13 parses the sources as C++20.
 - Chapter 1 shows `std::expected` and a table of the C++23 features with what each replaces;
   Chapters 6, 29 and 32 and Exercise 14.5 follow the retired preset.
+
+### Fixed (2.0.0-dev)
+
+- `minidaq_server --hardware` ended with SIGSEGV when a board of the description could not be
+  opened (an mmio device that is not there): the destructor of the half-made adapter stopped a
+  slow control that did not exist yet. It now prints the reason and exits with 1 (MDQ-PR-072,
+  found by the product build's system test).
 
 ### Fixed (review of 1.3.0)
 

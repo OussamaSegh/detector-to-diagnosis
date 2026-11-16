@@ -13,14 +13,18 @@
 #include "minidaq/config/hardware_config.hpp"
 #include "minidaq/control/ports.hpp"
 #include "minidaq/core/expected.hpp"
-#include "minidaq/hw/fake_board.hpp"
 #include "minidaq/hw/slow_control.hpp"
+
+namespace minidaq::hw {
+class FakeBoard;  // the simulated board, only in a build with the simulator (CR-0029)
+}  // namespace minidaq::hw
 
 namespace minidaq::control {
 
 class SlowControlHardware final : public HardwarePort {
  public:
-  // Opens the boards of the description and starts the slow control.
+  // Opens the boards of the description and starts the slow control. A product build refuses
+  // the backend "simulated" (CR-0029).
   [[nodiscard]] static Expected<std::unique_ptr<SlowControlHardware>, std::string> open(
       const config::HardwareConfig& cfg);
   ~SlowControlHardware() override;

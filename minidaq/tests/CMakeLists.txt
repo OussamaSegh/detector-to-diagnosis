@@ -1,3 +1,25 @@
+# The product build (CR-0029, preset product): no simulator in the server, so the tests that
+# need one do not apply. It runs the product's own system tests, the UDP readout, which
+# minidaq_send feeds as a board would, and the hardening check of the shipped programs.
+find_package(Python3 COMPONENTS Interpreter)
+if(NOT MINIDAQ_WITH_SIMULATOR)
+  if(Python3_Interpreter_FOUND)
+    foreach(name product readout)
+      add_test(NAME system.${name}
+               COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_${name}_system.py)
+      set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900
+        ENVIRONMENT "MINIDAQ_APPS=$<TARGET_FILE_DIR:minidaq_server>;MINIDAQ_PRODUCT=1")
+    endforeach()
+    if(MINIDAQ_HARDENING)
+      add_test(NAME build.hardening
+        COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_hardening.py
+                $<TARGET_FILE:minidaq_server> $<TARGET_FILE:minidaq_ctl> $<TARGET_FILE:minidaq_listmode>)
+      set_tests_properties(build.hardening PROPERTIES LABELS "unit")
+    endif()
+  endif()
+  return()
+endif()
+
 # Unit tests. Each test file carries requirement tags (REQ: ...) that
 # tools/trace_matrix.py collects into the traceability matrix (Chapter 14).
 add_executable(minidaq_unit_tests
@@ -52,7 +74,7 @@ add_executable(minidaq_unit_tests
   unit/test_health.cpp
   unit/test_update.cpp
   unit/test_signing.cpp)
-target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::update OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
+target_link_libraries(minidaq_unit_tests PRIVATE minidaq::control minidaq::sim minidaq::update OpenSSL::SSL OpenSSL::Crypto minidaq::warnings GTest::gtest_main GTest::gmock)
 # Tests that read shipped files (configurations, profiles, architecture documents).
 target_compile_definitions(minidaq_unit_tests PRIVATE MINIDAQ_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
   $<$<BOOL:${MINIDAQ_SANITIZERS}>:MINIDAQ_SANITIZED=1>)
@@ -64,7 +86,7 @@ gtest_discover_tests(minidaq_unit_tests PROPERTIES LABELS "unit")
 # Not built under ASan, which needs its own allocator.
 if(NOT MINIDAQ_SANITIZERS)
   add_executable(minidaq_alloc_tests unit/test_zero_alloc.cpp)
-  target_link_libraries(minidaq_alloc_tests PRIVATE minidaq::core minidaq::warnings GTest::gtest_main)
+  target_link_libraries(minidaq_alloc_tests PRIVATE minidaq::sim minidaq::warnings GTest::gtest_main)
   gtest_discover_tests(minidaq_alloc_tests PROPERTIES LABELS "unit")
 endif()
 
@@ -235,7 +257,7 @@ if(Python3_Interpreter_FOUND)
     set(_time_factor 10)  # sanitized programs run several times slower; the deadlines stretch
     set(_sanitized 1)
   endif()
-  foreach(name control acquisition readout diagnostics hardware platform)
+  foreach(name control acquisition readout diagnostics hardware platform product)
     add_test(NAME system.${name}
              COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/system/test_${name}_system.py)
     set_tests_properties(system.${name} PROPERTIES LABELS "system" TIMEOUT 900

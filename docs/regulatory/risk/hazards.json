@@ -123,10 +123,11 @@
       "severity": "S2",
       "probability_before": "P3",
       "controls": [
-        {"id": "RC-15", "type": "information", "description": "Every list-mode file's metadata states whether its data is simulated, and the run record names the source.", "requirements": ["SRS-OUT-012"], "effectiveness": {"method": "test", "evidence": "ListModeSink.WritesRealFilesThroughTheService"}}
+        {"id": "RC-15", "type": "information", "description": "Every list-mode file's metadata states whether its data is simulated, and the run record names the source.", "requirements": ["SRS-OUT-012"], "effectiveness": {"method": "test", "evidence": "ListModeSink.WritesRealFilesThroughTheService"}},
+        {"id": "RC-52", "type": "inherent", "description": "The product build contains no simulator: the server is built without the synthetic source and the simulated boards, and refuses a configuration or a hardware description that asks for them (CR-0029).", "requirements": ["SRS-PLT-012"], "effectiveness": {"method": "test", "evidence": "test_the_product_server_contains_no_code_of_the_simulator"}}
       ],
-      "probability_after": "P2",
-      "residual": "Acceptable before the control, reduced further as far as possible without a design change; problem report MDQ-PR-009 proposes leaving the simulator out of product builds.",
+      "probability_after": "P1",
+      "residual": "Acceptable. The shipped server cannot produce simulated data (RC-52); a development build still can, and says so in every file it writes (RC-15). What remains is a development build installed at a scanner instead of the product package; the hello reply of the control API says which build runs (\"simulator\": false in the product).",
       "status": "closed"
     },
     {

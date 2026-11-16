@@ -91,6 +91,12 @@ if in_part 1; then
 { stamp "ci/run_all.sh (all six presets)"; ci/run_all.sh; } > "$out/run_all.txt" 2>&1
 check "build and tests, six presets" $?
 
+# CR-0029: the product (preset product, no simulator) and its own tests: the refusals, the
+# symbol check, the UDP readout and the hardening of its programs.
+{ stamp "ci/run_all.sh product (the product build without the simulator)"; ci/run_all.sh product; } \
+  > "$out/product.txt" 2>&1
+check "product build and its tests" $?
+
 { stamp "tools/static_analysis.sh build/clang-release"
   tools/static_analysis.sh build/clang-release; } > "$out/static-analysis.txt" 2>&1
 check "static analysis" $?

@@ -31,6 +31,7 @@ TODO = "TODO(record):"
 ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in PRESETS] + \
        [(f"tests {p}", ["build and tests, six presets"], "run_all.txt") for p in PRESETS] + [
     ("static analysis", ["static analysis"], "static-analysis.txt"),
+    ("product build without the simulator", ["product build and its tests"], "product.txt"),
     ("trace matrix", ["build and tests, six presets"], "run_all.txt"),
     ("exercise starters", ["starters fail"], "starters.txt"),
     ("stress run", ["stress run"], "stress-tsan.txt"),
@@ -88,7 +89,7 @@ def skeleton(root, version):
     path = f"../../{rel}"
     rows = [f"| {name} | {row_result(found, prefixes)} | `{path}/{file}` |"
             for name, prefixes, file in ROWS]
-    rows.insert(len(PRESETS) * 2 + 7, f"| performance trend against the baseline | recorded | `{path}/perf-trend.txt` |")
+    rows.insert([name for name, _, _ in ROWS].index("performance") + 1, f"| performance trend against the baseline | recorded | `{path}/perf-trend.txt` |")
     acc = acceptance(evidence)
     rows.append(f"| acceptance | {acc[0]} | `{path}/acceptance.md` |" if acc else
                 f"| acceptance | not run | `{path}/acceptance.md` |")

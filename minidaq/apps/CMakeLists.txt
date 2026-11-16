@@ -1,7 +1,7 @@
 # Command-line tools built on the MiniDAQ library.
 foreach(app minidaq_jitter minidaq_latency minidaq_send)
   add_executable(${app} ${app}.cpp)
-  target_link_libraries(${app} PRIVATE minidaq::core minidaq::warnings)
+  target_link_libraries(${app} PRIVATE minidaq::sim minidaq::warnings)
 endforeach()
 
 # Control plane (Chapter 6).
@@ -13,7 +13,7 @@ target_link_libraries(minidaq_ctl PRIVATE minidaq::control minidaq::warnings)
 
 # Chapter 12: minidaq_sim writes list mode with the DAQ's own sink.
 add_executable(minidaq_sim minidaq_sim.cpp)
-target_link_libraries(minidaq_sim PRIVATE minidaq::control minidaq::warnings)
+target_link_libraries(minidaq_sim PRIVATE minidaq::control minidaq::sim minidaq::warnings)
 add_executable(minidaq_listmode minidaq_listmode.cpp)
 target_link_libraries(minidaq_listmode PRIVATE minidaq::core minidaq::control nlohmann_json::nlohmann_json minidaq::warnings)
 

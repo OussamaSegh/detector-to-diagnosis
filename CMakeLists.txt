@@ -11,7 +11,9 @@ project(minidaq
   LANGUAGES CXX)
 
 if(PROJECT_IS_TOP_LEVEL)
-  set(CMAKE_CXX_STANDARD 23)  # the baseline (ADR 0035); a normal variable, so a stale cache cannot keep 20
+  # The baseline (ADR 0035), forced so that a build directory configured before keeps no 20; in
+  # the cache, so that the release bundle records it.
+  set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard (23, ADR 0035)" FORCE)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -30,6 +32,7 @@ option(MINIDAQ_USE_SYSTEM_DEPS "Use system packages for GoogleTest/Benchmark/jso
 set(MINIDAQ_SANITIZERS "" CACHE STRING "Semicolon list of sanitizers: address;undefined | thread")
 option(MINIDAQ_BUILD_FUZZERS "Build libFuzzer targets (Clang only; instruments all code for coverage)" OFF)
 option(MINIDAQ_HARDENING "Compiler and linker hardening for shipped builds (ADR 0008)" OFF)
+option(MINIDAQ_WITH_SIMULATOR "Link the simulator (synthetic source, simulated boards) into the server; OFF for the product (CR-0029)" ON)
 # Chapter 29: the reconstruction's C++ projector as a Python module (pybind11, ADR 0024). Not
 # with sanitizers or fuzzing: the module would be loaded into an uninstrumented Python.
 if(MINIDAQ_SANITIZERS OR MINIDAQ_BUILD_FUZZERS)

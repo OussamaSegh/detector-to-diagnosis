@@ -9,9 +9,12 @@ Last updated: 2026-11-15: release 1.3.0 is out (tag book-v1.3.0) and its review 
 (143407e); VERSION is 1.3.1-dev. Milestone 2.0.0-dev (Theme B's breaking items) has started:
 CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;
 `minidaq::Expected` stays an alias on GCC and the shim on Clang 18, whose libstdc++ 13 hides
-`<expected>`; clang-tidy's use-std-print off; cppcheck 2.13 parses as C++20). Next: CR-0029
-(product build without the simulator, approved), CR-0030 (API 3.0 and schema 2.0). An existing
-build directory reconfigures to C++23 by itself (the standard is no longer a cache variable).
+`<expected>`; clang-tidy's use-std-print off; cppcheck 2.13 parses as C++20). CR-0029, product build without the simulator, done (closes MDQ-PR-009):
+library `minidaq_simulation`, option `MINIDAQ_WITH_SIMULATOR`, preset `product` (what ships and
+what repro_check/release_bundle package; its tests are system.product, system.readout and
+build.hardening; CI matrix and release checks part 1 run it); it found MDQ-PR-072 (fixed). Next:
+CR-0030 (API 3.0 and schema 2.0). An existing
+build directory reconfigures to C++23 by itself (the cache variable is forced to 23).
 
 ## Start here (toward 2.0.0)
 
@@ -238,7 +241,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-072, CR-0030, ADR 0036, RC-53, SRS-PLT-013, TL-49. A commit message has ONE trailer
+Next free numbers: MDQ-PR-073, CR-0030, ADR 0036, RC-53, SRS-PLT-013, TL-49. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 

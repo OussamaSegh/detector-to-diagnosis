@@ -148,8 +148,8 @@ to it needs, so knowing the classes early tells you where to be careful before y
 Second, the open problem reports are the team's memory of what is fragile: in MiniDAQ several
 were left open deliberately (MDQ-PR-006, a port fault noticed up to 20 ms late; MDQ-PR-007, the
 sorter holding its last 104 ns of singles until more data arrives, closed in release 1.3.0 by a
-change request of its own; MDQ-PR-009, simulation code linked into the shipped server), and each
-records why. Someone who "fixes" one of them in passing reopens a decision.
+change request of its own; MDQ-PR-009, simulation code linked into the shipped server, closed in
+2.0 by a product build without it), and each records why. Someone who "fixes" one of them in passing reopens a decision.
 
 The decision records come last for a reason. They are the most interesting documents and the
 easiest to read for pleasure; they are most useful once you know enough to ask why something is as

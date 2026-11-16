@@ -103,12 +103,21 @@ MiniDAQ has had unit and integration tests since Chapter 1, in one GoogleTest bi
 | HIL | the system with a real readout board | a bench | each product release |
 
 The test directories are under `minidaq/`; the unit and integration tests carry the CTest label
-`unit` and the system tests `system`, and every change runs them in all six presets. The
+`unit` and the system tests `system`, and every change runs them in all six presets (and the
+product's own, below, in the `product` preset). The
 hardware-in-the-loop row is what a product would do (assumption: confirm with team).
 
 The system tests run in every preset, sanitizers included: a use-after-free in the server's
 shutdown path is found by `asan-ubsan` running the real server, not by a unit test that never
 calls `main()`.
+
+Since 2.0 the program that ships is not quite the program these tests start: the `product`
+preset builds the server without the simulator (CR-0029), so the tests that configure the
+synthetic source cannot run on it. The product gets its own: `test_product_system.py` checks that
+it refuses the synthetic source and simulated boards with the reason, and reads the server's
+symbols with `nm` to show that no simulator code is in it, and `test_readout_system.py` runs it on
+UDP data from `minidaq_send`, as from a board. Run in a development build, the same file checks
+the opposite: a symbol check that finds nothing where the simulator is linked would be broken.
 
 ### Testing the programs as shipped
 

@@ -5,10 +5,29 @@
 
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/control/udp_detector.hpp"
+#if MINIDAQ_WITH_SIMULATOR
+#include "minidaq/sim/paced_source.hpp"
+#endif
 
 namespace minidaq::control {
 
+#if MINIDAQ_WITH_SIMULATOR
 namespace {
+// Synthetic singles delivered at the configured rate, with due times.
+class SimulatedDetector final : public DetectorPort {
+ public:
+  explicit SimulatedDetector(const config::SourceSettings& s);
+  std::size_t read(std::span<std::uint64_t> out) override { return source_(out); }
+  [[nodiscard]] std::function<std::int64_t(std::uint64_t)> due_times() override {
+    return [this](std::uint64_t i) { return source_.due_ns(i); };
+  }
+  [[nodiscard]] std::string describe() const override { return description_; }
+
+ private:
+  sim::PacedSource source_;
+  std::string description_;
+};
+
 sim::SyntheticConfig synthetic(const config::SourceSettings& s) {
   sim::SyntheticConfig c;
   c.rate_hz = s.rate_hz;
@@ -16,7 +35,6 @@ sim::SyntheticConfig synthetic(const config::SourceSettings& s) {
   c.seed = s.seed;
   return c;
 }
-}  // namespace
 
 SimulatedDetector::SimulatedDetector(const config::SourceSettings& s) : source_{synthetic(s), s.rate_hz} {
   char buf[96];
@@ -25,10 +43,17 @@ SimulatedDetector::SimulatedDetector(const config::SourceSettings& s) : source_{
                               static_cast<unsigned long long>(s.seed));
   description_ = n >= 0 ? buf : "simulated detector";
 }
+}  // namespace
+#endif
 
 std::unique_ptr<DetectorPort> make_default_detector(const config::AcquisitionConfig& c, std::string& error) {
   if (c.source.type == "synthetic") {
+#if MINIDAQ_WITH_SIMULATOR
     return std::make_unique<SimulatedDetector>(c.source);
+#else
+    error = std::string{"source type \"synthetic\": "} + no_simulator_in_product;
+    return nullptr;
+#endif
   }
   if (c.source.type == "udp") {
     auto d = UdpDetector::open(c.source.udp);

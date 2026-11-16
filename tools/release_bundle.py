@@ -6,7 +6,7 @@
     release_bundle.py verify PRODUCT.tar [--evidence EVIDENCE.tar]
     release_bundle.py programs PRODUCT.tar
 
-`make` takes the shipped build (preset `hardened`: Release, hardening and reproducible paths)
+`make` takes the shipped build (preset `product`: Release, hardening, reproducible paths, no simulator)
 of a clean commit and writes two archives to OUT:
 
 - minidaq-VERSION-COMMIT.tar, the product: the shipped programs without debug information,
@@ -44,7 +44,7 @@ PROGRAMS = ["minidaq_server", "minidaq_ctl"]  # the shipped items (software-item
 # The cache entries that change the shipped programs. Options that only add tests, benchmarks or
 # exercises are left out, so that a build of the programs alone gives the same product.
 OPTIONS = ["CMAKE_CXX_STANDARD", "MINIDAQ_HARDENING", "MINIDAQ_REPRODUCIBLE", "MINIDAQ_SANITIZERS",
-           "MINIDAQ_USE_SYSTEM_DEPS", "MINIDAQ_WARNINGS_AS_ERRORS"]
+           "MINIDAQ_USE_SYSTEM_DEPS", "MINIDAQ_WARNINGS_AS_ERRORS", "MINIDAQ_WITH_SIMULATOR"]
 REQUIRED_EVIDENCE = ["commit.txt", "release-checks.txt", "system-test-report.md", "run_all.txt"]
 
 
@@ -186,10 +186,11 @@ def package_evidence(product, evidence_dir, out):
 def make(args):
     build = args.build.resolve()
     c = cache(build)
-    wanted = {"CMAKE_BUILD_TYPE": "Release", "MINIDAQ_HARDENING": "ON", "MINIDAQ_REPRODUCIBLE": "ON"}
+    wanted = {"CMAKE_BUILD_TYPE": "Release", "MINIDAQ_HARDENING": "ON", "MINIDAQ_REPRODUCIBLE": "ON",
+              "MINIDAQ_WITH_SIMULATOR": "OFF"}  # CR-0029: the product has no simulator
     wrong = {k: c.get(k) for k, v in wanted.items() if c.get(k) != v}
     if wrong:
-        sys.exit(f"{build} is not the shipped build (preset hardened): {wrong}")
+        sys.exit(f"{build} is not the shipped build (preset product): {wrong}")
     commit = run("git", "-C", str(ROOT), "rev-parse", "HEAD").strip()
     if run("git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=no").strip():
         sys.exit("the working tree has uncommitted changes: a release is made from a commit")
@@ -198,12 +199,12 @@ def make(args):
         "version": (ROOT / "VERSION").read_text().strip(),
         "commit": commit,
         "source_date_epoch": int(run("git", "-C", str(ROOT), "log", "-1", "--format=%ct").strip()),
-        "preset": "hardened",
+        "preset": "product",
         "build_type": c["CMAKE_BUILD_TYPE"],
         "cxx_flags": c.get("CMAKE_CXX_FLAGS_RELEASE", ""),
         "options": {k: c.get(k, "") for k in OPTIONS},
-        "rebuild": ["git checkout " + commit, "cmake --preset hardened", "cmake --build --preset hardened",
-                    "tools/release_bundle.py make build/hardened OUT"],
+        "rebuild": ["git checkout " + commit, "cmake --preset product", "cmake --build --preset product",
+                    "tools/release_bundle.py make build/product OUT"],
         "toolchain": toolchain(c),
     }
 

@@ -4,8 +4,12 @@
 #include <chrono>
 #include <fstream>
 
+#include "minidaq/control/build.hpp"
 #include "minidaq/core/parse_number.hpp"
 #include "minidaq/hw/mmio_bus.hpp"
+#if MINIDAQ_WITH_SIMULATOR
+#include "minidaq/hw/fake_board.hpp"
+#endif
 
 namespace minidaq::control {
 
@@ -17,6 +21,7 @@ std::int64_t steady_ns() {
       .count();
 }
 
+#if MINIDAQ_WITH_SIMULATOR
 hw::BoardFault parse_fault(const std::string& f) {
   if (f == "unresponsive") {
     return hw::BoardFault::unresponsive;
@@ -35,6 +40,7 @@ hw::BoardFault parse_fault(const std::string& f) {
   }
   return hw::BoardFault::none;
 }
+#endif
 
 }  // namespace
 
@@ -50,6 +56,10 @@ Expected<std::unique_ptr<SlowControlHardware>, std::string> SlowControlHardware:
       }
       h->buses_.push_back(std::move(*bus));
     } else {
+#if !MINIDAQ_WITH_SIMULATOR
+      return Unexpected{std::string{"hardware backend \""} + cfg.backend +
+                        "\": " + no_simulator_in_product};
+#else
       auto board = std::make_unique<hw::FakeBoard>(static_cast<std::uint8_t>(b.slot), steady_ns);
       board->set_temperature(b.temperature_c);
       board->set_dark_current_ua(b.dark_current_ua);
@@ -58,6 +68,7 @@ Expected<std::unique_ptr<SlowControlHardware>, std::string> SlowControlHardware:
       board->set_data_rates(b.fill_words_per_s, b.drain_words_per_s);
       h->simulated_.push_back({board.get(), b.temperature_file});
       h->buses_.push_back(std::move(board));
+#endif
     }
     buses.push_back(h->buses_.back().get());
   }
@@ -70,13 +81,18 @@ Expected<std::unique_ptr<SlowControlHardware>, std::string> SlowControlHardware:
 }
 
 SlowControlHardware::~SlowControlHardware() {
-  sc_->stop();
-  sc_->power_down();  // the fail-safe state of a SiPM is unbiased
+  // open() returns before the slow control exists when a board cannot be opened: then there is
+  // nothing to stop, and no bias was ever set (MDQ-PR-072).
+  if (sc_) {
+    sc_->stop();
+    sc_->power_down();  // the fail-safe state of a SiPM is unbiased
+  }
 }
 
 // A simulated board whose temperature follows a file: one number in degrees Celsius. A file that
 // is missing or does not hold a number leaves the temperature as it was.
 void SlowControlHardware::update_simulation() {
+#if MINIDAQ_WITH_SIMULATOR
   for (const Simulated& s : simulated_) {
     if (s.temperature_file.empty()) {
       continue;
@@ -89,6 +105,7 @@ void SlowControlHardware::update_simulation() {
       }
     }
   }
+#endif
 }
 
 std::vector<HardwareBoard> SlowControlHardware::boards() const {

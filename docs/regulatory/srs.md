@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 31 (MiniDAQ 1.3.0-dev). Status: approved for release 1.3.0, 2026-11-15, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 32 (MiniDAQ 1.3.1-dev). Status: draft for review.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -327,6 +327,7 @@ units and the updates assume is `platform/platform.json`.
 | SRS-PLT-009 | The installation qualification shall find no deviation of the installed system from the platform definition (`platform/platform.json`): distribution, kernel and its command line, package versions, kernel settings, the service's user, the installed unit and configuration files and the platform ID. | platform | I |
 | SRS-PLT-010 | When no trial is installed, the updater's `rollback` shall change nothing and exit with the status `3`, so that the unit that started it fails. | update | T |
 | SRS-PLT-011 | The updater shall refuse to run while another updater runs on the same root. | update | T |
+| SRS-PLT-012 | The product build of the server (preset `product`) shall contain no code of the simulator and refuse, naming the reason, a configuration with the synthetic source and a hardware description with simulated boards. | service | T |
 
 ### 2.18 Calibration (CAL)
 
@@ -530,3 +531,4 @@ change.
 | 29 | Release 1.3.0, Chapter 24: time markers in the readout stream, SRS-FMT-014, SRS-PIPE-013, SRS-SRT-014 (problem report MDQ-PR-007); register map 1.2 of firmware 1.3, SRS-HW-016, and the datagrams the boards sent in the integrity verdict, SRS-HW-017; SRS-FMT-013 leaves markers out and SRS-HW-007 names the boards' new fields (ADR 0033, CR-0026); control API 2.5. |
 | 30 | Release 1.3.0, Chapter 25: signed run records, SRS-OUT-013 and SRS-OUT-014 (threat T-27), signed calibration tables, SRS-CAL-008 (threat T-54), and the analysis package's check and signature, SRS-ANA-007 and SRS-ANA-008 (ADR 0034, CR-0027). |
 | 31 | Approved for release 1.3.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 30. |
+| 32 | SRS-PLT-012: the product build without the simulator (CR-0029, MDQ-PR-009). |

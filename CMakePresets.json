@@ -88,6 +88,18 @@
       }
     },
     {
+      "name": "product",
+      "displayName": "The product (CR-0029): hardened, without the simulator, the benchmarks or the exercises",
+      "inherits": [
+        "hardened"
+      ],
+      "cacheVariables": {
+        "MINIDAQ_WITH_SIMULATOR": "OFF",
+        "MINIDAQ_BUILD_BENCHMARKS": "OFF",
+        "MINIDAQ_BUILD_EXERCISES": "OFF"
+      }
+    },
+    {
       "name": "asan-ubsan",
       "displayName": "ASan + UBSan (Clang)",
       "inherits": [
@@ -164,6 +176,10 @@
       "configurePreset": "hardened"
     },
     {
+      "name": "product",
+      "configurePreset": "product"
+    },
+    {
       "name": "asan-ubsan",
       "configurePreset": "asan-ubsan"
     },
@@ -216,6 +232,11 @@
       "name": "hardened",
       "inherits": "base",
       "configurePreset": "hardened"
+    },
+    {
+      "name": "product",
+      "inherits": "base",
+      "configurePreset": "product"
     },
     {
       "name": "asan-ubsan",
@@ -328,6 +349,23 @@
         {
           "type": "test",
           "name": "hardened"
+        }
+      ]
+    },
+    {
+      "name": "product",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "product"
+        },
+        {
+          "type": "build",
+          "name": "product"
+        },
+        {
+          "type": "test",
+          "name": "product"
         }
       ]
     },

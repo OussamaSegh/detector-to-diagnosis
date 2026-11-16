@@ -131,11 +131,11 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Check | When | Pass criterion |
 |---|---|---|
 | Build with warnings as errors | every change, every preset | no warning |
-| Unit, integration, system and documentation tests (`ctest`; the system tests as the [system test plan](verification/stp.md) says) | every change: `debug`, `clang-release`, `gcc-cxx23`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions) | all pass, no sanitizer report |
+| Unit, integration, system and documentation tests (`ctest`; the system tests as the [system test plan](verification/stp.md) says) | every change: `debug`, `clang-release`, `release`, `hardened`, `asan-ubsan`, `tsan` (`ci/run_all.sh`, GitHub Actions), and `product`, the shipped build without the simulator, with its own tests (CR-0029) | all pass, no sanitizer report |
 | Static analysis | every change | zero findings |
 | Formatting | every change: the pre-commit hook on the staged lines, the CI job `format` on the lines a push or pull request touches (`tools/check_format.py`) | no touched C++ line that clang-format with `.clang-format` would rewrite (coding standard, rule 1.4) |
 | Tool versions | every change (`tools/check_tools.py --environment`) | every tool with a version check matches the tool list |
-| Reproducible build | every change, `tools/repro_check.sh` (GitHub Actions) | two builds of the shipped programs from two checkouts in different directories give the same product archive |
+| Reproducible build | every change, `tools/repro_check.sh` (GitHub Actions) | two builds of the shipped programs (preset `product`) from two checkouts in different directories give the same product archive |
 | Gate self-test | when the tools, the CI or the regulatory files change, every week and for each release tag (`tools/gate_selftest.py`, workflow `gates`) | every gate passes on the unchanged commit and catches its planted fault for the planted reason |
 | Performance A/B | every change to the code or the build (workflow `perf`, `tools/perf_ab.sh`) | the gated benchmarks of the change are not slower than those of its parent, both run interleaved on one runner |
 | Exercise solutions | every change (part of `ctest`) | all pass |
@@ -261,4 +261,4 @@ of Chapter 13.
 | 14 | Release 1.0.0: the release checks' regression gate compares the candidate with the previous release run interleaved on the reference machine, and the recorded baseline becomes the trend (CR-0025). |
 | 15 | After release 1.0.0: section 8, item 9, the internal audit before each minor release and the state of every CAPA that is not closed (internal audit of 2026-11-09, MDQ-PR-065, CAPA-0002). |
 | 16 | Approved by the software lead for release 1.1.0; the content is that of version 15 (MDQ-PR-066). |
-| 17 | Section 4: C++23 is the language standard (CR-0028, ADR 0035). |
+| 17 | Section 4: C++23 is the language standard (CR-0028, ADR 0035). Section 6: the `release` preset replaces `gcc-cxx23`, and the `product` preset, the shipped build without the simulator, is built and tested on every change and packaged (CR-0029). |
