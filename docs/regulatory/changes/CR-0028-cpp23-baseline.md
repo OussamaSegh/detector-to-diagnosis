@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-15, by the software lead |
 | Source | improvement; roadmap 2.0.0, theme B, answer 4 |
 | Decision | approved, 2026-11-15, under the software lead's standing delegation of 2026-11-15 |
-| Commits | none yet |
+| Commits | 95c3af2 (the C++23 baseline) and the commit that records this |
 
 ## Description
 
@@ -97,6 +97,9 @@ is a change of the development environment, verified by the full release checks;
 significant change.
 
 ## Verification
+
+Tests: `Expected.IsStdExpectedWhereverTheLibraryHasIt`,
+`ReleaseRecord.test_the_current_rules_ask_for_the_current_presets`; and the checks below.
 
 - A trial build on 2026-11-15, before this request: `clang-release` with
   `-DCMAKE_CXX_STANDARD=23`, no warnings (warnings are errors), 953 of 953 tests passed. The

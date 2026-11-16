@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-16, by the software lead |
 | Source | improvement; roadmap 2.0.0, theme B (interface clean-up held for a major version) |
 | Decision | approved, 2026-11-16, under the software lead's standing delegation of 2026-11-15 |
-| Commits | see the CHANGELOG, 2.0.0-dev |
+| Commits | 5543f5f (control API 3.0, configuration schema 2.0, the migration tool) and the commit that records this |
 
 ## Description
 
@@ -119,6 +119,12 @@ The intended use does not change. The change alters interfaces of a class B prog
 verified by the full release checks, and the release notes name it as breaking.
 
 ## Verification
+
+Tests: `ControlProtocol.VersioningAndMalformedInput`,
+`ControlProtocol.StatusFieldsMatchTheApiVersion`, `Config.TheSourceIsNeverADefault`,
+`Config.AVersion1FileIsRefusedWithTheWayToConvertIt`,
+`Config.RenamedFieldsAreUnknownInTheirOldPlaces`,
+`Conversion.test_every_1x_configuration_converts_into_a_valid_2_0_document`; and the checks below.
 
 - Unit tests of the protocol (a 2.x request and a request without `api` are refused with
   `unsupported_api`; the status fields match `status_fields` for 3.0) and of the configuration

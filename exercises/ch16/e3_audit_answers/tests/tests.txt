@@ -95,7 +95,7 @@ Expected.NonTrivialTypesAreDestroyed
 Expected.StringValueMoves
 Expected.ValueAndError
 Expected.Void
-Geometry.AxialPositionsAreCenterd
+Geometry.AxialPositionsAreCentered
 Geometry.CrystalsLieOnTheRing
 Geometry.IdDecomposition
 HistogramInterval.PercentilesOfOnlyTheValuesBetweenTwoSnapshots

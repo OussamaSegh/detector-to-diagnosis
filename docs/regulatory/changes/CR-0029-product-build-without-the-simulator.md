@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-15, by the software lead |
 | Source | problem report MDQ-PR-009; hazard H-06; roadmap 2.0.0, theme B |
 | Decision | approved, 2026-11-15, under the software lead's standing delegation of 2026-11-15 |
-| Commits | see the CHANGELOG, 2.0.0-dev |
+| Commits | 0fd885b (the product build) and the commit that records this |
 
 ## Description
 
@@ -87,6 +87,10 @@ The intended use does not change. The change removes a function the intended use
 included; it reduces a risk. Not a significant change.
 
 ## Verification
+
+Tests: `Product.test_the_product_refuses_the_synthetic_source_when_it_is_configured`,
+`Product.test_the_product_refuses_simulated_boards_at_start_up`,
+`Product.test_the_product_server_contains_no_code_of_the_simulator`; and the checks below.
 
 - Unit tests of the refusal in both builds (the development build accepts, a service built
   with `MINIDAQ_WITH_SIMULATOR=OFF` refuses).
