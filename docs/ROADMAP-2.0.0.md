@@ -168,7 +168,7 @@ model. The same rhythm is kept.
 | 1.1.0 | The illustrated interior (released 2026-11-10) | Released |
 | 1.2.0 | Theme D first (post-release script, resumable checks), then Theme A and Theme F (web edition); the errata window of four to six weeks runs alongside | Released 2026-11-15 |
 | 1.3.0 | Theme B, non-breaking items: register map 1.2 and time markers (MDQ-PR-007), signing (T-27, T-54), MDQ-PR-006 decided again | Problem reports and threat gaps closed or re-decided; release checks pass |
-| 2.0.0-dev | Theme B, breaking items: control API 3.0, configuration schema 2.0, product build without the simulator, C++23 baseline | Earlier chapters, exercises and solutions updated to the new interface |
+| 2.0.0-dev | Theme B, breaking items: control API 3.0, configuration schema 2.0, product build without the simulator, C++23 baseline | Earlier chapters, exercises and solutions updated to the new interface. Done 2026-11-16: CR-0028, CR-0029, CR-0030 and MDQ-PR-073 on main, VERSION 2.0.0-dev with the SOUP review for 2.0 |
 | 2.0.0-dev, after the errata window (about 2026-12-07) | Chapter 38, clock distribution, and Chapter 39, time of flight, written against the new interfaces | Chapter recipe complete for each (code, tests, exercises, measurements, review) |
 | 2.0.0-rc | Chapter 40, maintenance and post-market, with MiniDAQ's 1.0 to 2.0 history as its example; Theme E files | Chapter recipe complete; page count within the KDP limit |
 | 2.0.0 | Second Edition: whole-book review, full release checks, KDP files | CI green on the release commit; tag `book-v2.0.0` |
