@@ -49,6 +49,8 @@ the patch version.
   (libstdc++ 13 has no `<print>`); cppcheck 2.13 parses the sources as C++20.
 - Chapter 1 shows `std::expected` and a table of the C++23 features with what each replaces;
   Chapters 6, 29 and 32 and Exercise 14.5 follow the retired preset.
+- VERSION is 2.0.0-dev, with the Python packages; SOUP list v28 holds the known-anomaly review
+  for MiniDAQ 2.0 (no item added, no new advisory, the lock file audit clean).
 
 ### Fixed (2.0.0-dev)
 

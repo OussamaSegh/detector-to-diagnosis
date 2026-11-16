@@ -6,7 +6,7 @@ anything. It is kept up to date with every chapter and every release. The CHANGE
 log record what changed. This file records why, how, and what is left.
 
 Last updated: 2026-11-16: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
-(143407e); VERSION is 1.3.1-dev. Milestone 2.0.0-dev (Theme B's breaking items) has started:
+(143407e); VERSION is 2.0.0-dev (SOUP list v28, review for 2.0, 2026-11-16). Milestone 2.0.0-dev (Theme B's breaking items) has started:
 CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;
 `minidaq::Expected` stays an alias on GCC and the shim on Clang 18, whose libstdc++ 13 hides
 `<expected>`; clang-tidy's use-std-print off; cppcheck 2.13 parses as C++20). CR-0029, product build without the simulator, done (closes MDQ-PR-009):
@@ -22,8 +22,10 @@ fixtures in tools/testdata/migrate_config are every 1.x config of the repo and t
 config in book/src or exercises; a block that shows one on purpose is fenced `{.text
 .old-interface}` (Chapter 17 does). Migration note docs/migration-2.0.md. `minidaq_sim --center`,
 `--max-file-mib`. MDQ-PR-073 closed: an encrypted signing key is refused without a passphrase
-prompt. Next: server branch coverage, SOUP
-review for 2.0 with VERSION 2.0.0-dev. An existing
+prompt. Server branch coverage 66.9% to 83.1% (system tests of start-up refusals and signed
+runs; reasons for what stays uncovered in the 2.0.0-dev plan). Next: chapters 38 and 39, then the
+2.0.0 coverage review, internal audit and release (release notes name CR-0029 and CR-0030 as
+breaking). An existing
 build directory reconfigures to C++23 by itself (the cache variable is forced to 23).
 
 ## Start here (toward 2.0.0)
