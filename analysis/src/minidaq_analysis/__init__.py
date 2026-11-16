@@ -2,4 +2,4 @@
 """minidaq-analysis: list-mode data, fits with uncertainties and the acquisition QC report
 (Chapter 31)."""
 
-__version__ = "2.0.0"
+__version__ = "2.0.1.dev0"

@@ -6,6 +6,8 @@ All notable changes to the book and to MiniDAQ are recorded here. The format fol
 (Part I = 0.1.0 ... Part VIII = 0.8.0, packaged release = 1.0.0); fixes after review bump
 the patch version.
 
+## [Unreleased]
+
 ## [2.0.0] - 2026-11-16
 
 The Second Edition. Release notes: two changes break what worked with 1.x, each with its
