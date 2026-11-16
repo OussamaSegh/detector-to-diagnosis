@@ -75,9 +75,15 @@ The intended use does not change. The plan answers IEC 62304 clause 6.1 for this
 
 ## Verification
 
-Tests: `Affects`, `SupportEnds` and `Trends` in `tools/test_maintenance.py` (`tools.maintenance`);
-`docs.anomalies`, `docs.soup`, `docs.srs`, `docs.trace`, `docs.baseline`, `docs.design_file`,
-`docs.changes`, `docs.tools`; the whole ctest.
+Tests in `tools/test_maintenance.py` (`tools.maintenance`):
+`Affects.test_a_report_after_1_0_must_name_the_releases_it_affects`,
+`Affects.test_a_version_that_was_never_released_is_refused`,
+`SupportEnds.test_an_end_within_the_support_period_needs_a_plan`,
+`SupportEnds.test_months_are_calendar_months`,
+`Trends.test_the_u_chart_widens_its_limit_for_a_small_window` and
+`Trends.test_a_report_counts_in_the_first_release_that_contains_its_record`, with the rest of the
+three classes; `docs.anomalies`, `docs.soup`, `docs.srs`, `docs.trace`, `docs.baseline`,
+`docs.design_file`, `docs.changes`, `docs.tools`; the whole ctest.
 
 ## Decision
 
