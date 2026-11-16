@@ -155,7 +155,8 @@ implements and the gate report it passed (`tools/ai_provenance.py`).
 - **A tool server over the run records (MCP).** It gives read-only access to the run records,
   integrity verdicts and problem reports, so an agent can answer "which runs did MDQ-PR-064
   affect" without shell access. It speaks JSON-RPC over standard input and output, and is
-  written with the standard library unless the author approves an SDK (section 7, question 7).
+  written with the standard library (section 8, answer 4); a sidebar shows the same server with
+  the official SDK.
 - **Evals and checks for all of them.**
   - A static check, run in CI, of every agent file: frontmatter, the paths and tests it names,
     the tools it may use, and least privilege (Exercise 37.2's checker, extended).
@@ -402,10 +403,6 @@ The rhythm stays as before:
 6. **Platform.** Ubuntu 26.04 and the full C++23 (recommended, if the runner image is available
    in time)?
 
-7. **The tool server.** Write the MCP server over the run records with the standard library
-   (recommended, no new dependency), or approve the MCP SDK for Python as a test-and-tooling
-   dependency?
-
 Until the author answers, the work follows the recommendations, and nothing that cannot be
 undone is done.
 
@@ -423,6 +420,10 @@ undone is done.
    to use and audit agents. That is Chapter 44 (subagents, skills, hooks, commands, tool servers
    and context files, composed, tested and under document control, on MiniDAQ), Appendix C
    (patterns and templates), and the MiniDAQ agent tooling of Theme P.
+4. **The tool server, 2026-11-16** (answered by the coordinator under the author's standing
+   delegation of 2026-11-15): standard library only, no new dependency. Chapter 44 adds a short
+   sidebar that shows the same server written with the official MCP SDK, printed and not built,
+   so that readers recognize the common pattern.
 
 ## 9. After 3.0.0: the long-term plan
 
