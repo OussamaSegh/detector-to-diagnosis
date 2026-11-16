@@ -1,0 +1,36 @@
+Machine: x86_64, 4 CPUs; build release.
+Source 1.5e6 Bq, intervals of 0.5 s, baseline 2 intervals, warning 100 ps, alarm 250 ps, 5 standard deviations.
+
+Steps of block 29's clock at 2.0 s, runs of 4 s, seed 5:
+
+| Run | Block 29 level | Its offset, ps | First alarm, s | Its intervals at alarm | Largest offset of another block, ps | Intervals at alarm | chi2/dof | Pairs | Complete |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| step of 50 ps | normal | 59 +- 26 | never | 0 | 103 | 0 | 1.08 | 513 | yes |
+| step of 100 ps | normal | 108 +- 26 | never | 0 | 102 | 0 | 1.08 | 513 | yes |
+| step of 150 ps | warning | 157 +- 26 | never | 0 | 101 | 0 | 1.08 | 513 | yes |
+| step of 200 ps | warning | 207 +- 26 | never | 0 | 100 | 0 | 1.08 | 513 | yes |
+| step of 300 ps | alarm | 305 +- 26 | 2.5 | 4 | 100 | 4 | 1.08 | 513 | no |
+| step of 600 ps | alarm | 601 +- 26 | 2.5 | 4 | 104 | 4 | 1.08 | 513 | no |
+| drift of 0.1 ppb (100 ps/s) | alarm | 327 +- 26 | 3.5 | 2 | 100 | 2 | 1.08 | 513 | no |
+
+Healthy runs of 4 s, seeds 11 to 20:
+
+| Run | Block 29 level | Its offset, ps | First alarm, s | Its intervals at alarm | Largest offset of another block, ps | Intervals at alarm | chi2/dof | Pairs | Complete |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| seed 11 | normal | 7 +- 25 | never | 0 | 93 | 0 | 1.16 | 514 | yes |
+| seed 12 | normal | -12 +- 23 | never | 0 | 107 | 0 | 1.15 | 467 | yes |
+| seed 13 | normal | -19 +- 31 | never | 0 | 115 | 0 | 0.99 | 498 | yes |
+| seed 14 | normal | -11 +- 25 | never | 0 | 86 | 0 | 1.11 | 533 | yes |
+| seed 15 | normal | -25 +- 25 | never | 0 | 85 | 0 | 1.11 | 514 | yes |
+| seed 16 | normal | -4 +- 27 | never | 0 | 94 | 0 | 1.28 | 495 | yes |
+| seed 17 | normal | 2 +- 25 | never | 0 | 110 | 0 | 1.26 | 529 | yes |
+| seed 18 | normal | -9 +- 23 | never | 0 | 90 | 0 | 1.03 | 500 | yes |
+| seed 19 | normal | 3 +- 24 | never | 0 | 90 | 0 | 1.11 | 503 | yes |
+| seed 20 | normal | -5 +- 23 | never | 0 | 85 | 0 | 1.14 | 500 | yes |
+
+Healthy: 0 intervals at alarm in 60 evaluated intervals of 72 blocks (4320 block intervals); the largest offset of any block 115 ps.
+
+Cost (bm_timing_monitor, median of 5):
+
+- record(): 9.7 ns per coincidence
+- one fit of 72 offsets to 2,556 pairs: 304 us

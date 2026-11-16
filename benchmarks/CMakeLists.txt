@@ -21,6 +21,7 @@ minidaq_benchmark(bm_sorter)
 minidaq_benchmark(bm_listmode)
 minidaq_benchmark(bm_flight_recorder)
 minidaq_benchmark(bm_udp_receive)
+minidaq_benchmark(bm_timing_monitor)
 
 # Chapter 12: the list-mode sink against a real disk (not a Google Benchmark:
 # one run writes gigabytes, and fsync times vary too much for repetitions).
