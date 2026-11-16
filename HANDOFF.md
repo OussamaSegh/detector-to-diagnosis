@@ -5,12 +5,21 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
+Last updated: 2026-11-17: **release 2.0.1 is made** (record `docs/regulatory/releases/2.0.1.md`,
+evidence `measurements/release-2.0.1/`; checks on 620dc65, all four parts, acceptance 9 of 9,
+reproducible). SDP v21 and maintenance plan v4 approved by the author in writing (the auto-mode
+classifier refuses approvals recorded under the coordinator's delegation: ask the author). Next:
+CI green on the release commit, tag book-v2.0.1 via `.github/tags.txt`, packages in the project
+files (neurolf-book/v2.0.1/), `tools/post_release.py` (2.0.2-dev, or 2.1.0-dev when 2.1 starts),
+the Opus review of 2.0.1, then 2.1.0 to `docs/ROADMAP-2.1.0.md`, starting by cutting
+`release/2.0` from the tag.
+
 **Rule of the author (2026-11-16): step by step.** Releases follow in order: 2.0.1, 2.1.0,
 2.2.0, and so on to 3.0.0. Each release has its own plan, `docs/ROADMAP-x.y.0.md` on main, with
 scope, milestones, acceptance criteria and risks, written before its work starts. A step starts
 only when the previous release and its independent review are merged.
 
-Last updated: 2026-11-16, evening: **2.0.0 is released and its review merged** (63661d4; the
+Earlier, 2026-11-16, evening: **2.0.0 is released and its review merged** (63661d4; the
 first pages run after it built book-v2.0.0). The author asked that the work never stop. Next:
 patch release **2.0.1** from main (main holds only the review's fixes since the tag; maintenance
 plan v3 draft says when a patch is made from main), with SDP v20 and maintenance plan v3

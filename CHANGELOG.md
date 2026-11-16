@@ -8,6 +8,13 @@ the patch version.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-16
+
+The first patch release of 2.0, made from the main branch (maintenance plan version 4). Release
+notes: nothing breaks; every change fixes a problem report of the review of 2.0.0 (MDQ-PR-077 to
+MDQ-PR-080), corrects a document or adds a record. Open known anomalies: MDQ-PR-006 and
+MDQ-PR-064, unchanged. Record: `docs/regulatory/releases/2.0.1.md`.
+
 ### Fixed (review of release 2.0.0)
 
 - MDQ-PR-078: the reader of a list-mode file's delayed window (MDQ-PR-075) is
@@ -23,11 +30,11 @@ the patch version.
 - `tools/soak.py` samples every second the steal time and each server thread's run-queue wait
   (`/proc/PID/task/*/schedstat`) and records each interval's largest one-second values, the
   finer measure that MDQ-PR-064's decision asks for.
-- SDP version 20 (draft): section 8 says when a failed check of the release checks may run
+- SDP version 21 (approved for 2.0.1): section 8 says when a failed check of the release checks may run
   again (MDQ-PR-077).
 - `tools/release_checks.sh resume` enforces that rule: a part that failed runs again only when
   `OUT/rerun-part-N.md` holds its investigation, and never a third time (status 4).
-- Maintenance plan version 3 (draft): a patch release is made from the main branch while it
+- Maintenance plan version 4 (approved for 2.0.1): a patch release is made from the main branch while it
   holds only changes a patch may contain; `release/X.Y` is cut at the first change for the next
   minor release.
 - `docs/ROADMAP-2.1.0.md`: the plan of the next minor release.

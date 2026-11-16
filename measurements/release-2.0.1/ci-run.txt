@@ -1,0 +1,6 @@
+# GitHub Actions runs of the 2.0.1 candidate and of the commits after it (read 2026-11-16)
+620dc65 (candidate of the release checks): ci 43949967456 success; gates 43949967483 success;
+  codeql 43949967691 success; pages 43949967487 success.
+71af964 (documents only, roadmaps and HANDOFF): ci 43969295641 success; codeql 43969295583 success;
+  pages 43969295571 success.
+The release commit's own runs are checked before the tag is made (MDQ-PR-016).
