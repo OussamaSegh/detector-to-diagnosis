@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-16, by the software lead |
 | Source | roadmap 2.0.0, theme C (Chapter 39); hazard H-13; the time base verdict of CR-0031, which had no consumer |
 | Decision | approved, 2026-11-16, under the software lead's standing delegation of 2026-11-15 |
-| Commits | listed when the change is implemented |
+| Commits | 50a7710 (projectors, guard, requirements and records), 2895811 (Chapter 39, its exercises and measurements, `chain.tof_sinograms`) and the commit that records this |
 
 ## Description
 
