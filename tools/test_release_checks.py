@@ -64,6 +64,7 @@ class ReleaseChecks(unittest.TestCase):
             path = pathlib.Path(out)
             (path / "release-checks.txt").write_text(
                 "## part 1\nall release checks passed (part 1)\n## part 2\n1 release checks failed (part 2)\n")
+            (path / "rerun-part-2.md").write_text("investigated\n")
             p = resume(out)
             self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
             self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\n")
@@ -77,6 +78,42 @@ class ReleaseChecks(unittest.TestCase):
             p = resume(out, failing_part=2)
             self.assertNotEqual(p.returncode, 0)
             self.assertEqual((pathlib.Path(out) / "ran").read_text(), "ran part 1\nran part 2\n")
+
+    def test_a_failed_part_runs_again_only_after_its_investigation(self):
+        # SDP section 8 (MDQ-PR-077): investigate first, write it down, then run once more.
+        with tempfile.TemporaryDirectory() as out:
+            path = pathlib.Path(out)
+            (path / "release-checks.txt").write_text(
+                "all release checks passed (part 1)\nall release checks passed (part 2)\n"
+                "1 release checks failed (part 3)\n")
+            p = resume(out)
+            self.assertEqual(p.returncode, 4)
+            self.assertIn("rerun-part-3.md", p.stderr)
+            self.assertFalse((path / "ran").exists())
+            (path / "rerun-part-3.md").write_text("The gate's verdict on BM_X: same machine code.\n")
+            p = resume(out)
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertEqual((path / "ran").read_text(), "ran part 3\nran part 4\n")
+
+    def test_a_part_that_failed_twice_does_not_run_a_third_time(self):
+        with tempfile.TemporaryDirectory() as out:
+            path = pathlib.Path(out)
+            (path / "release-checks.txt").write_text(
+                "1 release checks failed (part 2)\n2 release checks failed (part 2)\n"
+                "all release checks passed (part 1)\n")
+            (path / "rerun-part-2.md").write_text("investigated\n")
+            p = resume(out)
+            self.assertEqual(p.returncode, 4)
+            self.assertIn("failed twice", p.stderr)
+            self.assertFalse((path / "ran").exists())
+
+    def test_a_part_that_stopped_without_a_verdict_runs_again(self):
+        # A restart is not a failure: no summary line, so no investigation is asked for.
+        with tempfile.TemporaryDirectory() as out:
+            path = pathlib.Path(out)
+            (path / "release-checks.txt").write_text("all release checks passed (part 1)\npass  something\n")
+            self.assertEqual(resume(out).returncode, 0)
+            self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\n")
 
     def test_a_whole_run_that_passed_counts_for_every_part(self):
         with tempfile.TemporaryDirectory() as out:

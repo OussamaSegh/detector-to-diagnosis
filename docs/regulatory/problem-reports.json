@@ -1470,8 +1470,8 @@
         "rationale": "A rule of the release process. The one case so far was investigated before the rerun and both results are in the evidence; a gate that measures a 2 ns benchmark against an unchanged machine code cannot hide a defect of the product."
       },
       "resolution": {
-        "change": "SDP version 20 (draft, approved with the next release's documents) adds the rule to section 8: investigate first; run again only when the cause is not in the commit (for the gate, the benchmark's machine code compared) or is of the machine or the tool with its own report; keep both results in the record; at most once per release, and a second failure is a problem report against the commit.",
-        "verification": "The 2.0.0 record's handling of BM_HistogramRecord meets the rule (investigation before the rerun, both results kept), so no release is affected in its outcome."
+        "change": "SDP version 20 (draft, approved with the next release's documents) adds the rule to section 8: investigate first; run again only when the cause is not in the commit (for the gate, the benchmark's machine code compared) or is of the machine or the tool with its own report; keep both results in the record; at most once per release, and a second failure is a problem report against the commit. tools/release_checks.sh resume enforces it (release 2.0.1): a failed part runs again only when OUT/rerun-part-N.md holds its investigation, and never a third time (status 4).",
+        "verification": "The 2.0.0 record's handling of BM_HistogramRecord meets the rule (investigation before the rerun, both results kept), so no release is affected in its outcome. tools.release_checks: ReleaseChecks.test_a_failed_part_runs_again_only_after_its_investigation and test_a_part_that_failed_twice_does_not_run_a_third_time."
       },
       "root_cause": {
         "whys": [

@@ -25,6 +25,12 @@ the patch version.
   finer measure that MDQ-PR-064's decision asks for.
 - SDP version 20 (draft): section 8 says when a failed check of the release checks may run
   again (MDQ-PR-077).
+- `tools/release_checks.sh resume` enforces that rule: a part that failed runs again only when
+  `OUT/rerun-part-N.md` holds its investigation, and never a third time (status 4).
+- Maintenance plan version 3 (draft): a patch release is made from the main branch while it
+  holds only changes a patch may contain; `release/X.Y` is cut at the first change for the next
+  minor release.
+- `docs/ROADMAP-2.1.0.md`: the plan of the next minor release.
 
 ## [2.0.0] - 2026-11-16
 

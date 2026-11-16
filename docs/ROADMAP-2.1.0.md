@@ -30,7 +30,7 @@ delegation of 2026-11-15, after the author asked that the work continue.
   - The SOUP review for 2.1.
   - The approval of SDP version 20, unless 2.0.1 approves it first.
 - **Process.** The new rule on running a failed release check again (SDP section 8,
-  MDQ-PR-077) is not enforced by `tools/release_checks.sh`.
+  MDQ-PR-077) was not enforced by `tools/release_checks.sh` (done for 2.0.1).
 
 ## 2. What 2.1.0 is for
 
@@ -86,8 +86,9 @@ A minor version: compatible additions only (maintenance plan, section 4). No int
 
 ### Theme J: release process
 
-- `tools/release_checks.sh` records each rerun of a failed part and refuses a second rerun of
-  the same check for a release (SDP section 8, MDQ-PR-077).
+- `tools/release_checks.sh resume` runs a failed part again only after its investigation is
+  written, and refuses a second rerun for a release (SDP section 8, MDQ-PR-077). Done for 2.0.1,
+  since it completes the fix of MDQ-PR-077.
 - Patch releases: the maintenance plan says when a patch may be made from main, namely when main
   holds only changes that a patch may contain, and when `release/X.Y` is cut.
 - At 2.1.0:
@@ -99,8 +100,8 @@ A minor version: compatible additions only (maintenance plan, section 4). No int
 
 | Milestone | Content | Exit criterion |
 |---|---|---|
-| 2.0.1 | Patch: the fixes of the review of 2.0.0 (MDQ-PR-077 to MDQ-PR-080), SDP v20 approved, a measured soak for MDQ-PR-064 | Release checks pass; tag `book-v2.0.1` |
-| 2.1.0-dev, first | Theme J (the rerun rule in the tool), Theme G (room) | At least 40 pages of room; tests of the tool |
+| 2.0.1 | Patch: the fixes of the review of 2.0.0 (MDQ-PR-077 to MDQ-PR-080) with the rerun rule in the tool, SDP v20 and maintenance plan v3 approved, a measured soak for MDQ-PR-064 | Release checks pass; tag `book-v2.0.1` |
+| 2.1.0-dev, first | Theme G (room) | At least 40 pages of room |
 | 2.1.0-dev, second | Theme I (MDQ-PR-064) | Report closed or re-decided with its cause |
 | 2.1.0-dev, third | Theme H, Chapters 29 and 28, then the new exercises of Chapters 26 to 40 and the measurement folders | Chapter recipe complete for each |
 | 2.1.0 | Internal audit with trends, CAPA-0005 check, SOUP review, full release checks | CI green on the release commit; tag `book-v2.1.0` |

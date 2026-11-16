@@ -229,6 +229,8 @@ or the failure is of the machine or the tool and has its own problem report. The
 keeps the first result next to the one recorded, with the investigation, and a check is run again
 at most once for a release: a second failure is a problem report against the commit (review of
 release 2.0.0, where the gate's first verdict on `BM_HistogramRecord` was handled so; MDQ-PR-077).
+`tools/release_checks.sh resume` enforces the rule: it runs a failed part again only when
+`OUT/rerun-part-N.md` holds the investigation, and never a third time (test `tools.release_checks`).
 
 The release record for each version is part of its release notes in `CHANGELOG.md`
 and the release report. Exercise 14.5 builds a tool that checks such a record.
@@ -275,4 +277,4 @@ assessment of Chapter 13.
 | 17 | Section 4: C++23 is the language standard (CR-0028, ADR 0035). Section 6: the `release` preset replaces `gcc-cxx23`, and the `product` preset, the shipped build without the simulator, is built and tested on every change and packaged (CR-0029). |
 | 18 | Section 10 points to the software maintenance plan (Chapter 40, CR-0033, ADR 0039). |
 | 19 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 18. |
-| 20 | Review of release 2.0.0: section 8, when a failed check of the release checks may run again (MDQ-PR-077). |
+| 20 | Review of release 2.0.0: section 8, when a failed check of the release checks may run again, and the tool that enforces it (MDQ-PR-077). |

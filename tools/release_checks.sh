@@ -16,7 +16,9 @@
 # hour). Parts 2 to 4 use the builds that part 1 made. PART resume runs, in order, every part
 # that OUT/release-checks.txt does not record as passed ("all release checks passed (part N)"),
 # and stops at the first part that fails: after a restart, run it again with the same OUT and it
-# continues where the run stopped (roadmap 2.0.0, Theme D). A failed part runs again in full.
+# continues where the run stopped (roadmap 2.0.0, Theme D). A failed part runs again in full,
+# but only once for a release and only when OUT/rerun-part-N.md holds the investigation that
+# allows it (SDP section 8); resume refuses otherwise, with status 4 (MDQ-PR-077).
 #
 # The exit status is 0 only if every check passed (CAPA-0004: a check that cannot run fails), and
 # 3 if the run stopped before the last check (MDQ-PR-029).
@@ -31,6 +33,17 @@ if [ "$part" = resume ]; then
     if grep -qxE "all release checks passed \(part ($p|all)\)" "$out/release-checks.txt" 2>/dev/null; then
       echo "part $p: passed before, skipped"
       continue
+    fi
+    # A part that failed runs again only after its investigation is written, and only once for
+    # a release (SDP section 8, MDQ-PR-077); a part that stopped without a verdict runs again.
+    fails=$(grep -cxE "[0-9]+ release checks failed \(part ($p|all)\)" "$out/release-checks.txt" 2>/dev/null)
+    if [ "${fails:-0}" -ge 2 ]; then
+      echo "part $p has failed twice for this release: no third run; the failure is a problem report against the commit (SDP section 8)" >&2
+      exit 4
+    fi
+    if [ "${fails:-0}" -eq 1 ] && [ ! -s "$out/rerun-part-$p.md" ]; then
+      echo "part $p failed: write its investigation to $out/rerun-part-$p.md before it runs again (SDP section 8, MDQ-PR-077)" >&2
+      exit 4
     fi
     "$0" "$out" "$fuzz_seconds" "$p" || exit $?
   done
