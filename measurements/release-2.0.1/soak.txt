@@ -1,0 +1,9 @@
+soak: 1e+06 singles/s for 30.0 min, 181 samples every 10 s
+machine: vm, 4 CPUs; programs build/release/minidaq/apps
+singles in: 1800023990 (1000013/s); losses 0; fault None; complete True
+resident memory: first 30.5 MiB, last 31.3 MiB, max 31.3 MiB; trend +0.005 MiB/h (standard error 0.033) over 121 samples after 10 min
+end-to-end latency over each interval: p99 max 2.44 ms, max 12.71 ms
+intervals with p99 above 10 ms: 0 of 180
+steal time over each interval: max 0.68%, mean 0.25%
+per second (MDQ-PR-064): steal max 2.35%, run-queue wait of one thread max 59.27 ms
+result: PASS

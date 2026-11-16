@@ -1,0 +1,5 @@
+# 2026-11-16T21:16:08Z commit 620dc65 ci/run_all.sh product (the product build without the simulator)
+=== preset: product ===
+100% tests passed, 0 tests failed out of 20
+design file: 20 clauses, 25 controlled documents, ok
+=== all gates passed: product ===

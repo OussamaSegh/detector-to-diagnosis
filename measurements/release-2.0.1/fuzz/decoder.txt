@@ -1,0 +1,19 @@
+# 2026-11-16T22:44:39Z commit 620dc65 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 439377226
+#6	INITED cov: 96 ft: 225 corp: 5/2277b exec/s: 0 rss: 33Mb
+#7	NEW    cov: 98 ft: 228 corp: 6/2406b lim: 1601 exec/s: 0 rss: 33Mb L: 129/1601 MS: 1 CopyPart-
+#8	NEW    cov: 99 ft: 230 corp: 7/2431b lim: 1601 exec/s: 0 rss: 33Mb L: 25/1601 MS: 1 ChangeBinInt-
+#9	NEW    cov: 101 ft: 232 corp: 8/2440b lim: 1601 exec/s: 0 rss: 33Mb L: 9/1601 MS: 1 ChangeByte-
+#10	NEW    cov: 111 ft: 247 corp: 9/2445b lim: 1601 exec/s: 0 rss: 33Mb L: 5/1601 MS: 1 EraseBytes-
+#61	NEW    cov: 112 ft: 381 corp: 35/16Kb lim: 1601 exec/s: 0 rss: 36Mb L: 170/1601 MS: 1 InsertRepeatedBytes-
+#97	NEW    cov: 113 ft: 421 corp: 43/19Kb lim: 1601 exec/s: 0 rss: 36Mb L: 249/1601 MS: 2 ChangeASCIIInt-InsertRepeatedBytes-
+#141	NEW    cov: 114 ft: 434 corp: 49/19Kb lim: 1601 exec/s: 0 rss: 36Mb L: 252/1601 MS: 1 InsertRepeatedBytes-
+#145	NEW    cov: 115 ft: 436 corp: 51/21Kb lim: 1601 exec/s: 0 rss: 36Mb L: 1601/1601 MS: 1 CrossOver-
+#2076	NEW    cov: 117 ft: 499 corp: 91/45Kb lim: 1601 exec/s: 0 rss: 47Mb L: 1540/1601 MS: 3 CMP-ChangeBit-InsertByte- DE: "\001\000\000 \000\000\000\000"-
+#20588492	DONE   cov: 117 ft: 525 corp: 111/34Kb lim: 4096 exec/s: 34257 rss: 463Mb
+stat::number_of_executed_units: 20588492
+stat::average_exec_per_sec:     34257
+stat::new_units_added:          1232
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              463
+crash files: 0

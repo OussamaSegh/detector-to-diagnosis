@@ -516,10 +516,11 @@ TEST(ListModeSink, ReadsTheDelayedWindowFromMetadataAsUntrustedInput) {
   // MDQ-PR-075, CAPA-0005: the metadata comes from a file, so any type may be in any field.
   using minidaq::control::metadata_delayed_window_ps;
   EXPECT_EQ(metadata_delayed_window_ps(R"({"records":{"delayed_window_ps":100000}})"), 100000);
-  for (const char* bad : {"", "not json", "[]", "7", R"({"records":[]})", R"({"records":{}})",
-                          R"({"records":{"delayed_window_ps":[100000]}})",
-                          R"({"records":{"delayed_window_ps":"100000"}})",
-                          R"({"records":{"delayed_window_ps":1e5}})", R"({"records":null})"}) {
+  for (const char* bad :
+       {"", "not json", "[]", "7", "{}", R"({"run":{"delayed_window_ps":1}})", R"({"records":[]})",
+        R"({"records":{}})", R"({"records":{"delayed_window_ps":[100000]}})",
+        R"({"records":{"delayed_window_ps":"100000"}})", R"({"records":{"delayed_window_ps":1e5}})",
+        R"({"records":null})"}) {
     EXPECT_EQ(metadata_delayed_window_ps(bad), std::nullopt) << bad;
   }
 }

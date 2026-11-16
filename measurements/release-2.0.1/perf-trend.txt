@@ -1,0 +1,8 @@
+benchmark                                                       speed        p  verdict
+BM_DecodePacked/65536                                           1.886   1.0000  ok 
+BM_EnergyFilter/1/50/0/4096                                     0.878   0.2644  ok 
+BM_EnergyFilter/3/50/0/4096                                     0.844   0.2406  ok 
+BM_HistogramRecord                                              1.293   1.0000  ok 
+BM_Pipeline/4096/64/real_time                                   1.199   1.0000  ok 
+BM_SortFunctor/4096/0                                           1.226   1.0000  ok 
+trend against benchmarks/baseline/book-vm.json (not a check, CR-0025): status 0
