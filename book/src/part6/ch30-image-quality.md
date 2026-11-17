@@ -43,7 +43,7 @@ After this chapter you can:
 
 Chapter 27 (the corrections), Chapter 28 (the projector and OSEM) and Chapter 29 (the C++
 projector, which makes the measurements fast; the numpy one gives the same numbers, slowly).
-Reading: about 2.5 hours. Exercises: 2 hours. Milestone: 4 hours. If time is short, do Exercises
+Reading: about 2.5 hours. Exercises: 2.75 hours. Milestone: 4 hours. If time is short, do Exercises
 30.1 and 30.3.
 
 ## Three questions about an image
@@ -491,6 +491,15 @@ where it is, a drift reported when it leaves the baseline's limits, and a shift 
 at its seventh result in a row. Then answer in `NOTES.md` why the starter missed the drift, how
 often a stable process gives a false run, and what six results can say about their spread. *Time:*
 45 minutes.
+
+**Exercise 30.4 (E): The uniformity of a uniform cylinder.** *Goal:* measure the integral and
+differential uniformity of an image of a uniform cylinder so that a gradient or a defect shows and
+the noise and the blurred edge do not. *Starter:* `exercises/ch30/e4_uniformity/starter/uniformity.py`.
+*Acceptance:* `tests/test_uniformity.py` passes: the nine-point smoothing, a uniform cylinder below
+0.01%, a gradient of 5% to the edge measured at 3.4 to 3.8%, 2% noise per pixel below 4%, a cold row
+that only the columns show, and a field too small refused. Then answer in `NOTES.md` where the
+starter's 96% came from, what the smoothing does to the noise, and which number sees a defective
+block and which a wrong normalization. *Time:* 45 minutes.
 
 ## MiniDAQ milestone: image quality {.unnumbered}
 
