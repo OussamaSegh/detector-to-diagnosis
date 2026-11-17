@@ -45,7 +45,7 @@ After this chapter you can:
 Chapter 12 (the list-mode file and its run record), Chapter 15 (hazards and risk controls),
 Chapters 28 and 30 (the reconstructed image and its figures of merit) and Chapter 33 (the chain
 end to end, whose phantom image this chapter exports). Some Python and numpy. Reading: about 3
-hours. Exercises: 6 hours. Milestone: 3 hours. If time is short, do Exercise 35.2.
+hours. Exercises: 7 hours. Milestone: 3 hours. If time is short, do Exercise 35.2.
 
 ## What leaves the scanner, and where it goes
 
@@ -561,6 +561,16 @@ message in one PDU, a data set across many, a command in two fragments, several 
 an echo then a store; a wrong PDU type, a PDV that does not fit, another context, fragments out of
 order and input that ends mid-message all refused. *Time:* 3 hours.
 
+**Exercise 35.4 (M): UIDs that are valid, and derived UIDs that cannot collide.** *Goal:* check a
+UID's syntax, write a UUID under 2.25, and derive UIDs that no two different lists of parts share.
+*Starter:* `exercises/ch35/e4_uids/starter/uids.py`, which checks only the first character, writes
+the UUID in hexadecimal and joins the parts with dots. *Acceptance:* `tests/test_uids.py` passes:
+the invalid UIDs refused (a trailing newline among them), the example of X.667, the same parts
+giving the same UID and every list of up to three short parts a different one, 500 distinct slices,
+and parts whose text is not exact refused. Then answer in `NOTES.md` what a pattern anchored with
+`$` accepts, when the separator of `tools/dicom/uid.py` is ambiguous, and why MiniDAQ cannot change
+its encoding. *Time:* 1 hour.
+
 ## MiniDAQ milestone: the image reaches the archive {.unnumbered}
 
 ::: box-milestone
@@ -575,7 +585,7 @@ filed under a patient or study the order did not name. **Start:** tag `ch34`. **
 2. Add `tools/dicom`, `tools/pacs.py`, their tests and the test `tools.dicom`; pin pydicom and
    pynetdicom in the lock file and require them in CI's job python.
 3. Export and send the phantom image; keep the measurements in `measurements/ch35/`.
-4. Add Exercises 35.1 to 35.3.
+4. Add Exercises 35.1 to 35.4.
 
 **Definition of done.** `tools.dicom` passes with its independent checks, and fails if
 `MINIDAQ_DICOM_ORACLE_REQUIRED=1` and they cannot run; `docs.trace`, `docs.risk`, `docs.baseline`

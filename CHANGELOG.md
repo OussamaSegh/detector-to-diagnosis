@@ -20,6 +20,7 @@ the patch version.
 - Exercise 32.4: a dependency pinned by the hash of its archive, its headers as system ones.
 - Exercise 33.4: exact bounds on the fraction of soak intervals above the latency limit.
 - Exercise 34.4: hotspots that follow renames, with the commits a threshold leaves out listed.
+- Exercise 35.4: valid UIDs, and derived UIDs that cannot collide.
 - Chapter 28, "How many subsets": OSEM with 1 to 64 subsets compared at equal updates,
   iterations and noise (`measurements/ch28/reconstruct.py`, section 6).
 
@@ -33,6 +34,13 @@ the patch version.
 
 - VERSION 2.1.0-dev. SOUP list v31 (draft): the known-anomaly review for 2.1, with no change to
   any item. `release/2.0` waits for the author's approval of the branch (roadmap 2.1.0, section 4).
+
+### Fixed (2.1.0-dev)
+
+- MDQ-PR-083: the codebase survey (`tools/survey.py`) counts the commits made before a rename
+  under the file's current name; it restarted the file's history at the rename.
+- MDQ-PR-084: a UID, a code string or an update's version ending in a newline passed validation
+  (`$` matches before a final newline); the four checks use `fullmatch`. Safety relevant: RC-47.
 
 ### Fixed (review of release 2.0.1)
 

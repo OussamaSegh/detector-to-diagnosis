@@ -1,3 +1,4 @@
 minidaq_python_exercise(e1_decimal_string)
 minidaq_python_exercise(e2_image_plane)
 minidaq_python_exercise(e3_pdata)
+minidaq_python_exercise(e4_uids)
