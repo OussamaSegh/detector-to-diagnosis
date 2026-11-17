@@ -40,8 +40,10 @@ paper="${BOOK_PAPER:-white}"
 ink="${BOOK_INK:-bw}"
 # The trim size (user decision, 2026-10-26: 8.5 x 11 in, one volume) and the page margins in
 # inches. The inside margin of the KDP interior grows with the page count (kdp_gutter).
+# Top and bottom 0.7 in, not 0.85 (roadmap 2.1.0, Theme G): 35 pages fewer for the same line
+# length; the running head and the page number stay a third of an inch from the edge.
 trim_w=8.5 trim_h=11
-margin_inner=1.0 margin_outer=0.85 margin_top=0.85 margin_bottom=0.85
+margin_inner=1.0 margin_outer=0.85 margin_top=0.7 margin_bottom=0.7
 # The Boox page: the 10.3 in 4:3 screen in portrait (8.24 x 6.18 in), so a page fills it at 1:1
 # with no zoom. Narrow margins; the header and footer sit inside the top and bottom margins.
 boox_w=6.18 boox_h=8.24
@@ -320,6 +322,12 @@ build_pdf() {
   (cd "$build/tex" && TEXINPUTS="$here/figures/tikz:$build/figures:" latexmk -xelatex -interaction=nonstopmode -halt-on-error -quiet "$job.tex" >"$job.latexmk.log" 2>&1) \
     || { echo "LaTeX failed, see $build/tex/$job.log"; grep -n -A3 "^!" "$build/tex/$job.log" | head -30; exit 1; }
   cp "$build/tex/$job.pdf" "$pdfout"
+  # A box taller than the page runs off it (a float after a longtable did, Theme G).
+  if grep -qF 'Overfull \vbox' "$build/tex/$job.log"; then
+    echo "PDF has content taller than the page, see $build/tex/$job.log:"
+    grep -F 'Overfull \vbox' "$build/tex/$job.log" | head -5
+    exit 1
+  fi
   # A glyph the font does not have is silently left out of the PDF.
   if grep -q "Missing character" "$build/tex/$job.log"; then
     echo "PDF has characters its fonts cannot show:"; grep "Missing character" "$build/tex/$job.log" | sort | uniq -c

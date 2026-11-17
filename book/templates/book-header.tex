@@ -12,6 +12,18 @@
 \usepackage{microtype}
 \usepackage{needspace}
 \usepackage{etoolbox}
+% longtable's \LT@start sets \@colroom to the whole column and forgets the top floats already on
+% the page, so a float placed after the table could run off the page (roadmap 2.1.0, Theme G:
+% three figures did with 0.7 in top and bottom margins). The room is restored when the table
+% ends on the page where it started.
+\makeatletter
+\newdimen\dLTcolroom \newcount\dLTpage
+\patchcmd{\LT@start}{\global\@colroom\@colht}%
+  {\global\dLTcolroom\@colroom\global\dLTpage\c@page\global\@colroom\@colht}{}%
+  {\PackageError{d2d}{cannot patch longtable's LT@start}{}}
+\apptocmd{\endlongtable}{\ifnum\c@page=\dLTpage\global\@colroom\dLTcolroom\fi}{}%
+  {\PackageError{d2d}{cannot patch endlongtable}{}}
+\makeatother
 \setlength{\emergencystretch}{3em}
 % The chapter opener only (Atlas): EB Garamond for the title, Inter for the kicker,
 % the opener headings and the "Why it matters" label. The body stays Pagella.

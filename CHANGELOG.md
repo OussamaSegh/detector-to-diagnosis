@@ -10,6 +10,12 @@ the patch version.
 
 ### Changed (2.1.0-dev)
 
+- The book's top and bottom margins are 0.7 in, not 0.85 (roadmap 2.1.0, Theme G): 784 pages
+  instead of 819, 45 pages of room under KDP's 828, the same line length
+  (`measurements/theme-g-layout/`).
+- A figure after a long table no longer runs off the page (longtable forgot a top float's room);
+  `book/build.sh` now fails a PDF with content taller than the page.
+
 - VERSION 2.1.0-dev. SOUP list v31 (draft): the known-anomaly review for 2.1, with no change to
   any item. `release/2.0` waits for the author's approval of the branch (roadmap 2.1.0, section 4).
 
