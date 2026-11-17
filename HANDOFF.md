@@ -64,6 +64,15 @@ release; it now builds the last `book-v` tag of `.github/tags.txt` with main's e
 records per second the steal time and each server thread's run-queue wait, MDQ-PR-064's finer
 measure; its first 30-minute run is `measurements/review-2.0.0/soak/`. Next free MDQ-PR-081.
 
+Review of release 2.0.1 (2026-11-17, independent, PR from branch claude/project-thread-1fvsle):
+MDQ-PR-081 (`tools/release_record.py`'s skeleton named the `hardened` preset as the shipped
+binaries; since CR-0029 it is `product`; the 2.0.1 record is corrected with a note) and MDQ-PR-082
+(`release_checks.sh resume` counted a failed whole run against every part; a whole run now writes
+each part's verdict). MDQ-PR-006 and MDQ-PR-064 now list 2.0.1 in `affects`. Checked and found
+right: the code of MDQ-PR-078 and 079, the record's numbers against `measurements/release-2.0.1/`,
+the packages in the project files (Version 2.0.1 on every title page, 819 and 218 pages), SDP v21
+and maintenance plan v4. Next free MDQ-PR-083.
+
 Earlier on 2026-11-16: release 1.3.0 is out (tag book-v1.3.0) and its review is merged
 (143407e); VERSION is 2.0.0-dev (SOUP list v28, review for 2.0, 2026-11-16). Milestone 2.0.0-dev (Theme B's breaking items) has started:
 CR-0028, C++23 baseline, done (ADR 0035; every preset C++23, `gcc-cxx23` retired for `release`;
@@ -340,7 +349,7 @@ Next work: none is asked. VERSION is 1.1.1-dev after release 1.1.0. A next minor
 or 2.0.0, see the roadmap) bumps the Python package versions with it, adds a dated SOUP review
 for it, holds the internal audit before its release checks, and takes up MDQ-PR-064. A PR opened by a session starts no ci or gates
 run: verify a review branch locally before merging, and merge LOCALLY with the noreply identity.
-Next free numbers: MDQ-PR-077, CAPA-0006, CR-0034, ADR 0040, RC-56, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, SRS-REC-009, SRS-MNT-004, TL-51. A commit message has ONE trailer
+Next free numbers: MDQ-PR-083, CAPA-0006, CR-0034, ADR 0040, RC-56, SRS-PLT-013, SRS-CFG-017, SRS-TIM-007, SRS-REC-009, SRS-MNT-004, TL-51. A commit message has ONE trailer
 block: `Review:` directly above `Co-Authored-By:`, no blank line between (the commit-msg hook
 refuses otherwise).
 
@@ -861,7 +870,7 @@ acts 10 s after the last ping; install 46 to 62 ms, rollback 5 ms; 45 syscalls, 
 book/src/part5/ch25-embedded-platform.md, solutions and Exercises 25.1 to 25.4 (watchdog
 environment, SemVer precedence, power cut model, verify tree). This container has no systemd as
 PID 1: the units are checked offline only.
-Apple silicon (user has a MacBook Air M5): How to use this book recommends an Ubuntu 24.04 arm64
+Apple silicon (a reader with an Apple silicon Mac): How to use this book recommends an Ubuntu 24.04 arm64
 VM (OrbStack or UTM). The aarch64 cross build (g++-aarch64-linux-gnu, -Werror) passes; under
 qemu-user 728 of 773 unit and solution tests pass, and the rest are emulator limits
 (timeouts from slowness, /proc/self/exe is qemu, SO_RXQ_OVFL and crash signals not emulated,
