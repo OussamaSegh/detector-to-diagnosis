@@ -43,7 +43,7 @@ After this chapter you can:
 
 The whole book, and in particular Chapter 14 (software items and safety classes), Chapter 16 (the
 quality system's records), Chapter 18 (testing, mutation testing), Chapter 21 (review and
-debugging) and Chapter 33 (the chain end to end). Reading: about 3 hours. Exercises: 5 hours.
+debugging) and Chapter 33 (the chain end to end). Reading: about 3 hours. Exercises: 6 hours.
 Milestone: 3 hours. If time is short, do Exercise 34.3.
 
 ## What you are taking over
@@ -487,6 +487,16 @@ tests of ordinary values that catch one change of seven. *Acceptance:* the `orig
 are fixes and why that does not matter to the tests, and where you would record a behavior that
 looks wrong. *Time:* 2 hours.
 
+**Exercise 34.4 (M): Hotspots, and what a threshold leaves out.** *Goal:* rank files by commits
+times code lines without the commits that touch everything, following each file through its
+renames, within a window. *Starter:* `exercises/ch34/e4_hotspots/starter/hotspots.py`, which counts
+every commit and keeps renamed paths as numstat writes them. *Acceptance:* `tests/test_hotspots.py`
+passes: scores highest first with ties by path, commits above the threshold left out and listed,
+the three forms of a rename read and a file renamed twice counted under its current name, and the
+window applied. Then run it on MiniDAQ and answer in `NOTES.md` what the commits it leaves out
+are, what `tools/survey.py` does with a commit made before a rename, and what could replace the
+threshold. *Time:* 1 hour.
+
 ## MiniDAQ milestone: a map for the next maintainer {.unnumbered}
 
 ::: box-milestone
@@ -500,7 +510,7 @@ claims nothing. **Start:** tag `ch33`. **End:** tag `ch34`.
 2. Add `tools/survey.py`, its tests and the test `tools.survey`.
 3. Run the survey on the repository; remove the two prefixes that claim no file from the item map;
    keep the survey and the change coupling in `measurements/ch34/`.
-4. Add Exercises 34.1 to 34.3.
+4. Add Exercises 34.1 to 34.4.
 5. Bring `HANDOFF.md` up to date as the handover the next maintainer needs.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets; `tools.survey`,

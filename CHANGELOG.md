@@ -19,6 +19,7 @@ the patch version.
 - Exercise 28.4: when to stop OSEM, from a noise target.
 - Exercise 32.4: a dependency pinned by the hash of its archive, its headers as system ones.
 - Exercise 33.4: exact bounds on the fraction of soak intervals above the latency limit.
+- Exercise 34.4: hotspots that follow renames, with the commits a threshold leaves out listed.
 - Chapter 28, "How many subsets": OSEM with 1 to 64 subsets compared at equal updates,
   iterations and noise (`measurements/ch28/reconstruct.py`, section 6).
 
