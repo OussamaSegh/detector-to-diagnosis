@@ -26,6 +26,8 @@ the patch version.
 - Exercise 38.4: the overlapping Allan deviation of a clock from its time error.
 - Exercise 39.4: the TOF gain estimated at every point of a cylinder and for the measured regions;
   Chapter 39 now says how little of the gap to the measured gain the regions' position explains.
+- Exercise 40.4: is the shipped package affected, with OpenSSL's letters, dpkg's order and the
+  distribution's advisory.
 - Chapter 28, "How many subsets": OSEM with 1 to 64 subsets compared at equal updates,
   iterations and noise (`measurements/ch28/reconstruct.py`, section 6).
 

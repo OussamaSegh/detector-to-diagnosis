@@ -45,7 +45,7 @@ After this chapter you can:
 Chapter 13 (the regulatory landscape and post-market surveillance), Chapter 14 (IEC 62304, the
 problem reports and the SOUP list), Chapter 16 (ISO 13485, CAPA and internal audits), Chapter 21
 (root cause analysis) and Chapter 36 (git and the team workflow). Reading: about 3 hours.
-Exercises: 6 hours. Milestone: 3 hours. If time is short, do Exercise 40.3.
+Exercises: 7 hours. Milestone: 3 hours. If time is short, do Exercise 40.3.
 
 ## A release is a promise
 
@@ -544,6 +544,16 @@ merged from a branch, a fix cherry-picked to a maintenance branch and picked aga
 release branch made before the defect, a defect fixed before any release, and a history of 20,000
 commits. *Time:* 3 hours.
 
+**Exercise 40.4 (M): Is the version we ship affected?** *Goal:* decide whether an installed package
+is affected by an advisory: OpenSSL's versions with their letters, package versions compared as
+dpkg compares them, and the distribution's advisory deciding when it has spoken. *Starter:*
+`exercises/ch40/e4_affected_version/starter/affected.py`, which drops the letters, compares package
+versions as strings and ignores the distribution's fix. *Acceptance:* `tests/test_affected.py`
+passes: twelve OpenSSL versions in order, the upstream ranges, seven pairs in dpkg's order
+(`-0ubuntu3.5` before `-0ubuntu3.16`), and verdicts from a distribution's fix or, without one, an
+upstream lead. Then check the version on an Ubuntu machine and answer in `NOTES.md` why an upstream
+match is a lead and what the review must record. *Time:* 1 hour.
+
 ## MiniDAQ milestone: a maintained product {.unnumbered}
 
 ::: box-milestone
@@ -562,7 +572,7 @@ are analyzed for trends at each minor release.
    (version 29).
 5. Add `tools/pr_trends.py`, its tests (`tools.maintenance`) and TL-50; write
    `measurements/ch40/trends.txt`.
-6. Add Exercises 40.1 to 40.3.
+6. Add Exercises 40.1 to 40.4.
 
 **Definition of done.** `tools.maintenance` passes; `docs.anomalies`, `docs.soup`, `docs.srs`,
 `docs.trace`, `docs.baseline`, `docs.design_file`, `docs.changes` and `docs.tools` pass; every
