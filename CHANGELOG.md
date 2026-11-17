@@ -8,6 +8,11 @@ the patch version.
 
 ## [Unreleased]
 
+### Added (2.1.0-dev)
+
+- Exercise 29.4: write into the caller's array, without a copy and without the GIL
+  (roadmap 2.1.0, Theme H).
+
 ### Changed (2.1.0-dev)
 
 - The book's top and bottom margins are 0.7 in, not 0.85 (roadmap 2.1.0, Theme G): 784 pages

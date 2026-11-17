@@ -45,7 +45,7 @@ After this chapter you can:
 
 Chapter 3 (threads and data races), Chapter 7 (static analysis and sanitizers), Chapter 28 (the
 projector and OSEM). You need the Python headers (`python3-dev`) and NumPy. Reading: about 2.5
-hours. Exercises: 3 hours. Milestone: 5 hours. If time is short, do Exercises 29.1 and 29.3.
+hours. Exercises: 3.75 hours. Milestone: 5 hours. If time is short, do Exercises 29.1 and 29.3.
 
 ## What moves, and what stays
 
@@ -366,6 +366,18 @@ passes: the same projector and a float32 one accepted, and angles half a view of
 backprojector that is not the adjoint, a scale error of 1e-4 and another geometry refused, each
 with the reason in the message. Then answer in `NOTES.md` what the starter accepted, how to choose
 the tolerance, and why the candidate's own dot-product test is needed. *Time:* 45 minutes.
+
+**Exercise 29.4 (M): Write into the caller's array, without a copy and without the GIL.**
+*Goal:* add into an array the Python caller owns, in place, while other Python threads run, and
+refuse every output the C++ could only write by converting it. *Starter:*
+`exercises/ch29/e4_in_place/starter/scatter.cpp`, built into the module `scatter`.
+*Acceptance:* `tests/test_scatter.py` passes: the sums in the caller's own array, also in the
+C-contiguous rows of a larger one; float32 values and int32 indices converted; a float32, a
+Fortran-ordered, a strided and a read-only output refused with the reason, and a list with
+`TypeError`, each leaving the caller's array unchanged; an index outside the output refused before
+any write; and another Python thread running during a call of 3e7 additions. Then answer in
+`NOTES.md` what the starter did with a float32 output, what it wrote for an index one past the
+end, and what another thread changing the output during the call would do. *Time:* 45 minutes.
 
 ## MiniDAQ milestone: the projector in C++ {.unnumbered}
 
