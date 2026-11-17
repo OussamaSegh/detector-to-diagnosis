@@ -51,7 +51,7 @@ After this chapter you can:
 Chapter 8 (PET physics: annihilation, Compton scatter, attenuation), Chapter 10 (the coincidence
 sorter, its windows and the kill-all rule), Chapter 11 (count rates and dead time), Chapter 12 (the
 list-mode file, its run record and the sinogram) and Chapter 26 (calibration). You
-need Python 3 with numpy. Reading: about 3 hours. Exercises: 4 hours. Milestone: 6 hours. If time
+need Python 3 with numpy. Reading: about 3 hours. Exercises: 5 hours. Milestone: 6 hours. If time
 is short, do Exercises 27.1 and 27.2.
 
 ## From counts to activity
@@ -431,7 +431,8 @@ Figure [](#fig-ch27-factors) draws the live fractions against the rate, and the 
 
 The model's kind (non-paralyzable, paralyzable, or the mixture a real front end has) and its tau
 come from the electronics' design and a count-rate measurement (Chapter 11); a wrong kind gives a
-correction that is right at low rates and wrong at high ones. The record holds whole-run totals,
+correction that is right at low rates and wrong at high ones. Exercise 27.4 finds both from a
+decaying source. The record holds whole-run totals,
 so a dynamic study, whose frames have different rates, needs per-frame singles that MiniDAQ does
 not record yet (ADR 0022).
 
@@ -561,6 +562,15 @@ measurement along the line, the factor of 200 mm of water, and decay factors tha
 length the same activity. Then answer in `NOTES.md` how wrong a line is with an outline 5 mm too
 large, which shortcut for the decay is good enough, and why the attenuation of a line does not
 depend on where the annihilation was. *Time:* 60 minutes.
+
+**Exercise 27.4 (M): The kind of dead time, and its tau, from a decaying source.** *Goal:* find a
+unit's dead-time model and tau from the recorded rates of a decaying source, and invert each model
+for the true rate. *Starter:* `exercises/ch27/e4_dead_time/starter/deadtime.py`. *Acceptance:*
+`tests/test_deadtime.py` passes: both models inverted up to 0.9 / tau, a paralyzable rate above its
+maximum refused, a paralyzable and a non-paralyzable unit each recognized with tau within 2% and the
+starting rate within 0.5%, and a weak last point 5% off without effect. Then answer in `NOTES.md`
+where the starter's error came from, at which rates the kind matters, and why a scanner is not run
+near the peak of its count-rate curve. *Time:* 60 minutes.
 
 ## MiniDAQ milestone: the corrections and their inputs {.unnumbered}
 

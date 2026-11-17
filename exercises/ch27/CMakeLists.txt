@@ -1,3 +1,4 @@
 minidaq_python_exercise(e1_normalization)
 minidaq_python_exercise(e2_randoms)
 minidaq_python_exercise(e3_attenuation)
+minidaq_python_exercise(e4_dead_time)
