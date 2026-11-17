@@ -48,7 +48,7 @@ After this chapter you can:
 
 Chapter 8 (coincidences and time of flight), Chapter 10 (the sorter and its delayed window),
 Chapter 22 and Chapter 24 (the boards, their registers and the interface control document) and
-Chapter 26 (the timing calibration and its least squares). Reading: about 3 hours. Exercises: 6
+Chapter 26 (the timing calibration and its least squares). Reading: about 3 hours. Exercises: 7
 hours. Milestone: 3 hours. If time is short, do Exercise 38.3.
 
 ## One time base for many boards
@@ -509,6 +509,15 @@ are within 10 rms of the truth, one bad pair weighted down; two groups are solve
 block is unobserved; one swapped pair gives chi-square per degree of freedom above 50. *Time:* 3
 hours.
 
+**Exercise 38.4 (M): Jitter, wander and the Allan deviation.** *Goal:* the overlapping Allan
+deviation of a clock from its time error, checked on clocks whose answer is known. *Starter:*
+`exercises/ch38/e4_allan/starter/allan.py`, the standard deviation of the frequency averaged over
+blocks. *Acceptance:* `tests/test_allan.py` passes: an offset and a constant frequency give 0, a
+linear frequency drift D gives `D tau / sqrt(2)`, white phase noise of 26 ps gives
+`sqrt(3) * 26 ps / tau` and a slope of -1, white frequency noise a slope of -1/2, and too few samples
+are refused. Then answer in `NOTES.md` what the monitor's 26 ps per interval and a clock 0.1 ppb
+fast give, and which of the monitor's outputs sees the second. *Time:* 1 hour.
+
 ## MiniDAQ milestone: a time base that is watched {.unnumbered}
 
 ::: box-milestone
@@ -528,7 +537,7 @@ lock; a run whose time base moved is stored as incomplete and named in the audit
    update ICD-FEB; read it in the slow control, refuse a start without lock, and record a loss
    during a run.
 6. Measure (`measurements/ch38/`), check the pipeline benchmark against the performance gate, and
-   add Exercises 38.1 to 38.3.
+   add Exercises 38.1 to 38.4.
 
 **Definition of done.** The unit and system tests pass, including the two of the time base;
 `docs.srs`, `docs.trace`, `docs.baseline`, `docs.changes`, `docs.risk` and `docs.regmap` pass; the

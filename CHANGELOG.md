@@ -23,6 +23,7 @@ the patch version.
 - Exercise 35.4: valid UIDs, and derived UIDs that cannot collide.
 - Exercise 36.4: a bisection with untestable commits, compared with `git bisect run`.
 - Exercise 37.4: a suggested dependency checked against the lock file, the SOUP list and look-alikes.
+- Exercise 38.4: the overlapping Allan deviation of a clock from its time error.
 - Chapter 28, "How many subsets": OSEM with 1 to 64 subsets compared at equal updates,
   iterations and noise (`measurements/ch28/reconstruct.py`, section 6).
 
