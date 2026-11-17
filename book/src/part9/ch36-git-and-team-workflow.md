@@ -44,7 +44,7 @@ After this chapter you can:
 
 Chapter 16 (change control and the design and development file), Chapter 20 (CI as evidence),
 Chapter 21 (code review and bisecting) and Chapter 34 (reading a codebase through its history).
-Daily use of Git: commit, branch, merge, push. Reading: about 3 hours. Exercises: 6 hours.
+Daily use of Git: commit, branch, merge, push. Reading: about 3 hours. Exercises: 7 hours.
 Milestone: 2 hours. If time is short, do Exercise 36.3.
 
 ## What a commit is
@@ -577,6 +577,16 @@ unchanged); conflicts are as many as Git counts, each between markers (one line 
 deletion against a change, two insertions at one place, two adjacent lines, a conflict with a clean
 change elsewhere, two conflicts). *Time:* 3 hours.
 
+**Exercise 36.4 (M): A bisection that knows what an untestable commit leaves open.** *Goal:*
+bisect a first-parent history with a test that can answer "skip", and name the first bad commit
+only when the tests pin it down. *Starter:* `exercises/ch36/e4_bisect/starter/first_bad.py`, which
+takes an untestable commit as good. *Acceptance:* `tests/test_first_bad.py` passes: at most 7 tests
+for 100 commits, untestable commits far away changing nothing, one just before the first bad commit
+leaving both open, a broken build of six commits reported whole, nothing tested twice or outside
+the range, and impossible starts refused. Then compare with `git bisect run` and exit code 125 in a
+repository of your own, and answer in `NOTES.md` what the starter's answers would have cost a
+reviewer. *Time:* 1 hour.
+
 ## MiniDAQ milestone: a history that can be checked {.unnumbered}
 
 ::: box-milestone
@@ -592,7 +602,7 @@ that does not. **Start:** tag `ch35`. **End:** tag `ch36`.
    job document-control.
 3. Measure the history (`measurements/ch36/`), and move the review line into the trailer block in
    your own commits.
-4. Add Exercises 36.1 to 36.3.
+4. Add Exercises 36.1 to 36.4.
 
 **Definition of done.** `tools.commits` passes, including the check of the repository from the
 policy's first commit; CI's step passes on `main`; `docs.trace`, `docs.tools` and `docs.baseline`

@@ -1,3 +1,4 @@
 minidaq_python_exercise(e1_trailers)
 minidaq_python_exercise(e2_object_names)
 minidaq_python_exercise(e3_merge3)
+minidaq_python_exercise(e4_bisect)
