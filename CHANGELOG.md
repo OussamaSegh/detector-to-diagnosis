@@ -16,6 +16,9 @@ the patch version.
 - Exercise 29.4: write into the caller's array, without a copy and without the GIL
   (roadmap 2.1.0, Theme H).
 - Exercise 31.4: per-crystal mean and variance in one pass over a run read in chunks.
+- Exercise 28.4: when to stop OSEM, from a noise target.
+- Chapter 28, "How many subsets": OSEM with 1 to 64 subsets compared at equal updates,
+  iterations and noise (`measurements/ch28/reconstruct.py`, section 6).
 
 ### Changed (2.1.0-dev)
 

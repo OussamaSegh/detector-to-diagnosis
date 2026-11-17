@@ -1,3 +1,4 @@
 minidaq_python_exercise(e1_adjoint)
 minidaq_python_exercise(e2_model)
 minidaq_python_exercise(e3_subsets)
+minidaq_python_exercise(e4_stopping)

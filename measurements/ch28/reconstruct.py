@@ -18,6 +18,9 @@ Chapter 27 are reused.
 3. MLEM against OSEM: the same likelihood after the same number of updates?
 4. What the corrections in the model do: the background's profile without them.
 5. A post-filter: noise against contrast.
+6. The number of subsets: convergence against noise. OSEM with 1 (MLEM), 2, 4, 8, 16, 32 and 64
+   subsets of the 192 views, compared at the same number of image updates (8 to 64) and at the
+   same number of iterations, that is of passes over the data (1 to 8) (roadmap 2.1.0, Theme H).
 
     python3 measurements/ch28/reconstruct.py build/release/minidaq/apps [WORK_DIR] \
         > measurements/ch28/reconstruct.txt
@@ -313,6 +316,62 @@ def main():
             _, cov, crc = metrics(img)
             label = f"iteration {it}" + (f", Gaussian {f:.0f} mm FWHM" if f else "")
             print(f"| {label} | {pct(cov):.1f}% | " + " | ".join(f"{c:.2f}" for c in crc) + " |")
+    # 6. The number of subsets.
+    section("6. The number of subsets: convergence against noise")
+    print("OSEM with k subsets of the 192 views (every k-th view), the same data and model as "
+          "section 2. One iteration is one pass over all the views, whatever k; it makes k image "
+          "updates. Log-likelihood over that of OSEM's (8 subsets) iteration 1.\n")
+    subset_counts = (1, 2, 4, 8, 16, 32, 64)
+    by_k = {}
+    t0 = time.monotonic()
+    for k in subset_counts:
+        got = {}
+        mlem.osem(y, A, mult, add, max(1, 64 // k), n_subsets=k,
+                  callback=lambda it, x, got=got: got.__setitem__(
+                      it, (mlem.log_likelihood(y, mlem.expected(x, A, mult, add)) - ll0
+                           - base, metrics(x))))
+        by_k[k] = got
+    subsets_s = time.monotonic() - t0
+    print("At the same number of image updates (iterations times subsets):\n")
+    print("| Subsets | Iterations | Updates | Log-likelihood | Background noise (CoV) | "
+          "CRC 12 mm | CRC 5 mm |")
+    print("|---:|---:|---:|---:|---:|---:|---:|")
+    for updates in (8, 32, 64):
+        for k in subset_counts:
+            if updates % k or updates // k not in by_k[k]:
+                continue
+            ll, (_, cov, crc) = by_k[k][updates // k]
+            print(f"| {k} | {updates // k} | {updates} | {ll:,.0f} | {pct(cov):.1f}% | "
+                  f"{crc[0]:.2f} | {crc[2]:.2f} |")
+    print("\nAt the same number of iterations (passes over the data, the same computing time):\n")
+    print("| Subsets | Iterations | Log-likelihood | Background noise (CoV) | CRC 12 mm | "
+          "CRC 5 mm |")
+    print("|---:|---:|---:|---:|---:|---:|")
+    for it in (1, 2, 4):
+        for k in subset_counts:
+            if it not in by_k[k]:
+                continue
+            ll, (_, cov, crc) = by_k[k][it]
+            print(f"| {k} | {it} | {ll:,.0f} | {pct(cov):.1f}% | {crc[0]:.2f} | {crc[2]:.2f} |")
+    target = by_k[SUBSETS][4][1][1]
+    print(f"\nAt the same background noise: the first iteration of each k whose noise reaches "
+          f"that of {SUBSETS} subsets at iteration 4 ({pct(target):.1f}%), and the contrast it has "
+          "then:\n")
+    print("| Subsets | Iteration | Updates | Background noise (CoV) | CRC 12 mm | CRC 5 mm | "
+          "Log-likelihood |")
+    print("|---:|---:|---:|---:|---:|---:|---:|")
+    for k in subset_counts:
+        hit = [it for it in sorted(by_k[k]) if by_k[k][it][1][1] >= target]
+        if not hit:
+            print(f"| {k} | not within {max(by_k[k])} | | | | | |")
+            continue
+        it = hit[0]
+        ll, (_, cov, crc) = by_k[k][it]
+        print(f"| {k} | {it} | {it * k} | {pct(cov):.1f}% | {crc[0]:.2f} | {crc[2]:.2f} | "
+              f"{ll:,.0f} |")
+    print(f"\nAll seven reconstructions, with the likelihood at every iteration, in "
+          f"{subsets_s:.0f} s.")
+
     np.save(work / "osem_it4.npy", images[4])
     np.save(work / "osem_it32.npy", images[32])
     if tmp:

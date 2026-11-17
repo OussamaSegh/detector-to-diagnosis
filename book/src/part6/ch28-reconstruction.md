@@ -46,7 +46,7 @@ After this chapter you can:
 
 Chapter 8 (PET physics: lines of response, attenuation), Chapter 12 (the sinogram and its
 binning), Chapter 27 (the corrections and `tools/recon`). You need Python 3 with numpy, and the
-algebra of a matrix and its transpose. Reading: about 3 hours. Exercises: 3 hours. Milestone: 5
+algebra of a matrix and its transpose. Reading: about 3 hours. Exercises: 4 hours. Milestone: 5
 hours. If time is short, do Exercises 28.1 and 28.2.
 
 ## The problem
@@ -285,6 +285,45 @@ Figure [](#fig-ch28-subsets) shows what interleaved subsets look like.
 ```{.figure #fig-ch28-subsets src="book/figures/tikz/ch28/subsets.tex" caption="OSEM's subsets, drawn with 24 view directions in 4 subsets; MiniDAQ uses 192 views in 8. Every k-th view goes into a subset, so each subset spans the whole half turn." alt="Four circles, each crossed by six lines through its center at angles 30 degrees apart, offset by 7.5 degrees from one circle to the next, in four colors. Labels name subset 1 with views 0, 4, 8 and so on through subset 4 with views 3, 7, 11." width="80%"}
 ```
 
+### How many subsets
+
+If k subsets of fair size do the work of k MLEM iterations, why not take as many subsets as there
+are views? The measurement ran OSEM on the phantom of the next section with 1 (MLEM), 2, 4, 8, 16,
+32 and 64 subsets of the 192 views, every k-th view in each:
+
+| Subsets | Views | Updates | Iterations | Log-likelihood | Noise | CRC 12 mm | CRC 5 mm |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 192 | 32 | 32 | 4,063 | 19.5% | 1.23 | 0.88 |
+| 8 | 24 | 32 | 4 | 4,058 | 19.5% | 1.24 | 0.87 |
+| 16 | 12 | 32 | 2 | 4,064 | 19.7% | 1.23 | 0.88 |
+| 32 | 6 | 32 | 1 | 4,048 | 20.5% | 1.22 | 0.87 |
+| 1 | 192 | 64 | 64 | 4,614 | 34.2% | 1.21 | 0.98 |
+| 16 | 12 | 64 | 4 | 4,601 | 34.4% | 1.21 | 0.98 |
+| 32 | 6 | 64 | 2 | 4,571 | 35.1% | 1.19 | 0.94 |
+| 64 | 3 | 64 | 1 | 3,630 | 39.2% | 1.29 | 0.94 |
+
+: OSEM with k interleaved subsets after the same number of image updates; the log-likelihood
+relative to the first iteration of 8 subsets, the background noise (CoV), and the CRC of two rods
+(`measurements/ch28/reconstruct.txt`, section 6, which also has 2 and 4 subsets and the tables at
+equal iterations and at equal noise).
+
+Up to 16 subsets, the image depends on the number of updates and not on how they were made: after
+32 updates every row has 19.5 to 19.7% noise and a CRC of 1.23 to 1.24, and the likelihood differs
+by 6 out of the 4,000 gained. Subsets of 12 views are still fair. At 32 subsets of 6 views the rows
+start to part: more noise for less likelihood. At 64 subsets of 3 views each update follows its
+three views too closely, and after the 64 updates of a single pass the image is 984 below MLEM in
+likelihood with 5 points more noise: it no longer follows MLEM toward the maximum-likelihood
+image.
+
+At the same noise the subsets change nothing either: the first iteration of each k that reaches the
+19.5% of 4 iterations of 8 subsets has a CRC of 1.22 to 1.24 for the 12 mm rod and 0.87 to 0.90 for
+the 5 mm rod, from MLEM to 32 subsets. What subsets buy is time. One pass over the views costs the
+same whatever k, so the 32 updates took 32 passes as MLEM, 4 with 8 subsets and 2 with 16. What
+they cost is granularity: with k subsets the reconstruction can stop only every k updates, and with
+64 the first place to stop is already at 39% noise. MiniDAQ's 8 subsets stop every 8 updates,
+finely enough to choose 4 iterations, and are well within the range where the subsets are fair.
+Exercise 28.4 makes that choice from a noise target.
+
 ## A phantom, iteration by iteration
 
 ### The data
@@ -501,6 +540,15 @@ and without noise. Then answer in `NOTES.md` what uneven subsets do with the sho
 sensitivity, why the order of the views matters, and why 192 subsets would be a bad idea.
 *Time:* 45 minutes.
 
+**Exercise 28.4 (M): When to stop OSEM, from a noise target.** *Goal:* choose the number of
+iterations the way the chapter does, from the noise of a uniform region after each iteration,
+and refuse subsets too small to be fair. *Starter:*
+`exercises/ch28/e4_stopping/starter/stopping.py`. *Acceptance:* `tests/test_stopping.py` passes: the stop is the last iteration within 20% noise and
+one more passes it, the noise is the background's, 2, 3 and 6 subsets stop within one iteration's
+updates of MLEM with the same contrast, subsets of 3 views are refused, and so is a target the
+first iteration passes. Then answer in `NOTES.md` where the starter stopped, why 6 subsets stop
+earlier, and whether 6 views is the limit for MiniDAQ. *Time:* 1 hour.
+
 ## MiniDAQ milestone: the reconstruction {.unnumbered}
 
 ::: box-milestone
@@ -519,7 +567,7 @@ point source, and its contrast and noise are measured on a phantom. **Start:** t
    speed of subsets, noiseless data, unmeasured bins, the subsets.
 4. Add `chain`, the corrections of Chapter 27 as steps on whole runs, and the measurement
    `measurements/ch28/reconstruct.py`, which reuses Chapter 27's runs.
-5. Add Exercises 28.1 to 28.3.
+5. Add Exercises 28.1 to 28.4.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets and static analysis reports
 nothing; the trace matrix shows SRS-REC-001 to SRS-REC-003 verified; the point source comes out
