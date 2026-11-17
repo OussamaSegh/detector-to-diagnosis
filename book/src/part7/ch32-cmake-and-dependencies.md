@@ -44,7 +44,7 @@ After this chapter you can:
 
 Chapter 1 (the CMake project and its presets), Chapter 7 (the warnings and static analysis), Chapter
 14 (the SOUP list), Chapter 20 (the tool list, reproducible builds and the gate self-test) and
-Chapter 29 (the projector and its Python module). Reading: about 3 hours. Exercises: 2 hours.
+Chapter 29 (the projector and its Python module). Reading: about 3 hours. Exercises: 3 hours.
 Milestone: 5 hours. If time is short, do Exercise 32.1.
 
 ## Targets and what they pass on
@@ -610,6 +610,15 @@ and touching `geometry.hpp` still recompiles the eight rings. Then look at Ninja
 dependencies of one object, compare with the chapter's measurements, and say when a forward
 declaration is not enough. *Time:* 30 minutes.
 
+**Exercise 32.4 (M): A dependency pinned by its bytes.** *Goal:* fetch a library pinned by the
+SHA-256 of its archive, with its headers outside the project's warnings. *Starter:*
+`exercises/ch32/e4_pin/starter/CMakeLists.txt`, which fetches tinylib with no hash and fails the
+build on a warning in its header. *Acceptance:* `tests/test_pin.py` passes, offline: the program
+builds with `-Werror` and prints `scaled 10`, a tampered archive of the same name fails the
+configure with a hash mismatch, and a narrowing added to `main.cpp` still fails the build. Then
+answer in `NOTES.md` what a tag pins, what `SYSTEM` switches off and what replaces it for SOUP, and
+what a hash computed from an already replaced archive pins. *Time:* 60 minutes.
+
 ## MiniDAQ milestone: the build as an interface {.unnumbered}
 
 ::: box-milestone
@@ -632,7 +641,7 @@ project, the build's times are measured, and every changed C++ line is checked a
    run in the CI job `python`.
 5. Add `.clang-format`, `tools/check_format.py`, `tools/hooks/pre-commit`, their tests, the CI job
    `format` and the gate self-test's fault `format`.
-6. Add `measurements/ch32/build_times.py` and its results; add Exercises 32.1 to 32.3 with the
+6. Add `measurements/ch32/build_times.py` and its results; add Exercises 32.1 to 32.4 with the
    helper `minidaq_cmake_exercise`.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets; the CI jobs `format` and
