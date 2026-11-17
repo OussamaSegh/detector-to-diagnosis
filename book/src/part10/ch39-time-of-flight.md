@@ -43,7 +43,7 @@ After this chapter you can:
 
 Chapter 8 (time of flight in physics), Chapter 12 (the list-mode format and the histogrammer's TOF
 bins), Chapter 26 (the timing calibration), Chapters 28 and 29 (OSEM and the C++ projector) and
-Chapter 38 (the time base monitor). Reading: about 3 hours. Exercises: 6 hours. Milestone: 4
+Chapter 38 (the time base monitor). Reading: about 3 hours. Exercises: 7 hours. Milestone: 4
 hours. If time is short, do Exercise 39.2.
 
 ## What time of flight adds to a line
@@ -335,10 +335,13 @@ lesions you look for. A comparison of raw pixel noise would have concluded that 
 makes images worse, which is what the first version of this measurement printed.
 
 **The gain is below the estimate.** √(D / Δx) is 2.11 at 300 ps; the measured factors are 1.39 and
-1.69. The estimate is for the center of a uniform object, filtered at the localization's scale, at
-convergence; a region near the edge of the cylinder has a shorter chord through it and gains less,
-and the regions here are spread over the whole background. It is an estimate of the order of
-magnitude, and the measurement is what goes into a document.
+1.69. The estimate is for the center of a uniform object, compared at the localization's scale, at
+convergence. A region away from the center has shorter chords through it and gains less, but here
+that explains little: averaged over the measurement's 15 regions, the estimate is still 2.06
+(Exercise 39.4). The measures are at finer scales than the 45 mm of the localization, and their
+gains fall with the scale: 1.69 for regions 16 mm across, 1.39 for an 8 mm filter, less than 1 for
+one pixel. It is an estimate of the order of magnitude, and the measurement is what goes into a
+document.
 
 At 500 ps the gain shrinks, as it should: the filtered noise falls by 1.26 and the background
 variability by 1.11 after 12 iterations, against an estimate of 1.63. For the first six
@@ -587,6 +590,15 @@ each block only to the one opposite, raises ValueError; a source 60 mm off cente
 up to 300 ps to within 8 ps; a block that saw nothing is None and the others keep a mean of zero;
 swapping a and b of every event changes nothing. *Time:* 3 hours.
 
+**Exercise 39.4 (M): How much time of flight should gain, and where.** *Goal:* the estimate of the
+gain at every point of a uniform cylinder, from the chords of the lines through it, and for the
+measurement's regions. *Starter:* `exercises/ch39/e4_tof_gain/starter/gain.py`, which uses c
+instead of c / 2, takes the diameter as every chord and averages the regions' gains.
+*Acceptance:* `tests/test_gain.py` passes: 300 ps localize to 44.969 mm, the chords, 2.109 at the
+center and 2.022 at 55 mm, exactly 1 for an object smaller than the localization, and 2.056 for the
+15 regions of `measurements/ch39/tof.py`. Then answer in `NOTES.md` how much of the gap to the
+measured 1.69 the position explains, and which number goes into a document. *Time:* 1 hour.
+
 ## MiniDAQ milestone: time of flight on a trusted time base {.unnumbered}
 
 ::: box-milestone
@@ -605,7 +617,7 @@ time base was not shown to hold.
 4. Add `recon::Tof` and the TOF walk, kernel, forward and back to `JosephProjector`; bind them as
    `recon_cpp.TofProjector`; add the C++ tests and the comparison with numpy.
 5. Add `check_time_base_for_tof` and `tof_sinograms` to `tools/recon/chain.py`, with their tests.
-6. Measure (`measurements/ch39/`) and add Exercises 39.1 to 39.3.
+6. Measure (`measurements/ch39/`) and add Exercises 39.1 to 39.4.
 
 **Definition of done.** `recon_tests`, `tools.recon` and `tools.recon_cpp` pass, including the
 end-to-end test of the sign; `docs.srs`, `docs.trace`, `docs.changes` and `docs.risk` pass; the
