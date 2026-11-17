@@ -49,7 +49,7 @@ After this chapter you can:
 Chapter 8 (PET physics: photopeak, Compton scatter, time of flight), Chapter 10 (the coincidence
 sorter), Chapter 12 (the list-mode file and its run record), Chapter 15 (risk management) and
 Chapter 22 (the SiPM bias and its temperature dependence). You need Python 3 with numpy for the
-procedure and the exercises. Reading: about 3 hours. Exercises: 4 to 5 hours. Milestone: 6 hours.
+procedure and the exercises. Reading: about 3 hours. Exercises: 5 to 6 hours. Milestone: 6 hours.
 If time is short, do Exercises 26.1 and 26.3.
 
 ## What an uncalibrated detector reports
@@ -455,7 +455,8 @@ Some inputs make a table that passes everything and is wrong:
 
 - **E_sat.** The saturation energy is given on the command line. A wrong one gives curves that put
   each photopeak at 511 keV and every other energy off: the scatter below the photopeak, and so the
-  scatter correction of Chapter 27, comes out wrong.
+  scatter correction of Chapter 27, comes out wrong. A second line at another energy sees it, which
+  is what Exercise 26.4 does with the 307 keV line of the crystals' own lutetium.
 - **The source's position.** A cylinder 20 mm off center gives the lines that pass near the offset a
   mean flight-time difference of up to 133 ps, which the solution absorbs into the delays as a
   pattern around the ring (Exercise 26.3). The residual is no larger.
@@ -572,6 +573,15 @@ the parts of small graphs and of a point source's pairs, the delays of a cylinde
 exact delays from exact differences, and 15% randoms set aside. Then answer in `NOTES.md` why a mean
 is not a solution, what decides the number of iterations, and what a cylinder off center does.
 *Time:* 2 hours.
+
+**Exercise 26.4 (M): A second energy line.** *Goal:* write the check that sees a wrong saturation
+energy, which puts every photopeak at 511 keV and passes every criterion above, and find the
+saturation energy from two lines. *Starter:* `exercises/ch26/e4_second_line/starter/second_line.py`.
+*Acceptance:* `tests/test_second_line.py` passes: the right E_sat accepted, also with peak centers
+0.2% off, and E_sat of 1,200, 1,800 and 3,000 keV and a linear detector refused by the 307 keV
+line of the crystals' lutetium; E_sat found from exact codes and, as the median of 40 noisy
+crystals, within 10%. Then answer in `NOTES.md` how far the line moves for a wrong E_sat, why the
+median works, and what makes a good second line. *Time:* 45 minutes.
 
 ## MiniDAQ milestone: a calibrated detector {.unnumbered}
 

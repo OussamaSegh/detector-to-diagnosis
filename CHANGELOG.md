@@ -10,6 +10,7 @@ the patch version.
 
 ### Added (2.1.0-dev)
 
+- Exercise 26.4: a second energy line, the check that sees a wrong saturation energy.
 - Exercise 29.4: write into the caller's array, without a copy and without the GIL
   (roadmap 2.1.0, Theme H).
 
