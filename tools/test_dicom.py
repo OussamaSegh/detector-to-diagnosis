@@ -108,7 +108,7 @@ class Encoding(unittest.TestCase):
         # REQ: SRS-DCM-001
         cases = [("SH", "ACCESSION-NUMBER1"), ("UI", "1." + "2" * 63), ("UI", "1.2a"),
                  ("CS", "pt"), ("LO", "a\\b"), ("DS", float("nan")), ("IS", 2**31),
-                 ("PN", "A" * 65)]
+                 ("PN", "A" * 65), ("CS", "PT\n"), ("UI", "1.2\n")]  # MDQ-PR-084
         tags = {"SH": 0x00080050, "UI": 0x0020000D, "CS": 0x00080060, "LO": 0x00100020,
                 "DS": 0x00281053, "IS": 0x00200013, "PN": 0x00100010}
         for vr, value in cases:
@@ -351,7 +351,8 @@ class Series(unittest.TestCase):
         # REQ: SRS-DCM-005
         for bad in ({"PatientID": ""}, {"PatientID": "   "}, {"PatientName": ""},
                     {"StudyInstanceUID": "1.2.03"}, {"StudyInstanceUID": ""},
-                    {"PatientSex": "X"}, {"PatientBirthDate": "1970-01-01"}):
+                    {"PatientSex": "X"}, {"PatientBirthDate": "1970-01-01"},
+                    {"StudyInstanceUID": ORDER["StudyInstanceUID"] + "\n"}):  # MDQ-PR-084
             with self.subTest(bad=bad), self.assertRaises(DicomError):
                 make(order=bad)
         with self.assertRaisesRegex(DicomError, "UTC offset"):

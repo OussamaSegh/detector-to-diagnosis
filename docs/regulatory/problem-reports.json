@@ -1676,6 +1676,45 @@
         "category": "tool",
         "escape": "No test with a commit made before a rename."
       }
+    },
+    {
+      "id": "MDQ-PR-084",
+      "title": "A UID, a code string or an update's version with a trailing newline passes validation",
+      "found": "2026-11-17, writing Exercise 35.4 (tools/dicom/uid.py, valid)",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "0.5.0",
+        "0.6.0",
+        "0.7.0",
+        "0.8.0",
+        "0.9.0",
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+        "2.0.1"
+      ],
+      "capa": "",
+      "description": "Four validations matched a pattern anchored with ^ and $ through re.match, and Python's $ also matches just before a final newline. uid.valid('1.2.3\\n') was true, so the export accepted an order whose study UID ended in a newline (SRS-DCM-005 and RC-47 say it refuses an invalid one); the encoder's last check accepted a UI or CS value ending in a newline; and make_update.py accepted --version '0.5.1\\n' (since 0.5.0). No order or release used such a value.",
+      "evaluation": {
+        "safety_relevant": true,
+        "rationale": "RC-47 (H-15) was weaker than specified: a study UID that is not the order's by one character could have reached the archive, which would file the series under a study that is not the order's. It needs a newline at the end of the hospital's UID, which no test order or worklist has given; the patient attributes were not affected."
+      },
+      "resolution": {
+        "change": "The four checks use fullmatch: uid.valid, the encoder's CS and UI checks, and make_update.py's version.",
+        "verification": "tools.dicom: test_an_order_that_cannot_file_the_series_is_refused and test_a_value_that_breaks_its_vr_is_refused_not_truncated with a trailing newline; tools.make_update: test_a_version_with_a_trailing_newline_is_refused. All three fail without the change."
+      },
+      "root_cause": {
+        "whys": [
+          "re.match with ^...$ reads as 'the whole string' and is not: $ matches before a final newline.",
+          "The tests of invalid values had wrong characters, empty values and leading zeros, never a trailing newline."
+        ],
+        "cause": "A validation pattern anchored with $ instead of matched with fullmatch.",
+        "category": "code",
+        "escape": "No test with whitespace at the end of a value."
+      }
     }
   ]
 }

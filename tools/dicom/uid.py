@@ -27,7 +27,7 @@ APPLICATION_CONTEXT = "1.2.840.10008.3.1.1.1"
 
 def valid(u):
     """True if u is a syntactically valid UID."""
-    return isinstance(u, str) and 0 < len(u) <= 64 and bool(SYNTAX.match(u))
+    return isinstance(u, str) and 0 < len(u) <= 64 and SYNTAX.fullmatch(u) is not None
 
 
 def random_uid():

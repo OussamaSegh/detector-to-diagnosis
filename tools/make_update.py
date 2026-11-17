@@ -88,7 +88,7 @@ def main(argv=None):
     ap.add_argument("--key", required=True, type=pathlib.Path, help="Ed25519 private key (PEM)")
     ap.add_argument("--out", required=True, type=pathlib.Path)
     args = ap.parse_args(argv)
-    if not VERSION.match(args.version):
+    if not VERSION.fullmatch(args.version):
         raise SystemExit(f"make_update: version {args.version!r} is not MAJOR.MINOR.PATCH[-PRE]")
     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", "0"))
 

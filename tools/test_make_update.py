@@ -94,6 +94,15 @@ class MakeUpdate(unittest.TestCase):
         self.assertIn("does not verify", r.stderr)
         self.assertFalse((self.root / "current").exists())
 
+    def test_a_version_with_a_trailing_newline_is_refused(self):
+        # REQ: SRS-PLT-003
+        # MDQ-PR-084: "$" in the pattern matched before a final newline.
+        r = run(sys.executable, TOOLS / "make_update.py", "--stage", self.tmp, "--version",
+                "0.5.1\n", "--commit", "abc1234", "--platform", "minidaq-platform-1", "--key",
+                self.key, "--out", self.tmp / "never", ok=False)
+        self.assertIn("is not MAJOR.MINOR.PATCH", r.stderr)
+        self.assertFalse((self.tmp / "never").exists())
+
     def test_the_same_tree_gives_the_same_bundle(self):
         # REQ: SRS-PLT-003
         a = self.bundle("0.5.0", self.tmp / "one")

@@ -102,10 +102,10 @@ def _text(tag, vr, value, encoding):
         v = str(v)
         if vr not in SINGLE_VALUED and "\\" in v:
             raise DicomError(f"{dictionary.name(tag)}: a backslash inside one value")
-        if vr == "CS" and not CS_CHARS.match(v):
+        if vr == "CS" and not CS_CHARS.fullmatch(v):
             raise DicomError(f"{dictionary.name(tag)}: {v!r} is not a CS "
                              "(capitals, digits, space, underscore)")
-        if vr == "UI" and not UI_CHARS.match(v):
+        if vr == "UI" and not UI_CHARS.fullmatch(v):
             raise DicomError(f"{dictionary.name(tag)}: {v!r} is not a UID")
         try:
             b = v.encode(encoding if vr in CHARSET_VRS else "ascii")
