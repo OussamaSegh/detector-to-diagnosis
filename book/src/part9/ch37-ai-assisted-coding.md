@@ -43,7 +43,7 @@ After this chapter you can:
 Chapter 14 (IEC 62304's activities), Chapter 16 (change control), Chapter 18 (testing and
 mutation testing), Chapter 20 (tool confidence and CI), Chapter 21 (code review), Chapter 35 (the
 DICOM export and its independent checks) and Chapter 36 (the commit policy). Some use of an AI
-coding assistant helps but is not required. Reading: about 3 hours. Exercises: 6 hours. Milestone:
+coding assistant helps but is not required. Reading: about 3 hours. Exercises: 7 hours. Milestone:
 2 hours. If time is short, do Exercise 37.3.
 
 ## What an assistant does in a repository
@@ -513,6 +513,16 @@ check on a wrapping 40-bit counter by testing it against its requirement. *Start
 *Acceptance:* CTest builds your tests against the function and seven fluent, wrong versions of it:
 the original passes, every mutant fails, and there are at least 8 tests. *Time:* 3 hours.
 
+**Exercise 37.4 (M): A dependency an assistant suggests.** *Goal:* check a suggested requirement
+against the lock file and the SOUP list: pinned, approved, a look-alike of an approved package,
+already locked or in conflict. *Starter:* `exercises/ch37/e4_suggested_dependency/starter/suggested.py`,
+which compares names as written and never looks for look-alikes. *Acceptance:*
+`tests/test_suggested.py` passes: names compared as the index compares them, a conflict with the
+locked version, ranges refused as pins, nine look-alikes each near the package it resembles, two
+unrelated packages near nothing, and lines that are not requirements refused. Then run it on the
+real lock file and answer in `NOTES.md` what a look-alike finding asks of a reviewer and what the
+check cannot know. *Time:* 1 hour.
+
 ## MiniDAQ milestone: the assistant's part on the record {.unnumbered}
 
 ::: box-milestone
@@ -527,7 +537,7 @@ per release, and every new one comes with a test or names the tests that cover i
    `assisted`, and the test `tools.ai_provenance`.
 3. Measure the history (`measurements/ch37/`) and read every assisted change of product code that
    came without a test.
-4. Add Exercises 37.1 to 37.3.
+4. Add Exercises 37.1 to 37.4.
 
 **Definition of done.** `tools.ai_provenance` and `tools.commits` pass, including the policy over
 the repository from its first commit; `docs.trace`, `docs.tools` and `docs.baseline` (the four
