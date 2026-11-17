@@ -165,8 +165,9 @@ The release is built from the tag with the presets, as the checks did:
 ```sh
 git checkout book-v{version}
 ci/run_all.sh                                     # the six presets, tests and documentation tests
+ci/run_all.sh product                             # the product build, without the simulator
 tools/static_analysis.sh build/clang-release
-cmake --preset hardened && cmake --build --preset hardened   # the shipped binaries
+cmake --preset product && cmake --build --preset product     # the shipped binaries (CR-0029)
 tools/repro_check.sh OUT                                     # two builds, compared byte for byte
 tools/make_sbom.py --validate -o minidaq-{version}.cdx.json
 tools/release_checks.sh OUT 600 resume                        # this record's evidence

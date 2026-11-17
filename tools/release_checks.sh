@@ -36,7 +36,8 @@ if [ "$part" = resume ]; then
     fi
     # A part that failed runs again only after its investigation is written, and only once for
     # a release (SDP section 8, MDQ-PR-077); a part that stopped without a verdict runs again.
-    fails=$(grep -cxE "[0-9]+ release checks failed \(part ($p|all)\)" "$out/release-checks.txt" 2>/dev/null)
+    # Only the part's own verdicts count: a whole run writes one per part (MDQ-PR-082).
+    fails=$(grep -cxE "[0-9]+ release checks failed \(part $p\)" "$out/release-checks.txt" 2>/dev/null)
     if [ "${fails:-0}" -ge 2 ]; then
       echo "part $p has failed twice for this release: no third run; the failure is a problem report against the commit (SDP section 8)" >&2
       exit 4
@@ -67,18 +68,39 @@ on_exit() {
 }
 trap on_exit EXIT
 failed=()
-in_part() { [ "$part" = all ] || [ "$part" = "$1" ]; }
+# The failures of each part, so that a whole run also records each part's verdict (MDQ-PR-082).
+part_failed=(0 0 0 0 0)
+current=0
+in_part() { if [ "$part" = all ] || [ "$part" = "$1" ]; then current=$1; return 0; fi; return 1; }
 stamp() { echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) $*"; }
 # Every result also goes to OUT/release-checks.txt, one section per part, which
 # tools/acceptance.py reads (Chapter 33); a part run again appends a new section.
 check() {  # name status
   local line
-  if [ "$2" -eq 0 ]; then line="pass  $1"; else line="FAIL  $1"; failed+=("$1"); fi
+  if [ "$2" -eq 0 ]; then
+    line="pass  $1"
+  else
+    line="FAIL  $1"
+    failed+=("$1")
+    part_failed[current]=$((part_failed[current] + 1))
+  fi
   echo "$line"
   echo "$line" >> "$out/release-checks.txt"
 }
 summary() {
   finished=yes
+  # A whole run records each part's verdict too, so that resume asks for an investigation, and
+  # counts a run again, only for the part that failed (SDP section 8, MDQ-PR-082).
+  if [ "$part" = all ]; then
+    local p
+    for p in 1 2 3 4; do
+      if [ "${part_failed[p]}" -gt 0 ]; then
+        echo "${part_failed[p]} release checks failed (part $p)"
+      else
+        echo "all release checks passed (part $p)"
+      fi >> "$out/release-checks.txt"
+    done
+  fi
   if [ ${#failed[@]} -gt 0 ]; then
     echo "${#failed[@]} release checks failed (part $part)" | tee -a "$out/release-checks.txt" >&2
     exit 1

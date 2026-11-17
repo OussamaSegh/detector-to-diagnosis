@@ -58,6 +58,21 @@ def resume(out, failing_part=None):
                            + stub + block], capture_output=True, text=True)
 
 
+def verdicts(part, failing):
+    """Runs the script's check() and summary() for PART with stub checks, failing those in the
+    parts listed in FAILING, and returns release-checks.txt (MDQ-PR-082)."""
+    lines = SCRIPT.read_text().splitlines()
+    first = next(i for i, x in enumerate(lines) if x == "failed=()")
+    last = next(i for i in range(first, len(lines)) if lines[i].startswith("commit_file="))
+    body = "\n".join(lines[first:last])
+    calls = "".join(f'if in_part {p}; then check "c{p}" {1 if p in failing else 0}; fi\n'
+                    for p in (1, 2, 3, 4))
+    with tempfile.TemporaryDirectory() as out:
+        p = subprocess.run(["bash", "-c", f"set -uo pipefail\nout={out}\npart={part}\nfinished=no\n"
+                            + body + "\n" + calls + "summary\n"], capture_output=True, text=True)
+        return p.returncode, (pathlib.Path(out) / "release-checks.txt").read_text()
+
+
 class ReleaseChecks(unittest.TestCase):
     def test_resume_runs_only_the_parts_not_yet_passed(self):
         with tempfile.TemporaryDirectory() as out:
@@ -114,6 +129,34 @@ class ReleaseChecks(unittest.TestCase):
             (path / "release-checks.txt").write_text("all release checks passed (part 1)\npass  something\n")
             self.assertEqual(resume(out).returncode, 0)
             self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\n")
+
+    def test_a_whole_run_records_each_parts_verdict(self):
+        # MDQ-PR-082: a failed whole run blamed every part, so resume asked for an investigation
+        # of parts that had passed and counted their next run as a second one.
+        status, text = verdicts("all", {3})
+        self.assertEqual(status, 1)
+        for line in ("all release checks passed (part 1)", "all release checks passed (part 2)",
+                     "1 release checks failed (part 3)", "all release checks passed (part 4)",
+                     "1 release checks failed (part all)"):
+            self.assertIn(line + "\n", text)
+        status, text = verdicts("2", set())
+        self.assertEqual(status, 0)
+        self.assertEqual(text.count("release checks"), 1, text)
+
+    def test_resume_after_a_failed_whole_run_asks_only_for_the_failed_part(self):
+        with tempfile.TemporaryDirectory() as out:
+            path = pathlib.Path(out)
+            (path / "release-checks.txt").write_text(
+                "## part all\nFAIL  x\nall release checks passed (part 1)\n"
+                "all release checks passed (part 2)\n1 release checks failed (part 3)\n"
+                "all release checks passed (part 4)\n1 release checks failed (part all)\n")
+            p = resume(out)
+            self.assertEqual(p.returncode, 4)
+            self.assertIn("rerun-part-3.md", p.stderr)
+            (path / "rerun-part-3.md").write_text("investigated\n")
+            p = resume(out)
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertEqual((path / "ran").read_text(), "ran part 3\n")
 
     def test_a_whole_run_that_passed_counts_for_every_part(self):
         with tempfile.TemporaryDirectory() as out:

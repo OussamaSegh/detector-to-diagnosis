@@ -8,6 +8,18 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed (review of release 2.0.1)
+
+- MDQ-PR-081: `tools/release_record.py` wrote a record's Build section with the `hardened`
+  preset as the shipped binaries; since CR-0029 they are the `product` preset's, and the skeleton
+  now names `ci/run_all.sh product` too. The 2.0.1 record, written from it, is corrected with a
+  note.
+- MDQ-PR-082: after a whole run (`PART all`) that failed, `tools/release_checks.sh resume`
+  counted the failure against every part, so it asked for an investigation of parts that had
+  passed and could refuse a run that SDP section 8 allows. A whole run now records each part's
+  verdict, and `resume` counts only a part's own.
+- MDQ-PR-006 and MDQ-PR-064 affect 2.0.1 too (`affects`, known anomalies).
+
 ## [2.0.1] - 2026-11-16
 
 The first patch release of 2.0, made from the main branch (maintenance plan version 4). Release
