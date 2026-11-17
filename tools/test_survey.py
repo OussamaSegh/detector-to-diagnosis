@@ -37,7 +37,15 @@ class Churn(unittest.TestCase):
         text = ("@1\n\n1\t1\tminidaq/src/{old => new}/a.cpp\n"
                 "@2\n\n4\t0\tminidaq/src/new/a.cpp\n@3\n\n0\t0\tdoc.md => notes.md\n")
         self.assertEqual(survey.churn(text), {"minidaq/src/new/a.cpp": (2, 6), "notes.md": (1, 0)})
-        self.assertEqual(survey.renamed_to("a/{b => }/c.cpp"), "a/c.cpp")
+        self.assertEqual(survey.renamed("a/{b => }/c.cpp"), ("a/b/c.cpp", "a/c.cpp"))
+
+    def test_the_commits_before_a_rename_count_under_the_new_name(self):
+        # REQ: SRS-SVY-001
+        # Newest first: renamed twice, then two commits under the oldest name (MDQ-PR-083).
+        text = ("@4\n\n1\t1\tminidaq/src/{run.cpp => service.cpp}\n"
+                "@3\n\n2\t0\tminidaq/{acq => src}/run.cpp\n"
+                "@2\n\n3\t0\tminidaq/acq/run.cpp\n@1\n\n5\t0\tminidaq/acq/run.cpp\n")
+        self.assertEqual(survey.churn(text), {"minidaq/src/service.cpp": (4, 12)})
 
     def test_a_binary_file_counts_its_commits_and_no_lines(self):
         # REQ: SRS-SVY-001

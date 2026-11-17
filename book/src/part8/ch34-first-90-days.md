@@ -181,9 +181,12 @@ classification relies on. The second thing is the history per file:
 ```{.python include="tools/survey.py" snippet="churn"}
 ```
 
-`git log --numstat` gives, for every commit, the lines added and deleted in each file. The two
-details a first version gets wrong are renames (git writes `src/{old => new}/a.cpp`, and the file
-should count under its new name) and binary files (`-` instead of numbers). The survey then puts
+`git log --numstat` gives, for every commit, newest first, the lines added and deleted in each
+file. The two details a first version gets wrong are renames and binary files (`-` instead of
+numbers). Git writes a rename as `src/{old => new}/a.cpp`, and the file should count under the
+name it has now, with the commits made under its old names too: the survey's first version did
+only the first half, and Exercise 34.4 found it (MDQ-PR-083). Reading newest first, a rename is
+seen before the older commits, so a map from old names to the current one is enough. The survey then puts
 the two sources together:
 
 ```{.python include="tools/survey.py" snippet="survey"}
@@ -494,8 +497,8 @@ every commit and keeps renamed paths as numstat writes them. *Acceptance:* `test
 passes: scores highest first with ties by path, commits above the threshold left out and listed,
 the three forms of a rename read and a file renamed twice counted under its current name, and the
 window applied. Then run it on MiniDAQ and answer in `NOTES.md` what the commits it leaves out
-are, what `tools/survey.py` does with a commit made before a rename, and what could replace the
-threshold. *Time:* 1 hour.
+are, what mapping a rename only in its own commit does to a file's history, and what could
+replace the threshold. *Time:* 1 hour.
 
 ## MiniDAQ milestone: a map for the next maintainer {.unnumbered}
 

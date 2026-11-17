@@ -18,14 +18,14 @@ what large commits are; the list of commits it removed is how you test it.
 
 ## 2. tools/survey.py
 
-`churn` maps a rename to its new name in the commit that made it, so that commit counts for the
-current file, but the commits before it still count under the old name, which is no longer a
-file and drops out of the ranking. A file renamed after ten commits starts again at one. It has
-no threshold for mass commits and takes a window through `git log --since`. On MiniDAQ the 14
-renames in the history are of figures, measurements and one tool, none of a product file, so the
-survey's numbers are not affected today; they would be after the first rename of a source file.
-That is a limitation worth a line in the tool's validation record (TL-43), and a problem report
-if a rename of a product file is planned.
+Its first version mapped a rename to the new name only in the commit that made it, so that commit
+counted for the current file, but the commits before it still counted under the old name, which
+is no longer a file and drops out of the ranking: a file renamed after ten commits started again
+at one. Writing this exercise found it; it is MDQ-PR-083, fixed the way this solution does it,
+with a test of a file renamed twice. On MiniDAQ the 14 renames in the history are of figures,
+measurements and one tool, none under `minidaq/`, so no survey the book reports was affected.
+The survey has no threshold for large commits, which section 1 suggests is right for this
+history, and takes its window through `git log --since`.
 
 ## 3. The threshold
 

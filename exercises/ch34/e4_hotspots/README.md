@@ -25,8 +25,9 @@ renamed path as numstat writes it, ignores the window, and breaks ties arbitrari
 1. Run your function on MiniDAQ: `git log --numstat --format='commit %H %as' -- minidaq`, with
    the non-blank code lines of each `.cpp` and `.hpp` as sizes. How many commits touch more than
    20 files, what are they, and what do they do to the top five?
-2. Compare with `churn` in `tools/survey.py`. Which of the three distortions does it handle, and
-   what does it do with a commit made before a rename?
+2. Compare with `churn` in `tools/survey.py` and its test of renames. Which of the three
+   distortions does it handle? What would a version that maps a rename only in the commit that
+   made it do with the commits before it?
 3. Is a threshold of 20 files right for every project? What else could tell a reformat from a
    real change?
 

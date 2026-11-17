@@ -65,24 +65,33 @@ def code_lines(text):
 RENAME = re.compile(r"^(.*)\{(.*) => (.*)\}(.*)$")
 
 
-def renamed_to(path):
-    """The new path of a numstat entry: 'a/{b => c}/d' is a/c/d and 'a => b' is b."""
+def renamed(path):
+    """(old, new) for a numstat entry: 'a/{b => c}/d' is (a/b/d, a/c/d), 'a => b' is (a, b), and
+    a path that was not renamed is (path, path)."""
     m = RENAME.match(path)
     if m:
-        return (m.group(1) + m.group(3) + m.group(4)).replace("//", "/")
-    return path.split(" => ")[-1]
+        def join(middle):
+            return (m.group(1) + middle + m.group(4)).replace("//", "/")
+        return join(m.group(2)), join(m.group(3))
+    old, _, new = path.rpartition(" => ")
+    return (old, new) if old else (path, path)
 
 
 def churn(numstat):
-    """{path: (commits, lines added and deleted)} from `git log --numstat --format=@%H`. A binary
-    file ('-' counts) counts its commits and no lines; a renamed file counts under its new name."""
+    """{path: (commits, lines added and deleted)} from `git log --numstat --format=@%H`, newest
+    commit first as git gives it. A binary file ('-' counts) counts its commits and no lines; a
+    renamed file counts under the name it has now, with the commits made under its old names."""
     commits, lines = collections.Counter(), collections.Counter()
+    current = {}  # an old name -> the file's name now; a rename is read before the older commits
     for line in numstat.splitlines():
         parts = line.split("\t")
         if len(parts) != 3:
             continue
         added, deleted, path = parts
-        path = renamed_to(path)
+        old, new = renamed(path)
+        path = current.get(new, new)
+        if old != new:
+            current[old] = path
         commits[path] += 1
         if added != "-":
             lines[path] += int(added) + int(deleted)

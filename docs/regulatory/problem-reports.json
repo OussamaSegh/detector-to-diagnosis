@@ -1640,6 +1640,42 @@
         "category": "tool",
         "escape": "No test of resume after a whole run that failed."
       }
+    },
+    {
+      "id": "MDQ-PR-083",
+      "title": "The codebase survey restarts a file's history at a rename",
+      "found": "2026-11-17, writing Exercise 34.4 (tools/survey.py, churn)",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "0.8.0",
+        "0.9.0",
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+        "2.0.1"
+      ],
+      "capa": "",
+      "description": "churn() counted a renamed file under its new name only in the commit that made the rename; the commits before it counted under the old name, which is no longer a file and drops out of the survey. A source file renamed after ten commits would have ranked with one. No file under minidaq/ has been renamed, so no survey the book reports was affected.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A T1 tool whose output informs where to read first; it is neither in the product nor verification evidence, and no reported survey contained a rename."
+      },
+      "resolution": {
+        "change": "churn() reads the log newest first and keeps a map from old names to the current one, so the commits made under every earlier name count for the file as it is called now; renamed() returns both sides of a rename.",
+        "verification": "tools.survey: test_the_commits_before_a_rename_count_under_the_new_name (a file renamed twice, four commits)."
+      },
+      "root_cause": {
+        "whys": [
+          "The rename was handled per numstat line, and a line knows only its own commit.",
+          "The test of renames had the rename and a later commit, never an earlier one."
+        ],
+        "cause": "A rename relates commits on both sides of it, and the parser looked at one line at a time.",
+        "category": "tool",
+        "escape": "No test with a commit made before a rename."
+      }
     }
   ]
 }
