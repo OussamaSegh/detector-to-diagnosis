@@ -605,7 +605,7 @@ whose acceptance criteria refuse bad acquisitions, including the wrong source. *
    the list-mode metadata.
 5. Give `minidaq_sim` an uncalibrated detector and its truth file.
 6. Add `tools/calib` with its tests, the measurement `measurements/ch26/calibration.py`, and
-   Exercises 26.1 to 26.3.
+   Exercises 26.1 to 26.4.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets and static analysis reports
 nothing; the trace matrix shows SRS-CAL-001 to SRS-CAL-007 verified; the measurement's table is

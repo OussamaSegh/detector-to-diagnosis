@@ -15,6 +15,7 @@ the patch version.
 - Exercise 30.4: the integral and differential uniformity of a uniform cylinder.
 - Exercise 29.4: write into the caller's array, without a copy and without the GIL
   (roadmap 2.1.0, Theme H).
+- Exercise 31.4: per-crystal mean and variance in one pass over a run read in chunks.
 
 ### Changed (2.1.0-dev)
 

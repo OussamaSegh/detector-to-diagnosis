@@ -395,7 +395,7 @@ and is measured. **Start:** tag `ch28`. **End:** tag `ch29`.
 3. Fetch pybind11, add the option `MINIDAQ_BUILD_RECON_PYTHON` and the module `recon_cpp`;
    install `python3-dev` in CI.
 4. Add `project.CppProjector`, `tools/test_recon_cpp.py` and the test `tools.recon_cpp`.
-5. Add `measurements/ch29/projector.py` and Exercises 29.1 to 29.3, with the CMake function
+5. Add `measurements/ch29/projector.py` and Exercises 29.1 to 29.4, with the CMake function
    `minidaq_pybind_exercise`.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets, the library's tests pass

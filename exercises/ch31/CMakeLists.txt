@@ -1,3 +1,4 @@
 minidaq_python_exercise(e1_pair_counts)
 minidaq_python_exercise(e2_timing_fit)
 minidaq_pybind_exercise(e3_histogram MODULE dthist)
+minidaq_python_exercise(e4_running_stats)

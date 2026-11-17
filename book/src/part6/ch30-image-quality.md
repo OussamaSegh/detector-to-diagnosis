@@ -517,7 +517,7 @@ repeatability, and acceptance limits, all by methods that tests fix. **Start:** 
    `tools/test_recon.py`, which `tools/test_recon_cpp.py` also runs on the C++ projector.
 3. Add `measurements/ch30/quality.py`: the point sources, the six realizations of the phantom, and
    the five sections of `quality.txt`.
-4. Add Exercises 30.1 to 30.3.
+4. Add Exercises 30.1 to 30.4.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets; the trace matrix shows
 SRS-IQ-001 to SRS-IQ-003 tested and SRS-IQ-004 measured; the protocol meets SRS-IQ-004 on every

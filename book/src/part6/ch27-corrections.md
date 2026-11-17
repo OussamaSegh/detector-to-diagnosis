@@ -591,7 +591,7 @@ against the simulator's truth. **Start:** tag `ch26`. **End:** tag `ch27`.
 4. Give `minidaq_sim` crystal efficiencies, an extended source for normalization scans and truth
    sinograms.
 5. Add `tools/recon` with its tests, including the binning against `minidaq_listmode sino` bin for
-   bin, the measurement `measurements/ch27/corrections.py`, and Exercises 27.1 to 27.3.
+   bin, the measurement `measurements/ch27/corrections.py`, and Exercises 27.1 to 27.4.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets and static analysis reports
 nothing; the trace matrix shows SRS-COR-001 to SRS-COR-003 verified; the measurement's randoms

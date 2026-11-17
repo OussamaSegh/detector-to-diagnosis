@@ -45,7 +45,7 @@ After this chapter you can:
 
 Chapter 12 (the MDQ-L1 list-mode format), Chapter 26 (the energy and time calibration) and Chapter
 29 (Python and C++ in one build). Some statistics: the Poisson distribution, a likelihood, a
-chi-square test. Reading: about 3 hours. Exercises: 5 hours. Milestone: 6 hours. If time is short,
+chi-square test. Reading: about 3 hours. Exercises: 6.5 hours. Milestone: 6 hours. If time is short,
 do Exercises 31.1 and 31.2.
 
 ## From scripts to a package
@@ -660,6 +660,15 @@ least 15 times the speed of a Python loop in an optimized build. Then answer in 
 entries the starter put in the first bin, what `forcecast` does to a value that does not fit, and
 whether the C++ is worth its build. *Time:* 2 hours.
 
+**Exercise 31.4 (M): The mean and spread of each crystal over a run read in chunks.** *Goal:* keep
+the count, mean and variance of every crystal in one pass over a run read block by block, with the
+numbers of two passes in memory. *Starter:* `exercises/ch31/e4_running_stats/starter/running.py`.
+*Acceptance:* `tests/test_running.py` passes: equal and unequal chunks (one of them empty, one with
+a single crystal) give the reference means within 1e-9 and variances within a relative 1e-9, values
+offset by 3.6e15 still give the variances, fewer than two values give NaN, and a crystal outside the
+range is refused. Then answer in `NOTES.md` why the mean of the chunks' means is wrong, what the sum
+of squares gives at a large offset, and what makes the offset harmless. *Time:* 1.5 hours.
+
 ## MiniDAQ milestone: the analysis package {.unnumbered}
 
 ::: box-milestone
@@ -678,7 +687,7 @@ every input, and runs its tests, type checks and lint in CTest and CI from a pin
    job `python`.
 3. Add `measurements/ch31/analysis.py` (the readers, the two fits, five QC runs, the run without
    time blur) and `measurements/ch31/histogram_speed.py`.
-4. Add Exercises 31.1 to 31.3.
+4. Add Exercises 31.1 to 31.4.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets and the CI job `python` passes
 with every package required; mypy in strict mode and ruff report nothing; the trace matrix shows
