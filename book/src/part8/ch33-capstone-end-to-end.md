@@ -45,7 +45,7 @@ After this chapter you can:
 Chapter 9 (the readout link and its fault injection), Chapter 10 (the coincidence sorter and its
 counters), Chapter 12 (the list mode), Chapter 19 (the system tests and the soak), Chapter 20 (the
 release checks), Chapters 26 to 28 (calibration, corrections, reconstruction) and Chapter 31 (the
-QC report). Reading: about 3 hours. Exercises: 5 hours. Milestone: 6 hours. If time is short, do
+QC report). Reading: about 3 hours. Exercises: 6 hours. Milestone: 6 hours. If time is short, do
 Exercise 33.2.
 
 ## What the stages' tests leave between them
@@ -565,6 +565,16 @@ digest, a word of the text, item or method does; added, changed and removed are 
 only approved and implemented requests count. Then answer in `NOTES.md` the question of the request
 that names a requirement by saying it does not change. *Time:* 2 hours.
 
+**Exercise 33.4 (M): What a soak's intervals above the limit show.** *Goal:* bound the fraction
+of intervals above the latency limit with exact binomial bounds, and give a verdict that says when
+a soak was too short to tell. *Starter:* `exercises/ch33/e4_soak_verdict/starter/exceed.py`, which
+uses the normal approximation. *Acceptance:* `tests/test_exceed.py` passes: the closed form with
+none above, bounds that cover the true fraction at their confidence over every soak of 180, no
+overflow at 100,000 intervals, 299 intervals to show 1% with none above, and the verdicts
+DEMONSTRATED, EXCEEDED and INCONCLUSIVE. Then answer in `NOTES.md` how often ACC-04 passes a machine
+at 1% and at 3%, what it therefore shows, and what correlated intervals do to the bounds. *Time:* 1
+hour.
+
 ## MiniDAQ milestone: MiniDAQ 1.0, end to end {.unnumbered}
 
 ::: box-milestone
@@ -588,7 +598,7 @@ are frozen against a baseline. **Start:** tag `ch32`. **End:** tag `ch33`.
    the specification against the evidence of release 0.7.0.
 5. Add `docs/regulatory/srs-baseline.json` from SRS version 21, `tools/req_baseline.py`, its tests
    and the test `docs.baseline`.
-6. Add Exercises 33.1 to 33.3.
+6. Add Exercises 33.1 to 33.4.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets; `system.e2e`,
 `tools.acceptance`, `tools.req_baseline` and `docs.baseline` pass; `tools/e2e.py` passes on the
