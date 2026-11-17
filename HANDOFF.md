@@ -5,15 +5,14 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-17: **release 2.0.1 is released**: tag book-v2.0.1 on 5bfae42 (via
-`.github/tags.txt`), ci, gates, codeql and pages green on it; record
-`docs/regulatory/releases/2.0.1.md`, evidence `measurements/release-2.0.1/` (checks on 620dc65,
-all four parts, acceptance 9 of 9, reproducible). SDP v21 and maintenance plan v4 approved by the
-author in writing (the auto-mode classifier refuses approvals recorded under the coordinator's
-delegation: ask the author). Packages and the source zip are in the project files
-(neurolf-book/v2.0.1/). VERSION is 2.0.2-dev. Next: the Opus review of 2.0.1; when it is merged,
-2.1.0 to `docs/ROADMAP-2.1.0.md`, starting by cutting `release/2.0` from the tag and setting
-2.1.0-dev with `tools/post_release.py . 2.1.0-dev`.
+Last updated: 2026-11-17: **2.1.0-dev has started** (`docs/ROADMAP-2.1.0.md`). Release 2.0.1 is
+out (tag book-v2.0.1 on 5bfae42) and its independent review is merged (PR #20, 0925bf8:
+MDQ-PR-081, MDQ-PR-082; next free MDQ-PR-083). SOUP list v31 is a draft with the review for 2.1,
+to be approved by the author for release 2.1.0 (the auto-mode classifier refuses approvals
+recorded under the coordinator's delegation: ask the author). `release/2.0` is not cut yet: a
+session may push only to its own branch and main, so it waits for the author's approval of that
+push; cut it from the tag `book-v2.0.1`. Milestones in order: Theme G (room), Theme I
+(MDQ-PR-064), Theme H (depth), then the release with the internal audit and the CAPA-0005 check.
 
 **Rule of the author (2026-11-16): step by step.** Releases follow in order: 2.0.1, 2.1.0,
 2.2.0, and so on to 3.0.0. Each release has its own plan, `docs/ROADMAP-x.y.0.md` on main, with

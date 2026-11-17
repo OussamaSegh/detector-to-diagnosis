@@ -106,6 +106,12 @@ A minor version: compatible additions only (maintenance plan, section 4). No int
 | 2.1.0-dev, third | Theme H, Chapters 29 and 28, then the new exercises of Chapters 26 to 40 and the measurement folders | Chapter recipe complete for each |
 | 2.1.0 | Internal audit with trends, CAPA-0005 check, SOUP review, full release checks | CI green on the release commit; tag `book-v2.1.0` |
 
+Started on 2026-11-17, after the review of 2.0.1 was merged (0925bf8): VERSION 2.1.0-dev, with
+the SOUP list's known-anomaly review for 2.1. One deviation from the maintenance plan (section
+4): `release/2.0` is cut from the tag `book-v2.0.1` when the author approves pushing that
+branch, not before the first change for 2.1 reached main. The tag holds the cut point exactly,
+so a patch 2.0.2 made from that branch is the same either way.
+
 The same rhythm as before applies:
 
 - Each release gets an independent review on an Opus model before the next milestone is

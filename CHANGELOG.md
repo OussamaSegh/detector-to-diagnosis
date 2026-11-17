@@ -8,6 +8,11 @@ the patch version.
 
 ## [Unreleased]
 
+### Changed (2.1.0-dev)
+
+- VERSION 2.1.0-dev. SOUP list v31 (draft): the known-anomaly review for 2.1, with no change to
+  any item. `release/2.0` waits for the author's approval of the branch (roadmap 2.1.0, section 4).
+
 ### Fixed (review of release 2.0.1)
 
 - MDQ-PR-081: `tools/release_record.py` wrote a record's Build section with the `hardened`
