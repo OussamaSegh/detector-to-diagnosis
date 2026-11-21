@@ -14,6 +14,16 @@ session may push only to its own branch and main, so it waits for the author's a
 push; cut it from the tag `book-v2.0.1`. Milestones in order: Theme G (room), Theme I
 (MDQ-PR-064), Theme H (depth), then the release with the internal audit and the CAPA-0005 check.
 
+Progress on 2026-11-21: Theme G done (789 pages with Theme H's text, 39 of room under 828).
+Theme H: a fourth exercise in each of Chapters 26 to 40 (26.4 to 40.4) and Chapter 28's "How
+many subsets" (measurement section 6) are done. Writing them found MDQ-PR-083 (the survey lost a
+file's history at a rename) and MDQ-PR-084 (validations with `^...$` accepted a trailing newline;
+safety relevant, RC-47), both fixed with tests; next free MDQ-PR-085. Candidate for the coding
+standard at 2.1.0: "validate a whole value with fullmatch". Left: Chapter 29's text, which waits
+for the author's written approval of CR-0034 (the patch is in
+`/mnt/project-files/neurolf-book/pending/`); Theme I's soaks; the measurement folders for
+Chapters 1, 6 and 22; then the release.
+
 **Rule of the author (2026-11-16): step by step.** Releases follow in order: 2.0.1, 2.1.0,
 2.2.0, and so on to 3.0.0. Each release has its own plan, `docs/ROADMAP-x.y.0.md` on main, with
 scope, milestones, acceptance criteria and risks, written before its work starts. A step starts
