@@ -21,3 +21,24 @@ checks' soaks had peaks in 0.8.0, 0.9.0, 1.0.0 (2 of 180) and 1.1.0 (1 of 180), 
 1.2.0, 1.3.0 and 2.0.0 (0 of 180 each): 1,320 intervals without a peak since 1.2.0. The report
 stays open (roadmap 2.1.0, theme I) until a peak is caught
 with the measure or the rate is judged with longer evidence.
+
+`unpinned-100min/`: the same command on 2026-11-21, 20:06 to 21:46 UTC, at c7d72d7 (the programs
+of 2.0.1: no file of `minidaq/src`, `apps` or `include` has changed since), the `release`
+preset, the same 4-CPU virtual machine, nothing else running.
+
+- 2 of 600 intervals had a 99th percentile above 10 ms: 18.09 ms at 2650 s and 13.57 ms at
+  3010 s (99.67% within the limit; SRS-PERF-022 asks for 99%). The result is PASS.
+- In both, the largest one-second run-queue wait of one thread was `mdq-sort`'s, 24.1 and
+  25.9 ms, and the one-second steal 1.73% and 0.60%. Neither stands out: over the run the
+  largest wait had a median of 26.3 ms and a maximum of 89.8 ms (at 2000 s, `mdq-decode`, an
+  interval whose 99th percentile was below the limit), and 98% of the intervals had a wait of
+  24 ms or more.
+- The correlation of the interval's 99th percentile with the largest wait is 0.04, with the
+  one-second steal 0.14.
+- 6.0 billion singles, no loss, resident memory flat (+0.001 MiB/h).
+
+So the peak has now been caught with the measure beside it, and the measure does not explain it:
+neither the run-queue wait of a server thread nor the steal time was larger in the two intervals
+than in the 598 others. Waiting for a CPU, as these counters see it, is not the cause. A pinned
+soak (each pipeline thread on a CPU of its own) follows, to test the next candidate, the
+threads' movement between CPUs.
