@@ -30,6 +30,10 @@ the patch version.
   distribution's advisory.
 - Chapter 28, "How many subsets": OSEM with 1 to 64 subsets compared at equal updates,
   iterations and noise (`measurements/ch28/reconstruct.py`, section 6).
+- CR-0034: the C++ projector's `forward` and `back` take an optional `out`, written in place
+  through the buffer protocol and never converted (SRS-REC-009, SRS version 38). Chapter 29
+  gains "The crossing, measured": the output without a copy, the cost of a call, a conversion and
+  an allocation, the GIL measured, and the wheel (`measurements/ch29/crossing.txt`).
 
 ### Changed (2.1.0-dev)
 

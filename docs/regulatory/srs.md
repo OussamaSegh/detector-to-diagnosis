@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 37 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 38 (MiniDAQ 2.1.0-dev). Status: draft, to be approved with release 2.1.0. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -379,6 +379,7 @@ after the acquisition (`tools/recon`, tool TL-31).
 | SRS-REC-006 | The reconstruction tool's compiled projector `recon_cpp` shall give the same forward projection for every number of threads, and a backprojection that is the same in every run with the same number of threads and within 1e-12 relative between numbers of threads. | tools | T |
 | SRS-REC-007 | The reconstruction tool's projectors with time of flight shall weight each step of a line by the probability that a Gaussian timing error of the stated resolution puts its time difference in each TOF bin, with the histogrammer's TOF bins and its sign of tau (t_a - t_b, endpoint a at negative positions along the line), so that the TOF bins of a line add up to its projection without TOF and the dot-product test holds to 1e-6 relative. | tools | T |
 | SRS-REC-008 | The reconstruction tool shall refuse a reconstruction with time of flight of a run whose record has no time base verdict, an interval at alarm or a board clock that lost its lock, with a message that names the intervals, blocks or boards; a simulated run is accepted. | tools | T |
+| SRS-REC-009 | The reconstruction tool's compiled projector `recon_cpp` shall write a projection into an output array the caller gives, without a copy, and refuse, without writing anything, an output that is not a writeable, C-contiguous float64 NumPy array of the result's shape or that shares memory with the input. | tools | T |
 
 ### 2.21 Image quality (IQ)
 
@@ -569,3 +570,4 @@ shipped programs.
 | 35 | Time of flight in the reconstruction tool (CR-0032, ADR 0038, Chapter 39): SRS-REC-007 and SRS-REC-008 added. |
 | 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |
 | 37 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 36. |
+| 38 | The projector's output array (CR-0034, Chapter 29): SRS-REC-009 added. |

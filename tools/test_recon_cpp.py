@@ -156,6 +156,51 @@ class TheBoundary(unittest.TestCase):
         self.assertEqual(a.dtype, np.float64)
         self.assertEqual(a.shape, self.s.shape)
 
+    def test_writes_into_an_output_the_caller_gives(self):
+        # REQ: SRS-REC-009
+        m = self.A._p  # the module's Projector, which takes out=
+        rng = np.random.default_rng(14)
+        x = rng.random((32, 32))
+        sino = np.full(self.s.shape, np.nan)
+        got = m.forward(x, out=sino)
+        self.assertIs(got, sino)  # the caller's array, no copy
+        self.assertTrue(np.array_equal(sino, m.forward(x)))
+        image = np.empty((32, 32))
+        self.assertIs(m.back(sino, out=image), image)
+        self.assertTrue(np.array_equal(image, m.back(sino)))
+        two = np.zeros((2, self.s.shape[1]))
+        m.forward(x, views=[3, 7], out=two)
+        self.assertTrue(np.array_equal(two, m.forward(x, views=[3, 7])))
+        rows = np.zeros((64, 32))  # the C-contiguous rows of a larger array are written in place
+        m.back(sino, out=rows[:32])
+        self.assertTrue(np.array_equal(rows[:32], image))
+        self.assertFalse(rows[32:].any())
+
+    def test_refuses_an_output_it_cannot_write_in_place(self):
+        # REQ: SRS-REC-009
+        m = self.A._p
+        x = np.ones((32, 32))
+        for out, reason in ((np.zeros(self.s.shape, dtype=np.float32), "float64"),
+                            (np.zeros(self.s.shape, order="F"), "C-contiguous"),
+                            (np.zeros((self.s.shape[0], 2 * self.s.shape[1]))[:, ::2],
+                             "C-contiguous"),
+                            (np.zeros((self.s.shape[0], self.s.shape[1] + 1)), "got"),
+                            (np.zeros(self.s.size), "got")):
+            keep = out.copy()
+            with self.assertRaisesRegex(ValueError, reason):
+                m.forward(x, out=out)
+            self.assertTrue(np.array_equal(out, keep))
+        ro = np.zeros(self.s.shape)
+        ro.flags.writeable = False
+        with self.assertRaisesRegex(ValueError, "read-only"):
+            m.forward(x, out=ro)
+        with self.assertRaises(TypeError):
+            m.back(np.zeros(self.s.shape), out=[[0.0] * 32] * 32)
+        sino = np.zeros(self.s.shape)
+        inside = sino.reshape(-1)[:1024].reshape(32, 32)  # an image in the sinogram's memory
+        with self.assertRaisesRegex(ValueError, "shares memory"):
+            m.back(sino, out=inside)
+
 
 if __name__ == "__main__":
     unittest.main()

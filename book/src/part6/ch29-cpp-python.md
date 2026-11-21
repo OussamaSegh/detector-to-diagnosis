@@ -34,7 +34,8 @@ After this chapter you can:
    guess.
 2. Write a C++ library with an interface that a binding can call safely, and test it on its own.
 3. Expose it to Python with pybind11: arrays with a declared dtype and layout, checked shapes,
-   exceptions that become Python errors, and the GIL released while C++ computes.
+   exceptions that become Python errors, the GIL released while C++ computes, and an output
+   written into the caller's own array without a copy.
 4. Share a loop between threads without losing work or racing on the output, and keep the result
    reproducible.
 5. Run the same tests on two implementations of one algorithm, and compare them with a tolerance
@@ -44,7 +45,7 @@ After this chapter you can:
 ## Prerequisites and estimated time {.unnumbered}
 
 Chapter 3 (threads and data races), Chapter 7 (static analysis and sanitizers), Chapter 28 (the
-projector and OSEM). You need the Python headers (`python3-dev`) and NumPy. Reading: about 2.5
+projector and OSEM). You need the Python headers (`python3-dev`) and NumPy. Reading: about 2.75
 hours. Exercises: 3.75 hours. Milestone: 5 hours. If time is short, do Exercises 29.1 and 29.3.
 
 ## What moves, and what stays
@@ -189,7 +190,8 @@ computes, it holds no Python object and calls no Python function, so it releases
 other Python threads can run, for example one that writes the previous image to disk. The arrays
 it reads stay alive, because the call holds references to them. What the C++ may not do without
 the lock is touch any Python object: create one, change one, raise a Python exception. The output
-array is allocated before the lock is released and returned after it is taken back.
+array, a new one or the one the caller gives, is allocated or checked before the lock is released
+and returned after it is taken back.
 
 Figure [](#fig-ch29-boundary) follows one array across the boundary.
 
@@ -253,7 +255,7 @@ Exercise 29.3's starter compares on a disc and accepts both.
 The boundary has tests of its own: arrays of the wrong shape and views that do not exist are
 refused with the shapes in the message; a Fortran-ordered, a transposed, a strided and an int32
 array give bit for bit what a C-ordered float64 one gives; the inputs are left unchanged and the
-outputs are new arrays.
+outputs are new arrays, unless the caller gives one.
 
 ## Is it faster?
 
@@ -284,6 +286,115 @@ Figure [](#fig-ch29-speed) puts both versions side by side.
 ```{.figure #fig-ch29-speed src="book/figures/plots/ch29/speed.py" caption="One projection of MiniDAQ's 2D sinogram, numpy against the C++ projector on 1, 2 and 4 threads. The first C++ version (grey) was slower than numpy on one thread; computing the position as f_0 + k df made it faster." alt="Two panels of horizontal bars, forward and back projection, in milliseconds. Current: numpy 57 and 49, C++ one thread 34 and 36, two threads 21 and 27, four threads 14 and 15. First C++ version in grey: one thread 66 and 66, two threads 34 and 39, four threads 21 and 24." width="100%" inputs="measurements/ch29/projector.txt measurements/ch29/first-version.txt"}
 ```
 
+## The crossing, measured
+
+The table above times a whole projection. A reconstruction also pays for each crossing of the
+boundary: the call itself, a conversion of an input pybind11 cannot pass as it is, and the
+allocation of every output. This section measures each, and the GIL that the projector releases
+(`measurements/ch29/crossing.txt`).
+
+### An output without a copy
+
+An OSEM loop of 8 subsets allocates a new sinogram and a new image for every subset of every
+iteration. The module's `forward` and `back` take an optional `out`: an array the caller owns,
+into which the projection is written, and which is returned (CR-0034, SRS-REC-009). The C++
+writes through the array's data pointer, the buffer protocol, so the caller's memory is the
+output, with no copy on either side:
+
+```python
+sino = np.empty((192, 227))
+image = np.empty((128, 128))
+for _ in range(iterations):
+    p.forward(x, out=sino)      # the module's Projector, recon_cpp
+    p.back(sino, out=image)
+```
+
+The rule for an output is the opposite of the rule for an input. An input may be converted,
+because a converted copy has the same values and is only read. An output may not, because the
+projection would go into the converted copy and be thrown away with it: the caller's array would
+keep its old values, and no error would say so. So `out` is never converted. It is accepted only
+if it is already a float64, C-contiguous, writeable NumPy array of the result's shape, and
+anything else is refused with the reason before a value is written. The C-contiguous rows of a
+larger array, `rows[:32]`, are accepted and written in place; a column slice, a Fortran-ordered
+array, a float32 one and a read-only one are refused. One more check is needed: the projector
+reads its input while it writes its output, so the two may not share memory, and an output that
+overlaps the input is refused too. Exercise 29.4 builds the same rules into a function of its own.
+
+### What one crossing costs
+
+| Call | Time per call |
+|---|---:|
+| a Python function call | 0.08 µs |
+| NumPy `x * 2.0` on 4 x 4 | 1.02 µs |
+| `forward` of 4 x 4 pixels, 10 lines | 1.30 µs |
+| the same with `out=` | 1.25 µs |
+
+: The cost of a call that computes almost nothing, median of 7 runs of 20,000 calls
+(`measurements/ch29/crossing.txt`, section 1).
+
+A call into the module costs about a microsecond: the arguments are parsed, the array is checked
+and the GIL is released and taken back. That is the cost of one small NumPy operation, and about
+one twenty-thousandth of a projection of MiniDAQ's sinogram, which took 27 ms on one thread in the
+same run. The boundary is cheap when each call does a lot of work, and it would be expensive in
+a loop that called the module once per line: 43,584 lines would add about 50 ms of calls to a
+projection of 27. That is why the module takes a whole image and the views to project, and
+never a line.
+
+| Image | Its conversion alone | Share of one forward projection |
+|---|---:|---:|
+| C-ordered float64 | 0.1 µs | 0.00% |
+| Fortran-ordered float64 | 17.5 µs | 0.06% |
+| float32 | 4.5 µs | 0.02% |
+| strided view, `big[::2, ::2]` | 6.2 µs | 0.02% |
+
+: The conversion of a 128 x 128 image to C-ordered float64, against one forward projection
+(`measurements/ch29/crossing.txt`, section 2).
+
+A conversion copies the image once. For a 128 x 128 image that is a few microseconds, less than
+the spread of the projection's own time, so the table times the same conversion with
+`np.ascontiguousarray` on its own. A converted input costs nothing worth avoiding here. It would
+on a large volume passed many times, and there the caller can convert once, before the loop, and
+pass the C-ordered array each time.
+
+The allocation `out` saves is smaller still. A new 128 x 128 array takes 0.3 µs, and the back
+projection into a new array and into one `out` array took 28.8 and 28.4 ms, within the spread of
+the measurement (section 3). So `out` is not there for speed in this reconstruction. It is
+there for the caller who must decide where the result goes: a slice of a larger array, a buffer
+shared with another program, memory that must not be allocated during an acquisition. The
+measurement says which of the two reasons applies, and here it is the second.
+
+### The GIL, measured
+
+The projector releases the GIL, and the code says so. A measurement says so from the outside:
+a second Python thread counts as fast as it can while the main thread does something else, and
+the count shows whether that something held the lock.
+
+| While the main thread | Counts per second, median of 5 | Against sleeping |
+|---|---:|---:|
+| sleeps | 29.5 million | 100% |
+| runs 10 forward projections | 26.8 million | 91% |
+| runs a Python loop as long | 13.7 million | 46% |
+
+: A Python thread's speed while the main thread sleeps, projects or loops in Python
+(`measurements/ch29/crossing.txt`, section 4).
+
+During the projections the other thread runs almost as fast as when the main thread sleeps: its
+five runs, from 25.0 to 29.4 million, overlap the sleeping ones, from 27.7 to 30.1. During a
+Python loop it runs at less than half
+its speed, because the two threads take turns holding the lock. That is the test of the claim in
+the code: a module that forgot `py::gil_scoped_release` would be expected to put the second row next to
+the third.
+
+### The module as a wheel
+
+The module is built for the Python of the build directory, and `MINIDAQ_RECON_CPP` points the
+tests at it. A physicist's machine needs it installed instead, with the Python and NumPy it will
+run with. Chapter 32 builds it into a wheel from the same CMake project with scikit-build-core,
+and the test `recon.wheel` (SRS-BLD-003) installs that wheel into an empty directory and runs
+`tools/test_recon_cpp.py` against the installed module, `out` and its refusals included, with
+nothing of the build tree on the path. The tests in the build directory prove the code; the
+test of the wheel proves what is delivered.
+
 ## What the boundary costs
 
 Two implementations of one algorithm must be kept the same. Every change is made in both, or
@@ -305,7 +416,8 @@ module, and the module's own checks are tested from Python.
   between threads.
 - **Requirements for a boundary.** SRS-REC-004 to SRS-REC-006 state what can be checked: the same
   numbers as the reference, the refusal and conversion of arrays, the independence from the
-  number of threads.
+  number of threads. SRS-REC-009 (CR-0034) adds the output the caller gives: written in place,
+  or refused before anything is written.
 - **The reference is a decision.** Which implementation defines the right answer, and when that
   changes, belongs in an ADR and a change request, not in a commit message (assumption: confirm
   with team how your organization records a change of reference implementation).
@@ -315,8 +427,11 @@ module, and the module's own checks are tested from Python.
 - **Indexing the data pointer of any array.** Only a C-ordered array has its rows in a row. Ask
   for `c_style | forcecast`, or index with strides.
 - **Reading `shape(1)` before checking `ndim()`.** The error is about your code, not the call.
-- **Writing into the caller's array.** It changes some callers' data and not others', depending
-  on whether pybind11 had to copy.
+- **Writing into an input.** It changes some callers' data and not others', depending on whether
+  pybind11 had to copy.
+- **Converting an output.** The result goes into the converted copy and is lost, without an
+  error. Accept only an output that can be written as it is, and refuse the rest.
+- **An output that overlaps the input.** The projector reads values it has already overwritten.
 - **Touching Python objects without the GIL.** Allocate before releasing it, return after taking
   it back.
 - **Chunks of `count / threads`.** The remainder is lost. Use `count * k / threads`.
@@ -397,6 +512,8 @@ and is measured. **Start:** tag `ch28`. **End:** tag `ch29`.
 4. Add `project.CppProjector`, `tools/test_recon_cpp.py` and the test `tools.recon_cpp`.
 5. Add `measurements/ch29/projector.py` and Exercises 29.1 to 29.4, with the CMake function
    `minidaq_pybind_exercise`.
+6. Write CR-0034 and add `out` to `forward` and `back`, SRS-REC-009 (SRS version 38) and its two
+   tests; extend RC-43, TL-31 and TL-32; add `measurements/ch29/crossing.py`.
 
 **Definition of done.** `ci/run_all.sh` is green on all six presets, the library's tests pass
 under ThreadSanitizer, and static analysis reports nothing; the trace matrix shows SRS-REC-004 to
@@ -420,6 +537,8 @@ threads; every starter of the chapter fails. Tag `ch29`.
 13. Why can a comparison on a centered disc not see a reversed `s`?
 14. The first C++ version was no faster than NumPy. Why, and what made the second one faster?
 15. What makes pybind11 SOUP, and which tool class does it have here?
+16. Why may an input be converted and an output not?
+17. How would you show that the projector releases the GIL, without reading its code?
 
 ## Summary {.unnumbered}
 
@@ -437,8 +556,15 @@ threads; every starter of the chapter fails. Tag `ch29`.
 - On one thread the first C++ version was as slow as NumPy; without the division per step it took
   34 ms against 57, and 14 ms on four threads. A reconstruction of 4 iterations of 8 subsets went
   from 1.17 s to 0.18 s.
-- pybind11 3.1.0 is SOUP and tool TL-32; SRS-REC-004 to SRS-REC-006 and RC-43 cover the second
-  implementation.
+- `out` writes a projection into the caller's own array through the buffer protocol. It is never
+  converted, and an output that is not already a writeable, C-contiguous float64 array of the
+  right shape, or that overlaps the input, is refused before a value is written.
+- A call into the module costs about a microsecond, a conversion of a 128 x 128 image a few, and
+  an allocation less than one, against 27 ms for a projection: the boundary is cheap because each
+  call does a whole projection. A Python thread runs at 91% of its speed while the projector
+  computes and at 46% while a Python loop runs.
+- pybind11 3.1.0 is SOUP and tool TL-32; SRS-REC-004 to SRS-REC-006, SRS-REC-009 and RC-43 cover
+  the second implementation and its boundary.
 
 ## Further reading {.unnumbered}
 
@@ -454,4 +580,4 @@ threads; every starter of the chapter fails. Tag `ch29`.
 - A. Williams, *C++ Concurrency in Action*, 2nd edition, Manning, 2019: sharing work between
   threads and the C++ memory model.
 - The ThreadSanitizer documentation in the Clang manual, for what it reports and how.
-- ADR 0024 and CR-0015 in the repository: the decision and the change record.
+- ADR 0024, CR-0015 and CR-0034 in the repository: the decision and the change records.

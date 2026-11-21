@@ -11,7 +11,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>  // std::optional and std::vector from None and lists
 
+#include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -72,6 +74,51 @@ std::vector<std::size_t> view_list(const recon::JosephProjector& p,
 }
 // [/snippet:check]
 
+// [snippet:out]
+// An output the caller gives (out=) is written in place, through the buffer protocol: no copy.
+// It is never converted, because the result would go into a converted copy and be lost; so it
+// must already be a float64, C-contiguous, writeable NumPy array of the result's shape.
+py::array writable_out(const py::object& obj, const std::vector<py::ssize_t>& shape) {
+  if (!py::isinstance<py::array>(obj)) {
+    throw py::type_error("out must be a NumPy array");
+  }
+  auto out = py::reinterpret_borrow<py::array>(obj);
+  if (!out.dtype().is(py::dtype::of<double>())) {
+    throw py::value_error("out must be float64, got " + std::string(py::str(out.dtype())));
+  }
+  if ((out.flags() & py::array::c_style) == 0) {
+    throw py::value_error("out must be C-contiguous: a converted copy would not reach the caller");
+  }
+  if (!out.writeable()) {
+    throw py::value_error("out is read-only");
+  }
+  const bool same = out.ndim() == static_cast<py::ssize_t>(shape.size()) &&
+                    std::equal(shape.begin(), shape.end(), out.shape());
+  if (!same) {
+    std::string want;
+    std::string got;
+    for (std::size_t d = 0; d < shape.size(); ++d) {
+      want += (d != 0 ? " x " : "") + std::to_string(shape[d]);
+    }
+    for (py::ssize_t d = 0; d < out.ndim(); ++d) {
+      got += (d != 0 ? " x " : "") + std::to_string(out.shape(d));
+    }
+    throw py::value_error("out must be " + want + ", got " + (got.empty() ? "a scalar" : got));
+  }
+  return out;
+}
+
+// The projector reads its input while it writes out, so the two may not share memory.
+void require_apart(const Array& in, const py::array& out) {
+  const auto a = reinterpret_cast<std::uintptr_t>(in.data());
+  const auto b = reinterpret_cast<std::uintptr_t>(out.data());
+  if (a < b + static_cast<std::uintptr_t>(out.nbytes()) &&
+      b < a + static_cast<std::uintptr_t>(in.nbytes())) {
+    throw py::value_error("out shares memory with the input");
+  }
+}
+// [/snippet:out]
+
 class Projector {
  public:
   Projector(const Array& s_mm, const Array& phi, std::size_t n, double pixel_mm, unsigned threads,
@@ -79,32 +126,40 @@ class Projector {
       : p_(make(s_mm, phi, n, pixel_mm, tof)), threads_(threads) {}
 
   // [snippet:forward]
-  Array forward(const Array& image, const std::optional<std::vector<long long>>& views) const {
+  py::array forward(const Array& image, const std::optional<std::vector<long long>>& views,
+                    const py::object& out_obj) const {
     require_shape(image, "image", p_.n(), p_.n());
     const std::vector<std::size_t> vs = view_list(p_, views);
-    Array out = sinogram(vs.size());
+    py::array out = out_obj.is_none() ? py::array(sinogram(vs.size()))
+                                      : writable_out(out_obj, sinogram_shape(vs.size()));
+    require_apart(image, out);
+    auto* o = static_cast<double*>(out.mutable_data());
+    const auto size = static_cast<std::size_t>(out.size());
     {
       // The arrays stay alive (this call holds them); no Python object is touched meanwhile.
       py::gil_scoped_release release;
-      p_.forward({image.data(), static_cast<std::size_t>(image.size())}, vs,
-                 {out.mutable_data(), static_cast<std::size_t>(out.size())}, threads_);
+      p_.forward({image.data(), static_cast<std::size_t>(image.size())}, vs, {o, size}, threads_);
     }
     return out;
   }
   // [/snippet:forward]
 
-  Array back(const Array& sino, const std::optional<std::vector<long long>>& views) const {
+  py::array back(const Array& sino, const std::optional<std::vector<long long>>& views,
+                 const py::object& out_obj) const {
     const std::vector<std::size_t> vs = view_list(p_, views);
     if (p_.tof_bins() == 1) {
       require_shape(sino, "sinogram", vs.size(), p_.bins());
     } else {
       require_shape3(sino, "sinogram", vs.size(), p_.bins(), p_.tof_bins());
     }
-    Array out({static_cast<py::ssize_t>(p_.n()), static_cast<py::ssize_t>(p_.n())});
+    const auto n = static_cast<py::ssize_t>(p_.n());
+    py::array out = out_obj.is_none() ? py::array(Array({n, n})) : writable_out(out_obj, {n, n});
+    require_apart(sino, out);
+    auto* o = static_cast<double*>(out.mutable_data());
+    const auto size = static_cast<std::size_t>(out.size());
     {
       py::gil_scoped_release release;
-      p_.back({sino.data(), static_cast<std::size_t>(sino.size())}, vs,
-              {out.mutable_data(), static_cast<std::size_t>(out.size())}, threads_);
+      p_.back({sino.data(), static_cast<std::size_t>(sino.size())}, vs, {o, size}, threads_);
     }
     return out;
   }
@@ -120,13 +175,16 @@ class Projector {
   unsigned threads() const { return threads_; }
 
  private:
-  Array sinogram(std::size_t views) const {
-    if (p_.tof_bins() == 1) {
-      return Array({static_cast<py::ssize_t>(views), static_cast<py::ssize_t>(p_.bins())});
+  std::vector<py::ssize_t> sinogram_shape(std::size_t views) const {
+    std::vector<py::ssize_t> shape{static_cast<py::ssize_t>(views),
+                                   static_cast<py::ssize_t>(p_.bins())};
+    if (p_.tof_bins() != 1) {
+      shape.push_back(static_cast<py::ssize_t>(p_.tof_bins()));
     }
-    return Array({static_cast<py::ssize_t>(views), static_cast<py::ssize_t>(p_.bins()),
-                  static_cast<py::ssize_t>(p_.tof_bins())});
+    return shape;
   }
+
+  Array sinogram(std::size_t views) const { return Array(sinogram_shape(views)); }
 
   static recon::JosephProjector make(const Array& s_mm, const Array& phi, std::size_t n,
                                      double pixel_mm, recon::Tof tof) {
@@ -151,9 +209,13 @@ PYBIND11_MODULE(recon_cpp, m) {
       .def(py::init<const Array&, const Array&, std::size_t, double, unsigned>(), py::arg("s_mm"),
            py::arg("phi"), py::arg("n") = 128, py::arg("pixel_mm") = 2.0, py::arg("threads") = 0)
       .def("forward", &Projector::forward, py::arg("image"), py::arg("views") = py::none(),
-           "The line integrals of every line, or of the given views only.")
+           py::arg("out") = py::none(),
+           "The line integrals of every line, or of the given views only; into out if given "
+           "(float64, C-contiguous, of the result's shape), which is returned.")
       .def("back", &Projector::back, py::arg("sino"), py::arg("views") = py::none(),
-           "The adjoint: each line's value spread over its pixels with its weights.")
+           py::arg("out") = py::none(),
+           "The adjoint: each line's value spread over its pixels with its weights; into out if "
+           "given, which is returned.")
       .def_property_readonly("n", &Projector::n)
       .def_property_readonly("pixel_mm", &Projector::pixel_mm)
       .def_property_readonly("shape", &Projector::shape)

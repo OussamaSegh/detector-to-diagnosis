@@ -1,0 +1,47 @@
+# Chapter 29: what crossing the boundary costs
+
+Machine: x86_64, 4 CPUs, Python 3.13.18, numpy 2.5.3. Module: build/release/recon.
+
+## 1. A call
+
+| Call | Time per call |
+|---|---:|
+| Python function call | 0.08 µs |
+| NumPy `x * 2.0` on 4 x 4 | 1.02 µs |
+| `forward` of 4 x 4 pixels, 10 lines | 1.30 µs |
+| the same with `out=` | 1.25 µs |
+| the same with `views=[0]` | 1.19 µs |
+
+## 2. A conversion
+
+One forward projection, 1 thread, of the C-ordered float64 image: 27.22 ms.
+
+| Image | Its conversion alone | Share of one forward projection |
+|---|---:|---:|
+| C-ordered float64 (passed as it is) | 0.1 µs | 0.00% |
+| Fortran-ordered float64 | 17.5 µs | 0.06% |
+| float32 | 4.5 µs | 0.02% |
+| strided view, `big[::2, ::2]` | 6.2 µs | 0.02% |
+
+The conversion is what `c_style | forcecast` does for the module, timed on its own, because it is smaller than the spread of the projection's own time.
+
+## 3. An allocation
+
+| Back projection, 1 thread | Time |
+|---|---:|
+| into a new array | 28.81 ms |
+| into one `out=` array | 28.40 ms |
+
+The allocation alone, `np.empty((128, 128))`: 0.34 µs, 0.001% of the back projection.
+
+## 4. The GIL
+
+Counts per second of a Python thread that counts, while the main thread does each of these for about 0.3 s; 5 runs of each, alternated.
+
+| While the main thread | Counts per second, median | Range | Against sleeping |
+|---|---:|---:|---:|
+| sleeps | 29,539,875 | 27,683,443 to 30,070,625 | 100% |
+| runs 10 forward projections | 26,758,285 | 24,977,639 to 29,355,196 | 91% |
+| runs a Python loop as long | 13,697,170 | 12,202,200 to 14,434,922 | 46% |
+
+The projector releases the GIL, so the other thread keeps running; a Python loop holds it, and the two threads take turns.
