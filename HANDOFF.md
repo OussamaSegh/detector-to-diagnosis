@@ -19,10 +19,14 @@ Theme H: a fourth exercise in each of Chapters 26 to 40 (26.4 to 40.4) and Chapt
 many subsets" (measurement section 6) are done. Writing them found MDQ-PR-083 (the survey lost a
 file's history at a rename) and MDQ-PR-084 (validations with `^...$` accepted a trailing newline;
 safety relevant, RC-47), both fixed with tests; next free MDQ-PR-085. Candidate for the coding
-standard at 2.1.0: "validate a whole value with fullmatch". Left: Chapter 29's text, which waits
-for the author's written approval of CR-0034 (the patch is in
-`/mnt/project-files/neurolf-book/pending/`); Theme I's soaks; the measurement folders for
-Chapters 1, 6 and 22; then the release.
+standard at 2.1.0: "validate a whole value with fullmatch". Later the same day: CR-0034
+approved by the author and implemented (cc03a67, 611e86c; Chapter 29 "The crossing, measured",
+SRS v38 draft); measurement folders for Chapters 1, 6 and 22 (erratum E-010); Theme I's two
+100-minute soaks (measurements/mdq-pr-064/): unpinned 2 of 600 peaks, pinned 9 of 600, the
+scheduling measures do not mark the peaks, so no affinity setting. Proposed to the author:
+CR-0035, ACC-04 judged on a 100-minute release soak, and MDQ-PR-064 closed (2 of 1,740
+intervals at 2.0.x). Theme H is done (794 pages). Left: CR-0035 if approved, then the release
+(audit, CAPA-0005, pr_trends, SOUP review, release checks, approvals of SOUP v31 and SRS v38).
 
 **Rule of the author (2026-11-16): step by step.** Releases follow in order: 2.0.1, 2.1.0,
 2.2.0, and so on to 3.0.0. Each release has its own plan, `docs/ROADMAP-x.y.0.md` on main, with
