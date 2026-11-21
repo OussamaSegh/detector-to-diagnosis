@@ -12,7 +12,7 @@ The first version had frames without a destructor, and GCC folded the recursion 
 no-error path through 50 frames took 0.6 ns and the throw cost did not depend on the depth. A
 frame with a destructor, as real code has, keeps the frames and makes unwinding run it.
 
-With it, a throw costs 2 to 34 µs, growing with the depth, and a returned error 2 to 139 ns. The
+With it, a throw costs 2 to 34 µs, growing with the depth, and a returned error 2 to 142 ns. The
 chapter's sentence that one throw in a thousand singles would dominate the budget was written
 before the measurement; at 11 frames it is a quarter of it (8 ns of 33), and the text now says
-so. The views ran within 6% of the loop.
+so. The views ran within 6% of the loop (5.1 against 4.9 ns per single).

@@ -353,7 +353,7 @@ block costs nothing at run time while no exception is thrown. The problem is the
 Throwing allocates the exception object (usually on the heap), walks unwind tables and
 runs destructors through every frame. On the reference machine a throw and catch through
 2, 11 and 51 frames, each with a destructor, took 2, 8 and 34 µs, where returning the same
-error as a `std::expected` took 2, 16 and 139 ns (`measurements/ch01/costs.txt`); some
+error as a `std::expected` took 2, 13 and 142 ns (`measurements/ch01/costs.txt`); some
 runtimes add contention on the unwinder's global lock. At 30 million singles per second
 you have about 33 ns per single. If one malformed packet in a thousand throws through 11
 frames, that is 8 ns per single, a quarter of the budget, spent in bursts that make
@@ -523,7 +523,7 @@ auto good = singles
 
 Ranges are excellent for clarity in analysis code, tests and tools. In the hot path,
 measure before you use them: most simple pipelines compile to the same loop as a
-hand-written one (the energy filter above took 5.7 ns per single against 5.4 for the
+hand-written one (the energy filter above took 5.1 ns per single against 4.9 for the
 loop, `measurements/ch01/costs.txt`), but some adaptor combinations (`filter` followed
 by `reverse`, views that cache `begin()`) do not, and debug builds of range pipelines
 are much slower than plain loops. Chapter 5 shows how to check.
