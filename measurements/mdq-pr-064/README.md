@@ -40,5 +40,45 @@ preset, the same 4-CPU virtual machine, nothing else running.
 So the peak has now been caught with the measure beside it, and the measure does not explain it:
 neither the run-queue wait of a server thread nor the steal time was larger in the two intervals
 than in the 598 others. Waiting for a CPU, as these counters see it, is not the cause. A pinned
-soak (each pipeline thread on a CPU of its own) follows, to test the next candidate, the
-threads' movement between CPUs.
+soak follows, to test the next candidate, the threads' movement between CPUs.
+
+`pinned-100min/`: the same command on 2026-11-21, about 21:58 to 23:38 UTC, at 611e86c (the same
+programs), with `pin.sh` beside it, which every 5 s pins the server's pipeline threads by name:
+`mdq-source` to CPU 0, `mdq-decode` to 1, `mdq-sort` to 2, `mdq-pair` and `mdq-write` to 3. The
+simulator, the client and the server's other threads were not pinned. Four CPUs do not give five
+threads one each, so `mdq-pair` and `mdq-write` shared one.
+
+- 9 of 600 intervals had a 99th percentile above 10 ms, up to 98.04 ms at 1300 s (98.5% within
+  the limit). The soak's other results: 6.0 billion singles, no loss, memory flat, PASS (the soak
+  checks no latency; ACC-04 is evaluated from it at a release).
+- `mdq-write`, sharing CPU 3 with `mdq-pair`, had the largest wait in 597 of 600 seconds sampled,
+  with a median of 125 ms per second against 26 ms unpinned. In the nine intervals its wait was
+  123 to 156 ms: the same as in the other 591. The correlation of the 99th percentile with the
+  largest wait is 0.13, with the one-second steal 0.23; the worst interval had the run's
+  second-highest one-second steal, 4.52% (the highest, 10.34%, fell in an interval within the
+  limit).
+
+## What the three runs say
+
+1. **Waiting for a CPU, as the guest sees it, does not mark the peaks.** In neither run were the
+   peaks' intervals different from the others in run-queue wait, and steal was at most weakly
+   related to them (0.14 and 0.23).
+2. **Pinning makes it worse, not better.** Fixing the threads to CPUs raised the rate from 2 in
+   600 to 9 in 600 and the worst interval from 18 to 98 ms. With five busy pipeline threads, a
+   simulator and a client on four CPUs, the scheduler's freedom to move a thread to an idle CPU is
+   worth more than the caches a pinned thread keeps. A setting for the threads' CPU affinity
+   (roadmap 2.1.0, Theme I) is therefore not added: the measurement does not show MiniDAQ's own
+   scheduling as the cause, and the one placement four CPUs allow is worse than the default.
+3. **The peaks are rare.** With the programs of 2.0.x and the default scheduling, 2 of 1,740
+   intervals have had a peak (the review's 180, the 600 of 2026-11-16, the release soaks of 2.0.0
+   and 2.0.1, 180 each, and the 600 above): 0.11%, at most 0.36% at 95% confidence
+   (Clopper-Pearson), against the 1% that SRS-PERF-022 allows. No single was lost in any of them.
+4. **A 30-minute soak judges that rate badly.** ACC-04 allows one peak in 180 intervals. At a rate
+   of 0.11% a release fails it with a probability of 1.9%, and at 0.36% with 14%, although the
+   requirement is met. Over 600 intervals, with six allowed, the probability at 0.36% is 0.7%.
+
+The cause is still not named beyond "outside what the guest's counters see": the host's
+scheduling of the virtual CPUs is the remaining candidate, and the guest cannot measure it below
+the steal time it reports. The decision this evidence supports is the one the roadmap's risk table
+foresaw for that case: judge SRS-PERF-022 on a soak long enough to measure a rate of 1%, and close
+the report with the evidence that the peaks are rare and lose nothing.
