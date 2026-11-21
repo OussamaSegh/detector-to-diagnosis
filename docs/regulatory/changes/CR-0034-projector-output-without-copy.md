@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-17, by the software lead |
 | Source | roadmap 2.1.0, theme H (Chapter 29: zero-copy exchange of arrays, the cost of the crossing) |
 | Decision | approved, 2026-11-21, by the software lead (the author), in writing in the project |
-| Commits | the commit that adds this request |
+| Commits | cc03a67 (module, tests, records, Chapter 29 and its measurements) and the commit that records this |
 
 ## Description
 
