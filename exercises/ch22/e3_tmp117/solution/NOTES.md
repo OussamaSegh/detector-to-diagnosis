@@ -7,7 +7,7 @@ range check it would be a temperature.
 
 **The reset value.** `0x8000` is a valid two's complement number (−256 °C), so nothing in the
 arithmetic marks it. It is the datasheet that gives it a meaning: no conversion has completed
-since the reset. A slow control that believes it computes a bias for −256 °C, 9.5 V too low for a
+since the reset. A slow control that believes it computes a bias for −256 °C, 9.6 V too low for a
 34 mV/°C SiPM, or the lowest bias its limits allow. The same holds for every sensor: find the
 value it reads before it has measured anything.
 

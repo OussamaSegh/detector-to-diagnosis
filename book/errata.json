@@ -88,6 +88,25 @@
       ],
       "fixed_in": "1.3.0",
       "text": "The text's references to the appendix's figures read \".10\" to \".17\" instead of A.1 to A.8, as in the PDFs. In the EPUB and the web edition the figure captions now start with their number as well."
+    },
+    {
+      "id": "E-010",
+      "where": "Chapter 22, the temperature sensor's reset value",
+      "found_in": [
+        "0.5.0",
+        "0.6.0",
+        "0.7.0",
+        "0.8.0",
+        "0.9.0",
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+        "2.0.1"
+      ],
+      "fixed_in": "2.1.0",
+      "text": "A bias compensated for -256 C is 281 degrees x 34 mV = 9.55 V too low, so 9.6 V, not 9.5 V (measurements/ch22/model.txt). The figure of the gain's description also said 79 percent at 41 C for 79.9."
     }
   ]
 }

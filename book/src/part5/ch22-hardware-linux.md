@@ -356,7 +356,7 @@ complement, 7.8125 m°C per bit (1/128 °C); the configuration is register `0x01
 register `0x0F` reads `0x0117` in its low 12 bits. And, in a sentence that is easy to miss:
 following a reset, the temperature register reads −256 °C (`0x8000`) until the first conversion
 is complete. A slow control that reads the sensor right after power-up and believes the number
-sees a detector at −256 °C and, if it compensates the bias for it, sets a bias 9.5 V lower than
+sees a detector at −256 °C and, if it compensates the bias for it, sets a bias 9.6 V lower than
 it should (281 degrees at 34 mV per degree), or, if it is clamped, the lowest bias it allows.
 Exercise 22.3 decodes this sensor, and the decoder's first job is to recognize a reading that is
 not a temperature.
@@ -384,7 +384,7 @@ the bias follow the temperature:
 
 with k = 34 mV/°C and V~ov~ = 2.7 V. At 25 °C that is 40.7 V; at 30 °C, 40.87 V. Figure [](#fig-ch22-gain) shows the difference.
 
-```{.figure #fig-ch22-gain src="book/figures/plots/ch22/gain.py" caption="Gain against temperature, from the datasheet model. At a fixed bias the gain falls 1.3% per degree; with the bias following the temperature it stays at its nominal value, within the 5 mV dead band." alt="Line chart of gain in percent of nominal against SiPM temperature from 20 to 41 degrees. A dashed line for a fixed bias of 40.7 V falls from about 106 to 79 percent. A solid line for the compensated bias stays at 100 percent. Shaded bands mark the warning range from 35 degrees and the alarm from 40." width="70%"}
+```{.figure #fig-ch22-gain src="book/figures/plots/ch22/gain.py" caption="Gain against temperature, from the datasheet model. At a fixed bias the gain falls 1.3% per degree; with the bias following the temperature it stays at its nominal value, within the 5 mV dead band." alt="Line chart of gain in percent of nominal against SiPM temperature from 20 to 41 degrees. A dashed line for a fixed bias of 40.7 V falls from about 106 to 80 percent. A solid line for the compensated bias stays at 100 percent. Shaded bands mark the warning range from 35 degrees and the alarm from 40." width="70%"}
 ```
 
 This assumes the temperature the sensor reads is the temperature of the SiPMs, which is only

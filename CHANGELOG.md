@@ -34,6 +34,8 @@ the patch version.
   through the buffer protocol and never converted (SRS-REC-009, SRS version 38). Chapter 29
   gains "The crossing, measured": the output without a copy, the cost of a call, a conversion and
   an allocation, the GIL measured, and the wheel (`measurements/ch29/crossing.txt`).
+- `measurements/ch22/`: the numbers Chapter 22 computes from the SiPM's datasheet model,
+  recomputed; they found erratum E-010 (9.5 V for 9.6 V).
 
 ### Changed (2.1.0-dev)
 

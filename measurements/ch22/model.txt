@@ -1,0 +1,17 @@
+# Chapter 22: the datasheet model, recomputed
+
+| Quantity | Value |
+|---|---:|
+| gain lost per degree at a fixed bias | 1.26% |
+| breakdown shift from 25 to 29 C | 136 mV |
+| overvoltage at 29 C with the bias fixed | 2.564 V |
+| gain lost at 29 C | 5.04% |
+| register 0xF380 | -25.00 C |
+| register 0x8000 (the reset value) | -256.00 C |
+| one bit | 7.8125 mC |
+| bias error if -256 C is believed | 9.554 V |
+| the dead band in degrees | 0.147 C |
+| bias at 25 C | 40.70 V |
+| bias at 30 C | 40.87 V |
+| gain at 20 C, bias fixed at 40.7 V | 106.3% |
+| gain at 41 C, bias fixed at 40.7 V | 79.9% |
