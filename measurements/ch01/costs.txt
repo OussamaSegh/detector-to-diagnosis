@@ -1,0 +1,15 @@
+Machine: x86_64, 4 CPUs; g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -O2, C++23.
+
+| Error path | Frames | ns per call, error | ns per call, no error |
+|---|---:|---:|---:|
+| throw and catch | 1 | 2128.8 | 2.2 |
+| std::expected | 1 | 1.9 | 2.1 |
+| throw and catch | 10 | 7938.9 | 15.4 |
+| std::expected | 10 | 13.4 | 22.4 |
+| throw and catch | 50 | 33829.2 | 134.3 |
+| std::expected | 50 | 142.0 | 131.7 |
+
+| Energy filter over 1,000,000 singles | ns per single |
+|---|---:|
+| hand-written loop | 4.9 |
+| filter and transform views | 5.1 |

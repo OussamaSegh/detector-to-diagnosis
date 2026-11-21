@@ -36,6 +36,10 @@ the patch version.
   an allocation, the GIL measured, and the wheel (`measurements/ch29/crossing.txt`).
 - `measurements/ch22/`: the numbers Chapter 22 computes from the SiPM's datasheet model,
   recomputed; they found erratum E-010 (9.5 V for 9.6 V).
+- `measurements/ch01/` and `measurements/ch06/`: the cost of a throw against `std::expected`
+  and of a ranges pipeline, and the duration of the out-of-order fault test. Chapter 1 now
+  quotes the measured costs; one throw in a thousand singles is a quarter of the budget, not
+  most of it.
 
 ### Changed (2.1.0-dev)
 
