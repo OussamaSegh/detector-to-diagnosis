@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 21 (MiniDAQ 2.0.1). Status: approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
+Version 22 (MiniDAQ 2.1.0-dev). Status: draft, to be approved with release 2.1.0. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -143,7 +143,7 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
 | Structural coverage | each release, the `coverage` preset and `tools/coverage.py` (`tools/release_checks.sh`) | the report per software item is recorded; no class B item's branch coverage is lower than in the previous release without a reason; every branch of a class B file changed since the previous release that the tests do not take both ways is reached by a new test or accepted with a reason in the release record's coverage review |
 | Exercise starters | each new exercise and each release, `ctest -L starter` on a `Release` build (`tools/release_checks.sh`) | every starter fails at least one test, none hangs |
 | System test report | each release, `tools/test_report.py` on the `release` build (`tools/release_checks.sh`) | every test case of the system test plan passes on the clean release commit; the report is signed by the tester |
-| Soak | each release, `tools/soak.py`, 30 minutes at 1 M singles/s on the reference machine (`tools/release_checks.sh`) | the criteria of SRS-SYS-003 over 30 minutes: no loss, no fault, the run complete, resident memory growing by no more than 1 MiB per hour after a 10-minute warm-up (the 8-hour run belongs to the system test on the acquisition PC, SRS section 3) |
+| Soak | each release, `tools/soak.py`, 100 minutes at 1 M singles/s on the reference machine (`tools/release_checks.sh`; 30 minutes until 2.1.0, CR-0035) | the criteria of SRS-SYS-003 over 100 minutes: no loss, no fault, the run complete, resident memory growing by no more than 1 MiB per hour after a 10-minute warm-up (the 8-hour run belongs to the system test on the acquisition PC, SRS section 3) |
 | End to end | every change, without the image (test `system.e2e`); each release, with the image (`tools/e2e.py`, `tools/release_checks.sh` part 3) | the server's records equal the offline reference's over a clean link, every count balances between the stages, the daily QC report passes, the phantom's image meets SRS-SYS-008 (Chapter 33) |
 | Fuzzing | each release, 10 minutes per target from the seed corpus | no crash, coverage recorded in `measurements/` |
 | Performance requirements and regression | each release, on the reference machine (`tools/release_checks.sh`) | SRS-PERF-020, SRS-PERF-021 and SRS-PERF-022 met (acceptance criteria ACC-01, ACC-02 and ACC-04); `tools/perf_gate.py` finds no gated benchmark slower than in the previous release, both built on the reference machine and run interleaved in the same session (`tools/perf_ab.sh`, five rounds; CR-0025), or the budget was updated with a reason (CAPA-0004); the comparison with the recorded baseline `benchmarks/baseline/book-vm.json` is kept as the trend and explained in the release record, not judged by the script |
@@ -279,3 +279,4 @@ assessment of Chapter 13.
 | 19 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 18. |
 | 20 | Review of release 2.0.0: section 8, when a failed check of the release checks may run again, and the tool that enforces it (MDQ-PR-077). |
 | 21 | Approved for release 2.0.1 by the author (software lead), in writing on 2026-11-16; the content is that of version 20. |
+| 22 | The release soak lasts 100 minutes (CR-0035, MDQ-PR-064). |

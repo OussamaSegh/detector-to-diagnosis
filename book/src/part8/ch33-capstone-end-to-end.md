@@ -359,7 +359,11 @@ holds in at least 99% of the intervals (one of the soak's 180 may be above), and
 the machine's steal time with each interval, so that a peak can be told from a machine that was
 busy with other guests. Applied to the evidence already recorded, the new rule passes 0.7.0 and
 0.9.0 and still fails 0.8.0, whose soak had 15 intervals above: a rule changed to make a failure
-disappear would pass all three.
+disappear would pass all three. The rule changed once more, at 2.1.0, and only its length: with
+the per-second measure beside it, 2 of 1,740 intervals had a peak, at most 0.36% at 95%
+confidence, and a 30-minute soak would fail a release at that rate up to 14% of the time. The
+release soak now lasts 100 minutes, so six of its 600 intervals may be above (CR-0035,
+`measurements/mdq-pr-064/`). Exercise 33.4 computes such chances.
 
 `tools/acceptance.py` (TL-41) evaluates the specification from one output directory of the release
 checks. Each rule reads one kind of evidence and returns whether the target is met and what was

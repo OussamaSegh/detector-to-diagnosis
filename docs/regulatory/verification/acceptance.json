@@ -27,17 +27,17 @@
    "id": "ACC-03",
    "what": "A long acquisition at the reference rate",
    "requirements": ["SRS-SYS-003"],
-   "target": "30 minutes at 1 M singles/s: no loss, no fault, complete, memory growth within 1 MiB/h",
+   "target": "100 minutes (30 until 2.1.0, CR-0035) at 1 M singles/s: no loss, no fault, complete, memory growth within 1 MiB/h",
    "evidence": "soak.txt",
    "part": 3,
    "rule": "soak",
-   "limit": 30
+   "limit": 100
   },
   {
    "id": "ACC-04",
    "what": "End-to-end latency at the reference rate",
    "requirements": ["SRS-PERF-022"],
-   "target": "the 99th percentile of at least 99% of the soak's 10 s intervals at most 10 ms (every interval until version 2, CR-0025)",
+   "target": "the 99th percentile of at least 99% of the 100-minute soak's 600 intervals of 10 s at most 10 ms (every interval until version 2, CR-0025; 180 intervals until 2.1.0, CR-0035)",
    "evidence": "soak.txt",
    "part": 3,
    "rule": "soak_latency",

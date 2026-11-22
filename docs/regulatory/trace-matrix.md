@@ -259,7 +259,7 @@ tests. Do not edit by hand: the test `docs.trace` fails when this file is out of
 | SRS-SVY-003 | tools | T | `test_survey.py` test_each_item_gets_its_documents_and_its_history<br>`test_survey.py` test_hotspots_are_ranked_by_commits_times_code_lines<br>`test_survey.py` test_the_report_names_an_untested_requirement_and_exits_0 |  |
 | SRS-SYS-001 | service | T | `test_acquisition_system.py` test_every_coincidence_counted_is_in_the_files |  |
 | SRS-SYS-002 | readout | T | `test_readout_system.py` test_a_clean_stream_arrives_complete<br>`test_readout_system.py` test_a_packet_both_delayed_and_duplicated_is_a_duplicate<br>`test_readout_system.py` test_every_damaged_packet_is_accounted_for<br>`test_readout_system.py` test_the_sequence_number_wraps_without_loss<br>`test_e2e.py` test_a_damaged_link_gives_an_incomplete_run_with_every_packet_accounted_for |  |
-| SRS-SYS-003 | service | M | Soak test `tools/soak.py`, 30 minutes at 1,000,000 singles/s on the reference machine (`measurements/ch19/soak/`) |  |
+| SRS-SYS-003 | service | M | Soak test `tools/soak.py`, 100 minutes at 1,000,000 singles/s on the reference machine (30 minutes until 2.1.0, CR-0035; `measurements/ch19/soak/`) |  |
 | SRS-SYS-004 | service | T | `test_acquisition_system.py` test_a_seeded_run_writes_the_golden_records<br>`test_acquisition_system.py` test_batch_sizes_and_delays_do_not_change_the_records |  |
 | SRS-SYS-005 | service | T | `test_acquisition_system.py` test_another_seed_agrees_with_the_golden_run_within_chance |  |
 | SRS-SYS-006 | service | T | `test_e2e.py` test_a_clean_link_gives_the_reference_records_and_every_count_adds_up |  |

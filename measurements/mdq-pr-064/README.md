@@ -82,3 +82,6 @@ scheduling of the virtual CPUs is the remaining candidate, and the guest cannot 
 the steal time it reports. The decision this evidence supports is the one the roadmap's risk table
 foresaw for that case: judge SRS-PERF-022 on a soak long enough to measure a rate of 1%, and close
 the report with the evidence that the peaks are rare and lose nothing.
+
+Decided on 2026-11-22 by the author: CR-0035, the release soak lasts 100 minutes, and
+MDQ-PR-064 is closed.

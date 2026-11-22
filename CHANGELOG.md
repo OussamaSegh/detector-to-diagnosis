@@ -54,6 +54,9 @@ the patch version.
 
 ### Fixed (2.1.0-dev)
 
+- MDQ-PR-064 closed by CR-0035: the release soak lasts 100 minutes, so ACC-04's share of 99% is
+  judged over 600 intervals, not 180. Two measured soaks showed the peaks are rare (2 of 1,740
+  intervals at 2.0.x) and not caused by MiniDAQ's thread scheduling; pinning made them worse.
 - MDQ-PR-083: the codebase survey (`tools/survey.py`) counts the commits made before a rename
   under the file's current name; it restarted the file's history at the rename.
 - MDQ-PR-084: a UID, a code string or an update's version ending in a newline passed validation

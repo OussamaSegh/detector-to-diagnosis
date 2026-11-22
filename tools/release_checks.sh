@@ -236,8 +236,8 @@ echo "trend against benchmarks/baseline/book-vm.json (not a check, CR-0025): sta
 # soak of SRS-SYS-003 on the same programs.
 python3 tools/test_report.py build/release "$out/system-test-report.md" > "$out/system-tests.txt" 2>&1
 check "system test report" $?
-python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes 30 > "$out/soak.txt" 2>&1
-check "soak, 30 minutes at 1 M singles/s" $?
+python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes 100 > "$out/soak.txt" 2>&1
+check "soak, 100 minutes at 1 M singles/s" $?
 # Chapter 33: the chain end to end on the same programs, against the offline reference, with the
 # daily QC report and the reconstruction of a phantom (SRS-SYS-006 to SRS-SYS-008).
 MINIDAQ_RECON_CPP=build/release/recon python3 tools/e2e.py build/release/minidaq/apps "$out/e2e" \
