@@ -63,8 +63,9 @@ The intended use does not change.
 
 ## Verification
 
-`tools.acceptance`: `test_the_latency_holds_in_99_percent_of_the_intervals` (six of 600 pass,
-seven fail) and `test_evidence_below_its_target_fails` (a 30-minute soak fails ACC-03);
+`tools.acceptance`: `Verdicts.test_the_latency_holds_in_99_percent_of_the_intervals` (six of
+600 pass, seven fail) and `Verdicts.test_evidence_below_its_target_fails` (a 30-minute soak
+fails ACC-03);
 `docs.changes`, `docs.anomalies`, `docs.srs`; the release soak of 2.1.0, evaluated by
 `tools/acceptance.py`.
 
