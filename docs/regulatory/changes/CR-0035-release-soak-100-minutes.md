@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-21, by the software lead |
 | Source | problem report MDQ-PR-064; roadmap 2.1.0, theme I |
 | Decision | approved, 2026-11-22, by the software lead (the author), in writing in the project |
-| Commits | the commit that adds this request |
+| Commits | f73e5ed (release checks, acceptance criteria, records, Chapter 33) and the commit that records this |
 
 ## Description
 
