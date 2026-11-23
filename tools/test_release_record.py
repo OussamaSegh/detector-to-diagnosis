@@ -45,6 +45,7 @@ class ReleaseRecord(unittest.TestCase):
         minutes = re.search(r"tools/soak\.py .*--minutes (\d+)", script).group(1)
         soak = [name for name, keys, _ in rr.ROWS if name.startswith("soak")]
         self.assertEqual(soak, [f"soak, {minutes} minutes"])
+        self.assertEqual(rr.SOAK_ROW, f"soak, {minutes} minutes")
 
     def test_the_skeleton_of_a_release_has_every_row_and_fails_the_check_until_filled(self):
         with tempfile.TemporaryDirectory() as d:
@@ -112,6 +113,22 @@ class ReleaseRecord(unittest.TestCase):
         newest = max((p for p in (ROOT / "docs/regulatory/releases").glob("*.md")
                       if p.stem[0].isdigit()), key=lambda p: tuple(int(x) for x in p.stem.split(".")))
         self.assertEqual(rr.table_drift(ROOT, newest, newest.read_text()), [])
+
+    def test_every_record_since_the_table_took_its_form_matches_its_evidence(self):
+        """MDQ-PR-090: the records of 2.0.0 and 2.0.1 had soaks of 30 minutes, and their tables
+        say so; they are judged by the length their own soak check names."""
+        records = [p for p in (ROOT / "docs/regulatory/releases").glob("*.md")
+                   if p.stem[0].isdigit()
+                   and tuple(int(x) for x in p.stem.split(".")) >= rr.FIRST_TABLE]
+        self.assertGreaterEqual(len(records), 3)
+        for record in records:
+            with self.subTest(record=record.name):
+                self.assertEqual(rr.table_drift(ROOT, record, record.read_text()), [])
+
+    def test_the_soak_row_takes_the_length_of_the_release_it_records(self):
+        found = rr.results("pass  soak, 30 minutes at 1 M singles/s\n")
+        self.assertEqual(rr.soak_label(found), "soak, 30 minutes")
+        self.assertEqual(rr.soak_label({}), rr.SOAK_ROW)
 
     def test_the_current_rules_ask_for_the_current_presets(self):
         spec = rr.exercise_check(ROOT).__globals__

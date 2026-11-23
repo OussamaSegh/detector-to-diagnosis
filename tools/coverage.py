@@ -159,6 +159,15 @@ def main():
     print(text, end="")
     print(f"{len(raw)} profiles from {len(objs)} executables; report in {out}")
 
+    # Every class B line with a gap, kept so that the next release's coverage review can compare
+    # line by line (the review of 2.1.0 could compare only the totals per item).
+    export_files = [f["filename"] for f in json.loads(export)["data"][0]["files"]]
+    class_b = sorted(f for f in export_files
+                     if (it := item_of(os.path.relpath(f, root), items)) and it.get("class") == "B")
+    shown = subprocess.run([tool("llvm-cov"), "show", "-show-branches=count", "-show-mcdc", *common,
+                            *obj_args, *class_b], check=True, capture_output=True, text=True).stdout
+    (out / "uncovered.txt").write_text(uncovered_by_file(shown, class_b, root))
+
     if args.html:
         subprocess.run([tool("llvm-cov"), "show", "-format=html", "-show-branches=count", "-show-mcdc",
                         f"-output-dir={out / 'html'}", *common, *obj_args], check=True)
@@ -225,6 +234,24 @@ def uncovered(shown):
         out.append(f"       column {col}: {note}")
     return "\n".join(out)
 # [/snippet:uncovered]
+
+
+def uncovered_by_file(shown, files, root):
+    """uncovered() for each file of a `llvm-cov show` of several files, under a heading with its
+    path relative to root; a file without a gap is listed with "none"."""
+    heads = {f"{f}:": f for f in files}
+    parts, current = {}, None
+    for line in shown.splitlines():
+        if line in heads:
+            current = heads[line]
+            parts[current] = []
+        elif current:
+            parts[current].append(line)
+    out = []
+    for f in files:
+        listed = uncovered("\n".join(parts.get(f, [])))
+        out.append(f"## {os.path.relpath(f, root)}\n{listed or 'none'}\n")
+    return "\n".join(out)
 
 
 if __name__ == "__main__":

@@ -48,6 +48,19 @@ ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in
 ]
 
 
+SOAK_ROW = "soak, 100 minutes"
+
+
+def soak_label(found):
+    """The soak row's label with the length the release's own soak check names (MDQ-PR-090):
+    30 minutes until 2.0.1, 100 since CR-0035. Without a soak line, the current length."""
+    for name in found:
+        m = re.match(r"soak, (\d+) minutes", name)
+        if m:
+            return f"soak, {m.group(1)} minutes"
+    return SOAK_ROW
+
+
 def results(release_checks):
     """{check line's name: 'pass' or 'FAIL'}; a part run again replaces its earlier lines."""
     out = {}
@@ -84,7 +97,8 @@ def table_rows(root, version):
     evidence = root / rel
     found = results((evidence / "release-checks.txt").read_text())
     path = f"../../{rel}"
-    rows = [f"| {name} | {row_result(found, prefixes)} | `{path}/{file}` |"
+    soak = soak_label(found)
+    rows = [f"| {soak if name == SOAK_ROW else name} | {row_result(found, prefixes)} | `{path}/{file}` |"
             for name, prefixes, file in ROWS]
     rows.insert([name for name, _, _ in ROWS].index("performance") + 1, f"| performance trend against the baseline | recorded | `{path}/perf-trend.txt` |")
     acc = acceptance(evidence)
@@ -202,6 +216,11 @@ def exercise_check(root):
     return module.check
 
 
+# The first release whose record has every row the skeleton writes today: the product preset's
+# row came with CR-0029 in 2.0.0, and the rows of earlier records follow the rules of their time.
+FIRST_TABLE = (2, 0, 0)
+
+
 def table_drift(root, record, text):
     """The rows the evidence gives that the record's table lacks or states otherwise
     (MDQ-PR-089: the 2.1.0 record kept a soak row of 30 minutes next to a soak of 100). A record
@@ -209,6 +228,8 @@ def table_drift(root, record, text):
     version = record.stem
     if not (root / f"measurements/release-{version}/release-checks.txt").is_file():
         return []  # a record without its evidence in the tree; the exercise check reports paths
+    if tuple(int(x) for x in version.split(".")) < FIRST_TABLE:
+        return []  # written before the table had its present rows (MDQ-PR-090)
     lines = {line.strip() for line in text.splitlines()}
     return [f"the table lacks the row {row} that the evidence gives"
             for row in table_rows(root, version) if row not in lines]

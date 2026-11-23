@@ -1869,6 +1869,87 @@
         "category": "process",
         "escape": "MDQ-PR-087's verification checked the skeleton, not the record written from it; the internal audit's O-8 judged the repeated cause closed by the skeleton's test."
       }
+    },
+    {
+      "id": "MDQ-PR-090",
+      "title": "The record check judges old records by today's table and fails every record before 2.1.0",
+      "found": "2026-11-23, merging the review of release 2.1.0 (PR #21): release_record.py check on docs/regulatory/releases/2.0.1.md",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "MDQ-PR-089 made release_record.py check compare a record's table with the rows the skeleton writes from the evidence. The rows are today's: the soak row says 100 minutes, and the product preset's row exists. Every record before 2.1.0 then failed: 2.0.0 and 2.0.1 on the soak's length (their soaks lasted 30 minutes and their tables say so), the earlier ones on rows that did not exist when they were written. No test ran the check on old records, so CI stayed green.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A check of records, run by hand before a tag; it refused correct records and accepted no wrong one."
+      },
+      "resolution": {
+        "change": "The soak row's label takes the length that the release's own soak check names in release-checks.txt (soak_label), and the comparison applies from 2.0.0 on (FIRST_TABLE), the first record with every row of today's table.",
+        "verification": "tools/test_release_record.py: test_every_record_since_the_table_took_its_form_matches_its_evidence (2.0.0, 2.0.1 and 2.1.0 pass) and test_the_soak_row_takes_the_length_of_the_release_it_records; both fail before the change."
+      },
+      "root_cause": {
+        "whys": [
+          "The check took the labels of the table from a constant that describes the present release checks.",
+          "The fix was tested on the newest record and on a made-up one, not on the records already in the repository."
+        ],
+        "cause": "A check of historical records written against the present rules, not the rules each record was made under.",
+        "category": "tool",
+        "escape": "The new check was run on the newest record only; a run over every record would have shown it."
+      }
+    },
+    {
+      "id": "MDQ-PR-091",
+      "title": "CI fails on the commit that lists a release's tag, because VERSION is still the release",
+      "found": "2026-11-23, CI run 367 on ee34473 (Tag book-v2.1.0 on the release commit), docs.version in every build-test job; read under CAPA-0006 while starting 2.2.0",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "CAPA-0006",
+      "description": "The release is tagged through .github/tags.txt in a commit after the release commit, and the -dev bump comes after that. On the tag-list commit VERSION is still X.Y.Z, and tools/check_version.py accepts X.Y.Z only in a commit whose subject starts \"Release X.Y.Z\", so docs.version failed in all seven build-test jobs. The next commit, ec2182e (2.1.1-dev), was green. The failure was found about an hour after the push, when the CI runs of the morning were read, not right after the push as CAPA-0006 asks.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A rule about the version string of a commit that changes only the tag list; no program differs from the release commit's."
+      },
+      "resolution": {
+        "change": "check_version.py also accepts X.Y.Z in the commit whose subject starts \"Tag book-vX.Y.Z \", the commit that lists the release's tag; any other commit with a release version still fails.",
+        "verification": "tools/test_check_version.py: the tag-list commit of the same version passes, one naming another version fails; docs.version passes."
+      },
+      "root_cause": {
+        "whys": [
+          "The version rule (MDQ-PR-024) was written before tags were made by a workflow from .github/tags.txt, which needs a commit of its own after the release commit.",
+          "The order release, tag list, -dev bump was followed at each release, and the red run on the tag-list commit was replaced by a green one a few minutes later."
+        ],
+        "cause": "A rule about release commits that did not know the release procedure's second commit.",
+        "category": "tool",
+        "escape": "The CI result of the tag-list commit was not read before the next push: the -dev bump was pushed eleven minutes later, while that run was still going, against SDP version 22, section 5."
+      }
+    },
+    {
+      "id": "MDQ-PR-092",
+      "title": "The 2.2.0 roadmap was pushed without its place in the design file, and docs.design_file fails",
+      "found": "2026-11-23, ctest -L unit before the next push, after c98f417 (Roadmap 2.2.0) was on main",
+      "item": "documents",
+      "status": "closed",
+      "affects": [],
+      "capa": "CAPA-0006",
+      "description": "docs/ROADMAP-2.2.0.md is a planning document, and tools/design_file.py requires every roadmap to be in a clause of the design file (7.3.2). The unit suite was run before the file was added to git, and the check lists files with git ls-files, so it did not see the new file and passed; CI on c98f417 sees it and fails.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An index of documents; the roadmap's content was right and reviewed."
+      },
+      "resolution": {
+        "change": "The roadmap is listed under clause 7.3.2 of design-file.json, and design-file.md is written again from it.",
+        "verification": "docs.design_file passes with the roadmap tracked."
+      },
+      "root_cause": {
+        "whys": [
+          "The suite ran on a working tree whose new file was not yet staged, and the check reads tracked files only.",
+          "SDP section 5 asks for the whole unit suite before a push, but not on the tree as it will be committed."
+        ],
+        "cause": "The check before a push ran on a tree that differed from the commit pushed.",
+        "category": "process",
+        "escape": "The new file was staged after the suite ran; nothing ran the suite on the commit itself before the push."
+      }
     }
   ]
 }

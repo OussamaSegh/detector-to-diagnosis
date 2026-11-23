@@ -59,8 +59,8 @@ breaking anything, so that 3.0.0 can write Part XI on code that already works.
   record share: the soak's length, the presets, the fuzz targets and their seconds.
 - The coverage review compares two releases line by line. The release checks keep the list of
   untaken branches (`coverage/uncovered.txt`), which 2.1.0 lacked (its coverage review).
-- Exit: `release_record.py check` passes on every record from 1.0.0 on; the audit records the
-  CAPA evaluation.
+- Exit: `release_record.py check` compares every record from 2.0.0 on (the first with today's
+  rows) with its own evidence; the audit records the CAPA evaluation.
 
 ### Theme P1: the agent gate and its known-bad library
 
@@ -141,7 +141,7 @@ breaking anything, so that 3.0.0 can write Part XI on code that already works.
 
 | Milestone | Content | Exit criterion |
 |---|---|---|
-| 2.2.0-dev, first | Theme R (MDQ-PR-090, uncovered list kept) | `release_record.py check` passes on every record from 1.0.0 |
+| 2.2.0-dev, first | Theme R (MDQ-PR-090, uncovered list kept) | Every record from 2.0.0 matches its own evidence |
 | 2.2.0-dev, second | Theme P1: the gate and its known-bad library | Every known-bad change rejected for its reason |
 | 2.2.0-dev, third | Theme P2: context files, subagent, skill, hooks, provenance, their static check | Every agent file passes its check in CI; the eval's findings recorded |
 | 2.2.0-dev, fourth | Theme S: nodes in the simulator, the merge, the oracle, the measurement | Property tests pass; throughput measured |

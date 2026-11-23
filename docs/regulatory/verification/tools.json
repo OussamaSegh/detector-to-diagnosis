@@ -47,7 +47,7 @@
     {"id": "TL-07", "name": "Coverage tool (tools/coverage.py)", "kind": "in-house", "class": "T2", "version": "the commit",
      "use": "Runs the tests in the coverage build and reports coverage per software item.",
      "failure": "Coverage reported higher than reached, so uncovered code escapes review.",
-     "confidence": ["It fails if any test fails, so the report is of a passing run.", "Exercise 18.3's solution must pass and its starter fail in the coverage build (release checks)."],
+     "confidence": ["It fails if any test fails, so the report is of a passing run.", "Exercise 18.3's solution must pass and its starter fail in the coverage build (release checks).", "Its list of every class B line with a gap per file (coverage/uncovered.txt) is tested on a recorded llvm-cov output (tools.coverage)."],
      "evidence": ["tools/release_checks.sh", "exercises/ch18/e3_branch_coverage/README.md"], "shown_to_fail": "exercises/ch18/e3_branch_coverage/starter"},
     {"id": "TL-08", "name": "Mutation tool (tools/mutation_test.py)", "kind": "in-house", "class": "T2", "version": "the commit",
      "use": "Measures how many planted defects the tests find.",

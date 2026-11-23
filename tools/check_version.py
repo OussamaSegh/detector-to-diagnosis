@@ -6,8 +6,9 @@ The version goes into every program (minidaq_server's hello, its crash report, t
 files' "software" field), so a build of main that says "0.3.0" claims to be the release. The
 rules:
 
-- X.Y.Z without a suffix only in the release commit, whose subject starts "Release X.Y.Z", or
-  in a working tree that is changing VERSION for one;
+- X.Y.Z without a suffix only in the release commit, whose subject starts "Release X.Y.Z", in
+  the commit after it that lists its tag ("Tag book-vX.Y.Z ..."), or in a working tree that is
+  changing VERSION for one;
 - otherwise X.Y.Z-dev, later than the newest release recorded in docs/regulatory/releases/.
 
 Usage: check_version.py ROOT. Exit status 0 if VERSION follows the rules. Outside a git checkout
@@ -41,6 +42,8 @@ def problems(version, subject, released, changing):
         return []
     if subject is None or changing or subject.startswith(f"Release {number}"):
         return []
+    if subject.startswith(f"Tag book-v{number} "):
+        return []  # the commit that lists the release's tag (MDQ-PR-091)
     return [f"VERSION says {number}, a release, but this commit is not its release commit "
             f"('{subject}'): the commit after a release sets the next -dev version"]
 # [/snippet:problems]

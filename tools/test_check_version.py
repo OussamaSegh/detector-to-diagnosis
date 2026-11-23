@@ -22,6 +22,10 @@ class Version(unittest.TestCase):
 
     def test_the_release_commit_and_its_preparation_pass(self):
         self.assertEqual(problems("0.4.0", "Release 0.4.0: Part IV complete", RELEASED, False), [])
+        # MDQ-PR-091: the commit after the release that lists its tag for the tags workflow
+        self.assertEqual(problems("0.4.0", "Tag book-v0.4.0 on the release commit", RELEASED, False), [])
+        (p,) = problems("0.4.0", "Tag book-v0.4.1 on the release commit", RELEASED, False)
+        self.assertIn("not its release commit", p)
         self.assertEqual(problems("0.4.0", "ch21: diagnostics", RELEASED, True), [])
 
     def test_a_dev_version_of_a_released_version_fails(self):

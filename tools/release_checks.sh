@@ -168,7 +168,8 @@ check "stress run, tsan, 100 repetitions" $?
 check "property-based tests, wide search" $?
 
 # Chapter 18: structural coverage per software item; the review of the class B items' uncovered
-# branches is written into the release record from coverage/summary.txt and the --uncovered lists.
+# branches is written into the release record from coverage/summary.txt and coverage/uncovered.txt,
+# every class B line with a gap, which the next release's review compares line by line.
 { cmake --preset coverage -DMINIDAQ_BUILD_STARTERS=ON >/dev/null &&
     cmake --build --preset coverage -j"$(nproc)" >/dev/null &&
     python3 tools/coverage.py build/coverage "$out/coverage"; } > "$out/coverage.txt" 2>&1
