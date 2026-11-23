@@ -1,0 +1,13 @@
+diff --git a/minidaq/tests/unit/test_coincidence_sorter.cpp b/minidaq/tests/unit/test_coincidence_sorter.cpp
+index ad94c3d..5db796c 100644
+--- a/minidaq/tests/unit/test_coincidence_sorter.cpp
++++ b/minidaq/tests/unit/test_coincidence_sorter.cpp
+@@ -400,7 +400,7 @@ TEST(CoincidenceSorter, EverySingleIsAccountedFor) {
+   SorterStats st;
+   const auto out = run(c, singles, &st);
+   EXPECT_EQ(st.singles_in, singles.size());
+-  EXPECT_EQ(st.singles_in,
++  EXPECT_GE(st.singles_in,
+             st.energy_rejected + st.out_of_order + st.singles_alone + 2 * st.pair_windows + st.singles_in_multiples);
+   EXPECT_EQ(st.prompts + st.delayed, out.size());
+   EXPECT_GT(st.prompts_from_multiples, 0U);

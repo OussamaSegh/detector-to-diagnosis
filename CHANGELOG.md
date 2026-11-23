@@ -30,6 +30,12 @@ the patch version.
 - The agent's hooks: `tools/hooks/agent_command.py` refuses a command that writes outside the
   repository or pushes to a branch other than the session's own and `main`, or forces a push;
   `tools/hooks/agent_edit.py` formats an edited C++ file.
+- The `Gate:` trailer (commit policy 3): `tools/agent_gate.py --trailer` writes the gate's
+  verdict as a line a commit may carry; `tools/check_commits.py` (rule `gate`) requires it to
+  start with PASS or FAIL when it is given, and `tools/ai_provenance.py` reports it for each
+  assisted commit. The trailer stays optional.
+- The trace-review subagent's eval (`tools/agent_evals/`): six recorded changes with their
+  expected findings, and `score.py`, which scores a report against them.
 - CR-0036, proposed: the requirements of the gate and of the agent files.
 
 ### Fixed (roadmap 2.2.0, Theme R)

@@ -129,6 +129,18 @@ class Rules(unittest.TestCase):
         self.assertTrue(check_commits.merge(commit("Sorter\n", parents="ab"), POLICY))
         self.assertTrue(check_commits.merge(commit("Merge x\n", parents="abc"), POLICY))
 
+    def test_a_gate_trailer_is_optional_once_and_starts_with_the_verdict(self):
+        base = "Fix the sorter\n\nBody.\n\nReview: items 1 to 6.\n"
+        self.assertEqual(check_commits.gate(commit(base), POLICY), [])
+        for verdict in ("PASS, fast, 11 passed, since 8b1eeab", "FAIL, full, failed: unit"):
+            self.assertEqual(check_commits.gate(commit(base + f"Gate: {verdict}\n"), POLICY), [])
+        self.assertTrue(check_commits.gate(commit(base + "Gate: looks fine\n"), POLICY))
+        self.assertTrue(check_commits.gate(commit(base + "Gate: PASSED\n"), POLICY))
+        two = base + "Gate: PASS, fast\nGate: FAIL, full\n"
+        self.assertIn("2 'Gate:' trailers", check_commits.gate(commit(two), POLICY)[-1])
+        # Not a trailer git parses (above a blank line): not the gate's verdict either.
+        self.assertEqual(check_commits.gate(commit("Fix\n\nGate: nonsense\n\nReview: ok\n"), POLICY), [])
+
 
 SRS = """| ID | Requirement | Item | Method |
 |---|---|---|---|

@@ -1,0 +1,19 @@
+{
+ "agent": ".claude/agents/trace-review.md",
+ "base": "8b1eeabb7d0e18ce804f42a7388623b817e53c03",
+ "comment": "The trace-review subagent's eval (CR-0036, roadmap 2.2.0, Theme P2): each case is a change, a patch against base, with the findings the subagent must report. A finding is matched by a line of the report that starts with its number (\"1.\", \"2)\", \"[3]\", \"Finding 4\") and names every one of its 'mentions'; 'none' is matched by a report that says \"No findings\" and numbers none. tools/agent_evals/score.py scores a report; the runs are kept in measurements/agent-evals/trace-review/.",
+ "cases": [
+  {"id": "test-without-requirement", "patch": "tools/agent_gate/known-bad/02-test-without-requirement.patch",
+   "expected": [{"finding": 2, "mentions": ["EmptySourceTypeIsRefused"]}]},
+  {"id": "behavior-without-requirement", "patch": "tools/agent_gate/known-bad/03-product-change-without-test.patch",
+   "expected": [{"finding": 4, "mentions": ["coincidence_sorter.cpp"]}]},
+  {"id": "requirement-loses-its-test", "patch": "tools/agent_gate/known-bad/04-test-loses-its-tag.patch",
+   "expected": [{"finding": 1, "mentions": ["SRS-CFG-001"]}]},
+  {"id": "new-requirement-without-test", "patch": "tools/agent_gate/known-bad/05-untestable-requirement.patch",
+   "expected": [{"finding": 1, "mentions": ["SRS-SRT-999"]}]},
+  {"id": "weakened-risk-control", "patch": "tools/agent_evals/trace-review/weakened-risk-control.patch",
+   "expected": [{"finding": 3, "mentions": ["SRS-SRT-009"]}]},
+  {"id": "good-tagged-test", "patch": "tools/agent_gate/known-bad/good-tagged-test.patch",
+   "expected": "none"}
+ ]
+}

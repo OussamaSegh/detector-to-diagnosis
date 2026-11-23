@@ -9,7 +9,8 @@ For every commit of the range (default: the whole history) it reports whether an
 named in its trailers (`Co-Authored-By:`, `Assisted-by:` or `Generated-by:` with a value that
 matches one of the policy's `assistants` patterns), the software items and safety classes its
 product files belong to, whether it changed a test, and whether its review trailer is one git
-parses. The summary counts assisted commits per item and lists the assisted commits that changed
+parses, and the agent gate's verdict when a `Gate:` trailer gives it (commit policy 3; the
+trailer is optional). The summary counts assisted commits per item and lists the assisted commits that changed
 a product item's code without changing a test in the same commit: the commits a reviewer of an
 assistant's work should look at first. With --json the report is a JSON document for the release
 record.
@@ -61,6 +62,12 @@ def touched(commit, items):
 # [/snippet:assisted]
 
 
+def gate_of(message, policy):
+    """The value of the commit's `Gate:` trailer, or None."""
+    key = policy.get("gate_trailer", "Gate").lower()
+    return next((v for k, v in cc.trailers(message) if k.lower() == key), None)
+
+
 def report(root, revision_range, policy):
     items = json.loads((pathlib.Path(root) / ITEMS).read_text())["items"]
     rows = []
@@ -73,6 +80,7 @@ def report(root, revision_range, policy):
             "items": product,
             "tests": any(is_test(f) for f in c["files"]),
             "review": policy["review_trailer"] in dict(cc.trailers(c["message"])),
+            "gate": gate_of(c["message"], policy),
         })
     own = [r for r in rows if not r["merge"]]
     assisted = [r for r in own if r["assistant"]]
@@ -89,6 +97,8 @@ def report(root, revision_range, policy):
         "assisted_with_product_code": sum(1 for r in assisted if r["items"]),
         "assisted_product_code_without_a_test": [r["commit"] for r in untested],
         "assisted_with_a_parsed_review_trailer": sum(1 for r in assisted if r["review"]),
+        "assisted_with_a_gate_trailer": sum(1 for r in assisted if r["gate"]),
+        "assisted_gate_fail": [r["commit"] for r in assisted if (r["gate"] or "").startswith("FAIL")],
         "assisted_per_item": dict(sorted(per_item.items())),
         "rows": rows,
     }
@@ -119,6 +129,8 @@ def main(argv):
         print(f"  {sha} {', '.join(f'{i} ({k})' for i, k in sorted(row['items'].items()))}")
     print(f"assisted commits with a review trailer git parses: "
           f"{r['assisted_with_a_parsed_review_trailer']}")
+    print(f"assisted commits with a gate verdict: {r['assisted_with_a_gate_trailer']}"
+          + (f"; FAIL in {', '.join(r['assisted_gate_fail'])}" if r["assisted_gate_fail"] else ""))
     print("assisted commits per item: "
           + ", ".join(f"{i} {n}" for i, n in r["assisted_per_item"].items()))
     return 0

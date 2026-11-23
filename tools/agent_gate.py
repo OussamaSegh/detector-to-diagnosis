@@ -8,7 +8,7 @@ the project's own checks on the change and gives one verdict, with a reason for 
 the reviewer starts from what is known to be wrong. It never replaces the review (SRS-AI): a
 change that passes the gate can still be the wrong change.
 
-    agent_gate.py ROOT BASE [HEAD] [--full] [--build DIR] [--json]
+    agent_gate.py ROOT BASE [HEAD] [--full] [--build DIR] [--json | --trailer]
 
 ROOT is the checkout with the change; BASE the commit the change starts from; HEAD the commit
 with the change, checked out in ROOT (default: ROOT's working tree, staged or not). The checks are those of this
@@ -35,6 +35,9 @@ With --full, in BUILD (a debug build of ROOT, default ROOT/build/debug):
   build        the build, warnings as errors
   unit         ctest -L unit
   static       tools/static_analysis.sh on ROOT/build/clang-release, if that build exists
+
+With --trailer it prints only the line a commit message may carry (commit policy 3), such as
+`Gate: PASS, fast, 11 passed, 1 skipped, since 8b1eeab`, with the names of the checks that fail.
 
 Exit status 0 if every check passes or is skipped, 1 if one fails, 2 if the gate cannot run.
 The gate is shown to fail: tools/test_agent_gate.py applies each change of the known-bad
@@ -238,6 +241,17 @@ def judge(root, base, head=None, full=False, build=None):
     return files, results, verdict
 
 
+def trailer(results, verdict, base, full):
+    """The `Gate:` trailer of a verdict: the verdict first, then what it rests on."""
+    count = {r: sum(1 for _, x, _ in results if x == r) for r in ("pass", "FAIL", "skipped")}
+    parts = [verdict, "full" if full else "fast", f"{count['pass']} passed"]
+    if count["FAIL"]:
+        parts.append(f"failed: {' '.join(n for n, x, _ in results if x == 'FAIL')}")
+    if count["skipped"]:
+        parts.append(f"{count['skipped']} skipped")
+    return f"Gate: {', '.join(parts)}, since {base[:7]}"
+
+
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("root", type=pathlib.Path)
@@ -246,13 +260,16 @@ def main(argv):
     ap.add_argument("--full", action="store_true")
     ap.add_argument("--build", type=pathlib.Path)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--trailer", action="store_true")
     a = ap.parse_args(argv[1:])
     try:
         files, results, verdict = judge(a.root, a.base, a.head, a.full, a.build)
     except (RuntimeError, OSError, KeyError, ValueError) as e:
         print(f"agent gate: cannot run: {e}", file=sys.stderr)
         return 2
-    if a.json:
+    if a.trailer:
+        print(trailer(results, verdict, git(a.root, "rev-parse", "--short=7", a.base).strip(), a.full))
+    elif a.json:
         print(json.dumps({"base": a.base, "head": a.head or "working tree", "files": files,
                           "checks": [{"check": n, "result": r, "reasons": why} for n, r, why in results],
                           "verdict": verdict}, indent=1))

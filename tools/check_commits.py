@@ -25,7 +25,10 @@ The rules (the policy names them):
 - merge: a merge commit has two parents and names what it merges;
 - assisted (policy version 2, Chapter 37): a commit whose trailers name an AI assistant and that
   changes the code of a product item changes a test too, or names in a trailer `Tests:` the tests
-  that cover the change.
+  that cover the change;
+- gate (policy version 3, roadmap 2.2.0, CR-0036): a `Gate:` trailer, which stays optional,
+  is given once and starts with the gate's verdict, PASS or FAIL, as
+  `tools/agent_gate.py --trailer` writes it.
 
 Exit status: 0 if no commit breaks a rule, 1 if one does, 2 for a usage error or a range that
 git cannot resolve (a shallow clone, for example).
@@ -40,7 +43,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from trace_matrix import parse_srs  # noqa: E402
 
 POLICY = pathlib.Path("tools/commit_policy.json")
-RULES = ("identity", "subject", "layout", "review", "reference", "merge", "assisted")
+RULES = ("identity", "subject", "layout", "review", "reference", "merge", "assisted", "gate")
+GATE_VALUE = re.compile(r"(PASS|FAIL)\b.*")
 
 
 # [snippet:trailers]
@@ -228,6 +232,17 @@ def assisted(commit, policy, known):
     return [f"an assisted change of {', '.join(sorted(product))} with no test changed and no "
             "'Tests:' trailer naming the tests that cover it"]
 # [/snippet:assisted_rule]
+
+
+def gate(commit, policy):
+    """A `Gate:` trailer is optional; when given, once and with the gate's verdict first."""
+    key = policy.get("gate_trailer", "Gate").lower()
+    values = [v for k, v in trailers(commit["message"]) if k.lower() == key]
+    bad = [f"a '{policy.get('gate_trailer', 'Gate')}:' trailer '{v}' that does not start with "
+           "PASS or FAIL" for v in values if not GATE_VALUE.fullmatch(v)]
+    if len(values) > 1:
+        bad.append(f"{len(values)} 'Gate:' trailers; the gate gives one verdict")
+    return bad
 
 
 def known_references(root):

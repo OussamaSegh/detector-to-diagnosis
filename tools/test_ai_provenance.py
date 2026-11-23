@@ -104,11 +104,13 @@ class Report(unittest.TestCase):
         self.without = r.commit(message("Sorter: rename", REVIEW, ASSISTANT))
         r.write("minidaq/src/processing/sinogram.cpp", "int c;\n")
         self.named = r.commit(message("Sinogram: bins", REVIEW, "Tests: Sinogram.Bins",
-                                      ASSISTANT))
+                                      "Gate: PASS, fast, 11 passed, since 8b1eeab", ASSISTANT))
         r.write("minidaq/src/processing/sinogram.cpp", "int d;\n")
         self.human = r.commit(message("Sinogram: by hand", REVIEW))
         r.write("tools/survey.py", "x = 1\n")
-        self.tool = r.commit(message("Survey: a tool", REVIEW, ASSISTANT))
+        self.tool = r.commit(message("Survey: a tool", REVIEW,
+                                     "Gate: FAIL, fast, 10 passed, failed: gate, since 8b1eeab",
+                                     ASSISTANT))
 
     def tearDown(self):
         self.repo.close()
@@ -125,6 +127,16 @@ class Report(unittest.TestCase):
                               f"{self.repo.since}..HEAD", "--json"],
                              capture_output=True, text=True, check=True).stdout
         self.assertEqual(json.loads(out)["assisted"], 4)
+
+    def test_the_gate_trailer_is_reported_when_given_and_not_required(self):
+        r = ap.report(self.repo.root, f"{self.repo.since}..HEAD", POLICY)
+        self.assertEqual(r["assisted_with_a_gate_trailer"], 2)
+        self.assertEqual(r["assisted_gate_fail"], [self.tool[:12]])
+        gates = {row["commit"]: row["gate"] for row in r["rows"]}
+        self.assertEqual(gates[self.named[:12]], "PASS, fast, 11 passed, since 8b1eeab")
+        self.assertIsNone(gates[self.without[:12]])
+        problems = [cc.gate(c, POLICY) for c in cc.commits(self.repo.root, f"{self.repo.since}..HEAD")]
+        self.assertEqual(problems, [[]] * 5)
 
     def test_the_policy_rule_wants_a_test_or_a_tests_trailer(self):
         # REQ: SRS-AI-004

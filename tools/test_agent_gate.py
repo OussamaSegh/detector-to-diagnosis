@@ -107,6 +107,13 @@ class Rules(unittest.TestCase):
         self.assertTrue(gate.ANCHORED.search('ok = re.match(r"^[0-9]+$", v)'))
         self.assertFalse(gate.ANCHORED.search('ok = re.fullmatch(r"[0-9]+", v)'))
 
+    def test_the_trailer_gives_the_verdict_first(self):
+        results = [("gate", "pass", []), ("tags", "FAIL", ["x"]), ("format", "skipped", [])]
+        self.assertEqual(gate.trailer(results, "FAIL", "8b1eeab", False),
+                         "Gate: FAIL, fast, 1 passed, failed: tags, 1 skipped, since 8b1eeab")
+        self.assertEqual(gate.trailer(results[:1], "PASS", "8b1eeab", True),
+                         "Gate: PASS, full, 1 passed, since 8b1eeab")
+
     def test_a_change_to_a_check_is_for_a_person(self):
         self.assertTrue(gate.check_gate(files=["tools/trace_matrix.py"]))
         self.assertFalse(gate.check_gate(files=["tools/survey.py"]))

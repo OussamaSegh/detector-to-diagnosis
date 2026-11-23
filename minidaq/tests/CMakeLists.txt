@@ -196,9 +196,11 @@ if(Python3_Interpreter_FOUND)
   # Roadmap 2.2.0, Theme P2: the agent files' check and the agent's hooks (CR-0036).
   add_test(NAME tools.check_agent_files COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_check_agent_files.py)
   add_test(NAME tools.agent_hooks COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_agent_hooks.py)
+  add_test(NAME tools.agent_evals COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_agent_evals.py)
   add_test(NAME docs.agent_files
            COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/check_agent_files.py ${PROJECT_SOURCE_DIR})
-  set_tests_properties(tools.agent_gate tools.check_agent_files tools.agent_hooks docs.agent_files
+  set_tests_properties(tools.agent_gate tools.check_agent_files tools.agent_hooks tools.agent_evals
+                       docs.agent_files
                        PROPERTIES LABELS "unit")
   # Chapter 32: every configuration has its build, test and workflow presets.
   add_test(NAME docs.presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_presets.py ${PROJECT_SOURCE_DIR})

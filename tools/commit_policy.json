@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "since": "34cf130",
   "rules": [
     "identity",
@@ -8,7 +8,8 @@
     "review",
     "reference",
     "merge",
-    "assisted"
+    "assisted",
+    "gate"
   ],
   "identity_domains": [
     "users.noreply.github.com",
@@ -23,6 +24,7 @@
   "subject_max": 72,
   "body_max": 72,
   "review_trailer": "Review",
+  "gate_trailer": "Gate",
   "references": "CR-\\d{4}|MDQ-PR-\\d{3}",
   "controlled": {
     "requirements": "docs/regulatory/srs.md",
