@@ -365,7 +365,7 @@
       "use": "Judges a change before a person reviews it, however it was written: runs the project's own fast checks on the change (requirement tags of new tests, a test with each class B change, whole-value validation, trace, requirements, documents, waits, layers, format) and, with --full, the build, the unit tests and static analysis, and gives one verdict with a reason for each failure (roadmap 2.2.0, Theme P1). It never replaces the review (SRS-AI).",
       "failure": "A bad change passes: a check that does not run, a reason lost, a change that weakens the gate judged by its own weakened copy. The reviewer trusts a PASS and misses the defect.",
       "confidence": [
-        "tools/test_agent_gate.py applies each change of the known-bad library (tools/agent_gate/known-bad/, eleven changes taken from MiniDAQ's problem reports and rules) to its base commit in a scratch worktree and requires a FAIL from the check that the change's defect names; it requires a PASS on a known-good change.",
+        "tools/test_agent_gate.py applies each change of the known-bad library (tools/agent_gate/known-bad/, twelve changes taken from MiniDAQ's problem reports and rules) to its base commit in a scratch worktree and requires a FAIL from the check that the change's defect names; it requires a PASS on a known-good change.",
         "The gate runs the checks of its own version on the change, and a change to any check it runs is reported for a person (check gate).",
         "A person's review stays required; each escape found later becomes a new known-bad change (roadmap 2.2.0, section 6)."
       ],
@@ -374,6 +374,25 @@
         "tools/agent_gate/known-bad/cases.json"
       ],
       "shown_to_fail": "KnownBadLibrary.test_every_fast_known_bad_change_fails_its_own_check"
+    },
+    {
+      "id": "TL-52",
+      "name": "Agent file check (tools/check_agent_files.py) and the agent's hooks (tools/hooks/agent_command.py, tools/hooks/agent_edit.py)",
+      "kind": "in-house",
+      "class": "T2",
+      "version": "the commit; Python 3.12 or later, git, clang-format (edit hook)",
+      "use": "Checks the files an AI coding agent reads or obeys in the repository (the context file, the settings, the subagents, the skills and their register): their fields and versions, that the paths, commands and tests they name exist, the tools they allow against a least-privilege policy (tools/agent_files_policy.json), and that they hold no secret, address or absolute path; run in CI (docs.agent_files) and by the agent gate. The hooks refuse a command that writes outside the repository or pushes to another branch, and format an edited C++ file (roadmap 2.2.0, Theme P2; CR-0036).",
+      "failure": "An agent file that names a path that no longer exists, allows a tool or a command it should not have, or holds a secret passes; the agent follows it. A hook that allows a push to another branch or a write outside the checkout, or refuses normal work so that sessions learn to work around it.",
+      "confidence": [
+        "tools/test_check_agent_files.py builds a repository with one agent file of each kind that passes, and adds each kind of defect: a missing field, a wrong name, a version the history does not end with, a missing path, a pattern that matches nothing, an undefined test, a tool outside the kind's list, a broad permission, a missing deny rule, a missing hook, a secret, an address, an absolute path, a register out of date, and a changed file with its old version.",
+        "tools/test_agent_hooks.py runs each hook as the agent runs it, with its JSON on stdin: writes inside and outside the repository, pushes to the session's branch, to main, to another branch, forced and bulk pushes, and an edited C++ file, another file and a file outside the repository.",
+        "The known-bad library holds a subagent that is given Edit and Bash (case 12), which the agent gate must reject."
+      ],
+      "evidence": [
+        "tools/test_check_agent_files.py",
+        "tools/test_agent_hooks.py"
+      ],
+      "shown_to_fail": "AgentFiles.test_a_tool_outside_the_kinds_list_is_reported"
     }
   ]
 }

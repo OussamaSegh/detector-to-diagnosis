@@ -80,6 +80,13 @@
    "level": "full"
   },
   {
+   "id": "12-agent-that-edits",
+   "source": "roadmap 2.2.0, Theme P2 (least privilege)",
+   "defect": "A subagent meant to review is given Edit and Bash: it can change the tests it should only report on.",
+   "check": "agents",
+   "level": "fast"
+  },
+  {
    "id": "good-tagged-test",
    "source": null,
    "defect": "A new unit test, formatted, that names its requirement.",

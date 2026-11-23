@@ -15,10 +15,22 @@ the patch version.
   change, whole-value validation, trace, requirements, documents, waits, layers, format) take
   seconds; `--full` adds the build, the unit tests and static analysis. One verdict, with a
   reason for each failure; a change to a check the gate runs is reported for a person.
-- The known-bad library (`tools/agent_gate/known-bad/`): eleven changes, each a patch against a
+- The known-bad library (`tools/agent_gate/known-bad/`): twelve changes, each a patch against a
   fixed commit with the defect it holds (MDQ-PR-084's validation among them), and one good
   change. `tools.agent_gate` requires each bad change to fail its own check and the good one to
   pass.
+
+### Added (roadmap 2.2.0, Theme P2, first part)
+
+- `tools/check_agent_files.py` (TL-52, test `docs.agent_files`): checks the agent files (context
+  file, settings, subagents, skills and their register) for their fields and versions, the paths,
+  commands and tests they name, the tools they allow against `tools/agent_files_policy.json`, and
+  for secrets, addresses and absolute paths. The agent gate runs it (check `agents`), and the
+  known-bad library has a twelfth change: a reviewing subagent given Edit and Bash.
+- The agent's hooks: `tools/hooks/agent_command.py` refuses a command that writes outside the
+  repository or pushes to a branch other than the session's own and `main`, or forces a push;
+  `tools/hooks/agent_edit.py` formats an edited C++ file.
+- CR-0036, proposed: the requirements of the gate and of the agent files.
 
 ### Fixed (roadmap 2.2.0, Theme R)
 

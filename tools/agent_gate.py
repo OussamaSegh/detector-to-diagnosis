@@ -27,6 +27,7 @@ The fast checks (seconds) need no build:
   documents    no controlled document changed without a new version (tools/design_file.py)
   waits        no test waits or reads a clock without its reason (tools/check_test_waits.py)
   layers       the architecture's layers (tools/check_layers.py)
+  agents       the agent files (tools/check_agent_files.py --since BASE)
   format       the touched C++ lines as clang-format writes them (tools/check_format.py)
 
 With --full, in BUILD (a debug build of ROOT, default ROOT/build/debug):
@@ -51,6 +52,8 @@ PRODUCT_TESTS = ("minidaq/tests/", "recon/tests/", "analysis/tests/")
 GATE_FILES = ("tools/agent_gate.py", "tools/trace_matrix.py", "tools/req_lint.py",
               "tools/design_file.py", "tools/check_test_waits.py", "tools/check_layers.py",
               "tools/check_format.py", "tools/static_analysis.sh", "tools/agent_gate/",
+              "tools/check_agent_files.py", "tools/agent_files_policy.json",
+              "tools/hooks/agent_", ".claude/settings.json",
               ".clang-tidy", ".clang-format", "docs/architecture/layers.json",
               "docs/architecture/software-items.json")
 TAG = re.compile(r"(?://|#)\s*REQ:\s*SRS-[A-Z]+-\d{3}")
@@ -165,8 +168,8 @@ def tool(root, args, cwd=None):
 
 
 def from_tool(args, expect_ok=0):
-    def run(root, **_):
-        code, out = tool(root, [a.replace("{root}", str(root)) for a in args])
+    def run(root, base, **_):
+        code, out = tool(root, [a.replace("{root}", str(root)).replace("{base}", base) for a in args])
         return [] if code == expect_ok else [line for line in out.splitlines() if line.strip()][-8:]
     return run
 
@@ -193,6 +196,7 @@ FAST = [
     ("documents", check_documents),
     ("waits", from_tool(["check_test_waits.py", "{root}"])),
     ("layers", from_tool(["check_layers.py", "{root}"])),
+    ("agents", from_tool(["check_agent_files.py", "{root}", "--since", "{base}"])),
     ("format", check_format),
 ]
 

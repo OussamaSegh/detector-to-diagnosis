@@ -1,0 +1,40 @@
+diff --git a/.claude/README.md b/.claude/README.md
+new file mode 100644
+index 0000000..5066a2a
+--- /dev/null
++++ b/.claude/README.md
+@@ -0,0 +1,13 @@
++# Agent files
++
++Version 1. Owner: software lead.
++
++| File | Kind | Version | Owner |
++|---|---|---|---|
++| `.claude/agents/fixer.md` | agent | 1 | software lead |
++
++## Document history
++
++| Version | Change |
++|---|---|
++| 1 | First version. |
+diff --git a/.claude/agents/fixer.md b/.claude/agents/fixer.md
+new file mode 100644
+index 0000000..5a99943
+--- /dev/null
++++ b/.claude/agents/fixer.md
+@@ -0,0 +1,15 @@
++---
++name: fixer
++description: Fixes the trace matrix when docs.trace fails.
++tools: Read, Grep, Glob, Edit, Bash
++version: 1
++owner: software lead
++---
++
++Run `tools/trace_matrix.py` and edit the tests until it passes.
++
++## Document history
++
++| Version | Change |
++|---|---|
++| 1 | First version. |

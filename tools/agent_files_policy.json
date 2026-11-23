@@ -1,0 +1,25 @@
+{
+  "comment": "The least-privilege policy of MiniDAQ's agent files (roadmap 2.2.0, Theme P2; CR-0036), read by tools/check_agent_files.py. 'required' lists the frontmatter fields a file of the kind must have; 'tools' the only tools it may allow (a Bash rule names its command); 'forbidden' the permission rules that settings may not allow (regular expressions on the whole rule); 'deny' the rules that settings must deny; 'modes' the default modes settings may set. A change to this file is a change to a check the agent gate runs, so a person reviews it.",
+  "agent": {
+    "required": ["name", "description", "tools", "version", "owner"],
+    "tools": ["Read", "Grep", "Glob"]
+  },
+  "skill": {
+    "required": ["name", "description", "version", "owner"],
+    "tools": ["Read", "Grep", "Glob",
+              "Bash(tools/release_checks.sh *)",
+              "Bash(python3 tools/release_record.py *)",
+              "Bash(python3 tools/acceptance.py *)",
+              "Bash(tail *)", "Bash(cat *)"]
+  },
+  "settings": {
+    "forbidden": ["Bash", "Bash\\(\\*\\)", "Bash\\(sudo.*", "Bash\\(curl.*", "Bash\\(wget.*",
+                  "Bash\\(.*install.*", "Bash\\(rm -rf.*", "Bash\\(git push.*", "Bash\\(gh .*",
+                  "WebFetch", "Write", "Edit", "Write\\((?!\\./).*", "Edit\\((?!\\./).*",
+                  "Read\\((?!\\./).*", "mcp__.*"],
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Bash(git push --force *)", "Bash(git push -f *)",
+             "Bash(sudo *)", "Bash(curl *)", "Bash(wget *)", "Bash(pip install *)"],
+    "modes": ["default", "acceptEdits", "plan"],
+    "hooks": {"PreToolUse": "tools/hooks/agent_command.py", "PostToolUse": "tools/hooks/agent_edit.py"}
+  }
+}
