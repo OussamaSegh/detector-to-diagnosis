@@ -67,6 +67,9 @@ the patch version.
 - MDQ-PR-092: the 2.2.0 roadmap is listed in the design file.
 - MDQ-PR-093: `tools.agent_gate` failed on CI, where clang-format is installed without
   git-clang-format; the test now skips a case whose check the gate itself reports as skipped.
+- MDQ-PR-094: static analysis failed on main after Theme S (clang-tidy's
+  bugprone-unused-return-value on a discarded `at()` in `NodeMerge::end`); the index is checked
+  explicitly, and the constructor no longer copies its offsets (cppcheck).
 
 ### Fixed (review of release 2.1.0)
 

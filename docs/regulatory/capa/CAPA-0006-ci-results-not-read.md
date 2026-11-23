@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-11-23, by the software lead (internal audit before release 2.1.0) |
-| Source | MDQ-PR-085; during the check period, MDQ-PR-091, MDQ-PR-092 and MDQ-PR-093 (red runs on main, each reported the same day) |
+| Source | MDQ-PR-085; during the check period, MDQ-PR-091, MDQ-PR-092, MDQ-PR-093 and MDQ-PR-094 (red runs on main, each reported the same day) |
 | Owner | software lead |
 | Effectiveness check | release 2.2.0 |
 

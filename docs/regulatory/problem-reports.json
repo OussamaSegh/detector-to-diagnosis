@@ -1977,6 +1977,33 @@
         "category": "test",
         "escape": "The suite ran only where both programs are installed; no local run had clang-format without git-clang-format."
       }
+    },
+    {
+      "id": "MDQ-PR-094",
+      "title": "Static analysis fails on main after Theme S: an unused return value in the node merge",
+      "found": "2026-11-23, the CI result of ac7f3bc (Theme S), read before the next push (CAPA-0006)",
+      "item": "merger",
+      "status": "closed",
+      "affects": [],
+      "capa": "CAPA-0006",
+      "description": "NodeMerge::end checked its node's index with (void)offsets_.at(node). clang-tidy's bugprone-unused-return-value, an error in the static-analysis job, refuses a discarded at(); the gate's self-test, which runs the same analysis on the correct tree, failed with it. cppcheck, run afterwards on the same tree, also asked for a vector parameter of a helper to be passed by reference. The unit tests and the gate's fast checks passed, and neither runs static analysis.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The code behaved as specified: the discarded at() threw for an unknown node, as intended, and every other path was unchanged. The finding is the analysis's rule, not a fault in the merge; the node merge is used only with the simulator in 2.2."
+      },
+      "resolution": {
+        "change": "NodeMerge::end throws std::out_of_range for an unknown node explicitly, and the constructor moves its offsets and leaves the refusal of zero nodes to the StreamMerger, without the helper that copied them.",
+        "verification": "tools/static_analysis.sh's clang-tidy and cppcheck are clean on the changed sources; ctest -L unit passes; the node merge's tests, which refuse zero nodes, pass."
+      },
+      "root_cause": {
+        "whys": [
+          "Theme S was pushed after the unit suite and the gate's fast checks, which do not run static analysis; the gate's --full, which does, was not run.",
+          "CAPA-0006's rule before a push names the unit suite only, and a change of C++ code needs the analysis too."
+        ],
+        "cause": "A push of new C++ code without the static analysis that CI applies to it.",
+        "category": "process",
+        "escape": "Static analysis runs only in CI and in the gate's --full mode; the local check before the push did not include it."
+      }
     }
   ]
 }

@@ -3,20 +3,13 @@
 
 #include <limits>
 #include <stdexcept>
+#include <utility>
 
 namespace minidaq {
 
-namespace {
-std::vector<Picoseconds> checked(std::vector<Picoseconds> offsets) {
-  if (offsets.empty()) {
-    throw std::invalid_argument("NodeMerge: at least one node");
-  }
-  return offsets;
-}
-}  // namespace
-
 NodeMerge::NodeMerge(std::vector<Picoseconds> clock_offsets)
-    : offsets_{checked(std::move(clock_offsets))},
+    // The StreamMerger refuses zero boards with std::invalid_argument, so no nodes is refused too.
+    : offsets_{std::move(clock_offsets)},
       merger_{{.boards = offsets_.size(), .max_skew = Picoseconds{0}}} {}
 
 // [snippet:push]
@@ -35,7 +28,9 @@ void NodeMerge::advance(std::size_t node, Picoseconds node_time) {
 }
 
 void NodeMerge::end(std::size_t node) {
-  (void)offsets_.at(node);
+  if (node >= offsets_.size()) {
+    throw std::out_of_range("NodeMerge::end: no such node");
+  }
   merger_.advance(node, Picoseconds{std::numeric_limits<std::int64_t>::max()});
 }
 
