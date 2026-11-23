@@ -96,6 +96,16 @@ release; it now builds the last `book-v` tag of `.github/tags.txt` with main's e
 records per second the steal time and each server thread's run-queue wait, MDQ-PR-064's finer
 measure; its first 30-minute run is `measurements/review-2.0.0/soak/`. Next free MDQ-PR-081.
 
+Review of release 2.1.0 (2026-11-23, independent, PR from branch claude/project-thread-vdo54z):
+MDQ-PR-088 (CR-0034's `out` check compared the dtype by identity, `dtype().is`, so an unpickled
+float64 array was refused; now `py::isinstance<py::array_t<double>>`, in `recon_cpp.cpp` and
+Exercise 29.4) and MDQ-PR-089 (the 2.1.0 record's table said "soak, 30 minutes" next to a soak of
+100; corrected with a note, and `release_record.py check` now compares the record's table with
+the rows its evidence gives). MDQ-PR-006 lists 2.1.0 in `affects`. After merging, copy the
+corrected record to the project files (neurolf-book/v2.1.0/release-record-2.1.0.md). Records
+and generator have now disagreed three times (MDQ-PR-081, 087, 089): evaluate a CAPA for it at
+the 2.2.0 audit. Next free MDQ-PR-090, CAPA-0007, CR-0036.
+
 Review of release 2.0.1 (2026-11-17, independent, PR from branch claude/project-thread-1fvsle):
 MDQ-PR-081 (`tools/release_record.py`'s skeleton named the `hardened` preset as the shipped
 binaries; since CR-0029 it is `product`; the 2.0.1 record is corrected with a note) and MDQ-PR-082

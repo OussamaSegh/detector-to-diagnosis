@@ -32,6 +32,7 @@ the GIL for the whole loop and checks nothing. Build it with
    and whose mistake is it? Answer in `NOTES.md`.
 
 **Hints.** Take `out` as `const py::object&`, check `py::isinstance<py::array>`, then
-`out.dtype().is(py::dtype::of<double>())`, `out.flags() & py::array::c_style` and
+`py::isinstance<py::array_t<double>>(out)` (float64 in native byte order, whatever its dtype
+object: an unpickled array has one of its own), `out.flags() & py::array::c_style` and
 `out.writeable()`. Release the GIL with `py::gil_scoped_release` after the last call into Python
 and the last exception raised.

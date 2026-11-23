@@ -58,7 +58,7 @@
       "found": "2026-10-24, Chapter 6 design",
       "item": "service",
       "status": "open",
-      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1"],
+      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1", "2.1.0"],
       "description": "The service's monitor polls the ports every 20 ms, so a run continues for up to 20 ms after a detector or sink fault.",
       "evaluation": {"safety_relevant": true, "rationale": "Data acquired in those 20 ms after a fault is part of a run that ends in a fault anyway; the fault is reported and the run is not used. No data is presented as complete."},
       "decision": "Release with it. Reviewed against the risk file for release 0.3.0: a faulted run is incomplete in its integrity verdict whatever the delay (assess_integrity, RC-01), and H-05 covers the interrupted scan; 20 ms more data in a run that ends in a fault changes neither sequence of events nor harm, so no hazard needs a faster reaction. Chapter 15 was to decide this and did not; the release review did. Decided again for release 1.3.0 (roadmap 2.0.0, theme B), with the cost of the fix weighed: a faster reaction needs every port to wake the monitor from its own thread (the UDP receiver, the sink's I/O thread, the slow control), a callback into the service across the layers and a new lock order to prove, in class B code, to shorten by at most 20 ms a run that ends in a fault anyway. Kept open as a known anomaly, deliberately, because the behavior exists and a release must state it; RunIntegrity.AFaultMakesTheRunIncompleteWithoutALossCounter and AcquisitionService.DetectorFaultStopsTheRunAndNeedsAReset verify the two properties the decision rests on. To be decided again only if a hazard analysis finds a harm that depends on the delay."
@@ -1190,7 +1190,7 @@
       "status": "closed",
       "affects": ["0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1"],
       "capa": "",
-      "description": "The soak of release 1.0.0 had two 10 s intervals whose 99th percentile was above 10 ms (32.2 ms at 350 s, 23.2 ms at 880 s); the programs of release 0.9.0 on the same machine the same evening had two as well (up to 38.8 ms), and releases 0.8.0 and 0.9.0 had 15 and 1. No source of the product changed since 0.8.0. The steal time the soak records (CR-0025) was 0.5% to 0.9% in those intervals, like the others; averaged over 10 s and four CPUs it cannot show a stall of 30 ms, so the machine is neither shown nor ruled out as the cause. The finer measure exists since the review of 2.0.0 (tools/soak.py, one-second steal and run-queue wait per server thread); its first 30-minute run (measurements/review-2.0.0/) had no interval above 10 ms, a median largest wait of 31 ms per second and up to 204 ms with a 99th percentile of 3 ms (correlation 0.13), so waits of that size alone do not explain a peak; the cause is still to be found in a run that has one. A 100-minute soak for release 2.0.1 (measurements/mdq-pr-064/) had none either: 600 intervals, p99 at most 8.16 ms, correlation 0.14. On 2026-11-21 an unpinned 100-minute soak had 2 of 600 intervals above 10 ms (18.09 and 13.57 ms) whose largest waits (24 and 26 ms) and steal were typical of the run (median wait 26.3 ms, correlation 0.04); a pinned one (mdq-pair and mdq-write sharing a CPU) had 9 of 600, up to 98 ms, with mdq-write's wait 125 ms per second in every interval alike. MiniDAQ's own scheduling is not shown as the cause and pinning makes it worse; at 2.0.x, 2 of 1,740 intervals have had a peak, 0.11%, at most 0.36% at 95% confidence (measurements/mdq-pr-064/). On 2026-11-21 an unpinned 100-minute soak had 2 of 600 intervals above 10 ms (18.09 and 13.57 ms) whose largest waits (24 and 26 ms) and steal were typical of the run (median wait 26.3 ms, correlation 0.04); a pinned one (mdq-pair and mdq-write sharing a CPU) had 9 of 600, up to 98 ms, with mdq-write's wait 125 ms per second in every interval alike. MiniDAQ's own scheduling is not shown as the cause and pinning makes it worse; at 2.0.x, 2 of 1,740 intervals have had a peak, 0.11%, at most 0.36% at 95% confidence (measurements/mdq-pr-064/).",
+      "description": "The soak of release 1.0.0 had two 10 s intervals whose 99th percentile was above 10 ms (32.2 ms at 350 s, 23.2 ms at 880 s); the programs of release 0.9.0 on the same machine the same evening had two as well (up to 38.8 ms), and releases 0.8.0 and 0.9.0 had 15 and 1. No source of the product changed since 0.8.0. The steal time the soak records (CR-0025) was 0.5% to 0.9% in those intervals, like the others; averaged over 10 s and four CPUs it cannot show a stall of 30 ms, so the machine is neither shown nor ruled out as the cause. The finer measure exists since the review of 2.0.0 (tools/soak.py, one-second steal and run-queue wait per server thread); its first 30-minute run (measurements/review-2.0.0/) had no interval above 10 ms, a median largest wait of 31 ms per second and up to 204 ms with a 99th percentile of 3 ms (correlation 0.13), so waits of that size alone do not explain a peak; the cause is still to be found in a run that has one. A 100-minute soak for release 2.0.1 (measurements/mdq-pr-064/) had none either: 600 intervals, p99 at most 8.16 ms, correlation 0.14. On 2026-11-21 an unpinned 100-minute soak had 2 of 600 intervals above 10 ms (18.09 and 13.57 ms) whose largest waits (24 and 26 ms) and steal were typical of the run (median wait 26.3 ms, correlation 0.04); a pinned one (mdq-pair and mdq-write sharing a CPU) had 9 of 600, up to 98 ms, with mdq-write's wait 125 ms per second in every interval alike. MiniDAQ's own scheduling is not shown as the cause and pinning makes it worse; at 2.0.x, 2 of 1,740 intervals have had a peak, 0.11%, at most 0.36% at 95% confidence (measurements/mdq-pr-064/).",
       "evaluation": {
         "safety_relevant": false,
         "rationale": "No single was lost or arrived after the sorter's window in those intervals (the soak counts no loss), the latency is not a risk control of a hazard, and the delay before a fault is noticed is MDQ-PR-006, which does not depend on it."
@@ -1810,6 +1810,64 @@
         "cause": "A duration written twice, in the checks and in the tool that drafts their record, changed in one place only.",
         "category": "tool",
         "escape": "The skeleton's test checked the label it had, not the length the checks run."
+      }
+    },
+    {
+      "id": "MDQ-PR-088",
+      "title": "The C++ projector refuses a float64 output array whose dtype object is not NumPy's own",
+      "found": "2026-11-23, independent review of release 2.1.0 (recon/python/recon_cpp.cpp, writable_out)",
+      "item": "recon",
+      "status": "closed",
+      "affects": [
+        "2.1.0"
+      ],
+      "capa": "",
+      "description": "CR-0034's check of an output array compared its dtype with float64 by identity (dtype().is), not by equivalence. NumPy shares one dtype object among most float64 arrays, but an array that was unpickled (multiprocessing, joblib, np.load of a pickle) or built through newbyteorder() twice has a float64 dtype object of its own, and forward(..., out=) and back(..., out=) refused it with 'out must be float64, got float64'. SRS-REC-009 refuses only an output that is not float64. Exercise 29.4's solution and its hint teach the same check.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The defect refuses a valid output with an error and writes nothing; it never accepts an output it cannot write, so no projection is lost or wrong (RC-43 holds). A big-endian float64, which the C++ cannot write, is still refused."
+      },
+      "resolution": {
+        "change": "writable_out() and the exercise's writable_float64() accept an output that py::isinstance<py::array_t<double>> accepts: a NumPy array whose dtype is equivalent to float64 in native byte order (PyArray_EquivTypes). The exercise's hint names that check.",
+        "verification": "tools.recon_cpp: test_writes_into_an_output_the_caller_gives with an unpickled array, and test_refuses_an_output_it_cannot_write_in_place with a big-endian one; ch29/e4_in_place/solution: test_a_float64_output_with_a_dtype_object_of_its_own_is_written. The unpickled case fails without the change ('out must be float64, got float64')."
+      },
+      "root_cause": {
+        "whys": [
+          "The dtype was compared with dtype().is(), which pybind11 inherits from py::object: the identity of two Python objects.",
+          "The tests' outputs were all made by np.zeros or np.empty, which use NumPy's shared float64 object, so identity and equality never differed in them."
+        ],
+        "cause": "A type check by object identity where the type system defines equivalence.",
+        "category": "code",
+        "escape": "No test gave an output made another way than np.zeros or np.empty; the refusal tests checked that wrong outputs are refused, not that every right one is accepted."
+      }
+    },
+    {
+      "id": "MDQ-PR-089",
+      "title": "The release record of 2.1.0 names a soak of 30 minutes next to evidence of 100",
+      "found": "2026-11-23, independent review of release 2.1.0 (docs/regulatory/releases/2.1.0.md, table of checks)",
+      "item": "release",
+      "status": "closed",
+      "affects": [
+        "2.1.0"
+      ],
+      "capa": "",
+      "description": "The table of checks in the 2.1.0 record has the row 'soak, 30 minutes', although soak.txt reports 100 minutes and the record's own notes say 100. MDQ-PR-087 corrected the skeleton's row while the record was written, and its verification read a new skeleton, not the record; the record's table was not written again from it. tools/release_record.py check compares a record's evidence paths and results with the rules of Exercise 14.5, not its rows with what the evidence gives, so the record passed. It is the third report in two releases of a record stating what its evidence does not (MDQ-PR-081, MDQ-PR-087).",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A label in a record; the soak, the acceptance verdict (ACC-03, 100 minutes) and the evidence are right."
+      },
+      "resolution": {
+        "change": "The record's row says 100 minutes, with a note that the review corrected it. tools/release_record.py check now writes the table's rows from the record's evidence (table_rows, the skeleton's own function) and refuses a record that lacks one of them as written (table_drift).",
+        "verification": "tools.release_record: test_a_table_row_that_differs_from_the_evidence_is_refused (a stale soak label and a changed result are refused) and test_the_newest_record_has_every_row_its_evidence_gives, which fails on the record as released."
+      },
+      "root_cause": {
+        "whys": [
+          "The record's table was copied from a skeleton written before MDQ-PR-087's fix, and nothing compared it with the evidence again.",
+          "The record check verifies that the evidence paths exist and the results pass, not that the rows are the ones the evidence gives."
+        ],
+        "cause": "The record check did not compare the record's table with the table its evidence gives.",
+        "category": "process",
+        "escape": "MDQ-PR-087's verification checked the skeleton, not the record written from it; the internal audit's O-8 judged the repeated cause closed by the skeleton's test."
       }
     }
   ]

@@ -78,13 +78,10 @@ def acceptance(evidence):
     return ("pass" if ok else "FAIL"), m.group(0)
 
 
-def skeleton(root, version):
+def table_rows(root, version):
+    """The rows of the record's table of checks, as the evidence gives them."""
     rel = f"measurements/release-{version}"
     evidence = root / rel
-    commit_file = evidence / "commit.txt"
-    if not (evidence / "release-checks.txt").is_file() or not commit_file.is_file():
-        raise ValueError(f"{rel}: no release-checks.txt or commit.txt; run tools/release_checks.sh first")
-    commit = commit_file.read_text().split()[1]
     found = results((evidence / "release-checks.txt").read_text())
     path = f"../../{rel}"
     rows = [f"| {name} | {row_result(found, prefixes)} | `{path}/{file}` |"
@@ -95,6 +92,17 @@ def skeleton(root, version):
                 f"| acceptance | not run | `{path}/acceptance.md` |")
     for name, file in (("reproducible build", "repro/repro.txt"), ("CI on GitHub", "ci-run.txt")):
         rows.append(f"| {name} | {'pass' if (evidence / file).is_file() else 'not run'} | `{path}/{file}` |")
+    return rows
+
+
+def skeleton(root, version):
+    rel = f"measurements/release-{version}"
+    evidence = root / rel
+    commit_file = evidence / "commit.txt"
+    if not (evidence / "release-checks.txt").is_file() or not commit_file.is_file():
+        raise ValueError(f"{rel}: no release-checks.txt or commit.txt; run tools/release_checks.sh first")
+    commit = commit_file.read_text().split()[1]
+    rows = table_rows(root, version)
     parts = sorted(set(re.findall(r"all release checks passed \(part (\w+)\)",
                                   (evidence / "release-checks.txt").read_text())))
     reports = json.loads((root / "docs/regulatory/problem-reports.json").read_text())["reports"]
@@ -194,9 +202,22 @@ def exercise_check(root):
     return module.check
 
 
+def table_drift(root, record, text):
+    """The rows the evidence gives that the record's table lacks or states otherwise
+    (MDQ-PR-089: the 2.1.0 record kept a soak row of 30 minutes next to a soak of 100). A record
+    may add rows; each row the skeleton would write must be in it as written."""
+    version = record.stem
+    if not (root / f"measurements/release-{version}/release-checks.txt").is_file():
+        return []  # a record without its evidence in the tree; the exercise check reports paths
+    lines = {line.strip() for line in text.splitlines()}
+    return [f"the table lacks the row {row} that the evidence gives"
+            for row in table_rows(root, version) if row not in lines]
+
+
 def check(root, record):
     text = record.read_text()
     errors = exercise_check(root)(text, root / "docs/regulatory")
+    errors += table_drift(root, record, text)
     errors += [f"line {n}: still a {TODO} line" for n, line in enumerate(text.splitlines(), 1)
                if TODO in line]
     return errors
