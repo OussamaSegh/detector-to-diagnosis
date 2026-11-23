@@ -1,0 +1,6 @@
+# GitHub Actions runs of the 2.1.0 candidate (read 2026-11-23)
+dae4498 (candidate of the release checks): ci 45091789859 success; gates 45091789743 success;
+  codeql 45091789764 success; pages 45091789703 success; kdp 45091789757 success.
+fbe436b (the approvals, before it): ci 45088789637 failure, Exercise 29.4's GIL test in the
+  debug build-test job (MDQ-PR-086, fixed in dae4498); gates, pages success.
+The release commit's own runs are checked before the tag is made (MDQ-PR-016).

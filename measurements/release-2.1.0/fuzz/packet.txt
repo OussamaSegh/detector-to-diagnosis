@@ -1,0 +1,29 @@
+# 2026-11-23T05:18:24Z commit dae4498 fuzz_packet 600 s on CPU 2 from fuzz/corpus/packet
+INFO: Seed: 504345958
+#7	INITED cov: 100 ft: 213 corp: 6/1607b exec/s: 0 rss: 33Mb
+#8	NEW    cov: 101 ft: 215 corp: 7/1971b lim: 637 exec/s: 0 rss: 34Mb L: 364/637 MS: 1 ChangeByte-
+#11	NEW    cov: 102 ft: 257 corp: 8/2107b lim: 637 exec/s: 0 rss: 34Mb L: 136/637 MS: 3 ChangeByte-ChangeBit-CrossOver-
+#14	NEW    cov: 103 ft: 294 corp: 10/2774b lim: 637 exec/s: 0 rss: 34Mb L: 303/637 MS: 1 CopyPart-
+#21	NEW    cov: 105 ft: 320 corp: 15/4102b lim: 637 exec/s: 0 rss: 35Mb L: 156/637 MS: 1 ChangeByte-
+#23	NEW    cov: 106 ft: 349 corp: 17/4796b lim: 637 exec/s: 0 rss: 35Mb L: 218/637 MS: 1 CMP- DE: "\177<\000\000PQ\000\000"-
+#24	NEW    cov: 107 ft: 350 corp: 18/4900b lim: 637 exec/s: 0 rss: 35Mb L: 104/637 MS: 1 PersAutoDict- DE: "\177<\000\000PQ\000\000"-
+#51	NEW    cov: 108 ft: 376 corp: 23/5867b lim: 637 exec/s: 0 rss: 38Mb L: 184/637 MS: 3 ChangeBinInt-InsertRepeatedBytes-CrossOver-
+#68	NEW    cov: 110 ft: 395 corp: 28/6631b lim: 637 exec/s: 0 rss: 39Mb L: 156/637 MS: 1 ChangeBinInt-
+#69	NEW    cov: 111 ft: 401 corp: 29/7099b lim: 637 exec/s: 0 rss: 39Mb L: 468/637 MS: 1 CrossOver-
+#75	NEW    cov: 112 ft: 414 corp: 31/7846b lim: 637 exec/s: 0 rss: 40Mb L: 637/637 MS: 4 ChangeByte-PersAutoDict-ChangeBit-ChangeBinInt- DE: "\001\000\000@"-
+#109	NEW    cov: 113 ft: 419 corp: 34/8374b lim: 637 exec/s: 0 rss: 43Mb L: 104/637 MS: 1 ChangeBit-
+#227	NEW    cov: 114 ft: 435 corp: 42/10762b lim: 637 exec/s: 0 rss: 52Mb L: 150/637 MS: 3 InsertByte-EraseBytes-CopyPart-
+#363	NEW    cov: 115 ft: 441 corp: 48/11824b lim: 637 exec/s: 0 rss: 63Mb L: 485/637 MS: 3 PersAutoDict-ChangeBit-PersAutoDict- DE: "\000\000\000\000\000\000\000<"-"\000\000\000\000\000\000\000<"-
+#647	NEW    cov: 116 ft: 453 corp: 55/13968b lim: 637 exec/s: 0 rss: 86Mb L: 104/637 MS: 2 ChangeASCIIInt-ChangeBinInt-
+#665	NEW    cov: 117 ft: 455 corp: 57/15143b lim: 637 exec/s: 0 rss: 87Mb L: 637/637 MS: 5 ChangeBit-CopyPart-ChangeByte-CrossOver-CopyPart-
+#5442	NEW    cov: 118 ft: 485 corp: 76/20Kb lim: 637 exec/s: 0 rss: 350Mb L: 1/637 MS: 4 CrossOver-ChangeBinInt-ShuffleBytes-EraseBytes-
+#7194	NEW    cov: 119 ft: 495 corp: 80/21Kb lim: 637 exec/s: 0 rss: 350Mb L: 628/637 MS: 3 ChangeBit-InsertRepeatedBytes-CrossOver-
+#8687	NEW    cov: 121 ft: 501 corp: 83/22Kb lim: 637 exec/s: 0 rss: 351Mb L: 563/637 MS: 2 ChangeBinInt-CrossOver-
+#186550	NEW    cov: 122 ft: 571 corp: 131/30Kb lim: 1054 exec/s: 62183 rss: 356Mb L: 364/979 MS: 1 ChangeBit-
+#12782769	DONE   cov: 123 ft: 754 corp: 244/168Kb lim: 4096 exec/s: 21269 rss: 374Mb
+stat::number_of_executed_units: 12782769
+stat::average_exec_per_sec:     21269
+stat::new_units_added:          3338
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              374
+crash files: 0

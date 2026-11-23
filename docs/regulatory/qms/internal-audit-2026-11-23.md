@@ -1,6 +1,6 @@
 # Internal audit 2026-11-23: plan and practice before release 2.1.0
 
-Version 1 (MiniDAQ 2.1.0-dev). Status: final.
+Version 2 (MiniDAQ 2.1.0-dev). Status: final.
 
 | Field | Value |
 |---|---|
@@ -24,6 +24,7 @@ item 9 asks.
 | O-5 | SDP 7, maintenance plan 6: problem resolution and trends | `tools/pr_trends.py`: the window of 2.1.0 (36 commits) has 5 reports, 13.9 per 100 commits against an upper limit of 38.5; no root cause category has three reports in it. MDQ-PR-064 is closed by CR-0035 with its root cause; MDQ-PR-006 stays open with its decision. MDQ-PR-084 (validation with `^...$`) is the first report of its kind; the coding standard gains rule 3.6 for it (version 11), as an improvement, without a CAPA. | Observation | Coding standard rule 3.6 |
 | O-6 | SDP 7.3, the SOUP list: known vulnerabilities assessed | The review of 2026-11-23 (SOUP list section 4): nlohmann/json and pybind11 unchanged, the Python lock without a known vulnerability, eight OpenSSL findings (the advisory of 2026-11-17 and five records of 2026-11-18) in functions and protocols MiniDAQ does not use, each with a decision. Four are known only from secondary sources and are to be read again in Ubuntu's notice. | Observation | None further |
 | O-7 | CAPA procedure: effectiveness checked when due | CAPA-0005 is due at 2.1.0. Its first criterion holds: `fuzz-smoke` runs `fuzz_documents` on every push and passed on 13bfdb3. Its third holds: none of MDQ-PR-077 to MDQ-PR-085 has the cause "a field of a file MiniDAQ reads was read without checking its type". Its second, ten minutes of `fuzz_documents` without a crash in the release checks of 2.1.0, is still to run. | Observation | The release record completes CAPA-0005's check from the release checks |
+| O-8 | Maintenance plan 6: a root cause category with three reports in one window is evaluated for a CAPA | Added after the release checks. Writing the release record found MDQ-PR-087 (the skeleton's soak row still said 30 minutes after CR-0035), the third report of the category "tool" in the window of 2.1.0, with MDQ-PR-082 and MDQ-PR-083. The three causes differ: a summary that did not name the failed part, a parser that read one line at a time, a length written in two places. MDQ-PR-087's cause is that of MDQ-PR-081 (a change to what the checks do, made in the checks but not in the record's generator); MDQ-PR-081 reached 2.0.1, MDQ-PR-087 was found before a record used it. `tools/pr_trends.py` after it: 7 reports in 39 commits, 17.9 per 100 against a limit of 38.2. Evaluated: no CAPA. No common cause joins the three, the rate is within its limit, and the repeated cause is closed where it occurs: a test now reads the soak's length from `tools/release_checks.sh` and fails a skeleton that names another. | Observation | MDQ-PR-087; evaluated again at 2.2.0 with that window's trend |
 
 ## Conclusion
 
@@ -37,3 +38,4 @@ documents (O-3) and, after the release checks, CAPA-0005's effectiveness (O-7).
 | Version | Change |
 |---|---|
 | 1 | First version, before the release checks of 2.1.0. |
+| 2 | O-8: the trend evaluation after MDQ-PR-087, found while the release record was written. |

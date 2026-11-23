@@ -39,6 +39,13 @@ class ReleaseRecord(unittest.TestCase):
         self.assertEqual(rr.row_result(found, ["fuzz_", "fuzz build"]), "FAIL")
         self.assertEqual(rr.row_result(found, ["soak"]), "not run")
 
+    def test_the_soak_row_names_the_length_the_release_checks_run(self):
+        """MDQ-PR-087: the length is written in the script and in this table; they must agree."""
+        script = (ROOT / "tools/release_checks.sh").read_text()
+        minutes = re.search(r"tools/soak\.py .*--minutes (\d+)", script).group(1)
+        soak = [name for name, keys, _ in rr.ROWS if name.startswith("soak")]
+        self.assertEqual(soak, [f"soak, {minutes} minutes"])
+
     def test_the_skeleton_of_a_release_has_every_row_and_fails_the_check_until_filled(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
@@ -53,7 +60,7 @@ class ReleaseRecord(unittest.TestCase):
             for name, _, _ in rr.ROWS:
                 self.assertIn(f"| {name} |", text)
             self.assertIn("| fuzzing | FAIL |", text)
-            self.assertIn("| soak, 30 minutes | not run |", text)
+            self.assertIn("| soak, 100 minutes | not run |", text)
             record = root / "docs/regulatory/releases/9.9.0.md"
             record.write_text(text)
             errors = rr.check(root, record)

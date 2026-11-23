@@ -1,0 +1,19 @@
+# 2026-11-23T04:58:21Z commit dae4498 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 270463767
+#6	INITED cov: 96 ft: 225 corp: 5/2277b exec/s: 0 rss: 33Mb
+#7	NEW    cov: 96 ft: 226 corp: 6/2625b lim: 1601 exec/s: 0 rss: 33Mb L: 348/1601 MS: 1 EraseBytes-
+#9	NEW    cov: 106 ft: 241 corp: 7/2633b lim: 1601 exec/s: 0 rss: 33Mb L: 8/1601 MS: 2 ChangeBinInt-EraseBytes-
+#10	NEW    cov: 109 ft: 254 corp: 8/3427b lim: 1601 exec/s: 0 rss: 33Mb L: 794/1601 MS: 1 CrossOver-
+#19	NEW    cov: 110 ft: 297 corp: 12/6572b lim: 1601 exec/s: 0 rss: 34Mb L: 15/1601 MS: 3 ChangeByte-InsertByte-CopyPart-
+#20	NEW    cov: 112 ft: 304 corp: 13/6701b lim: 1601 exec/s: 0 rss: 34Mb L: 129/1601 MS: 1 CrossOver-
+#49	NEW    cov: 113 ft: 345 corp: 22/13586b lim: 1601 exec/s: 0 rss: 35Mb L: 549/1601 MS: 5 ChangeBinInt-ChangeASCIIInt-ChangeASCIIInt-ChangeASCIIInt-InsertRepeatedBytes-
+#70	NEW    cov: 114 ft: 388 corp: 28/15111b lim: 1601 exec/s: 0 rss: 35Mb L: 29/1601 MS: 4 ChangeByte-PersAutoDict-ChangeBit-PersAutoDict- DE: "\000\000I\365"-"\000\000I\365"-
+#133	NEW    cov: 115 ft: 429 corp: 41/23Kb lim: 1601 exec/s: 0 rss: 36Mb L: 791/1601 MS: 5 EraseBytes-InsertByte-CopyPart-InsertRepeatedBytes-InsertRepeatedBytes-
+#7459	NEW    cov: 117 ft: 505 corp: 85/40Kb lim: 1601 exec/s: 0 rss: 73Mb L: 765/1601 MS: 4 ChangeASCIIInt-CopyPart-ChangeASCIIInt-EraseBytes-
+#17047560	DONE   cov: 117 ft: 524 corp: 100/35Kb lim: 4096 exec/s: 28365 rss: 517Mb
+stat::number_of_executed_units: 17047560
+stat::average_exec_per_sec:     28365
+stat::new_units_added:          1293
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              517
+crash files: 0

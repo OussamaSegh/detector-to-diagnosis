@@ -1,0 +1,398 @@
+{
+ "access": {
+  "branches": [
+   191,
+   268
+  ],
+  "functions": [
+   51,
+   51
+  ],
+  "lines": [
+   447,
+   521
+  ],
+  "mcdc": [
+   19,
+   60
+  ]
+ },
+ "audit": {
+  "branches": [
+   7,
+   14
+  ],
+  "functions": [
+   8,
+   8
+  ],
+  "lines": [
+   29,
+   33
+  ],
+  "mcdc": [
+   1,
+   4
+  ]
+ },
+ "config": {
+  "branches": [
+   250,
+   314
+  ],
+  "functions": [
+   28,
+   28
+  ],
+  "lines": [
+   504,
+   507
+  ],
+  "mcdc": [
+   33,
+   35
+  ]
+ },
+ "core": {
+  "branches": [
+   131,
+   154
+  ],
+  "functions": [
+   88,
+   89
+  ],
+  "lines": [
+   425,
+   438
+  ],
+  "mcdc": [
+   10,
+   10
+  ]
+ },
+ "ctl": {
+  "branches": [
+   102,
+   132
+  ],
+  "functions": [
+   11,
+   11
+  ],
+  "lines": [
+   206,
+   249
+  ],
+  "mcdc": [
+   7,
+   14
+  ]
+ },
+ "format": {
+  "branches": [
+   254,
+   290
+  ],
+  "functions": [
+   72,
+   76
+  ],
+  "lines": [
+   614,
+   633
+  ],
+  "mcdc": [
+   29,
+   44
+  ]
+ },
+ "hw": {
+  "branches": [
+   279,
+   316
+  ],
+  "functions": [
+   68,
+   70
+  ],
+  "lines": [
+   741,
+   789
+  ],
+  "mcdc": [
+   43,
+   54
+  ]
+ },
+ "merger": {
+  "branches": [
+   52,
+   56
+  ],
+  "functions": [
+   13,
+   13
+  ],
+  "lines": [
+   124,
+   124
+  ],
+  "mcdc": [
+   11,
+   16
+  ]
+ },
+ "metrics": {
+  "branches": [
+   49,
+   54
+  ],
+  "functions": [
+   18,
+   18
+  ],
+  "lines": [
+   179,
+   181
+  ],
+  "mcdc": [
+   2,
+   4
+  ]
+ },
+ "output": {
+  "branches": [
+   221,
+   294
+  ],
+  "functions": [
+   41,
+   41
+  ],
+  "lines": [
+   488,
+   570
+  ],
+  "mcdc": [
+   40,
+   64
+  ]
+ },
+ "pipeline": {
+  "branches": [
+   199,
+   216
+  ],
+  "functions": [
+   81,
+   82
+  ],
+  "lines": [
+   736,
+   758
+  ],
+  "mcdc": [
+   28,
+   30
+  ]
+ },
+ "platform": {
+  "branches": [
+   41,
+   48
+  ],
+  "functions": [
+   18,
+   18
+  ],
+  "lines": [
+   101,
+   105
+  ],
+  "mcdc": [
+   4,
+   7
+  ]
+ },
+ "processing": {
+  "branches": [
+   439,
+   474
+  ],
+  "functions": [
+   71,
+   74
+  ],
+  "lines": [
+   850,
+   893
+  ],
+  "mcdc": [
+   72,
+   82
+  ]
+ },
+ "protocol": {
+  "branches": [
+   223,
+   264
+  ],
+  "functions": [
+   30,
+   31
+  ],
+  "lines": [
+   499,
+   522
+  ],
+  "mcdc": [
+   34,
+   60
+  ]
+ },
+ "readout": {
+  "branches": [
+   170,
+   214
+  ],
+  "functions": [
+   40,
+   43
+  ],
+  "lines": [
+   457,
+   481
+  ],
+  "mcdc": [
+   18,
+   43
+  ]
+ },
+ "rt": {
+  "branches": [
+   163,
+   214
+  ],
+  "functions": [
+   34,
+   37
+  ],
+  "lines": [
+   366,
+   415
+  ],
+  "mcdc": [
+   18,
+   44
+  ]
+ },
+ "server": {
+  "branches": [
+   118,
+   142
+  ],
+  "functions": [
+   1,
+   3
+  ],
+  "lines": [
+   210,
+   241
+  ],
+  "mcdc": [
+   19,
+   32
+  ]
+ },
+ "service": {
+  "branches": [
+   352,
+   404
+  ],
+  "functions": [
+   56,
+   57
+  ],
+  "lines": [
+   768,
+   793
+  ],
+  "mcdc": [
+   40,
+   69
+  ]
+ },
+ "sim": {
+  "branches": [
+   474,
+   528
+  ],
+  "functions": [
+   91,
+   95
+  ],
+  "lines": [
+   979,
+   1015
+  ],
+  "mcdc": [
+   74,
+   104
+  ]
+ },
+ "sorter": {
+  "branches": [
+   158,
+   172
+  ],
+  "functions": [
+   23,
+   23
+  ],
+  "lines": [
+   240,
+   240
+  ],
+  "mcdc": [
+   41,
+   44
+  ]
+ },
+ "tools": {
+  "branches": [
+   308,
+   588
+  ],
+  "functions": [
+   30,
+   37
+  ],
+  "lines": [
+   674,
+   1044
+  ],
+  "mcdc": [
+   17,
+   101
+  ]
+ },
+ "update": {
+  "branches": [
+   322,
+   392
+  ],
+  "functions": [
+   40,
+   43
+  ],
+  "lines": [
+   595,
+   700
+  ],
+  "mcdc": [
+   55,
+   80
+  ]
+ }
+}

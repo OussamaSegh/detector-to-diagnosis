@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-11-16, by the software lead (internal audit before release 2.0.0) |
 | Source | MDQ-PR-071; at the audit, MDQ-PR-074, MDQ-PR-075 and MDQ-PR-076; at the review of release 2.0.0, MDQ-PR-078 |
 | Owner | software lead |
-| Effectiveness check | release 2.1.0 |
+| Effectiveness check | release 2.1.0: effective |
 
 ## Problem
 
@@ -99,6 +99,18 @@ run it for ten minutes without a crash, and no problem report between this CAPA 
 2.1.0 has the cause "a field of a file MiniDAQ reads was read without checking its type". Due:
 release 2.1.0.
 
+Result: **effective** (2026-11-23, release checks of 2.1.0 on dae4498). Each criterion holds:
+
+- The fuzz-smoke job of `.github/workflows/ci.yml` ran `fuzz_documents` on every push since this
+  CAPA, and passed on the candidate dae4498 (internal audit of 2026-11-23, O-7).
+- Part 4 of the release checks ran `fuzz_documents` for 600 s from `fuzz/corpus/documents`:
+  1,256,374 inputs, 0 crash files
+  (`measurements/release-2.1.0/fuzz/documents.txt`).
+- None of the problem reports opened since this CAPA, MDQ-PR-077 to MDQ-PR-086, has the cause
+  "a field of a file MiniDAQ reads was read without checking its type"
+  (`docs/regulatory/problem-reports.json`).
+
 ## Closure
 
-Open until the effectiveness check.
+Closed on 2026-11-23 by the software lead, at the release record of 2.1.0, after the
+effectiveness check above.

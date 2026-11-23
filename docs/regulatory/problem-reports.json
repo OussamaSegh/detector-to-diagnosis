@@ -1784,6 +1784,33 @@
         "category": "test",
         "escape": "The solution's test ran alone, never under ctest -j on a loaded machine, before it was pushed; CAPA-0001's rule for timing tests (a margin and a reason) was not applied to a test of threads."
       }
+    },
+    {
+      "id": "MDQ-PR-087",
+      "title": "The release record's skeleton names the soak as 30 minutes after CR-0035 made it 100",
+      "found": "2026-11-23, writing the release record of 2.1.0 from tools/release_record.py skeleton",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "CR-0035 changed the release checks' soak to 100 minutes (tools/release_checks.sh, acceptance.json ACC-03), but the skeleton's row for it kept the label \"soak, 30 minutes\". A record written from the skeleton would have stated the wrong length next to evidence of 100 minutes.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A label in a tool that drafts a record; the checks and the acceptance verdict measure 100 minutes, and a person reads each row before the record is checked."
+      },
+      "resolution": {
+        "change": "The skeleton's row is \"soak, 100 minutes\", and a new test, test_the_soak_row_names_the_length_the_release_checks_run, reads the length from release_checks.sh and requires the row to name it.",
+        "verification": "tools/test_release_record.py passes, and the new test fails with the label of 30 minutes; the skeleton of 2.1.0 has the row \"soak, 100 minutes\"."
+      },
+      "root_cause": {
+        "whys": [
+          "The label was a string in the skeleton's table of checks, not read from release_checks.sh or acceptance.json.",
+          "CR-0035's impact analysis listed the script, the acceptance specification, the SRS, the SDP and the test plan, but not the record's skeleton."
+        ],
+        "cause": "A duration written twice, in the checks and in the tool that drafts their record, changed in one place only.",
+        "category": "tool",
+        "escape": "The skeleton's test checked the label it had, not the length the checks run."
+      }
     }
   ]
 }

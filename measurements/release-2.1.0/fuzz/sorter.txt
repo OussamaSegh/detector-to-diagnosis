@@ -1,0 +1,28 @@
+# 2026-11-23T05:18:24Z commit dae4498 fuzz_sorter 600 s on CPU 3 from fuzz/corpus/sorter
+INFO: Seed: 505313681
+#6	INITED cov: 292 ft: 491 corp: 5/1300b exec/s: 0 rss: 34Mb
+#7	NEW    cov: 292 ft: 526 corp: 6/1492b lim: 260 exec/s: 0 rss: 34Mb L: 192/260 MS: 1 EraseBytes-
+#89	NEW    cov: 293 ft: 804 corp: 39/8240b lim: 260 exec/s: 0 rss: 44Mb L: 181/260 MS: 1 CMP- DE: "\377\377\377\377\377\377\377("-
+#123	NEW    cov: 295 ft: 862 corp: 48/9518b lim: 260 exec/s: 0 rss: 48Mb L: 260/260 MS: 2 ShuffleBytes-ChangeBit-
+#129	NEW    cov: 297 ft: 869 corp: 50/10031b lim: 260 exec/s: 0 rss: 49Mb L: 253/260 MS: 3 ChangeASCIIInt-ChangeBit-InsertRepeatedBytes-
+#241	NEW    cov: 300 ft: 941 corp: 71/13619b lim: 260 exec/s: 0 rss: 61Mb L: 121/260 MS: 1 EraseBytes-
+#353	NEW    cov: 301 ft: 1000 corp: 89/16Kb lim: 260 exec/s: 0 rss: 73Mb L: 121/260 MS: 4 ChangeBinInt-ChangeBit-ShuffleBytes-InsertRepeatedBytes-
+#418	NEW    cov: 302 ft: 1005 corp: 91/16Kb lim: 260 exec/s: 0 rss: 80Mb L: 65/260 MS: 2 ChangeBit-ChangeByte-
+#617	NEW    cov: 303 ft: 1020 corp: 99/16Kb lim: 260 exec/s: 0 rss: 101Mb L: 244/260 MS: 3 ChangeBit-ChangeASCIIInt-CopyPart-
+#709	NEW    cov: 304 ft: 1031 corp: 103/17Kb lim: 260 exec/s: 0 rss: 105Mb L: 245/260 MS: 5 ShuffleBytes-InsertByte-CMP-ChangeBit-CMP- DE: "\000\000\000\002"-")\000\000\000\000\000\000\000"-
+#804	NEW    cov: 306 ft: 1079 corp: 113/18Kb lim: 260 exec/s: 0 rss: 106Mb L: 73/260 MS: 2 ChangeByte-InsertRepeatedBytes-
+#812	NEW    cov: 311 ft: 1090 corp: 114/18Kb lim: 260 exec/s: 0 rss: 106Mb L: 25/260 MS: 3 CrossOver-EraseBytes-EraseBytes-
+#1119	NEW    cov: 313 ft: 1160 corp: 131/20Kb lim: 260 exec/s: 0 rss: 107Mb L: 208/260 MS: 5 InsertRepeatedBytes-InsertRepeatedBytes-CrossOver-ChangeBit-PersAutoDict- DE: "\377\377\377\377\377\377\377+"-
+#1721	NEW    cov: 319 ft: 1207 corp: 149/22Kb lim: 260 exec/s: 0 rss: 107Mb L: 5/260 MS: 2 ShuffleBytes-CrossOver-
+#2138	NEW    cov: 320 ft: 1224 corp: 161/23Kb lim: 260 exec/s: 0 rss: 108Mb L: 22/260 MS: 4 ShuffleBytes-CMP-ShuffleBytes-CMP- DE: "Y\000\000\000"-"\026\000\000\000"-
+#2409	NEW    cov: 321 ft: 1290 corp: 169/24Kb lim: 260 exec/s: 0 rss: 108Mb L: 1/260 MS: 5 ShuffleBytes-ChangeASCIIInt-ChangeByte-CopyPart-CrossOver-
+#6347	NEW    cov: 322 ft: 1329 corp: 190/25Kb lim: 260 exec/s: 0 rss: 108Mb L: 253/260 MS: 1 InsertByte-
+#9408	NEW    cov: 323 ft: 1346 corp: 199/25Kb lim: 260 exec/s: 9408 rss: 111Mb L: 232/260 MS: 5 ChangeByte-ShuffleBytes-ChangeBinInt-InsertRepeatedBytes-CrossOver-
+#30663	NEW    cov: 324 ft: 1384 corp: 224/26Kb lim: 260 exec/s: 10221 rss: 113Mb L: 214/260 MS: 2 CopyPart-InsertByte-
+#4069342	DONE   cov: 324 ft: 1609 corp: 353/79Kb lim: 4096 exec/s: 6770 rss: 132Mb
+stat::number_of_executed_units: 4069342
+stat::average_exec_per_sec:     6770
+stat::new_units_added:          2446
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              132
+crash files: 0
