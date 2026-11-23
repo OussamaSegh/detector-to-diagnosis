@@ -5,7 +5,15 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-23, 06:50 UTC: **2.1.0 is released**: tag book-v2.1.0 on 739de30 (CI
+Last updated: 2026-11-23, 07:30 UTC: **2.2.0-dev has started** (`docs/ROADMAP-2.2.0.md`).
+The review of 2.1.0 is merged (PR #21, 4558b1a: MDQ-PR-088, MDQ-PR-089). SOUP list v32 is a
+draft with the review for 2.2. Milestones in order: Theme R (MDQ-PR-090: the record check
+judges old records by today's labels; the coverage review's uncovered list kept), Theme P1 (the
+agent gate and its known-bad library), Theme P2 (agent files under document control, their
+static check, CR-0036), Theme S (nodes in the simulator and the merge, CR-0037), then the
+release. Next free: MDQ-PR-090, CAPA-0007, CR-0036, ADR 0040, TL-51, SRS-AI-005.
+
+Earlier, 2026-11-23, 06:50 UTC: **2.1.0 is released**: tag book-v2.1.0 on 739de30 (CI
 green), packages in the project files (neurolf-book/v2.1.0/: book 794 pages, solutions 233,
 KDP, Boox, source zip, SBOM). VERSION is 2.1.1-dev, so that the review's fixes can make a
 patch; `tools/post_release.py . 2.2.0-dev` starts 2.2 once the review is merged and
