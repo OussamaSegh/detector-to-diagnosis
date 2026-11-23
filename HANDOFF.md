@@ -5,22 +5,22 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-23, 09:40 UTC: **2.2.0-dev, Themes R and P1 done, P2 half done.**
-Theme R: 8b1eeab (MDQ-PR-090 to 092). Theme P1: `tools/agent_gate.py` (TL-51) and its
-known-bad library, 6fe8a40; its test failed on CI where git-clang-format is missing
-(MDQ-PR-093, fixed alone in c3074b2). Theme P2, the tools: `tools/check_agent_files.py`
-(TL-52, `docs.agent_files`), the agent hooks `tools/hooks/agent_command.py` and
-`agent_edit.py`, the `Gate:` trailer (commit policy 3), the subagent eval
-`tools/agent_evals/` (13f37da, 81c1651). CR-0036 (gate and agent files) and CR-0037 (nodes in
-the simulator) are PROPOSED and wait for the author's written approval; after it: SRS v39
-draft with the AI group 005-010 and the new SIM/MRG/CFG rows (REQ tags go into the existing
-tests), `CLAUDE.md`, `.claude/README.md`, `.claude/settings.json`,
-`.claude/agents/trace-review.md`, `.claude/skills/release-checks/SKILL.md` (drafts in the
-session scratchpad, rewrite if lost), ADR 0040, the threat model review of an agent with shell
-access, the eval run by hand, then Theme S. Committing `.claude/settings.json` turns the hooks
-on for every later session of this repository: set `MINIDAQ_AGENT_WRITABLE` in an uncommitted
-`.claude/settings.local.json` for directories outside the repository that a session writes
-(the project files folder). Next free: MDQ-PR-094, CAPA-0007, CR-0038, ADR 0040, TL-53.
+Last updated: 2026-11-23, 23:10 UTC: **2.2.0-dev, Themes R, P1, P2 (but the agent files) and S
+done; the release is next.** CR-0036 and CR-0037 approved by the author in writing (22:20 UTC).
+d78b3db: SRS v39 draft (SRS-AI-005 to 010). afe1faa: ADR 0040, threat model v19 draft. ae5c595:
+the trace-review eval run by hand, kept in `measurements/agent-evals/trace-review/` (5 of 6 pass
+by the scorer; the sixth numbered its reasons, so the subagent's draft version 2 says to number
+only findings). ac7f3bc, Theme S: `sim::NodeLayout`/`NodeSplitter`/`MultiNodeSource`,
+`NodeMerge` (merger), schema 2.2 `source.nodes`, SRS-SIM-025, SRS-MRG-006/007, SRS-CFG-017,
+RC-56 of H-01, ADR 0041, architecture v29 and performance budget v5 drafts, `bm_node_merge`.
+Its CI was red on clang-tidy (a discarded `at()`): MDQ-PR-094, fixed alone in 92ca1bf, CI
+green; it joins CAPA-0006's source. Before a push of C++ code, run `tools/static_analysis.sh`
+too.
+NOT committed: `CLAUDE.md` and `.claude/` (drafts in the project files folder,
+`neurolf-book/plans/agent-files-drafts/`); committing `.claude/settings.json` turns the hooks
+on for every later session, so it waits for the author's explicit words naming it. Then: the
+release (internal audit with the CAPA-0006 check, SOUP v32, the drafts' approvals, release
+checks). Next free: MDQ-PR-095, CAPA-0007, CR-0038, ADR 0042, TL-53.
 
 Earlier, 2026-11-23, 07:30 UTC: **2.2.0-dev has started** (`docs/ROADMAP-2.2.0.md`).
 The review of 2.1.0 is merged (PR #21, 4558b1a: MDQ-PR-088, MDQ-PR-089). SOUP list v32 is a
