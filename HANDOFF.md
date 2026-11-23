@@ -5,7 +5,24 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-23, 07:30 UTC: **2.2.0-dev has started** (`docs/ROADMAP-2.2.0.md`).
+Last updated: 2026-11-23, 09:40 UTC: **2.2.0-dev, Themes R and P1 done, P2 half done.**
+Theme R: 8b1eeab (MDQ-PR-090 to 092). Theme P1: `tools/agent_gate.py` (TL-51) and its
+known-bad library, 6fe8a40; its test failed on CI where git-clang-format is missing
+(MDQ-PR-093, fixed alone in c3074b2). Theme P2, the tools: `tools/check_agent_files.py`
+(TL-52, `docs.agent_files`), the agent hooks `tools/hooks/agent_command.py` and
+`agent_edit.py`, the `Gate:` trailer (commit policy 3), the subagent eval
+`tools/agent_evals/` (13f37da, 81c1651). CR-0036 (gate and agent files) and CR-0037 (nodes in
+the simulator) are PROPOSED and wait for the author's written approval; after it: SRS v39
+draft with the AI group 005-010 and the new SIM/MRG/CFG rows (REQ tags go into the existing
+tests), `CLAUDE.md`, `.claude/README.md`, `.claude/settings.json`,
+`.claude/agents/trace-review.md`, `.claude/skills/release-checks/SKILL.md` (drafts in the
+session scratchpad, rewrite if lost), ADR 0040, the threat model review of an agent with shell
+access, the eval run by hand, then Theme S. Committing `.claude/settings.json` turns the hooks
+on for every later session of this repository: set `MINIDAQ_AGENT_WRITABLE` in an uncommitted
+`.claude/settings.local.json` for directories outside the repository that a session writes
+(the project files folder). Next free: MDQ-PR-094, CAPA-0007, CR-0038, ADR 0040, TL-53.
+
+Earlier, 2026-11-23, 07:30 UTC: **2.2.0-dev has started** (`docs/ROADMAP-2.2.0.md`).
 The review of 2.1.0 is merged (PR #21, 4558b1a: MDQ-PR-088, MDQ-PR-089). SOUP list v32 is a
 draft with the review for 2.2. Milestones in order: Theme R (MDQ-PR-090: the record check
 judges old records by today's labels; the coverage review's uncovered list kept), Theme P1 (the
