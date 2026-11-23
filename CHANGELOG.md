@@ -36,7 +36,9 @@ the patch version.
   assisted commit. The trailer stays optional.
 - The trace-review subagent's eval (`tools/agent_evals/`): six recorded changes with their
   expected findings, and `score.py`, which scores a report against them.
-- CR-0036, proposed: the requirements of the gate and of the agent files.
+- CR-0036 and CR-0037, approved on 2026-11-23: SRS version 39 (draft) adds SRS-AI-005 to
+  SRS-AI-010; ADR 0040; the threat model's version 19 (draft) records the review of an agent
+  with shell access.
 
 ### Fixed (roadmap 2.2.0, Theme R)
 
