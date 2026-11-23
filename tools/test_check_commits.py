@@ -130,6 +130,8 @@ class Rules(unittest.TestCase):
         self.assertTrue(check_commits.merge(commit("Merge x\n", parents="abc"), POLICY))
 
     def test_a_gate_trailer_is_optional_once_and_starts_with_the_verdict(self):
+
+        # REQ: SRS-AI-010
         base = "Fix the sorter\n\nBody.\n\nReview: items 1 to 6.\n"
         self.assertEqual(check_commits.gate(commit(base), POLICY), [])
         for verdict in ("PASS, fast, 11 passed, since 8b1eeab", "FAIL, full, failed: unit"):

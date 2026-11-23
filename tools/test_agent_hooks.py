@@ -51,12 +51,16 @@ class Command(Repo):
         self.assertIn(rule, err)
 
     def test_writes_inside_the_repository_and_the_temporary_dirs_are_allowed(self):
+
+        # REQ: SRS-AI-008
         for c in ["echo x > build/log.txt", f"echo x > {self.repo}/notes.txt", "cp a b",
                   "mkdir -p /tmp/scratch", "rm -rf /tmp/x", "make 2>/dev/null",
                   f"tee {self.repo}/out.txt < in", "ls -la /etc", "cat /etc/hostname"]:
             self.assertAllowed(c)
 
     def test_a_write_outside_the_repository_is_refused_with_its_rule(self):
+
+        # REQ: SRS-AI-008
         outside = "/srv/elsewhere.txt"  # judged, never written
         for c in [f"echo x > {outside}", f"echo x >> {outside}", f"cp a {outside}",
                   "mv build /srv/b", "rm -rf /srv", "touch ~/.bashrc",
@@ -75,6 +79,8 @@ class Command(Repo):
         self.assertRefused(f"echo x > {self.repo}/{climb}/srv/escaped", "outside the repository")
 
     def test_pushes_to_the_sessions_branch_and_main_are_allowed(self):
+
+        # REQ: SRS-AI-008
         for c in ["git push origin HEAD", "git push -u origin claude/work",
                   "git push origin HEAD:main", "git push origin HEAD:refs/heads/main",
                   f"git -C {self.repo} push origin claude/work", "git status && git push origin main"]:
@@ -86,11 +92,15 @@ class Command(Repo):
                            branch="feature/x")
 
     def test_a_push_to_another_branch_is_refused(self):
+
+        # REQ: SRS-AI-008
         for c in ["git push origin release/2.0", "git push origin HEAD:release/2.0",
                   "git fetch && git push origin other"]:
             self.assertRefused(c, "only the session's branch")
 
     def test_a_forced_or_bulk_push_is_refused(self):
+
+        # REQ: SRS-AI-008
         for c, rule in [("git push --force origin main", "forces a push"),
                         ("git push -f origin HEAD", "forces a push"),
                         ("git push origin +HEAD:main", "forces a push"),
@@ -124,6 +134,8 @@ class Edit(Repo):
         return r, f.read_text()
 
     def test_an_edited_cpp_file_is_formatted(self):
+
+        # REQ: SRS-AI-009
         r, text = self.edited("src/a.cpp", self.UGLY)
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertNotEqual(text, self.UGLY)
@@ -134,6 +146,8 @@ class Edit(Repo):
         self.assertIn("return x + 1;", text)
 
     def test_other_files_are_left_as_they_are(self):
+
+        # REQ: SRS-AI-009
         for name in ["notes.md", "tool.py", "data.json"]:
             r, text = self.edited(name, self.UGLY)
             self.assertEqual((r.returncode, text), (0, self.UGLY), name)

@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | proposed |
+| Status | approved |
 | Requested | 2026-11-23, by the software lead |
 | Source | improvement; roadmap 2.2.0, theme S |
-| Decision | pending |
+| Decision | approved, 2026-11-23, by the software lead (the author), in writing in the project |
 | Commits | none yet |
 
 ## Description
@@ -111,4 +111,4 @@ SRS-PIPE-010 and SRS-PERF-020 among them; the throughput measured with 1, 2 and 
 
 ## Decision
 
-Pending: the software lead.
+Approved by the software lead on 2026-11-23, in writing in the project (22:20 UTC), on the impact analysis above.

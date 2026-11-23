@@ -136,11 +136,15 @@ class AgentFiles(unittest.TestCase):
         self.assertTrue(any(fragment in e for e in errors), f"{fragment!r} not in {errors}")
 
     def test_good_files_pass(self):
+
+        # REQ: SRS-AI-007
         found, errors = caf.check(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(sorted(found.values()), ["agent", "context", "register", "settings", "skill"])
 
     def test_a_required_field_missing_is_reported(self):
+
+        # REQ: SRS-AI-007
         self.edit(".claude/agents/reviewer.md", "owner: software lead\n", "")
         self.assertFound("frontmatter lacks 'owner'")
 
@@ -157,6 +161,8 @@ class AgentFiles(unittest.TestCase):
         self.assertFound("history table ends with 2")
 
     def test_a_path_that_does_not_exist_is_reported(self):
+
+        # REQ: SRS-AI-007
         self.edit("CLAUDE.md", "`docs/srs.md`", "`docs/sds.md`")
         self.assertFound("CLAUDE.md:5: docs/sds.md does not exist")
 
@@ -169,10 +175,14 @@ class AgentFiles(unittest.TestCase):
         self.assertFound("nothing matches exercises/chNN/eNN_x")
 
     def test_a_test_that_is_not_defined_is_reported(self):
+
+        # REQ: SRS-AI-007
         self.edit(".claude/agents/reviewer.md", "ctest -R docs.trace", "ctest -R docs.tracing")
         self.assertFound("no test named docs.tracing")
 
     def test_a_tool_outside_the_kinds_list_is_reported(self):
+
+        # REQ: SRS-AI-007
         self.edit(".claude/agents/reviewer.md", "tools: Read, Grep, Glob", "tools: Read, Edit, Bash")
         self.assertFound("allows Edit, which a agent may not")
         self.assertFound("allows Bash, which a agent may not")
@@ -193,6 +203,8 @@ class AgentFiles(unittest.TestCase):
         self.assertFound("sets permissionMode")
 
     def test_a_broad_permission_is_reported(self):
+
+        # REQ: SRS-AI-007
         for rule in ["Bash", "Bash(*)", "Bash(sudo apt *)", "Bash(git push *)", "WebFetch",
                      "Write(/etc/*)", "Read(~/.ssh/*)", "Bash(pip install x)"]:
             with self.subTest(rule=rule):
@@ -218,6 +230,8 @@ class AgentFiles(unittest.TestCase):
         self.assertFound("tools/hooks/gone.py, which does not exist")
 
     def test_secrets_addresses_and_absolute_paths_are_reported(self):
+
+        # REQ: SRS-AI-007
         address = "someone" + "@" + "company-name.ch"
         key = "ghp_" + "a1" * 15
         for line, what in [(f"Mail {address}.", "an e-mail address"),

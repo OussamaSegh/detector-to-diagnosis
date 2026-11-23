@@ -64,6 +64,8 @@ class KnownBadLibrary(unittest.TestCase):
             self.assertTrue(c["source"] and c["defect"], c["id"])
 
     def test_every_fast_known_bad_change_fails_its_own_check(self):
+
+        # REQ: SRS-AI-005
         for case in self.spec["cases"]:
             if not case["check"] or case["level"] != "fast":
                 continue
@@ -75,6 +77,8 @@ class KnownBadLibrary(unittest.TestCase):
                 self.assertEqual(results[case["check"]], "FAIL", results)
 
     def test_a_full_level_change_passes_the_fast_checks_and_only_the_tests_catch_it(self):
+
+        # REQ: SRS-AI-005
         for case in self.spec["cases"]:
             if case["level"] != "full":
                 continue
@@ -92,6 +96,8 @@ class KnownBadLibrary(unittest.TestCase):
                     self.assertEqual(dict((n, r) for n, r, _ in full)[case["check"]], "FAIL")
 
     def test_the_good_change_passes(self):
+
+        # REQ: SRS-AI-005
         for case in self.spec["cases"]:
             if case["check"] is None:
                 results, verdict = self.judged(case)
@@ -108,6 +114,8 @@ class Rules(unittest.TestCase):
         self.assertFalse(gate.ANCHORED.search('ok = re.fullmatch(r"[0-9]+", v)'))
 
     def test_the_trailer_gives_the_verdict_first(self):
+
+        # REQ: SRS-AI-010
         results = [("gate", "pass", []), ("tags", "FAIL", ["x"]), ("format", "skipped", [])]
         self.assertEqual(gate.trailer(results, "FAIL", "8b1eeab", False),
                          "Gate: FAIL, fast, 1 passed, failed: tags, 1 skipped, since 8b1eeab")
@@ -115,6 +123,8 @@ class Rules(unittest.TestCase):
                          "Gate: PASS, full, 1 passed, since 8b1eeab")
 
     def test_a_change_to_a_check_is_for_a_person(self):
+
+        # REQ: SRS-AI-006
         self.assertTrue(gate.check_gate(files=["tools/trace_matrix.py"]))
         self.assertFalse(gate.check_gate(files=["tools/survey.py"]))
 

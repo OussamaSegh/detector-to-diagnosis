@@ -129,6 +129,8 @@ class Report(unittest.TestCase):
         self.assertEqual(json.loads(out)["assisted"], 4)
 
     def test_the_gate_trailer_is_reported_when_given_and_not_required(self):
+
+        # REQ: SRS-AI-010
         r = ap.report(self.repo.root, f"{self.repo.since}..HEAD", POLICY)
         self.assertEqual(r["assisted_with_a_gate_trailer"], 2)
         self.assertEqual(r["assisted_gate_fail"], [self.tool[:12]])

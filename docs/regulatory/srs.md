@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 38 (MiniDAQ 2.1.0). Status: approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 39 (MiniDAQ 2.2.0-dev). Status: draft, to be approved for release 2.2.0. Version 38 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -488,6 +488,12 @@ change.
 | SRS-AI-002 | The provenance report shall give each changed source file that is not a test the software item whose path prefix is the longest that matches it, with that item's safety class, and take as a test every file under a directory named `tests` and every Python file whose name starts with `test_`. | tools | T |
 | SRS-AI-003 | The provenance report shall give the number of commits, merges and assisted commits of a range, the assisted commits per item, the assisted commits with a review trailer git parses, and the list of assisted commits that change product code without changing a test, as text and as JSON. | tools | T |
 | SRS-AI-004 | The commit policy check shall report every assisted commit other than a merge that changes the code of an item with a safety class and neither changes a test nor has a `Tests` trailer that names the tests covering the change. | tools | T |
+| SRS-AI-005 | The agent gate shall run each of its checks, in the version of the gate that judges, on the change between a base commit and a checked-out commit or the working tree, and give the verdict FAIL with each failing check's reasons when a check fails, PASS otherwise, and report a check whose tool is not installed as skipped. | tools | T |
+| SRS-AI-006 | The agent gate shall report as a failure, for a person to review, every change that edits the gate or a check the gate runs. | tools | T |
+| SRS-AI-007 | The agent file checker shall report every agent file that lacks a field its kind requires, that names a repository path, a command or a test that does not exist, that allows a tool outside its kind's least-privilege list, or that holds a secret, an e-mail address or an absolute path outside the repository. | tools | T |
+| SRS-AI-008 | The command hook shall refuse, naming the rule, a command that writes to an absolute path outside the repository and the temporary directories, or that pushes to a branch other than the session's own and `main`, and allow every other command. | tools | T |
+| SRS-AI-009 | The edit hook shall format an edited C++ file of the repository with the repository's formatter, and leave every other file unchanged. | tools | T |
+| SRS-AI-010 | The provenance report and the commit policy shall read an optional `Gate:` trailer that names the gate's report, report each assisted commit with it, and not require it. | tools | T |
 
 ### 2.28 Time base (TIM)
 
@@ -571,3 +577,4 @@ shipped programs.
 | 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |
 | 37 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 36. |
 | 38 | The projector's output array (CR-0034, Chapter 29): SRS-REC-009 added. The soak of SRS-SYS-003 and SRS-PERF-022 lasts 100 minutes (CR-0035); the requirements' text does not change. Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
+| 39 | The agent gate and the agent files (CR-0036, roadmap 2.2.0, themes P1 and P2): SRS-AI-005 to SRS-AI-010 added. |

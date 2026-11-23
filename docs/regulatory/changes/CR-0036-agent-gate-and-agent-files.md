@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | proposed |
+| Status | approved |
 | Requested | 2026-11-23, by the software lead |
 | Source | improvement; roadmap 2.2.0, themes P1 and P2 |
-| Decision | pending |
+| Decision | approved, 2026-11-23, by the software lead (the author), in writing in the project |
 | Commits | none yet |
 
 ## Description
@@ -42,25 +42,24 @@ verdict would not be traced.
 
 ### Requirements
 
-Six requirements are added to the SRS's AI group, item `tools`, all verified by test. They take
-the group's next numbers, 005 to 010, in this order, when the SRS draft is written:
+Added, item `tools`, all verified by test (SRS version 39):
 
-- **AI 005**: The agent gate shall run each of its checks, in the version of the gate that
+- **SRS-AI-005**: The agent gate shall run each of its checks, in the version of the gate that
   judges, on the change between a base commit and a checked-out commit or the working tree, and
   give the verdict FAIL with each failing check's reasons when a check fails, PASS otherwise, and
   report a check whose tool is not installed as skipped.
-- **AI 006**: The agent gate shall report as a failure, for a person to review, every change
+- **SRS-AI-006**: The agent gate shall report as a failure, for a person to review, every change
   that edits the gate or a check the gate runs.
-- **AI 007**: The agent file checker shall report every agent file that lacks a field its
+- **SRS-AI-007**: The agent file checker shall report every agent file that lacks a field its
   kind requires, that names a repository path, a command or a test that does not exist, that
   allows a tool outside its kind's least-privilege list, or that holds a secret, an e-mail
   address or an absolute path outside the repository.
-- **AI 008**: The command hook shall refuse, naming the rule, a command that writes to an
+- **SRS-AI-008**: The command hook shall refuse, naming the rule, a command that writes to an
   absolute path outside the repository and the temporary directories, or that pushes to a branch
-  other than the session's own and `main`, and shall allow every other command.
-- **AI 009**: The edit hook shall format an edited C++ file of the repository with the
+  other than the session's own and `main`, and allow every other command.
+- **SRS-AI-009**: The edit hook shall format an edited C++ file of the repository with the
   repository's formatter, and leave every other file unchanged.
-- **AI 010**: The provenance report and the commit policy shall read an optional `Gate:`
+- **SRS-AI-010**: The provenance report and the commit policy shall read an optional `Gate:`
   trailer that names the gate's report, report each assisted commit with it, and not require it.
 
 No existing requirement changes.
@@ -86,7 +85,7 @@ None. The `Gate:` trailer is optional (commit policy 3, compatible).
 
 ### Documents
 
-The SRS (version 39, the AI group's requirements 005 to 010); the tool list (TL-51, TL-52); the commit policy
+The SRS (version 39, SRS-AI-005 to SRS-AI-010); the tool list (TL-51, TL-52); the commit policy
 (version 3); the threat model (a new version with the agent review); `CLAUDE.md` and
 `.claude/settings.json` (version 1 each); ADR 0040; the design file; the CHANGELOG.
 
@@ -104,4 +103,4 @@ results kept as evidence.
 
 ## Decision
 
-Pending: the software lead.
+Approved by the software lead on 2026-11-23, in writing in the project (22:20 UTC), on the impact analysis above.
