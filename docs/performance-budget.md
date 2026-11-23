@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Version 4 (MiniDAQ 0.4.0-dev, release 0.4.0). Status: measured on the book's machine at tag `ch05`, the whole pipeline again for releases 0.3.0 and 0.4.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`. Every number must be re-measured on the
+Version 5 (MiniDAQ 2.2.0-dev). Status: draft, to be approved for release 2.2.0; version 4 was measured on the book's machine at tag `ch05`, the whole pipeline again for releases 0.3.0 and 0.4.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`; version 5 adds the readout nodes of CR-0037. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -112,6 +112,29 @@ is a virtual disk that the host may cache (a repeated 3 GB `dd` ran at 1.4 GB/s 
 278 MB/s the first time): re-measure on the acquisition PC's disk before relying on the margin
 (verify on the acquisition PC).
 
+## Several readout nodes (CR-0037)
+
+Measured, not required: SRS-PERF-020 holds for one node, the default, which takes the path of
+2.1 and bypasses the merge. `bm_node_merge` (release build, 5 repetitions, medians, a 4-core
+2.1 GHz VM, g++ 13.3; `measurements/cr-0037/bm_node_merge.txt`, 2026-11-23):
+
+| Case | Singles/s | Per single |
+|---|---|---|
+| Synthetic source alone | 17.6 M | 57.7 ns |
+| The same, read by 2 nodes and merged | 13.2 M | 77.2 ns |
+| 4 nodes | 12.1 M | 83.0 ns |
+| 8 nodes | 9.8 M | 103.8 ns |
+| Whole pipeline, 1 node (no merge) | 32.1 M | 31.2 ns |
+| Whole pipeline, 2 nodes merged in the source stage | 31.0 M | 32.3 ns |
+| Whole pipeline, 4 nodes | 25.5 M | 39.2 ns |
+
+The merge costs about 20 ns per single with 2 nodes and 25 ns with 4 (dividing, correcting the
+clocks, the k-way merge), and it runs on the source thread. The whole pipeline with 4 nodes keeps
+a margin of 2.5 times at 10 M singles/s; the synthetic source itself, which generates on the same
+thread, stays above 10 M singles/s up to 4 nodes and falls just below it with 8. Nodes that are
+separate machines (roadmap 3.0.0) move the division and the clocks off this thread, and leave it
+the merge.
+
 ## Regression gate
 
 The rows with a library benchmark (`bm_*`) are compared with `benchmarks/baseline/<runner>.json`
@@ -144,3 +167,4 @@ slower, and the baseline gate says whether the margins of this table still hold.
 | 2 | Release 0.3.0: the whole pipeline re-measured with the coincidence sorter (MDQ-PR-014, CAPA-0004); the regression baseline updated for `BM_Pipeline`. |
 | 3 | Editorial: the repository's history was rewritten to remove personal data, so the cited commit hashes are those of the rewritten commits; the content is unchanged. |
 | 4 | Release 0.4.0: the whole pipeline and the list-mode writer re-measured; the regression gate's failure explained by an interleaved A/B, and the baseline kept. |
+| 5 | 2.2.0-dev: the throughput with 1, 2 and 4 readout nodes and the merge's cost per single, measured, not required (CR-0037). |

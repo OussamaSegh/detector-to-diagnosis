@@ -1,0 +1,40 @@
+2026-11-23T22:45:50+00:00
+Running ./build/release/benchmarks/bm_node_merge
+Run on (4 X 2100 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x4)
+  L1 Instruction 32 KiB (x4)
+  L2 Unified 2048 KiB (x4)
+  L3 Unified 266240 KiB (x1)
+Load Average: 1.27, 2.50, 2.14
+--------------------------------------------------------------------------------------------------
+Benchmark                                        Time             CPU   Iterations UserCounters...
+--------------------------------------------------------------------------------------------------
+BM_SourceAlone_mean                         235118 ns       232493 ns            5 items_per_second=17.6415M/s
+BM_SourceAlone_median                       236486 ns       233043 ns            5 items_per_second=17.5761M/s
+BM_SourceAlone_stddev                         8765 ns         9540 ns            5 items_per_second=724.082k/s
+BM_SourceAlone_cv                             3.73 %          4.10 %             5 items_per_second=4.10%
+BM_NodesMerged/2_mean                       315526 ns       313084 ns            5 items_per_second=13.102M/s
+BM_NodesMerged/2_median                     316229 ns       311326 ns            5 items_per_second=13.1566M/s
+BM_NodesMerged/2_stddev                      14005 ns        13375 ns            5 items_per_second=561.916k/s
+BM_NodesMerged/2_cv                           4.44 %          4.27 %             5 items_per_second=4.29%
+BM_NodesMerged/4_mean                       341596 ns       340566 ns            5 items_per_second=12.0274M/s
+BM_NodesMerged/4_median                     340082 ns       339523 ns            5 items_per_second=12.064M/s
+BM_NodesMerged/4_stddev                       3382 ns         2171 ns            5 items_per_second=76.332k/s
+BM_NodesMerged/4_cv                           0.99 %          0.64 %             5 items_per_second=0.63%
+BM_NodesMerged/8_mean                       422213 ns       419198 ns            5 items_per_second=9.79081M/s
+BM_NodesMerged/8_median                     425291 ns       419867 ns            5 items_per_second=9.75547M/s
+BM_NodesMerged/8_stddev                      23088 ns        21041 ns            5 items_per_second=492.639k/s
+BM_NodesMerged/8_cv                           5.47 %          5.02 %             5 items_per_second=5.03%
+BM_PipelineWithNodes/1/real_time_mean          131 ms         4.90 ms            5 items_per_second=32.0032M/s
+BM_PipelineWithNodes/1/real_time_median        131 ms         4.97 ms            5 items_per_second=32.062M/s
+BM_PipelineWithNodes/1/real_time_stddev       5.55 ms        0.613 ms            5 items_per_second=1.35805M/s
+BM_PipelineWithNodes/1/real_time_cv           4.23 %         12.51 %             5 items_per_second=4.24%
+BM_PipelineWithNodes/2/real_time_mean          135 ms         3.88 ms            5 items_per_second=31.0003M/s
+BM_PipelineWithNodes/2/real_time_median        135 ms         3.87 ms            5 items_per_second=30.9863M/s
+BM_PipelineWithNodes/2/real_time_stddev       3.96 ms        0.138 ms            5 items_per_second=914.836k/s
+BM_PipelineWithNodes/2/real_time_cv           2.93 %          3.55 %             5 items_per_second=2.95%
+BM_PipelineWithNodes/4/real_time_mean          167 ms         4.04 ms            5 items_per_second=25.1722M/s
+BM_PipelineWithNodes/4/real_time_median        164 ms         3.65 ms            5 items_per_second=25.5247M/s
+BM_PipelineWithNodes/4/real_time_stddev       5.05 ms        0.619 ms            5 items_per_second=743.688k/s
+BM_PipelineWithNodes/4/real_time_cv           3.03 %         15.31 %             5 items_per_second=2.95%

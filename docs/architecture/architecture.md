@@ -1,6 +1,6 @@
 # MiniDAQ software architecture description
 
-Version 28 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 29 (MiniDAQ 2.2.0-dev). Status: draft, to be approved for release 2.2.0. Version 28 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document describes the current architecture of MiniDAQ. It follows the structure that an
 architecture description in an IEC 62304 software development process is expected to cover
@@ -103,8 +103,13 @@ and monitors the acquisition over a control API. Version 0.5.0-dev covers:
   workflow preset; C++ formatting is checked on changed lines (tools TL-37 and TL-38, Chapter 32,
   [ADR 0027](../adr/0027-installable-packages-presets-and-changed-line-formatting.md)).
 
-Not yet covered: a source that reads several readout links at once (the merger exists, the
-pipeline does not use it yet). The control API's security is described in the
+- several readout nodes in one process: the simulator divides the scanner's blocks among up to
+  eight nodes with their own clocks, and the node merge corrects the clocks and merges the
+  nodes' streams in the source stage, before the sort stage; one node, the default, bypasses
+  it (CR-0037, [ADR 0041](../adr/0041-merge-the-readout-nodes-in-the-source-stage.md)).
+
+Not yet covered: a source that reads several readout links at once, and nodes that are separate
+processes or machines (roadmap 3.0.0, Chapters 41 and 42). The control API's security is described in the
 [threat model](../regulatory/security/threat-model.md) (Chapter 17).
 
 ## 2. Context and external interfaces
@@ -115,7 +120,7 @@ pipeline does not use it yet). The control API's security is described in the
 | Data consumer | Batches of `Coincidence` through `CoincidenceSinkPort`: MDQ-L1 list-mode files and a run record (`ListModeSink`, [specification](../formats/mdq-l1.md)), or a counting sink | out | `output.type` selects the sink; files carry no patient identity; the run record's `corrections` object is what `tools/recon` (tool TL-30) reads with the files |
 | Front-end boards | 32-bit registers through `RegisterBus`: `MmioBus` over a UIO device or a PCI resource file, or `FakeBoard`; described by a hardware description, schema 1.1 ([register map](../hw/feb-register-map.md) 1.3, the contract [ICD-FEB](../hw/icd-feb.md)) | both | The slow control owns the bias; the board's own protection switches it off above 60 C ([ADR 0017](../adr/0017-register-map-and-slow-control.md)) |
 | Operator, scripts, test harness | Control protocol 3.1 (major version 3: every request names its version, ADR 0036): newline-delimited JSON over TCP, 127.0.0.1:7700 by default ([ADR 0003](../adr/0003-control-protocol.md)), with token authentication and optional TLS 1.3 ([ADR 0014](../adr/0014-control-api-authentication-and-tls.md)) | in/out | `minidaq_ctl` is the reference client; binding beyond loopback needs TLS and tokens |
-| Configuration files | JSON, schema version 2.1 ([schema](acquisition-config.schema.json); 1.x files refused, converted by `tools/migrate_config.py`) | in | Comments allowed; validated before use |
+| Configuration files | JSON, schema version 2.2 ([schema](acquisition-config.schema.json); 1.x files refused, converted by `tools/migrate_config.py`) | in | Comments allowed; validated before use |
 | Calibration table | JSON, schema version 1.0 ([format](../formats/calibration.md)), written by `tools/calib` and named by the configuration | in | Checked against its CRC-32, the scanner serial, its expiry and the limits of a working detector before use |
 | Audit trail | JSON Lines file, one record per control action | out | Appended and flushed per record; optional fsync |
 | Operating system | Linux: threads, CPU affinity, `SCHED_FIFO`, `mlockall`, sockets; the receive path's counters in `/proc/net` and `/sys/class/net` | both | Real-time settings from an `rt_profile_file` (Chapter 4); the platform is defined in `platform/platform.json` and checked at installation (Chapter 25) |
@@ -183,7 +188,7 @@ assume risk controls outside the software (assumption: confirm with team).
 | rt | `rt/` | server | B | Scheduling and memory locking of the stages |
 | processing | energy filter, sinogram, count rates, calibration table, photopeak monitor and singles counter | server | B | Hot-path filter and quality-control views; applies each crystal's calibration (H-11); counts the singles the randoms and dead-time corrections need (H-12) |
 | sorter | `CoincidenceSorter` | server | B | Decides every coincidence |
-| merger | `StreamMerger` | server | B | Orders many boards' singles |
+| merger | `StreamMerger`, `NodeMerge` | server | B | Orders many boards' singles; merges the readout nodes' streams in true time (CR-0037) |
 | sim | `sim/`, the simulated board | development programs and tests | not shipped | The product build leaves it out of the server (CR-0029) |
 | config | `config/`, including the calibration table file | server | B | Validates the acquisition settings and the calibration table |
 | service | service, state machine, ports | server | B | Owns the run and its faults |
@@ -348,7 +353,7 @@ The full SOUP list, with requirements on each item and the anomaly review, is
 | Access control and TLS | Tokens, roles, secure defaults, deadlines, TLS 1.3 only, certificate verification, an intruder and an eavesdropper; the protocol fuzzer's authorization property | `test_security.cpp`, `fuzz/fuzz_protocol.cpp` |
 | Threat model | Every element analyzed for each STRIDE category; mitigations verified | `tools/check_threats.py`, test `docs.threats` |
 | Configuration | Reader rules; schema document agrees with the reader | `test_config.cpp` |
-| Coincidence sorter and merger | Exact agreement with the simulator's truth counter, chunking independence, accounting, policies, randoms bias; merger order, waiting, late boards, ties; fuzzing | `test_coincidence_sorter.cpp`, `test_stream_merger.cpp`, `fuzz/fuzz_sorter.cpp` |
+| Coincidence sorter and merger | Exact agreement with the simulator's truth counter, chunking independence, accounting, policies, randoms bias; merger order, waiting, late boards, ties; the node merge against the single-node oracle; fuzzing | `test_coincidence_sorter.cpp`, `test_stream_merger.cpp`, `test_readout_nodes.cpp`, `fuzz/fuzz_sorter.cpp` |
 | Front-end model and capacity | Dead-time stage against both formulas and by hand, chunking, accounting; replay order and rate; count-rate and bottleneck measurements regenerated by one command each | `test_dead_time.cpp`, `test_count_rates.cpp`, `test_replay_source.cpp`, `measurements/ch11/` |
 | Front-end hardware | Register access rules at compile time, the bus, the simulated board's failures, the slow control at simulated time, the service with simulated boards, a board that overheats in a run | `test_hw_registers.cpp`, `test_slow_control.cpp`, `test_hardware_service.cpp`, `system.hardware` |
 | Receive path | Every datagram delivered or counted, the tail of a burst included; the kernel's counter formats from captured text | `test_udp_detector.cpp`, `test_host_counters.cpp`, `measurements/ch23/` |
@@ -407,3 +412,4 @@ Open issues:
 | 26 | Chapter 38: the time base monitor and the boards' clock status, configuration schema 2.1, control API 3.1, register map 1.3 (ADR 0037, CR-0031). |
 | 27 | The external interfaces name the versions of release 2.0.0: control API 3.1, configuration schema 2.1, register map 1.3 (review of 2.0.0). |
 | 28 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 27. |
+| 29 | Several readout nodes in the simulator and the node merge before the sort stage, configuration schema 2.2 (ADR 0041, CR-0037). |

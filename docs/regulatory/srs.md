@@ -124,6 +124,8 @@ a document of any manufacturer's quality management system and does not reproduc
 | SRS-MRG-003 | When one board falls behind the others by more than the configured maximum skew in µs, the stream merger shall drop and count only that board's late singles. | merger | T |
 | SRS-MRG-004 | The stream merger shall count and drop a single that is earlier than one its board already delivered or promised, and refuse a configuration with zero boards. | merger | T |
 | SRS-MRG-005 | The stream merger shall release singles with equal times from different boards in an order fixed by the singles' time order and then by board. | merger | T |
+| SRS-MRG-006 | The node merge shall subtract each node's configured clock offset and merge the nodes' streams into one stream in the pipeline's time order, releasing a single only when every node has delivered a later time or ended. | merger | T |
+| SRS-MRG-007 | For any division of the blocks among nodes and any clock offsets within the bound, the coincidences of the merged run shall equal, coincidence for coincidence, those of the same singles sorted as one stream. | merger | T |
 | SRS-SNO-001 | The sinogram histogrammer shall give every transaxial line of response its own bin, at the radial position and angle of that line. | processing | T |
 | SRS-SNO-002 | The sinogram histogrammer shall accept exactly the lines of response that the coincidence sorter's field-of-view cut accepts. | processing | T |
 | SRS-SNO-003 | The sinogram histogrammer shall sort ring pairs into single-slice rebinning slices and a michelogram, and reject ring differences above the configured maximum. | processing | T |
@@ -156,6 +158,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-SIM-022 | The detector simulator shall, when asked for an uncalibrated detector, report each crystal's energy multiplied by that crystal's gain after a saturation of the given energy scale and each crystal's time later by that crystal's delay, with gains and delays drawn once per simulator from the given spreads and kept within 0.6 to 1.6 and 4 ns, and deliver the singles in the order of their reported times. | sim | T |
 | SRS-SIM-023 | The detector simulator shall, when asked for a spread of detection efficiencies, give each crystal a detection probability drawn once from a normal distribution of mean 1 minus twice the spread and of standard deviation the spread, kept within 0.05 to 1 and drawn from a random stream separate from the gains', and record a photon that deposits enough energy in a crystal with that crystal's probability, drawing every crystal's gain, delay and efficiency from the crystal seed when one is given, whatever the seed of the decays. | sim | T |
 | SRS-SIM-024 | The readout link model shall give, for each single, the single that the server decodes from its MDQ-P1 word: the time truncated to a multiple of 5 ps across the wraps of the 38-bit counter, the energy rounded to a multiple of 0.5 keV, the crystal unchanged, and the truth fields kept, and refuse a single whose crystal is not in the scanner. | sim | T |
+| SRS-SIM-025 | The simulator shall divide the scanner's blocks among 1 to 8 nodes, as configured, give each node a time-ordered stream of the singles of its blocks stamped with the node's clock offset of at most 1 µs either way, and with one node produce the stream it produces without nodes. | sim | T |
 | SRS-DTM-001 | The non-paralyzable dead-time model shall lose every single that arrives while its unit is busy, without extending the dead time. | sim | T |
 | SRS-DTM-002 | The paralyzable dead-time model shall restart the dead time with every arrival, recorded or lost. | sim | T |
 | SRS-DTM-003 | When pile-up is enabled, the dead-time model shall add the energy of a lost single to the recorded single that made the unit busy. | sim | T |
@@ -180,6 +183,7 @@ server today (section 4 of the architecture description explains the consequence
 | SRS-CFG-014 | The configuration reader shall reject a document of schema version 1.x, and the keys that version 2.0 renamed, with a message that names the migration tool `tools/migrate_config.py`. | config | T |
 | SRS-CFG-015 | The migration tool `tools/migrate_config.py` shall turn every 1.x acquisition configuration that the repository and the book have shown into a document that validates against schema 2.0 and keeps every value of the old document at its new place. | tools | T |
 | SRS-CFG-016 | The acquisition configuration shall accept, from schema 2.1 on, an optional `timing_monitor` object with the interval, the baseline intervals, the minimum of true coincidences, the half window, the warning and alarm limits and the significance of the time base monitor, each within its range, an alarm limit below the warning limit being an error. | config | T |
+| SRS-CFG-017 | The acquisition configuration shall accept, from schema 2.2 on, an optional `source.nodes` object for the synthetic source with the count of nodes and one clock offset per node, refuse it for another source type or in a document of an older schema, and refuse a count or an offset outside its range. | config | T |
 
 ### 2.10 Control (CTL)
 
@@ -577,4 +581,4 @@ shipped programs.
 | 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |
 | 37 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 36. |
 | 38 | The projector's output array (CR-0034, Chapter 29): SRS-REC-009 added. The soak of SRS-SYS-003 and SRS-PERF-022 lasts 100 minutes (CR-0035); the requirements' text does not change. Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
-| 39 | The agent gate and the agent files (CR-0036, roadmap 2.2.0, themes P1 and P2): SRS-AI-005 to SRS-AI-010 added. |
+| 39 | The agent gate and the agent files (CR-0036, roadmap 2.2.0, themes P1 and P2): SRS-AI-005 to SRS-AI-010 added. Several readout nodes in the simulator (CR-0037, theme S): SRS-SIM-025, SRS-MRG-006, SRS-MRG-007 and SRS-CFG-017 added. |

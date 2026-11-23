@@ -14,6 +14,7 @@ add_library(minidaq_core
   src/processing/coincidence_sorter.cpp
   src/processing/sinogram.cpp
   src/processing/stream_merger.cpp
+  src/processing/node_merge.cpp
   src/rt/realtime.cpp
   src/rt/crash_report.cpp
   src/rt/health.cpp
@@ -34,6 +35,8 @@ target_link_libraries(minidaq_core PUBLIC Threads::Threads PRIVATE minidaq::warn
 # (Target minidaq_simulation: minidaq_sim is the program of Chapter 12.)
 add_library(minidaq_simulation
   src/sim/synthetic_source.cpp
+  src/sim/readout_nodes.cpp
+  src/sim/node_source.cpp
   src/sim/detector_simulator.cpp
   src/sim/truth_counter.cpp
   src/sim/readout_link.cpp

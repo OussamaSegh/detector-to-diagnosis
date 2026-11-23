@@ -11,9 +11,11 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 #include "minidaq/core/clock.hpp"
+#include "minidaq/sim/node_source.hpp"
 #include "minidaq/sim/synthetic_source.hpp"
 
 namespace minidaq::sim {
@@ -22,6 +24,15 @@ class PacedSource {
  public:
   PacedSource(SyntheticConfig cfg, double words_per_second, std::size_t max_burst = 4096)
       : gen_{cfg}, rate_per_ns_{words_per_second * 1e-9}, max_burst_{max_burst} {}
+  // The same source read out by the nodes of `layout` and merged (CR-0037).
+  // With one node the merge is bypassed and the words are those above.
+  PacedSource(SyntheticConfig cfg, double words_per_second, NodeLayout layout,
+              std::size_t max_burst = 4096)
+      : PacedSource{cfg, words_per_second, max_burst} {
+    if (layout.nodes() > 1) {
+      nodes_.emplace(cfg, std::move(layout));
+    }
+  }
 
   // Fills up to out.size() words that are due by now; returns how many.
   std::size_t operator()(std::span<std::uint64_t> out) {
@@ -34,7 +45,11 @@ class PacedSource {
       return 0;
     }
     const auto n = static_cast<std::size_t>(std::min<std::uint64_t>({due - delivered_, out.size(), max_burst_}));
-    gen_.generate(out.first(n));
+    if (nodes_) {
+      nodes_->generate(out.first(n));
+    } else {
+      gen_.generate(out.first(n));
+    }
     delivered_ += n;
     return n;
   }
@@ -55,6 +70,7 @@ class PacedSource {
 
  private:
   SyntheticSource gen_;
+  std::optional<MultiNodeSource> nodes_;  // several nodes: the merged stream instead of gen_
   double rate_per_ns_;
   std::size_t max_burst_;
   std::int64_t start_ns_ = 0;

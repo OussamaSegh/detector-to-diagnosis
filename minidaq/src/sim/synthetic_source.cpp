@@ -16,33 +16,45 @@ SyntheticSource::SyntheticSource(SyntheticConfig cfg)
       energy_{511.0, 25.0},
       unit_{0.0, 1.0} {}
 
-std::size_t SyntheticSource::generate(std::span<std::uint64_t> out) {
+Single SyntheticSource::next() {
   using G = ScannerGeometry;
-  for (auto& w : out) {
-    Single s;
-    if (pending_) {
-      s = pending_single_;
-      pending_ = false;
-    } else {
-      t_ps_ += gap_(rng_);
-      s = Single{Picoseconds{static_cast<std::int64_t>(t_ps_)}, CrystalId{crystal_(rng_)},
-                 KeV{static_cast<float>(energy_(rng_))}};
-      if (unit_(rng_) < cfg_.pair_fraction) {
-        // Partner: opposite side of the same ring, slightly later.
-        const std::uint32_t ring = G::ring_of(s.crystal);
-        const std::uint32_t opposite = (G::transaxial_of(s.crystal) + G::crystals_per_ring / 2) % G::crystals_per_ring;
-        const auto dt = static_cast<std::int64_t>(unit_(rng_) * static_cast<double>(cfg_.pair_spread_ps));
-        pending_single_ = Single{s.time + Picoseconds{dt}, G::make_crystal(ring, opposite),
-                                 KeV{static_cast<float>(energy_(rng_))}};
-        pending_ = true;
-        // Keep the stream ordered: later singles start after the partner.
-        t_ps_ = std::fmax(t_ps_, static_cast<double>(pending_single_.time.count()));
-      }
+  Single s;
+  if (pending_) {
+    s = pending_single_;
+    pending_ = false;
+  } else {
+    t_ps_ += gap_(rng_);
+    s = Single{Picoseconds{static_cast<std::int64_t>(t_ps_)}, CrystalId{crystal_(rng_)},
+               KeV{static_cast<float>(energy_(rng_))}};
+    if (unit_(rng_) < cfg_.pair_fraction) {
+      // Partner: opposite side of the same ring, slightly later.
+      const std::uint32_t ring = G::ring_of(s.crystal);
+      const std::uint32_t opposite =
+          (G::transaxial_of(s.crystal) + G::crystals_per_ring / 2) % G::crystals_per_ring;
+      const auto dt =
+          static_cast<std::int64_t>(unit_(rng_) * static_cast<double>(cfg_.pair_spread_ps));
+      pending_single_ = Single{s.time + Picoseconds{dt}, G::make_crystal(ring, opposite),
+                               KeV{static_cast<float>(energy_(rng_))}};
+      pending_ = true;
+      // Keep the stream ordered: later singles start after the partner.
+      t_ps_ = std::fmax(t_ps_, static_cast<double>(pending_single_.time.count()));
     }
-    w = packed::encode(s);
+  }
     ++generated_;
+    return s;
+}
+
+std::size_t SyntheticSource::generate(std::span<std::uint64_t> out) {
+  for (auto& w : out) {
+    w = packed::encode(next());
   }
   return out.size();
+}
+
+void SyntheticSource::generate(std::span<Single> out) {
+  for (auto& s : out) {
+    s = next();
+  }
 }
 
 }  // namespace minidaq::sim

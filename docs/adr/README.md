@@ -47,3 +47,4 @@ A decision that changes is not edited away: write a new record and mark the old 
 | [0038](0038-time-of-flight-in-the-projector-and-only-on-a-trusted-time-base.md) | Time of flight in the projector, and only on a time base the run says held | Accepted |
 | [0039](0039-maintain-releases-from-the-records-the-project-already-keeps.md) | Maintain releases from the records the project already keeps | Accepted |
 | [0040](0040-judge-agent-changes-by-the-projects-own-checks.md) | Judge an agent's changes by the project's own checks, and keep its files under control | Accepted |
+| [0041](0041-merge-the-readout-nodes-in-the-source-stage.md) | Merge the readout nodes in the source stage, waiting for every node | Accepted |

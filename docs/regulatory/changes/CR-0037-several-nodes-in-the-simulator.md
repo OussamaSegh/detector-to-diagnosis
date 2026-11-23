@@ -6,7 +6,7 @@
 | Requested | 2026-11-23, by the software lead |
 | Source | improvement; roadmap 2.2.0, theme S |
 | Decision | approved, 2026-11-23, by the software lead (the author), in writing in the project |
-| Commits | none yet |
+| Commits | see the CHANGELOG, 2.2.0, Theme S |
 
 ## Description
 
@@ -108,6 +108,17 @@ within the bound, the merged coincidences equal to the single-node ones); unit t
 node division and the merge (order, ties, a slow node, the end of a run); the configuration
 tests of schema 2.2; `tools.agent_gate` and the release checks with the default of one node,
 SRS-PIPE-010 and SRS-PERF-020 among them; the throughput measured with 1, 2 and 4 nodes.
+
+## Implementation notes
+
+- The merge runs in the source stage's thread, inside the simulated detector's source
+  (`sim::MultiNodeSource`, used by the paced source when a configuration names more than one
+  node); `AcquisitionPipeline` itself does not change. The impact analysis named the item
+  `pipeline`; its code is unchanged, and the change is to `sim`, `merger` and `config`.
+- The node merge is the StreamMerger without a maximum skew: a silent node holds the run until
+  it reports a time or ends, since releasing past it could lose its coincidences.
+- Requirements SRS-SIM-025, SRS-MRG-006, SRS-MRG-007 and SRS-CFG-017 (SRS version 39); risk
+  control RC-56 of H-01; ADR 0041; the throughput in the performance budget, version 5.
 
 ## Decision
 

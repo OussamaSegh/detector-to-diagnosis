@@ -40,6 +40,22 @@ the patch version.
   SRS-AI-010; ADR 0040; the threat model's version 19 (draft) records the review of an agent
   with shell access.
 
+### Added (roadmap 2.2.0, Theme S, CR-0037)
+
+- Several readout nodes in the simulator: `sim::NodeLayout` divides the scanner's blocks among
+  1 to 8 nodes (contiguous ranges, or a node for each block), each stamping its singles with its
+  own clock offset of at most 1 µs (SRS-SIM-025).
+- The node merge (`NodeMerge`, item merger): subtracts each node's offset and merges the
+  streams with the StreamMerger, releasing a single only when every node is past it or has
+  ended (SRS-MRG-006). Its coincidences equal those of the same singles sorted as one stream,
+  for random divisions and offsets (SRS-MRG-007, risk control RC-56 of H-01).
+- Configuration schema 2.2: an optional `source.nodes` (`count`, `clock_offsets_ps`) for the
+  synthetic source (SRS-CFG-017). Without it the run takes the path of 2.1.
+- `bm_node_merge`: the merge's cost per single and the pipeline's throughput with 1, 2 and 4
+  nodes (performance budget, version 5); ADR 0041.
+- The trace-review subagent's eval, run by hand (`measurements/agent-evals/trace-review/`): five
+  of six cases pass by the scorer, and the sixth has the right verdict in a numbered form.
+
 ### Fixed (roadmap 2.2.0, Theme R)
 
 - MDQ-PR-090: `tools/release_record.py check` judged every record by today's table. It now

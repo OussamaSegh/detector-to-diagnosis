@@ -36,8 +36,8 @@ inline constexpr int supported_major = 2;
 // 1.4: "calibration" (Chapter 26). 2.0 (CR-0030): /source/type required, /stop_after_s in
 // /source, /pipeline/coincidence_window_ps is /sorter/window_ps, /output/max_file_mb is
 // max_file_mib, /rt_profile is /rt_profile_file. tools/migrate_config.py converts a 1.x file.
-// 2.1 (CR-0031): "timing_monitor" (Chapter 38).
-inline constexpr int supported_minor = 1;
+// 2.1 (CR-0031): "timing_monitor" (Chapter 38). 2.2 (CR-0037): /source/nodes.
+inline constexpr int supported_minor = 2;
 // What a refused 1.x file is told.
 inline constexpr const char* migration_hint =
     "convert it with tools/migrate_config.py (docs/migration-2.0.md)";
@@ -52,12 +52,22 @@ struct UdpSettings {
   friend bool operator==(const UdpSettings&, const UdpSettings&) = default;
 };
 
+// The readout nodes of the synthetic source (schema 2.2, CR-0037,
+// minidaq/sim/readout_nodes.hpp): contiguous ranges of blocks, one clock
+// offset per node. One node, the default, bypasses the node merge.
+struct NodeSettings {
+  std::size_t count = 1;                          // 1 to 8
+  std::vector<std::int64_t> clock_offsets_ps{0};  // one per node, at most 1 us either way
+  friend bool operator==(const NodeSettings&, const NodeSettings&) = default;
+};
+
 struct SourceSettings {
   std::string type = "synthetic";  // "synthetic" or "udp"; a file must name it (2.0)
   double rate_hz = 10e6;           // synthetic: singles per second
   double pair_fraction = 0.3;      // synthetic
   std::uint64_t seed = 1;          // synthetic
   double stop_after_s = 0.0;       // synthetic: end the run after this time; 0: run until stop
+  NodeSettings nodes;              // synthetic, schema 2.2: the readout nodes
   UdpSettings udp;                 // udp
   friend bool operator==(const SourceSettings&, const SourceSettings&) = default;
 };

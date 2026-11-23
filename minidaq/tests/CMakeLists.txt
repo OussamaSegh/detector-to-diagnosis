@@ -39,6 +39,7 @@ add_executable(minidaq_unit_tests
   unit/test_coincidence_sorter.cpp
   unit/test_sinogram.cpp
   unit/test_stream_merger.cpp
+  unit/test_readout_nodes.cpp
   unit/test_time_markers.cpp
   unit/test_dead_time.cpp
   unit/test_count_rates.cpp

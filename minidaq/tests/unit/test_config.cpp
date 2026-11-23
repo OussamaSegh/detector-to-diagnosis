@@ -36,7 +36,7 @@ std::string read(const std::string& path) {
 
 TEST(Config, MinimalDocumentGetsDefaults) {
   // REQ: SRS-CFG-001
-  const auto c = parse_config(R"({"schema_version": "2.1", "source": {"type": "synthetic"}})");
+  const auto c = parse_config(R"({"schema_version": "2.2", "source": {"type": "synthetic"}})");
   ASSERT_TRUE(c) << format_errors(c.error());
   EXPECT_EQ(*c, AcquisitionConfig{});
 }
@@ -118,7 +118,7 @@ TEST(Config, SchemaVersionRules) {
   // REQ: SRS-CFG-002
   EXPECT_TRUE(has(errors_of(R"({})"), "/schema_version", "is required"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "3.0"})"), "/schema_version", "major version 3"));
-  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2"})"), "/schema_version", "newer MiniDAQ"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.3"})"), "/schema_version", "newer MiniDAQ"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": ""})"), "/schema_version", "must look like"))
       << "an empty version is not a version (MDQ-PR-042)";
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "1"})"), "/schema_version", "must look like"));
@@ -187,9 +187,12 @@ TEST(Config, PipelineSettingsAreApplied) {
 // C++ reader is the authority. This test keeps the two from drifting apart.
 TEST(Config, SchemaDocumentAgreesWithTheReader) {
   const auto schema = nlohmann::json::parse(read(MINIDAQ_SOURCE_DIR "/docs/architecture/acquisition-config.schema.json"));
-  const auto effective = to_json(AcquisitionConfig{});
+  // Several nodes, so that the effective configuration has every key the schema has.
+  AcquisitionConfig with_nodes;
+  with_nodes.source.nodes = {.count = 2, .clock_offsets_ps = {0, 0}};
+  const auto effective = to_json(with_nodes);
   const auto base =
-      nlohmann::json::parse(R"({"schema_version": "2.0", "source": {"type": "synthetic"}})");
+      nlohmann::json::parse(R"({"schema_version": "2.2", "source": {"type": "synthetic"}})");
 
   // Walks the schema and the effective configuration together, at any depth:
   // the same keys at every level, and every leaf's enum and range accepted
@@ -252,6 +255,62 @@ TEST(Config, SchemaDocumentAgreesWithTheReader) {
     }
   };
   check(schema["properties"], effective, "");
+}
+
+TEST(Config, ReadoutNodesFromSchema22) {
+  // REQ: SRS-CFG-017
+  const auto c = parse_config(R"({"schema_version": "2.2",
+      "source": {"type": "synthetic", "nodes": {"count": 3, "clock_offsets_ps": [0, -1000000, 1000000]}}})");
+  ASSERT_TRUE(c.has_value()) << format_errors(c.error());
+  EXPECT_EQ(c->source.nodes.count, 3U);
+  EXPECT_EQ(c->source.nodes.clock_offsets_ps,
+            (std::vector<std::int64_t>{0, -1'000'000, 1'000'000}));
+  // Without offsets every node's is 0; without nodes there is one.
+  const auto zero = parse_config(
+      R"({"schema_version": "2.2", "source": {"type": "synthetic", "nodes": {"count": 4}}})");
+  ASSERT_TRUE(zero.has_value());
+  EXPECT_EQ(zero->source.nodes.clock_offsets_ps, (std::vector<std::int64_t>(4, 0)));
+  const auto one = parse_config(R"({"schema_version": "2.2", "source": {"type": "synthetic"}})");
+  ASSERT_TRUE(one.has_value());
+  EXPECT_EQ(one->source.nodes, NodeSettings{});
+  // A configuration with nodes is written back with them and read back the same.
+  const auto back = config_from_json(to_json(*c));
+  ASSERT_TRUE(back.has_value());
+  EXPECT_EQ(back->source.nodes, c->source.nodes);
+  // One node is written as before 2.2, with no nodes key.
+  EXPECT_FALSE(to_json(*one)["source"].contains("nodes"));
+}
+
+TEST(Config, ReadoutNodesAreRefusedOutOfRangeForUdpAndBefore22) {
+  // REQ: SRS-CFG-017
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.1", "source": {"type": "synthetic", "nodes": {"count": 2}}})"),
+      "/source/nodes", "2.2"));
+  EXPECT_TRUE(has(
+      errors_of(R"({"schema_version": "2.2", "source": {"type": "udp", "nodes": {"count": 2}}})"),
+      "/source/nodes", "only for source type"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.2", "source": {"type": "synthetic", "nodes": {"count": 9}}})"),
+      "/source/nodes/count", "between"));
+  EXPECT_TRUE(has(
+      errors_of(
+          R"({"schema_version": "2.2", "source": {"type": "synthetic", "nodes": {"count": 0}}})"),
+      "/source/nodes/count", "between"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2", "source": {"type": "synthetic",
+      "nodes": {"count": 2, "clock_offsets_ps": [0]}}})"),
+                  "/source/nodes/clock_offsets_ps", "one offset per node"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2", "source": {"type": "synthetic",
+      "nodes": {"count": 2, "clock_offsets_ps": [0, 1000001]}}})"),
+                  "/source/nodes/clock_offsets_ps/1", "between"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2", "source": {"type": "synthetic",
+      "nodes": {"count": 2, "clock_offsets_ps": [0, 1.5]}}})"),
+                  "/source/nodes/clock_offsets_ps/1", "integer"));
+  EXPECT_TRUE(
+      has(errors_of(
+              R"({"schema_version": "2.2", "source": {"type": "synthetic", "nodes": {"cnt": 2}}})"),
+          "/source/nodes/cnt", "unknown key"));
 }
 
 TEST(Config, UdpSource) {

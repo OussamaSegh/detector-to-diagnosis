@@ -22,6 +22,44 @@ using detail::ObjectReader;
 using detail::parse_version;
 
 constexpr double max_rate_hz = 1e9;
+constexpr std::size_t max_nodes = 8;
+constexpr std::int64_t max_clock_offset_ps = 1'000'000;  // 1 us either way
+
+// [snippet:nodes]
+// /source/nodes (schema 2.2, CR-0037): the count of readout nodes of the
+// synthetic source and one clock offset per node; without offsets, every
+// node's is 0.
+void read_nodes(const json& n, const std::string& at, AcquisitionConfig& c, ConfigErrors& errors) {
+  if (c.schema_minor < 2) {
+    errors.push_back({at, "needs schema_version 2.2 or later"});
+  }
+  ObjectReader r{n, at, errors};
+  auto& nodes = c.source.nodes;
+  r.get("count", nodes.count, std::size_t{1}, max_nodes);
+  nodes.clock_offsets_ps.assign(nodes.count, 0);
+  if (const json* offsets = r.object("clock_offsets_ps")) {
+    const std::string oat = r.child("clock_offsets_ps");
+    if (!offsets->is_array() || offsets->size() != nodes.count) {
+      errors.push_back(
+          {oat, "must be an array with one offset per node (" + std::to_string(nodes.count) + ")"});
+    } else {
+      for (std::size_t i = 0; i < offsets->size(); ++i) {
+        const json& v = (*offsets)[i];
+        const std::string iat = oat + "/" + std::to_string(i);
+        if (!v.is_number_integer()) {
+          errors.push_back({iat, "must be an integer"});
+        } else if (const auto x = v.get<std::int64_t>();
+                   x < -max_clock_offset_ps || x > max_clock_offset_ps) {
+          errors.push_back({iat, "must be between -1000000 and 1000000"});
+        } else {
+          nodes.clock_offsets_ps[i] = x;
+        }
+      }
+    }
+  }
+  r.finish();
+}
+// [/snippet:nodes]
 
 }  // namespace
 
@@ -82,6 +120,9 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
       }
       ur.get("max_hold_us", udp.max_hold_us, std::int64_t{1}, std::int64_t{1'000'000});
       ur.finish();
+    }
+    if (const json* n = r.object("nodes")) {
+      read_nodes(*n, r.child("nodes"), c, errors);
     }
     r.finish();
   }
@@ -169,6 +210,10 @@ Expected<AcquisitionConfig, ConfigErrors> config_from_json(const json& doc) {
   if (c.sorter.energy_low_kev > c.sorter.energy_high_kev) {
     errors.push_back({"/sorter/energy_low_kev", "must not exceed /sorter/energy_high_kev"});
   }
+  if (c.source.type != "synthetic" && doc.is_object() && doc.contains("source") &&
+      doc["source"].is_object() && doc["source"].contains("nodes")) {
+    errors.push_back({"/source/nodes", "is supported only for source type \"synthetic\""});
+  }
   if (c.source.type == "udp" && c.source.stop_after_s > 0) {
     // stop_after_s is turned into a word count from rate_hz, which a network
     // source does not have: stop a UDP run with the stop command.
@@ -194,7 +239,7 @@ Expected<AcquisitionConfig, ConfigErrors> parse_config(std::string_view json_tex
 }
 
 json to_json(const AcquisitionConfig& c) {
-  return json{
+  json j{
       {"schema_version", std::to_string(c.schema_major) + "." + std::to_string(c.schema_minor)},
       {"description", c.description},
       {"source",
@@ -247,6 +292,13 @@ json to_json(const AcquisitionConfig& c) {
         {"significance", c.timing_monitor.significance}}},
       {"rt_profile_file", c.rt_profile_file},
   };
+  // Only when it is not the default of one node, so that a configuration
+  // without nodes is written as before 2.2 and read back by any 2.x reader.
+  if (c.source.nodes != NodeSettings{}) {
+    j["source"]["nodes"] = {{"count", c.source.nodes.count},
+                            {"clock_offsets_ps", c.source.nodes.clock_offsets_ps}};
+  }
+  return j;
 }
 
 std::string format_errors(const ConfigErrors& errors) {

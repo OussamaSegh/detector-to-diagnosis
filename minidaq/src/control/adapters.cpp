@@ -2,6 +2,8 @@
 #include "minidaq/control/adapters.hpp"
 
 #include <cstdio>
+#include <string>
+#include <vector>
 
 #include "minidaq/control/listmode_sink.hpp"
 #include "minidaq/control/udp_detector.hpp"
@@ -36,12 +38,26 @@ sim::SyntheticConfig synthetic(const config::SourceSettings& s) {
   return c;
 }
 
-SimulatedDetector::SimulatedDetector(const config::SourceSettings& s) : source_{synthetic(s), s.rate_hz} {
+// The readout nodes of schema 2.2 (CR-0037); one node bypasses the merge.
+sim::NodeLayout layout(const config::NodeSettings& n) {
+  std::vector<Picoseconds> offsets;
+  offsets.reserve(n.clock_offsets_ps.size());
+  for (const std::int64_t o : n.clock_offsets_ps) {
+    offsets.emplace_back(o);
+  }
+  return sim::NodeLayout::contiguous(n.count, std::move(offsets));
+}
+
+SimulatedDetector::SimulatedDetector(const config::SourceSettings& s)
+    : source_{synthetic(s), s.rate_hz, layout(s.nodes)} {
   char buf[96];
   // snprintf truncates rather than overflows; a negative result is an encoding error.
   const int n = std::snprintf(buf, sizeof buf, "simulated detector, %.3g singles/s, seed %llu", s.rate_hz,
                               static_cast<unsigned long long>(s.seed));
   description_ = n >= 0 ? buf : "simulated detector";
+  if (s.nodes.count > 1) {
+    description_ += ", " + std::to_string(s.nodes.count) + " readout nodes merged";
+  }
 }
 }  // namespace
 #endif

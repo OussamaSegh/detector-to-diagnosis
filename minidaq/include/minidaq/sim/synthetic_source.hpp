@@ -28,9 +28,14 @@ class SyntheticSource {
   explicit SyntheticSource(SyntheticConfig cfg);
   // Fills `out` with packed words; returns the number written (always out.size()).
   std::size_t generate(std::span<std::uint64_t> out);
+  // Fills `out` with the same singles, unpacked: the stream that generate()
+  // would encode (CR-0037, the readout nodes divide it before it is packed).
+  void generate(std::span<Single> out);
   [[nodiscard]] std::uint64_t generated() const noexcept { return generated_; }
 
  private:
+  Single next();
+
   SyntheticConfig cfg_;
   std::mt19937_64 rng_;
   std::exponential_distribution<double> gap_;

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/minidaq/acquisition-config-2.1.schema.json",
-  "title": "MiniDAQ acquisition configuration, schema version 2.1",
-  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). Version 2.1 (CR-0031) adds timing_monitor. Version 2.0 (CR-0030) renamed and moved fields of 1.4 and made the source required; tools/migrate_config.py converts a 1.x file and docs/migration-2.0.md lists every change. The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
+  "$id": "https://example.invalid/minidaq/acquisition-config-2.2.schema.json",
+  "title": "MiniDAQ acquisition configuration, schema version 2.2",
+  "description": "Documents the format that minidaq::config::parse_config reads (Chapter 6). Version 2.2 (CR-0037) adds source.nodes. Version 2.1 (CR-0031) adds timing_monitor. Version 2.0 (CR-0030) renamed and moved fields of 1.4 and made the source required; tools/migrate_config.py converts a 1.x file and docs/migration-2.0.md lists every change. The C++ reader is the authority; test_config.cpp checks that this schema and the reader agree on keys, enums and ranges. Comments are allowed in configuration files but not by strict JSON tools.",
   "type": "object",
   "required": ["schema_version", "source"],
   "additionalProperties": false,
@@ -33,6 +33,18 @@
         "rate_hz": { "description": "synthetic only", "type": "number", "minimum": 1, "maximum": 1e9 },
         "pair_fraction": { "description": "synthetic only", "type": "number", "minimum": 0, "maximum": 1 },
         "seed": { "description": "synthetic only", "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+        "nodes": {
+          "description": "synthetic only, schema 2.2 or later: the scanner's blocks read out by several nodes in contiguous ranges, each with its own clock offset, and merged before the sort stage (CR-0037). One node, the default, bypasses the merge. clock_offsets_ps, when given, has one entry per node; without it every offset is 0.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "count": { "type": "integer", "minimum": 1, "maximum": 8 },
+            "clock_offsets_ps": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": -1000000, "maximum": 1000000 }
+            }
+          }
+        },
         "udp": {
           "description": "udp only: the MDQ-R1 readout link of Chapter 9",
           "type": "object",
