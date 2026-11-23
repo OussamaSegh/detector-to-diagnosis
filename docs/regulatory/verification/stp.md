@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 6 (MiniDAQ 2.1.0-dev). Status: draft, to be approved with release 2.1.0. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 6 (MiniDAQ 2.1.0). Status: approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -138,4 +138,4 @@ release and per change of the readout, not per commit.
 | 3 | The product build's system tests (CR-0029). |
 | 4 | CI runs seven presets, `product` among them; the libraries under test. The table lists every system test file: the time base cases of Readout (CR-0031), start-up files and signed runs of Startup, and Hardware, Diagnostics and Platform, which earlier versions left out (review of 2.0.0). |
 | 5 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 4. |
-| 6 | The release soak lasts 100 minutes (CR-0035). |
+| 6 | The release soak lasts 100 minutes (CR-0035). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |

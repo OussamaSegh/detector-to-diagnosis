@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 22 (MiniDAQ 2.1.0-dev). Status: draft, to be approved with release 2.1.0. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
+Version 22 (MiniDAQ 2.1.0). Status: approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -285,4 +285,4 @@ assessment of Chapter 13.
 | 19 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 18. |
 | 20 | Review of release 2.0.0: section 8, when a failed check of the release checks may run again, and the tool that enforces it (MDQ-PR-077). |
 | 21 | Approved for release 2.0.1 by the author (software lead), in writing on 2026-11-16; the content is that of version 20. |
-| 22 | The release soak lasts 100 minutes (CR-0035, MDQ-PR-064). Section 5: the whole unit suite before a push, and the CI result read after it (CAPA-0006, MDQ-PR-085). |
+| 22 | The release soak lasts 100 minutes (CR-0035, MDQ-PR-064). Section 5: the whole unit suite before a push, and the CI result read after it (CAPA-0006, MDQ-PR-085). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |

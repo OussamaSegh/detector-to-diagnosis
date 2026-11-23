@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 38 (MiniDAQ 2.1.0-dev). Status: draft, to be approved with release 2.1.0. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 38 (MiniDAQ 2.1.0). Status: approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -570,4 +570,4 @@ shipped programs.
 | 35 | Time of flight in the reconstruction tool (CR-0032, ADR 0038, Chapter 39): SRS-REC-007 and SRS-REC-008 added. |
 | 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |
 | 37 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 36. |
-| 38 | The projector's output array (CR-0034, Chapter 29): SRS-REC-009 added. The soak of SRS-SYS-003 and SRS-PERF-022 lasts 100 minutes (CR-0035); the requirements' text does not change. |
+| 38 | The projector's output array (CR-0034, Chapter 29): SRS-REC-009 added. The soak of SRS-SYS-003 and SRS-PERF-022 lasts 100 minutes (CR-0035); the requirements' text does not change. Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
