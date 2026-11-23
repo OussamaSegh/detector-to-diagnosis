@@ -83,7 +83,9 @@ py::array writable_out(const py::object& obj, const std::vector<py::ssize_t>& sh
     throw py::type_error("out must be a NumPy array");
   }
   auto out = py::reinterpret_borrow<py::array>(obj);
-  if (!out.dtype().is(py::dtype::of<double>())) {
+  // Equal to float64 in native byte order, not the same dtype object: an unpickled float64
+  // array has a dtype object of its own (MDQ-PR-088).
+  if (!py::isinstance<py::array_t<double>>(out)) {
     throw py::value_error("out must be float64, got " + std::string(py::str(out.dtype())));
   }
   if ((out.flags() & py::array::c_style) == 0) {

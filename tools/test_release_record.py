@@ -91,6 +91,28 @@ class ReleaseRecord(unittest.TestCase):
         errors += [line for line in text.splitlines() if rr.TODO in line]
         self.assertEqual(errors, [])
 
+    def test_a_table_row_that_differs_from_the_evidence_is_refused(self):
+        """MDQ-PR-089: the 2.1.0 record's table said 30 minutes next to a soak of 100."""
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            ev = root / "measurements/release-9.9.0"
+            ev.mkdir(parents=True)
+            (ev / "commit.txt").write_text("commit " + "a" * 40 + "\n")
+            (ev / "release-checks.txt").write_text(CHECKS + "pass  soak, 100 minutes at 1 M singles/s\n")
+            record = root / "9.9.0.md"
+            rows = rr.table_rows(root, "9.9.0")
+            self.assertIn("| soak, 100 minutes | pass | `../../measurements/release-9.9.0/soak.txt` |", rows)
+            self.assertEqual(rr.table_drift(root, record, "\n".join(rows)), [])
+            stale = "\n".join(rows).replace("soak, 100 minutes", "soak, 30 minutes")
+            self.assertEqual(len(rr.table_drift(root, record, stale)), 1)
+            wrong = "\n".join(rows).replace("| fuzzing | FAIL |", "| fuzzing | pass |")
+            self.assertEqual(len(rr.table_drift(root, record, wrong)), 1)
+
+    def test_the_newest_record_has_every_row_its_evidence_gives(self):
+        newest = max((p for p in (ROOT / "docs/regulatory/releases").glob("*.md")
+                      if p.stem[0].isdigit()), key=lambda p: tuple(int(x) for x in p.stem.split(".")))
+        self.assertEqual(rr.table_drift(ROOT, newest, newest.read_text()), [])
+
     def test_the_current_rules_ask_for_the_current_presets(self):
         spec = rr.exercise_check(ROOT).__globals__
         for p in rr.PRESETS:

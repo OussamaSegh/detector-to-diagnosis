@@ -8,6 +8,19 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed (review of release 2.1.0)
+
+- MDQ-PR-088: the C++ projector's `out` was compared with float64 by the identity of its dtype
+  object, so `forward` and `back` refused a valid float64 output that was unpickled or otherwise
+  carried a dtype object of its own ("out must be float64, got float64"). The check now accepts
+  any array whose dtype is equivalent to float64 in native byte order, and still refuses a
+  big-endian one; Exercise 29.4's solution and hint are corrected the same way.
+- MDQ-PR-089: the 2.1.0 record's table named a soak of 30 minutes next to evidence of 100. The
+  row is corrected with a note, and `tools/release_record.py check` now refuses a record whose
+  table lacks a row, as written, that its evidence gives.
+- MDQ-PR-006 affects 2.1.0 too (`affects`, known anomalies); MDQ-PR-064's description no longer
+  repeats its paragraph of 2026-11-21.
+
 ## [2.1.0] - 2026-11-23
 
 The first minor release since 2.0. Release notes: nothing breaks. The C++ projector's `forward`

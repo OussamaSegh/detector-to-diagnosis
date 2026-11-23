@@ -10,6 +10,7 @@ since the build that registers it also builds the module.
 
     MINIDAQ_RECON_CPP=build/debug/recon tools/test_recon_cpp.py
 """
+import pickle
 import sys
 import unittest
 
@@ -175,6 +176,10 @@ class TheBoundary(unittest.TestCase):
         m.back(sino, out=rows[:32])
         self.assertTrue(np.array_equal(rows[:32], image))
         self.assertFalse(rows[32:].any())
+        # float64 whatever its dtype object: an unpickled array has one of its own (MDQ-PR-088)
+        unpickled = pickle.loads(pickle.dumps(np.zeros(self.s.shape)))
+        self.assertIs(m.forward(x, out=unpickled), unpickled)
+        self.assertTrue(np.array_equal(unpickled, sino))
 
     def test_refuses_an_output_it_cannot_write_in_place(self):
         # REQ: SRS-REC-009
@@ -185,7 +190,8 @@ class TheBoundary(unittest.TestCase):
                             (np.zeros((self.s.shape[0], 2 * self.s.shape[1]))[:, ::2],
                              "C-contiguous"),
                             (np.zeros((self.s.shape[0], self.s.shape[1] + 1)), "got"),
-                            (np.zeros(self.s.size), "got")):
+                            (np.zeros(self.s.size), "got"),
+                            (np.zeros(self.s.shape, dtype=">f8"), "float64")):
             keep = out.copy()
             with self.assertRaisesRegex(ValueError, reason):
                 m.forward(x, out=out)

@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: MIT
 """Acceptance tests of Exercise 29.4."""
+import pickle
 import threading
 import time
 import unittest
@@ -41,12 +42,20 @@ class InPlace(unittest.TestCase):
         scatter.scatter_add(self.values.astype(np.float32), self.index.astype(np.int32), out)
         self.assertTrue(np.allclose(out, self.want, rtol=1e-6))
 
+    def test_a_float64_output_with_a_dtype_object_of_its_own_is_written(self):
+        # An unpickled array is float64 with a dtype object that is not numpy's own float64
+        # (MDQ-PR-088): it is what the C++ writes, so it is accepted.
+        out = pickle.loads(pickle.dumps(np.zeros(50)))
+        scatter.scatter_add(self.values, self.index, out)
+        self.assertTrue(np.allclose(out, self.want))
+
     def test_an_output_it_cannot_write_is_refused(self):
         # Each of these would be converted to a new array: the sums would go there, and the
         # caller's array would stay as it was, without an error.
         for out, reason in ((np.zeros(50, dtype=np.float32), "float64"),
                             (np.zeros((5, 10), order="F"), "C-contiguous"),
-                            (np.zeros(100)[::2], "C-contiguous")):
+                            (np.zeros(100)[::2], "C-contiguous"),
+                            (np.zeros(50, dtype=">f8"), "float64")):
             keep = out.copy()
             with self.assertRaisesRegex(ValueError, reason):
                 scatter.scatter_add(self.values, self.index, out)
