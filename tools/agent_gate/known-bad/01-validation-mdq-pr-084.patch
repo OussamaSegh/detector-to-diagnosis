@@ -1,0 +1,43 @@
+diff --git a/tools/dicom/encode.py b/tools/dicom/encode.py
+index 6499fa9..97ad02f 100644
+--- a/tools/dicom/encode.py
++++ b/tools/dicom/encode.py
+@@ -102,10 +102,10 @@ def _text(tag, vr, value, encoding):
+         v = str(v)
+         if vr not in SINGLE_VALUED and "\\" in v:
+             raise DicomError(f"{dictionary.name(tag)}: a backslash inside one value")
+-        if vr == "CS" and not CS_CHARS.fullmatch(v):
++        if vr == "CS" and not CS_CHARS.match(v):
+             raise DicomError(f"{dictionary.name(tag)}: {v!r} is not a CS "
+                              "(capitals, digits, space, underscore)")
+-        if vr == "UI" and not UI_CHARS.fullmatch(v):
++        if vr == "UI" and not UI_CHARS.match(v):
+             raise DicomError(f"{dictionary.name(tag)}: {v!r} is not a UID")
+         try:
+             b = v.encode(encoding if vr in CHARSET_VRS else "ascii")
+diff --git a/tools/dicom/uid.py b/tools/dicom/uid.py
+index 2a16078..805e7a4 100644
+--- a/tools/dicom/uid.py
++++ b/tools/dicom/uid.py
+@@ -27,7 +27,7 @@ APPLICATION_CONTEXT = "1.2.840.10008.3.1.1.1"
+ 
+ def valid(u):
+     """True if u is a syntactically valid UID."""
+-    return isinstance(u, str) and 0 < len(u) <= 64 and SYNTAX.fullmatch(u) is not None
++    return isinstance(u, str) and 0 < len(u) <= 64 and bool(SYNTAX.match(u))
+ 
+ 
+ def random_uid():
+diff --git a/tools/make_update.py b/tools/make_update.py
+index c1c7ac7..d27c30a 100644
+--- a/tools/make_update.py
++++ b/tools/make_update.py
+@@ -88,7 +88,7 @@ def main(argv=None):
+     ap.add_argument("--key", required=True, type=pathlib.Path, help="Ed25519 private key (PEM)")
+     ap.add_argument("--out", required=True, type=pathlib.Path)
+     args = ap.parse_args(argv)
+-    if not VERSION.fullmatch(args.version):
++    if not VERSION.match(args.version):
+         raise SystemExit(f"make_update: version {args.version!r} is not MAJOR.MINOR.PATCH[-PRE]")
+     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", "0"))
+ 

@@ -191,6 +191,9 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME tools.coverage COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_coverage_tool.py)
   set_tests_properties(docs.package_versions tools.post_release tools.release_record tools.coverage
                        PROPERTIES LABELS "unit")
+  # Roadmap 2.2.0, Theme P1: the agent gate rejects each change of its known-bad library.
+  add_test(NAME tools.agent_gate COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_agent_gate.py)
+  set_tests_properties(tools.agent_gate PROPERTIES LABELS "unit")
   # Chapter 32: every configuration has its build, test and workflow presets.
   add_test(NAME docs.presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/check_presets.py ${PROJECT_SOURCE_DIR})
   add_test(NAME tools.check_presets COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/test_check_presets.py)

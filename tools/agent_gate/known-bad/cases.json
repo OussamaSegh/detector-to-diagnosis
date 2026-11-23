@@ -1,0 +1,90 @@
+{
+ "base": "8b1eeabb7d0e18ce804f42a7388623b817e53c03",
+ "comment": "Each patch applies to base; the gate must FAIL each with its check and PASS the good one (tools/test_agent_gate.py).",
+ "cases": [
+  {
+   "id": "01-validation-mdq-pr-084",
+   "source": "MDQ-PR-084",
+   "defect": "Four validations of a UID, a code string and a version anchored with ^...$ and matched with .match(): a value with a final newline passes.",
+   "check": "validation",
+   "level": "fast"
+  },
+  {
+   "id": "02-test-without-requirement",
+   "source": "SDP section 6 (traceability)",
+   "defect": "A new unit test that names no requirement: what it verifies is not on the record.",
+   "check": "tags",
+   "level": "fast"
+  },
+  {
+   "id": "03-product-change-without-test",
+   "source": "MDQ-PR-014 (a change nothing measured)",
+   "defect": "The sorter's window check accepts a window of zero, and no test changes with it.",
+   "check": "tests",
+   "level": "fast"
+  },
+  {
+   "id": "04-test-loses-its-tag",
+   "source": "Chapter 14, the trace matrix",
+   "defect": "A test loses the tag of the only requirement it verifies.",
+   "check": "trace",
+   "level": "fast"
+  },
+  {
+   "id": "05-untestable-requirement",
+   "source": "Chapter 14, requirements in testable form",
+   "defect": "A requirement that cannot be verified: 'The sorter shall be fast.'",
+   "check": "requirements",
+   "level": "fast"
+  },
+  {
+   "id": "06-document-without-version",
+   "source": "ISO 13485 4.2.4 (internal audit O-2)",
+   "defect": "The system test plan's text changes and its version does not.",
+   "check": "documents",
+   "level": "fast"
+  },
+  {
+   "id": "07-test-sleeps",
+   "source": "CAPA-0001 (timing-dependent tests)",
+   "defect": "A test that sleeps without saying what it waits for.",
+   "check": "waits",
+   "level": "fast"
+  },
+  {
+   "id": "08-core-includes-control",
+   "source": "Chapter 6, the layers",
+   "defect": "The core includes the application layer.",
+   "check": "layers",
+   "level": "fast"
+  },
+  {
+   "id": "09-unformatted-test",
+   "source": "SRS-BLD-004, ADR 0027",
+   "defect": "A changed line of a test that clang-format would rewrite.",
+   "check": "format",
+   "level": "fast"
+  },
+  {
+   "id": "10-weakened-check",
+   "source": "Theme P1 (a change to the gate's own checks)",
+   "defect": "The trace matrix check returns no error whatever it finds, which makes every later trace failure pass.",
+   "check": "gate",
+   "level": "fast"
+  },
+  {
+   "id": "11-crc-reads-a-byte-twice",
+   "source": "Chapter 20, the unit-test gate",
+   "defect": "The slicing-by-8 CRC reads byte 6 twice instead of bytes 6 and 7; a test changes too, so only the tests themselves can catch it.",
+   "check": "unit",
+   "level": "full"
+  },
+  {
+   "id": "good-tagged-test",
+   "source": null,
+   "defect": "A new unit test, formatted, that names its requirement.",
+   "check": null,
+   "level": "fast"
+  }
+ ]
+}

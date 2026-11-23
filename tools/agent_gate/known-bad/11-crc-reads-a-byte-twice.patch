@@ -1,0 +1,22 @@
+diff --git a/minidaq/src/core/crc32.cpp b/minidaq/src/core/crc32.cpp
+index 603fa3b..c5b41a7 100644
+--- a/minidaq/src/core/crc32.cpp
++++ b/minidaq/src/core/crc32.cpp
+@@ -24,7 +24,7 @@ std::uint32_t crc32_update(std::uint32_t crc, std::span<const std::byte> data) n
+                                   (byte_at(data, i + 2) << 16U) | (byte_at(data, i + 3) << 24U));
+     c = t[7][lo & 0xFFU] ^ t[6][(lo >> 8U) & 0xFFU] ^ t[5][(lo >> 16U) & 0xFFU] ^ t[4][lo >> 24U] ^
+         t[3][byte_at(data, i + 4)] ^ t[2][byte_at(data, i + 5)] ^ t[1][byte_at(data, i + 6)] ^
+-        t[0][byte_at(data, i + 7)];
++        t[0][byte_at(data, i + 6)];
+   }
+   for (; i < data.size(); ++i) {
+     c = (c >> 8U) ^ t[0][(c ^ byte_at(data, i)) & 0xFFU];
+diff --git a/minidaq/tests/unit/test_crc32.cpp b/minidaq/tests/unit/test_crc32.cpp
+index 7a126bd..0fb4ece 100644
+--- a/minidaq/tests/unit/test_crc32.cpp
++++ b/minidaq/tests/unit/test_crc32.cpp
+@@ -105,3 +105,4 @@ TEST(Crc32, DetectsEveryBurstOfUpTo32Bits) {
+     }
+   }
+ }
++// A comment that changes the test file.

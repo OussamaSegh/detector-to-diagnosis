@@ -1,0 +1,13 @@
+diff --git a/minidaq/src/processing/coincidence_sorter.cpp b/minidaq/src/processing/coincidence_sorter.cpp
+index 2917a3b..e73d363 100644
+--- a/minidaq/src/processing/coincidence_sorter.cpp
++++ b/minidaq/src/processing/coincidence_sorter.cpp
+@@ -48,7 +48,7 @@ Expected<MultiplesPolicy, std::string> parse_multiples_policy(std::string_view s
+ }
+ 
+ Expected<SorterConfig, std::string> validate(const SorterConfig& c) {
+-  if (c.window <= Picoseconds{0} || c.window > max_window) {
++  if (c.window < Picoseconds{0} || c.window > max_window) {
+     return Unexpected<std::string>{std::string{"window must be in (0, 1 us]"}};
+   }
+   if (c.delay != Picoseconds{0} && (c.delay <= c.window || c.delay > max_delay)) {

@@ -355,6 +355,25 @@
         "measurements/ch40/trends.txt"
       ],
       "shown_to_fail": "Trends.test_a_report_counts_in_the_first_release_that_contains_its_record"
+    },
+    {
+      "id": "TL-51",
+      "name": "Agent gate (tools/agent_gate.py)",
+      "kind": "in-house",
+      "class": "T2",
+      "version": "the commit; Python 3.12 or later, git, clang-format (format check), CMake and CTest (--full)",
+      "use": "Judges a change before a person reviews it, however it was written: runs the project's own fast checks on the change (requirement tags of new tests, a test with each class B change, whole-value validation, trace, requirements, documents, waits, layers, format) and, with --full, the build, the unit tests and static analysis, and gives one verdict with a reason for each failure (roadmap 2.2.0, Theme P1). It never replaces the review (SRS-AI).",
+      "failure": "A bad change passes: a check that does not run, a reason lost, a change that weakens the gate judged by its own weakened copy. The reviewer trusts a PASS and misses the defect.",
+      "confidence": [
+        "tools/test_agent_gate.py applies each change of the known-bad library (tools/agent_gate/known-bad/, eleven changes taken from MiniDAQ's problem reports and rules) to its base commit in a scratch worktree and requires a FAIL from the check that the change's defect names; it requires a PASS on a known-good change.",
+        "The gate runs the checks of its own version on the change, and a change to any check it runs is reported for a person (check gate).",
+        "A person's review stays required; each escape found later becomes a new known-bad change (roadmap 2.2.0, section 6)."
+      ],
+      "evidence": [
+        "tools/test_agent_gate.py",
+        "tools/agent_gate/known-bad/cases.json"
+      ],
+      "shown_to_fail": "KnownBadLibrary.test_every_fast_known_bad_change_fails_its_own_check"
     }
   ]
 }

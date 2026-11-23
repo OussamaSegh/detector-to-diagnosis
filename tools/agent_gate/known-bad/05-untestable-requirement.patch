@@ -1,0 +1,12 @@
+diff --git a/docs/regulatory/srs.md b/docs/regulatory/srs.md
+index 8186c6b..076c191 100644
+--- a/docs/regulatory/srs.md
++++ b/docs/regulatory/srs.md
+@@ -105,6 +105,7 @@ a document of any manufacturer's quality management system and does not reproduc
+ | ID | Requirement | Item | Method |
+ |---|---|---|---|
+ | SRS-PROC-001 | The energy filter shall give the same result as the reference loop for every kernel and every batch size, including sizes that are not a multiple of the vector width. | processing | T |
++| SRS-SRT-999 | The sorter shall be fast. | sorter | T |
+ | SRS-SRT-001 | The coincidence sorter shall pair two singles whose time difference is less than or equal to the coincidence window, and report the earlier single first. | sorter | T |
+ | SRS-SRT-002 | The coincidence sorter shall support a fixed window, opened by the first single and not extended, and a window per single, as configured. | sorter | T |
+ | SRS-SRT-003 | The coincidence sorter shall resolve windows with more than two singles by the configured multiples policy: kill all, take all good pairs, take the good pair with the highest summed energy, or keep the good pair only if it is the only one. | sorter | T |

@@ -8,6 +8,28 @@ the patch version.
 
 ## [Unreleased]
 
+### Added (roadmap 2.2.0, Theme P1)
+
+- `tools/agent_gate.py` (TL-51): the gate a change passes before a person reviews it, however
+  it was written. Its fast checks (requirement tags of new tests, a test with each class B
+  change, whole-value validation, trace, requirements, documents, waits, layers, format) take
+  seconds; `--full` adds the build, the unit tests and static analysis. One verdict, with a
+  reason for each failure; a change to a check the gate runs is reported for a person.
+- The known-bad library (`tools/agent_gate/known-bad/`): eleven changes, each a patch against a
+  fixed commit with the defect it holds (MDQ-PR-084's validation among them), and one good
+  change. `tools.agent_gate` requires each bad change to fail its own check and the good one to
+  pass.
+
+### Fixed (roadmap 2.2.0, Theme R)
+
+- MDQ-PR-090: `tools/release_record.py check` judged every record by today's table. It now
+  reads the soak's length from the release's own evidence, and a test checks every record from
+  2.0.0 on against its own evidence. The release checks keep the list of untaken branches of the
+  class B files (`coverage/uncovered.txt`).
+- MDQ-PR-091: `docs.version` failed on the commit that lists a release's tag; it accepts the
+  release's version in that commit.
+- MDQ-PR-092: the 2.2.0 roadmap is listed in the design file.
+
 ### Fixed (review of release 2.1.0)
 
 - MDQ-PR-088: the C++ projector's `out` was compared with float64 by the identity of its dtype

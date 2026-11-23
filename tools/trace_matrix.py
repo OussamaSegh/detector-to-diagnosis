@@ -90,8 +90,8 @@ def scan(root):
         for p in sorted(base.rglob("*")):
             if p.suffix not in {".cpp", ".hpp", ".py"} or "__pycache__" in p.parts:
                 continue
-            if p.resolve() == pathlib.Path(__file__).resolve():
-                continue  # this file's docstring shows the tag syntax
+            if p.relative_to(root).as_posix() == "tools/trace_matrix.py":
+                continue  # this file's docstring shows the tag syntax, in any checkout it reads
             tags.extend(find_tags(p.relative_to(root).as_posix(), p.read_text(errors="replace")))
     return tags
 

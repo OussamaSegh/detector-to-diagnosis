@@ -1,0 +1,13 @@
+diff --git a/docs/regulatory/verification/stp.md b/docs/regulatory/verification/stp.md
+index 296e640..c40394b 100644
+--- a/docs/regulatory/verification/stp.md
++++ b/docs/regulatory/verification/stp.md
+@@ -2,7 +2,7 @@
+ 
+ Version 6 (MiniDAQ 2.1.0). Status: approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+ 
+-This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
++This plan, as changed, says how MiniDAQ is tested as a whole: the programs that ship, run together as an
+ operator runs them. It covers the topics that IEC 62304 expects of software integration and
+ system testing for a teaching project; it is not a document of any manufacturer's quality management
+ system and does not reproduce the standard. Unit verification is in the

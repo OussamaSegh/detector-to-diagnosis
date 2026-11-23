@@ -3,3 +3,5 @@
 measurements/** -whitespace
 # Fuzz seeds are raw bytes: no text diff, no line-ending or whitespace rules.
 fuzz/corpus/** binary
+# The agent gate's known-bad changes are patches: a blank context line is a single space.
+tools/agent_gate/known-bad/*.patch -whitespace

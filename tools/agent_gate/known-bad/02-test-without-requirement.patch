@@ -1,0 +1,16 @@
+diff --git a/minidaq/tests/unit/test_config.cpp b/minidaq/tests/unit/test_config.cpp
+index ae2ba6c..fac0fb7 100644
+--- a/minidaq/tests/unit/test_config.cpp
++++ b/minidaq/tests/unit/test_config.cpp
+@@ -34,6 +34,11 @@ std::string read(const std::string& path) {
+ }
+ }  // namespace
+ 
++TEST(Config, EmptySourceTypeIsRefused) {
++  const auto c = parse_config(R"({"schema_version": "2.1", "source": {"type": ""}})");
++  EXPECT_FALSE(c);
++}
++
+ TEST(Config, MinimalDocumentGetsDefaults) {
+   // REQ: SRS-CFG-001
+   const auto c = parse_config(R"({"schema_version": "2.1", "source": {"type": "synthetic"}})");

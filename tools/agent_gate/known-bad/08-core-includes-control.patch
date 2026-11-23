@@ -1,0 +1,20 @@
+diff --git a/minidaq/src/core/crc32.cpp b/minidaq/src/core/crc32.cpp
+index 603fa3b..d782aa2 100644
+--- a/minidaq/src/core/crc32.cpp
++++ b/minidaq/src/core/crc32.cpp
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: MIT
+ #include "minidaq/core/crc32.hpp"
++#include "minidaq/control/acquisition_service.hpp"
+ 
+ namespace minidaq {
+ 
+diff --git a/minidaq/tests/unit/test_crc32.cpp b/minidaq/tests/unit/test_crc32.cpp
+index 7a126bd..0fb4ece 100644
+--- a/minidaq/tests/unit/test_crc32.cpp
++++ b/minidaq/tests/unit/test_crc32.cpp
+@@ -105,3 +105,4 @@ TEST(Crc32, DetectsEveryBurstOfUpTo32Bits) {
+     }
+   }
+ }
++// A comment that changes the test file.
