@@ -8,7 +8,16 @@ the patch version.
 
 ## [Unreleased]
 
-### Added (2.1.0-dev)
+## [2.1.0] - 2026-11-23
+
+The first minor release since 2.0. Release notes: nothing breaks. The C++ projector's `forward`
+and `back` gain an optional `out` (CR-0034); every call without it behaves as before. The
+release soak lasts 100 minutes (CR-0035), which closes MDQ-PR-064. Open known anomaly:
+MDQ-PR-006, unchanged. Record: `docs/regulatory/releases/2.1.0.md`; evidence
+`measurements/release-2.1.0/` (checks on dae4498, all four parts, acceptance 9 of 9,
+reproducible).
+
+### Added
 
 - Exercise 26.4: a second energy line, the check that sees a wrong saturation energy.
 - Exercise 27.4: the kind of dead time, and its tau, from a decaying source.
@@ -41,7 +50,7 @@ the patch version.
   quotes the measured costs; one throw in a thousand singles is a quarter of the budget, not
   most of it.
 
-### Changed (2.1.0-dev)
+### Changed
 
 - The book's top and bottom margins are 0.7 in, not 0.85 (roadmap 2.1.0, Theme G): 784 pages
   instead of 819, 45 pages of room under KDP's 828, the same line length
@@ -49,10 +58,14 @@ the patch version.
 - A figure after a long table no longer runs off the page (longtable forgot a top float's room);
   `book/build.sh` now fails a PDF with content taller than the page.
 
-- VERSION 2.1.0-dev. SOUP list v31 (draft): the known-anomaly review for 2.1, with no change to
-  any item. `release/2.0` waits for the author's approval of the branch (roadmap 2.1.0, section 4).
+- Approved by the author for 2.1.0, in writing: SDP v22 (section 5, before and after a push,
+  CAPA-0006), SRS v38, SOUP list v31 (the review of 2026-11-23: eight OpenSSL findings, none in
+  a function MiniDAQ uses), system test plan v6 and coding standard v11 (rule 3.6, validate with
+  `fullmatch`). `release/2.0` waits for the author's approval of the branch (roadmap 2.1.0,
+  section 4).
+- CAPA-0005 closed as effective: `fuzz_documents` ran 600 s in the release checks without a crash.
 
-### Fixed (2.1.0-dev)
+### Fixed
 
 - MDQ-PR-064 closed by CR-0035: the release soak lasts 100 minutes, so ACC-04's share of 99% is
   judged over 600 intervals, not 180. Two measured soaks showed the peaks are rare (2 of 1,740
@@ -61,6 +74,13 @@ the patch version.
   under the file's current name; it restarted the file's history at the rename.
 - MDQ-PR-084: a UID, a code string or an update's version ending in a newline passed validation
   (`$` matches before a final newline); the four checks use `fullmatch`. Safety relevant: RC-47.
+- MDQ-PR-085: CI on main was red from 2026-11-17 to 2026-11-22 (Exercise 29.4's test lacked the
+  tags of `tests.waits`, and eight OpenSSL findings had no triage decision) and no record noticed
+  it; fixed, and CAPA-0006 adds the rule (internal audit 2026-11-23, N-1).
+- MDQ-PR-086: Exercise 29.4's test of the GIL tries the call up to five times; one call could
+  fail a correct solution on a loaded machine.
+- MDQ-PR-087: the release record's skeleton named the soak as 30 minutes; it says 100, and a
+  test reads the length from `tools/release_checks.sh`.
 
 ### Fixed (review of release 2.0.1)
 

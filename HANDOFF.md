@@ -5,7 +5,19 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-17: **2.1.0-dev has started** (`docs/ROADMAP-2.1.0.md`). Release 2.0.1 is
+Last updated: 2026-11-23: **release 2.1.0 is made** (record `docs/regulatory/releases/2.1.0.md`,
+evidence `measurements/release-2.1.0/`; checks on dae4498, all four parts, acceptance 9 of 9,
+reproducible). The author approved SDP v22, SRS v38, SOUP v31, STP v6 and coding standard v11
+in writing. CAPA-0005 closed as effective; CAPA-0006 (read CI after every push, the whole unit
+suite before it) is checked at 2.2.0. MDQ-PR-064 closed by CR-0035; MDQ-PR-085 to MDQ-PR-087
+fixed; next free MDQ-PR-088, CAPA-0007, CR-0036. Next: CI green on the release commit, tag
+book-v2.1.0 via `.github/tags.txt`, packages in the project files (neurolf-book/v2.1.0/),
+`tools/post_release.py` (2.2.0-dev), the Opus review of 2.1.0, then `docs/ROADMAP-2.2.0.md`
+written before 2.2's work starts. `release/2.0` still waits for the author's approval of the
+push. A release check run longer than two hours is stopped by the session's limit: run
+`tools/release_checks.sh OUT 600 resume` again with the same OUT.
+
+Earlier, 2026-11-17: **2.1.0-dev has started** (`docs/ROADMAP-2.1.0.md`). Release 2.0.1 is
 out (tag book-v2.0.1 on 5bfae42) and its independent review is merged (PR #20, 0925bf8:
 MDQ-PR-081, MDQ-PR-082; next free MDQ-PR-083). SOUP list v31 is a draft with the review for 2.1,
 to be approved by the author for release 2.1.0 (the auto-mode classifier refuses approvals
