@@ -90,15 +90,15 @@ class InPlace(unittest.TestCase):
             while not done.is_set():
                 ticks += 1
                 if ticks % 100 == 0:
-                    stamps.append(time.perf_counter())
+                    stamps.append(time.perf_counter())  # clock: measure (when the thread ran)
 
-        worker = threading.Thread(target=count)
+        worker = threading.Thread(target=count)  # threads: joined
         worker.start()
         running.wait()
-        time.sleep(0.01)
-        t0 = time.perf_counter()
+        time.sleep(0.01)  # sleep: minimum (the counter is running)
+        t0 = time.perf_counter()  # clock: measure
         scatter.scatter_add(values, index, out)
-        t1 = time.perf_counter()
+        t1 = time.perf_counter()  # clock: measure
         done.set()
         worker.join()
         self.assertEqual(out[0], n)
