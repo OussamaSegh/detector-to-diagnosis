@@ -1950,6 +1950,33 @@
         "category": "process",
         "escape": "The new file was staged after the suite ran; nothing ran the suite on the commit itself before the push."
       }
+    },
+    {
+      "id": "MDQ-PR-093",
+      "title": "tools.agent_gate fails on CI, where clang-format is installed and git-clang-format is not",
+      "found": "2026-11-23, the CI result of 6fe8a40 (Theme P1), read before the next push (CAPA-0006)",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "CAPA-0006",
+      "description": "The test of the agent gate skipped the known-bad change of the format check when clang-format was not on the path. The format check (tools/check_format.py) needs git-clang-format too, and is skipped without it. The build-test jobs install clang-format but not git-clang-format on the path, so the gate skipped the check, gave PASS for the unformatted change, and the test, which had not skipped, failed in every build-test job of ci on main.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A test of a development tool; the gate reported the format check as skipped, as it should, and the programs did not change."
+      },
+      "resolution": {
+        "change": "The test skips a known-bad change when the gate itself reports that change's check as skipped, instead of guessing from the path which tools the check needs.",
+        "verification": "tools.agent_gate passes with clang-format and git-clang-format, and skips case 09 with neither (a run with a path that holds only python3 and git)."
+      },
+      "root_cause": {
+        "whys": [
+          "The test decided by itself whether the format check could run, from one of the two programs the check needs.",
+          "The machine the test was written on has both programs, as does the format job of CI; the build-test jobs have one."
+        ],
+        "cause": "A test that duplicated, incompletely, the condition under which the tool it tests skips a check.",
+        "category": "test",
+        "escape": "The suite ran only where both programs are installed; no local run had clang-format without git-clang-format."
+      }
     }
   ]
 }

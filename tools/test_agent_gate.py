@@ -39,7 +39,6 @@ class KnownBadLibrary(unittest.TestCase):
         r = git(ROOT, "worktree", "add", "--detach", str(cls.wt), cls.spec["base"])
         if r.returncode != 0:
             raise unittest.SkipTest(f"no worktree: {r.stderr.strip()}")
-        cls.has_format = shutil.which("clang-format") is not None
 
     @classmethod
     def tearDownClass(cls):
@@ -69,9 +68,9 @@ class KnownBadLibrary(unittest.TestCase):
             if not case["check"] or case["level"] != "fast":
                 continue
             with self.subTest(case=case["id"]):
-                if case["check"] == "format" and not self.has_format:
-                    self.skipTest("clang-format is not installed")
                 results, verdict = self.judged(case)
+                if results[case["check"]] == "skipped":  # format: clang-format or
+                    self.skipTest(f"{case['check']} is skipped here")  # git-clang-format missing
                 self.assertEqual(verdict, "FAIL")
                 self.assertEqual(results[case["check"]], "FAIL", results)
 

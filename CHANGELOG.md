@@ -29,6 +29,8 @@ the patch version.
 - MDQ-PR-091: `docs.version` failed on the commit that lists a release's tag; it accepts the
   release's version in that commit.
 - MDQ-PR-092: the 2.2.0 roadmap is listed in the design file.
+- MDQ-PR-093: `tools.agent_gate` failed on CI, where clang-format is installed without
+  git-clang-format; the test now skips a case whose check the gate itself reports as skipped.
 
 ### Fixed (review of release 2.1.0)
 
