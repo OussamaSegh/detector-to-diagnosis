@@ -1729,6 +1729,34 @@
         "category": "code",
         "escape": "No test with whitespace at the end of a value."
       }
+    },
+    {
+      "id": "MDQ-PR-085",
+      "title": "The CI failed on main for six days, unnoticed, while commits were pushed",
+      "found": "2026-11-23, internal audit before release 2.1.0 (the CI runs of main since 2026-11-17)",
+      "item": "process",
+      "status": "closed",
+      "affects": [],
+      "capa": "CAPA-0006",
+      "description": "Every CI run on main from 9a92709 (2026-11-17, Exercise 29.4) to 13bfdb3 (2026-11-22), about 30 commits, failed: tests.waits found an untagged thread start, sleep and clock reads in Exercise 29.4's test, which seven build-test jobs run, and from 2026-11-18 the vulnerability-scan job found eight new libssl3t64 CVEs without a triage decision. Each commit was pushed after a subset of the tests (ctest -R with the tests of the change) passed locally, and no one read the CI's result before the next push. No release was made from a red commit.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "The test's tags and the triage decisions are process evidence; no product code was wrong, and the eight CVEs are in OpenSSL features MiniDAQ does not use (SOUP list review of 2026-11-23). A release would have been stopped by SDP section 8, which tags only a green commit."
+      },
+      "resolution": {
+        "change": "6162e1e tags the test's waits and adds the eight triage decisions. CAPA-0006: SDP version 22 asks for the whole unit suite (ctest -L unit) before pushing a change to a test or a tool, and for the CI result of the last pushed commit to be read before the next push or within the day, a red result getting a problem report the same day.",
+        "verification": "tests.waits and the ch29/e4 tests pass locally; the CI run on 6162e1e (vulnerability-scan and the build-test jobs)."
+      },
+      "root_cause": {
+        "whys": [
+          "Two checks that run only in CI, or only in the full suite, failed and nothing reported it to the developer.",
+          "The developer ran only the tests named for each change and pushed without reading the CI result of the previous push.",
+          "The SDP says when CI must be green (before a tag) but not when its result must be read."
+        ],
+        "cause": "No rule said when a pushed commit's CI result is read, and the local check before a push was a subset of the suite.",
+        "category": "process",
+        "escape": "SDP section 8 checks CI only at the release commit; the audit before the release is where it was found."
+      }
     }
   ]
 }

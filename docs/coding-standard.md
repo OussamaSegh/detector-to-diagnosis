@@ -1,6 +1,6 @@
 # MiniDAQ coding standard
 
-Version 10 (MiniDAQ 2.0.0-dev). Status: approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 11 (MiniDAQ 2.1.0-dev). Status: draft, to be approved with release 2.1.0. Version 10 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 A coding standard is useful when each rule has a reason and a machine checks
 it wherever a machine can. Every rule below says why it exists and what
@@ -82,6 +82,11 @@ state): a person, a disk or another version may have changed it (CAPA-0005).
    (CAPA-0003). *Enforced:* test `ControlProtocol.EveryFieldOfEveryTypeIsAnswered`
    (every field of a request with every JSON type; review adds each new
    field to it); fuzz targets.
+6. A value is validated whole: its pattern must match the entire text
+   (`std::regex_match`, Python `re.fullmatch`), never a search anchored with
+   `^` and `$`, because Python's `$` also matches before a final newline
+   (MDQ-PR-084). *Enforced:* review; tests that pass each validated value with
+   a trailing newline (`tools/test_dicom.py`, `tools/test_make_update.py`).
 
 ## 4. Resources and types
 
@@ -165,3 +170,4 @@ must report nothing before a change is merged.
 | 8 | Rule 1: C++23, and when `std::unreachable` may not be used (CR-0028, ADR 0035). |
 | 9 | Rule 3: a file MiniDAQ wrote earlier is untrusted input; rule 3.4 names `fuzz_documents` (CAPA-0005, MDQ-PR-074, MDQ-PR-075). |
 | 10 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 9. |
+| 11 | Rule 3.6: a value is validated whole, with `fullmatch` (MDQ-PR-084, internal audit before release 2.1.0). |

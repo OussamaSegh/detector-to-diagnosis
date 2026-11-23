@@ -122,6 +122,12 @@ activity starts. AAMI TIR45 describes how agile practices map to the standard's 
   and, when it changes a requirement, a hazard or a software item, a trace to its change request
   or problem report (`tools/commit_policy.json`, checked by `tools/check_commits.py` in CI and by
   the commit-msg hook). A published history is not rewritten without a change request.
+- **Before and after a push** (CAPA-0006, MDQ-PR-085): a change to a test, a tool or a
+  controlled document is pushed only after the whole unit suite (`ctest -L unit`) passes
+  locally, not only the tests named for the change. The CI result of the last pushed commit is
+  read before the next push, and at the latest on the day of the push; a failed run on `main`
+  gets a problem report the same day, and nothing but its fix is pushed until it is green
+  again, except work that cannot affect the failing job.
 - **What a real quality system adds:** a change control board for changes after release,
   the regulatory assessment of each change (Chapter 13, Exercise 13.2), and approval
   records with signatures.
@@ -279,4 +285,4 @@ assessment of Chapter 13.
 | 19 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 18. |
 | 20 | Review of release 2.0.0: section 8, when a failed check of the release checks may run again, and the tool that enforces it (MDQ-PR-077). |
 | 21 | Approved for release 2.0.1 by the author (software lead), in writing on 2026-11-16; the content is that of version 20. |
-| 22 | The release soak lasts 100 minutes (CR-0035, MDQ-PR-064). |
+| 22 | The release soak lasts 100 minutes (CR-0035, MDQ-PR-064). Section 5: the whole unit suite before a push, and the CI result read after it (CAPA-0006, MDQ-PR-085). |
