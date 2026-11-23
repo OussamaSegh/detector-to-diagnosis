@@ -5,7 +5,14 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-23: **release 2.1.0 is made** (record `docs/regulatory/releases/2.1.0.md`,
+Last updated: 2026-11-23, 06:50 UTC: **2.1.0 is released**: tag book-v2.1.0 on 739de30 (CI
+green), packages in the project files (neurolf-book/v2.1.0/: book 794 pages, solutions 233,
+KDP, Boox, source zip, SBOM). VERSION is 2.1.1-dev, so that the review's fixes can make a
+patch; `tools/post_release.py . 2.2.0-dev` starts 2.2 once the review is merged and
+`docs/ROADMAP-2.2.0.md` is written (2.2 needs a dated SOUP review in section 4, else
+docs.soup fails). Next: the Opus review of 2.1.0.
+
+Before: **release 2.1.0 is made** (record `docs/regulatory/releases/2.1.0.md`,
 evidence `measurements/release-2.1.0/`; checks on dae4498, all four parts, acceptance 9 of 9,
 reproducible). The author approved SDP v22, SRS v38, SOUP v31, STP v6 and coding standard v11
 in writing. CAPA-0005 closed as effective; CAPA-0006 (read CI after every push, the whole unit
