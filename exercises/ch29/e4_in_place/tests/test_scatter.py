@@ -75,11 +75,23 @@ class InPlace(unittest.TestCase):
         # A long call: 3e7 additions, about 0.1 s. While the C++ holds the GIL, no Python thread
         # can run at all, however long the call takes. The other thread notes the time as it
         # counts; when the call returns, Python may switch to it before this thread reads the
-        # clock, so only the first half of the call counts.
+        # clock, so only the first half of the call counts. On a loaded machine the other
+        # thread may not get a CPU during one call (CI, MDQ-PR-086), so the call is tried up to
+        # five times: with the GIL released one attempt is enough, with it held none can pass.
         n = 30_000_000
         values = np.ones(n)
         index = np.zeros(n, dtype=np.int64)
-        out = np.zeros(1)
+        seen = []
+        for _ in range(5):
+            out = np.zeros(1)
+            seen.append(self._stamps_during(values, index, out))
+            self.assertEqual(out[0], n)
+            if seen[-1] > 10:
+                return
+        self.fail(f"the other thread did not run during the call: {seen} stamps in 5 attempts")
+
+    @staticmethod
+    def _stamps_during(values, index, out):
         stamps = []
         running = threading.Event()
         done = threading.Event()
@@ -101,9 +113,8 @@ class InPlace(unittest.TestCase):
         t1 = time.perf_counter()  # clock: measure
         done.set()
         worker.join()
-        self.assertEqual(out[0], n)
-        first_half = [s for s in stamps if t0 < s < t0 + (t1 - t0) / 2]
-        self.assertGreater(len(first_half), 10, "the other thread did not run during the call")
+        return len([s for s in stamps if t0 < s < t0 + (t1 - t0) / 2])
+
 
 if __name__ == "__main__":
     unittest.main()

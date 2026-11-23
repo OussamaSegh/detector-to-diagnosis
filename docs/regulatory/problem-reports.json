@@ -1757,6 +1757,33 @@
         "category": "process",
         "escape": "SDP section 8 checks CI only at the release commit; the audit before the release is where it was found."
       }
+    },
+    {
+      "id": "MDQ-PR-086",
+      "title": "Exercise 29.4's test of the GIL fails when the other thread gets no CPU during the call",
+      "found": "2026-11-23, CI run 364 on fbe436b, job build-test (debug): ch29/e4_in_place/solution/unittest",
+      "item": "exercises",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "test_python_threads_run_during_the_call counts how often a second Python thread notes the time during the first half of one 3e7-element call of the solution, and requires more than 10. On the loaded CI runner (ctest in parallel, debug build) the second thread got no CPU during that half once and the test saw 0, although the solution releases the GIL. Found under CAPA-0006's rule, on the first CI run read after a push.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An exercise's test, not MiniDAQ; the defect made a correct solution fail, never let a wrong one pass."
+      },
+      "resolution": {
+        "change": "The test makes up to five calls and passes as soon as one shows the other thread running; a starter that holds the GIL sees 0 in all five, so it still fails.",
+        "verification": "ch29/e4_in_place/solution/unittest passes in debug 5 times in a row and in release; the starter fails it with [0, 0, 0, 0, 0]."
+      },
+      "root_cause": {
+        "whys": [
+          "One call gave the other thread one chance to be scheduled, and a busy machine can withhold it for 50 ms.",
+          "The test was written and run on an idle machine, where the thread always ran."
+        ],
+        "cause": "A test of scheduling that made one observation where the scheduler gives no guarantee for one.",
+        "category": "test",
+        "escape": "The solution's test ran alone, never under ctest -j on a loaded machine, before it was pushed; CAPA-0001's rule for timing tests (a margin and a reason) was not applied to a test of threads."
+      }
     }
   ]
 }
