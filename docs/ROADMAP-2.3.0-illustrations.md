@@ -143,7 +143,9 @@ nice to have. Effort as in the design plan: S about 1 hour, M about 2.5 hours, L
 | 36 | 30 | Photo: an image-quality phantom (next to item 9) | PH | section 3 | P3 | S |
 
 About 30 new drawings and plots and up to 10 photos. At about a third of a page each, that is
-12 to 15 pages.
+12 to 15 pages at most. Measured on 2026-11-24: the screen PDF of main (5647d2e) has 794 pages,
+and with the five prototypes it still has 794 (the figures filled float space already there), with
+no overfull box; KDP's limit is 828.
 
 ## 6. Acceptance
 
