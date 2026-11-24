@@ -5,7 +5,20 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-23, 23:10 UTC: **2.2.0-dev, Themes R, P1, P2 (but the agent files) and S
+Last updated: 2026-11-24, 19:30 UTC: **2.2.0 release commit made; tag after its CI is green.**
+The release checks ran on 5647d2e (worktree in the scratchpad, OUT copied to
+`measurements/release-2.2.0/`): all four parts passed, but ACC-04 failed (8 of 600 soak
+intervals above 10 ms, six allowed). MDQ-PR-096; part 3 ran again once and failed ACC-04 (11)
+and the gate on BM_SortFunctor (same machine code as 2.1.0). Control soak of book-v2.1.0's
+programs: 6 of 600 (`measurements/mdq-pr-096/`). The software lead (the coordinator under the
+author's delegation) released with a deviation; CR-0038 (proposed, 2.3.0) judges the latency
+against the previous release, interleaved. MDQ-PR-097 (the newest-record test reads its own
+commit) and MDQ-PR-098 (`fail (deviation)` rows) fixed. `release/2.0` is not cut (decided;
+the tag keeps that line). After the tag: add `2.2.0` to MDQ-PR-006 and MDQ-PR-096's `affects`,
+VERSION 2.2.1-dev or 2.3.0-dev, packages to the project files, the Opus review of 2.2.0, then
+`docs/ROADMAP-2.3.0.md`. Next free: MDQ-PR-099, CAPA-0008, CR-0039, ADR 0042, TL-53.
+
+Earlier, 2026-11-23, 23:10 UTC: **2.2.0-dev, Themes R, P1, P2 (but the agent files) and S
 done; the release is next.** CR-0036 and CR-0037 approved by the author in writing (22:20 UTC).
 d78b3db: SRS v39 draft (SRS-AI-005 to 010). afe1faa: ADR 0040, threat model v19 draft. ae5c595:
 the trace-review eval run by hand, kept in `measurements/agent-evals/trace-review/` (5 of 6 pass

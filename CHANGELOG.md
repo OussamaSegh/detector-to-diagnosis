@@ -8,6 +8,17 @@ the patch version.
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-24
+
+Release notes: nothing breaks. The agent gate and the agent files under document control
+(CR-0036) are development tools and change no shipped program. Configuration schema 2.2 adds the
+optional `source.nodes` of the synthetic source (CR-0037); a document of schema 2.0 or 2.1 reads
+as before, and one node, the default, gives the same stream. Released with a deviation for the
+latency criterion ACC-04 and one verdict of the regression gate (MDQ-PR-096, open; CR-0038
+proposed for 2.3.0). Open known anomalies: MDQ-PR-006, unchanged, and MDQ-PR-096. Record:
+`docs/regulatory/releases/2.2.0.md`; evidence `measurements/release-2.2.0/` (checks on 5647d2e,
+all four parts, reproducible).
+
 ### Added (roadmap 2.2.0, Theme P1)
 
 - `tools/agent_gate.py` (TL-51): the gate a change passes before a person reviews it, however
@@ -83,6 +94,24 @@ the patch version.
 - MDQ-PR-094: static analysis failed on main after Theme S (clang-tidy's
   bugprone-unused-return-value on a discarded `at()` in `NodeMerge::end`); the index is checked
   explicitly, and the constructor no longer copies its offsets (cppcheck).
+
+### Release 2.2.0
+
+- The SOUP review before release 2.2.0 (SOUP list version 32): no item changes; the triage of
+  CVE-2026-121481 records its new reading (OpenSSL 4.0 and 4.1 only).
+- SDP 23, SRS 39, SOUP list 32, architecture 29, performance budget 5 and threat model 19
+  approved for 2.2.0; `CLAUDE.md` and `.claude/` committed and approved (CR-0036); the internal
+  audit of 2026-11-24 final. `release/2.0` is not cut: the tag `book-v2.0.1` keeps that line.
+- MDQ-PR-096 (open): the release soak had 8, then 11, of 600 intervals above 10 ms (six
+  allowed); a control soak of 2.1.0's programs on the same machine had 6
+  (`measurements/mdq-pr-096/`). Released with a deviation; CR-0038 (proposed) judges the latency
+  against the previous release, interleaved.
+- MDQ-PR-097: the test of the newest release record judged it against today's problem reports;
+  it reads the files of the commit that wrote the record.
+- MDQ-PR-098: `tools/release_record.py check` had no path for a check released with a
+  deviation; a row may say `fail (deviation)` when the record has a section Deviation.
+- The coverage review of 2.2.0 added three tests: a non-array and a too-negative clock offset
+  are refused, and `NodeMerge::end` of a node that does not exist throws.
 
 ### Fixed (review of release 2.1.0)
 

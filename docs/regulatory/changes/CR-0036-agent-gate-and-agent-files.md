@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-23, by the software lead |
 | Source | improvement; roadmap 2.2.0, themes P1 and P2 |
 | Decision | approved, 2026-11-23, by the software lead (the author), in writing in the project |
-| Commits | none yet |
+| Commits | 6fe8a40 (Theme P1), 13f37da and 81c1651 (Theme P2 tools), afe1faa (ADR 0040, threat model), 5647d2e (the agent files); released in 2.2.0 |
 
 ## Description
 
@@ -100,6 +100,10 @@ every change stays required, however it was written.
 `tools.check_agent_files` and `docs.agent_files`; the hooks' unit tests; `tools.ai_provenance`;
 `docs.trace`, `docs.srs`, `docs.changes`; the subagent's eval, run by hand with an agent and its
 results kept as evidence.
+
+The tests that verified it in release 2.2.0 include
+`KnownBadLibrary.test_every_fast_known_bad_change_fails_its_own_check` and
+`AgentFiles.test_good_files_pass`.
 
 ## Decision
 

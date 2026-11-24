@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-23, by the software lead |
 | Source | improvement; roadmap 2.2.0, theme S |
 | Decision | approved, 2026-11-23, by the software lead (the author), in writing in the project |
-| Commits | see the CHANGELOG, 2.2.0, Theme S |
+| Commits | ac7f3bc (Theme S), 92ca1bf (MDQ-PR-094); released in 2.2.0 |
 
 ## Description
 
@@ -108,6 +108,10 @@ within the bound, the merged coincidences equal to the single-node ones); unit t
 node division and the merge (order, ties, a slow node, the end of a run); the configuration
 tests of schema 2.2; `tools.agent_gate` and the release checks with the default of one node,
 SRS-PIPE-010 and SRS-PERF-020 among them; the throughput measured with 1, 2 and 4 nodes.
+
+The tests that verified it in release 2.2.0 include
+`NodeMerge.MergedCoincidencesEqualTheSingleNodeOracle`, `NodeMerge.TheMultiNodeSourceGivesTheOraclesCoincidences`
+and `Config.ReadoutNodesFromSchema22`.
 
 ## Implementation notes
 
