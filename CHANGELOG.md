@@ -15,7 +15,9 @@ the patch version.
   `fail (deviation)` row only when that section names it; SDP version 24 (draft) states the
   deviation path of section 8. The command hook refuses `git push origin :main` and forces
   among combined short options (MDQ-PR-100). The acceptance report names no absolute path of
-  the machine (MDQ-PR-101).
+  the machine (MDQ-PR-101). The agent's edit hook formats only the lines of a C++ file that
+  differ from HEAD, so a small edit of an old file gives a small diff, and two lines of
+  `synthetic_source.cpp` are formatted (MDQ-PR-102).
 
 ## [2.2.0] - 2026-11-24
 

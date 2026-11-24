@@ -10,11 +10,12 @@ Last updated: 2026-11-24, 19:00 UTC: **2.3.0-dev has started** (`docs/ROADMAP-2.
 packages in the project files (neurolf-book/v2.2.0/: book 794 pages, solutions 233, Boox, KDP,
 source zip, SBOM, record). The review of 2.2.0 is merged (PR #23, 14bd28b), and the
 illustrations plan with its prototypes (PR #22, 0c4a6cd). SOUP list v33 is a draft with the
-review for 2.3. Milestones in order: Theme H (the formatting commit, the edit hook that formats
-touched lines only, `synthetic_source.cpp`), Theme L (CR-0038: the interleaved A/B soak,
-ACC-10), Theme I in the illustrations thread (photo pipeline, figures, photos), then the release
-(internal audit with CAPA-0007's check, SDP v24 approved). Next free: MDQ-PR-102, CAPA-0008,
-CR-0039, ADR 0042, TL-53.
+review for 2.3. Theme H is done: the edit hook formats only the lines that differ from HEAD
+(a new file whole), and the two lines of `synthetic_source.cpp` are formatted (MDQ-PR-102). No
+whole-tree format commit: ADR 0027 is kept, and the roadmap says so. Next: Theme L (CR-0038: the
+interleaved A/B soak, ACC-10), Theme I in the illustrations thread (photo pipeline, figures,
+photos), then the release (internal audit with CAPA-0007's check, SDP v24 approved). Next free:
+MDQ-PR-103, CAPA-0008, CR-0039, ADR 0042, TL-53.
 
 Earlier, 2026-11-24, 17:30 UTC: **2.2.0 release commit made; tag after its CI is green.**
 The release checks ran on 5647d2e (worktree in the scratchpad, OUT copied to
@@ -165,7 +166,8 @@ says a comparison never replaces the absolute limit. After merging, copy the cor
 the project files (neurolf-book/v2.2.0/release-record-2.2.0.md). Not fixed, for the build thread:
 `minidaq/src/sim/synthetic_source.cpp` has two lines indented as before the CR-0037 refactor
 (`git clang-format` of changed lines missed them); the edit hook formats a whole file, so the
-next edit of a file written before `.clang-format` reformats all of it. Next free MDQ-PR-102.
+next edit of a file written before `.clang-format` reformats all of it (both fixed in 2.3.0-dev,
+MDQ-PR-102). Next free MDQ-PR-102.
 
 Review of release 2.1.0 (2026-11-23, independent, PR from branch claude/project-thread-vdo54z):
 MDQ-PR-088 (CR-0034's `out` check compared the dtype by identity, `dtype().is`, so an unpickled

@@ -112,11 +112,13 @@ roadmap adopts its sections 3 to 8 as they stand. In summary:
 - **Formatting debt.**
   - Format the two lines of `synthetic_source.cpp`.
   - Change the edit hook so that it formats only the lines an edit touched
-    (`git clang-format` on the file's diff against HEAD), not the whole file, and give it a
+    (clang-format `--lines` on the file's diff against HEAD), not the whole file, and give it a
     unit test.
-  - A one-time commit formats every C++ file that `.clang-format` would change, alone,
-    with no other change, so that later diffs stay small. `tools/check_format.py` keeps
-    judging touched lines.
+  - No whole-tree format commit. ADR 0027 chose to format the code as it is edited and to
+    keep each line's history; a format commit would touch 334 C++ files and shift the `lines=`
+    listings of the book. With the hook formatting touched lines, the reason for such a commit
+    is gone (decided 2026-11-24, MDQ-PR-102). `tools/check_format.py` keeps judging touched
+    lines.
 - **CAPA-0007's effectiveness check** at the internal audit. It is effective if no fact of the
   release checks was found written twice in 2.3.0-dev, and if the test that reads
   `tools/release_facts.json` still fails on a copy written back.
@@ -126,7 +128,7 @@ roadmap adopts its sections 3 to 8 as they stand. In summary:
 
 | Milestone | Content | Exit criterion |
 |---|---|---|
-| 2.3.0-dev, first | Theme H: the formatting commit, the hook that formats touched lines, `synthetic_source.cpp`; `tools/post_release.py . 2.3.0-dev` and the SOUP review for 2.3 | Every C++ file is formatted; the hook's test passes; CI green |
+| 2.3.0-dev, first | Theme H: the hook that formats touched lines, `synthetic_source.cpp`; `tools/post_release.py . 2.3.0-dev` and the SOUP review for 2.3 | The hook's test passes; `synthetic_source.cpp` formatted; CI green |
 | 2.3.0-dev, second | Theme L: CR-0038 approved, the interleaved A/B soak with resume, ACC-10, its tests against the recorded soaks | The comparison test passes on the recorded soaks; a full A/B soak runs on the machine |
 | 2.3.0-dev, third | Theme I, M1 to M3 (pipeline, Parts II, V and VI, the map), in the illustrations thread | `figures.py check` covers photos; all P1 items merged |
 | 2.3.0-dev, fourth | Theme I, M4 and M5 (photos, the long sections) | Each photo has a credit checked by a person; the list of section 1 closed item by item |
@@ -180,7 +182,6 @@ The rhythm stays as before:
 | The A/B soak doubles part 3's time | Release checks of about five hours, more restarts at the two-hour limit | Resumable soak blocks; part 3 is the only part that grows |
 | Interleaving still leaves the two soaks under different host load | ACC-10 blames the code or the machine wrongly | Blocks of 20 minutes, alternating; the per-second steal and run-queue measure kept for both; the test is one-sided and its power stated in the record |
 | ACC-04 keeps failing on this machine for every release | Every release needs a deviation | ACC-10 tells whether the code got worse; the question of a quieter machine goes to 3.0.0; the deviation path is in SDP v24, not invented each time |
-| The formatting commit hides a real change | A reviewer misses it | That commit changes whitespace only; `git diff -w` of it is empty, and the commit says so |
 | A photo's license is wrong | An infringing image in a public repository | Theme I's policy: only PD, CC0 and CC BY; a person reads every license page; removed at once on doubt |
 | Page budget | The PDF passes 828 pages | Measured after each milestone; P3 items move to 3.0.0 first |
 | Two threads edit the same files | Merge conflicts | Theme I keeps to `book/` and the chapters; Chapter 33 edited once, after Theme I's edits to it |

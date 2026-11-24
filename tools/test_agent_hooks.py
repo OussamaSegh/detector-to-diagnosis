@@ -163,6 +163,35 @@ class Edit(Repo):
             r, text = self.edited(name, self.UGLY)
             self.assertEqual((r.returncode, text), (0, self.UGLY), name)
 
+    def committed(self, name, text):
+        f = self.repo / name
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(text)
+        subprocess.run(["git", "add", name], cwd=self.repo, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid",
+                        "commit", "-q", "-m", "old", "--no-verify"], cwd=self.repo, check=True)
+
+    OLD = "int  f( int x ){return x+1;}\nint  g( int y ){return y+1;}\nint  h( int z ){return z+1;}\n"
+
+    def test_an_edit_of_one_line_in_an_unformatted_file_changes_that_line_only(self):
+
+        # REQ: SRS-AI-009
+        self.committed("src/old.cpp", self.OLD)
+        edit = self.OLD.replace("return y+1;", "return y+2;")
+        r, text = self.edited("src/old.cpp", edit)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        before, after = self.OLD.splitlines(), text.splitlines()
+        self.assertEqual(after[0], before[0])
+        self.assertEqual(after[-1], before[-1])
+        self.assertNotIn("int  g( int y ){return y+2;}", after)
+        self.assertIn("return y + 2;", text)
+        self.assertEqual(text.count("return x+1;") + text.count("return z+1;"), 2)
+
+    def test_a_tracked_file_without_a_change_is_left_as_it_is(self):
+        self.committed("src/same.cpp", self.OLD)
+        r, text = self.edited("src/same.cpp", self.OLD)
+        self.assertEqual((r.returncode, text), (0, self.OLD))
+
     def test_a_cpp_file_outside_the_repository_is_left_as_it_is(self):
         f = self.dir / "outside.cpp"
         f.write_text(self.UGLY)

@@ -2188,6 +2188,35 @@
         "category": "tool",
         "escape": "The privacy rule is checked on agent files, not on evidence."
       }
+    },
+    {
+      "id": "MDQ-PR-102",
+      "title": "The agent's edit hook formats a whole file, so a small edit of an old file arrives with a large diff",
+      "found": "2026-11-24, independent review of release 2.2.0 (HANDOFF): two lines of minidaq/src/sim/synthetic_source.cpp kept their pre-refactor indentation, and an edit of any file written before .clang-format reformats all of it",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "2.2.0"
+      ],
+      "capa": "",
+      "description": "tools/hooks/agent_edit.py ran clang-format -i on the whole edited file. ADR 0027 formats the code only where a change touches it, and tools/check_format.py judges only those lines; the hook went further than the check, so a one-line edit of a file written before .clang-format rewrote every unformatted line of it and hid the change in a format diff. The CR-0037 refactor, made without the hook, left two lines of synthetic_source.cpp in their old indentation, which git clang-format of the changed lines did not reach.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A development tool; a large whitespace diff hides a change from a reviewer but does not change the product."
+      },
+      "resolution": {
+        "change": "The hook formats only the lines that differ from HEAD (git diff -U0 HEAD, clang-format --lines), and a new, untracked file whole; the two lines of synthetic_source.cpp are formatted (whitespace only). ADR 0027 is kept: no whole-tree format commit.",
+        "verification": "tools.test_agent_hooks: test_an_edit_of_one_line_in_an_unformatted_file_changes_that_line_only and test_a_tracked_file_without_a_change_is_left_as_it_is (both fail without the change)."
+      },
+      "root_cause": {
+        "whys": [
+          "The hook was written to give the agent the file the pre-commit hook accepts, and formatting the whole file was the shortest way.",
+          "Its tests used new files only, where the whole file and the changed lines are the same."
+        ],
+        "cause": "The hook's scope was not compared with the check's scope (ADR 0027).",
+        "category": "tool",
+        "escape": "No test edited a committed, unformatted file."
+      }
     }
   ]
 }

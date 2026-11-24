@@ -40,8 +40,8 @@ Single SyntheticSource::next() {
       t_ps_ = std::fmax(t_ps_, static_cast<double>(pending_single_.time.count()));
     }
   }
-    ++generated_;
-    return s;
+  ++generated_;
+  return s;
 }
 
 std::size_t SyntheticSource::generate(std::span<std::uint64_t> out) {
