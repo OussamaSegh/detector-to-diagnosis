@@ -361,6 +361,7 @@ candidate for 4.0.0 (section 9).
 |---|---|---|
 | 2.1.0 | Its own roadmap | Released |
 | 2.2.0 | Groundwork that breaks nothing: Theme P's gate with its known-bad library, context files under document control, extended provenance, the first agent tooling (the traceability subagent, the release-check skill, the hooks) with their static check, the simulator with several nodes, and the merge inside one process | The gate rejects every known-bad change; every agent file passes its check; release checks pass |
+| 2.3.0 | Its own roadmap (`docs/ROADMAP-2.3.0.md`): illustrations and photos, the latency judged against the previous release (CR-0038), the housekeeping of 2.2.0 | Released |
 | 3.0.0-dev, first | Theme N | Every preset green on the new compiler; Part I updated |
 | 3.0.0-dev, second | Theme M, with the earlier chapters updated | `docs.interfaces` passes; migration note complete |
 | 3.0.0-dev, third | Chapters 41 to 45 (Theme L), each with its recorded agent sessions; the tool server over the run records | Chapter recipe complete; the gate's report in each chapter's record |
