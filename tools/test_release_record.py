@@ -104,7 +104,20 @@ class ReleaseRecord(unittest.TestCase):
             self.skipTest("no git history to read the rules of the release from")
         module = types.ModuleType("release_check_at_release")
         exec(compile(rules.stdout, "release_check.py", "exec"), module.__dict__)
-        errors = module.check(text, ROOT / "docs/regulatory")
+        # ...and against the files of the commit that last wrote the record: a problem report
+        # opened after the release is listed by the next record, not by this one (MDQ-PR-097).
+        written = subprocess.run(["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--",
+                                  str(newest.relative_to(ROOT))], capture_output=True, text=True,
+                                 check=True).stdout.strip()
+        if written and subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", written, "--",
+                                       str(newest.relative_to(ROOT))]).returncode == 0:
+            with tempfile.TemporaryDirectory() as tmp:
+                archive = subprocess.run(["git", "-C", str(ROOT), "archive", written, "docs", "measurements"],
+                                         capture_output=True, check=True)
+                subprocess.run(["tar", "-x", "-C", tmp], input=archive.stdout, check=True)
+                errors = module.check(text, pathlib.Path(tmp) / "docs/regulatory")
+        else:  # the record is being written: judge it against the working tree
+            errors = module.check(text, ROOT / "docs/regulatory")
         errors += [line for line in text.splitlines() if rr.TODO in line]
         self.assertEqual(errors, [])
 
