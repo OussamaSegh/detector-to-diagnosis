@@ -13,8 +13,9 @@ rule on stderr, a command that
    `install`, `ln`, or the operands of `rm`, `mkdir`, `touch`, `rmdir`;
 2. pushes to a branch other than the session's own (the variable MINIDAQ_SESSION_BRANCH, else the
    branch checked out) and `main`, pushes every branch or tag at once (`--all`, `--mirror`,
-   `--tags`), deletes a remote branch, or forces a push (SDP section 5: a published history is
-   not rewritten without a change request).
+   `--tags`), deletes a remote branch (`--delete`, `-d` or a refspec with an empty source,
+   `:main`), or forces a push (`--force`, `-f` alone or with other short options, a refspec
+   with `+`) (SDP section 5: a published history is not rewritten without a change request).
 
 Every other command is allowed (exit status 0, nothing printed). The hook refuses only what the
 project's rules already forbid, and names the rule, so that a session does not learn to work
@@ -108,6 +109,11 @@ def check_push(segment, root):
     args = w[i + 1:]
     errors = [f"git push {a}: {why} (rule: SDP section 5 and the session's branch)"
               for a, why in PUSH_REFUSED.items() if a in args]
+    # Short options given together, `-fu` or `-uf`: each letter is an option (review of 2.2.0).
+    for a in args:
+        if re.fullmatch(r"-[A-Za-z]{2,}", a):
+            errors += [f"git push {a}: {PUSH_REFUSED['-' + c]} (rule: SDP section 5 and the "
+                       "session's branch)" for c in "fd" if c in a[1:]]
     plain = [a for a in args if not a.startswith("-")]
     own = session_branch(root)
     allowed = {"main", own} - {""}
@@ -115,6 +121,9 @@ def check_push(segment, root):
         if ref.startswith("+"):
             errors.append(f"git push {ref}: forces a push (rule: SDP section 5)")
             ref = ref[1:]
+        if ref.startswith(":"):  # an empty source deletes the remote branch (review of 2.2.0)
+            errors.append(f"git push {ref}: deletes a remote branch (rule: SDP section 5)")
+            continue
         dst = ref.split(":", 1)[1] if ":" in ref else ref
         dst = own if dst == "HEAD" else dst.removeprefix("refs/heads/")
         if dst not in allowed:

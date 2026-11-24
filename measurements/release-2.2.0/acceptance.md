@@ -1,6 +1,6 @@
 # MiniDAQ 1.0 acceptance specification, version 2: NOT ACCEPTED
 
-Candidate commit `5647d2e558a3`; evidence from `/home/user/detector-to-diagnosis/measurements/release-2.2.0`.
+Candidate commit `5647d2e558a3`; evidence from `measurements/release-2.2.0`.
 
 | Criterion | Requirements | Target | Found | Verdict |
 |---|---|---|---|---|

@@ -183,6 +183,16 @@ class Verdicts(unittest.TestCase):
             self.assertFalse(accepted, verdict)
             self.assertIn("NOT ACCEPTED", text)
 
+    def test_the_report_names_no_absolute_path_of_the_machine(self):
+        # MDQ-PR-101: the 2.2.0 report named the checkout's absolute path.
+        rows = [(c, "PASS", "x") for c in SPEC["criteria"]]
+        text = acceptance.report(SPEC, rows, COMMIT, self.ev.out)[1]
+        self.assertNotIn(str(pathlib.Path(self.ev.out).resolve()), text)
+        self.assertIn(f"evidence from `OUT ({pathlib.Path(self.ev.out).name})`", text)
+        inside = acceptance.ROOT / "measurements/release-9.9.0"
+        self.assertIn("evidence from `measurements/release-9.9.0`",
+                      acceptance.report(SPEC, rows, COMMIT, inside)[1])
+
     def test_every_criterion_names_a_known_rule_and_existing_requirements(self):
         srs = (acceptance.ROOT / "docs/regulatory/srs.md").read_text()
         for c in SPEC["criteria"]:

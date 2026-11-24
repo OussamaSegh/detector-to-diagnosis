@@ -58,7 +58,7 @@
       "found": "2026-10-24, Chapter 6 design",
       "item": "service",
       "status": "open",
-      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1", "2.1.0"],
+      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1", "2.1.0", "2.2.0"],
       "description": "The service's monitor polls the ports every 20 ms, so a run continues for up to 20 ms after a detector or sink fault.",
       "evaluation": {"safety_relevant": true, "rationale": "Data acquired in those 20 ms after a fault is part of a run that ends in a fault anyway; the fault is reported and the run is not used. No data is presented as complete."},
       "decision": "Release with it. Reviewed against the risk file for release 0.3.0: a faulted run is incomplete in its integrity verdict whatever the delay (assess_integrity, RC-01), and H-05 covers the interrupted scan; 20 ms more data in a run that ends in a fault changes neither sequence of events nor harm, so no hazard needs a faster reaction. Chapter 15 was to decide this and did not; the release review did. Decided again for release 1.3.0 (roadmap 2.0.0, theme B), with the cost of the fix weighed: a faster reaction needs every port to wake the monitor from its own thread (the UDP receiver, the sink's I/O thread, the slow control), a callback into the service across the layers and a new lock order to prove, in class B code, to shorten by at most 20 ms a run that ends in a fault anyway. Kept open as a known anomaly, deliberately, because the behavior exists and a release must state it; RunIntegrity.AFaultMakesTheRunIncompleteWithoutALossCounter and AcquisitionService.DetectorFaultStopsTheRunAndNeedsAReset verify the two properties the decision rests on. To be decided again only if a hazard analysis finds a harm that depends on the delay."
@@ -2038,14 +2038,14 @@
       "found": "2026-11-24, release checks of 2.2.0, part 3, on 5647d2e: tools/acceptance.py judged ACC-04 FAIL (592 of 600 intervals within 10 ms, 98.7%)",
       "item": "pipeline",
       "status": "open",
-      "affects": [],
+      "affects": ["2.2.0"],
       "capa": "",
       "description": "Every check of part 3 passed, but 8 of the soak's 600 intervals of 10 s had a 99th percentile above 10 ms (up to 62.65 ms), where ACC-04 allows six (CR-0035). In each, one server thread waited 21 to 61 ms in one second for a CPU while runnable (mdq-write, mdq-decode or mdq-sort); steal over the intervals averaged 0.66% (0.25% in 2.1.0's soak), per second up to 6.79%. The pipeline ran at about 4% of its capacity, and the single-node source of CR-0037 runs the same generator statements; the regression gate against book-v2.1.0 passed. The symptom is MDQ-PR-064's.",
       "evaluation": {
         "safety_relevant": false,
         "rationale": "No single was lost or arrived after the sorter's window (the soak counts no loss and the run is complete); the latency is not a risk control of a hazard, as for MDQ-PR-064."
       },
-      "decision": "Run part 3 of the release checks again once, in full, on the same commit (SDP section 8; investigation in the release's rerun-part-3.md). A second failure of ACC-04 is a problem report against the commit and stops the release for the software lead. Part 3 ran again the same day: ACC-04 failed again, 11 of 600 intervals (highest 20.45 ms, each again with one thread waiting 21 to 77 ms for a CPU, steal mean 0.83%), and the regression gate judged BM_SortFunctor slower (0.862, p 0.0026), a benchmark it had passed in the first run, of a sorter whose source did not change since 2.1.0. The release stops for the software lead. Control the same evening: book-v2.1.0's programs, built anew, had 6 of 600 intervals above 10 ms on the same machine (3 at their release), with the same CPU waits; the candidate's 19 of 1,200 is 1.6 times that rate, not distinguishable from chance in two soaks. BM_SortFunctor's machine code is the same in both builds (measurements/mdq-pr-096/). Decided on 2026-11-24 by the software lead (the coordinator under the author's standing delegation of 2026-11-15, 2026-11-23 and 2026-11-24, in writing in the project): release 2.2.0 with a recorded deviation for ACC-04 and for the regression gate's verdict on BM_SortFunctor, as for MDQ-PR-064 at 1.0.0, on the control soak (the 2.1.0 programs at the limit on the same machine) and the benchmark's unchanged machine code. The report stays open; CR-0038 proposes for 2.3.0 that the latency be judged against the previous release's programs, interleaved on the same machine."
+      "decision": "Run part 3 of the release checks again once, in full, on the same commit (SDP section 8; investigation in the release's rerun-part-3.md). A second failure of ACC-04 is a problem report against the commit and stops the release for the software lead. Part 3 ran again the same day: ACC-04 failed again, 11 of 600 intervals (highest 20.45 ms, each again with one thread waiting 21 to 77 ms for a CPU, steal mean 0.83%), and the regression gate judged BM_SortFunctor slower (0.862, p 0.0026), a benchmark it had passed in the first run, of a sorter whose source did not change since 2.1.0. The release stops for the software lead. Control the same evening: book-v2.1.0's programs, built anew, had 6 of 600 intervals above 10 ms on the same machine (3 at their release), with the same CPU waits; the candidate's 19 of 1,200 is 1.6 times that rate, not distinguishable from chance in two soaks. BM_SortFunctor's machine code is the same in both builds (measurements/mdq-pr-096/). Decided on 2026-11-24 by the software lead (the coordinator under the author's standing delegation of 2026-11-15, 2026-11-23 and 2026-11-24, in writing in the project): release 2.2.0 with a recorded deviation for ACC-04 and for the regression gate's verdict on BM_SortFunctor, as for MDQ-PR-064 at 1.0.0, on the control soak (the 2.1.0 programs at the limit on the same machine) and the benchmark's unchanged machine code. The report stays open; CR-0038 proposes for 2.3.0 that the latency be judged against the previous release's programs, interleaved on the same machine. Review of 2.2.0 (MDQ-PR-099): a CPU wait of 20 ms or more is in 99% of all intervals of the three soaks, so its presence in the slow ones is no evidence for the machine; the control soak is (p = 0.22). The candidate's 19 of 1,200 does not show SRS-PERF-022 met (p = 0.037 against 1%): 'affects' names 2.2.0, which was released with the anomaly."
     },
     {
       "id": "MDQ-PR-097",
@@ -2099,6 +2099,94 @@
         "cause": "A check written for the passing case only.",
         "category": "tool",
         "escape": "The skeleton's tests covered a stale row and a failed row, not a failed row that was released."
+      }
+    },
+    {
+      "id": "MDQ-PR-099",
+      "title": "The deviation of release 2.2.0 rests on a plan without a deviation path, on CPU waits found in nearly every interval, and on a record check that excuses rows the decision does not name",
+      "found": "2026-11-24, independent review of release 2.2.0 (measurements/review-2.2.0/)",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "2.2.0"
+      ],
+      "capa": "",
+      "description": "Three faults of the record, not of the decision. (1) SDP version 23, section 8, releases only when every check passes and every acceptance criterion is PASS; it has no deviation, although MDQ-PR-098 and the record say section 8 allows one (1.0.0 used one too). (2) The record, MDQ-PR-096 and CR-0038 give, as evidence for the machine, a server thread waiting 20 to 77 ms for a CPU in every slow interval; such a wait is in 594, 598 and 594 of the 600 intervals of the three soaks, slow or not. The record also does not say that the candidate's 19 of 1,200 slow intervals do not show SRS-PERF-022 met (p = 0.037 against 1%). (3) tools/release_record.py check excused every row marked 'fail (deviation)' once the record had any non-empty section Deviation, whether or not the section named that check. The gate's verdict on BM_SortFunctor was compared on the benchmark's own body only, without the sort it calls or its input.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "Records and a tool of the release process; the corrected evidence supports the same decision (no evidence that 2.2.0 is worse than 2.1.0: control p = 0.22; the sort, its callee and its input identical in both builds), and the latency is no risk control."
+      },
+      "resolution": {
+        "change": "The 2.2.0 record's section Deviation names the rows it releases and has a note with the corrected reasons; MDQ-PR-096 and CR-0038 corrected; the check excuses a 'fail (deviation)' row only when the section Deviation names it as `row`; SDP version 24 (draft) adds the deviation to section 8 with what its record states; measurements/review-2.2.0/ holds the comparison of the sort with its callee and its input, and the table of waits.",
+        "verification": "tools.release_record: test_a_failed_check_passes_only_as_a_recorded_deviation refuses a section that names another check (fails without the change); the 2.2.0 record passes the check."
+      },
+      "root_cause": {
+        "whys": [
+          "The deviation was written under time pressure after a second failure, from the evidence of MDQ-PR-064's method, which records the largest wait of each interval but not how common such a wait is.",
+          "The record check was extended for the one case at hand (MDQ-PR-098) and tested with one section Deviation that covered every row.",
+          "The plan's section 8 was not reread when the record cited it."
+        ],
+        "cause": "A deviation argued from a coincidence without its base rate, and a plan and a check that did not state what a deviation must show.",
+        "category": "process",
+        "escape": "The release decision was made by one reviewer the same evening; the independent review after release is the check that found it."
+      }
+    },
+    {
+      "id": "MDQ-PR-100",
+      "title": "The agent's command hook allows a push that deletes main or forces with combined short options",
+      "found": "2026-11-24, independent review of release 2.2.0, the hook run on chosen commands",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "2.2.0"
+      ],
+      "capa": "",
+      "description": "tools/hooks/agent_command.py refuses --delete, -d, --force, -f and a '+' refspec, but allowed 'git push origin :main' (a refspec with an empty source deletes the remote branch, and its destination 'main' is allowed) and 'git push -fu origin main' (the force among combined short options).",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A development tool; .claude/settings.json asks a person before every git push, so the hook is the second control, and no such push was made."
+      },
+      "resolution": {
+        "change": "A refspec that starts with ':' is refused as a delete; an argument of two or more short options is refused when it holds f or d.",
+        "verification": "tools.test_agent_hooks: test_a_delete_by_empty_source_or_a_force_among_short_options_is_refused (fails without the change); -u alone is still allowed."
+      },
+      "root_cause": {
+        "whys": [
+          "The hook matched whole arguments against a list of option spellings.",
+          "Its tests listed the spellings the hook knew."
+        ],
+        "cause": "A deny list of spellings instead of the meanings of git's refspec and option syntax.",
+        "category": "tool",
+        "escape": "No test tried the other spellings of the same operations."
+      }
+    },
+    {
+      "id": "MDQ-PR-101",
+      "title": "The acceptance report names the absolute path of the machine that ran the checks",
+      "found": "2026-11-24, independent review of release 2.2.0: measurements/release-2.2.0/acceptance.md names the checkout's absolute path, against CLAUDE.md's privacy rule",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "2.2.0"
+      ],
+      "capa": "",
+      "description": "tools/acceptance.py wrote 'evidence from' with the OUT directory as given, an absolute path of the machine; the reports of 1.0.0 to 2.1.0 name scratch directories the same way, and that of 2.2.0 the checkout under a home directory. The repository is public.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A report of the release process; the paths hold no personal data, but the rule forbids them."
+      },
+      "resolution": {
+        "change": "The report names the directory relative to the repository when inside it, else 'OUT (name)'; the line of the 2.2.0 report is corrected. Earlier reports are kept as released.",
+        "verification": "tools.test_acceptance: test_the_report_names_no_absolute_path_of_the_machine (fails without the change)."
+      },
+      "root_cause": {
+        "whys": [
+          "The report printed its argument as given.",
+          "The agent file checker looks for absolute paths in agent files only."
+        ],
+        "cause": "A generated, committed report with no check of the privacy rule.",
+        "category": "tool",
+        "escape": "The privacy rule is checked on agent files, not on evidence."
       }
     }
   ]

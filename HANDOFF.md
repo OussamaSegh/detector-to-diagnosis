@@ -140,6 +140,22 @@ release; it now builds the last `book-v` tag of `.github/tags.txt` with main's e
 records per second the steal time and each server thread's run-queue wait, MDQ-PR-064's finer
 measure; its first 30-minute run is `measurements/review-2.0.0/soak/`. Next free MDQ-PR-081.
 
+Review of release 2.2.0 (2026-11-24, independent, PR from branch claude/project-thread-j1m7ez):
+the deviation's decision stands, its record is corrected. MDQ-PR-099: SDP v23 section 8 had no
+deviation path (SDP v24 draft adds one, to approve at 2.3.0); the CPU waits cited for the
+machine are in 99% of all soak intervals (the control soak is the evidence, p = 0.22); 19 of
+1,200 does not show SRS-PERF-022 met (p = 0.037 against 1%); `release_record.py check` now
+excuses a `fail (deviation)` row only when the section Deviation names it in backticks. The
+gate's BM_SortFunctor verdict is confirmed not in the commit: the sort with its callee and its
+input are identical in both builds (`measurements/review-2.2.0/`). MDQ-PR-100: the command hook
+allowed `git push origin :main` and `git push -fu`. MDQ-PR-101: `tools/acceptance.py` wrote the
+machine's absolute path into the committed report. MDQ-PR-096 lists 2.2.0 in `affects`; CR-0038
+says a comparison never replaces the absolute limit. After merging, copy the corrected record to
+the project files (neurolf-book/v2.2.0/release-record-2.2.0.md). Not fixed, for the build thread:
+`minidaq/src/sim/synthetic_source.cpp` has two lines indented as before the CR-0037 refactor
+(`git clang-format` of changed lines missed them); the edit hook formats a whole file, so the
+next edit of a file written before `.clang-format` reformats all of it. Next free MDQ-PR-102.
+
 Review of release 2.1.0 (2026-11-23, independent, PR from branch claude/project-thread-vdo54z):
 MDQ-PR-088 (CR-0034's `out` check compared the dtype by identity, `dtype().is`, so an unpickled
 float64 array was refused; now `py::isinstance<py::array_t<double>>`, in `recon_cpp.cpp` and

@@ -155,7 +155,12 @@ class ReleaseRecord(unittest.TestCase):
             # Without a section Deviation the row is neither the evidence's nor excused.
             self.assertEqual(len(rr.table_drift(root, record, deviated)), 1)
             self.assertEqual(rr.excused(deviated, refused), refused)
-            decided = deviated + "\n\n## Deviation\n\nThe software lead decided ...\n"
+            # A section Deviation that does not name the row does not excuse it (review of
+            # 2.2.0, MDQ-PR-099): a decision covers the checks it names.
+            unnamed = deviated + "\n\n## Deviation\n\nThe software lead decided on `soak`.\n"
+            self.assertEqual(len(rr.table_drift(root, record, unnamed)), 1)
+            self.assertEqual(rr.excused(unnamed, refused), refused)
+            decided = deviated + "\n\n## Deviation\n\nThe software lead decided on `fuzzing` ...\n"
             self.assertEqual(rr.table_drift(root, record, decided), [])
             self.assertEqual(rr.excused(decided, refused), [])
             # A deviation never excuses another error, and an empty section is no decision.
