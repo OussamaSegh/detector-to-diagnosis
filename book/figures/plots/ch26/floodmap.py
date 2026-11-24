@@ -49,8 +49,11 @@ def main(dst):
     fig, axes = d2d.figure(height=2.2, width=1.0, ncols=3)
     show = np.sqrt(img)  # square root: the dim gaps between blobs stay visible
     ext = (0, PIXELS, PIXELS, 0)
-    for ax in axes:
-        ax.imshow(show, cmap=d2d.CMAP, extent=ext, interpolation="nearest")
+    # The overlays sit on a dimmer flood so that they stand out; each panel's image also differs,
+    # which the EPUB needs: matplotlib names an SVG image by its content, and EPUBCheck refuses
+    # two elements with one id.
+    for ax, dim in zip(axes, (1.0, 0.7, 0.85)):
+        ax.imshow(show * dim, cmap=d2d.CMAP, vmin=0, vmax=show.max(), extent=ext, interpolation="nearest")
         ax.set_xticks([])
         ax.set_yticks([])
         ax.set_xlabel("u", fontsize=d2d.FONT_PT - 1)

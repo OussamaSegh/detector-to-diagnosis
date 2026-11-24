@@ -77,7 +77,7 @@ crystal in three ways.
   resolution the scanner is specified for is a few hundred picoseconds (Chapter 8).
 
 The crystal number is a calibration too, made before any of these. In many blocks the light of
-one crystal spreads over several SiPMs (Figure [](#fig-ch08-module)), and the board computes a
+one crystal spreads over several SiPMs (Chapter 8 draws a block), and the board computes a
 position from their signals. A flood, a uniform irradiation of the block, histogrammed by that
 position shows one blob per crystal, but not on a regular grid, and a lookup table maps every
 position to its crystal. MiniDAQ's boards do this themselves and send the crystal number;
