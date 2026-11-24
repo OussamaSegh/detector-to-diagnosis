@@ -40,12 +40,28 @@ class ReleaseRecord(unittest.TestCase):
         self.assertEqual(rr.row_result(found, ["soak"]), "not run")
 
     def test_the_soak_row_names_the_length_the_release_checks_run(self):
-        """MDQ-PR-087: the length is written in the script and in this table; they must agree."""
-        script = (ROOT / "tools/release_checks.sh").read_text()
-        minutes = re.search(r"tools/soak\.py .*--minutes (\d+)", script).group(1)
+        """MDQ-PR-087: the record's soak row has the length the checks run, from the shared facts."""
+        minutes = rr.FACTS["soak_minutes"]
         soak = [name for name, keys, _ in rr.ROWS if name.startswith("soak")]
         self.assertEqual(soak, [f"soak, {minutes} minutes"])
         self.assertEqual(rr.SOAK_ROW, f"soak, {minutes} minutes")
+
+    def test_the_scripts_read_the_release_facts_and_keep_no_copy(self):
+        """CAPA-0007: the soak's length, the presets and the fuzz targets and seconds live in
+        tools/release_facts.json only; a script that wrote one of them again could drift."""
+        checks = (ROOT / "tools/release_checks.sh").read_text()
+        run_all = (ROOT / "ci/run_all.sh").read_text()
+        self.assertIn("release_facts.json", checks)
+        self.assertIn("release_facts.json", run_all)
+        self.assertNotRegex(checks, r"--minutes \d")
+        self.assertNotRegex(checks, r"fuzz_seconds=\$\{2:-\d")
+        self.assertNotIn(" ".join(rr.FACTS["fuzz_targets"][:3]), checks)
+        self.assertNotIn(" ".join(rr.FACTS["presets"][:3]), run_all)
+        self.assertNotIn("OUT 600 ", (ROOT / "tools/release_record.py").read_text())
+        # The fuzz targets are those the fuzz preset builds.
+        fuzz = (ROOT / "fuzz/CMakeLists.txt").read_text()
+        for t in rr.FACTS["fuzz_targets"]:
+            self.assertIn(f"fuzz_{t}", fuzz)
 
     def test_the_skeleton_of_a_release_has_every_row_and_fails_the_check_until_filled(self):
         with tempfile.TemporaryDirectory() as d:

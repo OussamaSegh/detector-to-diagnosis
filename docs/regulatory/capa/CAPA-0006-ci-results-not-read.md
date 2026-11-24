@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-11-23, by the software lead (internal audit before release 2.1.0) |
-| Source | MDQ-PR-085; during the check period, MDQ-PR-091, MDQ-PR-092, MDQ-PR-093 and MDQ-PR-094 (red runs on main, each reported the same day) |
+| Source | MDQ-PR-085; during the check period, MDQ-PR-091, MDQ-PR-092, MDQ-PR-093, MDQ-PR-094 and MDQ-PR-095 (red runs on main, each reported the same day) |
 | Owner | software lead |
-| Effectiveness check | release 2.2.0 |
+| Effectiveness check | release 2.2.0: effective |
 
 ## Problem
 
@@ -58,8 +58,27 @@ Criterion: between release 2.1.0 and release 2.2.0, no run of `ci` on `main` sta
 day it ran without a problem report, and every commit's message names the whole unit suite or
 says why it was not needed.
 Due: release 2.2.0.
-Result: filled in at the check.
+
+Result: **effective** (2026-11-24, internal audit before release 2.2.0). Each criterion holds:
+
+- `ci` failed on five of the 19 commits pushed to `main` between book-v2.1.0 and the audit:
+  ee34473 (MDQ-PR-091), c98f417 (MDQ-PR-092), 6fe8a40 (MDQ-PR-093), ac7f3bc (MDQ-PR-094) and
+  ddc8d5a (MDQ-PR-095).
+  Each was read before the next push, reported the same day, and followed by its fix alone,
+  which was green (the next run of `ci` on `main` passed each time; the runs read with the
+  GitHub API at the audit).
+- Every one of the 19 commits names the whole unit suite in its `Tests:` trailer, or says why it
+  was not needed (`tools/check_commits.py`, and the trailers read at the audit).
+
+What the rule does not prevent: a red run whose cause no local check reproduces. Of the five,
+MDQ-PR-093 (a CI machine with clang-format and without git-clang-format), MDQ-PR-094 (static
+analysis, which the unit suite does not run) and MDQ-PR-095 (a test of scheduling on a loaded
+runner) were of this kind. The SDP's version 23 adds the
+static analysis before a push of C++ code; the difference of machines stays a cause that CI is
+there to catch.
 
 ## Closure
 
-Open until the effectiveness check.
+Closed on 2026-11-24 at the internal audit before release 2.2.0, on the result above. The
+assistant prepared the audit; the software lead confirms the closure when accepting the audit
+before the release checks.

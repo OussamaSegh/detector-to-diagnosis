@@ -56,6 +56,17 @@ the patch version.
 - The trace-review subagent's eval, run by hand (`measurements/agent-evals/trace-review/`): five
   of six cases pass by the scorer, and the sixth has the right verdict in a numbered form.
 
+### Changed (internal audit before release 2.2.0)
+
+- CAPA-0007: the presets, the soak's length and the fuzz targets and seconds of the release
+  checks are in `tools/release_facts.json`, which `tools/release_checks.sh`, `ci/run_all.sh` and
+  `tools/release_record.py` read; a test fails on a copy written back (MDQ-PR-081, MDQ-PR-087,
+  MDQ-PR-089).
+- CAPA-0006 is effective and closed. The SDP's version 23 (draft) adds static analysis before a
+  push of C++ code (MDQ-PR-094).
+- The internal audit of 2026-11-24 (draft); the audit before release 2.1.0 is indexed in the
+  design file, which had left it out (its finding N-1).
+
 ### Fixed (roadmap 2.2.0, Theme R)
 
 - MDQ-PR-090: `tools/release_record.py check` judged every record by today's table. It now

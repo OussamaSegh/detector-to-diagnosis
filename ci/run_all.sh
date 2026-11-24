@@ -9,7 +9,8 @@ cd "$(dirname "$0")/.."
 
 presets=("$@")
 if [ ${#presets[@]} -eq 0 ]; then
-  presets=(debug clang-release release hardened asan-ubsan tsan)
+  # The six presets of the release checks, from the file they share (CAPA-0007).
+  read -r -a presets <<< "$(python3 -c 'import json; print(" ".join(json.load(open("tools/release_facts.json"))["presets"]))')"
 fi
 
 for p in "${presets[@]}"; do

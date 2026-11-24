@@ -24,7 +24,11 @@
 # 3 if the run stopped before the last check (MDQ-PR-029).
 set -uo pipefail
 out=${1:?usage: tools/release_checks.sh OUT [FUZZ_SECONDS]}
-fuzz_seconds=${2:-600}
+# The soak's length, the fuzz targets and their default seconds come from one file that the
+# release record reads too (CAPA-0007).
+fact() { python3 -c 'import json,sys; v=json.load(open(sys.argv[1]))[sys.argv[2]]; print(" ".join(map(str, v)) if isinstance(v, list) else v)' "$(dirname "$0")/release_facts.json" "$1"; }
+soak_minutes=$(fact soak_minutes) || exit 2
+fuzz_seconds=${2:-$(fact fuzz_seconds)} || exit 2
 part=${3:-all}
 case "$part" in all | resume | 1 | 2 | 3 | 4) ;; *) echo "PART is all, resume, 1, 2, 3 or 4" >&2; exit 2 ;; esac
 if [ "$part" = resume ]; then
@@ -237,8 +241,8 @@ echo "trend against benchmarks/baseline/book-vm.json (not a check, CR-0025): sta
 # soak of SRS-SYS-003 on the same programs.
 python3 tools/test_report.py build/release "$out/system-test-report.md" > "$out/system-tests.txt" 2>&1
 check "system test report" $?
-python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes 100 > "$out/soak.txt" 2>&1
-check "soak, 100 minutes at 1 M singles/s" $?
+python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes "$soak_minutes" > "$out/soak.txt" 2>&1
+check "soak, $soak_minutes minutes at 1 M singles/s" $?
 # Chapter 33: the chain end to end on the same programs, against the offline reference, with the
 # daily QC report and the reconstruction of a phantom (SRS-SYS-006 to SRS-SYS-008).
 MINIDAQ_RECON_CPP=build/release/recon python3 tools/e2e.py build/release/minidaq/apps "$out/e2e" \
@@ -265,7 +269,7 @@ run_fuzz() {  # target cpu
     echo "crash files: $(ls "$dir"/crash-* "$dir"/leak-* "$dir"/timeout-* 2>/dev/null | wc -l)"
   } > "$out/fuzz/$t.txt"
 }
-targets=(config decoder raw16 protocol packet sorter listmode calibration documents)
+read -r -a targets <<< "$(fact fuzz_targets)"
 cpus=$(nproc)
 i=0
 while [ $i -lt ${#targets[@]} ]; do  # two targets at a time, each on its own CPU

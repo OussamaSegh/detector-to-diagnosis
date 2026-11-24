@@ -25,7 +25,9 @@ import pathlib
 import re
 import sys
 
-PRESETS = ["debug", "clang-release", "release", "hardened", "asan-ubsan", "tsan"]
+# The facts the release checks run, from the file they share (CAPA-0007).
+FACTS = json.loads((pathlib.Path(__file__).resolve().parent / "release_facts.json").read_text())
+PRESETS = FACTS["presets"]
 TODO = "TODO(record):"
 # (row of the record, the release check lines it rests on (prefixes), evidence file)
 ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in PRESETS] + \
@@ -42,13 +44,13 @@ ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in
     ("performance, SRS-PERF-021", ["writer benchmark ran"], "perf-writer.txt"),
     ("performance, SRS-PERF-022", ["soak"], "soak.txt"),
     ("system tests", ["system test report"], "system-test-report.md"),
-    ("soak, 100 minutes", ["soak"], "soak.txt"),
+    (f"soak, {FACTS['soak_minutes']} minutes", ["soak"], "soak.txt"),
     ("end to end", ["end to end"], "e2e.txt"),
     ("fuzzing", ["fuzz_", "fuzz build"], "release-checks.txt"),
 ]
 
 
-SOAK_ROW = "soak, 100 minutes"
+SOAK_ROW = f"soak, {FACTS['soak_minutes']} minutes"
 
 
 def soak_label(found):
@@ -192,7 +194,7 @@ tools/static_analysis.sh build/clang-release
 cmake --preset product && cmake --build --preset product     # the shipped binaries (CR-0029)
 tools/repro_check.sh OUT                                     # two builds, compared byte for byte
 tools/make_sbom.py --validate -o minidaq-{version}.cdx.json
-tools/release_checks.sh OUT 600 resume                        # this record's evidence
+tools/release_checks.sh OUT {FACTS['fuzz_seconds']} resume                        # this record's evidence
 tools/acceptance.py OUT                                       # the acceptance verdict
 book/build.sh all both && book/build.sh boox both             # the book and the solutions
 ```

@@ -1606,7 +1606,7 @@
       "affects": [
         "2.0.1"
       ],
-      "capa": "",
+      "capa": "CAPA-0007",
       "description": "tools/release_record.py writes a record's Build section with 'cmake --preset hardened ... # the shipped binaries' and without 'ci/run_all.sh product'. Since CR-0029 (2.0.0) the shipped programs are the product preset's, which the release checks build and tools/repro_check.sh compares. The 2.0.0 record was corrected by hand; the 2.0.1 record, written from the skeleton, kept the old lines, so it tells a reader to build the wrong binaries from the tag.",
       "evaluation": {
         "safety_relevant": false,
@@ -1792,7 +1792,7 @@
       "item": "tools",
       "status": "closed",
       "affects": [],
-      "capa": "",
+      "capa": "CAPA-0007",
       "description": "CR-0035 changed the release checks' soak to 100 minutes (tools/release_checks.sh, acceptance.json ACC-03), but the skeleton's row for it kept the label \"soak, 30 minutes\". A record written from the skeleton would have stated the wrong length next to evidence of 100 minutes.",
       "evaluation": {
         "safety_relevant": false,
@@ -1850,7 +1850,7 @@
       "affects": [
         "2.1.0"
       ],
-      "capa": "",
+      "capa": "CAPA-0007",
       "description": "The table of checks in the 2.1.0 record has the row 'soak, 30 minutes', although soak.txt reports 100 minutes and the record's own notes say 100. MDQ-PR-087 corrected the skeleton's row while the record was written, and its verification read a new skeleton, not the record; the record's table was not written again from it. tools/release_record.py check compares a record's evidence paths and results with the rules of Exercise 14.5, not its rows with what the evidence gives, so the record passed. It is the third report in two releases of a record stating what its evidence does not (MDQ-PR-081, MDQ-PR-087).",
       "evaluation": {
         "safety_relevant": false,
@@ -2012,7 +2012,7 @@
       "item": "exercises",
       "status": "closed",
       "affects": [],
-      "capa": "",
+      "capa": "CAPA-0006",
       "description": "test_python_threads_run_during_the_call failed in the debug build-test job on a commit that changed only HANDOFF.md, as MDQ-PR-086 did before its fix: five calls of the solution, each a chance for the second thread to be scheduled, all passed without it running on the loaded runner. The test passes locally, alone and repeated 20 times.",
       "evaluation": {
         "safety_relevant": false,

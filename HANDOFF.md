@@ -20,7 +20,13 @@ NOT committed: `CLAUDE.md` and `.claude/` (drafts in the project files folder,
 `neurolf-book/plans/agent-files-drafts/`); committing `.claude/settings.json` turns the hooks
 on for every later session, so it waits for the author's explicit words naming it. Then: the
 release (internal audit with the CAPA-0006 check, SOUP v32, the drafts' approvals, release
-checks). Next free: MDQ-PR-095, CAPA-0007, CR-0038, ADR 0042, TL-53.
+checks). 2026-11-24: MDQ-PR-095 (Exercise 29.4's GIL test on a loaded runner, again) fixed
+alone in 770bb15. The internal audit of 2026-11-24 is a draft: CAPA-0006 effective and closed,
+CAPA-0007 (`tools/release_facts.json`, one source for the release checks' facts), SDP v23
+draft, N-1 (the 2.1.0 audit was not indexed). Before the release checks: the software lead's
+written approval of SDP v23, SRS v39, SOUP v32, architecture v29, performance budget v5, threat
+model v19 and acceptance of the audit; the SOUP advisories read again. Next free: MDQ-PR-096,
+CAPA-0008, CR-0038, ADR 0042, TL-53.
 
 Earlier, 2026-11-23, 07:30 UTC: **2.2.0-dev has started** (`docs/ROADMAP-2.2.0.md`).
 The review of 2.1.0 is merged (PR #21, 4558b1a: MDQ-PR-088, MDQ-PR-089). SOUP list v32 is a
