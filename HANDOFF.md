@@ -26,10 +26,10 @@ CR-0038 approved (coordinator, delegation); the soak is part 5 of the release ch
 `tools/soak_ab.py` runs book-v2.2.0's programs and the candidate in 5 x 2 blocks of 20 minutes,
 interleaved, resumable per block (about 3.5 hours; rerun `resume` with the same OUT after each
 two-hour stop); ACC-10 in the acceptance specification (version 3); SDP v25 and STP v7 drafts
-describe it. Theme L's exit criterion is met: the first full A/B soak, book-v2.2.0 against the
+describe it. Theme L's exit criterion is met (Chapter 33 and 34 describe it since 2026-11-24): the first full A/B soak, book-v2.2.0 against the
 candidate, passed ACC-03, ACC-04 (5 of 600) and ACC-10 (2 of 600, p 0.23; power only 9% at
 so low a rate), with one resume (`measurements/cr-0038/`, MDQ-PR-103). Still to do: SRS-PERF-022's verification text at the next SRS
-version, and Chapter 33's soak text once Theme I's edits to it are merged. Then Theme I in the
+version. Then Theme I in the
 illustrations thread (photo pipeline, figures, photos), then the release (internal audit with
 CAPA-0007's check, SDP v25 approved). Next free:
 MDQ-PR-104, CAPA-0008, CR-0039, ADR 0042, TL-53.

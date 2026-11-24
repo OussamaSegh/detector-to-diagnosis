@@ -339,13 +339,14 @@ of the release checks that produces it, and the rule that reads it:
 |---|---|---|---|
 | ACC-01 | pipeline throughput, hardened | SRS-PERF-020 | median of 5 at least 20 M singles/s |
 | ACC-02 | list-mode writer, fsync at close | SRS-PERF-021 | slowest of 3 at least 3 M coinc./s |
-| ACC-03 | a long acquisition | SRS-SYS-003 | 30 min at 1 M singles/s, no loss, complete |
+| ACC-03 | a long acquisition | SRS-SYS-003 | 100 min at 1 M singles/s, no loss, complete |
 | ACC-04 | end-to-end latency | SRS-PERF-022 | p99 at most 10 ms in 99% of 10 s intervals |
 | ACC-05 | the chain end to end | SRS-SYS-006, 007, SRS-ANA-005 | all checks pass, records equal |
 | ACC-06 | the image | SRS-SYS-008 | radius and flatness within their limits |
 | ACC-07 | the system test plan | SRS-SYS-001, 002, 004, 005 | every case passed, none skipped |
-| ACC-08 | every release verification | (process) | all four parts passed |
+| ACC-08 | every release verification | (process) | all five parts passed |
 | ACC-09 | trace, risk, anomalies, freeze | (process) | the four checks pass on the candidate |
+| ACC-10 | latency against the previous release | SRS-PERF-022 | not more slow intervals, Fisher's test |
 
 ACC-04 needed a requirement that did not exist. The soak has measured the end-to-end latency since
 Chapter 19, and every release record quoted it, but no requirement said what it must be. A target
@@ -364,6 +365,22 @@ the per-second measure beside it, 2 of 1,740 intervals had a peak, at most 0.36%
 confidence, and a 30-minute soak would fail a release at that rate up to 14% of the time. The
 release soak now lasts 100 minutes, so six of its 600 intervals may be above (CR-0035,
 `measurements/mdq-pr-064/`). Exercise 33.4 computes such chances.
+
+The third change, at 2.3.0, kept the rule and changed what it is compared with. On the day of
+release 2.2.0 the candidate had 8 and then 11 of 600 intervals above the limit, and the
+programs of 2.1.0, soaked the same evening on the same machine, had 6, twice their count at their
+own release (MDQ-PR-096). One soak of the candidate alone cannot tell a busy machine from a slower
+program. So the soak now runs the previous release's programs, built from its tag, and the
+candidate's in turn, in blocks of 20 minutes (A B, B A, A B, ...), as the regression gate of
+Chapter 20 runs the benchmarks, and a slow spell of the host falls on both (CR-0038). Two
+verdicts come out of it and stay apart. ACC-04 is still absolute: the candidate's share of slow
+intervals against SRS-PERF-022. The new ACC-10 asks only whether the candidate has more slow
+intervals than the previous release had beside it, with Fisher's exact test, one-sided at 5%.
+Passing ACC-10 never meets the requirement; it says where a failure of ACC-04 lies. The first such
+soak gave 2.2.0's programs 2 of 600 and the candidate 5, both within the limit
+(`measurements/cr-0038/`), and it showed the comparison's own limit: at so low a rate, the test
+had a 9% chance of finding a candidate twice as slow. The record states that power beside the
+verdict, because a test that could not have failed proves little by passing.
 
 `tools/acceptance.py` (TL-41) evaluates the specification from one output directory of the release
 checks. Each rule reads one kind of evidence and returns whether the target is met and what was

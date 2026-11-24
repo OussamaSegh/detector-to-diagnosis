@@ -109,7 +109,7 @@ than from its architecture diagram.
 
 **Reproduce the last release's evidence.** Take the last release record and run what it says was
 run: the release checks, the benchmarks, the soak. Compare your numbers with the record's. For
-MiniDAQ that is `tools/release_checks.sh` in four parts and, since Chapter 33,
+MiniDAQ that is `tools/release_checks.sh` in five parts and, since Chapter 33,
 `tools/acceptance.py`, which tells you directly whether your evidence would accept the release. A
 difference is not necessarily a problem (your machine is not the reference machine), but you must
 be able to explain it. If you cannot reproduce the release, nobody can, and that is a finding for
