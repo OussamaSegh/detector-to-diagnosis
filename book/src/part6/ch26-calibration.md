@@ -565,6 +565,11 @@ identified, and a harder block. Then answer in `NOTES.md` which crystals are har
 nearest-peak boundaries go wrong, and what a board's recalibration can check automatically. *Time:*
 90 minutes.
 
+Figure [](#fig-ch26-flood) is what the solution finds in a flood like the tests' one.
+
+```{.figure #fig-ch26-flood src="book/figures/plots/ch26/floodmap.py" inputs="exercises/ch26/e2_flood_map" caption="The flood map of a 16 by 16 block, drawn with the exercise's solution on a synthetic flood (seed 26). The light sharing compresses the edge crystals and bends the rows; the peaks still come in order, and the lookup table assigns every pixel to its nearest peak." alt="Three square images of the same flood on a dark background, a grid of 16 by 16 bright blobs, closer together near the edges and with rows that sag slightly. Middle: a dot on each blob and white lines joining the dots row by row, each line following its slightly curved row. Right: thin white boundaries between the blobs, the lookup table's regions, one cell around each blob, narrower near the edges." width="100%"}
+```
+
 **Exercise 26.3 (H): Channel delays by least squares.** *Goal:* solve the delays of a four-ring
 scanner from its coincident pairs by conjugate gradients without a matrix, refuse pairs that do not
 connect every crystal, and set random coincidences aside. *Starter:*

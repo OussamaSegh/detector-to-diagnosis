@@ -78,6 +78,13 @@ fast, and its noise and resolution are well understood. It needs data already co
 treats every bin as equally certain, so its images of low-count data have streaks, and the
 pre-corrected data it needs has negative bins where the randoms were subtracted.
 
+Figure [](#fig-ch28-backprojection) builds a backprojection up from a few views. Each view smears
+its projection back along its lines; a few views make a star, many views without a filter make a
+blur that falls off as 1/r around every object, and the ramp filter is what removes the blur.
+
+```{.figure #fig-ch28-backprojection src="book/figures/plots/ch28/backprojection.py" inputs="tools/recon/project.py" caption="Backprojection, view by view, with the chapter's projector: a rod and a point forward-projected over 192 views without noise, then smeared back from 1, 4, 16 and 192 views, and last from 192 ramp-filtered views. Without the filter the sum is the object blurred by 1/r; with it, the object comes back." alt="Six square images in a row on a dark background. The object: a disk upper right and a small bright point lower left. One view summed: two vertical bright bands through the two objects. Four views: a pattern of crossing bands, brightest where they meet at the objects. Sixteen views: a star of thin rays around each object. All 192 views summed: two bright spots, each with a wide halo fading outward. All 192 views ramp-filtered: a sharp disk and a sharp point on a dark background, like the object."}
+```
+
 The iterative methods start from the model instead. Maximum-likelihood expectation maximization,
 MLEM (Shepp and Vardi, 1982; Lange and Carson, 1984), finds the image whose expected counts make
 the measured ones most probable. Its ordered-subsets version, OSEM (Hudson and Larkin, 1994),

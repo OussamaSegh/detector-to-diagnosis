@@ -236,6 +236,14 @@ crystals).
 
 ### The intuition
 
+A PET scanner is a ring of detector blocks around a bore, with the patient on a bed inside it.
+Every block sees the photons that reach its face, and the ring is several crystals deep along the
+scanner's axis, so one scan covers a slab of the body, the axial field of view, at once. Figure
+[](#fig-ch08-scanner) shows the ring with the gantry's cover taken off.
+
+```{.figure #fig-ch08-scanner src="book/figures/tikz/ch08/scanner.tex" caption="A brain PET scanner with the front cover taken off, drawn, not to scale. A decay in the head sends two photons to two blocks on opposite sides of the ring; the line between the two blocks is the line of response." alt="A drawing of a scanner seen from the front left: a cylindrical gantry housing with a bore, a patient lying on a bed with the head inside the bore. The front face shows the detector ring as 24 colored blocks around the bore; a dashed outline shows that the ring continues along the axis, and a dimension line above marks the axial field of view. A dot in the head sends two wavy photon arrows in opposite directions to two highlighted blocks, joined by a dashed line of response. Labels on the right name the gantry housing, the detector ring of 24 blocks of crystals and SiPMs, the ring's depth along the axis, the two 511 keV photons and the patient bed." width="100%"}
+```
+
 A detector turns a photon into numbers in four steps. A *scintillator crystal* absorbs
 the photon and emits a short flash of visible light. A *photodetector* turns the light
 into an electrical pulse. A *front-end ASIC* (an application-specific integrated circuit)
@@ -244,6 +252,13 @@ assemble those measurements into event words and send them over a link. Each ste
 noise to the time and to the energy, and each step has a maximum rate. Figure [](#fig-ch08-chain) shows the chain and what each step hands on.
 
 ```{.figure #fig-ch08-chain src="book/figures/tikz/ch08/chain.tex" caption="The detector chain. Each box turns its input into something the next one can measure; the FPGA's event words are what the DAQ software receives." alt="A row of five boxes connected by arrows: scintillator (LYSO crystal), photodetector (SiPM), front-end ASIC, FPGA, and the acquisition PC. A 511 keV photon enters the scintillator. Under each box a small drawing shows its output: a flash of light about 40 ns long, an electrical pulse, a time stamp and an energy in ADC units, packed event words in packets, and Ethernet to the coincidence sorter." width="100%"}
+```
+
+Inside each block the steps are physical layers. Figure [](#fig-ch08-module) takes one block apart:
+the crystals on top, where the photon is absorbed, the photodetectors under them, and the board that
+measures the pulses under those.
+
+```{.figure #fig-ch08-module src="book/figures/tikz/ch08/module.tex" caption="One detector block, taken apart, drawn, not to scale. The photon is absorbed in one crystal; its flash of light is kept in that crystal by the reflector and reaches the SiPMs under it, with some shared to the neighbors." alt="An exploded three-dimensional drawing of a detector block, layers stacked from top to bottom with dashed lines showing how they sit on each other. On top, an 8 by 8 array of long crystals separated by white reflector lines; a wavy photon arrow enters one crystal of the front row, which is highlighted, with a star-shaped flash halfway down and an arrow pointing down. Below, a thin clear optical coupling layer; below it an 8 by 8 SiPM array whose pixel under the hit crystal is bright and its neighbors lighter. At the bottom, a larger front-end board with an ASIC chip and a connector. Labels name each layer: the 511 keV photon, the crystals a few millimeters wide and about 2 cm long, the flash of a few thousand optical photons about 40 ns long, the optical coupling, the SiPM array with most light under the hit crystal, and the front-end board whose ASIC measures time and energy." width="95%"}
 ```
 
 ### Scintillators
@@ -274,7 +289,10 @@ sum of the fired cells is the signal. SiPMs are compact, work at tens of volts, 
 insensitive to magnetic fields (so they work inside an MR scanner), and are fast. Their
 gain and dark count rate depend strongly on temperature, which is why a SiPM-based
 scanner monitors temperatures and corrects gains: a calibration problem that becomes a
-DAQ data stream (Chapter 26).
+DAQ data stream (Chapter 26). Figure [](#fig-ch08-sipm) shows why the signal comes in steps.
+
+```{.figure #fig-ch08-sipm src="book/figures/tikz/ch08/sipm.tex" caption="A SiPM pixel is an array of microcells. Each detected photon fires one cell completely, so the output is the number of fired cells: in steps of one cell for a few photons, smooth for a scintillation flash, and saturating when most cells have fired." alt="Left: a magnified 12 by 12 grid of square microcells, each with a short line for its quench resistor; twelve cells are highlighted as fired, each with a dot for the photon that fired it, and a legend distinguishes fired from ready cells. Right: three pulses drawn on one time axis, with heights marked 1 cell, 2 cells and 3 cells, the height growing in equal steps; a note says that in a flash thousands of cells fire, so the pulse looks smooth, and that when most cells have fired more light adds little, the saturation of Chapter 26." width="95%"}
+```
 
 ### Front-end ASICs and the FPGA
 

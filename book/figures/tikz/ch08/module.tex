@@ -1,0 +1,58 @@
+% Chapter 8: one detector block, exploded. From the top: an 8 x 8 array of scintillator crystals
+% separated by reflector, the optical coupling, an 8 x 8 SiPM array and the front-end board with
+% its ASIC. A drawn view, not to scale; real blocks differ in counts and sizes.
+\begin{tikzpicture}[x={(0.78cm,-0.36cm)},y={(0.70cm,0.40cm)},z={(0cm,1cm)}]
+  % \isobox{x0}{y0}{z0}{dx}{dy}{dz}{color}{share of color on the top face}
+  % draws the three faces the reader sees: the top, the face at y0 and the face at x0+dx.
+  \newcommand{\isobox}[8]{%
+    \fill[#7!#8!white,draw=d2dink,line width=0.45pt] (#1,#2,#3+#6) -- ++(#4,0,0) -- ++(0,#5,0) -- ++(-#4,0,0) -- cycle;
+    \fill[#7!#8!d2dink!55!white,draw=d2dink,line width=0.45pt] (#1,#2,#3) -- ++(#4,0,0) -- ++(0,0,#6) -- ++(-#4,0,0) -- cycle;
+    \fill[#7!#8!d2dink!80!white,draw=d2dink,line width=0.45pt] (#1+#4,#2,#3) -- ++(0,#5,0) -- ++(0,0,#6) -- ++(0,-#5,0) -- cycle;}
+  % the front-end board, with the ASIC and a connector
+  \isobox{-0.6}{-0.6}{0}{4.9}{3.6}{0.12}{d2dcat2}{30}
+  \isobox{3.05}{0.7}{0.12}{0.9}{0.9}{0.12}{d2dink}{70}
+  \isobox{3.4}{2.35}{0.12}{0.6}{0.35}{0.18}{d2dmuted}{40}
+  \foreach \i in {0.2,0.6,...,2.2} {\draw[d2dcat2!60!d2dink,line width=0.5pt] (2.5,\i,0.12) -- (3.05,{0.7+0.9*(\i-0.2)/2.0},0.12);}
+  % the SiPM array: 8 x 8 light-sensitive pixels on a carrier
+  \isobox{0}{0}{0.75}{2.4}{2.4}{0.16}{d2dink}{70}
+  \foreach \i in {0,...,7} {\foreach \j in {0,...,7} {
+    \fill[d2dcat0!35!white] ({0.04+0.3*\i},{0.04+0.3*\j},0.91) -- ++(0.22,0,0) -- ++(0,0.22,0) -- ++(-0.22,0,0) -- cycle;}}
+  % the pixels that receive the flash: most light under the crystal that was hit, some shared
+  \foreach \i/\j/\s in {5/0/100,4/0/45,6/0/45,5/1/45,4/1/20,6/1/20} {
+    \fill[d2dcat1!\s!white] ({0.04+0.3*\i},{0.04+0.3*\j},0.91) -- ++(0.22,0,0) -- ++(0,0.22,0) -- ++(-0.22,0,0) -- cycle;}
+  % the optical coupling: a thin clear layer
+  \isobox{0}{0}{1.45}{2.4}{2.4}{0.06}{d2dcat4}{25}
+  % the crystal array, 8 x 8, with reflector (white lines) between the crystals
+  \isobox{0}{0}{2.05}{2.4}{2.4}{2.2}{d2dcat4}{35}
+  \foreach \k in {1,...,7} {
+    \draw[white,line width=0.9pt] ({0.3*\k},0,4.25) -- ({0.3*\k},2.4,4.25);
+    \draw[white,line width=0.9pt] (0,{0.3*\k},4.25) -- (2.4,{0.3*\k},4.25);
+    \draw[white,line width=0.9pt] ({0.3*\k},0,2.05) -- ({0.3*\k},0,4.25);
+    \draw[white,line width=0.9pt] (2.4,{0.3*\k},2.05) -- (2.4,{0.3*\k},4.25);}
+  % the crystal that was hit, on the front row: the photon enters at the top, the flash
+  % of light at the depth where it is absorbed, the light guided down to the SiPMs
+  \fill[d2dcat1!55!white] (1.5,0,2.05) -- (1.8,0,2.05) -- (1.8,0,4.25) -- (1.5,0,4.25) -- cycle;
+  \draw[d2dink,line width=1pt] (1.5,0,2.05) -- (1.5,0,4.25) -- (1.8,0,4.25) -- (1.8,0,2.05);
+  \coordinate (flash) at (1.65,0,3.35);
+  \foreach \a in {0,45,...,315} {\draw[d2dcat1!70!d2dink,line width=0.7pt] ($(flash)+(\a:0.07cm)$) -- ($(flash)+(\a:0.2cm)$);}
+  \fill[white] (flash) circle (0.05cm);
+  \draw[photon,d2dcat3] (1.65,0,5.6) -- (1.65,0,4.3);
+  \draw[->,d2dcat1!70!d2dink,line width=0.8pt] (1.65,0,3.05) -- (1.65,0,2.15);
+  % the explosion lines: where each layer sits on the next
+  \foreach \p in {(0,0),(2.4,0),(2.4,2.4)} {\draw[d2dmuted,line width=0.35pt,dash pattern=on 1.5pt off 1.5pt] \p++(0,0,0.95) -- ++(0,0,1.1);}
+  % labels
+  \begin{scope}[every node/.style={lab,anchor=west}]
+    \node (n1) at (5.2,4.2,4.4) {511 keV photon};
+    \node (n2) at (5.2,4.2,3.5) {8 $\times$ 8 LYSO crystals, each a few mm\\wide and about 2 cm long; reflector\\between them keeps the light in};
+    \node (n3) at (5.2,4.2,2.3) {the flash: a few thousand optical\\photons, about 40 ns long};
+    \node (n4) at (5.2,4.2,1.35) {optical coupling};
+    \node (n5) at (5.2,4.2,0.55) {8 $\times$ 8 SiPM array: most light under\\the hit crystal, some shared};
+    \node (n6) at (5.2,4.2,-0.55) {front-end board: the ASIC measures\\time and energy (Chapter 9)};
+  \end{scope}
+  \draw[d2dmuted,line width=0.4pt] (n1.west) -- (1.75,0,5.2);
+  \draw[d2dmuted,line width=0.4pt] (n2.west) -- (2.4,2.0,3.9);
+  \draw[d2dmuted,line width=0.4pt] (n3.west) -- (flash);
+  \draw[d2dmuted,line width=0.4pt] (n4.west) -- (2.4,2.0,1.48);
+  \draw[d2dmuted,line width=0.4pt] (n5.west) -- (2.4,2.0,0.85);
+  \draw[d2dmuted,line width=0.4pt] (n6.west) -- (3.95,1.2,0.24);
+\end{tikzpicture}
