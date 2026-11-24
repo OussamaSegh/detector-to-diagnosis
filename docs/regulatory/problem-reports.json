@@ -2031,6 +2031,21 @@
         "category": "test",
         "escape": "The fix of MDQ-PR-086 was verified by five runs in a row on an idle machine, not on a machine loaded as CI's is."
       }
+    },
+    {
+      "id": "MDQ-PR-096",
+      "title": "The release soak of 2.2.0 has 8 of 600 intervals above 10 ms, more than ACC-04 allows, each with a thread kept from a CPU",
+      "found": "2026-11-24, release checks of 2.2.0, part 3, on 5647d2e: tools/acceptance.py judged ACC-04 FAIL (592 of 600 intervals within 10 ms, 98.7%)",
+      "item": "pipeline",
+      "status": "open",
+      "affects": [],
+      "capa": "",
+      "description": "Every check of part 3 passed, but 8 of the soak's 600 intervals of 10 s had a 99th percentile above 10 ms (up to 62.65 ms), where ACC-04 allows six (CR-0035). In each, one server thread waited 21 to 61 ms in one second for a CPU while runnable (mdq-write, mdq-decode or mdq-sort); steal over the intervals averaged 0.66% (0.25% in 2.1.0's soak), per second up to 6.79%. The pipeline ran at about 4% of its capacity, and the single-node source of CR-0037 runs the same generator statements; the regression gate against book-v2.1.0 passed. The symptom is MDQ-PR-064's.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "No single was lost or arrived after the sorter's window (the soak counts no loss and the run is complete); the latency is not a risk control of a hazard, as for MDQ-PR-064."
+      },
+      "decision": "Run part 3 of the release checks again once, in full, on the same commit (SDP section 8; investigation in the release's rerun-part-3.md). A second failure of ACC-04 is a problem report against the commit and stops the release for the software lead."
     }
   ]
 }
