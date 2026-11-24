@@ -305,6 +305,12 @@ TEST(Config, ReadoutNodesAreRefusedOutOfRangeForUdpAndBefore22) {
       "nodes": {"count": 2, "clock_offsets_ps": [0, 1000001]}}})"),
                   "/source/nodes/clock_offsets_ps/1", "between"));
   EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2", "source": {"type": "synthetic",
+      "nodes": {"count": 2, "clock_offsets_ps": [-1000001, 0]}}})"),
+                  "/source/nodes/clock_offsets_ps/0", "between"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2", "source": {"type": "synthetic",
+      "nodes": {"count": 1, "clock_offsets_ps": 0}}})"),
+                  "/source/nodes/clock_offsets_ps", "one offset per node"));
+  EXPECT_TRUE(has(errors_of(R"({"schema_version": "2.2", "source": {"type": "synthetic",
       "nodes": {"count": 2, "clock_offsets_ps": [0, 1.5]}}})"),
                   "/source/nodes/clock_offsets_ps/1", "integer"));
   EXPECT_TRUE(

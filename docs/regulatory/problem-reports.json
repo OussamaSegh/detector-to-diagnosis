@@ -2045,7 +2045,7 @@
         "safety_relevant": false,
         "rationale": "No single was lost or arrived after the sorter's window (the soak counts no loss and the run is complete); the latency is not a risk control of a hazard, as for MDQ-PR-064."
       },
-      "decision": "Run part 3 of the release checks again once, in full, on the same commit (SDP section 8; investigation in the release's rerun-part-3.md). A second failure of ACC-04 is a problem report against the commit and stops the release for the software lead. Part 3 ran again the same day: ACC-04 failed again, 11 of 600 intervals (highest 20.45 ms, each again with one thread waiting 21 to 77 ms for a CPU, steal mean 0.83%), and the regression gate judged BM_SortFunctor slower (0.862, p 0.0026), a benchmark it had passed in the first run, of a sorter whose source did not change since 2.1.0. The release stops for the software lead. Control the same evening: book-v2.1.0's programs, built anew, had 6 of 600 intervals above 10 ms on the same machine (3 at their release), with the same CPU waits; the candidate's 19 of 1,200 is 1.6 times that rate, not distinguishable from chance in two soaks. BM_SortFunctor's machine code is the same in both builds (measurements/mdq-pr-096/)."
+      "decision": "Run part 3 of the release checks again once, in full, on the same commit (SDP section 8; investigation in the release's rerun-part-3.md). A second failure of ACC-04 is a problem report against the commit and stops the release for the software lead. Part 3 ran again the same day: ACC-04 failed again, 11 of 600 intervals (highest 20.45 ms, each again with one thread waiting 21 to 77 ms for a CPU, steal mean 0.83%), and the regression gate judged BM_SortFunctor slower (0.862, p 0.0026), a benchmark it had passed in the first run, of a sorter whose source did not change since 2.1.0. The release stops for the software lead. Control the same evening: book-v2.1.0's programs, built anew, had 6 of 600 intervals above 10 ms on the same machine (3 at their release), with the same CPU waits; the candidate's 19 of 1,200 is 1.6 times that rate, not distinguishable from chance in two soaks. BM_SortFunctor's machine code is the same in both builds (measurements/mdq-pr-096/). Decided on 2026-11-24 by the software lead (the coordinator under the author's standing delegation of 2026-11-15, 2026-11-23 and 2026-11-24, in writing in the project): release 2.2.0 with a recorded deviation for ACC-04 and for the regression gate's verdict on BM_SortFunctor, as for MDQ-PR-064 at 1.0.0, on the control soak (the 2.1.0 programs at the limit on the same machine) and the benchmark's unchanged machine code. The report stays open; CR-0038 proposes for 2.3.0 that the latency be judged against the previous release's programs, interleaved on the same machine."
     },
     {
       "id": "MDQ-PR-097",
@@ -2072,6 +2072,33 @@
         "cause": "A test that judged a past record by present data.",
         "category": "test",
         "escape": "No report had stayed open across a push since the test was written."
+      }
+    },
+    {
+      "id": "MDQ-PR-098",
+      "title": "The release record check has no way to accept a check released with the software lead's deviation",
+      "found": "2026-11-24, writing the record of 2.2.0: tools/release_record.py check refused the rows of ACC-04 and the regression gate, which the software lead had released with a deviation",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "SDP section 8 lets the software lead release with a failed check, recorded with the decision (1.0.0 did so for ACC-04). Since Theme R the check of a record compares each table row with the evidence and requires the performance row to pass, so a record that states the deviation honestly cannot pass it, and one that passes it would misstate the evidence.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A tool of the release records; it refused a correct record, it never accepted a wrong one."
+      },
+      "resolution": {
+        "change": "A row may say 'fail (deviation)' where the evidence gives FAIL or pass, when the record has a non-empty section Deviation; the check then excuses only the exercise check's 'is not pass' error of that row. Exercise 14.5's own check is unchanged.",
+        "verification": "tools.release_record: test_a_failed_check_passes_only_as_a_recorded_deviation (refused without the section or with an empty one, accepted with it, no other error excused); the 2.2.0 record passes the check."
+      },
+      "root_cause": {
+        "whys": [
+          "Theme R made the table follow the evidence row by row.",
+          "No release since 1.0.0 had failed a check, so the path of SDP section 8 for a deviation was not exercised by the new check."
+        ],
+        "cause": "A check written for the passing case only.",
+        "category": "tool",
+        "escape": "The skeleton's tests covered a stale row and a failed row, not a failed row that was released."
       }
     }
   ]

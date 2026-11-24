@@ -233,13 +233,34 @@ def table_drift(root, record, text):
     if tuple(int(x) for x in version.split(".")) < FIRST_TABLE:
         return []  # written before the table had its present rows (MDQ-PR-090)
     lines = {line.strip() for line in text.splitlines()}
+    if deviation(text):
+        lines |= {DEVIATED.sub(r"| \1 | pass |", line) for line in lines}
+        lines |= {DEVIATED.sub(r"| \1 | FAIL |", line) for line in lines}
     return [f"the table lacks the row {row} that the evidence gives"
             for row in table_rows(root, version) if row not in lines]
 
 
+# A check that failed and was released with the software lead's decision (SDP section 8): its row
+# says "fail (deviation)" and the record has a section Deviation with the decision (MDQ-PR-098).
+DEVIATED = re.compile(r"^\| ([^|]+?) \| fail \(deviation\) \|")
+
+
+def deviation(text):
+    """The text of the record's section Deviation, empty if it has none."""
+    m = re.search(r"^## Deviation\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    return m.group(1).strip() if m else ""
+
+
+def excused(text, errors):
+    """The exercise check's errors without those of the rows released with a deviation."""
+    if not deviation(text):
+        return errors
+    return [e for e in errors if not re.fullmatch(r"Verification: '[^']+' is 'fail \(deviation\)', not 'pass'", e)]
+
+
 def check(root, record):
     text = record.read_text()
-    errors = exercise_check(root)(text, root / "docs/regulatory")
+    errors = excused(text, exercise_check(root)(text, root / "docs/regulatory"))
     errors += table_drift(root, record, text)
     errors += [f"line {n}: still a {TODO} line" for n, line in enumerate(text.splitlines(), 1)
                if TODO in line]

@@ -1,0 +1,77 @@
+# 2026-11-24T09:06:12Z commit 5647d2e ci/run_all.sh (all six presets)
+=== preset: debug ===
+          Start  400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+ 400/1033 Test  #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.01 sec
+ 641/1033 Test  #641: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................................................................................................***Skipped   0.00 sec
+          Start  676: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+ 676/1033 Test  #676: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+ 740/1033 Test  #740: ch10/e4_fast_sorter/solution/FastSorter.FastEnough ..............................................................................................................................***Skipped   0.00 sec
+          Start  906: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive
+ 906/1033 Test  #906: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive .....................................................................................................   Passed    0.00 sec
+          Start  927: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue
+ 927/1033 Test  #927: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue ..............................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 1033
+=== preset: clang-release ===
+          Start  400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+ 400/1033 Test  #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.01 sec
+          Start  676: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+ 676/1033 Test  #676: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+          Start  906: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive
+ 906/1033 Test  #906: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive .....................................................................................................   Passed    0.00 sec
+          Start  927: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue
+ 927/1033 Test  #927: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue ..............................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 1033
+=== preset: release ===
+          Start  400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+ 400/1033 Test  #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.00 sec
+          Start  676: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+ 676/1033 Test  #676: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+          Start  906: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive
+ 906/1033 Test  #906: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive .....................................................................................................   Passed    0.00 sec
+          Start  927: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue
+ 927/1033 Test  #927: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue ..............................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 1033
+=== preset: hardened ===
+          Start  400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+ 400/1034 Test  #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.01 sec
+          Start  677: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+ 677/1034 Test  #677: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.00 sec
+          Start  907: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive
+ 907/1034 Test  #907: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive .....................................................................................................   Passed    0.00 sec
+          Start  928: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue
+ 928/1034 Test  #928: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue ..............................................................................................................   Passed    0.00 sec
+100% tests passed, 0 tests failed out of 1034
+=== preset: asan-ubsan ===
+   1/1022 Test    #1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt ............................................................................................................***Skipped   0.03 sec
+   2/1022 Test    #2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt ...........................................................................................................***Skipped   0.03 sec
+          Start  400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+ 400/1022 Test  #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.03 sec
+ 568/1022 Test  #568: ch02/e3_pmr_arena/solution/Stage.SteadyStateDoesNotAllocate .....................................................................................................................***Skipped   0.01 sec
+ 622/1022 Test  #622: ch04/e4_prefault_arena/solution/PrefaultedArena.WritingAfterConstructionDoesNotFault ............................................................................................***Skipped   0.02 sec
+ 637/1022 Test  #637: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................................................................................................***Skipped   0.01 sec
+          Start  672: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+ 672/1022 Test  #672: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.01 sec
+ 736/1022 Test  #736: ch10/e4_fast_sorter/solution/FastSorter.FastEnough ..............................................................................................................................***Skipped   0.02 sec
+          Start  902: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive
+ 902/1022 Test  #902: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive .....................................................................................................   Passed    0.01 sec
+          Start  923: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue
+ 923/1022 Test  #923: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue ..............................................................................................................   Passed    0.01 sec
+100% tests passed, 0 tests failed out of 1022
+=== preset: tsan ===
+   1/1022 Test    #1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt ............................................................................................................***Skipped   0.03 sec
+   2/1022 Test    #2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt ...........................................................................................................***Skipped   0.03 sec
+          Start  400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+ 400/1022 Test  #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.05 sec
+ 568/1022 Test  #568: ch02/e3_pmr_arena/solution/Stage.SteadyStateDoesNotAllocate .....................................................................................................................***Skipped   0.02 sec
+ 622/1022 Test  #622: ch04/e4_prefault_arena/solution/PrefaultedArena.WritingAfterConstructionDoesNotFault ............................................................................................***Skipped   0.02 sec
+ 637/1022 Test  #637: ch05/e2_hotspot/solution/EventSource.FastEnough .................................................................................................................................***Skipped   0.02 sec
+          Start  672: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged
+ 672/1022 Test  #672: ch07/e1_tidy_zero/solution/Options.AFailedParseLeavesTheOptionsUnchanged ........................................................................................................   Passed    0.02 sec
+ 736/1022 Test  #736: ch10/e4_fast_sorter/solution/FastSorter.FastEnough ..............................................................................................................................***Skipped   0.02 sec
+          Start  902: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive
+ 902/1022 Test  #902: ch23/e4_batch_receiver/solution/BatchReceiver.KeepsTheErrorOfAFailedReceive .....................................................................................................   Passed    0.02 sec
+          Start  923: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue
+ 923/1022 Test  #923: ch24/e4_split_counter/solution/SplitCounter.AFailedReadIsNotAValue ..............................................................................................................   Passed    0.02 sec
+100% tests passed, 0 tests failed out of 1022
+design file: 20 clauses, 29 controlled documents, ok
+=== all gates passed: debug clang-release release hardened asan-ubsan tsan ===

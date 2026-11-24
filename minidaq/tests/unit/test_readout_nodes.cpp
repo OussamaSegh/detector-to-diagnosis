@@ -244,6 +244,7 @@ TEST(NodeMerge, CountsALateSingleNeverDropsItSilently) {
   EXPECT_EQ(m.stats().singles_in, m.stats().singles_out + m.stats().late + m.stats().out_of_order);
   EXPECT_EQ(m.stats().late + m.stats().out_of_order, 1U);
   EXPECT_THROW(NodeMerge{{}}, std::invalid_argument);
+  EXPECT_THROW(m.end(2), std::out_of_range);  // no such node (coverage review of 2.2.0)
 }
 
 // [snippet:oracle]

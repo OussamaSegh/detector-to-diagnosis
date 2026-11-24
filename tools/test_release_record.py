@@ -118,6 +118,7 @@ class ReleaseRecord(unittest.TestCase):
                 errors = module.check(text, pathlib.Path(tmp) / "docs/regulatory")
         else:  # the record is being written: judge it against the working tree
             errors = module.check(text, ROOT / "docs/regulatory")
+        errors = rr.excused(text, errors)  # a check released with a deviation (MDQ-PR-098)
         errors += [line for line in text.splitlines() if rr.TODO in line]
         self.assertEqual(errors, [])
 
@@ -137,6 +138,30 @@ class ReleaseRecord(unittest.TestCase):
             self.assertEqual(len(rr.table_drift(root, record, stale)), 1)
             wrong = "\n".join(rows).replace("| fuzzing | FAIL |", "| fuzzing | pass |")
             self.assertEqual(len(rr.table_drift(root, record, wrong)), 1)
+
+    def test_a_failed_check_passes_only_as_a_recorded_deviation(self):
+        """MDQ-PR-098: release 2.2.0 was approved with a deviation for ACC-04 and the gate."""
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            ev = root / "measurements/release-9.9.0"
+            ev.mkdir(parents=True)
+            (ev / "commit.txt").write_text("commit " + "a" * 40 + "\n")
+            (ev / "release-checks.txt").write_text(CHECKS + "pass  soak, 100 minutes at 1 M singles/s\n")
+            record = root / "9.9.0.md"
+            rows = "\n".join(rr.table_rows(root, "9.9.0"))
+            self.assertIn("| fuzzing | FAIL |", rows)
+            deviated = rows.replace("| fuzzing | FAIL |", "| fuzzing | fail (deviation) |")
+            refused = ["Verification: 'fuzzing' is 'fail (deviation)', not 'pass'"]
+            # Without a section Deviation the row is neither the evidence's nor excused.
+            self.assertEqual(len(rr.table_drift(root, record, deviated)), 1)
+            self.assertEqual(rr.excused(deviated, refused), refused)
+            decided = deviated + "\n\n## Deviation\n\nThe software lead decided ...\n"
+            self.assertEqual(rr.table_drift(root, record, decided), [])
+            self.assertEqual(rr.excused(decided, refused), [])
+            # A deviation never excuses another error, and an empty section is no decision.
+            self.assertEqual(rr.excused(decided, ["Verification: 'fuzzing' is 'FAIL', not 'pass'"]),
+                             ["Verification: 'fuzzing' is 'FAIL', not 'pass'"])
+            self.assertEqual(rr.deviation(deviated + "\n## Deviation\n\n## Risk\n"), "")
 
     def test_the_newest_record_has_every_row_its_evidence_gives(self):
         newest = max((p for p in (ROOT / "docs/regulatory/releases").glob("*.md")
