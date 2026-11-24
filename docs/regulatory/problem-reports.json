@@ -2004,6 +2004,33 @@
         "category": "process",
         "escape": "Static analysis runs only in CI and in the gate's --full mode; the local check before the push did not include it."
       }
+    },
+    {
+      "id": "MDQ-PR-095",
+      "title": "Exercise 29.4's test of the GIL fails again on CI after five calls without the other thread running",
+      "found": "2026-11-24, the CI result of ddc8d5a, job build-test (debug): ch29/e4_in_place/solution/unittest, read before the next push (CAPA-0006)",
+      "item": "exercises",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "test_python_threads_run_during_the_call failed in the debug build-test job on a commit that changed only HANDOFF.md, as MDQ-PR-086 did before its fix: five calls of the solution, each a chance for the second thread to be scheduled, all passed without it running on the loaded runner. The test passes locally, alone and repeated 20 times.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "An exercise's test, not MiniDAQ; the defect made a correct solution fail, never let a wrong one pass."
+      },
+      "resolution": {
+        "change": "The test tries the call for up to 20 s instead of five times, and passes as soon as one call shows the other thread running; the failure message names the attempts.",
+        "verification": "ch29/e4_in_place/solution/unittest passes in debug; the solution with its GIL release removed fails it after 22 attempts over 20 s, all with 0 stamps; tests.waits passes with the deadline's clock reads tagged."
+      },
+      "root_cause": {
+        "whys": [
+          "MDQ-PR-086's fix gave the scheduler five chances, a number chosen without a measure of how long a loaded runner can withhold a CPU.",
+          "A debug call takes about a second there, so five calls covered a few seconds of a runner running several test processes at once."
+        ],
+        "cause": "A margin of attempts with no basis in time, for a test of scheduling.",
+        "category": "test",
+        "escape": "The fix of MDQ-PR-086 was verified by five runs in a row on an idle machine, not on a machine loaded as CI's is."
+      }
     }
   ]
 }

@@ -85,19 +85,23 @@ class InPlace(unittest.TestCase):
         # can run at all, however long the call takes. The other thread notes the time as it
         # counts; when the call returns, Python may switch to it before this thread reads the
         # clock, so only the first half of the call counts. On a loaded machine the other
-        # thread may not get a CPU during one call (CI, MDQ-PR-086), so the call is tried up to
-        # five times: with the GIL released one attempt is enough, with it held none can pass.
+        # thread may not get a CPU during one call (CI, MDQ-PR-086), and five calls were not
+        # always enough either (MDQ-PR-095), so the call is tried for up to 20 s: with the GIL
+        # released one attempt is enough, with it held none can pass however long it tries.
         n = 30_000_000
         values = np.ones(n)
         index = np.zeros(n, dtype=np.int64)
         seen = []
-        for _ in range(5):
+        # A margin of 20 s over a stall of about 50 ms.
+        deadline = time.monotonic() + 20.0  # clock: deadline
+        while not seen or time.monotonic() < deadline:  # clock: deadline
             out = np.zeros(1)
             seen.append(self._stamps_during(values, index, out))
             self.assertEqual(out[0], n)
             if seen[-1] > 10:
                 return
-        self.fail(f"the other thread did not run during the call: {seen} stamps in 5 attempts")
+        self.fail(f"the other thread did not run during the call in {len(seen)} attempts "
+                  f"over 20 s: {seen[:10]} stamps in the first ten")
 
     @staticmethod
     def _stamps_during(values, index, out):
