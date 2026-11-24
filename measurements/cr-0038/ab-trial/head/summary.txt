@@ -1,0 +1,6 @@
+soak: 1e+06 singles/s for 100.0 min, 605 samples every 10 s, in 5 blocks interleaved with the other side's (CR-0038)
+resident memory: max 31.4 MiB; trend +0.041 MiB/h (standard error 0.041) pooled within 5 blocks, 305 samples after 10 min of each
+end-to-end latency over each interval: p99 max 116.39 ms, max 125.83 ms
+intervals with p99 above 10 ms: 5 of 600 (block 2 at 1040 s, block 4 at 1040 s, block 4 at 1170 s, block 5 at 10 s, block 5 at 310 s)
+steal time over each interval: max 1.10%, mean 0.56%
+result: PASS

@@ -202,6 +202,22 @@ class Blocks(unittest.TestCase):
             self.assertEqual(ran.read_text(), "head-2\nbase-2\n", code.stdout + code.stderr)
             self.assertTrue((out / "compare.txt").is_file())
 
+    def test_a_block_names_no_absolute_path_of_the_machine(self):
+
+        # REQ: SRS-PERF-022
+        # MDQ-PR-103: the release checks give the previous release's programs by an absolute path
+        # under OUT; the summary is committed to a public repository.
+        with tempfile.TemporaryDirectory() as d:
+            f = pathlib.Path(d) / "summary.txt"
+            apps = pathlib.Path(d) / "soak-ab/base-src/build/release/minidaq/apps"
+            f.write_text(f"machine: vm, 4 CPUs; programs {apps}\nresult: PASS\n")
+            soak_ab.private(f, apps, "base")
+            self.assertNotIn(d, f.read_text())
+            self.assertIn("programs the previous release's build", f.read_text())
+            f.write_text("machine: vm, 4 CPUs; programs build/release/minidaq/apps\n")
+            soak_ab.private(f, pathlib.Path("build/release/minidaq/apps"), "head")
+            self.assertIn("programs build/release/minidaq/apps", f.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2217,6 +2217,33 @@
         "category": "tool",
         "escape": "No test edited a committed, unformatted file."
       }
+    },
+    {
+      "id": "MDQ-PR-103",
+      "title": "The A/B soak's block summaries name the previous release's programs by an absolute path of the machine",
+      "found": "2026-11-24, the first run of tools/soak_ab.py (CR-0038), before any release used it",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "tools/soak.py writes the programs' directory as given; tools/release_checks.sh gives the previous release's as an absolute path under OUT, so every block summary of that side named a path of the machine, against CLAUDE.md's privacy rule, in evidence committed to a public repository (as MDQ-PR-101 for the acceptance report).",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "Evidence of the release process; the paths hold no personal data, but the rule forbids them."
+      },
+      "resolution": {
+        "change": "tools/soak_ab.py rewrites an absolute programs path in each block's summary as the side's name; the trial's summaries in measurements/cr-0038/ are corrected.",
+        "verification": "tools.test_soak_ab: test_a_block_names_no_absolute_path_of_the_machine (fails without the change)."
+      },
+      "root_cause": {
+        "whys": [
+          "tools/soak.py was written for one run from the repository, with a relative path.",
+          "CR-0038 added a second build outside the repository and kept soak.py's report as it was."
+        ],
+        "cause": "A generated, committed report with no check of the privacy rule (the escape of MDQ-PR-101 again).",
+        "category": "tool",
+        "escape": "The privacy rule is checked on agent files, not on evidence."
+      }
     }
   ]
 }

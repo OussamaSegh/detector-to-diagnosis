@@ -37,6 +37,7 @@ import sys
 
 SOAK = pathlib.Path(__file__).resolve().parent / "soak.py"
 SIDES = ("base", "head")
+SIDE_NAMES = {"base": "previous release's", "head": "candidate's"}
 
 
 def order(blocks):
@@ -189,6 +190,14 @@ def compare(base, head, alpha=0.05):
     return not worse, "\n".join(lines) + "\n"
 
 
+def private(summary, apps, side):
+    """Names a block's programs without an absolute path of the machine: the summary is evidence
+    committed to a public repository (as MDQ-PR-101 for the acceptance report, MDQ-PR-103)."""
+    if pathlib.Path(apps).is_absolute():
+        text = summary.read_text().replace(str(apps), f"the {SIDE_NAMES[side]} build")
+        summary.write_text(text)
+
+
 def merge(out, blocks):
     verdicts = {}
     for side in SIDES:
@@ -230,6 +239,7 @@ def main(argv):
             if not (d / "summary.txt").is_file():
                 print(f"{d.name}: the soak wrote no summary", file=sys.stderr)
                 return 1
+            private(d / "summary.txt", apps[side], side)
     return merge(out, args.blocks)
 
 

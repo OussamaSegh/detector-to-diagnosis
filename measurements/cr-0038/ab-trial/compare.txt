@@ -1,0 +1,4 @@
+intervals with p99 above the limit: candidate 5 of 600 (0.83%), previous release 2 of 600 (0.33%)
+Fisher's exact test, one-sided (the candidate worse): p = 0.2259, alpha 0.05
+power: 9% to find a candidate with twice the previous release's rate (0.33%)
+result: PASS
