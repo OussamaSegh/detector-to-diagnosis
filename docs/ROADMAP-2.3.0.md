@@ -36,6 +36,11 @@ release, each planned before it starts (2026-11-16).
 
 ## 2. What 2.3.0 is for
 
+2.3.0 is the last 2.x release: 3.0.0 is the final version (the author, 2026-11-24), so what
+2.3.0 leaves open goes to 3.0.0, which closes it (`docs/ROADMAP-3.0.0.md`, section 9). The final
+deliverable is a book ready to sell and one companion zip of MiniDAQ and the exercises; 2.3.0's
+part of it is the illustrations, the photos and the page budget.
+
 A minor version: compatible additions only (maintenance plan, section 4), and no interface
 breaks. It does three things:
 

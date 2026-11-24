@@ -5,7 +5,16 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
-Last updated: 2026-11-24, 19:00 UTC: **2.3.0-dev has started** (`docs/ROADMAP-2.3.0.md`).
+Last updated: 2026-11-24, 19:50 UTC: **3.0.0 is the final version** (the author, 2026-11-24): no
+release is planned after it. 2.3.0 is the last 2.x release; its review's fixes go into 3.0.0-dev,
+and 3.0.0 must close every open item (no open problem report, CAPA, change request or draft
+document, every 2.x deferral done or decided; `docs/ROADMAP-3.0.0.md`, section 9). For Theme I,
+photos may be looked up online (the author, 2026-11-24), under the photo policy only (public
+domain, CC0 or CC BY, credited, license page read by a person). The deliverable of 3.0.0 (the author,
+2026-11-24): a final book ready to sell, and one companion zip of MiniDAQ and the exercises,
+built by CI reproducibly (ROADMAP-3.0.0, section 9).
+
+Earlier, 2026-11-24, 19:00 UTC: **2.3.0-dev has started** (`docs/ROADMAP-2.3.0.md`).
 2.2.0 is released: tag book-v2.2.0 on c4b5ca3 (CI green: ci, gates, codeql, pages, perf, kdp),
 packages in the project files (neurolf-book/v2.2.0/: book 794 pages, solutions 233, Boox, KDP,
 source zip, SBOM, record). The review of 2.2.0 is merged (PR #23, 14bd28b), and the

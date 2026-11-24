@@ -1,8 +1,10 @@
 # Roadmap for release 3.0.0, and after
 
-Status: proposed, revised on 2026-11-16 at the author's direction. The author's answers are in
-section 8; section 7 holds the questions still open, each with a recommendation. Work on 3.0.0
-starts after release 2.1.0 (`docs/ROADMAP-2.1.0.md`). Nothing here changes 2.0.1 or 2.1.0.
+Status: proposed, revised on 2026-11-16 at the author's direction, and on 2026-11-24: **3.0.0 is
+the final version** (the author, 2026-11-24, section 8, answer 6; section 9). The author's
+answers are in section 8; section 7 holds the questions still open, each with a recommendation.
+Work on 3.0.0 starts after release 2.3.0 (`docs/ROADMAP-2.3.0.md`), the last 2.x release.
+Nothing here changes 2.0.1 to 2.3.0.
 
 ## 1. Why this edition changes its aim
 
@@ -276,7 +278,8 @@ Parts I to X keep their subjects, and their exercises shift toward judgment.
   - Chapter 28: a projector that converges to the wrong image.
 - The acceptance tests the audit itself: the reader's tests or report must reject the change and
   accept the corrected one.
-- 3.0.0 adds one audit exercise per Part, ten in all. 3.1.0 adds the other thirty.
+- 3.0.0 adds one audit exercise per Part, ten in all. No release follows to add the others
+  (section 9): the ten are the book's audit exercises.
 
 **Specification first in the milestones.** Each chapter's MiniDAQ milestone starts from a
 requirement and an acceptance test that the reader writes before any code, whoever writes the
@@ -343,7 +346,7 @@ Chapters 13 to 17 are checked against what is in force at 3.0.0-rc:
 
 AI inside the device stays out of this edition, as Chapter 37 says. That covers
 machine-learning-enabled software, predetermined change control plans and the EU AI Act. It is a
-candidate for 4.0.0 (section 9).
+topic the final chapter names as further study; no later edition covers it (section 9).
 
 ### Theme K: the Third Edition's format
 
@@ -388,7 +391,7 @@ The rhythm stays as before:
 | One machine hides network effects | The text is contradicted by real clusters | Network namespaces with delay and loss (verify: that CI's runners allow them). The text states the limits |
 | Agent file formats change quickly | Chapter 44's examples break | The principles are taught first and the formats second; the static check fails CI when a format changes; Appendix C's templates are updated in minor releases |
 | An agent file has more power than it needs | A subagent or hook changes what it should only read | Least privilege is checked statically; the tool server is read-only; the threat model reviews each agent file |
-| Scope grows | The edition never ships | The Part XI list (five chapters) and the ten audit exercises are fixed at the start. Anything else goes to 3.1.0 |
+| Scope grows | The edition never ships | The Part XI list (five chapters) and the ten audit exercises are fixed at the start. Nothing is deferred to a later release, since none follows (section 9): anything else is dropped, or named as further study in the final chapter |
 
 ## 7. Questions for the author
 
@@ -397,8 +400,8 @@ The rhythm stays as before:
    agentic-era skills are the subject (recommended)? The alternatives:
    - Part XI on scaling alone, with the skills only in Theme Q.
    - A separate Part on agents.
-3. **Audit exercises.** One per Part in 3.0.0 and the rest in 3.1.0 (recommended), or all 40 in
-   3.0.0, which delays the release?
+3. **Audit exercises.** Decided by the coordinator, 2026-11-24, after answer 6: one per Part,
+   ten in 3.0.0; the other thirty are not written, since no 3.1.0 follows.
 4. **GPU reconstruction.** Keep it out (recommended)?
 5. **Breaking changes.** API 4.0, schema 3.0 and MDQ-P2, grouped in one milestone (recommended)?
 6. **Platform.** Ubuntu 26.04 and the full C++23 (recommended, if the runner image is available
@@ -427,17 +430,60 @@ undone is done.
    so that readers recognize the common pattern.
 5. **Format, 2026-11-16:** "3.0.0 is a two volumes book." The Third Edition is printed in two
    volumes, as in Theme K.
+6. **The final version, 2026-11-24:** "3.0.0 is the final version." No release is planned after
+   3.0.0. The remaining 2.x step (2.3.0) leads straight to 3.0.0-dev, and 3.0.0 closes every open
+   item (section 9).
 
-## 9. After 3.0.0: the long-term plan
+## 9. 3.0.0 is the final version
 
-A breaking change still waits for a major version.
+The author decided on 2026-11-24 that 3.0.0 is the final version of the book and of MiniDAQ. The
+long-term plan that stood here (3.1.0 with thirty more audit exercises, 3.2.0 on fleet operations,
+4.0.0 on AI inside the device) is withdrawn. So:
 
-| Release | Aim |
-|---|---|
-| 3.1.0 | Audit exercises for the remaining 30 chapters, each from MiniDAQ's own problem history; the gate's known-bad library grows from them |
-| 3.2.0 | Fleet operations and service of installed scanners: remote updates of many nodes, service logs, and field problems traced back to a release (builds on Chapters 25 and 40) |
-| 3.x | The 2.x line kept under the maintenance plan: patch releases for problems relevant to safety until its support ends |
-| 4.0.0 (candidate) | AI inside the device, the other half of the agentic era for this engineer: machine-learning-enabled reconstruction or quality control, data management, predetermined change control plans and the EU AI Act. It needs the author's decision on scope and probably a new dependency |
+- **The path.** 2.3.0 is the last 2.x release. Its independent review's fixes go into
+  3.0.0-dev's first milestone instead of a 2.3.1 or a 2.4.0. Then the milestones of section 5,
+  in order.
+- **Nothing is deferred past 3.0.0.** Every item that a 2.x document sends to "3.0.0" or to "a
+  later release" is done in 3.0.0 or closed with a decision recorded. The topics left out of the
+  book (AI inside the device, fleet operations, GPU reconstruction, the other thirty audit
+  exercises) are named as further study in the final chapter, not promised.
+- **3.0.0 closes every open item.** Its exit criterion, beside section 5's, is a project with
+  nothing open:
+  - no problem report open: MDQ-PR-006 closes with the control API 4.0 (Theme M); MDQ-PR-096
+    closes when ACC-04 passes on a release soak, or with a decision on SRS-PERF-022 or on the
+    reference machine that CR-0038's comparison supports (the question of a quieter machine,
+    from `docs/ROADMAP-2.3.0.md`, is decided here);
+  - no CAPA open: each evaluated at 3.0.0's internal audit, closed effective or closed with a
+    decision;
+  - no change request proposed or approved but not implemented;
+  - no controlled document in draft;
+  - every deferral of the 2.x roadmaps closed (Theme I's P3 figures, the list-mode format MDQ-P2,
+    schema 3.0, Ubuntu 26.04 and the full C++23);
+  - the known-anomalies list empty, or each entry closed with its rationale.
+- **The deliverable** (the author, 2026-11-24: "I need a final perfect sellable book + one zip
+  file for minidaq and exercices"). 3.0.0 is accepted when both are there:
+  - *A book ready to sell.* Copy-edited from the first page to the last; the two volumes' print
+    PDFs and covers, the EPUB, each within the store's limits (828 pages a volume, EPUBCheck
+    clean, no overfull box, figures readable in gray); front matter ready for an ISBN (title and
+    copyright pages, edition, a place for the ISBN of each volume and format); the store
+    metadata written (title, subtitle, description, keywords, categories, the author's line).
+    Obtaining the ISBNs and uploading to a store stay the author's own steps.
+  - *One companion zip.* `detector-to-diagnosis-companion-3.0.0.zip`: MiniDAQ's source, the
+    exercises with their starters, solutions, tests and data, the build presets and a README
+    that builds and runs them from a clean Ubuntu machine. Built by CI from the release tag,
+    reproducibly (the same tag gives the same bytes), with its SHA-256 in the release record,
+    and checked by a job that unpacks it, builds it and runs its unit tests and the starters'
+    expected failures.
+- **Each step toward it.** 2.3.0 adds the illustrations and photos and keeps the page budget.
+  3.0.0-dev adds, beside section 5's milestones: the companion zip and its CI job (first
+  milestone, so every later build exercises it); the copy-edit of each chapter as it is revised;
+  the ISBN-ready front matter and the store metadata (3.0.0-rc); and a last proofread of both
+  volumes in print profile before the tag.
+- **After 3.0.0.** No release is planned. Errata found by readers are recorded in
+  `book/errata.json` and shown on the download page. The maintenance plan's next version, at
+  3.0.0, states that support of MiniDAQ ends with it: the archive is kept, and a problem relevant
+  to safety found later is recorded with the decision that no release follows (a teaching
+  project has no installed devices).
 
 The direction stays the same throughout. The reader should leave able to say what must be true,
 to show that it is, and to put it on the record, whoever or whatever wrote the code.
