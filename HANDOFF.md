@@ -17,7 +17,7 @@ CR-0038 approved (coordinator, delegation); the soak is part 5 of the release ch
 `tools/soak_ab.py` runs book-v2.2.0's programs and the candidate in 5 x 2 blocks of 20 minutes,
 interleaved, resumable per block (about 3.5 hours; rerun `resume` with the same OUT after each
 two-hour stop); ACC-10 in the acceptance specification (version 3); SDP v25 and STP v7 drafts
-describe it. Still to do for Theme L: mark CR-0038 implemented with its commit, run one full A/B
+describe it. Still to do for Theme L (CR-0038 implemented in e14eb43): run one full A/B
 soak on the machine (roadmap exit criterion), SRS-PERF-022's verification text at the next SRS
 version, and Chapter 33's soak text once Theme I's edits to it are merged. Then Theme I in the
 illustrations thread (photo pipeline, figures, photos), then the release (internal audit with

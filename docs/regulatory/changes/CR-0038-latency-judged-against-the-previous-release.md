@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-24, by the software lead |
 | Source | problem report MDQ-PR-096 |
 | Decision | approved, 2026-11-24, by the coordinator under the software lead's standing delegation (2026-11-23) |
-| Commits | none yet |
+| Commits | e14eb43 (Theme L); verified by the release checks of 2.3.0 |
 
 ## Description
 
@@ -79,6 +79,15 @@ The comparison's tests against the recorded soaks (`measurements/mdq-pr-064/`,
 `measurements/mdq-pr-096/`), split into blocks: `tools/test_soak_ab.py`; the acceptance rules,
 `tools/test_acceptance.py`; the five parts and their resume, `tools/test_release_checks.py`; the
 record's row, `tools/test_release_record.py`; then the release checks of 2.3.0.
+
+The tests that verify it include `Recorded.test_the_rerun_of_2_2_0_fails_acc_04_but_not_acc_10`,
+`Recorded.test_the_busy_soak_as_candidate_against_the_quiet_one_fails_acc_10`,
+`Fisher.test_the_one_sided_p_is_that_of_the_enumerated_tables`,
+`Memory.test_a_leak_in_every_block_fails_the_side`,
+`Blocks.test_a_stopped_run_continues_at_the_block_it_was_in`,
+`Verdicts.test_the_candidate_is_compared_with_the_previous_release`,
+`Verdicts.test_the_soak_is_part_5_and_a_run_without_it_fails` and
+`ReleaseChecks.test_each_part_runs_only_its_own_checks`.
 
 ## Decision
 
