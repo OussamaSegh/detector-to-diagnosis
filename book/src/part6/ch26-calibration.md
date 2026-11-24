@@ -76,6 +76,16 @@ crystal in three ways.
   of picoseconds between channels are normal before calibration, and the coincidence time
   resolution the scanner is specified for is a few hundred picoseconds (Chapter 8).
 
+The crystal number is a calibration too, made before any of these. In many blocks the light of
+one crystal spreads over several SiPMs (Chapter 8 draws a block), and the board computes a
+position from their signals. A flood, a uniform irradiation of the block, histogrammed by that
+position shows one blob per crystal, but not on a regular grid, and a lookup table maps every
+position to its crystal. MiniDAQ's boards do this themselves and send the crystal number;
+Exercise 26.2 builds the table, and Figure [](#fig-ch26-flood) shows what its solution finds.
+
+```{.figure #fig-ch26-flood src="book/figures/plots/ch26/floodmap.py" inputs="exercises/ch26/e2_flood_map" caption="The flood map of a 16 by 16 block, drawn with the exercise's solution on a synthetic flood (seed 26). The light sharing compresses the edge crystals and bends the rows; the peaks still come in order, and the lookup table assigns every pixel to its nearest peak." alt="Three square images of the same flood on a dark background, a grid of 16 by 16 bright blobs, closer together near the edges and with rows that sag slightly. Middle: a dot on each blob and white lines joining the dots row by row, each line following its slightly curved row. Right: thin white boundaries between the blobs, the lookup table's regions, one cell around each blob, narrower near the edges." width="100%"}
+```
+
 `minidaq_sim` simulates all three since this chapter. With `--gain-spread 0.1 --saturation 1500
 --time-skew 500` every crystal gets its own gain (10% rms, kept within 0.6 to 1.6), the SiPM
 saturates with an E_sat of 1500 keV, and every channel gets its own delay (500 ps rms, kept within

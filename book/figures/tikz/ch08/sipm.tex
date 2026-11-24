@@ -1,0 +1,41 @@
+% Chapter 8: a SiPM pixel seen from above, magnified, and what it sends. Left: a 12 x 12 corner
+% of the microcells; each optical photon that is detected fires one cell completely. Right: the
+% pulse is the sum of the fired cells, so its height comes in steps of one cell.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % the microcells
+  \def\c{0.34}
+  \foreach \i in {0,...,11} {\foreach \j in {0,...,11} {
+    \fill[d2dcat0!18!white,draw=d2dcat0!55!white,line width=0.35pt] ({\i*\c},{\j*\c}) rectangle ++(\c-0.04,\c-0.04);
+    \draw[d2dmuted,line width=0.3pt] ({\i*\c+0.03},{\j*\c+\c-0.08}) -- ++(0.08,0);}}
+  % fired cells: one per detected photon
+  \foreach \i/\j in {2/9,3/3,5/6,6/6,7/2,8/9,9/5,10/1,4/10,1/5,6/11,11/7} {
+    \fill[d2dcat1,draw=d2dink,line width=0.4pt] ({\i*\c},{\j*\c}) rectangle ++(\c-0.04,\c-0.04);
+    \fill[d2dcat3] ({\i*\c+0.15},{\j*\c+0.15}) circle (0.045);}
+  \draw[d2dink,line width=0.7pt] (-0.06,-0.06) rectangle ({12*\c+0.02},{12*\c+0.02});
+  \node[title,anchor=south] at ({6*\c},{12*\c+0.15}) {A corner of one SiPM pixel};
+  \node[note,anchor=north,text width=4.2cm] at ({6*\c},-0.2)
+    {each square is a microcell, tens of µm wide: an avalanche photodiode above breakdown,
+     with its own quench resistor (the short line). A photon fires a cell completely, or not at all.};
+  % legend
+  \begin{scope}[shift={(4.6,3.6)}]
+    \fill[d2dcat1,draw=d2dink,line width=0.4pt] (0,0) rectangle (0.28,0.28);
+    \fill[d2dcat3] (0.14,0.14) circle (0.045);
+    \node[lab,anchor=west] at (0.35,0.14) {fired};
+    \fill[d2dcat0!18!white,draw=d2dcat0!55!white,line width=0.35pt] (0,-0.5) rectangle (0.28,-0.22);
+    \node[lab,anchor=west] at (0.35,-0.36) {ready};
+  \end{scope}
+  % the output: steps of one cell
+  \begin{scope}[shift={(7.0,0.4)}]
+    \draw[->,d2dmuted,line width=0.6pt] (0,0) -- (4.6,0) node[note,anchor=north east] {time};
+    \draw[->,d2dmuted,line width=0.6pt] (0,0) -- (0,3.4) node[note,anchor=south,align=center] {output};
+    \foreach \n/\dsh in {1/solid,2/dashed,3/dotted} {
+      \draw[d2dcat0,line width=1.1pt,\dsh] (0.1,0) -- (0.5,0) .. controls (0.58,{0.85*\n}) .. (0.68,{0.85*\n})
+        .. controls (1.4,{0.55*\n}) and (2.6,{0.1*\n}) .. (4.4,{0.02*\n});
+      \draw[d2drule,line width=0.4pt] (0,{0.85*\n}) -- (0.62,{0.85*\n});
+      \node[lab,anchor=east] at (-0.05,{0.85*\n}) {\n\ cell\ifnum\n>1 s\fi};}
+    \node[title,anchor=south] at (2.2,3.6) {The pulse is the sum of the cells};
+    \node[note,anchor=north,text width=4.6cm] at (2.2,-0.45)
+      {In a scintillation flash thousands of cells fire, so the pulse looks smooth; when most cells
+       have fired, more light adds little: the saturation of Chapter 26.};
+  \end{scope}
+\end{tikzpicture}
