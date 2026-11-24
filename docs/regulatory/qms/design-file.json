@@ -24,6 +24,8 @@
     {"clause": "8.5.3", "topic": "Preventive action", "evidence": ["docs/regulatory/capa/", "docs/coding-standard.md"], "note": "Preventive actions become rules of the coding standard or checks in CI."}
   ],
   "controlled": [
+    "CLAUDE.md",
+    ".claude/README.md",
     "docs/regulatory/intended-use.md",
     "docs/regulatory/regulatory-context.md",
     "docs/regulatory/sdp.md",

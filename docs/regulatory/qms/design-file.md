@@ -33,6 +33,8 @@ For each clause of ISO 13485:2016 that concerns design and development, the docu
 Each states its version at the top and its history at the end; `docs.design_file` checks
 both, and CI checks that a document changed since the last release has a new version.
 
+- `CLAUDE.md`
+- `.claude/README.md`
 - `docs/regulatory/intended-use.md`
 - `docs/regulatory/regulatory-context.md`
 - `docs/regulatory/sdp.md`

@@ -16,11 +16,11 @@ RC-56 of H-01, ADR 0041, architecture v29 and performance budget v5 drafts, `bm_
 Its CI was red on clang-tidy (a discarded `at()`): MDQ-PR-094, fixed alone in 92ca1bf, CI
 green; it joins CAPA-0006's source. Before a push of C++ code, run `tools/static_analysis.sh`
 too.
-NOT committed: `CLAUDE.md` and `.claude/` (drafts in the project files folder,
-`neurolf-book/plans/agent-files-drafts/`); committing `.claude/settings.json` turns the hooks
-on for every later session, so it waits for the author's explicit words naming it. Then: the
-release (internal audit with the CAPA-0006 check, SOUP v32, the drafts' approvals, release
-checks). 2026-11-24: MDQ-PR-095 (Exercise 29.4's GIL test on a loaded runner, again) fixed
+2026-11-24: the author approved the release's documents and the agent files in writing
+(08:25 UTC). `CLAUDE.md` and `.claude/` are committed: the hooks of `.claude/settings.json`
+run in every later session (a write outside the repository and `/tmp` needs the directory in
+MINIDAQ_AGENT_WRITABLE, set in an uncommitted `.claude/settings.local.json`; `curl` is denied,
+so read CI with the GitHub tools; a push asks first). Then: the release checks. 2026-11-24: MDQ-PR-095 (Exercise 29.4's GIL test on a loaded runner, again) fixed
 alone in 770bb15. The internal audit of 2026-11-24 is a draft: CAPA-0006 effective and closed,
 CAPA-0007 (`tools/release_facts.json`, one source for the release checks' facts), SDP v23
 draft, N-1 (the 2.1.0 audit was not indexed). Before the release checks: the software lead's
