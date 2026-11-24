@@ -1,6 +1,6 @@
 # MiniDAQ software requirements specification
 
-Version 39 (MiniDAQ 2.2.0-dev). Status: draft, to be approved for release 2.2.0. Version 38 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 39 (MiniDAQ 2.2.0-dev). Status: approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC. Version 38 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 37 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This document states what MiniDAQ's software shall do, one testable requirement per row. It
 follows the content that IEC 62304 expects of software requirements (functional and
@@ -581,4 +581,4 @@ shipped programs.
 | 36 | Maintenance (CR-0033, ADR 0039, Chapter 40): SRS-MNT-001 to SRS-MNT-003 added. |
 | 37 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 36. |
 | 38 | The projector's output array (CR-0034, Chapter 29): SRS-REC-009 added. The soak of SRS-SYS-003 and SRS-PERF-022 lasts 100 minutes (CR-0035); the requirements' text does not change. Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
-| 39 | The agent gate and the agent files (CR-0036, roadmap 2.2.0, themes P1 and P2): SRS-AI-005 to SRS-AI-010 added. Several readout nodes in the simulator (CR-0037, theme S): SRS-SIM-025, SRS-MRG-006, SRS-MRG-007 and SRS-CFG-017 added. |
+| 39 | The agent gate and the agent files (CR-0036, roadmap 2.2.0, themes P1 and P2): SRS-AI-005 to SRS-AI-010 added. Several readout nodes in the simulator (CR-0037, theme S): SRS-SIM-025, SRS-MRG-006, SRS-MRG-007 and SRS-CFG-017 added. Approved for release 2.2.0 by the author (software lead), in writing on 2026-11-24. |

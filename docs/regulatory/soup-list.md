@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 32 (MiniDAQ 2.2.0-dev). Status: draft, the known-anomaly review for 2.2 of 2026-11-23; to be approved by the software lead for release 2.2.0. Version 31 was approved for release 2.1.0, 2026-11-23, by the author (software lead) in writing.
+Version 32 (MiniDAQ 2.2.0-dev). Status: approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC. Version 31 was approved for release 2.1.0, 2026-11-23, by the author (software lead) in writing.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -37,7 +37,7 @@ the support period of the [maintenance plan](maintenance-plan.md) without a plan
 | How MiniDAQ verifies its use | Unit tests of the configuration reader and protocol (`test_config.cpp`, `test_control_protocol.cpp`); the `fuzz_config` and `fuzz_protocol` fuzz targets under AddressSanitizer and UndefinedBehaviorSanitizer (Chapter 7). |
 | Anomalies found by MiniDAQ | Numbers outside the range of `double`, such as `6e688`, raise `json::out_of_range` (406), not `json::parse_error`. MiniDAQ's reader caught only `parse_error`, and the configuration fuzzer found the resulting crash within seconds. This is documented library behavior, not a library defect; the reader now catches `json::exception` (test `Config.NumberOverflowIsAnErrorNotACrash`). |
 | Known-anomaly review | Before each release: read the library's issue tracker and release notes for the pinned version and any later ones, and evaluate each reported defect against the requirements above. Record the result below. |
-| Last review | 2026-11-23, for MiniDAQ 2.2 (record in [section 4](#4-known-anomaly-reviews)), 2026-11-23, before release 2.1.0 (no change), 2026-11-17, for MiniDAQ 2.1 (record in [section 4](#4-known-anomaly-reviews)), 2026-11-16, for MiniDAQ 2.0, and before it 2026-11-15, for MiniDAQ 1.3, and 2026-11-14, for MiniDAQ 1.2: 3.12.0 is still the latest release, with no published security advisory (record in [section 4](#4-known-anomaly-reviews)). Result: no change since the review for MiniDAQ 0.3; none of the known defects affects a requirement above. |
+| Last review | 2026-11-24, for MiniDAQ 2.2, before release 2.2.0 (no change; record in [section 4](#4-known-anomaly-reviews)), 2026-11-23, for MiniDAQ 2.2 (record in [section 4](#4-known-anomaly-reviews)), 2026-11-23, before release 2.1.0 (no change), 2026-11-17, for MiniDAQ 2.1 (record in [section 4](#4-known-anomaly-reviews)), 2026-11-16, for MiniDAQ 2.0, and before it 2026-11-15, for MiniDAQ 1.3, and 2026-11-14, for MiniDAQ 1.2: 3.12.0 is still the latest release, with no published security advisory (record in [section 4](#4-known-anomaly-reviews)). Result: no change since the review for MiniDAQ 0.3; none of the known defects affects a requirement above. |
 | Support ends | no announced end (2026-11-16): the project maintains its latest release only and publishes no support dates; a defect is fixed in a new release, which MiniDAQ adopts by a change request (CR-0002 did for 3.12.0). |
 
 | Field | OpenSSL (platform library) |
@@ -57,7 +57,7 @@ the support period of the [maintenance plan](maintenance-plan.md) without a plan
 | How MiniDAQ verifies its use | `test_security.cpp`: TLS 1.3 only (a TLS 1.2 client is refused), a client that trusts another CA or connects by another name is refused, an eavesdropper sees no token; the whole suite under AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer (the sanitizers instrument MiniDAQ's code, not the prebuilt library). |
 | Anomalies found by MiniDAQ | None. A write to a connection that the peer had closed raised `SIGPIPE` and ended the process; this is the documented behavior of `write(2)` on a socket, not an OpenSSL defect, and MiniDAQ blocks or ignores the signal (Chapter 17). |
 | Known-anomaly review | Before each release: read the security advisories of OpenSSL 3.0 and the changelog of the platform's package, and evaluate each fix against the features used above. Record the result below. Between releases: the vulnerability scan of the SBOM (CI job `vulnerability-scan`). |
-| Last review | 2026-11-23, for MiniDAQ 2.2 (record in [section 4](#4-known-anomaly-reviews)), and earlier the same day 2026-11-23, before release 2.1.0: the OpenSSL advisory of 2026-11-17 and five CVE records of 2026-11-18 add eight findings to the scan; two are known to affect 3.0 (CVE-2026-107493 in `PEM_X509_INFO_read*`, CVE-2026-95690 in DTLS) and four have no 3.0 range in the sources read, none in a feature MiniDAQ uses; the package is unchanged (record in [section 4](#4-known-anomaly-reviews), decisions in `security/vulnerability-triage.json`). 2026-11-17, for MiniDAQ 2.1 (record in [section 4](#4-known-anomaly-reviews)), 2026-11-16, for MiniDAQ 2.0, and before it 2026-11-15, for MiniDAQ 1.3, and 2026-11-14, for MiniDAQ 1.2: the Ubuntu package `3.0.13-0ubuntu3.16` is still the archive's candidate. The OpenSSL advisories of 2026-11-10 add one vulnerability of 3.0, CVE-2026-107496 in `CMS_encrypt()`, which MiniDAQ does not call; Ubuntu has not yet evaluated it for 24.04 (record in [section 4](#4-known-anomaly-reviews), decisions in `security/vulnerability-triage.json`). Result: as for 0.5; MiniDAQ 1.2 needs that package version or later. |
+| Last review | 2026-11-24, for MiniDAQ 2.2, before release 2.2.0 (no change; record in [section 4](#4-known-anomaly-reviews)), 2026-11-23, for MiniDAQ 2.2 (record in [section 4](#4-known-anomaly-reviews)), and earlier the same day 2026-11-23, before release 2.1.0: the OpenSSL advisory of 2026-11-17 and five CVE records of 2026-11-18 add eight findings to the scan; two are known to affect 3.0 (CVE-2026-107493 in `PEM_X509_INFO_read*`, CVE-2026-95690 in DTLS) and four have no 3.0 range in the sources read, none in a feature MiniDAQ uses; the package is unchanged (record in [section 4](#4-known-anomaly-reviews), decisions in `security/vulnerability-triage.json`). 2026-11-17, for MiniDAQ 2.1 (record in [section 4](#4-known-anomaly-reviews)), 2026-11-16, for MiniDAQ 2.0, and before it 2026-11-15, for MiniDAQ 1.3, and 2026-11-14, for MiniDAQ 1.2: the Ubuntu package `3.0.13-0ubuntu3.16` is still the archive's candidate. The OpenSSL advisories of 2026-11-10 add one vulnerability of 3.0, CVE-2026-107496 in `CMS_encrypt()`, which MiniDAQ does not call; Ubuntu has not yet evaluated it for 24.04 (record in [section 4](#4-known-anomaly-reviews), decisions in `security/vulnerability-triage.json`). Result: as for 0.5; MiniDAQ 1.2 needs that package version or later. |
 | Support ends | 2026-09-07 for OpenSSL 3.0 from the OpenSSL project (its release strategy: 3.0 was a long-term support release of five years). The platform's package is maintained by Canonical for Ubuntu 24.04 LTS: security updates in standard support until 2029-05, and with Expanded Security Maintenance until 2034-04 (assumption: confirm with team which support the product's platform contract includes). |
 | End-of-support plan | Decided 2026-11-16 (CR-0033): the project's own support for 3.0 has ended, so its fixes reach MiniDAQ only through the distribution's backports; the known-anomaly review reads Ubuntu's security notices for `openssl` as the primary source from now on, and the project's advisories as information. The move to OpenSSL 3.5 (a long-term support release, supported by the project until 2030-04-08) is made with the next platform definition, minidaq-platform-2, on the next Ubuntu LTS, as a SOUP change with its own change request, whose impact analysis checks every OpenSSL call that MiniDAQ makes against 3.5. |
 
@@ -98,6 +98,31 @@ the license, the requirements above against the new version's release notes,
 and the known-anomaly review.
 
 ## 4. Known-anomaly reviews
+
+### 2026-11-24: every item, before release 2.2.0
+
+Reviewer: the book's author. Why now: the review of 2026-11-23 for MiniDAQ 2.2 asked for the
+trackers and advisories to be read again before release 2.2.0, the four OpenSSL records known
+only from secondary sources among them. Since then MiniDAQ 2.2.0-dev added no item and used no
+new feature of one.
+
+- nlohmann/json: the release page, read on 2026-11-24, still marks v3.12.0 of 2025-04-11 as the
+  latest release, and the security page says there are no published advisories. No change.
+- OpenSSL: Ubuntu's notices for noble, read on 2026-11-24 back to 2026-11-18, have no notice for
+  `openssl`; the newest is USN-8847-1 of 2026-09-29, whose fix `3.0.13-0ubuntu3.16` is installed.
+  The record of CVE-2026-121481 (`EVP_EncodeBlock()`), read on OpenCVE, now names OpenSSL 4.0.0
+  before 4.0.4 and 4.1.0 before 4.1.1 only, with no 3.0 range, and OpenSSL rates it Low; its
+  decision stays `not_affected` with this reading added. The other three records known from
+  secondary sources (CVE-2026-121482, CVE-2026-107494, CVE-2026-84786) have no Ubuntu notice
+  yet, and MiniDAQ uses none of the functions or protocols they name; they are read again when
+  Ubuntu's notice is published. `apt-cache policy` on 2026-11-24 gives `3.0.13-0ubuntu3.16` as
+  installed and candidate.
+- pybind11: PyPI, read on 2026-11-24, still names 3.1.0 of 2026-08-06 as the latest release, the
+  version pinned.
+- The Python packages of `analysis/requirements.lock`: `tools/lock_audit.py` on 2026-11-24
+  reports 30 packages and none with a known vulnerability.
+
+Decision: keep every item as it is for release 2.2.0.
 
 ### 2026-11-23: every item, for MiniDAQ 2.2
 
@@ -588,4 +613,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 29 | Each shipped item says when its supplier's support ends, and OpenSSL, whose project ended its support of 3.0 on 2026-09-07, has an end-of-support plan (CR-0033, Chapter 40); `docs.soup` checks both. |
 | 30 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 29. |
 | 31 | The known-anomaly reviews for MiniDAQ 2.1, 2026-11-17 and 2026-11-23 (eight OpenSSL findings, none affecting MiniDAQ): no item changes (draft, to be approved for release 2.1.0). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
-| 32 | The known-anomaly review for MiniDAQ 2.2, 2026-11-23: no item changes (draft, to be approved for release 2.2.0). |
+| 32 | The known-anomaly reviews for MiniDAQ 2.2, 2026-11-23 and 2026-11-24 (CVE-2026-121481 read again: no 3.0 range): no item changes. Approved for release 2.2.0 by the author (software lead), in writing on 2026-11-24. |

@@ -1,6 +1,6 @@
 # MiniDAQ performance budget
 
-Version 5 (MiniDAQ 2.2.0-dev). Status: draft, to be approved for release 2.2.0; version 4 was measured on the book's machine at tag `ch05`, the whole pipeline again for releases 0.3.0 and 0.4.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`; version 5 adds the readout nodes of CR-0037. Every number must be re-measured on the
+Version 5 (MiniDAQ 2.2.0-dev). Status: approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC; version 4 was measured on the book's machine at tag `ch05`, the whole pipeline again for releases 0.3.0 and 0.4.0, with a realistic-stream section from tag `ch11` and the list-mode writer from tag `ch12`; version 5 adds the readout nodes of CR-0037. Every number must be re-measured on the
 acquisition PC before it is used for a design decision (verify on the acquisition PC).
 
 ## Requirement and assumptions
@@ -167,4 +167,4 @@ slower, and the baseline gate says whether the margins of this table still hold.
 | 2 | Release 0.3.0: the whole pipeline re-measured with the coincidence sorter (MDQ-PR-014, CAPA-0004); the regression baseline updated for `BM_Pipeline`. |
 | 3 | Editorial: the repository's history was rewritten to remove personal data, so the cited commit hashes are those of the rewritten commits; the content is unchanged. |
 | 4 | Release 0.4.0: the whole pipeline and the list-mode writer re-measured; the regression gate's failure explained by an interleaved A/B, and the baseline kept. |
-| 5 | 2.2.0-dev: the throughput with 1, 2 and 4 readout nodes and the merge's cost per single, measured, not required (CR-0037). |
+| 5 | 2.2.0-dev: the throughput with 1, 2 and 4 readout nodes and the merge's cost per single, measured, not required (CR-0037). Approved for release 2.2.0 by the author (software lead), in writing on 2026-11-24. |

@@ -1,7 +1,7 @@
 # Internal audit 2026-11-24: plan and practice before release 2.2.0
 
-Version 1 (MiniDAQ 2.2.0-dev). Status: draft, to be accepted by the software lead with the
-release's approvals.
+Version 2 (MiniDAQ 2.2.0-dev). Status: final, accepted by the software lead in writing on
+2026-11-24 at 08:25 UTC.
 
 | Field | Value |
 |---|---|
@@ -42,3 +42,4 @@ decision on the agent files of CR-0036 (O-5).
 | Version | Change |
 |---|---|
 | 1 | First version, before the release checks of 2.2.0. |
+| 2 | Accepted by the software lead (the book's author) in writing on 2026-11-24, with the approvals of release 2.2.0; the findings do not change. |
