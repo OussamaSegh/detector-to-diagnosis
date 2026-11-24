@@ -8,6 +8,15 @@ the patch version.
 
 ## [Unreleased]
 
+### Changed
+
+- The release soak runs the candidate and the previous release's programs, built from its tag,
+  in five blocks of 20 minutes each, interleaved on the same machine, as part 5 of the release
+  checks; a run stopped by a time limit continues at its block (`tools/soak_ab.py`, CR-0038).
+  ACC-04 stays absolute; the new ACC-10 compares the two counts of slow intervals with Fisher's
+  exact test, one-sided, so that a failure of ACC-04 can be told to be the machine's or the
+  code's (MDQ-PR-096).
+
 ### Fixed
 
 - Review of release 2.2.0: the record's section Deviation names the rows it releases and

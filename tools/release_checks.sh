@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # The release checks of SDP section 6 that are not run on every change, in order, on one commit:
 # all presets, static analysis, starters, the stress run, the performance requirements and the
-# regression gate, the system test report, the soak and the end-to-end run, and 10 minutes of
-# fuzzing per target.
+# regression gate, the system test report and the end-to-end run, 10 minutes of fuzzing per
+# target, and the soak of the candidate interleaved with the previous release's (CR-0038).
 # Run it on the reference machine, quiet, from a clean checkout. Each check writes its output to
 # OUT; the release record cites the files.
 #
 #   tools/release_checks.sh OUT [FUZZ_SECONDS] [PART]
 #
-# PART is all (the default), resume, or one of four parts, each under 45 minutes on the reference machine:
-# 1 the six presets, static analysis and the starters; 2 the stress run, the wide property
-# search, coverage and the benchmarks; 3 the regression gate, the system tests, the soak and the
-# end-to-end run; 4 the fuzzing. Run the parts in order, on the same commit and into the same OUT,
+# PART is all (the default), resume, or one of five parts, the first four each under 45 minutes on
+# the reference machine: 1 the six presets, static analysis and the starters; 2 the stress run,
+# the wide property search, coverage and the benchmarks; 3 the regression gate, the system tests
+# and the end-to-end run; 4 the fuzzing; 5 the soak, about 3.5 hours, in blocks that a stopped
+# run keeps (tools/soak_ab.py: run it again and it continues at the block it was in). Run the
+# parts in order, on the same commit and into the same OUT,
 # when one session cannot hold the whole run (MDQ-PR-041: a machine that restarts within the
 # hour). Parts 2 to 4 use the builds that part 1 made. PART resume runs, in order, every part
 # that OUT/release-checks.txt does not record as passed ("all release checks passed (part N)"),
@@ -28,12 +30,13 @@ out=${1:?usage: tools/release_checks.sh OUT [FUZZ_SECONDS]}
 # release record reads too (CAPA-0007).
 fact() { python3 -c 'import json,sys; v=json.load(open(sys.argv[1]))[sys.argv[2]]; print(" ".join(map(str, v)) if isinstance(v, list) else v)' "$(dirname "$0")/release_facts.json" "$1"; }
 soak_minutes=$(fact soak_minutes) || exit 2
+soak_blocks=$(fact soak_blocks) || exit 2
 fuzz_seconds=${2:-$(fact fuzz_seconds)} || exit 2
 part=${3:-all}
-case "$part" in all | resume | 1 | 2 | 3 | 4) ;; *) echo "PART is all, resume, 1, 2, 3 or 4" >&2; exit 2 ;; esac
+case "$part" in all | resume | 1 | 2 | 3 | 4 | 5) ;; *) echo "PART is all, resume, 1, 2, 3, 4 or 5" >&2; exit 2 ;; esac
 if [ "$part" = resume ]; then
   mkdir -p "$out"
-  for p in 1 2 3 4; do
+  for p in 1 2 3 4 5; do
     if grep -qxE "all release checks passed \(part ($p|all)\)" "$out/release-checks.txt" 2>/dev/null; then
       echo "part $p: passed before, skipped"
       continue
@@ -73,7 +76,7 @@ on_exit() {
 trap on_exit EXIT
 failed=()
 # The failures of each part, so that a whole run also records each part's verdict (MDQ-PR-082).
-part_failed=(0 0 0 0 0)
+part_failed=(0 0 0 0 0 0)
 current=0
 in_part() { if [ "$part" = all ] || [ "$part" = "$1" ]; then current=$1; return 0; fi; return 1; }
 stamp() { echo "# $(date -u +%FT%TZ) commit $(git rev-parse --short HEAD) $*"; }
@@ -97,7 +100,7 @@ summary() {
   # counts a run again, only for the part that failed (SDP section 8, MDQ-PR-082).
   if [ "$part" = all ]; then
     local p
-    for p in 1 2 3 4; do
+    for p in 1 2 3 4 5; do
       if [ "${part_failed[p]}" -gt 0 ]; then
         echo "${part_failed[p]} release checks failed (part $p)"
       else
@@ -114,7 +117,7 @@ summary() {
 }
 
 commit_file=$out/commit.txt
-case "$part" in 2 | 3 | 4) commit_file=$out/commit-part-$part.txt ;; esac
+case "$part" in 2 | 3 | 4 | 5) commit_file=$out/commit-part-$part.txt ;; esac
 { echo "commit $(git rev-parse HEAD)"; git status --porcelain; } > "$commit_file"
 if [ -n "$(git status --porcelain)" ]; then
   echo "the working tree is not clean; the release checks need one commit" >&2
@@ -237,12 +240,10 @@ python3 tools/perf_gate.py benchmarks/baseline/book-vm.json "$out/perf-ab/head.j
 echo "trend against benchmarks/baseline/book-vm.json (not a check, CR-0025): status $?" \
   >> "$out/perf-trend.txt"
 
-# Chapter 19: the system test report of the release build (system test plan, section 8), and the
-# soak of SRS-SYS-003 on the same programs.
+# Chapter 19: the system test report of the release build (system test plan, section 8). The
+# soak of SRS-SYS-003 is part 5's.
 python3 tools/test_report.py build/release "$out/system-test-report.md" > "$out/system-tests.txt" 2>&1
 check "system test report" $?
-python3 tools/soak.py build/release/minidaq/apps "$out/soak" --minutes "$soak_minutes" > "$out/soak.txt" 2>&1
-check "soak, $soak_minutes minutes at 1 M singles/s" $?
 # Chapter 33: the chain end to end on the same programs, against the offline reference, with the
 # daily QC report and the reconstruction of a phantom (SRS-SYS-006 to SRS-SYS-008).
 MINIDAQ_RECON_CPP=build/release/recon python3 tools/e2e.py build/release/minidaq/apps "$out/e2e" \
@@ -285,6 +286,40 @@ for t in "${targets[@]}"; do
   grep -q "^crash files: 0$" "$out/fuzz/$t.txt" && grep -q "DONE" "$out/fuzz/$t.txt"
   check "fuzz_$t, $fuzz_seconds s" $?
 done
+fi
+
+[ "$part" = 4 ] && summary
+
+if in_part 5; then
+
+# CR-0038: the soak of SRS-SYS-003 and SRS-PERF-022, of the candidate and of the previous
+# release's programs built here, in blocks interleaved on this machine in this session
+# (tools/soak_ab.py, as tools/perf_ab.sh runs the benchmarks): a soak of the candidate alone
+# could not tell a slow spell of the machine from a slower program (MDQ-PR-096). soak.txt is the
+# candidate's blocks as one soak (ACC-03, ACC-04); soak-compare.txt the comparison (ACC-10). The
+# blocks and the previous release's source stay in OUT/soak-ab until the part ends, so a run
+# stopped by a time limit continues at the block it was in.
+soak_base=${PERF_BASE:-$(git describe --tags --abbrev=0 --match 'book-v*' HEAD 2>/dev/null)}
+base_src=$out/soak-ab/base-src
+{ stamp "soak: release builds of $(git rev-parse --short HEAD) and of $soak_base, $soak_blocks blocks of $((soak_minutes / soak_blocks)) minutes each, interleaved"
+  [ -n "$soak_base" ] && git rev-parse --verify -q "$soak_base^{commit}" >/dev/null &&
+  cmake --preset release && cmake --build --preset release -j"$(nproc)" &&
+  { [ -d "$base_src" ] || git worktree add --detach "$base_src" "$soak_base"; } &&
+  [ "$(git -C "$base_src" rev-parse HEAD)" = "$(git rev-parse "$soak_base^{commit}")" ] &&
+  (cd "$base_src" && cmake --preset release -DMINIDAQ_BUILD_EXERCISES=OFF &&
+    cmake --build --preset release -j"$(nproc)") &&
+  echo "base $soak_base = $(git rev-parse "$soak_base^{commit}")" &&
+  python3 tools/soak_ab.py "$base_src/build/release/minidaq/apps" build/release/minidaq/apps \
+    "$out/soak-ab" --blocks "$soak_blocks" --block-minutes "$((soak_minutes / soak_blocks))"
+} > "$out/soak-ab.txt" 2>&1
+cp "$out/soak-ab/head/summary.txt" "$out/soak.txt" 2>/dev/null || echo "the soak did not run" > "$out/soak.txt"
+cp "$out/soak-ab/compare.txt" "$out/soak-compare.txt" 2>/dev/null ||
+  echo "the comparison did not run" > "$out/soak-compare.txt"
+grep -qx "result: PASS" "$out/soak.txt"
+check "soak, $soak_minutes minutes at 1 M singles/s, in $soak_blocks blocks" $?
+grep -qx "result: PASS" "$out/soak-compare.txt"
+check "soak against $soak_base interleaved: the candidate not worse (ACC-10)" $?
+git worktree remove --force "$base_src" 2>/dev/null
 fi
 
 echo "After the last part, evaluate the acceptance specification: tools/acceptance.py $out"

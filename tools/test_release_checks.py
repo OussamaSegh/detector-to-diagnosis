@@ -66,7 +66,7 @@ def verdicts(part, failing):
     last = next(i for i in range(first, len(lines)) if lines[i].startswith("commit_file="))
     body = "\n".join(lines[first:last])
     calls = "".join(f'if in_part {p}; then check "c{p}" {1 if p in failing else 0}; fi\n'
-                    for p in (1, 2, 3, 4))
+                    for p in (1, 2, 3, 4, 5))
     with tempfile.TemporaryDirectory() as out:
         p = subprocess.run(["bash", "-c", f"set -uo pipefail\nout={out}\npart={part}\nfinished=no\n"
                             + body + "\n" + calls + "summary\n"], capture_output=True, text=True)
@@ -82,7 +82,7 @@ class ReleaseChecks(unittest.TestCase):
             (path / "rerun-part-2.md").write_text("investigated\n")
             p = resume(out)
             self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
-            self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\n")
+            self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\nran part 5\n")
             # Run again after everything passed: nothing runs.
             (path / "ran").unlink()
             self.assertEqual(resume(out).returncode, 0)
@@ -108,7 +108,7 @@ class ReleaseChecks(unittest.TestCase):
             (path / "rerun-part-3.md").write_text("The gate's verdict on BM_X: same machine code.\n")
             p = resume(out)
             self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
-            self.assertEqual((path / "ran").read_text(), "ran part 3\nran part 4\n")
+            self.assertEqual((path / "ran").read_text(), "ran part 3\nran part 4\nran part 5\n")
 
     def test_a_part_that_failed_twice_does_not_run_a_third_time(self):
         with tempfile.TemporaryDirectory() as out:
@@ -128,7 +128,7 @@ class ReleaseChecks(unittest.TestCase):
             path = pathlib.Path(out)
             (path / "release-checks.txt").write_text("all release checks passed (part 1)\npass  something\n")
             self.assertEqual(resume(out).returncode, 0)
-            self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\n")
+            self.assertEqual((path / "ran").read_text(), "ran part 2\nran part 3\nran part 4\nran part 5\n")
 
     def test_a_whole_run_records_each_parts_verdict(self):
         # MDQ-PR-082: a failed whole run blamed every part, so resume asked for an investigation
@@ -137,6 +137,7 @@ class ReleaseChecks(unittest.TestCase):
         self.assertEqual(status, 1)
         for line in ("all release checks passed (part 1)", "all release checks passed (part 2)",
                      "1 release checks failed (part 3)", "all release checks passed (part 4)",
+                     "all release checks passed (part 5)",
                      "1 release checks failed (part all)"):
             self.assertIn(line + "\n", text)
         status, text = verdicts("2", set())
@@ -149,7 +150,8 @@ class ReleaseChecks(unittest.TestCase):
             (path / "release-checks.txt").write_text(
                 "## part all\nFAIL  x\nall release checks passed (part 1)\n"
                 "all release checks passed (part 2)\n1 release checks failed (part 3)\n"
-                "all release checks passed (part 4)\n1 release checks failed (part all)\n")
+                "all release checks passed (part 4)\nall release checks passed (part 5)\n"
+                "1 release checks failed (part all)\n")
             p = resume(out)
             self.assertEqual(p.returncode, 4)
             self.assertIn("rerun-part-3.md", p.stderr)
@@ -182,25 +184,25 @@ class ReleaseChecks(unittest.TestCase):
         self.assertEqual(run_bash("finished=yes\nexit 1\n").returncode, 1)
 
     def test_an_unknown_part_is_refused_before_anything_runs(self):
-        p = subprocess.run(["bash", str(SCRIPT), "/nonexistent/out", "600", "5"], capture_output=True, text=True)
+        p = subprocess.run(["bash", str(SCRIPT), "/nonexistent/out", "600", "6"], capture_output=True, text=True)
         self.assertEqual(p.returncode, 2)
-        self.assertIn("PART is all, resume, 1, 2, 3 or 4", p.stderr)
+        self.assertIn("PART is all, resume, 1, 2, 3, 4 or 5", p.stderr)
 
     def test_a_part_ends_with_its_summary(self):
         text = SCRIPT.read_text()
-        for n in (1, 2, 3):
+        for n in (1, 2, 3, 4):
             self.assertIn(f'[ "$part" = {n} ] && summary', text)
         self.assertTrue(text.rstrip().endswith("summary"))
 
     def test_each_part_runs_only_its_own_checks(self):
         # Every check is inside one part's block, so a part never runs another's checks
-        # (MDQ-PR-041). The blocks open in order, 1 to 4, and each closes before the next.
+        # (MDQ-PR-041). The blocks open in order, 1 to 5, and each closes before the next.
         lines = SCRIPT.read_text().splitlines()
-        opened = [n for n, x in enumerate(lines) if re.fullmatch(r"if in_part [1-4]; then", x)]
-        self.assertEqual([lines[n][-7] for n in opened], ["1", "2", "3", "4"])
+        opened = [n for n, x in enumerate(lines) if re.fullmatch(r"if in_part [1-5]; then", x)]
+        self.assertEqual([lines[n][-7] for n in opened], ["1", "2", "3", "4", "5"])
         depth = 0
         for n, x in enumerate(lines):
-            if re.fullmatch(r"if in_part [1-4]; then", x):
+            if re.fullmatch(r"if in_part [1-5]; then", x):
                 self.assertEqual(depth, 0, f"line {n + 1}: a part inside a part")
                 depth = 1
             elif x == "fi" and depth:

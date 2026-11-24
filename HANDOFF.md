@@ -12,9 +12,16 @@ source zip, SBOM, record). The review of 2.2.0 is merged (PR #23, 14bd28b), and 
 illustrations plan with its prototypes (PR #22, 0c4a6cd). SOUP list v33 is a draft with the
 review for 2.3. Theme H is done: the edit hook formats only the lines that differ from HEAD
 (a new file whole), and the two lines of `synthetic_source.cpp` are formatted (MDQ-PR-102). No
-whole-tree format commit: ADR 0027 is kept, and the roadmap says so. Next: Theme L (CR-0038: the
-interleaved A/B soak, ACC-10), Theme I in the illustrations thread (photo pipeline, figures,
-photos), then the release (internal audit with CAPA-0007's check, SDP v24 approved). Next free:
+whole-tree format commit: ADR 0027 is kept, and the roadmap says so. Theme L is implemented:
+CR-0038 approved (coordinator, delegation); the soak is part 5 of the release checks,
+`tools/soak_ab.py` runs book-v2.2.0's programs and the candidate in 5 x 2 blocks of 20 minutes,
+interleaved, resumable per block (about 3.5 hours; rerun `resume` with the same OUT after each
+two-hour stop); ACC-10 in the acceptance specification (version 3); SDP v25 and STP v7 drafts
+describe it. Still to do for Theme L: mark CR-0038 implemented with its commit, run one full A/B
+soak on the machine (roadmap exit criterion), SRS-PERF-022's verification text at the next SRS
+version, and Chapter 33's soak text once Theme I's edits to it are merged. Then Theme I in the
+illustrations thread (photo pipeline, figures, photos), then the release (internal audit with
+CAPA-0007's check, SDP v25 approved). Next free:
 MDQ-PR-103, CAPA-0008, CR-0039, ADR 0042, TL-53.
 
 Earlier, 2026-11-24, 17:30 UTC: **2.2.0 release commit made; tag after its CI is green.**

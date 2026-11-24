@@ -29,6 +29,7 @@ import sys
 FACTS = json.loads((pathlib.Path(__file__).resolve().parent / "release_facts.json").read_text())
 PRESETS = FACTS["presets"]
 TODO = "TODO(record):"
+COMPARED = "performance against the previous release, SRS-PERF-022"
 # (row of the record, the release check lines it rests on (prefixes), evidence file)
 ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in PRESETS] + \
        [(f"tests {p}", ["build and tests, six presets"], "run_all.txt") for p in PRESETS] + [
@@ -42,9 +43,12 @@ ROWS = [(f"build {p}", ["build and tests, six presets"], "run_all.txt") for p in
     ("performance", ["performance regression gate"], "perf-gate.txt"),
     ("performance, SRS-PERF-020", ["pipeline benchmark ran"], "perf-pipeline.txt"),
     ("performance, SRS-PERF-021", ["writer benchmark ran"], "perf-writer.txt"),
-    ("performance, SRS-PERF-022", ["soak"], "soak.txt"),
+    ("performance, SRS-PERF-022", ["soak, "], "soak.txt"),
     ("system tests", ["system test report"], "system-test-report.md"),
-    (f"soak, {FACTS['soak_minutes']} minutes", ["soak"], "soak.txt"),
+    (f"soak, {FACTS['soak_minutes']} minutes", ["soak, "], "soak.txt"),
+    # CR-0038: the candidate's soak against the previous release's, interleaved (ACC-10); a
+    # release whose checks had no such soak (before 2.3.0) has no such row.
+    (COMPARED, ["soak against"], "soak-compare.txt"),
     ("end to end", ["end to end"], "e2e.txt"),
     ("fuzzing", ["fuzz_", "fuzz build"], "release-checks.txt"),
 ]
@@ -101,7 +105,8 @@ def table_rows(root, version):
     path = f"../../{rel}"
     soak = soak_label(found)
     rows = [f"| {soak if name == SOAK_ROW else name} | {row_result(found, prefixes)} | `{path}/{file}` |"
-            for name, prefixes, file in ROWS]
+            for name, prefixes, file in ROWS
+            if name != COMPARED or any(n.startswith("soak against") for n in found)]
     rows.insert([name for name, _, _ in ROWS].index("performance") + 1, f"| performance trend against the baseline | recorded | `{path}/perf-trend.txt` |")
     acc = acceptance(evidence)
     rows.append(f"| acceptance | {acc[0]} | `{path}/acceptance.md` |" if acc else

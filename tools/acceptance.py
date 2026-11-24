@@ -88,6 +88,20 @@ def soak_latency(text, c):
                 f"highest {highest:g} ms")
 
 
+def soak_compare(text, c):
+    """The candidate's slow intervals against the previous release's on the same machine
+    (CR-0038, tools/soak_ab.py): Fisher's exact test, one-sided, at the specification's alpha."""
+    counts = re.search(r"candidate (\d+) of (\d+) .*previous release (\d+) of (\d+)", text)
+    p = re.search(r"Fisher's exact test, one-sided .*: p = ([\d.]+), alpha ([\d.]+)", text)
+    if not counts or not p:
+        raise Missing("not a comparison of two soaks")
+    if float(p.group(2)) != c["alpha"]:
+        raise Missing(f"the comparison used alpha {p.group(2)}, not {c['alpha']:g}")
+    k1, n1, k2, n2 = map(int, counts.groups())
+    return float(p.group(1)) >= c["alpha"], (f"candidate {k1} of {n1}, previous release {k2} of "
+                                             f"{n2}; one-sided p {p.group(1)}")
+
+
 def e2e_checks(text):
     result = json.loads(text)
     if result.get("format") != "MiniDAQ end-to-end result":
@@ -133,7 +147,8 @@ def release_checks(text, c):
     for block in re.split(r"^## part ", text, flags=re.M)[1:]:
         name, _, body = block.partition("\n")
         sections[name.strip()] = body
-    parts = {"all"} if "all" in sections else {"1", "2", "3", "4"}
+    # Five parts since CR-0038 (the soak, part 5); a specification without "parts" had four.
+    parts = {"all"} if "all" in sections else {str(p) for p in range(1, c.get("parts", 4) + 1)}
     passed = sorted(p for p in parts if p in sections and re.search(
         rf"^all release checks passed \(part {p}\)$", sections[p], re.M))
     failed = [f for p in parts if p in sections for f in re.findall(r"^FAIL  (.*)$", sections[p], re.M)]
@@ -153,8 +168,8 @@ def repository(root, c):
     return not bad, ("all pass" if not bad else "failed: " + ", ".join(bad))
 
 
-RULES = {f.__name__: f for f in (pipeline_median, writer_slowest, soak, soak_latency, e2e_chain,
-                                 e2e_image, system_tests, release_checks)}
+RULES = {f.__name__: f for f in (pipeline_median, writer_slowest, soak, soak_latency, soak_compare,
+                                 e2e_chain, e2e_image, system_tests, release_checks)}
 # [/snippet:rules]
 
 

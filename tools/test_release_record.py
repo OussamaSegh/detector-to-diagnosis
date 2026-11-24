@@ -75,8 +75,18 @@ class ReleaseRecord(unittest.TestCase):
             text = rr.skeleton(root, "9.9.0")
             self.assertIn("MiniDAQ 9.9.0, commit " + "a" * 40 + ", tag book-v9.9.0", text)
             for name, _, _ in rr.ROWS:
+                if name == rr.COMPARED:  # checks without the soak of CR-0038 have no such row
+                    self.assertNotIn(f"| {name} |", text)
+                    continue
                 self.assertIn(f"| {name} |", text)
             self.assertIn("| fuzzing | FAIL |", text)
+            (ev / "release-checks.txt").write_text(
+                CHECKS + "## part 5\npass  soak, 100 minutes at 1 M singles/s, in 5 blocks\n"
+                "pass  soak against book-v9.8.0 interleaved: the candidate not worse (ACC-10)\n")
+            both = rr.skeleton(root, "9.9.0")
+            self.assertIn(f"| {rr.COMPARED} | pass | `../../measurements/release-9.9.0/soak-compare.txt` |", both)
+            self.assertIn("| soak, 100 minutes | pass |", both)
+            (ev / "release-checks.txt").write_text(CHECKS)
             self.assertIn("| soak, 100 minutes | not run |", text)
             record = root / "docs/regulatory/releases/9.9.0.md"
             record.write_text(text)

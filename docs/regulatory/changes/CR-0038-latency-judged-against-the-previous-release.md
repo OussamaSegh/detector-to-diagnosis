@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | proposed |
+| Status | approved |
 | Requested | 2026-11-24, by the software lead |
 | Source | problem report MDQ-PR-096 |
-| Decision | pending (roadmap 2.3.0) |
+| Decision | approved, 2026-11-24, by the coordinator under the software lead's standing delegation (2026-11-23) |
 | Commits | none yet |
 
 ## Description
@@ -19,6 +19,15 @@ and the previous release's count, with a test of the difference. The two verdict
 apart: a candidate no worse than the previous release that still fails the absolute limit
 fails ACC-04, and is released only with a deviation (SDP version 24, section 8); the
 comparison says where the failure is, not that the requirement is met.
+
+As implemented (roadmap 2.3.0, Theme L): the soak becomes part 5 of the release checks. The
+previous release (the newest `book-v*` tag before the candidate) is built from its tag in a
+worktree under OUT, and `tools/soak_ab.py` runs the two in 5 blocks of 20 minutes each, in the
+order A B, B A, A B, ... (as `tools/perf_ab.sh`); each block is one run of `tools/soak.py`. A
+block with its summary is kept, so a run stopped by the two-hour limit continues at the block it
+was in. The candidate's blocks, as one soak, are `soak.txt` (ACC-03, ACC-04); its memory trend is
+the slope pooled within the blocks after the warm-up of each. `soak-compare.txt` is ACC-10:
+Fisher's exact test, one-sided, alpha 0.05, with the power to find a doubled rate stated.
 
 ## Reason
 
@@ -39,8 +48,9 @@ None changed: SRS-PERF-022 keeps its limit and share. Its verification gains the
 
 ### Software items and safety class
 
-None: `tools/release_checks.sh`, `tools/acceptance.py` and `docs/regulatory/acceptance.json`
-change; no shipped item.
+None: `tools/release_checks.sh`, `tools/acceptance.py`, `tools/release_record.py`,
+`tools/release_facts.json`, the new `tools/soak_ab.py` and
+`docs/regulatory/verification/acceptance.json` change; no shipped item.
 
 ### Risk
 
@@ -65,9 +75,14 @@ No change to the intended use or to a safety-relevant function.
 
 ## Verification
 
-To be planned in the roadmap of 2.3.0: the comparison's test against recorded soaks
-(`measurements/mdq-pr-064/`, `measurements/mdq-pr-096/`), and the release checks of 2.3.0.
+The comparison's tests against the recorded soaks (`measurements/mdq-pr-064/`,
+`measurements/mdq-pr-096/`), split into blocks: `tools/test_soak_ab.py`; the acceptance rules,
+`tools/test_acceptance.py`; the five parts and their resume, `tools/test_release_checks.py`; the
+record's row, `tools/test_release_record.py`; then the release checks of 2.3.0.
 
 ## Decision
 
-Pending, for the roadmap of 2.3.0.
+Approved on 2026-11-24 by the coordinator under the software lead's standing delegation ("I am
+the customer, you are the planner and builder, you approve and decide", 2026-11-23), with the
+roadmap of 2.3.0, on the impact analysis above. The soak in blocks is a change of how ACC-03 is
+measured, not of SRS-SYS-003: the 8-hour run stays with the system test on the acquisition PC.

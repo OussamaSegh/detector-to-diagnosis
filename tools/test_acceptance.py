@@ -31,9 +31,11 @@ SOAK = ("soak: 1e+06 singles/s for {} min, 601 samples every 10 s\n"
         "end-to-end latency over each interval: p99 max {} ms, max 12.91 ms\n"
         "intervals with p99 above 10 ms: {} of 600\n"
         "result: {}\n")
+COMPARE = ("intervals with p99 above the limit: candidate {} of 600 (1.33%), previous release {} of "
+           "600 (1.00%)\nFisher's exact test, one-sided (the candidate worse): p = {}, alpha 0.05\n")
 REPORT = "## 2. Results\n\n34 test cases: {} passed, {} failed, 0 skipped.\n"
 CHECKS = "".join(f"## part {n}\npass  something\nall release checks passed (part {n})\n"
-                 for n in (1, 2, 3, 4))
+                 for n in (1, 2, 3, 4, 5))
 
 
 def e2e_result(commit="cfb708f", same=True, radius=80.25):
@@ -55,11 +57,12 @@ class Evidence:
         self._tmp = tempfile.TemporaryDirectory()
         self.out = pathlib.Path(self._tmp.name)
         for name, part in (("commit.txt", 1), ("commit-part-2.txt", 2), ("commit-part-3.txt", 3),
-                           ("commit-part-4.txt", 4)):
+                           ("commit-part-4.txt", 4), ("commit-part-5.txt", 5)):
             self.write(name, f"commit {COMMIT}\n")
         self.write("perf-pipeline.txt", PIPELINE.format("37.4753"))
         self.write("perf-writer.txt", WRITER.format("15.77"))
         self.write("soak.txt", SOAK.format("100.0", "4.42", 0, "PASS"))
+        self.write("soak-compare.txt", COMPARE.format(8, 6, "0.3946"))
         self.write("system-test-report.md", REPORT.format(34, 0))
         self.write("release-checks.txt", CHECKS)
         (self.out / "e2e").mkdir()
@@ -113,7 +116,34 @@ class Verdicts(unittest.TestCase):
         self.ev.write("release-checks.txt", CHECKS + failed_first)
         self.assertEqual(self.ev.verdict("ACC-08"), "FAIL")
         self.ev.write("release-checks.txt", "## part all\npass  x\nall release checks passed (part all)\n")
-        self.assertEqual(self.ev.verdict("ACC-08"), "PASS", "one run of all four parts")
+        self.assertEqual(self.ev.verdict("ACC-08"), "PASS", "one whole run")
+
+    def test_the_soak_is_part_5_and_a_run_without_it_fails(self):
+
+        # REQ: SRS-PERF-022
+        # CR-0038: four passed parts were a whole run until 2.2.0; since then the soak is part 5.
+        self.ev.write("release-checks.txt", CHECKS.replace(
+            "## part 5\npass  something\nall release checks passed (part 5)\n", ""))
+        self.assertEqual(self.ev.verdict("ACC-08"), "FAIL")
+        (self.ev.out / "commit-part-5.txt").write_text(f"commit {OTHER}\n")
+        self.assertEqual(self.ev.verdict("ACC-04"), "STALE")
+        self.assertEqual(self.ev.verdict("ACC-10"), "STALE")
+
+    def test_the_candidate_is_compared_with_the_previous_release(self):
+
+        # REQ: SRS-PERF-022
+        # CR-0038: ACC-10 fails when the candidate is worse on the same machine, at alpha 0.05;
+        # ACC-04 stays absolute (the 2.2.0 rerun: 11 of 600 fail it, and pass ACC-10).
+        self.assertEqual(self.ev.verdict("ACC-10"), "PASS")
+        self.ev.write("soak-compare.txt", COMPARE.format(20, 3, "0.0002"))
+        self.assertEqual(self.ev.verdict("ACC-10"), "FAIL")
+        self.ev.write("soak-compare.txt", COMPARE.format(11, 6, "0.1644"))
+        self.ev.write("soak.txt", SOAK.format("100.0", "20.45", 11, "PASS"))
+        self.assertEqual((self.ev.verdict("ACC-04"), self.ev.verdict("ACC-10")), ("FAIL", "PASS"))
+        self.ev.write("soak-compare.txt", COMPARE.format(11, 6, "0.1644").replace("alpha 0.05", "alpha 0.1"))
+        self.assertEqual(self.ev.verdict("ACC-10"), "MISSING", "another alpha")
+        self.ev.write("soak-compare.txt", "the comparison did not run\n")
+        self.assertEqual(self.ev.verdict("ACC-10"), "MISSING")
 
     def test_a_soak_that_failed_fails_whatever_its_length(self):
         self.ev.write("soak.txt", SOAK.format("100.0", "4.42", 0, "FAIL: 3 singles lost"))
@@ -154,8 +184,11 @@ class Verdicts(unittest.TestCase):
         self.assertEqual(self.ev.verdict("ACC-01"), "MISSING", "no commit for part 2")
 
     def test_evidence_of_another_commit_or_a_changed_tree_is_stale(self):
-        self.ev.write("commit-part-3.txt", f"commit {OTHER}\n")
+        self.ev.write("commit-part-5.txt", f"commit {OTHER}\n")
         self.assertEqual(self.ev.verdict("ACC-03"), "STALE")
+        self.ev.write("commit-part-5.txt", f"commit {COMMIT}\n")
+        self.ev.write("commit-part-3.txt", f"commit {OTHER}\n")
+        self.assertEqual(self.ev.verdict("ACC-07"), "STALE")
         self.ev.write("commit-part-2.txt", f"commit {COMMIT}\n M tools/e2e.py\n")
         self.assertEqual(self.ev.verdict("ACC-01"), "STALE")
         self.ev.write("e2e/e2e.json", e2e_result(commit="cfb708f-dirty"))

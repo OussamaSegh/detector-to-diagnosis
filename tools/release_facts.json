@@ -2,6 +2,7 @@
  "comment": "The facts that the release checks run and the release record states, in one place (CAPA-0007): tools/release_checks.sh, ci/run_all.sh and tools/release_record.py read them from here, and tools/test_release_record.py checks that none of them keeps a copy. A change to a fact is a change to the release checks: it needs the SDP's section 6 and a change request when the checks it names change.",
  "presets": ["debug", "clang-release", "release", "hardened", "asan-ubsan", "tsan"],
  "soak_minutes": 100,
+ "soak_blocks": 5,
  "fuzz_seconds": 600,
  "fuzz_targets": ["config", "decoder", "raw16", "protocol", "packet", "sorter", "listmode", "calibration", "documents"]
 }

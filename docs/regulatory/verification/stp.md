@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 6 (MiniDAQ 2.1.0). Status: approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 7 (MiniDAQ 2.3.0-dev). Status: draft for review. Version 6 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -30,7 +30,7 @@ system and does not reproduce the standard. Unit verification is in the
 | Unit | one unit against its specification in its header, through its interface | `minidaq/tests/unit/`, label `unit` | every change, seven presets |
 | Integration | units put together in one process: the pipeline with its stages, the service with its ports, the control server with the service | `minidaq/tests/unit/` (for example `test_pipeline.cpp`, `test_acquisition_service.cpp`, `test_service_interactions.cpp`), label `unit` | every change, seven presets |
 | System | the shipped programs in their own processes, through their real interfaces: options, signals, TCP and TLS, UDP, files, exit status | `minidaq/tests/system/`, label `system` | every change, seven presets |
-| Soak | one long acquisition: memory, counters and latency over time | `tools/soak.py` | each release, 100 minutes on the reference machine (30 until 2.1.0, CR-0035) |
+| Soak | one long acquisition: memory, counters and latency over time | `tools/soak.py`, `tools/soak_ab.py` | each release, 100 minutes on the reference machine (30 until 2.1.0, CR-0035), since 2.3.0 in 5 blocks of 20 interleaved with the previous release's programs (CR-0038) |
 | Hardware in the loop | the system with a real readout board instead of `minidaq_send` | a test bench (section 6) | each release of the product (assumption: confirm with team) |
 
 A defect is tested at the lowest level that can show it. A system test that finds a defect
@@ -126,7 +126,9 @@ release and per change of the readout, not per commit.
 - For each release, `tools/test_report.py build/release measurements/release-X.Y.Z/system-test-report.md`
   writes the test report: commit, build, machine, each test case with its requirements, result
   and duration, deviations, and the signatures of tester and reviewer.
-- The soak's samples and summary are kept in `measurements/release-X.Y.Z/soak/`.
+- The soak's samples and summary are kept in `measurements/release-X.Y.Z/soak/` (until 2.2.0) or
+  `measurements/release-X.Y.Z/soak-ab/` (each block of both releases, each side's summary and
+  the comparison, since 2.3.0, CR-0038).
 - The release record (development plan, section 8) cites both.
 
 ## 9. Changes
@@ -139,3 +141,4 @@ release and per change of the readout, not per commit.
 | 4 | CI runs seven presets, `product` among them; the libraries under test. The table lists every system test file: the time base cases of Readout (CR-0031), start-up files and signed runs of Startup, and Hardware, Diagnostics and Platform, which earlier versions left out (review of 2.0.0). |
 | 5 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 4. |
 | 6 | The release soak lasts 100 minutes (CR-0035). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
+| 7 | The release soak runs in blocks interleaved with the previous release's programs, and the two are compared (CR-0038). |

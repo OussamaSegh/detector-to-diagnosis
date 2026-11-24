@@ -1,6 +1,6 @@
 {
  "title": "MiniDAQ 1.0 acceptance specification",
- "version": 2,
+ "version": 3,
  "comment": "What MiniDAQ must show as a whole before it is called 1.0 (Chapter 33), each criterion with the requirements it demonstrates, its target, and the evidence file of the release checks that shows it. tools/acceptance.py evaluates every criterion from one OUT directory of tools/release_checks.sh: PASS, FAIL, MISSING (no evidence: never a pass) or STALE (evidence of another commit). The targets are book-level numbers (assumption: confirm with team the values of the scanner's system requirements). Changes to this file go through change control like the SRS.",
  "criteria": [
   {
@@ -27,9 +27,9 @@
    "id": "ACC-03",
    "what": "A long acquisition at the reference rate",
    "requirements": ["SRS-SYS-003"],
-   "target": "100 minutes (30 until 2.1.0, CR-0035) at 1 M singles/s: no loss, no fault, complete, memory growth within 1 MiB/h",
+   "target": "100 minutes (30 until 2.1.0, CR-0035) at 1 M singles/s, in 5 blocks of 20 minutes interleaved with the previous release's since 2.3.0 (CR-0038): no loss, no fault, complete, memory growth within 1 MiB/h (the slope pooled within the blocks)",
    "evidence": "soak.txt",
-   "part": 3,
+   "part": 5,
    "rule": "soak",
    "limit": 100
   },
@@ -37,9 +37,9 @@
    "id": "ACC-04",
    "what": "End-to-end latency at the reference rate",
    "requirements": ["SRS-PERF-022"],
-   "target": "the 99th percentile of at least 99% of the 100-minute soak's 600 intervals of 10 s at most 10 ms (every interval until version 2, CR-0025; 180 intervals until 2.1.0, CR-0035)",
+   "target": "the 99th percentile of at least 99% of the 100-minute soak's 600 intervals of 10 s at most 10 ms (every interval until version 2, CR-0025; 180 intervals until 2.1.0, CR-0035; in 5 blocks of 20 minutes since 2.3.0, CR-0038). Absolute: the comparison with the previous release (ACC-10) never replaces it",
    "evidence": "soak.txt",
-   "part": 3,
+   "part": 5,
    "rule": "soak_latency",
    "limit": 10.0,
    "share": 0.99
@@ -75,10 +75,11 @@
    "id": "ACC-08",
    "what": "Every verification of a release (SDP section 6) that the release checks run",
    "requirements": [],
-   "target": "all four parts end with 'all release checks passed', on the commit of part 1",
+   "target": "all five parts end with 'all release checks passed', on the commit of part 1 (four parts until 2.2.0; the soak is part 5 since CR-0038)",
    "evidence": "release-checks.txt",
    "part": 0,
-   "rule": "release_checks"
+   "rule": "release_checks",
+   "parts": 5
   },
   {
    "id": "ACC-09",
@@ -94,6 +95,16 @@
     ["tools/anomalies.py", ".", "--check"],
     ["tools/req_baseline.py", ".", "--check"]
    ]
+  },
+  {
+   "id": "ACC-10",
+   "what": "End-to-end latency against the previous release on the same machine",
+   "requirements": ["SRS-PERF-022"],
+   "target": "the candidate's count of soak intervals above 10 ms not higher than the previous release's, its soak interleaved with the candidate's in blocks: Fisher's exact test, one-sided, p at least 0.05 (CR-0038). It says whether a failure of ACC-04 is in the code or in the machine; it does not meet SRS-PERF-022",
+   "evidence": "soak-compare.txt",
+   "part": 5,
+   "rule": "soak_compare",
+   "alpha": 0.05
   }
  ]
 }
