@@ -1,10 +1,12 @@
 # Roadmap for release 2.3.0: illustrations and photos
 
-Status: proposed. Drafted on 2026-11-24, while 2.2.0 is being released, after the author's remark
-that the book lacks illustrations and photos that would make its explanations clearer. Written to
-be folded into `docs/ROADMAP-2.3.0.md` as its Theme I when that roadmap is drafted, or to stand
-as the plan of a book-only 2.3.0 if 2.3.0 carries nothing else. Work starts only after 2.2.0 is
-released and its independent review is merged (the step-by-step rule of 2026-11-16).
+Status: accepted as Theme I of 2.3.0. Drafted on 2026-11-24, while 2.2.0 is being released, after
+the author's remark that the book lacks illustrations and photos that would make its explanations
+clearer. Decided the same day under the author's standing delegation (section 9): the photo policy
+of section 3 is accepted, the plan becomes Theme I of a wider 2.3.0 and is folded into
+`docs/ROADMAP-2.3.0.md` when that roadmap is drafted, and the five prototypes are kept as the
+model for the rest. Work starts only after 2.2.0 is released and its independent review is merged
+(the step-by-step rule of 2026-11-16).
 
 ## 1. Where the book stands
 
@@ -186,9 +188,10 @@ no overfull box; KDP's limit is 828.
 | Physics drawn wrong | A picture teaches a wrong model | Every physics figure reviewed against the chapter's numbers and references; the Opus review checks them |
 | Work on 2.2.0 and 2.3.0 overlaps | Merge conflicts in chapters being edited | 2.3.0 starts after the 2.2.0 release and its review are merged; prototypes touch only Chapters 8, 26 and 28 |
 
-## 9. Decisions to take
+## 9. Decisions taken (2026-11-24)
 
-1. Accept the photo policy of section 3 (it reverses a rule of the design plan).
-2. 2.3.0 as a book-only release between 2.2.0 and 3.0.0-dev, or this plan as Theme I of a
-   wider 2.3.0. The table of `docs/ROADMAP-3.0.0.md`, section 5, then gets a 2.3.0 row.
-3. Keep, change or drop each of the five prototypes.
+1. The photo policy of section 3 is accepted; it supersedes the design plan's "no photos" rule,
+   since the author asked for photos.
+2. The plan is Theme I of a wider 2.3.0, not a book-only release. The table of
+   `docs/ROADMAP-3.0.0.md`, section 5, gets a 2.3.0 row when `docs/ROADMAP-2.3.0.md` is drafted.
+3. The five prototypes are kept as the model for the rest of the inventory.
