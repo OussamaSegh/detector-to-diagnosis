@@ -153,8 +153,10 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME book.web_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_web.py)
   # Review of 1.2.0: the EPUB's figure numbers, in the chapters and the appendix (erratum E-009).
   add_test(NAME book.figure_numbers COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_figure_numbers.py)
+  # Roadmap 2.3.0, Theme I (CR-0039): the photo policy's checks, on photos made by the test.
+  add_test(NAME book.photos_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_photos.py)
   set_tests_properties(book.xrefs book.xrefs_tool book.errata book.errata_tool book.web_tool book.figure_numbers
-                       PROPERTIES LABELS "unit")
+                       book.photos_tool PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)
