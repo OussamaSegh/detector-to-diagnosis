@@ -109,6 +109,17 @@ class Command(Repo):
                         ("git push origin --delete claude/work", "deletes")]:
             self.assertRefused(c, rule)
 
+    def test_a_delete_by_empty_source_or_a_force_among_short_options_is_refused(self):
+        # Found by the review of 2.2.0: both were allowed.
+        # REQ: SRS-AI-008
+        for c, rule in [("git push origin :main", "deletes"),
+                        ("git push origin :claude/work", "deletes"),
+                        ("git push -fu origin main", "forces a push"),
+                        ("git push -uf origin claude/work", "forces a push"),
+                        ("git push -ud origin claude/work", "deletes")]:
+            self.assertRefused(c, rule, branch="claude/work")
+        self.assertAllowed("git push -u origin claude/work", branch="claude/work")
+
     def test_other_tools_and_bad_input_are_allowed(self):
         r = run(COMMAND, {"tool_name": "Read", "tool_input": {"file_path": "/etc/x"}}, self.repo)
         self.assertEqual(r.returncode, 0)

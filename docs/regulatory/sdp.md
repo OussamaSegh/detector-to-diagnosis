@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 23 (MiniDAQ 2.2.0-dev). Status: approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC. Version 22 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
+Version 24 (MiniDAQ 2.2.1-dev). Status: draft for review. Version 23 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC. Version 22 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching
@@ -201,8 +201,8 @@ in its header, and every requirement it implements is traced.
 
 ## 8. Release
 
-A release is made when every check of section 6 passes on the commit to be released, and its
-release record shows:
+A release is made when every check of section 6 passes on the commit to be released, or a
+check that failed is released with a deviation (below), and its release record shows:
 
 1. the version and the commit, with the tag `book-vX.Y.Z`;
 2. the results of every verification of section 6 for that commit;
@@ -239,6 +239,17 @@ at most once for a release: a second failure is a problem report against the com
 release 2.0.0, where the gate's first verdict on `BM_HistogramRecord` was handled so; MDQ-PR-077).
 `tools/release_checks.sh resume` enforces the rule: it runs a failed part again only when
 `OUT/rerun-part-N.md` holds the investigation, and never a third time (test `tools.release_checks`).
+
+A release with a check that failed, at its first run or at its one run again, is made only by a
+deviation that the software lead decides in writing, after reading the investigation. The
+release record's section Deviation then names each row of its table released so, as `row`, and
+states: the check and its result, the criterion as it was set before the checks ran, the
+evidence that the failure is not in the commit (a comparison with the previous release's
+programs on the same machine, with its statistics), what the evidence does not show (whether
+the requirement itself is met), the safety evaluation, and the problem report that stays open
+until the check passes again. A row marked `fail (deviation)` that the section does not name is
+refused by `tools/release_record.py check` (MDQ-PR-098, MDQ-PR-099). Releases 1.0.0 and 2.2.0
+were made so for ACC-04.
 
 The release record for each version is part of its release notes in `CHANGELOG.md`
 and the release report. Exercise 14.5 builds a tool that checks such a record.
@@ -289,3 +300,4 @@ assessment of Chapter 13.
 | 21 | Approved for release 2.0.1 by the author (software lead), in writing on 2026-11-16; the content is that of version 20. |
 | 22 | The release soak lasts 100 minutes (CR-0035, MDQ-PR-064). Section 5: the whole unit suite before a push, and the CI result read after it (CAPA-0006, MDQ-PR-085). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
 | 23 | Section 5: a change to C++ code passes the static analysis before a push (internal audit before release 2.2.0, MDQ-PR-094). The release checks read their shared facts from `tools/release_facts.json` (CAPA-0007). Approved for release 2.2.0 by the author (software lead), in writing on 2026-11-24. |
+| 24 | Review of release 2.2.0: section 8, the release with a deviation, which the plan did not provide for although releases 1.0.0 and 2.2.0 used it: who decides, what the section Deviation of the record states, and the check that it names each row released so (MDQ-PR-099). |

@@ -233,9 +233,9 @@ def table_drift(root, record, text):
     if tuple(int(x) for x in version.split(".")) < FIRST_TABLE:
         return []  # written before the table had its present rows (MDQ-PR-090)
     lines = {line.strip() for line in text.splitlines()}
-    if deviation(text):
-        lines |= {DEVIATED.sub(r"| \1 | pass |", line) for line in lines}
-        lines |= {DEVIATED.sub(r"| \1 | FAIL |", line) for line in lines}
+    named = {line for line in lines if (m := DEVIATED.match(line)) and decided(text, m.group(1))}
+    lines |= {DEVIATED.sub(r"| \1 | pass |", line) for line in named}
+    lines |= {DEVIATED.sub(r"| \1 | FAIL |", line) for line in named}
     return [f"the table lacks the row {row} that the evidence gives"
             for row in table_rows(root, version) if row not in lines]
 
@@ -251,11 +251,19 @@ def deviation(text):
     return m.group(1).strip() if m else ""
 
 
+def decided(text, row):
+    """Whether the section Deviation names the row, as `row`: a decision excuses only the checks
+    it names, not every row marked so (review of 2.2.0, MDQ-PR-099)."""
+    return f"`{row}`" in deviation(text)
+
+
 def excused(text, errors):
-    """The exercise check's errors without those of the rows released with a deviation."""
-    if not deviation(text):
-        return errors
-    return [e for e in errors if not re.fullmatch(r"Verification: '[^']+' is 'fail \(deviation\)', not 'pass'", e)]
+    """The exercise check's errors without those of the rows released with a deviation that
+    the section Deviation names."""
+    def released(e):
+        m = re.fullmatch(r"Verification: '([^']+)' is 'fail \(deviation\)', not 'pass'", e)
+        return m is not None and decided(text, m.group(1))
+    return [e for e in errors if not released(e)]
 
 
 def check(root, record):

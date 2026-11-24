@@ -15,15 +15,21 @@ of the end-to-end latency is at most 10 ms, on one soak of the candidate alone. 
 a soak of the previous release's programs, interleaved with the candidate's on the same machine
 in the same session (as the regression gate already does for the benchmarks, CR-0025), and
 judges the candidate's count of slow intervals against both the absolute limit of SRS-PERF-022
-and the previous release's count, with a test of the difference.
+and the previous release's count, with a test of the difference. The two verdicts stay
+apart: a candidate no worse than the previous release that still fails the absolute limit
+fails ACC-04, and is released only with a deviation (SDP version 24, section 8); the
+comparison says where the failure is, not that the requirement is met.
 
 ## Reason
 
 MDQ-PR-096: on 2026-11-24 the candidate of 2.2.0 had 8 and then 11 of 600 slow intervals, where
 six are allowed, and a control soak of book-v2.1.0's programs on the same machine had 6, against
-3 at their own release and 2 of 1,740 at 2.0.x. The machine's own rate of scheduling stalls of
-20 to 95 ms changed between sessions; a single soak cannot tell that from a change of the code,
-so the criterion stops a release on the machine's state, or passes one on a quiet day.
+3 at their own release and 2 of 1,740 at 2.0.x. The same programs had twice as many slow
+intervals on one evening as at their release; a single soak cannot tell the machine's state
+from a change of the code, so the criterion stops a release on the machine's state, or passes
+one on a quiet day. (The review of 2.2.0, MDQ-PR-099, corrected an earlier reason here: a CPU
+wait of 20 ms or more is in 99% of all intervals, slow or not, so it does not show the
+machine's state; the control soak does.)
 
 ## Impact analysis
 

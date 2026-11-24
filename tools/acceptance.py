@@ -203,11 +203,22 @@ def evaluate(c, out, candidate, root=ROOT):
 # [/snippet:verdict]
 
 
+def shown(out):
+    """The evidence directory as the report names it: relative to the repository when inside it,
+    else by its own name. The report is committed to a public repository, which names no
+    absolute path of the machine that ran the checks (MDQ-PR-101)."""
+    p = pathlib.Path(out).resolve()
+    try:
+        return str(p.relative_to(ROOT))
+    except ValueError:
+        return f"OUT ({p.name})"
+
+
 def report(spec, rows, candidate, out):
     accepted = all(v == "PASS" for _, v, _ in rows)
     lines = [f"# {spec['title']}, version {spec['version']}: "
              f"{'ACCEPTED' if accepted else 'NOT ACCEPTED'}", "",
-             f"Candidate commit `{candidate[:12]}`; evidence from `{out}`.", "",
+             f"Candidate commit `{candidate[:12]}`; evidence from `{shown(out)}`.", "",
              "| Criterion | Requirements | Target | Found | Verdict |", "|---|---|---|---|---|"]
     for c, verdict, found in rows:
         reqs = ", ".join(c["requirements"]) or "(process)"

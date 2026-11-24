@@ -8,6 +8,15 @@ the patch version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Review of release 2.2.0: the record's section Deviation names the rows it releases and
+  corrects two of its reasons (MDQ-PR-099); `tools/release_record.py check` excuses a
+  `fail (deviation)` row only when that section names it; SDP version 24 (draft) states the
+  deviation path of section 8. The command hook refuses `git push origin :main` and forces
+  among combined short options (MDQ-PR-100). The acceptance report names no absolute path of
+  the machine (MDQ-PR-101).
+
 ## [2.2.0] - 2026-11-24
 
 Release notes: nothing breaks. The agent gate and the agent files under document control
