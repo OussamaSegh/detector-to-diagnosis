@@ -1,0 +1,23 @@
+% Front matter: the journey of one event through MiniDAQ and the chapters that teach each step,
+% with the chapters that surround every step (C++ and Linux, the regulated life cycle, the team).
+\begin{tikzpicture}[x=1cm,y=1cm,
+  st/.style={box=d2dcat0,minimum width=2.55cm,minimum height=1.25cm,font=\sffamily\footnotesize,text width=2.35cm},
+  ch/.style={font=\sffamily\scriptsize\bfseries,text=d2dcat0!80!d2dink}]
+  % row 1, left to right
+  \foreach \i/\t/\c in {0/{a decay, two\\photons}/{Ch 8},1/{crystals and\\SiPMs}/{Ch 8},2/{front-end board:\\time and energy}/{Ch 9, 24, 38},3/{the link:\\UDP packets}/{Ch 9, 23},4/{the sorter:\\coincidences}/{Ch 10, 11}} {
+    \node[st] (a\i) at (3.15*\i,0) {\t};
+    \node[ch,anchor=south] at (a\i.north) {\c};}
+  % row 2, right to left
+  \foreach \i/\t/\c in {0/{list mode and\\sinograms}/{Ch 12},1/{calibration and\\corrections}/{Ch 26, 27},2/{reconstruction:\\OSEM, TOF}/{Ch 28, 29, 39},3/{image quality}/{Ch 30},4/{DICOM to\\the PACS}/{Ch 35}} {
+    \node[st] (b\i) at (12.6-3.15*\i,-2.3) {\t};
+    \node[ch,anchor=north] at (b\i.south) {\c};}
+  \foreach \i [evaluate=\i as \j using int(\i+1)] in {0,...,3} {\draw[flow] (a\i) -- (a\j); \draw[flow] (b\i) -- (b\j);}
+  \draw[flow] (a4.east) -- ++(0.35,0) |- (b0.east);
+  % what surrounds every step
+  \begin{scope}[every node/.style={dim,text=d2dink,font=\sffamily\footnotesize,minimum height=0.7cm}]
+    \node[minimum width=14.5cm] at (6.3,-4.15) {around every step: C++, memory, concurrency and real-time Linux (Part I); hardware, network and platform (Part V)};
+    \node[minimum width=14.5cm] at (6.3,-5.0) {the regulated life cycle: IEC 62304, risk, QMS, security (Part III); testing, CI and review (Part IV)};
+    \node[minimum width=14.5cm] at (6.3,-5.85) {the team: analysis, builds, the capstone, Git, AI tools, maintenance (Parts VII to X)};
+  \end{scope}
+  \node[title,anchor=south west] at (-1.3,0.95) {One event's journey through MiniDAQ};
+\end{tikzpicture}
