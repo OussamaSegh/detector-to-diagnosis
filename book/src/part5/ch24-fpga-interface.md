@@ -515,6 +515,11 @@ The pair stage then tells the sorter:
 ```{.cpp include="minidaq/src/processing/coincidence_sorter.cpp" snippet="advance"}
 ```
 
+Figure [](#fig-ch24-marker) follows one marker through the board, the calibration and the sorter.
+
+```{.figure #fig-ch24-marker src="book/figures/tikz/ch24/marker.tex" caption="A time marker from the board to the sorter. The calibration moves each single by its crystal's offset, so a single stamped after the marker can come out earlier than it; the sort stage moves the marker back by the largest offset, and the sorter closes every window that ends before it." alt="Three time lines. The board's words in raw time: singles as thin ticks and a thick marker t m, with the note no later word of this board is earlier. After the calibration: the singles have moved a little each way, one single stamped after the marker now lies before the marker's old place, and an arrow moves the marker back by the largest offset. The sorter's windows: three windows that end before the moved marker are closed by advance; one window that reaches past it stays open." width="95%"}
+```
+
 `advance` closes the windows that no single at or after the promised time could join, which is
 what `push` does when such a single arrives; it moves no window boundary, so the coincidences and
 the counters are the ones without markers (SRS-SRT-014). That is the property to test, and

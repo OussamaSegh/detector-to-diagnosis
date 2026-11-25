@@ -525,6 +525,11 @@ of trust, which is the strongest form and the most work to set up. Which of thes
 is the platform team's decision (assumption: confirm with team); MiniDAQ's design must not depend on
 it, which is why its own updater only touches `/opt/minidaq`.
 
+Figure [](#fig-ch25-images) puts the two kinds of update side by side.
+
+```{.figure #fig-ch25-images src="book/figures/tikz/ch25/images.tex" caption="Updating the platform and updating MiniDAQ. A secure-boot chain verifies each stage before it runs the next; an image framework writes the root file system that is not running and the bootloader falls back if it fails. MiniDAQ's updater touches only its own two slots under /opt/minidaq. A generic drawing, not any framework's layout." alt="Left: four stacked boxes, firmware as the root of trust, bootloader, kernel and root file system, each verifying the next. Right: a disk with a boot partition holding the bootloader and its state, two root file systems, root A running and root B holding the update, with arrows from the boot partition: boot the update to root B and, dashed, fall back if it fails to root A. Below them, /opt/minidaq with MiniDAQ's own slots a and b. A note says an image framework such as RAUC, SWUpdate, Mender or OSTree writes root A or B, while MiniDAQ's updater writes only its slots." width="95%"}
+```
+
 ::: box-regulated
 - **The platform is SOUP.** IEC 62304 asks you to identify every SOUP item by name, manufacturer and
   version, and to evaluate its anomaly lists; the platform definition and its SBOM are that

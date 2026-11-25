@@ -1,0 +1,38 @@
+% Chapter 24: a time marker in register map 1.2. Row 1: one board's words in raw time, singles
+% and a marker at t_m, which promises that no later word is earlier. Row 2: after the calibration
+% each single moves by its crystal's offset, so a single after the marker can come out earlier
+% than it; the sort stage moves the marker back by the largest offset. Row 3: the sorter closes
+% every window that ends before the moved marker, without waiting for a later single.
+\begin{tikzpicture}[x=1.15cm,y=1cm]
+  \def\tm{6.0}
+  \def\off{0.9}
+  % row 1: raw times
+  \node[lab,anchor=east] at (-0.2,0) {board's words,\\raw time};
+  \draw[->,d2dmuted,line width=0.6pt] (0,0) -- (11,0) node[note,anchor=north east] {time};
+  \foreach \x in {0.6,1.5,2.3,3.4,4.1,5.2} {\draw[d2dcat0,line width=1.4pt] (\x,0) -- (\x,0.45);}
+  \draw[partcolor,line width=2pt] (\tm,0) -- (\tm,0.75) node[lab,anchor=south,text=partcolor] {marker $t_m$};
+  \foreach \x in {6.5,7.4} {\draw[d2dcat0,line width=1.4pt] (\x,0) -- (\x,0.45);}
+  \node[note,anchor=west,align=left] at (8.0,0.45) {promise: no later word\\of this board is earlier};
+  % row 2: calibrated times
+  \begin{scope}[shift={(0,-1.9)}]
+    \node[lab,anchor=east] at (-0.2,0) {after the\\calibration};
+    \draw[->,d2dmuted,line width=0.6pt] (0,0) -- (11,0);
+    \foreach \x/\d in {0.6/0.3,1.5/-0.2,2.3/0.5,3.4/0.1,4.1/-0.4,5.2/0.2} {\draw[d2dcat0,line width=1.4pt] (\x+\d,0) -- (\x+\d,0.45);}
+    \draw[d2dcat5,line width=1.4pt] (6.5-0.8,0) -- (6.5-0.8,0.45);
+    \node[note,anchor=north,text=d2dcat5!80!d2dink,align=center] at (5.7,-0.05) {stamped after the\\marker, now earlier};
+    \draw[d2dcat0,line width=1.4pt] (7.4+0.3,0) -- (7.4+0.3,0.45);
+    \draw[partcolor!45!white,line width=2pt,dash pattern=on 2pt off 1.5pt] (\tm,0) -- (\tm,0.75);
+    \draw[partcolor,line width=2pt] (\tm-\off,0) -- (\tm-\off,0.75);
+    \draw[->,partcolor,line width=0.8pt] (\tm,0.95) -- (\tm-\off,0.95) node[midway,above,note,text=partcolor] {back by the largest offset};
+  \end{scope}
+  % row 3: the sorter
+  \begin{scope}[shift={(0,-4.0)}]
+    \node[lab,anchor=east] at (-0.2,0.2) {the sorter's\\windows};
+    \draw[->,d2dmuted,line width=0.6pt] (0,0) -- (11,0);
+    \foreach \x/\w in {0.9/0.5,2.8/0.5,3.5/0.5} {\fill[d2dcat2!30!white,draw=d2dcat2!80!d2dink,line width=0.5pt] (\x,0) rectangle (\x+\w,0.5);}
+    \fill[d2dcat1!25!white,draw=d2dcat1!80!d2dink,line width=0.5pt,dash pattern=on 2pt off 1.5pt] (4.9,0) rectangle (5.4,0.5);
+    \draw[partcolor,line width=2pt] (\tm-\off,0) -- (\tm-\off,0.75);
+    \node[note,anchor=north,align=center] at (2.6,-0.1) {closed by \texttt{advance}: they end before\\the moved marker, no later single can join};
+    \node[note,anchor=north west,align=left] at (5.25,-0.1) {still open: it reaches past\\the moved marker};
+  \end{scope}
+\end{tikzpicture}
