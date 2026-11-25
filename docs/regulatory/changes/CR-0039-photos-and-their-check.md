@@ -85,8 +85,12 @@ fetch's files to a temporary branch, `photos-inbox`, which a session can fetch w
 project's rule is that a session pushes only its own branch and `main`; the software lead allowed
 this branch in writing on 2026-11-25 at 13:25 UTC ("Allow the inbox branch"). The branch is never
 merged: only the photos that pass the checks of this change are copied into `book/figures/photos/`
-on the session's branch, and the inbox is deleted when the photos are chosen. Its deletion is
-recorded here when done.
+on the session's branch, and the inbox is deleted when the photos are chosen.
+
+Closed on 2026-11-25. Two photos were kept (merged in 37dad1e, PR #27). A session's push cannot
+delete a branch, so at the software lead's written request (22:11 UTC) `photos.yml` got a mode
+`clean` that deletes the inbox (a308ecc); its run 45711195816 deleted `photos-inbox` at about
+22:13 UTC, and `git ls-remote` no longer lists the branch.
 
 ## Decision
 
