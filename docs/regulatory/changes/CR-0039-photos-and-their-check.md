@@ -78,6 +78,16 @@ The tests that verify it include `Photos.test_a_photo_that_follows_the_policy_pa
 `Photos.test_a_file_changed_after_its_credit_fails` and
 `Photos.test_the_built_photo_is_gray_for_black_ink_and_small_for_the_epub`.
 
+## Exception: the photos-inbox branch
+
+Sessions cannot download a job's artifacts through their proxy, so `photos.yml` also adds each
+fetch's files to a temporary branch, `photos-inbox`, which a session can fetch with git. The
+project's rule is that a session pushes only its own branch and `main`; the software lead allowed
+this branch in writing on 2026-11-25 at 13:25 UTC ("Allow the inbox branch"). The branch is never
+merged: only the photos that pass the checks of this change are copied into `book/figures/photos/`
+on the session's branch, and the inbox is deleted when the photos are chosen. Its deletion is
+recorded here when done.
+
 ## Decision
 
 Approved by the software lead on 2026-11-25 at 09:25 UTC, in writing in the project thread, after the

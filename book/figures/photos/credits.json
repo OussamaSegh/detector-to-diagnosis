@@ -1,4 +1,29 @@
 {
-  "version": 1,
-  "photos": []
+ "version": 1,
+ "photos": [
+  {
+   "file": "pet-ct-gantry.jpg",
+   "title": "A clinical PET/CT scanner's gantry and bore",
+   "source": "https://commons.wikimedia.org/wiki/File:Bron_-_CERMEP_-_Salle_du_scanner_TEP-CT_de_2010,_scanner_de_c%C3%B4t%C3%A9.jpg",
+   "author": "Romainbehar",
+   "license": "CC0-1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "read_on": "2026-11-25",
+   "read_by": "the book's assistant, from the file page's license metadata (Commons API)",
+   "sha256": "2bf89b6e62eb150b8a849420c7470b8f4d469e9e23f0e60d1a181a8d2a31d73f",
+   "changes": "cropped to the bore and the controls, leaving out the maker's and the site's names, from the 1920 px rendition; metadata removed"
+  },
+  {
+   "file": "photomultiplier.jpg",
+   "title": "A photomultiplier tube beside a ruler",
+   "source": "https://commons.wikimedia.org/wiki/File:Technology_photomultiplier_tube_202_(52280871801).jpg",
+   "author": "Jan Helebrant",
+   "license": "CC0-1.0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "read_on": "2026-11-25",
+   "read_by": "the book's assistant, from the file page's license metadata (Commons API)",
+   "sha256": "a305a738586c34aee348df1bd4d460aff6b2a1ca857f13e77fbb6160f0de2e5d",
+   "changes": "resized to 2000 px wide; metadata removed"
+  }
+ ]
 }
