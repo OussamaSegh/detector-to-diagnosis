@@ -1,0 +1,30 @@
+% Chapter 25: image updates of the platform beside MiniDAQ's own updater. Left: a secure-boot chain,
+% each stage verifying the next. Right: a disk with A/B root file systems, which an image-update
+% framework writes and the bootloader falls back between, and MiniDAQ's two slots under /opt, which
+% only MiniDAQ's updater touches. A generic drawing, not any framework's layout.
+\begin{tikzpicture}[x=1cm,y=1cm,
+  st/.style={box=d2dcat3,minimum width=3.2cm,font=\sffamily\footnotesize}]
+  % the chain of trust
+  \node[title,anchor=south] at (0,4.55) {a secure-boot chain};
+  \node[st] (rom) at (0,3.9) {firmware (root of trust)};
+  \node[st] (bl) at (0,2.6) {bootloader};
+  \node[st] (k) at (0,1.3) {kernel};
+  \node[st] (fs) at (0,0) {root file system};
+  \foreach \a/\b in {rom/bl,bl/k,k/fs} {\draw[flow] (\a) -- (\b) node[midway,right,note] {verifies};}
+  % the disk
+  \begin{scope}[shift={(4.6,-0.4)}]
+    \node[title,anchor=south west] at (0,4.95) {the disk of the acquisition PC};
+    \draw[d2dink,line width=0.8pt,rounded corners=2pt] (0,0) rectangle (6.6,4.8);
+    \node[box=d2dmuted,minimum width=6.0cm,minimum height=0.6cm,font=\sffamily\footnotesize] (boot) at (3.3,4.35) {boot partition: bootloader and its state};
+    \node[hot=d2dcat0,minimum width=2.8cm,minimum height=1.5cm,font=\sffamily\footnotesize\bfseries] (ra) at (1.75,2.55) {root A\\running};
+    \node[box=d2dcat0,minimum width=2.8cm,minimum height=1.5cm,font=\sffamily\footnotesize] (rb) at (4.85,2.55) {root B\\the update};
+    \node[box=partcolor,minimum width=6.0cm,minimum height=1.4cm,anchor=north,font=\sffamily\footnotesize,align=center] (opt) at (3.3,1.6) {};
+    \node[lab,anchor=north] at (3.3,1.55) {\texttt{/opt/minidaq}: MiniDAQ's own slots};
+    \node[box=partcolor,minimum width=1.6cm,minimum height=0.5cm,font=\sffamily\scriptsize] at (2.2,0.65) {slots/a};
+    \node[box=partcolor,minimum width=1.6cm,minimum height=0.5cm,font=\sffamily\scriptsize] at (4.4,0.65) {slots/b};
+    \draw[->,d2dcat0!80!d2dink,line width=0.8pt] (boot.south -| rb.north) -- (rb.north) node[pos=0.45,right,note,text=d2dcat0!80!d2dink] {boot the update};
+    \draw[->,d2dcat5!80!d2dink,line width=0.8pt,dash pattern=on 3pt off 1.5pt] (boot.south -| ra.north) -- (ra.north) node[pos=0.45,right,note,text=d2dcat5!80!d2dink] {fall back if it fails};
+  \end{scope}
+  \node[note,anchor=north,align=center] at (7.9,-0.55) {an image framework (RAUC, SWUpdate, Mender, OSTree) writes root A or B;\\MiniDAQ's updater writes only its slots, whatever the platform uses};
+  \draw[d2dmuted,line width=0.4pt,dash pattern=on 2pt off 1.5pt] (fs.east) -- (ra.west);
+\end{tikzpicture}

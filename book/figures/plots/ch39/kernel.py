@@ -43,7 +43,7 @@ def main(dst):
     for ax, (title, img) in zip(axes, panels):
         ax.imshow(img, cmap=d2d.CMAP, vmin=0, vmax=img.max(), interpolation="nearest", origin="lower",
                   extent=(xs.min() - 1, xs.max() + 1, ys.min() - 1, ys.max() + 1))
-        ax.add_patch(__import__("matplotlib").patches.Circle((0, 0), 120, fill=False, ec="white",
+        ax.add_patch(__import__("matplotlib").patches.Circle((0, 0), 120, fill=False, ec=d2d.MUTED,
                                                               lw=0.6, ls=":"))
         ax.set_xticks([])
         ax.set_yticks([])
