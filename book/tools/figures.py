@@ -37,7 +37,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 BOOK = HERE.parent
 ROOT = BOOK.parent
 OUT = BOOK / "build" / "figures"
-SHARED = [BOOK / "figures/lib/d2d.py", BOOK / "figures/tikz/d2d-figure.tex",
+SHARED = [BOOK / "figures/lib/d2d.py", BOOK / "figures/lib/phantoms.py", BOOK / "figures/tikz/d2d-figure.tex",
           HERE / "palette.json", HERE / "palette.py", pathlib.Path(__file__)]
 PHOTOS = BOOK / "figures" / "photos"
 CREDITS = PHOTOS / "credits.json"

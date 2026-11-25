@@ -475,6 +475,16 @@ Figure [](#fig-ch27-profile) draws the rows of the table as profiles.
 ```{.figure #fig-ch27-profile src="book/figures/plots/ch27/profile.py" caption="The radial profile of the phantom's central slices after each correction, scaled to a mean of 1. Only the attenuation correction makes it flat, to 1.9% rms against the truth's 1.1%; the drop at 75 mm is the detector's resolution at the source's edge, in the truth too." alt="Profile against s from 0 to 75 mm for six steps. Prompts as measured, minus randoms and normalized rise from about 0.85 at the center to 1.25 at 60 mm; minus scatter is steeper, 0.79 to 1.32. Attenuation corrected is flat near 1 to 60 mm, then drops to 0.70 at 75 mm, following the dotted truth." width="85%" inputs="measurements/ch27/corrections.txt"}
 ```
 
+The cylinder is the easiest case for every correction. Figure [](#fig-ch27-brain) applies the same
+measurement model to a slice shaped like a head, and reconstructs it with the OSEM of Chapter 28
+three times: with every correction in the model, without attenuation correction, without scatter
+correction. Without attenuation correction the edge of the brain is too hot and its center too
+cold, by the same mechanism as the profile above; without scatter correction the background rises
+and the lesion's contrast falls.
+
+```{.figure #fig-ch27-brain src="book/figures/plots/ch27/brain.py" inputs="tools/recon/project.py tools/recon/mlem.py" caption="The corrections on a synthetic head slice: attenuation, a smooth scatter of 25% of the trues, uniform randoms of 10%, Poisson noise at about 3 million trues, OSEM with 8 subsets and 6 iterations. The image without attenuation correction is scaled to the same mean over the brain, so that its shape is compared, not its level." alt="Top row: the attenuation map, an oval of water with a brighter skull ring; the attenuation factors, a sinogram brightest where lines cross the most head; the measured noisy sinogram; and the object, with a bright cortex ring, two deep gray structures, dark ventricles and one small hot lesion. Bottom row: three OSEM images, with every correction, without attenuation correction where the outer ring is too bright, and without scatter correction where the background is raised; and a profile through the lesion comparing the object with the three images." width="100%"}
+```
+
 Two things are not in this table and no test of the software can give them: a patient whose outline
 is not a cylinder, and a scatter model that is not the patient's. The tool's tests prove that each
 correction computes what it claims on data whose answer is known; whether the models fit a patient

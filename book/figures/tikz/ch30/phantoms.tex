@@ -1,0 +1,47 @@
+% Chapter 30: the two phantoms of the chapter, each drawn as a transaxial slice and a side view.
+% Left: a body-shaped image-quality phantom as the text describes NEMA NU 2's (six hot spheres of
+% 10 to 37 mm on one slice in a warm background, a cold cylinder along the axis), drawn from that
+% description, not to scale. Right: MiniDAQ's 2D phantom of Chapter 28, a water cylinder with three
+% hot rods along its axis.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % ---- left: the body-shaped phantom, the slice through the spheres
+  \newcommand{\bodyslice}{(-2.1,-1.0) -- (2.1,-1.0) -- (2.1,0.2) arc[start angle=0,end angle=180,radius=2.1] -- cycle}
+  \fill[d2dcat4!12!white] \bodyslice;
+  \fill[d2drule!70!white,draw=d2dmuted,line width=0.4pt] (0,0.5) circle (0.42);
+  \foreach \a/\r in {90/0.17,150/0.21,210/0.27,270/0.34,330/0.43,30/0.55} {
+    \fill[partcolor!80!white,draw=partcolor!60!d2dink,line width=0.3pt] ({1.3*cos(\a)},{0.5+0.85*sin(\a)}) circle (\r);}
+  \draw[d2dink,line width=0.7pt] \bodyslice;
+  \node[title,anchor=south] at (0,2.45) {A body-shaped image-quality phantom};
+  \node[note,anchor=north] at (0,-1.1) {the slice through the spheres};
+  \begin{scope}[every node/.style={note,align=left,anchor=west}]
+    \node (s) at (2.5,1.9) {six spheres, 10 to 37 mm,\\four times as hot as the\\background, on one slice};
+    \node (c) at (2.5,0.55) {a cold cylinder\\along the axis};
+    \node (w) at (2.5,-0.55) {warm background:\\water with activity};
+  \end{scope}
+  \draw[d2dmuted,line width=0.4pt] (s.west) -- ({1.3*cos(30)+0.35},{0.5+0.85*sin(30)+0.35});
+  \draw[d2dmuted,line width=0.4pt] (c.west) -- (0.38,0.55);
+  \draw[d2dmuted,line width=0.4pt] (w.west) -- (1.75,-0.6);
+  % side view: the phantom's length, the spheres' slice and the slices either side
+  \begin{scope}[shift={(0,-3.2)}]
+    \fill[d2dcat4!12!white,draw=d2dink,line width=0.7pt] (-2.1,-0.7) rectangle (2.1,0.7);
+    \fill[d2drule!70!white] (-2.1,-0.12) rectangle (2.1,0.12);
+    \fill[partcolor!14!white] (-0.55,-0.7) rectangle (0.55,0.7);
+    \foreach \x in {-0.55,-0.2,0.2,0.55} {\draw[partcolor,line width=0.4pt,dash pattern=on 2pt off 1.5pt] (\x,-0.7) -- (\x,0.7);}
+    \draw[partcolor,line width=0.9pt] (0,-0.7) -- (0,0.7);
+    \node[note,anchor=north,align=center] at (0,-0.8) {side view: the regions of interest are drawn on the\\spheres' slice (solid) and on slices either side (dashed)};
+  \end{scope}
+  % ---- right: MiniDAQ's 2D phantom
+  \begin{scope}[shift={(8.6,0)}]
+    \fill[d2dcat4!12!white,draw=d2dink,line width=0.7pt] (0,0) circle (1.8);
+    \draw[d2dmuted,line width=0.4pt,dash pattern=on 2pt off 1.5pt] (0,0) circle (1.6);
+    \foreach \r/\a in {0.24/90,0.16/210,0.10/330} {
+      \fill[partcolor!80!white,draw=partcolor!60!d2dink,line width=0.3pt] ({0.8*cos(\a)},{0.8*sin(\a)}) circle (\r);}
+    \node[title,anchor=south] at (0,2.45) {MiniDAQ's 2D phantom};
+    \node[note,anchor=north] at (0,-1.9) {a transaxial slice};
+    \begin{scope}[shift={(0,-3.2)}]
+      \fill[d2dcat4!12!white,draw=d2dink,line width=0.7pt] (-1.8,-0.7) rectangle (1.8,0.7);
+      \foreach \y/\w in {0.35/0.07,-0.15/0.05,0.1/0.035} {\fill[partcolor!80!white] (-1.8,\y-\w) rectangle (1.8,\y+\w);}
+      \node[note,anchor=north,align=center] at (0,-0.8) {water, 90 mm radius, activity in 80 mm;\\rods of 12, 8 and 5 mm radius, four\\times the background, along the axis};
+    \end{scope}
+  \end{scope}
+\end{tikzpicture}
