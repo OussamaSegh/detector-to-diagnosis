@@ -238,6 +238,11 @@ whether a second ratio is measured), and measures in the reconstructed images:
   central slice and on slices 1 and 2 cm either side, sixty in all, and the standard deviation of
   their means over their mean.
 
+Figure [](#fig-ch30-phantoms) draws that phantom beside MiniDAQ's.
+
+```{.figure #fig-ch30-phantoms src="book/figures/tikz/ch30/phantoms.tex" caption="The two phantoms of this chapter, each as a slice and a side view, not to scale. Left: a body-shaped image-quality phantom as NEMA NU 2 describes it, drawn from that description. Right: MiniDAQ's 2D phantom of Chapter 28." alt="Left: a slice shaped like a half circle on a rectangle, with six hot spheres of growing size on a ring around a gray cold cylinder in the middle, labeled six spheres, 10 to 37 mm, four times as hot as the background; a cold cylinder along the axis; warm background, water with activity. Below it, a side view with the spheres' slice as a solid line and slices either side as dashed lines. Right: a circular slice with three hot rods of different sizes and a dashed circle for the active region, and a side view with the three rods running along the axis." width="100%"}
+```
+
 MiniDAQ's version is 2D, with the phantom of Chapter 28: a water cylinder of 90 mm radius with
 activity in 80 mm, and rods of 12, 8 and 5 mm radius at four times the background. The figures
 of merit are three short functions:

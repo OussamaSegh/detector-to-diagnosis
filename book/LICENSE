@@ -15,6 +15,10 @@ form or by any means without the prior written permission of the author, except 
 brief quotations in reviews and articles. You may read them here and build the book
 for your own study.
 
+Photos by others, under book/figures/photos/, are not the author's and keep their own
+licenses (public domain, CC0 or CC BY), each named with its author and source in
+book/figures/photos/credits.json and on the book's Photo credits page.
+
 Everything else in this repository is under the MIT License of the root LICENSE file:
 MiniDAQ, its exercises, tools, tests, records and measurements, and the book's build
 tooling (book/build.sh, book/tools/, book/filters/, book/templates/). A code listing

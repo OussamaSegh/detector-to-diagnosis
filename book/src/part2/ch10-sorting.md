@@ -359,6 +359,11 @@ same annihilation as the opener, so every pair found there is a random, and the 
 rate estimates the prompt randoms rate: same opener, same width, same rules, only without
 the true partner.
 
+Figure [](#fig-ch10-delayed) draws the two windows on one time line.
+
+```{.figure #fig-ch10-delayed src="book/figures/tikz/ch10/delayed.tex" caption="The delayed window. The opener at t opens the prompt window of width τ and a delayed window of the same width D later. The prompt window can hold the opener's true partner or an uncorrelated single; the delayed window can hold only uncorrelated singles, so its pairs count the randoms." alt="A horizontal time line with tick marks for singles. At the left, a tall dark tick labeled opener t starts a shaded prompt window of width tau, holding a colored tick for the true partner and a gray tick for another single. Far to the right, a dashed delayed window of the same width tau starts a distance D later and holds one gray tick. Notes say that only uncorrelated singles can be in the delayed window, and that with the same opener, width and rules the delayed count estimates the prompt randoms." width="100%"}
+```
+
 In MiniDAQ the delayed window is [t + D, t + D + τ], inclusive at both ends like the
 prompt window. Its pairs are (opener, delayed single), and the multiples policy applies to
 them as well: one delayed single is a pair, two or more are a delayed multiple. Delayed

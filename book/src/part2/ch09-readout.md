@@ -339,6 +339,12 @@ the PC needs no special hardware, and standard tools (packet captures, switches,
 the operating system) work. PCIe and dedicated optical links are the alternatives when
 bandwidth or latency demand them.
 
+Figure [](#fig-ch09-hardware) shows where the link sits in the hardware: every front-end board
+sends its own stream of packets, and a switch gathers them onto one network card in the PC.
+
+```{.figure #fig-ch09-hardware src="book/figures/tikz/ch09/hardware.tex" caption="The readout in hardware, drawn, not to scale. Each front-end board measures its blocks' pulses in ASICs, packs event words in an FPGA and sends UDP packets on its own Ethernet link; a switch gathers the links onto the acquisition PC's 10 GbE network card. A clock board gives every board the same reference (Chapter 38)." alt="A block diagram. On the left, front-end boards numbered 1 to n, each holding detector blocks of crystals and SiPMs, two ASICs, an FPGA and an Ethernet port. A clock board above sends a dashed line to every board. Each board's port has its own link to an Ethernet switch in the middle, and one 10 GbE link runs from the switch to the network card of the acquisition PC on the right, which has two CPUs and runs the sorter, the writer and the rest of MiniDAQ." width="100%"}
+```
+
 ### Why UDP
 
 UDP (RFC 768) sends independent datagrams. It does not retransmit lost ones, does not

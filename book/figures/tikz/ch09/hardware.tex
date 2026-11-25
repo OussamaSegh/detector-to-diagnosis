@@ -1,0 +1,61 @@
+% Chapter 9: the readout in hardware. Detector blocks sit on front-end boards; each board's
+% ASICs measure the pulses and its FPGA packs event words and sends UDP packets on its own
+% Ethernet link; a switch gathers the links onto the acquisition PC's network card. A clock
+% board sends every front-end board the same reference and start pulse (Chapter 38).
+% A drawn view, not to scale; counts are examples.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % one front-end board: two blocks on the edge that faces the patient, two ASICs, an FPGA,
+  % an Ethernet port and a clock input
+  \newcommand{\feb}[2]{%
+    \begin{scope}[shift={(0,#1)}]
+      \fill[d2dcat2!22!white,draw=d2dcat2!70!d2dink,line width=0.6pt,rounded corners=1.5pt] (0,0) rectangle (4.2,1.25);
+      \foreach \k in {0,1} {
+        \fill[partcolor!70!white,draw=d2dink,line width=0.4pt] (0.12,0.12+0.55*\k) rectangle ++(0.5,0.46);
+        \foreach \g in {1,2,3} {\draw[white,line width=0.35pt] (0.12+0.125*\g,0.12+0.55*\k) -- ++(0,0.46);}
+        \fill[d2dink!75!white] (0.95,0.2+0.55*\k) rectangle ++(0.55,0.32);
+        \node[font=\sffamily\tiny,text=white] at (1.225,0.36+0.55*\k) {ASIC};
+        \draw[d2dmuted,line width=0.4pt] (0.62,0.35+0.55*\k) -- (0.95,0.35+0.55*\k);
+        \draw[d2dmuted,line width=0.4pt] (1.5,0.36+0.55*\k) -- (2.0,0.62);}
+      \fill[d2dink!60!white] (2.0,0.3) rectangle (2.95,0.95);
+      \node[font=\sffamily\tiny,text=white] at (2.475,0.625) {FPGA};
+      \draw[d2dmuted,line width=0.4pt] (2.95,0.62) -- (3.55,0.62);
+      \fill[d2dmuted!40!white,draw=d2dink,line width=0.4pt] (3.55,0.45) rectangle (4.2,0.8);
+      \fill[d2dcat4!40!white,draw=d2dink,line width=0.4pt] (3.05,1.25) rectangle ++(0.4,-0.18);
+      \node[note,anchor=east] at (-0.45,0.62) {#2};
+      \draw[d2dcat0,line width=0.7pt,dash pattern=on 3pt off 1.5pt] (-0.3,1.37) -- (3.25,1.37) -- (3.25,1.25);
+    \end{scope}}
+  \feb{4.5}{board 1}
+  \feb{3.0}{board 2}
+  \feb{1.5}{board 3}
+  \node[note] at (2.1,1.05) {$\vdots$};
+  \feb{-0.6}{board $n$}
+  % the switch and the PC
+  \fill[d2dmuted!30!white,draw=d2dink,line width=0.6pt,rounded corners=1.5pt] (6.0,1.3) rectangle (7.6,3.2);
+  \foreach \j in {0,...,5} {\fill[d2dink!55!white] (6.15,1.5+0.27*\j) rectangle ++(0.3,0.18);}
+  \node[lab,align=center] at (7.0,2.25) {\footnotesize Ethernet\\[-2pt]\footnotesize switch};
+  \fill[d2drule!45!white,draw=d2dink,line width=0.6pt,rounded corners=2pt] (9.0,0.6) rectangle (11.2,3.9);
+  \fill[d2dink!20!white,draw=d2dink,line width=0.4pt] (9.2,1.0) rectangle (11.0,1.5);
+  \node[font=\sffamily\tiny] at (10.1,1.25) {network card (NIC)};
+  \fill[d2dink!20!white,draw=d2dink,line width=0.4pt] (9.2,1.8) rectangle (10.05,2.6);
+  \fill[d2dink!20!white,draw=d2dink,line width=0.4pt] (10.15,1.8) rectangle (11.0,2.6);
+  \node[font=\sffamily\tiny,align=center] at (9.625,2.2) {CPU 0};
+  \node[font=\sffamily\tiny,align=center] at (10.575,2.2) {CPU 1};
+  \node[lab,align=center] at (10.1,3.3) {\footnotesize acquisition PC};
+  % links: one per board into the switch, one fast uplink to the PC
+  \foreach \y in {5.12,3.62,2.12,0.02} {\draw[partcolor,line width=0.9pt] (4.2,\y) .. controls (5.2,\y) and (5.2,{1.6+(\y+0.6)*0.27}) .. (6.15,{1.59+(\y+0.6)*0.27});}
+  \draw[partcolor,line width=2pt] (7.6,1.6) -- (9.2,1.25);
+  \node[note,anchor=south,text=partcolor] at (8.4,1.55) {10 GbE};
+  \node[note,anchor=north,text=partcolor] at (5.6,-0.15) {one link per board,\\UDP packets of\\event words};
+  % the clock board and its fan-out
+  \fill[d2dcat4!30!white,draw=d2dink,line width=0.6pt,rounded corners=1.5pt] (1.4,6.4) rectangle (3.2,7.05);
+  \node[lab] at (2.3,6.725) {\footnotesize clock board};
+  \draw[d2dcat0,line width=0.7pt,dash pattern=on 3pt off 1.5pt] (1.5,6.725) -- (-0.3,6.725) -- (-0.3,0.77);
+  \node[note,anchor=west,text=d2dcat0,align=left] at (3.65,6.4) {one reference clock and one\\start pulse to every board (Ch. 38)};
+  % labels of the board's parts
+  \begin{scope}[every node/.style={note,align=left,anchor=east}]
+    \node[anchor=south] (b) at (0.37,7.25) {detector blocks:\\crystals and SiPMs};
+  \end{scope}
+  \draw[d2dmuted,line width=0.4pt] (b.south) -- (0.37,5.65);
+  \node[note,anchor=north] at (2.1,-0.75) {each board: blocks, ASICs (time and energy),\\an FPGA that packs event words, an Ethernet port};
+  \node[note,anchor=north] at (10.1,0.5) {the sorter, the writer and\\the rest of MiniDAQ (Ch. 10 on)};
+\end{tikzpicture}

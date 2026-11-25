@@ -197,6 +197,11 @@ calls of erf for K bins, since neighboring bins share an edge, and the probabili
 well inside the bins add up to one to rounding, because the sum telescopes to the difference of
 the outer two.
 
+Figure [](#fig-ch39-kernel) shows what the kernel does to one count in the image.
+
+```{.figure #fig-ch39-kernel src="book/figures/plots/ch39/kernel.py" inputs="tools/recon/project.py" caption="One count backprojected with this chapter's projectors. Without time of flight it spreads along the whole line; with it, along a Gaussian centered on its bin, 40 mm from the line's middle, whose width is set by the CTR. TOF bins of 50 ps, so that the bin does not hide the kernel." alt="Four square images with a dotted circle of 120 mm radius. The first shows a bright straight line crossing the whole circle at 30 degrees. The next three show the same line reduced to a short bright segment centered 40 mm from the line's middle, about 90 mm long at a CTR of 600 ps, 45 mm at 300 ps and 22 mm at 150 ps." width="100%"}
+```
+
 ```{.cpp include="recon/src/joseph.cpp" snippet="kernel"}
 ```
 
