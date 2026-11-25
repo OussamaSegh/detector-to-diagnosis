@@ -384,7 +384,8 @@ Four chapters after Part XI, on the reconstruction tool, not the acquisition pro
 GPU code is optional: every kernel has a CPU oracle, the CUDA target is built only when the
 toolkit is found, tests that need a device are labeled `gpu` and skipped without one, and a CI
 job compiles the CUDA target without a GPU. The dependencies (the CUDA toolkit, OpenMP, PyTorch as
-an optional test oracle) are change request CR-0040, decided before the theme starts. Each
+an optional test oracle) are change request CR-0040, approved on 2026-11-25 on the condition that all three stay
+optional. Each
 chapter has an audit exercise, marked (A).
 
 ### Theme K: the Third Edition's format
@@ -410,7 +411,7 @@ chapter has an audit exercise, marked (A).
 | 3.0.0-dev, second | Theme F: Chapters F1 to F7 | Chapter recipe complete; starters fail and solutions pass in `ctest -L unit`; Volume 1 under 828 pages |
 | 3.0.0-dev, third | Theme M, with the earlier chapters updated | `docs.interfaces` passes; migration note complete |
 | 3.0.0-dev, fourth | Chapters 41 to 45 (Theme L), each with its recorded agent sessions; the tool server over the run records | Chapter recipe complete; the gate's report in each chapter's record |
-| 3.0.0-dev, fifth | Theme G: CR-0040 decided; Chapters 46 to 49; `recon_cuda`; the compile-only CUDA job | CPU-only CI green; `gpu` tests pass on one GPU machine, recorded |
+| 3.0.0-dev, fifth | Theme G: Chapters 46 to 49; `recon_cuda`; the compile-only CUDA job | CPU-only CI green; `gpu` tests pass on one GPU machine, recorded |
 | 3.0.0-dev, sixth | Theme Q: ten audit exercises (one per Part I to X), milestones written specification first, Appendices B and C, Chapter 37 revised | Each audit exercise's acceptance rejects the bad change and accepts the fixed one |
 | 3.0.0-rc | Theme O, the rest of Theme K, the review of the whole book | Each volume within 828 pages; KDP files built |
 | 3.0.0 | Third Edition: internal audit and the full release checks | CI green on the release commit; tag `book-v3.0.0` |

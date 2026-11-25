@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Status | proposed |
+| Status | approved |
 | Requested | 2026-11-25, by the software lead |
 | Source | improvement: roadmap 3.0.0, Theme G (docs/ROADMAP-3.0.0-foundations.md, sections 4 and 5) |
-| Decision | pending |
+| Decision | approved, 2026-11-25, by the coordinator under the software lead's standing delegation (2026-11-23), with the condition that CUDA, OpenMP and PyTorch stay optional |
 | Commits | none yet |
 
 ## Description
@@ -15,7 +15,8 @@ GPU image reconstruction and deep learning on the reconstruction tool. This chan
 dependencies to the tool, none of them to the acquisition product:
 
 - **OpenMP**, from the compiler's own runtime (GCC's `libgomp`), for the CPU-parallel projector
-  of Chapter 46, behind a CMake option that is on when the compiler supports it.
+  of Chapter 46, behind a CMake option (`MINIDAQ_BUILD_OPENMP`, off by default). Without it the
+  projector keeps its `std::jthread` chunks, and the default build and CI need no OpenMP.
 - **The CUDA toolkit** (the compiler `nvcc`, the CUDA runtime and `compute-sanitizer`), for an
   optional projector `recon_cuda` with the interface of `recon_cpp` (Chapters 47 and 48). It is
   built only with `MINIDAQ_BUILD_CUDA=ON`, which is off by default; without it the build, the book
@@ -88,4 +89,8 @@ chapter's measurement record; the SBOM and SOUP checks.
 
 ## Decision
 
-Pending. To be decided before Theme G starts.
+Approved on 2026-11-25 by the coordinator, under the software lead's standing delegation of
+2026-11-23 ("I am the customer, you are the planner and builder, you approve and decide") and on
+the author's request of the same day for this content (roadmap 3.0.0, section 8, answer 7).
+Condition: CUDA, OpenMP and PyTorch stay optional; the default build, the book and CI need none
+of them. Implementation starts with Theme G (roadmap 3.0.0, section 5).

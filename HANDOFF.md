@@ -14,7 +14,7 @@ concurrency from zero, design patterns, data structures up to lock-free. Part XI
 to 49 after Part XI: parallel computing on the CPU, CUDA from zero, GPU reconstruction
 (`recon_cuda`, optional), deep learning for PET in numpy. GPU code is optional (CPU oracle,
 `MINIDAQ_BUILD_CUDA` off by default, `gpu` CTest label skipped without a device, a compile-only
-CUDA CI job). CR-0040 (proposed) holds the dependencies: CUDA toolkit, OpenMP, PyTorch as an
+CUDA CI job). CR-0040 (approved 2026-11-25 by the coordinator, all optional) holds the dependencies: CUDA toolkit, OpenMP, PyTorch as an
 optional test oracle. The two-volume build moves to 3.0.0-dev's first milestone. Nothing in
 2.3.0 changes. Next free: CR-0041 (others as below).
 

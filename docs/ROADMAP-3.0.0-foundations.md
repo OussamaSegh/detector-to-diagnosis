@@ -1,6 +1,7 @@
 # Roadmap for release 3.0.0: the foundations, and parallel computing on GPUs
 
-Status: proposed, 2026-11-25. Drafted at the author's request of 2026-11-25 (section 8): the book
+Status: accepted, 2026-11-25, by the coordinator under the author's standing delegation, with
+CR-0040. Drafted at the author's request of 2026-11-25 (section 8): the book
 should teach multithreading and concurrency, C++23, Linux, design patterns and advanced data
 structures such as lock-free queues to a reader who has never used them, and possibly parallel
 computing, CUDA, GPU image reconstruction and deep learning. This plan is folded into
@@ -37,7 +38,7 @@ foundation chapter, not something the new chapters repeat.
 2. **Part XII, "Parallel computing, GPUs and learned reconstruction"**, four chapters 46 to 49
    at the end of Volume 2, after Part XI. GPU code is optional: the book builds, every exercise
    runs and CI passes on a machine without a GPU.
-3. **Change request CR-0040** for the dependencies Part XII needs: the CUDA toolkit as an
+3. **Change request CR-0040** (approved 2026-11-25, all optional) for the dependencies Part XII needs: the CUDA toolkit as an
    optional build target of the reconstruction tool, OpenMP from the compiler, and PyTorch as an
    optional test oracle. None of them is part of the acquisition product.
 
@@ -346,16 +347,17 @@ what a team weighs before moving anything of the product to a GPU.
   trained, with its learning curves; 49.3 a test set that leaks, found and fixed; 49.4 (A) a
   denoiser that scores well and removes a lesion.
 
-## 5. Dependencies (CR-0040, proposed)
+## 5. Dependencies (CR-0040, approved)
 
 | Item | Used by | Ships in the product | Status |
 |---|---|---|---|
 | CUDA toolkit (nvcc, runtime) | `recon_cuda`, Chapters 47 to 49 | No | Optional build target; SOUP of the reconstruction tool and a tool entry for nvcc and compute-sanitizer; version pinned in CI's compile-only job (verify: the CUDA release that supports the compiler of Theme N as a host compiler) |
-| OpenMP (GCC's `libgomp`) | the reconstruction tool, Chapter 46 | No | Comes with the compiler; recorded as SOUP of the tool |
+| OpenMP (GCC's `libgomp`) | the reconstruction tool, Chapter 46 | No | Optional (`MINIDAQ_BUILD_OPENMP`, off by default; the `std::jthread` path stays); comes with the compiler; recorded as SOUP of the tool |
 | PyTorch | the optional test oracle of Chapter 49 | No | Test only, never required; pinned, CPU build; `analysis/requirements.lock` "Test only" section, as pydicom |
 | Intel TBB | not used | No | Not added: Chapter F5 shows the parallel algorithms without it |
 
-The change request is written now as proposed, and decided before Theme G starts.
+CR-0040 was approved on 2026-11-25 by the coordinator under the author's delegation, on the
+condition that all three stay optional: the default build, the book and CI need none of them.
 
 ## 6. Page budget
 
@@ -376,7 +378,7 @@ first milestone of 3.0.0-dev: a single volume cannot take the new Parts.
 |---|---|---|
 | First (with Theme N) | Two-volume build; Part 0 opener; build numbering for F chapters | Both volumes build, each under 828 pages; an empty F1 numbers as "F1" in PDF, EPUB and web |
 | Second: Theme F | Chapters F1 to F7, in that order, each with its exercises, solutions and "Reading MiniDAQ" | Chapter recipe complete; exercises' starters fail and solutions pass in `ctest -L unit`; Volume 1 under 828 pages |
-| After Part XI: Theme G | CR-0040 decided; Chapters 46 to 49; `recon_cuda`; CI compile-only job | Chapter recipe complete; CPU-only CI green; `gpu` tests pass on one GPU machine and the run is in the chapter's record |
+| After Part XI: Theme G | Chapters 46 to 49; `recon_cuda`; CI compile-only job | Chapter recipe complete; CPU-only CI green; `gpu` tests pass on one GPU machine and the run is in the chapter's record |
 
 Each chapter is readable on the download page and in the web edition as soon as it is merged
 on main, before the release, as every chapter is today.
@@ -393,10 +395,10 @@ on main, before the release, as every chapter is today.
 | Deep learning read as an endorsement of AI in the device | A reader puts a network into a product without the regulatory work | Chapter 49 states what that work is, and the network stays a research tool outside the product |
 | Scope: eleven chapters added to a release that must ship | 3.0.0 slips | The list is fixed here. If 3.0.0 is late, the cut order is: Chapter 49 first, then Chapter 48 folded into 47; Part 0 is never cut, because the author asked for it first |
 
-## 9. Decisions to take
+## 9. Decisions taken
 
-Taken by the coordinator under the author's standing delegation, as the other 3.0.0 questions;
-until then the work follows the recommendations.
+Taken by the coordinator under the author's standing delegation on 2026-11-25, as recommended,
+when it accepted this plan and approved CR-0040:
 
 1. Part 0 lettered F1 to F7 before Part I, rather than renumbering the book (recommended).
 2. Part XII after Part XI with chapters 46 to 49 (recommended), rather than splitting Part VI.
