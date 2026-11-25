@@ -2244,6 +2244,33 @@
         "category": "tool",
         "escape": "The privacy rule is checked on agent files, not on evidence."
       }
+    },
+    {
+      "id": "MDQ-PR-104",
+      "title": "The change request check cannot find tests of the book's build tools",
+      "found": "2026-11-25, the illustrations thread, implementing CR-0039: its verifying tests in book/tools/test_photos.py were not found",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "tools/check_changes.py collects the test names that an implemented change request may cite from tools/, minidaq/tests, recon/tests, minidaq/tests/system and analysis/tests, not from book/tools/, where the book's build tools keep their tests. CR-0039 (the photo check in book/tools/figures.py) could not be marked implemented.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A document check of the process; it refused a correct record, it did not pass a wrong one."
+      },
+      "resolution": {
+        "change": "tests() also reads book/tools/test_*.py.",
+        "verification": "tools.test_check_changes: test_every_place_that_holds_tests_is_read (fails without the change)."
+      },
+      "root_cause": {
+        "whys": [
+          "The check listed the places that held tests when it was written.",
+          "CR-0039 is the first change request to the book's build tools."
+        ],
+        "cause": "A fixed list of test directories, with no test of its own.",
+        "category": "tool",
+        "escape": "docs.changes ran only on the records, which never cited a book tool's test."
+      }
     }
   ]
 }

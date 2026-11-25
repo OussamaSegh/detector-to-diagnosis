@@ -80,12 +80,13 @@ def check(name, text, known):
 
 def tests(root):
     """Every GoogleTest name in minidaq/tests and recon/tests, as Suite.Name, and every unittest
-    of the tools' tests (tools/test_*.py) and of the system tests (minidaq/tests/system/test_*.py),
-    as Class.test_name, and every pytest test of the analysis package (analysis/tests/test_*.py),
+    of the tools' tests (tools/test_*.py), of the book's build tools (book/tools/test_*.py, since
+    CR-0039) and of the system tests (minidaq/tests/system/test_*.py), as Class.test_name, and every pytest test of the analysis package (analysis/tests/test_*.py),
     as module::test_name."""
     cpp = list((root / "minidaq/tests").rglob("*.cpp")) + list((root / "recon/tests").rglob("*.cpp"))
     names = {f"{s}.{n}" for f in cpp for s, n in GTEST.findall(f.read_text())}
-    py = list((root / "tools").glob("test_*.py")) + list((root / "minidaq/tests/system").glob("test_*.py"))
+    py = (list((root / "tools").glob("test_*.py")) + list((root / "book/tools").glob("test_*.py"))
+          + list((root / "minidaq/tests/system").glob("test_*.py")))
     for f in py:
         cls = None
         for line in f.read_text().splitlines():

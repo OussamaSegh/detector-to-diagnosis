@@ -26,7 +26,8 @@ the patch version.
   among combined short options (MDQ-PR-100). The acceptance report names no absolute path of
   the machine (MDQ-PR-101). The agent's edit hook formats only the lines of a C++ file that
   differ from HEAD, so a small edit of an old file gives a small diff, and two lines of
-  `synthetic_source.cpp` are formatted (MDQ-PR-102).
+  `synthetic_source.cpp` are formatted (MDQ-PR-102). The change request check reads the tests of the
+  book's build tools (MDQ-PR-104).
 
 ## [2.2.0] - 2026-11-24
 
