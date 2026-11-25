@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Status | proposed |
+| Status | approved |
 | Requested | 2026-11-24, by the software lead |
 | Source | improvement: roadmap 2.3.0, Theme I (docs/ROADMAP-2.3.0-illustrations.md, sections 3 and 4) |
-| Decision | pending |
-| Commits | none yet |
+| Decision | approved, 2026-11-25, by the software lead in writing (decision in the project thread, 09:25 UTC) |
+| Commits | eade60e (the photo build and check), merged in 55fd363 |
 
 ## Description
 
@@ -73,6 +73,14 @@ None: the intended use and every safety-relevant function are unchanged.
 - `python3 -B book/tools/figures.py check` passes on the book (no photos yet).
 - The book's PDF and EPUB build as before; EPUBCheck reports no error.
 
+The tests that verify it include `Photos.test_a_photo_that_follows_the_policy_passes`,
+`Photos.test_a_share_alike_license_fails`, `Photos.test_exif_left_in_the_file_fails`,
+`Photos.test_a_file_changed_after_its_credit_fails` and
+`Photos.test_the_built_photo_is_gray_for_black_ink_and_small_for_the_epub`.
+
 ## Decision
 
-Pending: the software lead's decision, in writing.
+Approved by the software lead on 2026-11-25 at 09:25 UTC, in writing in the project thread, after the
+change was implemented and merged under review (eade60e, merged in 55fd363); the photos themselves
+follow under this approval, each with its credit. The status moves to implemented once
+`tools/check_changes.py` finds the tests of `book/tools/`, which it does not read yet.
