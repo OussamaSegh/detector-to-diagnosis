@@ -4,13 +4,14 @@
 # fetch. A fetch also adds its files to the branch photos-inbox, because sessions cannot download
 # artifacts through their proxy but can fetch a branch. That branch is a temporary inbox, allowed
 # by the software lead on 2026-11-25: never merged, deleted when the photos are chosen (CR-0039).
+# Sessions cannot delete a branch, so mode clean deletes it (allowed 2026-11-25, 22:11 UTC).
 # A person reads every license page before a photo enters book/figures/photos/ (CR-0039).
 name: photos
 on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "search or fetch"
+        description: "search, fetch, or clean (deletes the photos-inbox branch)"
         required: true
         default: search
       items:
@@ -27,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Search or fetch
+        if: inputs.mode != 'clean'
         env:
           MODE: ${{ inputs.mode }}
           ITEMS: ${{ inputs.items }}
@@ -40,6 +42,7 @@ jobs:
           sys.exit(subprocess.call([sys.executable, "book/tools/commons.py", mode, "out", *items]))
           EOF
       - uses: actions/upload-artifact@v4
+        if: inputs.mode != 'clean'
         with:
           name: photos-${{ inputs.mode }}
           path: out/
@@ -64,3 +67,12 @@ jobs:
           git -C inbox add "run-${GITHUB_RUN_ID}"
           git -C inbox commit -qm "Photo candidates of run ${GITHUB_RUN_ID} (temporary inbox, never merged)"
           git -C inbox push origin photos-inbox
+      - name: Delete the photos-inbox branch
+        if: inputs.mode == 'clean'
+        run: |
+          set -eu
+          if git ls-remote --exit-code --heads origin photos-inbox >/dev/null; then
+            git push origin --delete photos-inbox
+          else
+            echo "no photos-inbox branch"
+          fi
