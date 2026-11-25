@@ -52,3 +52,4 @@ src/part10/ch38-clock-distribution.md
 src/part10/ch39-time-of-flight.md
 src/part10/ch40-maintenance.md
 src/appendix/architecture.md
+src/back/photo-credits.md

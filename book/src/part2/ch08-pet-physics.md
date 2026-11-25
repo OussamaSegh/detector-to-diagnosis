@@ -244,6 +244,12 @@ scanner's axis, so one scan covers a slab of the body, the axial field of view, 
 ```{.figure #fig-ch08-scanner src="book/figures/tikz/ch08/scanner.tex" caption="A brain PET scanner with the front cover taken off, drawn, not to scale. A decay in the head sends two photons to two blocks on opposite sides of the ring; the line between the two blocks is the line of response." alt="A drawing of a scanner seen from the front left: a cylindrical gantry housing with a bore, a patient lying on a bed with the head inside the bore. The front face shows the detector ring as 24 colored blocks around the bore; a dashed outline shows that the ring continues along the axis, and a dimension line above marks the axial field of view. A dot in the head sends two wavy photon arrows in opposite directions to two highlighted blocks, joined by a dashed line of response. Labels on the right name the gantry housing, the detector ring of 24 blocks of crystals and SiPMs, the ring's depth along the axis, the two 511 keV photons and the patient bed." width="100%"}
 ```
 
+Figure [](#fig-ch08-gantry) shows a clinical PET/CT scanner with its cover on: the ring of blocks
+sits inside the gantry, around the bore, and the bed carries the patient through it.
+
+```{.figure #fig-ch08-gantry src="book/figures/photos/pet-ct-gantry.jpg" caption="A clinical PET/CT scanner's gantry and bore, with the bed in front. The detector ring is inside the housing, around the bore; the controls beside it move the bed. Photo: Romainbehar, CC0 1.0." alt="A photograph of a large pale green scanner housing with a wide circular bore in its middle. A white bed with a sheet leads into the bore from the lower right. On the left of the housing are lit control buttons and a red emergency button; small yellow warning labels sit on the bore's rim." width="60%"}
+```
+
 A detector turns a photon into numbers in four steps. A *scintillator crystal* absorbs
 the photon and emits a short flash of visible light. A *photodetector* turns the light
 into an electrical pulse. A *front-end ASIC* (an application-specific integrated circuit)
@@ -292,6 +298,12 @@ scanner monitors temperatures and corrects gains: a calibration problem that bec
 DAQ data stream (Chapter 26). Figure [](#fig-ch08-sipm) shows why the signal comes in steps.
 
 ```{.figure #fig-ch08-sipm src="book/figures/tikz/ch08/sipm.tex" caption="A SiPM pixel is an array of microcells. Each detected photon fires one cell completely, so the output is the number of fired cells: in steps of one cell for a few photons, smooth for a scintillation flash, and saturating when most cells have fired." alt="Left: a magnified 12 by 12 grid of square microcells, each with a short line for its quench resistor; twelve cells are highlighted as fired, each with a dot for the photon that fired it, and a legend distinguishes fired from ready cells. Right: three pulses drawn on one time axis, with heights marked 1 cell, 2 cells and 3 cells, the height growing in equal steps; a note says that in a flash thousands of cells fire, so the pulse looks smooth, and that when most cells have fired more light adds little, the saturation of Chapter 26." width="85%"}
+```
+
+A PMT is a vacuum tube a few centimeters across and longer than it is wide (Figure
+[](#fig-ch08-pmt)); a SiPM array of the same face fits in a few millimeters of depth.
+
+```{.figure #fig-ch08-pmt src="book/figures/photos/photomultiplier.jpg" caption="A photomultiplier tube beside a ruler in centimeters: the photocathode at the left end, the stack of dynodes that multiply the electrons, and the pins at the right. Photo: Jan Helebrant, CC0 1.0." alt="A photograph of a glass vacuum tube about 13 centimeters long lying on its side above a yellow ruler. The left end is a mirrored cylinder, the photocathode; the middle holds a stack of about a dozen metal rings, the dynodes, joined by wires; pins stick out of the right end." width="70%"}
 ```
 
 ### Front-end ASICs and the FPGA
