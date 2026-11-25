@@ -3,6 +3,9 @@
 Status: proposed, revised on 2026-11-16 at the author's direction, and on 2026-11-24: **3.0.0 is
 the final version** (the author, 2026-11-24, section 8, answer 6; section 9). The author's
 answers are in section 8; section 7 holds the questions still open, each with a recommendation.
+Revised on 2026-11-25 at the author's request (section 8, answer 7): Part 0, the foundations from
+zero, and Part XII, parallel computing and GPUs, planned in
+[`ROADMAP-3.0.0-foundations.md`](ROADMAP-3.0.0-foundations.md) as Themes F and G.
 Work on 3.0.0 starts after release 2.3.0 (`docs/ROADMAP-2.3.0.md`), the last 2.x release.
 Nothing here changes 2.0.1 to 2.3.0.
 
@@ -91,6 +94,10 @@ A major version: a Third Edition of the book and a breaking release of MiniDAQ.
    closes MDQ-PR-006.
 4. **The full C++23 on the next LTS platform.**
 5. **Room for the whole book**, in two volumes.
+6. **A book a beginner can start** (section 8, answer 7): Part 0 teaches C++ to C++23, Linux,
+   concurrency, design patterns and data structures up to lock-free queues from zero, and Part
+   XII teaches parallel computing, CUDA, GPU reconstruction and deep learning, with every GPU
+   path optional.
 
 ## 4. Themes and scope
 
@@ -279,7 +286,8 @@ Parts I to X keep their subjects, and their exercises shift toward judgment.
 - The acceptance tests the audit itself: the reader's tests or report must reject the change and
   accept the corrected one.
 - 3.0.0 adds one audit exercise per Part, ten in all. No release follows to add the others
-  (section 9): the ten are the book's audit exercises.
+  (section 9): the ten are the audit exercises of Parts I to X. The chapters of Parts 0 and XII
+  are new and each is written with its own audit exercise (Themes F and G).
 
 **Specification first in the milestones.** Each chapter's MiniDAQ milestone starts from a
 requirement and an acceptance test that the reader writes before any code, whoever writes the
@@ -348,11 +356,44 @@ AI inside the device stays out of this edition, as Chapter 37 says. That covers
 machine-learning-enabled software, predetermined change control plans and the EU AI Act. It is a
 topic the final chapter names as further study; no later edition covers it (section 9).
 
+### Theme F: Part 0, the foundations from zero (new)
+
+Seven lettered chapters before Part I, F1 to F7, for a reader who has never used these topics.
+The plan, with each chapter's sections, exercises and the MiniDAQ code it reads, is
+[`ROADMAP-3.0.0-foundations.md`](ROADMAP-3.0.0-foundations.md), section 3.
+
+- F1 C++ from the ground up; F2 modern C++, from C++11 to C++23; F3 Linux for the C++ engineer:
+  the shell and the toolchain; F4 Linux systems programming; F5 concurrency from zero; F6 design
+  patterns in modern C++; F7 data structures and algorithms for a DAQ, up to lock-free.
+- Lettered, so the forty chapters after them keep their numbers, exercise IDs and directories.
+- Each ends where a Part I chapter starts, with a "Reading MiniDAQ" section instead of a
+  milestone. Part 0 changes no product code, requirement or interface.
+- Each chapter has an audit exercise, marked (A), as Theme Q's are.
+
+### Theme G: Part XII, parallel computing, GPUs and learned reconstruction (new)
+
+Four chapters after Part XI, on the reconstruction tool, not the acquisition product
+([`ROADMAP-3.0.0-foundations.md`](ROADMAP-3.0.0-foundations.md), section 4):
+
+- 46 parallel computing on the CPU (Amdahl, roofline, OpenMP, reproducible reductions);
+- 47 GPU programming from zero with CUDA;
+- 48 GPU image reconstruction, with the optional projector `recon_cuda` and new SRS-REC
+  requirements;
+- 49 deep learning for PET from zero, in numpy, as a research tool kept outside the product.
+
+GPU code is optional: every kernel has a CPU oracle, the CUDA target is built only when the
+toolkit is found, tests that need a device are labeled `gpu` and skipped without one, and a CI
+job compiles the CUDA target without a GPU. The dependencies (the CUDA toolkit, OpenMP, PyTorch as
+an optional test oracle) are change request CR-0040, decided before the theme starts. Each
+chapter has an audit exercise, marked (A).
+
 ### Theme K: the Third Edition's format
 
 - Two volumes (decided by the author, section 8, answer 5):
-  - Volume 1, "The System and the Process", holds Parts I to V.
-  - Volume 2, "From Data to Diagnosis", holds Parts VI to XI and Appendices A to C.
+  - Volume 1, "The System and the Process", holds Part 0 and Parts I to V.
+  - Volume 2, "From Data to Diagnosis", holds Parts VI to XII and Appendices A to C.
+- The two-volume build comes first in 3.0.0-dev (with Theme N), because a single volume cannot
+  take Parts 0 and XII (`ROADMAP-3.0.0-foundations.md`, section 6).
 - Each volume has its own index.
 - A cross-reference to the other volume names that volume.
 - The solutions manual and the web edition stay single.
@@ -365,11 +406,13 @@ topic the final chapter names as further study; no later edition covers it (sect
 | 2.1.0 | Its own roadmap | Released |
 | 2.2.0 | Groundwork that breaks nothing: Theme P's gate with its known-bad library, context files under document control, extended provenance, the first agent tooling (the traceability subagent, the release-check skill, the hooks) with their static check, the simulator with several nodes, and the merge inside one process | The gate rejects every known-bad change; every agent file passes its check; release checks pass |
 | 2.3.0 | Its own roadmap (`docs/ROADMAP-2.3.0.md`): illustrations and photos, the latency judged against the previous release (CR-0038), the housekeeping of 2.2.0 | Released |
-| 3.0.0-dev, first | Theme N | Every preset green on the new compiler; Part I updated |
-| 3.0.0-dev, second | Theme M, with the earlier chapters updated | `docs.interfaces` passes; migration note complete |
-| 3.0.0-dev, third | Chapters 41 to 45 (Theme L), each with its recorded agent sessions; the tool server over the run records | Chapter recipe complete; the gate's report in each chapter's record |
-| 3.0.0-dev, fourth | Theme Q: ten audit exercises, milestones written specification first, Appendices B and C, Chapter 37 revised | Each audit exercise's acceptance rejects the bad change and accepts the fixed one |
-| 3.0.0-rc | Theme O, Theme K, the review of the whole book | Each volume within 828 pages; KDP files built |
+| 3.0.0-dev, first | Theme N; Theme K's two-volume build and the numbering of the F chapters | Every preset green on the new compiler; Part I updated; both volumes build under 828 pages |
+| 3.0.0-dev, second | Theme F: Chapters F1 to F7 | Chapter recipe complete; starters fail and solutions pass in `ctest -L unit`; Volume 1 under 828 pages |
+| 3.0.0-dev, third | Theme M, with the earlier chapters updated | `docs.interfaces` passes; migration note complete |
+| 3.0.0-dev, fourth | Chapters 41 to 45 (Theme L), each with its recorded agent sessions; the tool server over the run records | Chapter recipe complete; the gate's report in each chapter's record |
+| 3.0.0-dev, fifth | Theme G: CR-0040 decided; Chapters 46 to 49; `recon_cuda`; the compile-only CUDA job | CPU-only CI green; `gpu` tests pass on one GPU machine, recorded |
+| 3.0.0-dev, sixth | Theme Q: ten audit exercises (one per Part I to X), milestones written specification first, Appendices B and C, Chapter 37 revised | Each audit exercise's acceptance rejects the bad change and accepts the fixed one |
+| 3.0.0-rc | Theme O, the rest of Theme K, the review of the whole book | Each volume within 828 pages; KDP files built |
 | 3.0.0 | Third Edition: internal audit and the full release checks | CI green on the release commit; tag `book-v3.0.0` |
 
 The rhythm stays as before:
@@ -391,7 +434,7 @@ The rhythm stays as before:
 | One machine hides network effects | The text is contradicted by real clusters | Network namespaces with delay and loss (verify: that CI's runners allow them). The text states the limits |
 | Agent file formats change quickly | Chapter 44's examples break | The principles are taught first and the formats second; the static check fails CI when a format changes; Appendix C's templates are updated in minor releases |
 | An agent file has more power than it needs | A subagent or hook changes what it should only read | Least privilege is checked statically; the tool server is read-only; the threat model reviews each agent file |
-| Scope grows | The edition never ships | The Part XI list (five chapters) and the ten audit exercises are fixed at the start. Nothing is deferred to a later release, since none follows (section 9): anything else is dropped, or named as further study in the final chapter |
+| Scope grows | The edition never ships | The Part XI list (five chapters), Parts 0 and XII (eleven chapters) and the ten audit exercises are fixed at the start; if 3.0.0 is late, Chapter 49 is cut first, then Chapter 48 is folded into 47 (`ROADMAP-3.0.0-foundations.md`, section 8). Nothing is deferred to a later release, since none follows (section 9): anything else is dropped, or named as further study in the final chapter |
 
 ## 7. Questions for the author
 
@@ -402,7 +445,8 @@ The rhythm stays as before:
    - A separate Part on agents.
 3. **Audit exercises.** Decided by the coordinator, 2026-11-24, after answer 6: one per Part,
    ten in 3.0.0; the other thirty are not written, since no 3.1.0 follows.
-4. **GPU reconstruction.** Keep it out (recommended)?
+4. **GPU reconstruction.** Decided by the author, 2026-11-25 (section 8, answer 7): in, as Part
+   XII, with every GPU path optional.
 5. **Breaking changes.** API 4.0, schema 3.0 and MDQ-P2, grouped in one milestone (recommended)?
 6. **Platform.** Ubuntu 26.04 and the full C++23 (recommended, if the runner image is available
    in time)?
@@ -433,6 +477,13 @@ undone is done.
 6. **The final version, 2026-11-24:** "3.0.0 is the final version." No release is planned after
    3.0.0. The remaining 2.x step (2.3.0) leads straight to 3.0.0-dev, and 3.0.0 closes every open
    item (section 9).
+7. **More C++ from zero, and GPUs, 2026-11-25:** "I think we need more C++ content", for a
+   reader who has never worked with multithreading and concurrency, C++23, Linux, design
+   patterns, or advanced data structures such as lock-free queues; and "maybe a part about
+   CUDA", parallel computing, GPUs for image reconstruction and deep learning. Planned as Themes F and G
+   ([`ROADMAP-3.0.0-foundations.md`](ROADMAP-3.0.0-foundations.md)): Part 0 before Part I, Part
+   XII after Part XI, GPU code optional (the coordinator's direction, under the author's
+   delegation, that the book build and its CI pass without a GPU). This answers question 4.
 
 ## 9. 3.0.0 is the final version
 
@@ -446,7 +497,8 @@ long-term plan that stood here (3.1.0 with thirty more audit exercises, 3.2.0 on
 - **Nothing is deferred past 3.0.0.** Every item that a 2.x document sends to "3.0.0" or to "a
   later release" is done in 3.0.0 or closed with a decision recorded. The topics left out of the
   book (AI inside the device, fleet operations, GPU reconstruction, the other thirty audit
-  exercises) are named as further study in the final chapter, not promised.
+  exercises) are named as further study in the final chapter, not promised. GPU reconstruction
+  is no longer among them: the author asked for it on 2026-11-25, and Part XII covers it.
 - **3.0.0 closes every open item.** Its exit criterion, beside section 5's, is a project with
   nothing open:
   - no problem report open: MDQ-PR-006 closes with the control API 4.0 (Theme M); MDQ-PR-096

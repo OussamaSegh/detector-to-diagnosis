@@ -5,6 +5,19 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
+Added 2026-11-25, 15:00 UTC (thread "Expand the book's core C++ teaching"): **3.0.0 gains Part 0
+and Part XII** at the author's request (ROADMAP-3.0.0, section 8, answer 7), planned in
+`docs/ROADMAP-3.0.0-foundations.md` and folded in as Themes F and G. Part 0, "Foundations",
+chapters F1 to F7 before Part I (lettered, so no chapter, exercise or directory is renumbered):
+C++ from the ground up, C++11 to C++23, Linux shell and toolchain, Linux systems programming,
+concurrency from zero, design patterns, data structures up to lock-free. Part XII, chapters 46
+to 49 after Part XI: parallel computing on the CPU, CUDA from zero, GPU reconstruction
+(`recon_cuda`, optional), deep learning for PET in numpy. GPU code is optional (CPU oracle,
+`MINIDAQ_BUILD_CUDA` off by default, `gpu` CTest label skipped without a device, a compile-only
+CUDA CI job). CR-0040 (proposed) holds the dependencies: CUDA toolkit, OpenMP, PyTorch as an
+optional test oracle. The two-volume build moves to 3.0.0-dev's first milestone. Nothing in
+2.3.0 changes. Next free: CR-0041 (others as below).
+
 Last updated: 2026-11-24, 19:50 UTC: **3.0.0 is the final version** (the author, 2026-11-24): no
 release is planned after it. 2.3.0 is the last 2.x release; its review's fixes go into 3.0.0-dev,
 and 3.0.0 must close every open item (no open problem report, CAPA, change request or draft
