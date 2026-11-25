@@ -32,7 +32,7 @@ so low a rate), with one resume (`measurements/cr-0038/`, MDQ-PR-103). Still to 
 version. Then Theme I in the
 illustrations thread (photo pipeline, figures, photos), then the release (internal audit with
 CAPA-0007's check, SDP v25 approved). Next free:
-MDQ-PR-105, CAPA-0008, CR-0040, ADR 0042, TL-53.
+MDQ-PR-106, CAPA-0008, CR-0040, ADR 0042, TL-53.
 
 Earlier, 2026-11-24, 17:30 UTC: **2.2.0 release commit made; tag after its CI is green.**
 The release checks ran on 5647d2e (worktree in the scratchpad, OUT copied to

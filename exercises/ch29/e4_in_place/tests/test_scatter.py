@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 """Acceptance tests of Exercise 29.4."""
 import pickle
+import sys
 import threading
 import time
 import unittest
@@ -83,8 +84,11 @@ class InPlace(unittest.TestCase):
     def test_python_threads_run_during_the_call(self):
         # A long call: 3e7 additions, about 0.1 s. While the C++ holds the GIL, no Python thread
         # can run at all, however long the call takes. The other thread notes the time as it
-        # counts; when the call returns, Python may switch to it before this thread reads the
-        # clock, so only the first half of the call counts. On a loaded machine the other
+        # counts. When the call returns, Python may switch to it for up to a switch interval
+        # before this thread reads the clock, so the last part of the call does not count. The
+        # first part does: the checks of the indices hold the GIL and may take half the call in
+        # a debug build, which is why only the first half counting failed (MDQ-PR-105). On a
+        # loaded machine the other
         # thread may not get a CPU during one call (CI, MDQ-PR-086), and five calls were not
         # always enough either (MDQ-PR-095), so the call is tried for up to 20 s: with the GIL
         # released one attempt is enough, with it held none can pass however long it tries.
@@ -126,7 +130,10 @@ class InPlace(unittest.TestCase):
         t1 = time.perf_counter()  # clock: measure
         done.set()
         worker.join()
-        return len([s for s in stamps if t0 < s < t0 + (t1 - t0) / 2])
+        # After the call the other thread may hold the GIL until this thread asks for it back, a
+        # switch interval (5 ms by default) and the wait for a CPU: 20 ms or four intervals.
+        margin = max(0.02, 4 * sys.getswitchinterval())
+        return len([s for s in stamps if t0 < s < t1 - margin])
 
 
 if __name__ == "__main__":

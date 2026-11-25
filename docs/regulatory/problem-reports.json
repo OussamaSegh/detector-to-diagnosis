@@ -2271,6 +2271,35 @@
         "category": "tool",
         "escape": "docs.changes ran only on the records, which never cited a book tool's test."
       }
+    },
+    {
+      "id": "MDQ-PR-105",
+      "title": "Exercise 29.4's GIL test counts only the first half of the call, which the solution's checks fill in a debug build",
+      "found": "2026-11-25, the CI result of 773ef25, job build-test (debug): ch29/e4_in_place/solution/unittest, read before the next push (CAPA-0006); the third failure after MDQ-PR-086 and MDQ-PR-095",
+      "item": "exercises",
+      "status": "closed",
+      "affects": [
+        "2.2.0"
+      ],
+      "capa": "",
+      "description": "test_python_threads_run_during_the_call counted the other thread's stamps in the first half of the call only, to leave out the moment after the call when Python may switch to that thread before the test reads the clock. The solution checks every index with the GIL held, then releases it for the additions; unoptimized, the two loops take about the same time, so the first half was all checks, and the stamps began at 50 to 52% of the call (measured with Python 3.12, -O0: 0 stamps in the first half in most calls). Whether a call passed depended on a few milliseconds around the middle: MDQ-PR-086 and MDQ-PR-095 read it as the scheduler and tried more often, which could not help.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "A test of a book exercise; the product is not involved, and the solution was right."
+      },
+      "resolution": {
+        "change": "The test counts the stamps from the start of the call to 20 ms (or four switch intervals) before its end: the GIL-held checks no longer decide, and a thread that runs only after the call, as with the starter (its stamps at 98 to 99% of the call, within a switch interval of the end), still does not count.",
+        "verification": "ch29/e4_in_place/solution/unittest passes, also with checks three times as long (built for Python 3.12 at -O0); the starter fails it, 0 stamps in 39 attempts over 20 s."
+      },
+      "root_cause": {
+        "whys": [
+          "The window of the test was chosen for the end of the call, without measuring where the GIL-held part of the solution lies.",
+          "Its two earlier failures were read as scheduling on a loaded runner and answered with more attempts."
+        ],
+        "cause": "A timing window not checked against where the code under test holds the lock.",
+        "category": "test",
+        "escape": "Optimized local builds make the checks short; the window failed only where the loops are unoptimized, the CI's debug job."
+      }
     }
   ]
 }

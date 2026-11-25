@@ -27,7 +27,8 @@ the patch version.
   the machine (MDQ-PR-101). The agent's edit hook formats only the lines of a C++ file that
   differ from HEAD, so a small edit of an old file gives a small diff, and two lines of
   `synthetic_source.cpp` are formatted (MDQ-PR-102). The change request check reads the tests of the
-  book's build tools (MDQ-PR-104).
+  book's build tools (MDQ-PR-104). Exercise 29.4's GIL test no longer counts the solution's
+  GIL-held checks against it (MDQ-PR-105).
 
 ## [2.2.0] - 2026-11-24
 
