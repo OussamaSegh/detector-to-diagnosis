@@ -1,7 +1,10 @@
 # Finds or fetches photos on Wikimedia Commons for the book (roadmap 2.3.0, Theme I, M1 and M4).
 # The sessions that write the book cannot reach Commons, so this manual job does it and keeps the
 # result as an artifact: candidates.json for a search, the files and their license metadata for a
-# fetch. A person reads every license page before a photo enters book/figures/photos/ (CR-0039).
+# fetch. A fetch also adds its files to the branch photos-inbox, because sessions cannot download
+# artifacts through their proxy but can fetch a branch. That branch is a temporary inbox, allowed
+# by the software lead on 2026-11-25: never merged, deleted when the photos are chosen (CR-0039).
+# A person reads every license page before a photo enters book/figures/photos/ (CR-0039).
 name: photos
 on:
   workflow_dispatch:
@@ -15,7 +18,7 @@ on:
         required: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   photos:
@@ -41,3 +44,23 @@ jobs:
           name: photos-${{ inputs.mode }}
           path: out/
           retention-days: 7
+      - name: Add a fetch to the photos-inbox branch
+        if: inputs.mode == 'fetch'
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin photos-inbox >/dev/null; then
+            git fetch --depth=1 origin photos-inbox
+            git worktree add inbox FETCH_HEAD
+            git -C inbox checkout -q -B photos-inbox
+          else
+            git worktree add --detach inbox
+            git -C inbox checkout -q --orphan photos-inbox
+            git -C inbox rm -rfq .
+          fi
+          mkdir -p "inbox/run-${GITHUB_RUN_ID}"
+          cp out/* "inbox/run-${GITHUB_RUN_ID}/"
+          git -C inbox add "run-${GITHUB_RUN_ID}"
+          git -C inbox commit -qm "Photo candidates of run ${GITHUB_RUN_ID} (temporary inbox, never merged)"
+          git -C inbox push origin photos-inbox
