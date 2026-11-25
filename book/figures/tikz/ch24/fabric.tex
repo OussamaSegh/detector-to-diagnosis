@@ -1,0 +1,50 @@
+% Chapter 24: inside an FPGA, schematically. A grid of logic cells (LUT + flip-flop), columns of
+% block RAM and DSP blocks, I/O and serial transceivers on the edge, a clock manager. Two clock
+% domains of a readout design are shaded on the fabric, with the CDC FIFO in block RAM between
+% them. Not any vendor's layout; counts and proportions are for the drawing only.
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % the chip and its I/O ring
+  \fill[d2drule!35!white,draw=d2dink,line width=0.8pt,rounded corners=2pt] (-0.5,-0.5) rectangle (10.9,6.9);
+  \foreach \x in {0.0,0.6,...,10.3} {\fill[d2dmuted!60!white] (\x,6.62) rectangle (\x+0.3,6.78); \fill[d2dmuted!60!white] (\x,-0.38) rectangle (\x+0.3,-0.22);}
+  \foreach \y in {0.2,0.8,...,6.2} {\fill[d2dmuted!60!white] (-0.38,\y) rectangle (-0.22,\y+0.3);}
+  % the two clock domains (drawn first, under the fabric)
+  \fill[d2dcat0!16!white] (0.0,0.0) rectangle (4.95,6.4);
+  \fill[d2dcat2!20!white] (5.65,0.0) rectangle (10.4,6.4);
+  % the fabric: logic cells, with a BRAM column and a DSP column in each domain
+  \foreach \cx/\kind in {0.0/L,0.6/L,1.2/B,1.8/L,2.4/L,3.0/D,3.6/L,4.2/L,5.85/L,6.45/B,7.05/L,7.65/L,8.25/D,8.85/L,9.45/L} {
+    \if L\kind
+      \foreach \y in {0.15,0.75,...,5.9} {\fill[white,draw=d2dmuted,line width=0.3pt] (\cx+0.05,\y) rectangle (\cx+0.5,\y+0.45);
+        \fill[d2dmuted!70!white] (\cx+0.12,\y+0.08) rectangle (\cx+0.27,\y+0.37);
+        \fill[d2dink!70!white] (\cx+0.32,\y+0.13) rectangle (\cx+0.44,\y+0.32);}
+    \else\if B\kind
+      \foreach \y in {0.15,1.35,...,5.0} {\fill[d2dcat1!35!white,draw=d2dcat1!70!d2dink,line width=0.4pt] (\cx+0.05,\y) rectangle (\cx+0.5,\y+1.05);}
+    \else
+      \foreach \y in {0.15,1.35,...,5.0} {\fill[d2dcat3!35!white,draw=d2dcat3!70!d2dink,line width=0.4pt] (\cx+0.05,\y) rectangle (\cx+0.5,\y+1.05);}
+    \fi\fi}
+  % the CDC FIFO between the domains, in block RAM, and its synchronizers
+  \fill[d2dcat1!55!white,draw=d2dink,line width=0.7pt] (4.95,2.6) rectangle (5.65,3.8);
+  \node[lab,rotate=90] at (5.3,3.2) {FIFO};
+  % clock manager and transceivers
+  \fill[d2dcat4!40!white,draw=d2dink,line width=0.6pt] (4.95,5.3) rectangle (5.65,6.3);
+  \node[lab,rotate=90] at (5.3,5.8) {clocks};
+  \fill[d2dcat5!40!white,draw=d2dink,line width=0.6pt] (10.15,1.2) rectangle (10.75,2.8);
+  \node[lab,rotate=90] at (10.45,2.0) {transceivers};
+  % labels outside
+  \begin{scope}[every node/.style={note,align=left,anchor=west}]
+    \node (lc) at (11.4,6.2) {logic cells: a lookup table\\(any function of 4 to 6 inputs)\\and a flip-flop (one bit)};
+    \node (br) at (11.4,4.7) {block RAM: tens of kbit each,\\for FIFOs and buffers};
+    \node (ds) at (11.4,3.6) {DSP blocks: multipliers};
+    \node (tr) at (11.4,2.2) {serial transceivers: links\\of many Gb/s};
+    \node (io) at (11.4,0.7) {I/O pins on the edge};
+  \end{scope}
+  \draw[d2dmuted,line width=0.4pt] (lc.west) -- (9.75,5.6);
+  \draw[d2dmuted,line width=0.4pt] (br.west) -- (6.7,4.2);
+  \draw[d2dmuted,line width=0.4pt] (ds.west) -- (8.5,3.4);
+  \draw[d2dmuted,line width=0.4pt] (tr.west) -- (10.75,2.0);
+  \draw[d2dmuted,line width=0.4pt] (io.west) -- (10.6,-0.3);
+  % the domains, named below the chip
+  \node[note,align=center,anchor=north] at (2.45,-0.65) {\textcolor{d2dcat0!80!d2dink}{\textbf{domain A}}: the detector clock\\(time stamps, event words)};
+  \node[note,align=center,anchor=north] at (8.0,-0.65) {\textcolor{d2dcat2!80!d2dink}{\textbf{domain B}}: the link clock\\(packets out)};
+  \node[note,align=center,anchor=north] at (5.3,-1.55) {the only path between them: a FIFO with synchronized pointers};
+  \draw[d2dmuted,line width=0.4pt] (5.3,-1.6) -- (5.3,2.6);
+\end{tikzpicture}

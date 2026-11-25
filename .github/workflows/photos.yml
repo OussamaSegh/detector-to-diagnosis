@@ -1,0 +1,43 @@
+# Finds or fetches photos on Wikimedia Commons for the book (roadmap 2.3.0, Theme I, M1 and M4).
+# The sessions that write the book cannot reach Commons, so this manual job does it and keeps the
+# result as an artifact: candidates.json for a search, the files and their license metadata for a
+# fetch. A person reads every license page before a photo enters book/figures/photos/ (CR-0039).
+name: photos
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "search or fetch"
+        required: true
+        default: search
+      items:
+        description: "search queries or File: titles, separated by ;"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  photos:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Search or fetch
+        env:
+          MODE: ${{ inputs.mode }}
+          ITEMS: ${{ inputs.items }}
+        run: |
+          python3 - <<'EOF'
+          import os, re, subprocess, sys
+          mode = os.environ["MODE"]
+          if not re.fullmatch(r"search|fetch", mode):
+              sys.exit(f"mode must be search or fetch, not {mode!r}")
+          items = [s.strip() for s in os.environ["ITEMS"].split(";") if s.strip()]
+          sys.exit(subprocess.call([sys.executable, "book/tools/commons.py", mode, "out", *items]))
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: photos-${{ inputs.mode }}
+          path: out/
+          retention-days: 7

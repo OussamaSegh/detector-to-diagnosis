@@ -5,6 +5,13 @@ to build it the way regulated medical device software must be built. It is pract
 chapter grows MiniDAQ, a simulated PET data acquisition system with its own regulated software
 file, and every code listing is compiled and tested from the companion repository.
 
+Figure [](#fig-front-journey) is the system in one picture: the path of one event from the
+decay to the hospital's archive, with the chapters that teach each step, and the chapters that
+surround every step.
+
+```{.figure #fig-front-journey src="book/figures/tikz/front/journey.tex" caption="One event's journey through MiniDAQ, with the chapters that teach each step. The chapters on C++ and Linux, the regulated life cycle and the team apply to every step." alt="Ten boxes in two rows joined by arrows, each with its chapters. Top row, left to right: a decay and two photons, Chapter 8; crystals and SiPMs, Chapter 8; the front-end board, time and energy, Chapters 9, 24 and 38; the link, UDP packets, Chapters 9 and 23; the sorter, coincidences, Chapters 10 and 11. Bottom row, right to left: list mode and sinograms, Chapter 12; calibration and corrections, Chapters 26 and 27; reconstruction with OSEM and TOF, Chapters 28, 29 and 39; image quality, Chapter 30; DICOM to the PACS, Chapter 35. Three gray bands below name what surrounds every step: Parts I and V, Parts III and IV, and Parts VII to X." width="100%"}
+```
+
 ## How a chapter is built {.unnumbered}
 
 Every chapter has the same shape:

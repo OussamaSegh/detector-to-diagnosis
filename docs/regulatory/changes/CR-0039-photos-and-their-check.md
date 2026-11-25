@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | approved |
+| Status | implemented |
 | Requested | 2026-11-24, by the software lead |
 | Source | improvement: roadmap 2.3.0, Theme I (docs/ROADMAP-2.3.0-illustrations.md, sections 3 and 4) |
 | Decision | approved, 2026-11-25, by the software lead in writing (decision in the project thread, 09:25 UTC) |
@@ -82,5 +82,5 @@ The tests that verify it include `Photos.test_a_photo_that_follows_the_policy_pa
 
 Approved by the software lead on 2026-11-25 at 09:25 UTC, in writing in the project thread, after the
 change was implemented and merged under review (eade60e, merged in 55fd363); the photos themselves
-follow under this approval, each with its credit. The status moves to implemented once
-`tools/check_changes.py` finds the tests of `book/tools/`, which it does not read yet.
+follow under this approval, each with its credit. Implemented: `tools/check_changes.py` reads the tests
+of `book/tools/` since 773ef25 (MDQ-PR-104).

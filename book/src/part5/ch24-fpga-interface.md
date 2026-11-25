@@ -74,6 +74,12 @@ loop, and it does it with a fixed, known latency: a timestamp taken by a time-to
 in the FPGA is accurate to tens of picoseconds, which no operating system can promise for
 anything.
 
+Figure [](#fig-ch24-fabric) draws these blocks on a schematic chip, with the two clock domains of
+a readout design that the section on clock domains below comes back to.
+
+```{.figure #fig-ch24-fabric src="book/figures/tikz/ch24/fabric.tex" caption="Inside an FPGA, schematically: columns of logic cells, block RAM and DSP blocks, a clock manager, transceivers and I/O on the edge. A readout design uses two clock domains, and a FIFO in block RAM is the only path between them. Not any vendor's layout." alt="A chip outline with pins on its edges. Inside, a grid of columns: most are small logic cells, each a lookup table and a flip-flop, and some are tall block RAM or DSP blocks. The left half is shaded as domain A, the detector clock for time stamps and event words; the right half as domain B, the link clock for packets out. Between them sit a clock manager and a FIFO, labeled the only path between them, a FIFO with synchronized pointers. Transceivers sit on the right edge." width="95%"}
+```
+
 ### From source to bitstream
 
 Firmware is written in a hardware description language (HDL), VHDL or SystemVerilog, and goes
