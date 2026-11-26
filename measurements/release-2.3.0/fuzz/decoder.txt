@@ -1,0 +1,18 @@
+# 2026-11-26T11:00:59Z commit 1926017 fuzz_decoder 600 s on CPU 3 from fuzz/corpus/decoder
+INFO: Seed: 2711157644
+#6	INITED cov: 96 ft: 225 corp: 5/2277b exec/s: 0 rss: 33Mb
+#7	NEW    cov: 99 ft: 243 corp: 6/2365b lim: 1601 exec/s: 0 rss: 33Mb L: 88/1601 MS: 1 InsertRepeatedBytes-
+#23	NEW    cov: 101 ft: 342 corp: 15/3888b lim: 1601 exec/s: 0 rss: 34Mb L: 9/1601 MS: 2 ChangeByte-ShuffleBytes-
+#30	NEW    cov: 102 ft: 348 corp: 18/4313b lim: 1601 exec/s: 0 rss: 34Mb L: 82/1601 MS: 4 ShuffleBytes-CrossOver-ChangeBinInt-CrossOver-
+#47	NEW    cov: 103 ft: 364 corp: 24/4592b lim: 1601 exec/s: 0 rss: 34Mb L: 17/1601 MS: 1 PersAutoDict- DE: "\377\377\377\377\377\377\377\017"-
+#50	NEW    cov: 104 ft: 370 corp: 27/5340b lim: 1601 exec/s: 0 rss: 34Mb L: 514/1601 MS: 1 InsertByte-
+#61	NEW    cov: 105 ft: 376 corp: 30/6041b lim: 1601 exec/s: 0 rss: 34Mb L: 173/1601 MS: 3 ChangeBit-ChangeBinInt-CopyPart-
+#94	NEW    cov: 115 ft: 403 corp: 38/9878b lim: 1601 exec/s: 0 rss: 36Mb L: 8/1601 MS: 1 EraseBytes-
+#5631	NEW    cov: 117 ft: 508 corp: 85/30Kb lim: 1601 exec/s: 0 rss: 58Mb L: 791/1601 MS: 3 ChangeBinInt-CopyPart-CrossOver-
+#15700541	DONE   cov: 117 ft: 525 corp: 99/34Kb lim: 4096 exec/s: 26124 rss: 461Mb
+stat::number_of_executed_units: 15700541
+stat::average_exec_per_sec:     26124
+stat::new_units_added:          1069
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              461
+crash files: 0

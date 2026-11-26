@@ -8,6 +8,33 @@ the patch version.
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-11-26
+
+Release notes: nothing breaks, and no shipped program changes. The last 2.x release: the latency
+is judged against the previous release's programs on the same machine (CR-0038), the book has
+256 figures with its first two photos (CR-0039), and committed evidence names no path of the
+machine (CAPA-0008). Released with a deviation for the latency criterion ACC-04: 8 of 600 soak
+intervals above 10 ms (six allowed), against 10 of 600 for 2.2.0's programs interleaved on the
+same machine (ACC-10 passes; MDQ-PR-096 open, its closing planned for 3.0.0). Open known
+anomalies: MDQ-PR-006, unchanged, and MDQ-PR-096. Record: `docs/regulatory/releases/2.3.0.md`;
+evidence `measurements/release-2.3.0/` (checks on 1926017, all five parts, reproducible).
+
+### Added (roadmap 2.3.0, Theme I, CR-0039)
+
+- Illustrations and photos: figures of the scanner, its modules and electronics, the FPGA
+  fabric, the journey of a single, phantoms and reconstructions, checked for black-ink print;
+  two CC0 photos with a photo credits page, fetched by the photo job and checked
+  (`book/figures/photos/credits.json`). The book has 802 pages.
+
+### Release 2.3.0
+
+- SDP 25, system test plan 7, SOUP list 33, acceptance specification 3 and the release-checks
+  skill 2 (agent files' register 2) approved for 2.3.0; the internal audit of 2026-11-26 final.
+- CAPA-0007 (release facts written once) closed as effective; CAPA-0008 implemented, due at
+  3.0.0.
+- MDQ-PR-096 (open): ACC-04 failed again on the interleaved soak, ACC-10 passed. Released with
+  a deviation under SDP version 25, section 8.
+
 ### Changed
 
 - The release soak runs the candidate and the previous release's programs, built from its tag,

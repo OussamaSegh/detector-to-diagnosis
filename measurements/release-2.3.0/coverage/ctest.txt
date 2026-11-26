@@ -1,0 +1,1102 @@
+Internal ctest changing into directory: $SCRATCH/rc230/build/coverage
+Test project $SCRATCH/rc230/build/coverage
+        Start   1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt
+        Start   2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt
+        Start   3: Quantity.SameUnitArithmetic
+        Start   4: Quantity.Ordering
+  1/546 Test   #3: Quantity.SameUnitArithmetic .....................................................................................................................................................   Passed    0.01 sec
+        Start   5: Coincidence.TimeDifferenceIsSecondMinusFirst
+  2/546 Test   #1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt ............................................................................................................   Passed    0.02 sec
+        Start   6: ParseNumber.AcceptsOnlyAWholeNumberInRange
+  3/546 Test   #4: Quantity.Ordering ...............................................................................................................................................................   Passed    0.02 sec
+        Start   7: ParseNumber.FloatingPointRejectsNonFiniteValues
+  4/546 Test   #5: Coincidence.TimeDifferenceIsSecondMinusFirst ....................................................................................................................................   Passed    0.01 sec
+        Start   8: ParseNumber.BoundsAreInclusive
+  5/546 Test   #2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt ...........................................................................................................   Passed    0.03 sec
+        Start   9: Expected.ValueAndError
+  6/546 Test   #6: ParseNumber.AcceptsOnlyAWholeNumberInRange ......................................................................................................................................   Passed    0.01 sec
+        Start  10: Expected.Monadic
+  7/546 Test   #7: ParseNumber.FloatingPointRejectsNonFiniteValues .................................................................................................................................   Passed    0.01 sec
+        Start  11: Expected.NonTrivialTypesAreDestroyed
+  8/546 Test   #9: Expected.ValueAndError ..........................................................................................................................................................   Passed    0.01 sec
+        Start  12: Expected.StringValueMoves
+  9/546 Test   #8: ParseNumber.BoundsAreInclusive ..................................................................................................................................................   Passed    0.01 sec
+        Start  13: Expected.Void
+ 10/546 Test  #10: Expected.Monadic ................................................................................................................................................................   Passed    0.01 sec
+        Start  14: Expected.IsStdExpectedWhereverTheLibraryHasIt
+ 11/546 Test  #11: Expected.NonTrivialTypesAreDestroyed ............................................................................................................................................   Passed    0.01 sec
+        Start  15: ConstexprMath.MatchesStdLib
+ 12/546 Test  #13: Expected.Void ...................................................................................................................................................................   Passed    0.01 sec
+        Start  16: Geometry.CrystalsLieOnTheRing
+ 13/546 Test  #12: Expected.StringValueMoves .......................................................................................................................................................   Passed    0.02 sec
+        Start  17: Geometry.AxialPositionsAreCentered
+ 14/546 Test  #14: Expected.IsStdExpectedWhereverTheLibraryHasIt ...................................................................................................................................   Passed    0.02 sec
+        Start  18: Geometry.IdDecomposition
+ 15/546 Test  #15: ConstexprMath.MatchesStdLib .....................................................................................................................................................   Passed    0.02 sec
+        Start  19: Raw16.RoundTrip
+ 16/546 Test  #16: Geometry.CrystalsLieOnTheRing ...................................................................................................................................................   Passed    0.01 sec
+        Start  20: Raw16.RejectsMalformedInput
+ 17/546 Test  #18: Geometry.IdDecomposition ........................................................................................................................................................   Passed    0.01 sec
+        Start  21: Raw16.ToStringCoversAllErrors
+ 18/546 Test  #17: Geometry.AxialPositionsAreCentered ..............................................................................................................................................   Passed    0.02 sec
+        Start  22: PackedSingle.FieldsDoNotOverlap
+ 19/546 Test  #19: Raw16.RoundTrip .................................................................................................................................................................   Passed    0.01 sec
+        Start  23: PackedSingle.CoarseAndFine
+ 20/546 Test  #20: Raw16.RejectsMalformedInput .....................................................................................................................................................   Passed    0.01 sec
+        Start  24: PackedSingle.RoundTripPropertyWithinQuantization
+ 21/546 Test  #21: Raw16.ToStringCoversAllErrors ...................................................................................................................................................   Passed    0.01 sec
+        Start  25: PackedSingle.EnergySaturatesAndHandlesNaN
+ 22/546 Test  #23: PackedSingle.CoarseAndFine ......................................................................................................................................................   Passed    0.01 sec
+        Start  26: TimeUnwrapper.ReconstructsAcrossManyWraps
+ 23/546 Test  #22: PackedSingle.FieldsDoNotOverlap .................................................................................................................................................   Passed    0.02 sec
+        Start  27: TimeUnwrapper.LateWordFromBeforeTheWrap
+ 24/546 Test  #25: PackedSingle.EnergySaturatesAndHandlesNaN .......................................................................................................................................   Passed    0.01 sec
+        Start  28: StreamDecoder.DecodesAndCountsInvalidCrystals
+ 25/546 Test  #26: TimeUnwrapper.ReconstructsAcrossManyWraps .......................................................................................................................................   Passed    0.01 sec
+        Start  29: StreamDecoder.OutputSpanLimitsTheWork
+ 26/546 Test  #27: TimeUnwrapper.LateWordFromBeforeTheWrap .........................................................................................................................................   Passed    0.01 sec
+        Start  30: StreamDecoder.LittleEndianBytes
+ 27/546 Test  #28: StreamDecoder.DecodesAndCountsInvalidCrystals ...................................................................................................................................   Passed    0.01 sec
+        Start  31: StreamDecoder.ReadsAMarkerAsAPromiseNotASingle
+ 28/546 Test  #30: StreamDecoder.LittleEndianBytes .................................................................................................................................................   Passed    0.01 sec
+        Start  32: StreamDecoder.KeepsTheLatestOfSeveralMarkersAndNeverTakesTheMarkerForASingle
+ 29/546 Test  #29: StreamDecoder.OutputSpanLimitsTheWork ...........................................................................................................................................   Passed    0.02 sec
+        Start  33: StreamDecoder.UnwrapsAMarkerLikeASingle
+ 30/546 Test  #31: StreamDecoder.ReadsAMarkerAsAPromiseNotASingle ..................................................................................................................................   Passed    0.02 sec
+        Start  34: ReadoutPacket.RoundTrip
+ 31/546 Test  #24: PackedSingle.RoundTripPropertyWithinQuantization ................................................................................................................................   Passed    0.04 sec
+        Start  35: ReadoutPacket.RejectsEveryMalformedField
+ 32/546 Test  #32: StreamDecoder.KeepsTheLatestOfSeveralMarkersAndNeverTakesTheMarkerForASingle ....................................................................................................   Passed    0.01 sec
+        Start  36: ReadoutPacket.SequenceDistanceAcrossTheWrap
+ 33/546 Test  #33: StreamDecoder.UnwrapsAMarkerLikeASingle .........................................................................................................................................   Passed    0.01 sec
+        Start  37: SequenceTracker.InOrderIsDeliveredAtOnce
+ 34/546 Test  #34: ReadoutPacket.RoundTrip .........................................................................................................................................................   Passed    0.01 sec
+        Start  38: SequenceTracker.ReorderedPacketsLeaveInSequenceOrder
+ 35/546 Test  #35: ReadoutPacket.RejectsEveryMalformedField ........................................................................................................................................   Passed    0.02 sec
+        Start  39: SequenceTracker.AGapIsDeclaredLostAfterTheHoldTime
+ 36/546 Test  #36: ReadoutPacket.SequenceDistanceAcrossTheWrap .....................................................................................................................................   Passed    0.01 sec
+        Start  40: SequenceTracker.AFullWindowDeclaresTheOldestGapLost
+ 37/546 Test  #37: SequenceTracker.InOrderIsDeliveredAtOnce ........................................................................................................................................   Passed    0.02 sec
+        Start  41: SequenceTracker.ALargeJumpIsCountedInOneStep
+ 38/546 Test  #38: SequenceTracker.ReorderedPacketsLeaveInSequenceOrder ............................................................................................................................   Passed    0.01 sec
+        Start  42: SequenceTracker.DuplicatesAreStale
+ 39/546 Test  #39: SequenceTracker.AGapIsDeclaredLostAfterTheHoldTime ..............................................................................................................................   Passed    0.01 sec
+        Start  43: SequenceTracker.ALateCopyOfAHeldPacketIsNotReordered
+ 40/546 Test  #40: SequenceTracker.AFullWindowDeclaresTheOldestGapLost .............................................................................................................................   Passed    0.01 sec
+        Start  44: SequenceTracker.WorksAcrossTheSequenceWrap
+ 41/546 Test  #41: SequenceTracker.ALargeJumpIsCountedInOneStep ....................................................................................................................................   Passed    0.01 sec
+        Start  45: SequenceTracker.ASourceThatRestartsIsFollowedAfterARunOfStalePackets
+ 42/546 Test  #42: SequenceTracker.DuplicatesAreStale ..............................................................................................................................................   Passed    0.02 sec
+        Start  46: SequenceTracker.AJumpBeyondTheMaximumGapIsARestart
+ 43/546 Test  #43: SequenceTracker.ALateCopyOfAHeldPacketIsNotReordered ............................................................................................................................   Passed    0.01 sec
+        Start  47: SequenceTracker.RejectsAWindowThatIsNotAPowerOfTwo
+ 44/546 Test  #44: SequenceTracker.WorksAcrossTheSequenceWrap ......................................................................................................................................   Passed    0.01 sec
+        Start  48: SequenceTracker.AccountsForEveryPacketThroughAFaultyLink
+ 45/546 Test  #46: SequenceTracker.AJumpBeyondTheMaximumGapIsARestart ..............................................................................................................................   Passed    0.01 sec
+        Start  49: QuantizeAsOnLink.TruncatesTimeTo5PsAndRoundsEnergyToHalfKeVKeepingTheTruth
+ 46/546 Test  #47: SequenceTracker.RejectsAWindowThatIsNotAPowerOfTwo ..............................................................................................................................   Passed    0.01 sec
+        Start  50: QuantizeAsOnLink.GivesWhatTheServersDecoderGivesAcrossTheTimeWrap
+ 47/546 Test  #45: SequenceTracker.ASourceThatRestartsIsFollowedAfterARunOfStalePackets ............................................................................................................   Passed    0.02 sec
+        Start  51: QuantizeAsOnLink.RefusesACrystalOutsideTheScanner
+ 48/546 Test  #49: QuantizeAsOnLink.TruncatesTimeTo5PsAndRoundsEnergyToHalfKeVKeepingTheTruth ......................................................................................................   Passed    0.02 sec
+        Start  52: Crc32.ReproducesTheStandardCheckValue
+ 49/546 Test  #50: QuantizeAsOnLink.GivesWhatTheServersDecoderGivesAcrossTheTimeWrap ...............................................................................................................   Passed    0.02 sec
+        Start  53: Crc32.SlicingBy8MatchesTheBytewiseLoopAtEveryLengthAndOffset
+ 50/546 Test  #51: QuantizeAsOnLink.RefusesACrystalOutsideTheScanner ...............................................................................................................................   Passed    0.02 sec
+        Start  54: Crc32.UpdateContinuesOverConcatenatedPieces
+ 51/546 Test  #52: Crc32.ReproducesTheStandardCheckValue ...........................................................................................................................................   Passed    0.02 sec
+        Start  55: Crc32.DetectsEverySingleAndDoubleBitFlipInABlock
+ 52/546 Test  #53: Crc32.SlicingBy8MatchesTheBytewiseLoopAtEveryLengthAndOffset ....................................................................................................................   Passed    0.02 sec
+        Start  56: Crc32.DetectsEveryBurstOfUpTo32Bits
+ 53/546 Test  #48: SequenceTracker.AccountsForEveryPacketThroughAFaultyLink ........................................................................................................................   Passed    0.06 sec
+        Start  57: FlightRecorder.KeepsAThreadsEventsInTheOrderItRecordedThem
+ 54/546 Test  #54: Crc32.UpdateContinuesOverConcatenatedPieces .....................................................................................................................................   Passed    0.02 sec
+        Start  58: FlightRecorder.KeepsTheLastEventsOfARingWhenItWrapsAround
+ 55/546 Test  #56: Crc32.DetectsEveryBurstOfUpTo32Bits .............................................................................................................................................   Passed    0.03 sec
+        Start  59: FlightRecorder.ASmallSnapshotKeepsTheNewestEventsOldestFirst
+ 56/546 Test  #57: FlightRecorder.KeepsAThreadsEventsInTheOrderItRecordedThem ......................................................................................................................   Passed    0.02 sec
+        Start  60: FlightRecorder.MergesTheRingsOfSeveralThreadsByTime
+ 57/546 Test  #58: FlightRecorder.KeepsTheLastEventsOfARingWhenItWrapsAround .......................................................................................................................   Passed    0.02 sec
+        Start  61: FlightRecorder.AThreadGivesItsRingBackWhenItExits
+ 58/546 Test  #59: FlightRecorder.ASmallSnapshotKeepsTheNewestEventsOldestFirst ....................................................................................................................   Passed    0.02 sec
+        Start  62: FlightRecorder.CountsTheEventsOfThreadsThatFindNoFreeRing
+ 59/546 Test  #61: FlightRecorder.AThreadGivesItsRingBackWhenItExits ...............................................................................................................................   Passed    0.01 sec
+        Start  63: FlightRecorder.ASnapshotTakenWhileThreadsRecordNeverShowsHalfAnEvent
+ 60/546 Test  #60: FlightRecorder.MergesTheRingsOfSeveralThreadsByTime .............................................................................................................................   Passed    0.02 sec
+        Start  64: FlightRecorder.TheProcessRecorderIsOneObject
+ 61/546 Test  #64: FlightRecorder.TheProcessRecorderIsOneObject ....................................................................................................................................   Passed    0.02 sec
+        Start  65: FlightRecorder.NamesEveryCode
+ 62/546 Test  #65: FlightRecorder.NamesEveryCode ...................................................................................................................................................   Passed    0.01 sec
+        Start  66: CrashReport.TheBuildIdIsTheOneTheLinkerWrote
+ 63/546 Test  #62: FlightRecorder.CountsTheEventsOfThreadsThatFindNoFreeRing .......................................................................................................................   Passed    0.05 sec
+        Start  67: CrashReport.AReportNamesTheSignalTheProgramAndTheLastEvents
+ 64/546 Test  #66: CrashReport.TheBuildIdIsTheOneTheLinkerWrote ....................................................................................................................................   Passed    0.04 sec
+        Start  68: CrashReport.ASignalSentByAnotherProcessNamesTheSenderInsteadOfAnAddress
+ 65/546 Test  #67: CrashReport.AReportNamesTheSignalTheProgramAndTheLastEvents .....................................................................................................................   Passed    0.04 sec
+        Start  69: CrashReport.NamesTheFatalSignals
+ 66/546 Test  #69: CrashReport.NamesTheFatalSignals ................................................................................................................................................   Passed    0.02 sec
+        Start  70: ListMode.FileHeaderRoundTrip
+ 67/546 Test  #68: CrashReport.ASignalSentByAnotherProcessNamesTheSenderInsteadOfAnAddress .........................................................................................................   Passed    0.03 sec
+        Start  71: ListMode.FileHeaderRejectsDamageAndUnknownVersions
+ 68/546 Test  #70: ListMode.FileHeaderRoundTrip ....................................................................................................................................................   Passed    0.02 sec
+        Start  72: ListMode.RecordsRoundTripExceptForTheEnergyQuantum
+ 69/546 Test  #71: ListMode.FileHeaderRejectsDamageAndUnknownVersions ..............................................................................................................................   Passed    0.02 sec
+        Start  73: ListMode.TagsShareTheRecordStream
+ 70/546 Test  #72: ListMode.RecordsRoundTripExceptForTheEnergyQuantum ..............................................................................................................................   Passed    0.02 sec
+        Start  74: ListMode.ABlockClosesWhenFullOutOfTimeRangeOrOnATimeReset
+ 71/546 Test  #55: Crc32.DetectsEverySingleAndDoubleBitFlipInABlock ................................................................................................................................   Passed    0.19 sec
+        Start  75: ListMode.ReaderReturnsEveryRecordOfAnIntactFile
+ 72/546 Test  #73: ListMode.TagsShareTheRecordStream ...............................................................................................................................................   Passed    0.02 sec
+        Start  76: ListMode.OneCorruptByteCostsOneBlockAndNothingElse
+ 73/546 Test  #74: ListMode.ABlockClosesWhenFullOutOfTimeRangeOrOnATimeReset .......................................................................................................................   Passed    0.02 sec
+        Start  77: ListMode.ReaderResynchronizesAfterADamagedHeader
+ 74/546 Test  #75: ListMode.ReaderReturnsEveryRecordOfAnIntactFile .................................................................................................................................   Passed    0.02 sec
+        Start  78: ListMode.ATruncatedFileIsReadUpToItsLastCompleteBlock
+ 75/546 Test  #77: ListMode.ReaderResynchronizesAfterADamagedHeader ................................................................................................................................   Passed    0.02 sec
+        Start  79: ListMode.ADamagedFileHeaderStopsTheReader
+ 76/546 Test  #78: ListMode.ATruncatedFileIsReadUpToItsLastCompleteBlock ...........................................................................................................................   Passed    0.04 sec
+        Start  80: ListMode.ReadsAFileWrittenByAnIndependentImplementation
+ 77/546 Test  #79: ListMode.ADamagedFileHeaderStopsTheReader .......................................................................................................................................   Passed    0.03 sec
+        Start  81: ListModeSink.WritesEveryCoincidenceAndClosesTheRun
+ 78/546 Test  #80: ListMode.ReadsAFileWrittenByAnIndependentImplementation .........................................................................................................................   Passed    0.02 sec
+        Start  82: ListModeSink.RotatesFilesAndEndsEachWithAClosingBlock
+ 79/546 Test  #81: ListModeSink.WritesEveryCoincidenceAndClosesTheRun ..............................................................................................................................   Passed    0.06 sec
+        Start  83: ListModeSink.MakesEachFileDurableBeforeItsFinalName
+ 80/546 Test  #82: ListModeSink.RotatesFilesAndEndsEachWithAClosingBlock ...........................................................................................................................   Passed    0.07 sec
+        Start  84: ListModeSink.ShortWritesAreCompleted
+ 81/546 Test  #83: ListModeSink.MakesEachFileDurableBeforeItsFinalName .............................................................................................................................   Passed    0.04 sec
+        Start  85: ListModeSink.AFullDiskIsAFaultAndTheFileStaysPart
+ 82/546 Test  #85: ListModeSink.AFullDiskIsAFaultAndTheFileStaysPart ...............................................................................................................................   Passed    0.02 sec
+        Start  86: ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData
+ 83/546 Test  #84: ListModeSink.ShortWritesAreCompleted ............................................................................................................................................   Passed    0.05 sec
+        Start  87: ListModeSink.ABlockIsWrittenAtTheLatestAfterTheMaximumDelay
+ 84/546 Test  #87: ListModeSink.ABlockIsWrittenAtTheLatestAfterTheMaximumDelay .....................................................................................................................   Passed    0.06 sec
+        Start  88: ListModeSink.RejectsBadConfigurationsAndExistingFiles
+ 85/546 Test  #88: ListModeSink.RejectsBadConfigurationsAndExistingFiles ...........................................................................................................................   Passed    0.03 sec
+        Start  89: ListModeSink.WritesRealFilesThroughTheService
+ 86/546 Test  #86: ListModeSink.ASlowDiskSlowsTheWriterDownInsteadOfLosingData .....................................................................................................................   Passed    0.15 sec
+        Start  90: ListModeSink.StoresTheRunRecordNextToTheFiles
+ 87/546 Test  #90: ListModeSink.StoresTheRunRecordNextToTheFiles ...................................................................................................................................   Passed    0.08 sec
+        Start  91: ListModeSink.NamesTheCalibrationTableInTheFilesAndTheRunRecord
+ 88/546 Test  #76: ListMode.OneCorruptByteCostsOneBlockAndNothingElse ..............................................................................................................................   Passed    0.53 sec
+        Start  92: ListModeSink.ReadsTheDelayedWindowFromMetadataAsUntrustedInput
+ 89/546 Test  #92: ListModeSink.ReadsTheDelayedWindowFromMetadataAsUntrustedInput ..................................................................................................................   Passed    0.04 sec
+        Start  93: CoincidenceSorter.TheWindowIsInclusive
+ 90/546 Test  #93: CoincidenceSorter.TheWindowIsInclusive ..........................................................................................................................................   Passed    0.04 sec
+        Start  94: CoincidenceSorter.FixedAndPerSingleWindowsDiffer
+ 91/546 Test  #94: CoincidenceSorter.FixedAndPerSingleWindowsDiffer ................................................................................................................................   Passed    0.04 sec
+        Start  95: CoincidenceSorter.MultiplesPolicies
+ 92/546 Test  #95: CoincidenceSorter.MultiplesPolicies .............................................................................................................................................   Passed    0.04 sec
+        Start  96: CoincidenceSorter.TiesKeepTheEarlierPair
+ 93/546 Test  #63: FlightRecorder.ASnapshotTakenWhileThreadsRecordNeverShowsHalfAnEvent ............................................................................................................   Passed    0.86 sec
+        Start  97: CoincidenceSorter.TwoSinglesOfOneCrystalWithOneTimeAreTakenInEnergyOrder
+ 94/546 Test  #96: CoincidenceSorter.TiesKeepTheEarlierPair ........................................................................................................................................   Passed    0.02 sec
+        Start  98: CoincidenceSorter.GeometryCuts
+ 95/546 Test  #97: CoincidenceSorter.TwoSinglesOfOneCrystalWithOneTimeAreTakenInEnergyOrder ........................................................................................................   Passed    0.02 sec
+        Start  99: CoincidenceSorter.EnergyGateAndOrder
+ 96/546 Test  #98: CoincidenceSorter.GeometryCuts ..................................................................................................................................................   Passed    0.01 sec
+        Start 100: CoincidenceSorter.DelayedWindow
+ 97/546 Test  #99: CoincidenceSorter.EnergyGateAndOrder ............................................................................................................................................   Passed    0.01 sec
+        Start 101: CoincidenceSorter.RejectsBadConfigurations
+ 98/546 Test #100: CoincidenceSorter.DelayedWindow .................................................................................................................................................   Passed    0.01 sec
+        Start 102: CoincidenceSorter.TheLimitsOfTheConfigurationAreInclusive
+ 99/546 Test #101: CoincidenceSorter.RejectsBadConfigurations ......................................................................................................................................   Passed    0.01 sec
+        Start 103: CoincidenceSorter.GeometryCutsDoNotDependOnOrderOrOrientation
+100/546 Test #102: CoincidenceSorter.TheLimitsOfTheConfigurationAreInclusive .......................................................................................................................   Passed    0.01 sec
+        Start 104: CoincidenceSorter.DelayedMultiplesFollowThePolicy
+101/546 Test #103: CoincidenceSorter.GeometryCutsDoNotDependOnOrderOrOrientation ...................................................................................................................   Passed    0.01 sec
+        Start 105: CoincidenceSorter.ChunkingDoesNotChangeTheResult
+102/546 Test #104: CoincidenceSorter.DelayedMultiplesFollowThePolicy ...............................................................................................................................   Passed    0.01 sec
+        Start 106: CoincidenceSorter.EverySingleIsAccountedFor
+103/546 Test #105: CoincidenceSorter.ChunkingDoesNotChangeTheResult ................................................................................................................................   Passed    0.25 sec
+        Start 107: CoincidenceSorter.MatchesTheSimulatorsGroundTruth
+104/546 Test #106: CoincidenceSorter.EverySingleIsAccountedFor .....................................................................................................................................   Passed    0.27 sec
+        Start 108: CoincidenceSorter.TheDelayedWindowEstimateDependsOnTheMultiplesPolicy
+105/546 Test  #89: ListModeSink.WritesRealFilesThroughTheService ...................................................................................................................................   Passed    0.87 sec
+        Start 109: CoincidenceSorter.AMarkerClosesTheWindowsBeforeIt
+106/546 Test #109: CoincidenceSorter.AMarkerClosesTheWindowsBeforeIt ...............................................................................................................................   Passed    0.01 sec
+        Start 110: CoincidenceSorter.MarkersChangeNoCoincidence
+107/546 Test #110: CoincidenceSorter.MarkersChangeNoCoincidence ....................................................................................................................................   Passed    0.07 sec
+        Start 111: Sinogram.EveryTransaxialLorHasItsOwnBin
+108/546 Test  #91: ListModeSink.NamesTheCalibrationTableInTheFilesAndTheRunRecord ..................................................................................................................   Passed    0.84 sec
+        Start 112: Sinogram.RadialPositionIsTheDistanceOfTheLorFromTheAxis
+109/546 Test #112: Sinogram.RadialPositionIsTheDistanceOfTheLorFromTheAxis .........................................................................................................................   Passed    0.01 sec
+        Start 113: Sinogram.AgreesWithTheSortersFieldOfViewCut
+110/546 Test #111: Sinogram.EveryTransaxialLorHasItsOwnBin .........................................................................................................................................   Passed    0.08 sec
+        Start 114: Sinogram.RingPairsGoToTheirSsrbSliceAndTheMichelogram
+111/546 Test #113: Sinogram.AgreesWithTheSortersFieldOfViewCut .....................................................................................................................................   Passed    0.05 sec
+        Start 115: Sinogram.TimeOfFlightBinsLocateTheAnnihilationAlongTheLor
+112/546 Test #114: Sinogram.RingPairsGoToTheirSsrbSliceAndTheMichelogram ...........................................................................................................................   Passed    0.05 sec
+        Start 116: Sinogram.DelayedPairsAreBinnedApartWithTheDelayRemoved
+113/546 Test #116: Sinogram.DelayedPairsAreBinnedApartWithTheDelayRemoved ..........................................................................................................................   Passed    0.19 sec
+        Start 117: Sinogram.APointSourceDrawsASinusoid
+114/546 Test #107: CoincidenceSorter.MatchesTheSimulatorsGroundTruth ...............................................................................................................................   Passed    1.41 sec
+        Start 118: StreamMerger.MergesInterleavedChunksIntoOneOrderedStream
+115/546 Test #118: StreamMerger.MergesInterleavedChunksIntoOneOrderedStream ........................................................................................................................   Passed    0.19 sec
+        Start 119: StreamMerger.WaitsForEveryBoard
+116/546 Test #119: StreamMerger.WaitsForEveryBoard .................................................................................................................................................   Passed    0.01 sec
+        Start 120: StreamMerger.ASlowBoardLosesOnlyItsLateSingles
+117/546 Test #120: StreamMerger.ASlowBoardLosesOnlyItsLateSingles ..................................................................................................................................   Passed    0.01 sec
+        Start 121: StreamMerger.CountsABoardThatGoesBackInTime
+118/546 Test #121: StreamMerger.CountsABoardThatGoesBackInTime .....................................................................................................................................   Passed    0.02 sec
+        Start 122: StreamMerger.TiesComeOutInADeterministicOrder
+119/546 Test #122: StreamMerger.TiesComeOutInADeterministicOrder ...................................................................................................................................   Passed    0.02 sec
+        Start 123: ReadoutNodes.ContiguousRangesCoverEveryBlockAndCheckTheirBounds
+120/546 Test #123: ReadoutNodes.ContiguousRangesCoverEveryBlockAndCheckTheirBounds .................................................................................................................   Passed    0.01 sec
+        Start 124: ReadoutNodes.EachNodeGetsItsBlocksInTimeOrderInItsOwnClock
+121/546 Test #124: ReadoutNodes.EachNodeGetsItsBlocksInTimeOrderInItsOwnClock ......................................................................................................................   Passed    0.04 sec
+        Start 125: ReadoutNodes.OneNodeIsTheStreamWithoutNodes
+122/546 Test #125: ReadoutNodes.OneNodeIsTheStreamWithoutNodes .....................................................................................................................................   Passed    0.04 sec
+        Start 126: NodeMerge.SubtractsEachOffsetAndMergesInTimeOrder
+123/546 Test #126: NodeMerge.SubtractsEachOffsetAndMergesInTimeOrder ...............................................................................................................................   Passed    0.02 sec
+        Start 127: NodeMerge.HoldsEverythingForASlowNodeUntilItReportsOrEnds
+124/546 Test #127: NodeMerge.HoldsEverythingForASlowNodeUntilItReportsOrEnds .......................................................................................................................   Passed    0.01 sec
+        Start 128: NodeMerge.CountsALateSingleNeverDropsItSilently
+125/546 Test #128: NodeMerge.CountsALateSingleNeverDropsItSilently .................................................................................................................................   Passed    0.01 sec
+        Start 129: NodeMerge.MergedCoincidencesEqualTheSingleNodeOracle
+126/546 Test #117: Sinogram.APointSourceDrawsASinusoid .............................................................................................................................................   Passed    1.41 sec
+        Start 130: NodeMerge.TheMultiNodeSourceGivesTheOraclesCoincidences
+127/546 Test #130: NodeMerge.TheMultiNodeSourceGivesTheOraclesCoincidences .........................................................................................................................   Passed    0.32 sec
+        Start 131: NodeMerge.AConfigurationWithNodesFeedsTheSourceStageTheMergedStream
+128/546 Test #131: NodeMerge.AConfigurationWithNodesFeedsTheSourceStageTheMergedStream .............................................................................................................   Passed    0.05 sec
+        Start 132: TimeMarker.IsAWordThatNoSingleOfTheScannerCanBe
+129/546 Test #132: TimeMarker.IsAWordThatNoSingleOfTheScannerCanBe .................................................................................................................................   Passed    0.01 sec
+        Start 133: ReadoutLink.SendsAMarkerAtEveryIntervalBeforeTheDataAfterIt
+130/546 Test #133: ReadoutLink.SendsAMarkerAtEveryIntervalBeforeTheDataAfterIt .....................................................................................................................   Passed    0.02 sec
+        Start 134: DeadTime.NonParalyzableIgnoresArrivalsWhileBusy
+131/546 Test #134: DeadTime.NonParalyzableIgnoresArrivalsWhileBusy .................................................................................................................................   Passed    0.01 sec
+        Start 135: DeadTime.ParalyzableExtendsTheDeadTimeWithEveryArrival
+132/546 Test #135: DeadTime.ParalyzableExtendsTheDeadTimeWithEveryArrival ..........................................................................................................................   Passed    0.01 sec
+        Start 136: DeadTime.PileUpAddsTheLostEnergy
+133/546 Test #136: DeadTime.PileUpAddsTheLostEnergy ................................................................................................................................................   Passed    0.01 sec
+        Start 137: DeadTime.UnitsAreIndependent
+134/546 Test #137: DeadTime.UnitsAreIndependent ....................................................................................................................................................   Passed    0.01 sec
+        Start 138: DeadTime.OutputIsInTimeOrderForAnyChunking
+135/546 Test #115: Sinogram.TimeOfFlightBinsLocateTheAnnihilationAlongTheLor .......................................................................................................................   Passed    2.15 sec
+        Start 139: DeadTime.RecordedRatesMatchTheAnalyticalModels
+136/546 Test #139: DeadTime.RecordedRatesMatchTheAnalyticalModels ..................................................................................................................................   Passed    0.22 sec
+        Start 140: DeadTime.TrueRateInvertsRecordedRate
+137/546 Test #140: DeadTime.TrueRateInvertsRecordedRate ............................................................................................................................................   Passed    0.01 sec
+        Start 141: DeadTime.RejectsBadConfigurations
+138/546 Test #141: DeadTime.RejectsBadConfigurations ...............................................................................................................................................   Passed    0.01 sec
+        Start 142: CountRates.NecrAndScatterFraction
+139/546 Test #142: CountRates.NecrAndScatterFraction ...............................................................................................................................................   Passed    0.01 sec
+        Start 143: ReplaySource.LoopsWithShiftedTimesInOrder
+140/546 Test #143: ReplaySource.LoopsWithShiftedTimesInOrder .......................................................................................................................................   Passed    0.01 sec
+        Start 144: ReplaySource.RealTimeRateAndPacing
+141/546 Test #144: ReplaySource.RealTimeRateAndPacing ..............................................................................................................................................   Passed    0.11 sec
+        Start 145: SpscRing.CapacityRoundsUpToPowerOfTwo
+142/546 Test #145: SpscRing.CapacityRoundsUpToPowerOfTwo ...........................................................................................................................................   Passed    0.01 sec
+        Start 146: SpscRing.FifoOrderAndFullEmpty
+143/546 Test #146: SpscRing.FifoOrderAndFullEmpty ..................................................................................................................................................   Passed    0.01 sec
+        Start 147: SpscRing.WrapsAroundManyTimes
+144/546 Test #147: SpscRing.WrapsAroundManyTimes ...................................................................................................................................................   Passed    0.01 sec
+        Start 148: SpscRing.MoveOnlyElements
+145/546 Test #148: SpscRing.MoveOnlyElements .......................................................................................................................................................   Passed    0.01 sec
+        Start 149: SpscRing.BatchPushPopPartial
+146/546 Test #149: SpscRing.BatchPushPopPartial ....................................................................................................................................................   Passed    0.01 sec
+        Start 150: SpscRingStress.TwoThreadsPreserveEverySequenceNumber
+147/546 Test #138: DeadTime.OutputIsInTimeOrderForAnyChunking ......................................................................................................................................   Passed    0.74 sec
+        Start 151: SpscRingStress.BatchedTransferOfStructs
+148/546 Test #129: NodeMerge.MergedCoincidencesEqualTheSingleNodeOracle ............................................................................................................................   Passed    4.20 sec
+        Start 152: MpmcQueue.SingleThreadFifo
+149/546 Test #152: MpmcQueue.SingleThreadFifo ......................................................................................................................................................   Passed    0.02 sec
+        Start 153: MpmcQueueStress.FourProducersTwoConsumersExactlyOnce
+150/546 Test #151: SpscRingStress.BatchedTransferOfStructs .........................................................................................................................................   Passed    5.47 sec
+        Start 154: MpmcQueueStress.PerProducerOrderIsPreserved
+151/546 Test #153: MpmcQueueStress.FourProducersTwoConsumersExactlyOnce ............................................................................................................................   Passed    5.03 sec
+        Start 155: Channel.BatchesCirculateWithoutAllocation
+152/546 Test #154: MpmcQueueStress.PerProducerOrderIsPreserved .....................................................................................................................................   Passed    2.45 sec
+        Start 156: Channel.SequenceNumbersIncrease
+153/546 Test #155: Channel.BatchesCirculateWithoutAllocation .......................................................................................................................................   Passed    0.01 sec
+        Start 157: ChannelStress.CloseAfterLastPublishIsNeverMissed
+154/546 Test #156: Channel.SequenceNumbersIncrease .................................................................................................................................................   Passed    0.01 sec
+        Start 158: Pipeline.MatchesSingleThreadedReference
+155/546 Test #150: SpscRingStress.TwoThreadsPreserveEverySequenceNumber ............................................................................................................................   Passed    8.73 sec
+        Start 159: Pipeline.DropPolicyCountsEveryLostWord
+156/546 Test #159: Pipeline.DropPolicyCountsEveryLostWord ..........................................................................................................................................   Passed    0.08 sec
+        Start 160: Pipeline.StopRequestDrainsInFlightData
+157/546 Test #158: Pipeline.MatchesSingleThreadedReference .........................................................................................................................................   Passed    0.67 sec
+        Start 161: Pipeline.SourceWithNoDataDoesNotHang
+158/546 Test #161: Pipeline.SourceWithNoDataDoesNotHang ............................................................................................................................................   Passed    0.03 sec
+        Start 162: Pipeline.DestructorStopsARunningPipeline
+159/546 Test #162: Pipeline.DestructorStopsARunningPipeline ........................................................................................................................................   Passed    0.02 sec
+        Start 163: Pipeline.RecordsStageAndEndToEndLatency
+160/546 Test #160: Pipeline.StopRequestDrainsInFlightData ..........................................................................................................................................   Passed    0.13 sec
+        Start 164: Pipeline.MeasuresFromDueTimeWhenTheSourceKnowsIt
+161/546 Test #164: Pipeline.MeasuresFromDueTimeWhenTheSourceKnowsIt ................................................................................................................................   Passed    0.06 sec
+        Start 165: Pipeline.AppliesRealTimeProfileBeforeStartReturns
+162/546 Test #165: Pipeline.AppliesRealTimeProfileBeforeStartReturns ...............................................................................................................................   Passed    0.03 sec
+        Start 166: Pipeline.ABatchWithoutValidWordsAndAnIdentityTableChangeNothing
+163/546 Test #163: Pipeline.RecordsStageAndEndToEndLatency .........................................................................................................................................   Passed    0.15 sec
+        Start 167: Pipeline.CalibratesEverySingleAndTheCorrectionMakesNoneLate
+164/546 Test #166: Pipeline.ABatchWithoutValidWordsAndAnIdentityTableChangeNothing .................................................................................................................   Passed    0.24 sec
+        Start 168: Pipeline.AMarkerDeliversTheLastCoincidencesWhileTheSourceIsSilent
+165/546 Test #168: Pipeline.AMarkerDeliversTheLastCoincidencesWhileTheSourceIsSilent ...............................................................................................................   Passed    0.08 sec
+        Start 169: Pipeline.MarkersChangeNoCoincidence
+166/546 Test #167: Pipeline.CalibratesEverySingleAndTheCorrectionMakesNoneLate .....................................................................................................................   Passed    0.53 sec
+        Start 170: Pipeline.MonitorsThePhotopeakOfTheCalibratedSingles
+167/546 Test #170: Pipeline.MonitorsThePhotopeakOfTheCalibratedSingles .............................................................................................................................   Passed    0.11 sec
+        Start 171: MemoryModel.StoreBufferingNeverBothZeroWithSeqCst
+168/546 Test #157: ChannelStress.CloseAfterLastPublishIsNeverMissed ................................................................................................................................   Passed    1.55 sec
+        Start 172: MemoryModel.MessagePassingWithReleaseAcquire
+169/546 Test #169: Pipeline.MarkersChangeNoCoincidence .............................................................................................................................................   Passed    1.00 sec
+        Start 173: LatencyHistogram.EmptyIsAllZero
+170/546 Test #173: LatencyHistogram.EmptyIsAllZero .................................................................................................................................................   Passed    0.02 sec
+        Start 174: LatencyHistogram.BucketBoundariesAreContiguous
+171/546 Test #174: LatencyHistogram.BucketBoundariesAreContiguous ..................................................................................................................................   Passed    0.02 sec
+        Start 175: LatencyHistogram.RelativeErrorBound
+172/546 Test #175: LatencyHistogram.RelativeErrorBound .............................................................................................................................................   Passed    0.02 sec
+        Start 176: LatencyHistogram.PercentilesMatchExactWithinPrecision
+173/546 Test #176: LatencyHistogram.PercentilesMatchExactWithinPrecision ...........................................................................................................................   Passed    0.19 sec
+        Start 177: LatencyHistogram.SmallExactValues
+174/546 Test #177: LatencyHistogram.SmallExactValues ...............................................................................................................................................   Passed    0.02 sec
+        Start 178: LatencyHistogram.OverflowIsClampedAndCounted
+175/546 Test #178: LatencyHistogram.OverflowIsClampedAndCounted ....................................................................................................................................   Passed    0.01 sec
+        Start 179: LatencyHistogram.MergeAndReset
+176/546 Test #179: LatencyHistogram.MergeAndReset ..................................................................................................................................................   Passed    0.01 sec
+        Start 180: LatencyHistogram.FixedSmallFootprint
+177/546 Test #180: LatencyHistogram.FixedSmallFootprint ............................................................................................................................................   Passed    0.01 sec
+        Start 181: LatencyHistogram.CountAtExposesBuckets
+178/546 Test #181: LatencyHistogram.CountAtExposesBuckets ..........................................................................................................................................   Passed    0.02 sec
+        Start 182: HistogramInterval.PercentilesOfOnlyTheValuesBetweenTwoSnapshots
+179/546 Test #182: HistogramInterval.PercentilesOfOnlyTheValuesBetweenTwoSnapshots .................................................................................................................   Passed    0.02 sec
+        Start 183: RtProfile.ParsesAllKeys
+180/546 Test #183: RtProfile.ParsesAllKeys .........................................................................................................................................................   Passed    0.01 sec
+        Start 184: RtProfile.RejectsBadInputWithLineNumbers
+181/546 Test #184: RtProfile.RejectsBadInputWithLineNumbers ........................................................................................................................................   Passed    0.01 sec
+        Start 185: RtProfile.FormatRoundTrips
+182/546 Test #185: RtProfile.FormatRoundTrips ......................................................................................................................................................   Passed    0.01 sec
+        Start 186: Realtime.PinToCpuZero
+183/546 Test #186: Realtime.PinToCpuZero ...........................................................................................................................................................   Passed    0.01 sec
+        Start 187: Realtime.InvalidCpuIsAnError
+184/546 Test #187: Realtime.InvalidCpuIsAnError ....................................................................................................................................................   Passed    0.01 sec
+        Start 188: Realtime.SchedOtherAlwaysWorksFifoReportsErrors
+185/546 Test #188: Realtime.SchedOtherAlwaysWorksFifoReportsErrors .................................................................................................................................   Passed    0.02 sec
+        Start 189: Realtime.ApplyStageReportsWhatHappened
+186/546 Test #189: Realtime.ApplyStageReportsWhatHappened ..........................................................................................................................................   Passed    0.02 sec
+        Start 190: Realtime.PrefaultedStackDoesNotFaultAgain
+187/546 Test #190: Realtime.PrefaultedStackDoesNotFaultAgain .......................................................................................................................................   Passed    0.01 sec
+        Start 191: Realtime.TimerSlackCanBeSet
+188/546 Test #191: Realtime.TimerSlackCanBeSet .....................................................................................................................................................   Passed    0.01 sec
+        Start 192: PacedSource.NeverDeliversAheadOfTheClock
+189/546 Test #192: PacedSource.NeverDeliversAheadOfTheClock ........................................................................................................................................   Passed    0.21 sec
+        Start 193: PacedSource.WordsAreValidMdqP1
+190/546 Test #193: PacedSource.WordsAreValidMdqP1 ..................................................................................................................................................   Passed    0.02 sec
+        Start 194: PacedSource.DueTimesFollowTheSchedule
+191/546 Test #194: PacedSource.DueTimesFollowTheSchedule ...........................................................................................................................................   Passed    0.02 sec
+        Start 195: PacedSource.ReportsTheBacklogOfASlowReader
+192/546 Test #195: PacedSource.ReportsTheBacklogOfASlowReader ......................................................................................................................................   Passed    0.02 sec
+        Start 196: EnergyFilter.AllKernelsMatchTheReferenceForEverySize
+193/546 Test #196: EnergyFilter.AllKernelsMatchTheReferenceForEverySize ............................................................................................................................   Passed    0.03 sec
+        Start 197: EnergyFilter.BoundariesAreInclusiveAndNanIsRejected
+194/546 Test #197: EnergyFilter.BoundariesAreInclusiveAndNanIsRejected .............................................................................................................................   Passed    0.02 sec
+        Start 198: EnergyFilter.InPlaceMatchesOutOfPlace
+195/546 Test #198: EnergyFilter.InPlaceMatchesOutOfPlace ...........................................................................................................................................   Passed    0.03 sec
+        Start 199: EnergyFilter.NeverWritesPastAShortOutput
+196/546 Test #199: EnergyFilter.NeverWritesPastAShortOutput ........................................................................................................................................   Passed    0.02 sec
+        Start 200: EnergyFilter.SimdAndBestAreAvailableAndResolved
+197/546 Test #200: EnergyFilter.SimdAndBestAreAvailableAndResolved .................................................................................................................................   Passed    0.02 sec
+        Start 201: Calibration.TheIdentityTableChangesNothing
+198/546 Test #201: Calibration.TheIdentityTableChangesNothing ......................................................................................................................................   Passed    0.03 sec
+        Start 202: Calibration.AppliesEachCrystalsOwnEnergyCurveAndTimeOffset
+199/546 Test #202: Calibration.AppliesEachCrystalsOwnEnergyCurveAndTimeOffset ......................................................................................................................   Passed    0.04 sec
+        Start 203: Calibration.ASingleOfACrystalOutsideTheScannerIsLeftAlone
+200/546 Test #203: Calibration.ASingleOfACrystalOutsideTheScannerIsLeftAlone .......................................................................................................................   Passed    0.04 sec
+        Start 204: Calibration.RefusesATableForAnotherNumberOfCrystals
+201/546 Test #204: Calibration.RefusesATableForAnotherNumberOfCrystals .............................................................................................................................   Passed    0.02 sec
+        Start 205: Calibration.RefusesEachCoefficientOutsideWhatADetectorCanHave
+202/546 Test #205: Calibration.RefusesEachCoefficientOutsideWhatADetectorCanHave ...................................................................................................................   Passed    0.07 sec
+        Start 206: Calibration.ReportsTwentyRefusedCrystalsAndCountsTheRest
+203/546 Test #206: Calibration.ReportsTwentyRefusedCrystalsAndCountsTheRest ........................................................................................................................   Passed    0.02 sec
+        Start 207: Calibration.RefusesATableThatDoesNotSayWhereAndWhenItWasMade
+204/546 Test #207: Calibration.RefusesATableThatDoesNotSayWhereAndWhenItWasMade ....................................................................................................................   Passed    0.04 sec
+        Start 208: Calibration.ItsCrcIsThatOfTheCanonicalBytesAsPythonWritesThem
+205/546 Test #208: Calibration.ItsCrcIsThatOfTheCanonicalBytesAsPythonWritesThem ...................................................................................................................   Passed    0.03 sec
+        Start 209: Calibration.KnowsAUtcTimestampWhenItSeesOne
+206/546 Test #209: Calibration.KnowsAUtcTimestampWhenItSeesOne .....................................................................................................................................   Passed    0.01 sec
+        Start 210: PhotopeakMonitor.AveragesThePhotopeakOfEachBlockOnly
+207/546 Test #210: PhotopeakMonitor.AveragesThePhotopeakOfEachBlockOnly ............................................................................................................................   Passed    0.01 sec
+        Start 211: BlockOffsets.ExactShiftsGiveTheOffsetsWithAMeanOfZero
+208/546 Test #211: BlockOffsets.ExactShiftsGiveTheOffsetsWithAMeanOfZero ...........................................................................................................................   Passed    0.01 sec
+        Start 212: BlockOffsets.ASingleChainHasTheUncertaintyOfItsPairs
+209/546 Test #212: BlockOffsets.ASingleChainHasTheUncertaintyOfItsPairs ............................................................................................................................   Passed    0.01 sec
+        Start 213: BlockOffsets.GroupsAreSolvedApartAndALoneBlockIsUnobserved
+210/546 Test #213: BlockOffsets.GroupsAreSolvedApartAndALoneBlockIsUnobserved ......................................................................................................................   Passed    0.02 sec
+        Start 214: BlockOffsets.ShiftsThatNoBlockClockExplainsGiveALargeChi2
+211/546 Test #214: BlockOffsets.ShiftsThatNoBlockClockExplainsGiveALargeChi2 .......................................................................................................................   Passed    0.01 sec
+        Start 215: BlockOffsets.PairsThatCannotBeUsedAreLeftOut
+212/546 Test #215: BlockOffsets.PairsThatCannotBeUsedAreLeftOut ....................................................................................................................................   Passed    0.01 sec
+        Start 216: TimingMonitor.NamesEachLevel
+213/546 Test #216: TimingMonitor.NamesEachLevel ....................................................................................................................................................   Passed    0.01 sec
+        Start 217: TimingMonitor.IgnoresCoincidencesWithinOneBlockOrOfACrystalThatDoesNotExist
+214/546 Test #217: TimingMonitor.IgnoresCoincidencesWithinOneBlockOrOfACrystalThatDoesNotExist .....................................................................................................   Passed    0.66 sec
+        Start 218: TimingMonitor.RefusesAConfigurationThatCannotWork
+215/546 Test #218: TimingMonitor.RefusesAConfigurationThatCannotWork ...............................................................................................................................   Passed    0.01 sec
+        Start 219: TimingMonitor.AHealthyRunStaysNormalInEveryBlock
+216/546 Test #171: MemoryModel.StoreBufferingNeverBothZeroWithSeqCst ...............................................................................................................................   Passed    3.12 sec
+        Start 220: TimingMonitor.AStepInOneBlockClockIsFoundInThatBlockAndNoOther
+217/546 Test #220: TimingMonitor.AStepInOneBlockClockIsFoundInThatBlockAndNoOther ..................................................................................................................   Passed    0.52 sec
+        Start 221: TimingMonitor.TheRandomsDoNotDiluteTheShift
+218/546 Test #219: TimingMonitor.AHealthyRunStaysNormalInEveryBlock ................................................................................................................................   Passed    1.02 sec
+        Start 222: TimingMonitor.ADriftIsFoundOnceItPassesTheLimits
+219/546 Test #221: TimingMonitor.TheRandomsDoNotDiluteTheShift .....................................................................................................................................   Passed    0.56 sec
+        Start 223: TimingMonitor.TooFewTruesLeaveTheBlocksUnobserved
+220/546 Test #222: TimingMonitor.ADriftIsFoundOnceItPassesTheLimits ................................................................................................................................   Passed    0.67 sec
+        Start 224: TimingMonitor.ASnapshotCanBeTakenWhileTheMonitorRecords
+221/546 Test #223: TimingMonitor.TooFewTruesLeaveTheBlocksUnobserved ...............................................................................................................................   Passed    0.25 sec
+        Start 225: CalibrationFile.ReadsATableAsTheProcedureWritesIt
+222/546 Test #224: TimingMonitor.ASnapshotCanBeTakenWhileTheMonitorRecords .........................................................................................................................   Passed    0.20 sec
+        Start 226: CalibrationFile.RefusesADamagedOrHandEditedTable
+223/546 Test #225: CalibrationFile.ReadsATableAsTheProcedureWritesIt ...............................................................................................................................   Passed    0.25 sec
+        Start 227: CalibrationFile.RefusesEachMalformedPart
+224/546 Test #172: MemoryModel.MessagePassingWithReleaseAcquire ....................................................................................................................................   Passed    4.73 sec
+        Start 228: CalibrationFile.ReportsAtMostFiveBadValuesPerArray
+225/546 Test #228: CalibrationFile.ReportsAtMostFiveBadValuesPerArray ..............................................................................................................................   Passed    0.17 sec
+        Start 229: CalibrationFile.ACorrectlySealedTableIsStillCheckedAgainstTheLimits
+226/546 Test #229: CalibrationFile.ACorrectlySealedTableIsStillCheckedAgainstTheLimits .............................................................................................................   Passed    0.22 sec
+        Start 230: CalibrationService.ConfiguresWithATableAndReportsIt
+227/546 Test #108: CoincidenceSorter.TheDelayedWindowEstimateDependsOnTheMultiplesPolicy ...........................................................................................................   Passed   17.73 sec
+        Start 231: CalibrationService.NamesNoBlockWhenTheTableIsRight
+228/546 Test #226: CalibrationFile.RefusesADamagedOrHandEditedTable ................................................................................................................................   Passed    0.65 sec
+        Start 232: CalibrationService.RefusesATableForAnotherScannerOrOutOfDate
+229/546 Test #232: CalibrationService.RefusesATableForAnotherScannerOrOutOfDate ....................................................................................................................   Passed    0.39 sec
+        Start 233: CalibrationService.RefusesAMissingOrDamagedFile
+230/546 Test #231: CalibrationService.NamesNoBlockWhenTheTableIsRight ..............................................................................................................................   Passed    0.60 sec
+        Start 234: CalibrationConfig.NeedsTheScannerSerialWithATable
+231/546 Test #234: CalibrationConfig.NeedsTheScannerSerialWithATable ...............................................................................................................................   Passed    0.02 sec
+        Start 235: SinglesCounter.CountsEachCrystalsSinglesInTheEnergyWindowOnly
+232/546 Test #235: SinglesCounter.CountsEachCrystalsSinglesInTheEnergyWindowOnly ...................................................................................................................   Passed    0.02 sec
+        Start 236: SinglesCounter.AnEmptyRunHasNoTimes
+233/546 Test #236: SinglesCounter.AnEmptyRunHasNoTimes .............................................................................................................................................   Passed    0.02 sec
+        Start 237: SinglesCounter.ASingleOutsideTheWindowCountsForItsBlockOnly
+234/546 Test #237: SinglesCounter.ASingleOutsideTheWindowCountsForItsBlockOnly .....................................................................................................................   Passed    0.02 sec
+        Start 238: SinglesCounter.ABatchOfOnlyUnknownCrystalsChangesNothing
+235/546 Test #238: SinglesCounter.ABatchOfOnlyUnknownCrystalsChangesNothing ........................................................................................................................   Passed    0.02 sec
+        Start 239: CorrectionsRecord.NamesTheWindowsAndCarriesEveryCrystal
+236/546 Test #239: CorrectionsRecord.NamesTheWindowsAndCarriesEveryCrystal .........................................................................................................................   Passed    0.03 sec
+        Start 240: Physics.ComptonKinematics
+237/546 Test #233: CalibrationService.RefusesAMissingOrDamagedFile .................................................................................................................................   Passed    0.34 sec
+        Start 241: Physics.KleinNishinaShapeIsBoundedByTwo
+238/546 Test #241: Physics.KleinNishinaShapeIsBoundedByTwo .........................................................................................................................................   Passed    0.01 sec
+        Start 242: Physics.WaterAttenuation
+239/546 Test #240: Physics.ComptonKinematics .......................................................................................................................................................   Passed    0.02 sec
+        Start 243: Physics.CylinderExit
+240/546 Test #242: Physics.WaterAttenuation ........................................................................................................................................................   Passed    0.01 sec
+        Start 244: Physics.RotateKeepsUnitLengthAndAngle
+241/546 Test #243: Physics.CylinderExit ............................................................................................................................................................   Passed    0.02 sec
+        Start 245: DetectorSimulator.RejectsImpossibleConfigurations
+242/546 Test #244: Physics.RotateKeepsUnitLengthAndAngle ...........................................................................................................................................   Passed    0.01 sec
+        Start 246: DetectorSimulator.RejectsNaNInEveryNumericField
+243/546 Test #245: DetectorSimulator.RejectsImpossibleConfigurations ...............................................................................................................................   Passed    0.02 sec
+        Start 247: DetectorSimulator.SameSeedSameStream
+244/546 Test #246: DetectorSimulator.RejectsNaNInEveryNumericField .................................................................................................................................   Passed    0.03 sec
+        Start 248: DetectorSimulator.OutputIsTimeOrderedAndValid
+245/546 Test #230: CalibrationService.ConfiguresWithATableAndReportsIt .............................................................................................................................   Passed    0.90 sec
+        Start 249: DetectorSimulator.DecayRateMatchesActivity
+246/546 Test #249: DetectorSimulator.DecayRateMatchesActivity ......................................................................................................................................   Passed    0.13 sec
+        Start 250: DetectorSimulator.AxialAcceptanceOfAPointSource
+247/546 Test #250: DetectorSimulator.AxialAcceptanceOfAPointSource .................................................................................................................................   Passed    0.14 sec
+        Start 251: DetectorSimulator.EnergyResolutionAt511
+248/546 Test #251: DetectorSimulator.EnergyResolutionAt511 .........................................................................................................................................   Passed    0.22 sec
+        Start 252: DetectorSimulator.CoincidenceTimeResolution
+249/546 Test #247: DetectorSimulator.SameSeedSameStream ............................................................................................................................................   Passed    0.80 sec
+        Start 253: DetectorSimulator.PhantomScattersAndTheEnergyWindowRejectsScatter
+250/546 Test #252: DetectorSimulator.CoincidenceTimeResolution .....................................................................................................................................   Passed    0.29 sec
+        Start 254: DetectorSimulator.TruesAreLinearAndRandomsQuadraticInActivity
+251/546 Test #248: DetectorSimulator.OutputIsTimeOrderedAndValid ...................................................................................................................................   Passed    1.32 sec
+        Start 255: DetectorSimulator.RefusesAnUncalibratedDetectorBeyondItsRange
+252/546 Test #255: DetectorSimulator.RefusesAnUncalibratedDetectorBeyondItsRange ...................................................................................................................   Passed    0.01 sec
+        Start 256: DetectorSimulator.ADelaySpreadAloneLeavesEveryGainAtOne
+253/546 Test #256: DetectorSimulator.ADelaySpreadAloneLeavesEveryGainAtOne .........................................................................................................................   Passed    0.03 sec
+        Start 257: DetectorSimulator.AnUncalibratedDetectorReportsEachCrystalsOwnGainAndDelay
+254/546 Test #257: DetectorSimulator.AnUncalibratedDetectorReportsEachCrystalsOwnGainAndDelay ......................................................................................................   Passed    0.17 sec
+        Start 258: DetectorSimulator.AnUncalibratedDetectorStillDeliversInTimeOrder
+255/546 Test #258: DetectorSimulator.AnUncalibratedDetectorStillDeliversInTimeOrder ................................................................................................................   Passed    0.08 sec
+        Start 259: DetectorSimulator.EachCrystalDetectsWithItsOwnEfficiency
+256/546 Test #227: CalibrationFile.RefusesEachMalformedPart ........................................................................................................................................   Passed    4.18 sec
+        Start 260: BlockClocks.EachBlockStampsWithItsClockAndNothingElseChanges
+257/546 Test #253: DetectorSimulator.PhantomScattersAndTheEnergyWindowRejectsScatter ...............................................................................................................   Passed    2.21 sec
+        Start 261: BlockClocks.AClockThatCannotBeIsRefused
+258/546 Test #261: BlockClocks.AClockThatCannotBeIsRefused .........................................................................................................................................   Passed    0.01 sec
+        Start 262: AcquisitionState.EveryPairIsEitherInTheTableOrIllegal
+259/546 Test #262: AcquisitionState.EveryPairIsEitherInTheTableOrIllegal ...........................................................................................................................   Passed    0.01 sec
+        Start 263: AcquisitionState.EveryStateIsReachableAndFaultIsAlwaysRecoverable
+260/546 Test #263: AcquisitionState.EveryStateIsReachableAndFaultIsAlwaysRecoverable ...............................................................................................................   Passed    0.01 sec
+        Start 264: AcquisitionState.TableMatchesTheArchitectureDocument
+261/546 Test #264: AcquisitionState.TableMatchesTheArchitectureDocument ............................................................................................................................   Passed    0.01 sec
+        Start 265: AcquisitionState.NamesRoundTrip
+262/546 Test #265: AcquisitionState.NamesRoundTrip .................................................................................................................................................   Passed    0.01 sec
+        Start 266: AcquisitionState.ListenerSeesEveryTransitionAndMayReadTheState
+263/546 Test #266: AcquisitionState.ListenerSeesEveryTransitionAndMayReadTheState ..................................................................................................................   Passed    0.01 sec
+        Start 267: AcquisitionState.ApplyIfChecksTheExpectedState
+264/546 Test #267: AcquisitionState.ApplyIfChecksTheExpectedState ..................................................................................................................................   Passed    0.01 sec
+        Start 268: AcquisitionState.ConcurrentEventsAreSerialized
+265/546 Test #260: BlockClocks.EachBlockStampsWithItsClockAndNothingElseChanges ....................................................................................................................   Passed    0.16 sec
+        Start 269: Config.MinimalDocumentGetsDefaults
+266/546 Test #268: AcquisitionState.ConcurrentEventsAreSerialized ..................................................................................................................................   Passed    0.02 sec
+        Start 270: Config.TheSourceIsNeverADefault
+267/546 Test #269: Config.MinimalDocumentGetsDefaults ..............................................................................................................................................   Passed    0.02 sec
+        Start 271: Config.AVersion1FileIsRefusedWithTheWayToConvertIt
+268/546 Test #270: Config.TheSourceIsNeverADefault .................................................................................................................................................   Passed    0.01 sec
+        Start 272: Config.RenamedFieldsAreUnknownInTheirOldPlaces
+269/546 Test #271: Config.AVersion1FileIsRefusedWithTheWayToConvertIt ..............................................................................................................................   Passed    0.01 sec
+        Start 273: Config.TheTimingMonitorIsReadFromSchema21
+270/546 Test #272: Config.RenamedFieldsAreUnknownInTheirOldPlaces ..................................................................................................................................   Passed    0.01 sec
+        Start 274: Config.ShippedConfigurationsAreValid
+271/546 Test #273: Config.TheTimingMonitorIsReadFromSchema21 .......................................................................................................................................   Passed    0.01 sec
+        Start 275: Config.EffectiveConfigurationRoundTrips
+272/546 Test #274: Config.ShippedConfigurationsAreValid ............................................................................................................................................   Passed    0.01 sec
+        Start 276: Config.SchemaVersionRules
+273/546 Test #275: Config.EffectiveConfigurationRoundTrips .........................................................................................................................................   Passed    0.01 sec
+        Start 277: Config.UnknownKeysAreErrorsWithSuggestions
+274/546 Test #276: Config.SchemaVersionRules .......................................................................................................................................................   Passed    0.01 sec
+        Start 278: Config.TypesAndRangesAreCheckedAndAllErrorsReported
+275/546 Test #277: Config.UnknownKeysAreErrorsWithSuggestions ......................................................................................................................................   Passed    0.01 sec
+        Start 279: Config.SyntaxErrorsAndWrongDocumentTypes
+276/546 Test #278: Config.TypesAndRangesAreCheckedAndAllErrorsReported .............................................................................................................................   Passed    0.01 sec
+        Start 280: Config.CommentsAreAllowed
+277/546 Test #279: Config.SyntaxErrorsAndWrongDocumentTypes ........................................................................................................................................   Passed    0.01 sec
+        Start 281: Config.PipelineSettingsAreApplied
+278/546 Test #280: Config.CommentsAreAllowed .......................................................................................................................................................   Passed    0.02 sec
+        Start 282: Config.SchemaDocumentAgreesWithTheReader
+279/546 Test #281: Config.PipelineSettingsAreApplied ...............................................................................................................................................   Passed    0.02 sec
+        Start 283: Config.ReadoutNodesFromSchema22
+280/546 Test #283: Config.ReadoutNodesFromSchema22 .................................................................................................................................................   Passed    0.01 sec
+        Start 284: Config.ReadoutNodesAreRefusedOutOfRangeForUdpAndBefore22
+281/546 Test #282: Config.SchemaDocumentAgreesWithTheReader ........................................................................................................................................   Passed    0.03 sec
+        Start 285: Config.UdpSource
+282/546 Test #284: Config.ReadoutNodesAreRefusedOutOfRangeForUdpAndBefore22 ........................................................................................................................   Passed    0.01 sec
+        Start 286: Config.SorterSettings
+283/546 Test #285: Config.UdpSource ................................................................................................................................................................   Passed    0.01 sec
+        Start 287: Config.OutputSettings
+284/546 Test #286: Config.SorterSettings ...........................................................................................................................................................   Passed    0.01 sec
+        Start 288: Config.NumberOverflowIsAnErrorNotACrash
+285/546 Test #287: Config.OutputSettings ...........................................................................................................................................................   Passed    0.01 sec
+        Start 289: AcquisitionService.FullLifecycleWithConservation
+286/546 Test #288: Config.NumberOverflowIsAnErrorNotACrash .........................................................................................................................................   Passed    0.01 sec
+        Start 290: AcquisitionService.AFiniteRunEndsByItself
+287/546 Test #290: AcquisitionService.AFiniteRunEndsByItself .......................................................................................................................................   Passed    0.21 sec
+        Start 291: AcquisitionService.IllegalCommandsChangeNothing
+288/546 Test #291: AcquisitionService.IllegalCommandsChangeNothing .................................................................................................................................   Passed    0.04 sec
+        Start 292: AcquisitionService.DetectorFaultStopsTheRunAndNeedsAReset
+289/546 Test #289: AcquisitionService.FullLifecycleWithConservation ................................................................................................................................   Passed    0.27 sec
+        Start 293: AcquisitionService.DeviceErrorAtStartKeepsTheConfiguration
+290/546 Test #293: AcquisitionService.DeviceErrorAtStartKeepsTheConfiguration ......................................................................................................................   Passed    0.01 sec
+        Start 294: AcquisitionService.MissingRealTimeProfileIsAConfigurationError
+291/546 Test #292: AcquisitionService.DetectorFaultStopsTheRunAndNeedsAReset .......................................................................................................................   Passed    0.04 sec
+        Start 295: AcquisitionService.DestructionStopsARunningAcquisition
+292/546 Test #294: AcquisitionService.MissingRealTimeProfileIsAConfigurationError ..................................................................................................................   Passed    0.01 sec
+        Start 296: AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate
+293/546 Test #295: AcquisitionService.DestructionStopsARunningAcquisition ..........................................................................................................................   Passed    0.04 sec
+        Start 297: AcquisitionService.OutOfOrderSinglesAreAFault
+294/546 Test #297: AcquisitionService.OutOfOrderSinglesAreAFault ...................................................................................................................................   Passed    0.04 sec
+        Start 298: AcquisitionService.ALossMakesTheRunIncomplete
+295/546 Test #298: AcquisitionService.ALossMakesTheRunIncomplete ...................................................................................................................................   Passed    0.14 sec
+        Start 299: AcquisitionService.StatusReportsTheLastIntervalSeparately
+296/546 Test #296: AcquisitionService.DefaultAdaptersRunAtTheConfiguredRate ........................................................................................................................   Passed    0.25 sec
+        Start 300: AcquisitionService.ASinkThatCannotCloseEndsTheRunInAFault
+297/546 Test #299: AcquisitionService.StatusReportsTheLastIntervalSeparately .......................................................................................................................   Passed    0.07 sec
+        Start 301: AcquisitionService.WithoutAdaptersStartIsADeviceError
+298/546 Test #301: AcquisitionService.WithoutAdaptersStartIsADeviceError ...........................................................................................................................   Passed    0.01 sec
+        Start 302: AcquisitionService.ProfilePathMustBeASmallRegularFile
+299/546 Test #302: AcquisitionService.ProfilePathMustBeASmallRegularFile ...........................................................................................................................   Passed    0.02 sec
+        Start 303: AcquisitionService.ReportsTheTimeBaseOfEachBlock
+300/546 Test #300: AcquisitionService.ASinkThatCannotCloseEndsTheRunInAFault .......................................................................................................................   Passed    0.07 sec
+        Start 304: RunIntegrity.ACleanRunIsComplete
+301/546 Test #304: RunIntegrity.ACleanRunIsComplete ................................................................................................................................................   Passed    0.01 sec
+        Start 305: RunIntegrity.EveryLossCounterMakesTheRunIncomplete
+302/546 Test #305: RunIntegrity.EveryLossCounterMakesTheRunIncomplete ..............................................................................................................................   Passed    0.01 sec
+        Start 306: RunIntegrity.CountersThatAreNotLossesDoNotCount
+303/546 Test #306: RunIntegrity.CountersThatAreNotLossesDoNotCount .................................................................................................................................   Passed    0.01 sec
+        Start 307: RunIntegrity.AFaultMakesTheRunIncompleteWithoutALossCounter
+304/546 Test #307: RunIntegrity.AFaultMakesTheRunIncompleteWithoutALossCounter .....................................................................................................................   Passed    0.03 sec
+        Start 308: RunIntegrity.ALossCounterOfAnotherTypeCountsAsALoss
+305/546 Test #308: RunIntegrity.ALossCounterOfAnotherTypeCountsAsALoss .............................................................................................................................   Passed    0.02 sec
+        Start 309: RunIntegrity.MissingPortsCountAsNoLoss
+306/546 Test #309: RunIntegrity.MissingPortsCountAsNoLoss ..........................................................................................................................................   Passed    0.02 sec
+        Start 310: RunIntegrity.TheBoardsLossesCount
+307/546 Test #310: RunIntegrity.TheBoardsLossesCount ...............................................................................................................................................   Passed    0.02 sec
+        Start 311: RunIntegrity.DatagramsTheBoardsSentButTheLinkNeverSawAreALoss
+308/546 Test #311: RunIntegrity.DatagramsTheBoardsSentButTheLinkNeverSawAreALoss ...................................................................................................................   Passed    0.02 sec
+        Start 312: RunIntegrity.IntervalsWithABlockClockAtAlarmMakeTheRunIncomplete
+309/546 Test #312: RunIntegrity.IntervalsWithABlockClockAtAlarmMakeTheRunIncomplete ................................................................................................................   Passed    0.01 sec
+        Start 313: RunIntegrity.ABoardClockThatLostLockMakesTheRunIncomplete
+310/546 Test #313: RunIntegrity.ABoardClockThatLostLockMakesTheRunIncomplete .......................................................................................................................   Passed    0.03 sec
+        Start 314: LineFramer.SplitsAndJoinsLikeTcpDoes
+311/546 Test #314: LineFramer.SplitsAndJoinsLikeTcpDoes ............................................................................................................................................   Passed    0.02 sec
+        Start 315: LineFramer.AnOverlongLineIsFatal
+312/546 Test #315: LineFramer.AnOverlongLineIsFatal ................................................................................................................................................   Passed    0.02 sec
+        Start 316: ControlProtocol.CommandsAndErrors
+313/546 Test #316: ControlProtocol.CommandsAndErrors ...............................................................................................................................................   Passed    0.02 sec
+        Start 317: ControlProtocol.VersioningAndMalformedInput
+314/546 Test #317: ControlProtocol.VersioningAndMalformedInput .....................................................................................................................................   Passed    0.02 sec
+        Start 318: ControlProtocol.EveryFieldOfEveryTypeIsAnswered
+315/546 Test #318: ControlProtocol.EveryFieldOfEveryTypeIsAnswered .................................................................................................................................   Passed    0.35 sec
+        Start 319: ControlProtocol.StatusFieldsMatchTheApiVersion
+316/546 Test #319: ControlProtocol.StatusFieldsMatchTheApiVersion ..................................................................................................................................   Passed    0.30 sec
+        Start 320: ControlProtocol.DiagnosticsReturnTheNewestEventsOfTheFlightRecorder
+317/546 Test #320: ControlProtocol.DiagnosticsReturnTheNewestEventsOfTheFlightRecorder .............................................................................................................   Passed    0.20 sec
+        Start 321: ControlProtocol.AuthenticationInTheProtocolLayer
+318/546 Test #321: ControlProtocol.AuthenticationInTheProtocolLayer ................................................................................................................................   Passed    0.01 sec
+        Start 322: ControlServer.PipelinedRequestsAndManyClients
+319/546 Test #322: ControlServer.PipelinedRequestsAndManyClients ...................................................................................................................................   Passed    0.01 sec
+        Start 323: ControlServer.AClientThatDisconnectsDoesNotStopTheAcquisition
+320/546 Test #303: AcquisitionService.ReportsTheTimeBaseOfEachBlock ................................................................................................................................   Passed    1.23 sec
+        Start 324: ControlServer.RecordsEveryCommandWithTheClientsAddress
+321/546 Test #324: ControlServer.RecordsEveryCommandWithTheClientsAddress ..........................................................................................................................   Passed    0.05 sec
+        Start 325: ControlServer.OverlongRequestClosesOnlyThatConnection
+322/546 Test #325: ControlServer.OverlongRequestClosesOnlyThatConnection ...........................................................................................................................   Passed    0.02 sec
+        Start 326: ControlServer.RefusesClientsBeyondTheLimit
+323/546 Test #326: ControlServer.RefusesClientsBeyondTheLimit ......................................................................................................................................   Passed    0.01 sec
+        Start 327: ControlServer.BadBindAddressIsReported
+324/546 Test #323: ControlServer.AClientThatDisconnectsDoesNotStopTheAcquisition ...................................................................................................................   Passed    0.16 sec
+        Start 328: ControlServer.CommandsNeedAnAuthenticatedClient
+325/546 Test #327: ControlServer.BadBindAddressIsReported ..........................................................................................................................................   Passed    0.01 sec
+        Start 329: ControlServer.AnUnknownTokenClosesTheConnection
+326/546 Test #328: ControlServer.CommandsNeedAnAuthenticatedClient .................................................................................................................................   Passed    0.02 sec
+        Start 330: ControlServer.ObserversMayOnlyReadTheStatus
+327/546 Test #329: ControlServer.AnUnknownTokenClosesTheConnection .................................................................................................................................   Passed    0.02 sec
+        Start 331: ControlServer.ClosesConnectionsThatDoNotAuthenticate
+328/546 Test #330: ControlServer.ObserversMayOnlyReadTheStatus .....................................................................................................................................   Passed    0.01 sec
+        Start 332: ControlServer.RefusesInsecureConfigurations
+329/546 Test #332: ControlServer.RefusesInsecureConfigurations .....................................................................................................................................   Passed    0.01 sec
+        Start 333: ControlServer.ServesOnlyTls13Clients
+330/546 Test #333: ControlServer.ServesOnlyTls13Clients ............................................................................................................................................   Passed    0.02 sec
+        Start 334: ControlServer.AnIntruderCannotStopARunningScan
+331/546 Test #259: DetectorSimulator.EachCrystalDetectsWithItsOwnEfficiency ........................................................................................................................   Passed    3.68 sec
+        Start 335: ControlServer.TheTokenNeverCrossesTheNetworkInClear
+332/546 Test #334: ControlServer.AnIntruderCannotStopARunningScan ..................................................................................................................................   Passed    0.07 sec
+        Start 336: TokenStore.LoadsHashesAndRefusesUnsafeFiles
+333/546 Test #335: ControlServer.TheTokenNeverCrossesTheNetworkInClear .............................................................................................................................   Passed    0.02 sec
+        Start 337: Secrets.StartupTokenIsPrivate
+334/546 Test #336: TokenStore.LoadsHashesAndRefusesUnsafeFiles .....................................................................................................................................   Passed    0.02 sec
+        Start 338: TlsStream.ClientVerifiesTheServer
+335/546 Test #337: Secrets.StartupTokenIsPrivate ...................................................................................................................................................   Passed    0.01 sec
+        Start 339: AuditLog.AppendsOneJsonObjectPerLine
+336/546 Test #338: TlsStream.ClientVerifiesTheServer ...............................................................................................................................................   Passed    0.02 sec
+        Start 340: AuditLog.AFullDiskIsCountedNotIgnored
+337/546 Test #339: AuditLog.AppendsOneJsonObjectPerLine ............................................................................................................................................   Passed    0.01 sec
+        Start 341: AuditLog.AnUnopenablePathIsReported
+338/546 Test #340: AuditLog.AFullDiskIsCountedNotIgnored ...........................................................................................................................................   Passed    0.01 sec
+        Start 342: UdpDetector.RejectsABadAddressAndReportsTheBoundPort
+339/546 Test #341: AuditLog.AnUnopenablePathIsReported .............................................................................................................................................   Passed    0.01 sec
+        Start 343: UdpDetector.DeliversWordsInOrderAndCountsEveryFault
+340/546 Test #342: UdpDetector.RejectsABadAddressAndReportsTheBoundPort ............................................................................................................................   Passed    0.01 sec
+        Start 344: UdpDetector.TracesAResynchronizationOfTheLink
+341/546 Test #343: UdpDetector.DeliversWordsInOrderAndCountsEveryFault .............................................................................................................................   Passed    0.01 sec
+        Start 345: UdpDetector.RunsAnAcquisitionThroughTheService
+342/546 Test #344: UdpDetector.TracesAResynchronizationOfTheLink ...................................................................................................................................   Passed    0.01 sec
+        Start 346: UdpDetector.CountsTheDatagramsItsSocketDroppedEvenAtTheEnd
+343/546 Test #345: UdpDetector.RunsAnAcquisitionThroughTheService ..................................................................................................................................   Passed    0.10 sec
+        Start 347: UdpDetector.TheKernelsDropCountArrivesWithTheNextDatagram
+344/546 Test #346: UdpDetector.CountsTheDatagramsItsSocketDroppedEvenAtTheEnd ......................................................................................................................   Passed    0.12 sec
+        Start 348: UdpDetector.ReportsTheHostsCountersAsChangesSinceItOpened
+345/546 Test #348: UdpDetector.ReportsTheHostsCountersAsChangesSinceItOpened .......................................................................................................................   Passed    0.02 sec
+        Start 349: UdpDetector.ASecondRunOnTheSamePortStarts
+346/546 Test #347: UdpDetector.TheKernelsDropCountArrivesWithTheNextDatagram .......................................................................................................................   Passed    0.11 sec
+        Start 350: HostCounters.ReadsTheUdpCountersByColumnName
+347/546 Test #350: HostCounters.ReadsTheUdpCountersByColumnName ....................................................................................................................................   Passed    0.01 sec
+        Start 351: HostCounters.SumsTheBacklogCountersOfEveryCpu
+348/546 Test #351: HostCounters.SumsTheBacklogCountersOfEveryCpu ...................................................................................................................................   Passed    0.01 sec
+        Start 352: HostCounters.FindsOneSocketByItsInode
+349/546 Test #352: HostCounters.FindsOneSocketByItsInode ...........................................................................................................................................   Passed    0.01 sec
+        Start 353: HostCounters.ReportsOnlyWhatBothReadingsHave
+350/546 Test #353: HostCounters.ReportsOnlyWhatBothReadingsHave ....................................................................................................................................   Passed    0.01 sec
+        Start 354: HostCounters.ReadsTheFilesBelowARoot
+351/546 Test #354: HostCounters.ReadsTheFilesBelowARoot ............................................................................................................................................   Passed    0.01 sec
+        Start 355: Properties.TheUnwrapperRestoresEveryTime
+352/546 Test #355: Properties.TheUnwrapperRestoresEveryTime ........................................................................................................................................   Passed    0.01 sec
+        Start 356: Properties.PackAndUnpackAreInverse
+353/546 Test #356: Properties.PackAndUnpackAreInverse ..............................................................................................................................................   Passed    0.01 sec
+        Start 357: Properties.TheSorterFindsWhatTheReferenceFinds
+354/546 Test #349: UdpDetector.ASecondRunOnTheSamePortStarts .......................................................................................................................................   Passed    0.16 sec
+        Start 358: Properties.TheOrderOfTiesDoesNotMatter
+355/546 Test #357: Properties.TheSorterFindsWhatTheReferenceFinds ..................................................................................................................................   Passed    0.03 sec
+        Start 359: Properties.LongStreamsGiveTheSameResult
+356/546 Test #358: Properties.TheOrderOfTiesDoesNotMatter ..........................................................................................................................................   Passed    0.02 sec
+        Start 360: Properties.EveryCoincidenceIsInItsWindow
+357/546 Test #360: Properties.EveryCoincidenceIsInItsWindow ........................................................................................................................................   Passed    0.01 sec
+        Start 361: Properties.FixedWindowsUseEachSingleOnce
+358/546 Test #361: Properties.FixedWindowsUseEachSingleOnce ........................................................................................................................................   Passed    0.01 sec
+        Start 362: Properties.BatchSizesDoNotMatter
+359/546 Test #362: Properties.BatchSizesDoNotMatter ................................................................................................................................................   Passed    0.01 sec
+        Start 363: Properties.EverySingleIsAccountedFor
+360/546 Test #363: Properties.EverySingleIsAccountedFor ............................................................................................................................................   Passed    0.01 sec
+        Start 364: Properties.TheTrackerRestoresOrderAndCountsEveryPacket
+361/546 Test #364: Properties.TheTrackerRestoresOrderAndCountsEveryPacket ..........................................................................................................................   Passed    0.03 sec
+        Start 365: Properties.TheMergerOutputIsOrderedAndComplete
+362/546 Test #331: ControlServer.ClosesConnectionsThatDoNotAuthenticate ............................................................................................................................   Passed    0.62 sec
+        Start 366: Properties.TheHarnessShrinksACounterexample
+363/546 Test #359: Properties.LongStreamsGiveTheSameResult .........................................................................................................................................   Passed    0.13 sec
+        Start 367: ServiceInteractions.ARunClosesTheSinkOnceAfterTheLastWrite
+364/546 Test #366: Properties.TheHarnessShrinksACounterexample .....................................................................................................................................   Passed    0.01 sec
+        Start 368: ServiceInteractions.ASinkThatCannotCloseFaultsTheRun
+365/546 Test #365: Properties.TheMergerOutputIsOrderedAndComplete ..................................................................................................................................   Passed    0.04 sec
+        Start 369: ServiceInteractions.AFaultedRunDoesNotCloseTheSink
+366/546 Test #369: ServiceInteractions.AFaultedRunDoesNotCloseTheSink ..............................................................................................................................   Passed    0.08 sec
+        Start 370: Registers.FieldsPutTheirBitsWhereTheMapSays
+367/546 Test #370: Registers.FieldsPutTheirBitsWhereTheMapSays .....................................................................................................................................   Passed    0.04 sec
+        Start 371: Registers.ATemperatureIsTwosComplementIn128thsOfADegree
+368/546 Test #371: Registers.ATemperatureIsTwosComplementIn128thsOfADegree .........................................................................................................................   Passed    0.03 sec
+        Start 372: Registers.TheGeneratedMapMatchesItsSpecification
+369/546 Test #372: Registers.TheGeneratedMapMatchesItsSpecification ................................................................................................................................   Passed    0.03 sec
+        Start 373: Registers.AFieldWriteReadsTheRegisterAndWritesItBackOnce
+370/546 Test #373: Registers.AFieldWriteReadsTheRegisterAndWritesItBackOnce ........................................................................................................................   Passed    0.02 sec
+        Start 374: MmioBus.EachAccessIsOneLoadOrStoreAtTheRegistersOffset
+371/546 Test #374: MmioBus.EachAccessIsOneLoadOrStoreAtTheRegistersOffset ..........................................................................................................................   Passed    0.02 sec
+        Start 375: MmioBus.RefusesAccessesOutsideTheMapOrNotAligned
+372/546 Test #375: MmioBus.RefusesAccessesOutsideTheMapOrNotAligned ................................................................................................................................   Passed    0.02 sec
+        Start 376: FakeBoard.RampsTheBiasAtTheProgrammedRateAndReportsReady
+373/546 Test #376: FakeBoard.RampsTheBiasAtTheProgrammedRateAndReportsReady ........................................................................................................................   Passed    0.03 sec
+        Start 377: FakeBoard.KeepsTheRulesOfEachRegister
+374/546 Test #377: FakeBoard.KeepsTheRulesOfEachRegister ...........................................................................................................................................   Passed    0.03 sec
+        Start 378: FakeBoard.HasTheRegistersOfMap12OnlyWithFirmware13
+375/546 Test #378: FakeBoard.HasTheRegistersOfMap12OnlyWithFirmware13 ..............................................................................................................................   Passed    0.02 sec
+        Start 379: FakeBoard.HasTheClockStatusOfMap13OnlyWithFirmware14
+376/546 Test #379: FakeBoard.HasTheClockStatusOfMap13OnlyWithFirmware14 ............................................................................................................................   Passed    0.02 sec
+        Start 380: FakeBoard.FailsLikeRealBoardsFail
+377/546 Test #380: FakeBoard.FailsLikeRealBoardsFail ...............................................................................................................................................   Passed    0.03 sec
+        Start 381: SlowControl.KeepsTheOvervoltageConstantAsTheTemperatureMoves
+378/546 Test #381: SlowControl.KeepsTheOvervoltageConstantAsTheTemperatureMoves ....................................................................................................................   Passed    0.02 sec
+        Start 382: SlowControl.NeverSetsABiasOutsideItsLimits
+379/546 Test #382: SlowControl.NeverSetsABiasOutsideItsLimits ......................................................................................................................................   Passed    0.02 sec
+        Start 383: SlowControl.WritesTheRampRateAndTheSetpointBeforeItEnablesTheSupply
+380/546 Test #383: SlowControl.WritesTheRampRateAndTheSetpointBeforeItEnablesTheSupply .............................................................................................................   Passed    0.01 sec
+        Start 384: SlowControl.WarnsWithHysteresisAndSwitchesTheBiasOffAtTheAlarm
+381/546 Test #384: SlowControl.WarnsWithHysteresisAndSwitchesTheBiasOffAtTheAlarm ..................................................................................................................   Passed    0.01 sec
+        Start 385: SlowControl.DoesNotBelieveATemperatureBelowItsMinimum
+382/546 Test #385: SlowControl.DoesNotBelieveATemperatureBelowItsMinimum ...........................................................................................................................   Passed    0.01 sec
+        Start 386: SlowControl.LatchesAFaultForEachWayABoardFails
+383/546 Test #386: SlowControl.LatchesAFaultForEachWayABoardFails ..................................................................................................................................   Passed    0.01 sec
+        Start 387: SlowControl.LatchesTheBoardsOwnOvertemperatureAndOvercurrentFindings
+384/546 Test #387: SlowControl.LatchesTheBoardsOwnOvertemperatureAndOvercurrentFindings ............................................................................................................   Passed    0.01 sec
+        Start 388: SlowControl.LeavesItsFaultInTheFlightRecorder
+385/546 Test #367: ServiceInteractions.ARunClosesTheSinkOnceAfterTheLastWrite ......................................................................................................................   Passed    0.49 sec
+        Start 389: SlowControl.AnAcknowledgedFaultClearsOnlyWhenItsCauseHasGone
+386/546 Test #388: SlowControl.LeavesItsFaultInTheFlightRecorder ...................................................................................................................................   Passed    0.01 sec
+        Start 390: SlowControl.SaysWhyAnAcquisitionMayNotStart
+387/546 Test #389: SlowControl.AnAcknowledgedFaultClearsOnlyWhenItsCauseHasGone ....................................................................................................................   Passed    0.02 sec
+        Start 391: SlowControl.RunsItsOwnCycleOnAThreadUntilStopped
+388/546 Test #390: SlowControl.SaysWhyAnAcquisitionMayNotStart .....................................................................................................................................   Passed    0.01 sec
+        Start 392: SlowControl.PowersEveryBoardDownAtShutdown
+389/546 Test #391: SlowControl.RunsItsOwnCycleOnAThreadUntilStopped ................................................................................................................................   Passed    0.02 sec
+        Start 393: SlowControl.RefusesFirmwareItWasNotWrittenFor
+390/546 Test #392: SlowControl.PowersEveryBoardDownAtShutdown ......................................................................................................................................   Passed    0.02 sec
+        Start 394: SlowControl.SwitchesTheTriggersWhenAskedAndSaysWhenItHasDone
+391/546 Test #393: SlowControl.RefusesFirmwareItWasNotWrittenFor ...................................................................................................................................   Passed    0.03 sec
+        Start 395: SlowControl.SwitchesTheTimeMarkersOnWithTheTriggersAndReadsTheDatagramsSent
+392/546 Test #394: SlowControl.SwitchesTheTriggersWhenAskedAndSaysWhenItHasDone ....................................................................................................................   Passed    0.02 sec
+        Start 396: SlowControl.ReadsEachBoardsClockAndStartsNoRunWithoutALock
+393/546 Test #395: SlowControl.SwitchesTheTimeMarkersOnWithTheTriggersAndReadsTheDatagramsSent .....................................................................................................   Passed    0.02 sec
+        Start 397: SlowControl.SaysDrainedOnlyOnceTheFifoIsEmpty
+394/546 Test #396: SlowControl.ReadsEachBoardsClockAndStartsNoRunWithoutALock ......................................................................................................................   Passed    0.02 sec
+        Start 398: SlowControl.CountsFifoOverflowsAsLostDataNotAsAFault
+395/546 Test #397: SlowControl.SaysDrainedOnlyOnceTheFifoIsEmpty ...................................................................................................................................   Passed    0.02 sec
+        Start 399: SlowControl.ALatchedFaultSwitchesTheBiasAndTheTriggersOff
+396/546 Test #398: SlowControl.CountsFifoOverflowsAsLostDataNotAsAFault ............................................................................................................................   Passed    0.02 sec
+        Start 400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly
+397/546 Test #399: SlowControl.ALatchedFaultSwitchesTheBiasAndTheTriggersOff .......................................................................................................................   Passed    0.02 sec
+        Start 401: HardwareConfig.ReadsTheSettingsInTheirUnitsAndKeepsTheDefaults
+398/546 Test #400: SlowControl.AFailedWriteIsAFailedAccessAndNeverEnablesTheBiasEarly ..............................................................................................................   Passed    0.02 sec
+        Start 402: HardwareConfig.Schema11AddsTheFirmwareTheFifoAndTheRunTimeouts
+399/546 Test #401: HardwareConfig.ReadsTheSettingsInTheirUnitsAndKeepsTheDefaults ..................................................................................................................   Passed    0.02 sec
+        Start 403: HardwareConfig.ReportsEveryProblemWithItsLocation
+400/546 Test #402: HardwareConfig.Schema11AddsTheFirmwareTheFifoAndTheRunTimeouts ..................................................................................................................   Passed    0.01 sec
+        Start 404: HardwareConfig.RefusesADescriptionOfTheWrongForm
+401/546 Test #403: HardwareConfig.ReportsEveryProblemWithItsLocation ...............................................................................................................................   Passed    0.01 sec
+        Start 405: HardwareConfig.RefusesEachFieldOutsideItsRangeOnItsOwn
+402/546 Test #368: ServiceInteractions.ASinkThatCannotCloseFaultsTheRun ............................................................................................................................   Passed    0.64 sec
+        Start 406: HardwareService.ABoardThatCannotBeOpenedIsAnErrorNotACrash
+403/546 Test #404: HardwareConfig.RefusesADescriptionOfTheWrongForm ................................................................................................................................   Passed    0.01 sec
+        Start 407: HardwareService.DoesNotStartARunWhileABoardIsNotReady
+404/546 Test #405: HardwareConfig.RefusesEachFieldOutsideItsRangeOnItsOwn ..........................................................................................................................   Passed    0.01 sec
+        Start 408: HardwareService.AHardwareFaultStopsTheRunAndAResetAcknowledgesIt
+405/546 Test #406: HardwareService.ABoardThatCannotBeOpenedIsAnErrorNotACrash ......................................................................................................................   Passed    0.01 sec
+        Start 409: HardwareService.AFaultWhileIdleIsReportedAtOnce
+406/546 Test #407: HardwareService.DoesNotStartARunWhileABoardIsNotReady ...........................................................................................................................   Passed    0.01 sec
+        Start 410: HardwareService.StatusAndRunRecordShowEachBoard
+407/546 Test #409: HardwareService.AFaultWhileIdleIsReportedAtOnce .................................................................................................................................   Passed    0.02 sec
+        Start 411: HardwareService.TheTriggersAreOnOnlyWhileARunTakesData
+408/546 Test #254: DetectorSimulator.TruesAreLinearAndRandomsQuadraticInActivity ...................................................................................................................   Passed    6.40 sec
+        Start 412: HardwareService.ARunWhoseBoardsDoNotSwitchTheirTriggersOnEndsInAFault
+409/546 Test #410: HardwareService.StatusAndRunRecordShowEachBoard .................................................................................................................................   Passed    1.25 sec
+        Start 413: HardwareService.AStopWaitsForTheBoardsAndADrainThatRunsOutOfTimeIsALoss
+410/546 Test #408: HardwareService.AHardwareFaultStopsTheRunAndAResetAcknowledgesIt ................................................................................................................   Passed    1.31 sec
+        Start 414: HardwareService.AClockThatLosesLockDuringARunIsAnAuditEventAndALoss
+411/546 Test #411: HardwareService.TheTriggersAreOnOnlyWhileARunTakesData ..........................................................................................................................   Passed    1.32 sec
+        Start 415: Health.ALoopIsHealthyWhileItBeatsAndGetsItsLimitToStart
+412/546 Test #415: Health.ALoopIsHealthyWhileItBeatsAndGetsItsLimitToStart .........................................................................................................................   Passed    0.02 sec
+        Start 416: Health.EveryLoopCountsAndABeatFromBeforeTheWatchDoesNotUseUpTheLimit
+413/546 Test #416: Health.EveryLoopCountsAndABeatFromBeforeTheWatchDoesNotUseUpTheLimit ............................................................................................................   Passed    0.02 sec
+        Start 417: Health.TheSlowControlBeatsOncePerCycleAndAHungBusStopsIt
+414/546 Test #417: Health.TheSlowControlBeatsOncePerCycleAndAHungBusStopsIt ........................................................................................................................   Passed    0.62 sec
+        Start 418: ServiceManager.WithoutANotifySocketEveryCallDoesNothing
+415/546 Test #418: ServiceManager.WithoutANotifySocketEveryCallDoesNothing .........................................................................................................................   Passed    0.02 sec
+        Start 419: ServiceManager.ReadsTheEnvironmentAsSdNotifyDoes
+416/546 Test #419: ServiceManager.ReadsTheEnvironmentAsSdNotifyDoes ................................................................................................................................   Passed    0.01 sec
+        Start 420: ServiceManager.SendsReadyStatusAndStoppingAsOneDatagramEach
+417/546 Test #420: ServiceManager.SendsReadyStatusAndStoppingAsOneDatagramEach .....................................................................................................................   Passed    0.01 sec
+        Start 421: ServiceManager.TheWatchdogPingsOnlyWhileEveryLoopBeats
+418/546 Test #412: HardwareService.ARunWhoseBoardsDoNotSwitchTheirTriggersOnEndsInAFault ...........................................................................................................   Passed    1.31 sec
+        Start 422: UpdateVersion.OrdersReleasesAndTheirPreReleases
+419/546 Test #422: UpdateVersion.OrdersReleasesAndTheirPreReleases .................................................................................................................................   Passed    0.01 sec
+        Start 423: UpdateManifest.EveryFieldIsRequiredAndTheArchiveIsAPlainName
+420/546 Test #423: UpdateManifest.EveryFieldIsRequiredAndTheArchiveIsAPlainName ....................................................................................................................   Passed    0.01 sec
+        Start 424: Update.OnlyASignatureByATrustedEd25519KeyIsAccepted
+421/546 Test #424: Update.OnlyASignatureByATrustedEd25519KeyIsAccepted .............................................................................................................................   Passed    0.02 sec
+        Start 425: Update.InstallsATrialThatIsConfirmedOrRolledBack
+422/546 Test #421: ServiceManager.TheWatchdogPingsOnlyWhileEveryLoopBeats ..........................................................................................................................   Passed    0.52 sec
+        Start 426: Update.RefusesWhatTheSignatureDoesNotVouchFor
+423/546 Test #414: HardwareService.AClockThatLosesLockDuringARunIsAnAuditEventAndALoss .............................................................................................................   Passed    1.29 sec
+        Start 427: Update.RefusesAnArchiveThatWritesOutsideItsSlot
+424/546 Test #413: HardwareService.AStopWaitsForTheBoardsAndADrainThatRunsOutOfTimeIsALoss .........................................................................................................   Passed    1.49 sec
+        Start 428: Update.APowerCutAfterAnyStepLeavesAVersionThatRuns
+425/546 Test #427: Update.RefusesAnArchiveThatWritesOutsideItsSlot .................................................................................................................................   Passed    0.43 sec
+        Start 429: Update.RefusesABundleForAnotherProductOrWithoutItsArchive
+426/546 Test #425: Update.InstallsATrialThatIsConfirmedOrRolledBack ................................................................................................................................   Passed    0.90 sec
+        Start 430: Update.OpenRefusesAStoreItCannotTrust
+427/546 Test #429: Update.RefusesABundleForAnotherProductOrWithoutItsArchive .......................................................................................................................   Passed    0.08 sec
+        Start 431: Update.OneProcessAtATime
+428/546 Test #430: Update.OpenRefusesAStoreItCannotTrust ...........................................................................................................................................   Passed    0.05 sec
+        Start 432: UpdateTree.AManifestNamesEachFileOnceAndInsideTheTree
+429/546 Test #431: Update.OneProcessAtATime ........................................................................................................................................................   Passed    0.02 sec
+        Start 433: Signing.SignsAndVerifiesWithTheKeysOfADirectory
+430/546 Test #432: UpdateTree.AManifestNamesEachFileOnceAndInsideTheTree ...........................................................................................................................   Passed    0.02 sec
+        Start 434: Signing.ASignedRunVerifiesUntilAFileOrItsRecordChanges
+431/546 Test #433: Signing.SignsAndVerifiesWithTheKeysOfADirectory .................................................................................................................................   Passed    0.03 sec
+        Start 435: Signing.ASignedRecordThatDoesNotListItsFilesProperlyIsRefused
+432/546 Test #426: Update.RefusesWhatTheSignatureDoesNotVouchFor ...................................................................................................................................   Passed    0.60 sec
+        Start 436: Signing.AnEncryptedKeyIsRefusedWithoutAskingForAPassphrase
+433/546 Test #436: Signing.AnEncryptedKeyIsRefusedWithoutAskingForAPassphrase ......................................................................................................................   Passed    0.03 sec
+        Start 437: Signing.WithoutAKeyTheRunRecordIsAsBefore
+434/546 Test #437: Signing.WithoutAKeyTheRunRecordIsAsBefore .......................................................................................................................................   Passed    0.33 sec
+        Start 438: Signing.ACalibrationTableIsUsedOnlyWithASignatureATrustedKeyVerifies
+435/546 Test #434: Signing.ASignedRunVerifiesUntilAFileOrItsRecordChanges ..........................................................................................................................   Passed    0.62 sec
+        Start 439: ReadoutPacketHeaders/MalformedHeader.IsRejected/magic_0  # GetParam() = 24-byte object <8B-D2 51-25 FB-55 00-00 00-00 00-00 00-00 00-00 58-01 EE-24 FB-55 00-00>
+436/546 Test #439: ReadoutPacketHeaders/MalformedHeader.IsRejected/magic_0  # GetParam() = 24-byte object <8B-D2 51-25 FB-55 00-00 00-00 00-00 00-00 00-00 58-01 EE-24 FB-55 00-00> ................   Passed    0.01 sec
+        Start 440: ReadoutPacketHeaders/MalformedHeader.IsRejected/magic_3  # GetParam() = 24-byte object <93-D2 51-25 FB-55 00-00 03-00 00-00 00-00 00-00 72-01 B7-62 FB-55 00-00>
+437/546 Test #440: ReadoutPacketHeaders/MalformedHeader.IsRejected/magic_3  # GetParam() = 24-byte object <93-D2 51-25 FB-55 00-00 03-00 00-00 00-00 00-00 72-01 B7-62 FB-55 00-00> ................   Passed    0.01 sec
+        Start 441: ReadoutPacketHeaders/MalformedHeader.IsRejected/version_0  # GetParam() = 24-byte object <9B-D2 51-25 FB-55 00-00 04-00 00-00 00-00 00-00 00-02 00-00 00-00 00-00>
+438/546 Test #441: ReadoutPacketHeaders/MalformedHeader.IsRejected/version_0  # GetParam() = 24-byte object <9B-D2 51-25 FB-55 00-00 04-00 00-00 00-00 00-00 00-02 00-00 00-00 00-00> ..............   Passed    0.01 sec
+        Start 442: ReadoutPacketHeaders/MalformedHeader.IsRejected/version_2  # GetParam() = 24-byte object <A5-D2 51-25 FB-55 00-00 04-00 00-00 00-00 00-00 02-02 D1-6C FF-7F 00-00>
+439/546 Test #442: ReadoutPacketHeaders/MalformedHeader.IsRejected/version_2  # GetParam() = 24-byte object <A5-D2 51-25 FB-55 00-00 04-00 00-00 00-00 00-00 02-02 D1-6C FF-7F 00-00> ..............   Passed    0.01 sec
+        Start 443: ReadoutPacketHeaders/MalformedHeader.IsRejected/version_255  # GetParam() = 24-byte object <AF-D2 51-25 FB-55 00-00 04-00 00-00 00-00 00-00 FF-02 D1-6C FF-7F 00-00>
+440/546 Test #443: ReadoutPacketHeaders/MalformedHeader.IsRejected/version_255  # GetParam() = 24-byte object <AF-D2 51-25 FB-55 00-00 04-00 00-00 00-00 00-00 FF-02 D1-6C FF-7F 00-00> ............   Passed    0.01 sec
+        Start 444: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x02  # GetParam() = 24-byte object <BB-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 02-03 D1-6C FF-7F 00-00>
+441/546 Test #444: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x02  # GetParam() = 24-byte object <BB-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 02-03 D1-6C FF-7F 00-00> .............   Passed    0.01 sec
+        Start 445: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x04  # GetParam() = 24-byte object <C6-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 04-03 00-00 00-00 00-00>
+442/546 Test #445: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x04  # GetParam() = 24-byte object <C6-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 04-03 00-00 00-00 00-00> .............   Passed    0.01 sec
+        Start 446: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x08  # GetParam() = 24-byte object <D1-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 08-03 D1-6C FF-7F 00-00>
+443/546 Test #446: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x08  # GetParam() = 24-byte object <D1-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 08-03 D1-6C FF-7F 00-00> .............   Passed    0.01 sec
+        Start 447: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x10  # GetParam() = 24-byte object <DC-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 10-03 D1-6C FF-7F 00-00>
+444/546 Test #447: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x10  # GetParam() = 24-byte object <DC-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 10-03 D1-6C FF-7F 00-00> .............   Passed    0.01 sec
+        Start 448: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x20  # GetParam() = 24-byte object <E7-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 20-03 D1-6C FF-7F 00-00>
+445/546 Test #448: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x20  # GetParam() = 24-byte object <E7-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 20-03 D1-6C FF-7F 00-00> .............   Passed    0.01 sec
+        Start 449: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x40  # GetParam() = 24-byte object <F2-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 40-03 D1-6C FF-7F 00-00>
+446/546 Test #449: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x40  # GetParam() = 24-byte object <F2-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 40-03 D1-6C FF-7F 00-00> .............   Passed    0.01 sec
+        Start 450: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x80  # GetParam() = 24-byte object <FD-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 80-03 D1-6C FF-7F 00-00>
+447/546 Test #450: ReadoutPacketHeaders/MalformedHeader.IsRejected/flags_0x80  # GetParam() = 24-byte object <FD-D2 51-25 FB-55 00-00 05-00 00-00 00-00 00-00 80-03 D1-6C FF-7F 00-00> .............   Passed    0.01 sec
+        Start 451: ReadoutPacketHeaders/MalformedHeader.IsRejected/word_count_high_byte  # GetParam() = 24-byte object <08-D3 51-25 FB-55 00-00 0D-00 00-00 00-00 00-00 04-04 D1-6C FF-7F 00-00>
+448/546 Test #451: ReadoutPacketHeaders/MalformedHeader.IsRejected/word_count_high_byte  # GetParam() = 24-byte object <08-D3 51-25 FB-55 00-00 0D-00 00-00 00-00 00-00 04-04 D1-6C FF-7F 00-00> ...   Passed    0.01 sec
+        Start 452: ReadoutPacketHeaders/MalformedHeader.IsRejected/reserved_14  # GetParam() = 24-byte object <1D-D3 51-25 FB-55 00-00 0E-00 00-00 00-00 00-00 01-06 D1-6C FF-7F 00-00>
+449/546 Test #452: ReadoutPacketHeaders/MalformedHeader.IsRejected/reserved_14  # GetParam() = 24-byte object <1D-D3 51-25 FB-55 00-00 0E-00 00-00 00-00 00-00 01-06 D1-6C FF-7F 00-00> ............   Passed    0.01 sec
+        Start 453: ReadoutPacketHeaders/MalformedHeader.IsRejected/reserved_15  # GetParam() = 24-byte object <29-D3 51-25 FB-55 00-00 0F-00 00-00 00-00 00-00 80-06 00-00 00-00 00-00>
+450/546 Test #453: ReadoutPacketHeaders/MalformedHeader.IsRejected/reserved_15  # GetParam() = 24-byte object <29-D3 51-25 FB-55 00-00 0F-00 00-00 00-00 00-00 80-06 00-00 00-00 00-00> ............   Passed    0.01 sec
+        Start 454: ZeroAllocation.StreamDecoderDoesNotAllocate
+451/546 Test #454: ZeroAllocation.StreamDecoderDoesNotAllocate .....................................................................................................................................   Passed    0.01 sec
+        Start 455: architecture.layers
+452/546 Test #455: architecture.layers .............................................................................................................................................................   Passed    0.04 sec
+        Start 456: architecture.items
+453/546 Test #456: architecture.items ..............................................................................................................................................................   Passed    0.03 sec
+        Start 457: docs.regulatory
+454/546 Test #438: Signing.ACalibrationTableIsUsedOnlyWithASignatureATrustedKeyVerifies ............................................................................................................   Passed    0.51 sec
+        Start 458: docs.srs
+455/546 Test #457: docs.regulatory .................................................................................................................................................................   Passed    0.03 sec
+        Start 459: docs.trace
+456/546 Test #435: Signing.ASignedRecordThatDoesNotListItsFilesProperlyIsRefused ...................................................................................................................   Passed    0.91 sec
+        Start 460: docs.soup
+457/546 Test #458: docs.srs ........................................................................................................................................................................   Passed    0.05 sec
+        Start 461: docs.anomalies
+458/546 Test #460: docs.soup .......................................................................................................................................................................   Passed    0.04 sec
+        Start 462: docs.risk
+459/546 Test #461: docs.anomalies ..................................................................................................................................................................   Passed    0.04 sec
+        Start 463: docs.design_file
+460/546 Test #459: docs.trace ......................................................................................................................................................................   Passed    0.09 sec
+        Start 464: docs.changes
+461/546 Test #462: docs.risk .......................................................................................................................................................................   Passed    0.06 sec
+        Start 465: docs.capa
+462/546 Test #463: docs.design_file ................................................................................................................................................................   Passed    0.07 sec
+        Start 466: docs.threats
+463/546 Test #465: docs.capa .......................................................................................................................................................................   Passed    0.07 sec
+        Start 467: docs.tools
+464/546 Test #466: docs.threats ....................................................................................................................................................................   Passed    0.11 sec
+        Start 469: docs.regmap
+465/546 Test #469: docs.regmap .....................................................................................................................................................................   Passed    0.05 sec
+        Start 470: tools.regmap_gen
+466/546 Test #467: docs.tools ......................................................................................................................................................................   Passed    0.15 sec
+        Start 471: tests.waits
+467/546 Test #464: docs.changes ....................................................................................................................................................................   Passed    0.24 sec
+        Start 472: book.index
+468/546 Test #470: tools.regmap_gen ................................................................................................................................................................   Passed    0.09 sec
+        Start 473: book.xrefs
+469/546 Test #428: Update.APowerCutAfterAnyStepLeavesAVersionThatRuns ..............................................................................................................................   Passed    1.74 sec
+        Start 474: book.xrefs_tool
+470/546 Test #471: tests.waits .....................................................................................................................................................................   Passed    0.13 sec
+        Start 475: book.errata
+471/546 Test #475: book.errata .....................................................................................................................................................................   Passed    0.03 sec
+        Start 476: book.errata_tool
+472/546 Test #474: book.xrefs_tool .................................................................................................................................................................   Passed    0.08 sec
+        Start 477: book.web_tool
+473/546 Test #476: book.errata_tool ................................................................................................................................................................   Passed    0.07 sec
+        Start 478: book.figure_numbers
+474/546 Test #473: book.xrefs ......................................................................................................................................................................   Passed    0.21 sec
+        Start 479: book.photos_tool
+475/546 Test #478: book.figure_numbers .............................................................................................................................................................   Passed    0.12 sec
+        Start 480: tools.sbom
+476/546 Test #477: book.web_tool ...................................................................................................................................................................   Passed    0.15 sec
+        Start 481: tools.vuln_triage
+477/546 Test #481: tools.vuln_triage ...............................................................................................................................................................   Passed    0.06 sec
+        Start 482: tools.release_bundle
+478/546 Test #480: tools.sbom ......................................................................................................................................................................   Passed    0.15 sec
+        Start 483: tools.perf_gate
+479/546 Test #483: tools.perf_gate .................................................................................................................................................................   Passed    0.10 sec
+        Start 484: tools.release_checks
+480/546 Test #479: book.photos_tool ................................................................................................................................................................   Passed    0.33 sec
+        Start 485: docs.version
+481/546 Test #485: docs.version ....................................................................................................................................................................   Passed    0.04 sec
+        Start 486: tools.check_version
+482/546 Test #486: tools.check_version .............................................................................................................................................................   Passed    0.06 sec
+        Start 487: tools.postmortem
+483/546 Test #484: tools.release_checks ............................................................................................................................................................   Passed    0.56 sec
+        Start 488: docs.package_versions
+484/546 Test #488: docs.package_versions ...........................................................................................................................................................   Passed    0.03 sec
+        Start 489: tools.post_release
+485/546 Test #489: tools.post_release ..............................................................................................................................................................   Passed    0.09 sec
+        Start 490: tools.release_record
+486/546 Test #482: tools.release_bundle ............................................................................................................................................................   Passed    1.00 sec
+        Start 491: tools.coverage
+487/546 Test #491: tools.coverage ..................................................................................................................................................................   Passed    0.06 sec
+        Start 492: tools.agent_gate
+488/546 Test #487: tools.postmortem ................................................................................................................................................................   Passed    0.89 sec
+        Start 493: tools.check_agent_files
+489/546 Test #490: tools.release_record ............................................................................................................................................................   Passed    0.51 sec
+        Start 494: tools.agent_hooks
+490/546 Test #494: tools.agent_hooks ...............................................................................................................................................................   Passed    2.48 sec
+        Start 495: tools.agent_evals
+491/546 Test #495: tools.agent_evals ...............................................................................................................................................................   Passed    0.08 sec
+        Start 496: docs.agent_files
+492/546 Test #493: tools.check_agent_files .........................................................................................................................................................   Passed    2.75 sec
+        Start 497: docs.presets
+493/546 Test #497: docs.presets ....................................................................................................................................................................   Passed    0.03 sec
+        Start 498: tools.check_presets
+494/546 Test #496: docs.agent_files ................................................................................................................................................................   Passed    0.08 sec
+        Start 499: tools.check_format
+495/546 Test #498: tools.check_presets .............................................................................................................................................................   Passed    0.06 sec
+        Start 500: tools.pre_commit
+496/546 Test #499: tools.check_format ..............................................................................................................................................................   Passed    1.15 sec
+        Start 501: tools.lock_audit
+497/546 Test #501: tools.lock_audit ................................................................................................................................................................   Passed    0.12 sec
+        Start 502: tools.acceptance
+498/546 Test #502: tools.acceptance ................................................................................................................................................................   Passed    0.09 sec
+        Start 503: tools.soak_ab
+499/546 Test #500: tools.pre_commit ................................................................................................................................................................   Passed    2.74 sec
+        Start 504: tools.check_changes
+500/546 Test #504: tools.check_changes .............................................................................................................................................................   Passed    0.08 sec
+        Start 505: tools.evidence_paths
+501/546 Test #505: tools.evidence_paths ............................................................................................................................................................   Passed    0.26 sec
+        Start 506: docs.evidence_paths
+502/546 Test #472: book.index ......................................................................................................................................................................   Passed    7.75 sec
+        Start 507: tools.req_baseline
+503/546 Test #507: tools.req_baseline ..............................................................................................................................................................   Passed    0.08 sec
+        Start 508: tools.survey
+504/546 Test #506: docs.evidence_paths .............................................................................................................................................................   Passed    0.96 sec
+        Start 509: docs.baseline
+505/546 Test #509: docs.baseline ...................................................................................................................................................................   Passed    0.05 sec
+        Start 510: tools.maintenance
+506/546 Test #510: tools.maintenance ...............................................................................................................................................................   Passed    0.40 sec
+        Start 511: tools.dicom
+507/546 Test #508: tools.survey ....................................................................................................................................................................   Passed    1.49 sec
+        Start 512: tools.commits
+508/546 Test #512: tools.commits ...................................................................................................................................................................   Passed    2.02 sec
+        Start 513: tools.ai_provenance
+509/546 Test #513: tools.ai_provenance .............................................................................................................................................................   Passed    0.44 sec
+        Start 514: tools.migrate_config
+510/546 Test #492: tools.agent_gate ................................................................................................................................................................   Passed   10.39 sec
+        Start 515: docs.interfaces
+511/546 Test #515: docs.interfaces .................................................................................................................................................................   Passed    0.30 sec
+        Start 516: tools.make_update
+512/546 Test #516: tools.make_update ...............................................................................................................................................................   Passed    0.60 sec
+        Start 517: tools.platform_check
+513/546 Test #517: tools.platform_check ............................................................................................................................................................   Passed    0.21 sec
+        Start 518: packaging.units
+514/546 Test #518: packaging.units .................................................................................................................................................................   Passed    0.07 sec
+        Start 519: tools.calib
+515/546 Test #514: tools.migrate_config ............................................................................................................................................................   Passed    1.49 sec
+        Start 520: tools.recon
+516/546 Test #511: tools.dicom .....................................................................................................................................................................   Passed    5.12 sec
+        Start 521: tools.listmode
+517/546 Test #521: tools.listmode ..................................................................................................................................................................   Passed    4.82 sec
+        Start 522: system.control
+518/546 Test #522: system.control ..................................................................................................................................................................   Passed    2.80 sec
+        Start 523: system.acquisition
+519/546 Test #523: system.acquisition ..............................................................................................................................................................   Passed   12.35 sec
+        Start 524: system.readout
+520/546 Test #519: tools.calib .....................................................................................................................................................................   Passed   29.41 sec
+        Start 525: system.diagnostics
+521/546 Test #525: system.diagnostics ..............................................................................................................................................................   Passed    2.24 sec
+        Start 526: system.hardware
+522/546 Test #526: system.hardware .................................................................................................................................................................   Passed    2.39 sec
+        Start 527: system.platform
+523/546 Test #503: tools.soak_ab ...................................................................................................................................................................   Passed   41.90 sec
+        Start 528: system.product
+524/546 Test #528: system.product ..................................................................................................................................................................   Passed    0.33 sec
+        Start 529: system.e2e
+525/546 Test #527: system.platform .................................................................................................................................................................   Passed    5.99 sec
+        Start 530: system.stats
+526/546 Test #530: system.stats ....................................................................................................................................................................   Passed   11.23 sec
+        Start 531: JosephProjector.BackIsTheAdjointOfForward
+527/546 Test #531: JosephProjector.BackIsTheAdjointOfForward .......................................................................................................................................   Passed    0.13 sec
+        Start 532: JosephProjector.ADiscProjectsToItsChords
+528/546 Test #532: JosephProjector.ADiscProjectsToItsChords ........................................................................................................................................   Passed    0.05 sec
+        Start 533: JosephProjector.AnOffCenterPointLiesOnItsSinusoid
+529/546 Test #533: JosephProjector.AnOffCenterPointLiesOnItsSinusoid ...............................................................................................................................   Passed    0.02 sec
+        Start 534: JosephProjector.TheThreadsDoNotChangeTheResult
+530/546 Test #534: JosephProjector.TheThreadsDoNotChangeTheResult ..................................................................................................................................   Passed    0.08 sec
+        Start 535: JosephProjector.ASubsetIsTheRowsOfItsViews
+531/546 Test #535: JosephProjector.ASubsetIsTheRowsOfItsViews ......................................................................................................................................   Passed    0.03 sec
+        Start 536: JosephProjector.RefusesWhatDoesNotFit
+532/546 Test #536: JosephProjector.RefusesWhatDoesNotFit ...........................................................................................................................................   Passed    0.01 sec
+        Start 537: TofProjector.BackIsTheAdjointOfForward
+533/546 Test #537: TofProjector.BackIsTheAdjointOfForward ..........................................................................................................................................   Passed    1.71 sec
+        Start 538: TofProjector.TheTofBinsAddUpToTheProjectionWithoutTof
+534/546 Test #538: TofProjector.TheTofBinsAddUpToTheProjectionWithoutTof ...........................................................................................................................   Passed    0.29 sec
+        Start 539: TofProjector.APointLiesWhereItsTimeOfFlightSays
+535/546 Test #539: TofProjector.APointLiesWhereItsTimeOfFlightSays .................................................................................................................................   Passed    0.30 sec
+        Start 540: TofProjector.TheThreadsDoNotChangeTheResult
+536/546 Test #540: TofProjector.TheThreadsDoNotChangeTheResult .....................................................................................................................................   Passed    0.95 sec
+        Start 541: TofProjector.RefusesATimingThatCannotBe
+537/546 Test #541: TofProjector.RefusesATimingThatCannotBe .........................................................................................................................................   Passed    0.01 sec
+        Start 542: cmake.consumer
+538/546 Test #542: cmake.consumer ..................................................................................................................................................................   Passed    2.39 sec
+        Start 543: tools.recon_cpp
+539/546 Test #520: tools.recon .....................................................................................................................................................................   Passed   89.25 sec
+        Start 544: recon.wheel
+540/546 Test #529: system.e2e ......................................................................................................................................................................   Passed   59.68 sec
+        Start 545: analysis.pytest
+541/546 Test #524: system.readout ..................................................................................................................................................................   Passed   98.90 sec
+        Start 546: analysis.mypy
+542/546 Test #545: analysis.pytest .................................................................................................................................................................   Passed   27.82 sec
+        Start 547: analysis.ruff
+543/546 Test #547: analysis.ruff ...................................................................................................................................................................   Passed    0.13 sec
+544/546 Test #546: analysis.mypy ...................................................................................................................................................................   Passed    4.71 sec
+545/546 Test #543: tools.recon_cpp .................................................................................................................................................................   Passed   70.94 sec
+546/546 Test #544: recon.wheel .....................................................................................................................................................................   Passed   42.70 sec
+
+100% tests passed, 0 tests failed out of 546
+
+Label Time Summary:
+system    = 184.70 sec*proc (8 tests)
+unit      = 498.12 sec*proc (538 tests)
+
+Total Test time (real) = 176.11 sec

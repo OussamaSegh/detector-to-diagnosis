@@ -1,6 +1,6 @@
 # MiniDAQ software development plan
 
-Version 25 (MiniDAQ 2.3.0-dev). Status: approved for release 2.3.0, 2026-11-26, given by the coordinator under the software lead's standing delegation (2026-11-15 and 2026-11-23), in writing on 2026-11-26 at 07:33 UTC. Version 24 was the draft of the review of 2.2.0. Version 23 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC. Version 22 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
+Version 25 (MiniDAQ 2.3.0-dev). Status: approved for release 2.3.0, 2026-11-26, given by the coordinator under the software lead's standing delegation (2026-11-15 and 2026-11-23), in writing on 2026-11-26 at 07:33 UTC. Version 24 was written by the review of 2.2.0 and not released. Version 23 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC. Version 22 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 21 was approved for release 2.0.1, 2026-11-16, given by the author (software lead) in writing on 2026-11-16 at 23:53 UTC.
 
 This plan says how MiniDAQ is developed, verified, released and maintained. It covers the
 topics that IEC 62304 expects a software development plan to address, for a teaching

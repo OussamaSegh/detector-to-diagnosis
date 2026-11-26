@@ -58,7 +58,7 @@
       "found": "2026-10-24, Chapter 6 design",
       "item": "service",
       "status": "open",
-      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1", "2.1.0", "2.2.0"],
+      "affects": ["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.0.1", "2.1.0", "2.2.0", "2.3.0"],
       "description": "The service's monitor polls the ports every 20 ms, so a run continues for up to 20 ms after a detector or sink fault.",
       "evaluation": {"safety_relevant": true, "rationale": "Data acquired in those 20 ms after a fault is part of a run that ends in a fault anyway; the fault is reported and the run is not used. No data is presented as complete."},
       "decision": "Release with it. Reviewed against the risk file for release 0.3.0: a faulted run is incomplete in its integrity verdict whatever the delay (assess_integrity, RC-01), and H-05 covers the interrupted scan; 20 ms more data in a run that ends in a fault changes neither sequence of events nor harm, so no hazard needs a faster reaction. Chapter 15 was to decide this and did not; the release review did. Decided again for release 1.3.0 (roadmap 2.0.0, theme B), with the cost of the fix weighed: a faster reaction needs every port to wake the monitor from its own thread (the UDP receiver, the sink's I/O thread, the slow control), a callback into the service across the layers and a new lock order to prove, in class B code, to shorten by at most 20 ms a run that ends in a fault anyway. Kept open as a known anomaly, deliberately, because the behavior exists and a release must state it; RunIntegrity.AFaultMakesTheRunIncompleteWithoutALossCounter and AcquisitionService.DetectorFaultStopsTheRunAndNeedsAReset verify the two properties the decision rests on. To be decided again only if a hazard analysis finds a harm that depends on the delay."
@@ -2038,7 +2038,7 @@
       "found": "2026-11-24, release checks of 2.2.0, part 3, on 5647d2e: tools/acceptance.py judged ACC-04 FAIL (592 of 600 intervals within 10 ms, 98.7%)",
       "item": "pipeline",
       "status": "open",
-      "affects": ["2.2.0"],
+      "affects": ["2.2.0", "2.3.0"],
       "capa": "",
       "description": "Every check of part 3 passed, but 8 of the soak's 600 intervals of 10 s had a 99th percentile above 10 ms (up to 62.65 ms), where ACC-04 allows six (CR-0035). In each, one server thread waited 21 to 61 ms in one second for a CPU while runnable (mdq-write, mdq-decode or mdq-sort); steal over the intervals averaged 0.66% (0.25% in 2.1.0's soak), per second up to 6.79%. The pipeline ran at about 4% of its capacity, and the single-node source of CR-0037 runs the same generator statements; the regression gate against book-v2.1.0 passed. The symptom is MDQ-PR-064's.",
       "evaluation": {

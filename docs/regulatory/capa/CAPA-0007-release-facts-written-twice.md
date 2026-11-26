@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | implemented |
+| Status | closed |
 | Opened | 2026-11-24, at the internal audit before release 2.2.0 |
 | Source | MDQ-PR-081, MDQ-PR-087 and MDQ-PR-089 |
 | Owner | software lead |
@@ -76,8 +76,20 @@ Criterion: the release checks of 2.2.0 and 2.3.0 run from `tools/release_facts.j
 records pass `release_record.py check` with no row edited by hand, and no problem report until
 release 2.3.0 has the cause "a fact of the release checks changed in one place and not another".
 Due: release 2.3.0.
-Result: filled in at the check.
+Result: **effective** (2026-11-26, release record of 2.3.0). Each part holds:
+
+- The release checks of 2.2.0 (on 5647d2e) and of 2.3.0 (on 1926017) read the presets, the soak's
+  length and blocks, the fuzz seconds and the fuzz targets from `tools/release_facts.json`;
+  CR-0038 added the soak's blocks to the same file, and no script writes a copy
+  (`test_the_scripts_read_the_release_facts_and_keep_no_copy` passes on both commits).
+- The records of 2.2.0 and 2.3.0 pass `release_record.py check`. Their rows are the skeleton's,
+  except the rows each record's section Deviation names as `fail (deviation)`, which the check
+  accepts only when named (MDQ-PR-098); no row was edited to agree with the evidence.
+- No problem report from MDQ-PR-090 to MDQ-PR-106 has the cause "a fact of the release checks
+  changed in one place and not another" (`tools/pr_trends.py` and the reports' root causes, read
+  at the internal audit of 2026-11-26 and again for the record).
 
 ## Closure
 
-Open until the effectiveness check.
+Closed on 2026-11-26 with the release record of 2.3.0, on the result above, which the
+coordinator approved with the release under the author's standing delegation.

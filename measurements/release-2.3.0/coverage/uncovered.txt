@@ -1,0 +1,1620 @@
+## minidaq/apps/minidaq_ctl.cpp
+   55: if (fd_ < 0 || ::inet_pton(AF_INET, host.c_str(), &a.sin_addr) != 1 ||
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 20: branch never true
+       column 20: condition never shown to decide alone (MC/DC)
+   74: if (fd_ >= 0) {
+       column 9: branch never false
+   89: if (n <= 0) {
+       column 11: branch never true
+  105: if (!response.is_object()) {  // a discarded (unparsable) response is not an object either
+       column 9: branch never true
+  119: if (r.io != minidaq::control::TlsStream::Io::done) {
+       column 11: branch never true
+  120: error_ = r.io == minidaq::control::TlsStream::Io::closed ? "connection closed by server" : tls_->error();
+       column 18: branch never taken
+  126: if (sent <= 0) {
+       column 9: branch never true
+  135: if (r.io != minidaq::control::TlsStream::Io::done) {
+       column 11: branch never true
+  136: error_ = r.io == minidaq::control::TlsStream::Io::closed ? "connection closed by server" : tls_->error();
+       column 18: branch never taken
+  143: error_ = got == 0 ? "connection closed by server" : errno_text();
+       column 16: branch never true
+  168: if (name.empty() || !minidaq::control::role_from_string(role)) {
+       column 7: condition never shown to decide alone (MC/DC)
+  173: if (token.empty()) {
+       column 7: branch never true
+  196: if (!p) {
+       column 11: branch never true
+  203: } else if (opt == "--tls-ca") {
+       column 16: branch never false
+  209: if (i >= argc) {
+       column 7: branch never true
+  213: if (cmd == "-h" || cmd == "--help" || cmd == "help") {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 22: branch never true
+       column 22: condition never shown to decide alone (MC/DC)
+       column 41: branch never true
+       column 41: condition never shown to decide alone (MC/DC)
+  218: return i + 2 < argc ? new_token(argv[i + 1], argv[i + 2]) : usage(argv[0]);
+       column 12: branch never false
+  223: if (!ctx) {
+       column 9: branch never true
+  258: if (i + 1 >= argc) {
+       column 9: branch never true
+  262: const auto seconds = i + 2 < argc ? minidaq::parse_number<double>(argv[i + 2], 0.0, 86400.0) : 30.0;
+       column 26: branch never false
+  263: if (!seconds) {
+       column 9: branch never true
+  269: if (!conn.call(json{{"api", "3.0"}, {"id", id}, {"cmd", "status"}}, response)) {
+       column 11: branch never true
+  297: if (!in || request["config"].is_discarded()) {
+       column 16: branch never true
+       column 16: condition never shown to decide alone (MC/DC)
+  303: if (i + 1 < argc) {
+       column 9: branch never false
+  312: if (!conn.call(request, response)) {
+       column 7: branch never true
+
+## minidaq/apps/minidaq_server.cpp
+   93: if (a == "--port" && v) {
+       column 26: branch never false
+       column 26: condition never shown to decide alone (MC/DC)
+   98: } else if (a == "--bind" && v) {
+       column 33: branch never false
+       column 33: condition never shown to decide alone (MC/DC)
+  102: } else if (a == "--config" && v) {
+       column 35: branch never false
+       column 35: condition never shown to decide alone (MC/DC)
+  104: } else if (a == "--tokens" && v) {
+       column 35: branch never false
+       column 35: condition never shown to decide alone (MC/DC)
+  106: } else if (a == "--tls-cert" && v) {
+       column 37: branch never false
+       column 37: condition never shown to decide alone (MC/DC)
+  108: } else if (a == "--tls-key" && v) {
+       column 36: branch never false
+       column 36: condition never shown to decide alone (MC/DC)
+  110: } else if (a == "--crash-report" && v) {
+       column 41: branch never false
+       column 41: condition never shown to decide alone (MC/DC)
+  112: } else if (a == "--hardware" && v) {
+       column 37: branch never false
+       column 37: condition never shown to decide alone (MC/DC)
+  114: } else if (a == "--signing-key" && v) {
+       column 40: branch never false
+       column 40: condition never shown to decide alone (MC/DC)
+  116: } else if (a == "--calibration-keys" && v) {
+       column 45: branch never false
+       column 45: condition never shown to decide alone (MC/DC)
+  144: if (crash_fd < 0) {
+       column 9: branch never false
+  149: if (auto installed = rt::install_crash_report(crash_fd, MINIDAQ_VERSION_STRING); !installed) {
+       column 84: branch never true
+  169: if (startup_token.empty()) {
+       column 9: branch never true
+  187: if (!manager) {
+       column 7: branch never true
+  217: return key ? std::nullopt : std::optional<std::string>{key.error()};
+       column 14: branch never taken
+  239: if (!opened) {
+       column 9: branch never true
+  273: if (!written) {
+       column 9: branch never true
+  293: if (opt.hardware && opt.hardware->heartbeat()) {
+       column 23: branch never false
+       column 23: condition never shown to decide alone (MC/DC)
+  298: if (const int err = manager->ready("state " + std::string{to_string(service.state())}); err != 0) {
+       column 91: branch never true
+  303: service.note("watchdog", healthy ? "healthy" : "unhealthy", why, healthy);
+       column 63: branch never taken
+  308: if (sigwait(&signals, &sig) != 0) {  // fails only for an invalid set
+       column 7: branch never true
+  323: if (audit && audit->failed_writes() > 0) {
+       column 7: condition never shown to decide alone (MC/DC)
+       column 16: branch never true
+       column 16: condition never shown to decide alone (MC/DC)
+
+## minidaq/apps/minidaq_update.cpp
+   40: if (argc < 2) {
+       column 7: branch never true
+   51: if (argc < 3) {
+       column 9: branch never true
+   56: } else if (command != "confirm" && command != "rollback" && command != "status") {
+       column 14: condition never shown to decide alone (MC/DC)
+       column 38: condition never shown to decide alone (MC/DC)
+       column 63: branch never true
+       column 63: condition never shown to decide alone (MC/DC)
+   61: if (a == "--allow-older" && command == "install") {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 33: branch never taken
+       column 33: condition never shown to decide alone (MC/DC)
+   65: const char* v = i + 1 < argc ? argv[++i] : nullptr;
+       column 21: branch never false
+   66: if (a == "--root" && v) {
+       column 26: branch never false
+       column 26: condition never shown to decide alone (MC/DC)
+   68: } else if (a == "--keys" && v && command == "install") {
+       column 33: branch never false
+       column 33: condition never shown to decide alone (MC/DC)
+       column 38: branch never false
+       column 38: condition never shown to decide alone (MC/DC)
+   70: } else if (a == "--platform-file" && v && command == "install") {
+       column 16: branch never false
+       column 16: condition never shown to decide alone (MC/DC)
+       column 42: branch never false
+       column 42: condition never shown to decide alone (MC/DC)
+       column 47: branch never false
+       column 47: condition never shown to decide alone (MC/DC)
+   78: if (!store) {
+       column 7: branch never true
+   82: for (const auto& r : store->repairs()) {
+       column 22: branch never true
+   89: if (!in || options.platform.empty()) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 16: branch never true
+       column 16: condition never shown to decide alone (MC/DC)
+  104: if (!r) {
+       column 9: branch never true
+  110: return command == "rollback" ? 3 : 0;
+       column 14: branch never false
+  118: if (const auto& st = store->state(); st) {
+       column 40: branch never false
+
+## minidaq/include/minidaq/config/acquisition_config.hpp
+   52: friend bool operator==(const UdpSettings&, const UdpSettings&) = default;
+       column 74: branch never false
+   61: friend bool operator==(const NodeSettings&, const NodeSettings&) = default;
+       column 76: branch never false
+   72: friend bool operator==(const SourceSettings&, const SourceSettings&) = default;
+       column 80: branch never false
+   80: friend bool operator==(const PipelineSettings&, const PipelineSettings&) = default;
+       column 84: branch never false
+   94: friend bool operator==(const SorterSettings&, const SorterSettings&) = default;
+       column 80: branch never false
+  108: friend bool operator==(const OutputSettings&, const OutputSettings&) = default;
+       column 80: branch never false
+  119: friend bool operator==(const CalibrationSettings&, const CalibrationSettings&) = default;
+       column 90: branch never false
+  131: friend bool operator==(const TimingMonitorSettings&, const TimingMonitorSettings&) = default;
+       column 94: branch never false
+  146: friend bool operator==(const AcquisitionConfig&, const AcquisitionConfig&) = default;
+       column 86: branch never false
+
+## minidaq/include/minidaq/control/access.hpp
+none
+
+## minidaq/include/minidaq/control/acquisition_service.hpp
+none
+
+## minidaq/include/minidaq/control/acquisition_state.hpp
+none
+
+## minidaq/include/minidaq/control/adapters.hpp
+none
+
+## minidaq/include/minidaq/control/audit_log.hpp
+none
+
+## minidaq/include/minidaq/control/control_protocol.hpp
+none
+
+## minidaq/include/minidaq/control/control_server.hpp
+none
+
+## minidaq/include/minidaq/control/file_ops.hpp
+none
+
+## minidaq/include/minidaq/control/hardware.hpp
+none
+
+## minidaq/include/minidaq/control/listmode_sink.hpp
+none
+
+## minidaq/include/minidaq/control/ports.hpp
+none
+
+## minidaq/include/minidaq/control/service_manager.hpp
+none
+
+## minidaq/include/minidaq/control/signing.hpp
+none
+
+## minidaq/include/minidaq/control/tls.hpp
+none
+
+## minidaq/include/minidaq/control/udp_detector.hpp
+none
+
+## minidaq/include/minidaq/core/bits.hpp
+none
+
+## minidaq/include/minidaq/core/byte_io.hpp
+none
+
+## minidaq/include/minidaq/core/clock.hpp
+none
+
+## minidaq/include/minidaq/core/constexpr_math.hpp
+none
+
+## minidaq/include/minidaq/core/crc32.hpp
+none
+
+## minidaq/include/minidaq/core/expected.hpp
+   77: if (has_value_) {
+       column 9: branch never false
+   86: if (has_value_) {
+       column 9: branch never false
+   93: if (this != &other) {
+       column 9: branch never false
+   96: if (has_value_) {
+       column 11: branch never false
+  106: if (this != &other) {
+       column 9: branch never false
+  142: if (has_value_) {
+       column 9: branch never false
+  150: if (has_value_) {
+       column 9: branch never false
+  158: if (!ok) {
+       column 9: branch never true
+  195: if (has_value_) {
+       column 9: branch never true
+
+## minidaq/include/minidaq/core/flight_recorder.hpp
+none
+
+## minidaq/include/minidaq/core/geometry.hpp
+none
+
+## minidaq/include/minidaq/core/ids.hpp
+   21: friend constexpr auto operator<=>(StrongId, StrongId) noexcept = default;
+       column 74: branch never false
+
+## minidaq/include/minidaq/core/parse_number.hpp
+none
+
+## minidaq/include/minidaq/core/quantity.hpp
+   62: friend constexpr auto operator<=>(Quantity, Quantity) noexcept = default;
+       column 74: branch never false
+   72: return q.count() < Rep{} ? -q : q;
+       column 10: branch never false
+
+## minidaq/include/minidaq/core/single.hpp
+   20: friend constexpr bool operator==(const Single&, const Single&) noexcept = default;
+       column 83: branch never false
+   42: friend constexpr bool operator==(const Coincidence&, const Coincidence&) noexcept = default;
+       column 93: branch never false
+
+## minidaq/include/minidaq/format/list_mode.hpp
+  101: friend bool operator==(const Tag&, const Tag&) = default;
+       column 58: branch never false
+  220: friend bool operator==(const ReadIssue&, const ReadIssue&) = default;
+       column 70: branch never false
+
+## minidaq/include/minidaq/format/packed_single.hpp
+none
+
+## minidaq/include/minidaq/format/readout_packet.hpp
+  246: stats_.reordered += overtaken ? 1 : 0;
+       column 25: branch never true
+  274: if (!s.used || s.header.sequence != next_) {
+       column 20: branch never true
+       column 20: condition never shown to decide alone (MC/DC)
+
+## minidaq/include/minidaq/hw/register.hpp
+   44: friend bool operator==(const HwError&, const HwError&) = default;
+       column 66: branch never false
+  152: if (!word) {
+       column 7: branch never true
+
+## minidaq/include/minidaq/hw/slow_control.hpp
+none
+
+## minidaq/include/minidaq/metrics/histogram_interval.hpp
+   46: if (a.size() != h.bucket_count() || b.size() != a.size()) {
+       column 39: branch never true
+       column 39: condition never shown to decide alone (MC/DC)
+   70: for (std::size_t i = lo; i <= hi; ++i) {
+       column 30: branch never false
+
+## minidaq/include/minidaq/metrics/latency_histogram.hpp
+  137: for (std::size_t i = 0; i < size_; ++i) {
+       column 29: branch never false
+  167: if (other.size_ != size_ || other.sub_bits_ != sub_bits_) {
+       column 33: branch never true
+       column 33: condition never shown to decide alone (MC/DC)
+  176: if (other.count() > 0) {
+       column 9: branch never false
+
+## minidaq/include/minidaq/net/host_counters.hpp
+none
+
+## minidaq/include/minidaq/pipeline/acquisition_pipeline.hpp
+none
+
+## minidaq/include/minidaq/pipeline/backoff.hpp
+none
+
+## minidaq/include/minidaq/pipeline/channel.hpp
+none
+
+## minidaq/include/minidaq/pipeline/mpmc_queue.hpp
+   32: : capacity_{std::bit_ceil(capacity < 2 ? std::size_t{2} : capacity)},
+       column 33: branch never true
+
+## minidaq/include/minidaq/pipeline/spsc_ring.hpp
+  129: return tail >= head ? tail - head : 0;
+       column 12: branch never false
+
+## minidaq/include/minidaq/pipeline/stage_stats.hpp
+none
+
+## minidaq/include/minidaq/processing/calibration.hpp
+   48: friend bool operator==(const CrystalCalibration&, const CrystalCalibration&) = default;
+       column 88: branch never false
+
+## minidaq/include/minidaq/processing/coincidence_sorter.hpp
+  106: friend bool operator==(const SorterStats&, const SorterStats&) = default;
+       column 74: branch never false
+
+## minidaq/include/minidaq/processing/count_rates.hpp
+none
+
+## minidaq/include/minidaq/processing/node_merge.hpp
+none
+
+## minidaq/include/minidaq/processing/singles_counter.hpp
+none
+
+## minidaq/include/minidaq/processing/sinogram.hpp
+none
+
+## minidaq/include/minidaq/processing/stream_merger.hpp
+none
+
+## minidaq/include/minidaq/processing/timing_monitor.hpp
+none
+
+## minidaq/include/minidaq/rt/health.hpp
+none
+
+## minidaq/include/minidaq/update/slots.hpp
+none
+
+## minidaq/src/config/acquisition_config.cpp
+  133: std::string overflow = c.pipeline.overflow == OverflowPolicy::block ? "block" : "drop";
+       column 28: branch never false
+  176: if (out.prefix.empty() || out.prefix.find('/') != std::string::npos) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+  213: if (c.source.type != "synthetic" && doc.is_object() && doc.contains("source") &&
+       column 39: branch never false
+       column 39: condition never shown to decide alone (MC/DC)
+       column 58: branch never false
+       column 58: condition never shown to decide alone (MC/DC)
+  214: doc["source"].is_object() && doc["source"].contains("nodes")) {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/config/calibration_file.cpp
+   54: ok = std::isfinite(d) && std::abs(d) <= static_cast<double>(std::numeric_limits<T>::max());
+       column 14: branch never false
+       column 14: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/config/hardware_config.cpp
+   77: if (doc.is_object() && !doc.contains("schema_version")) {
+       column 7: condition never shown to decide alone (MC/DC)
+       column 26: branch never true
+       column 26: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/config/object_reader.hpp
+   44: if (c == '~') {
+       column 9: branch never true
+   46: } else if (c == '/') {
+       column 16: branch never true
+  179: return !a.empty() && !b.empty() && ra.ec == std::errc{} && ra.ptr == a.data() + a.size() &&
+       column 10: branch never false
+       column 24: branch never false
+       column 62: branch never false
+  180: rb.ec == std::errc{} && rb.ptr == b.data() + b.size() && major >= 0 && minor >= 0;
+       column 10: branch never false
+       column 34: branch never false
+       column 81: branch never false
+
+## minidaq/src/control/access.cpp
+   31: if (EVP_Digest(data.data(), data.size(), md.data(), &len, EVP_sha256(), nullptr) != 1) {
+       column 7: branch never true
+   54: if (c >= '0' && c <= '9') {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+   57: if (c >= 'a' && c <= 'f') {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+       column 21: branch never false
+       column 21: condition never shown to decide alone (MC/DC)
+   66: if (hi < 0 || lo < 0) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 19: branch never true
+       column 19: condition never shown to decide alone (MC/DC)
+   80: if (st.st_uid != ::geteuid()) {
+       column 7: branch never true
+   99: switch (r) {
+       column 11: branch never true
+  104: case Role::none:
+       column 5: branch never true
+  122: if (cmd == "hello" || cmd == "auth") {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 25: branch never true
+       column 25: condition never shown to decide alone (MC/DC)
+  141: if (::fstat(fd, &st) != 0) {
+       column 7: branch never true
+  143: } else if (!S_ISREG(st.st_mode)) {
+       column 14: branch never true
+  150: if (n < 0 && errno == EINTR) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 18: branch never taken
+       column 18: condition never shown to decide alone (MC/DC)
+  153: if (n < 0) {
+       column 9: branch never true
+  166: if (!doc.is_object() || !doc.contains("tokens") || !doc["tokens"].is_array()) {
+       column 27: branch never true
+       column 27: condition never shown to decide alone (MC/DC)
+       column 54: branch never true
+       column 54: condition never shown to decide alone (MC/DC)
+  172: if (!t.is_object() || !t.contains("name") || !t["name"].is_string() || !t.contains("role") ||
+       column 9: branch never true
+       column 27: branch never true
+       column 50: branch never true
+       column 76: branch never true
+  173: !t["role"].is_string() || !t.contains("sha256") || !t["sha256"].is_string()) {
+       column 9: branch never true
+       column 35: branch never true
+       column 60: branch never true
+  181: if (!hash_found || hash_found->size() != 32) {
+       column 24: branch never true
+       column 24: condition never shown to decide alone (MC/DC)
+  188: if (e.identity.name == name || e.sha256 == hash) {
+       column 11: branch never true
+       column 11: condition never shown to decide alone (MC/DC)
+  211: if (h.size() == e.sha256.size() && CRYPTO_memcmp(h.data(), e.sha256.data(), h.size()) == 0) {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+  224: if (RAND_bytes(bytes.data(), static_cast<int>(bytes.size())) != 1) {
+       column 7: branch never true
+  237: if (const char* d = std::getenv("MINIDAQ_RUNTIME_DIR"); d != nullptr && *d != '\0') {  // NOLINT(concurrency-mt-unsafe)
+       column 59: branch never false
+       column 59: condition never shown to decide alone (MC/DC)
+       column 75: branch never false
+       column 75: condition never shown to decide alone (MC/DC)
+  239: } else if (const char* x = std::getenv("XDG_RUNTIME_DIR"); x != nullptr && *x != '\0') {  // NOLINT(concurrency-mt-unsafe)
+       column 62: branch never taken
+       column 62: condition never shown to decide alone (MC/DC)
+       column 78: branch never taken
+       column 78: condition never shown to decide alone (MC/DC)
+  249: if (::mkdir(dir.c_str(), 0700) != 0 && errno != EEXIST) {
+       column 7: condition never shown to decide alone (MC/DC)
+       column 42: branch never true
+       column 42: condition never shown to decide alone (MC/DC)
+  253: if (::lstat(dir.c_str(), &st) != 0) {
+       column 7: branch never true
+  259: if (!S_ISDIR(st.st_mode)) {
+       column 7: branch never true
+  263: if (::unlink(path.c_str()) != 0 && errno != ENOENT) {
+       column 7: condition never shown to decide alone (MC/DC)
+       column 38: branch never true
+       column 38: condition never shown to decide alone (MC/DC)
+  268: if (fd < 0) {
+       column 7: branch never true
+  276: if (!ok) {
+       column 7: branch never true
+  292: if (::fstat(fd, &st) != 0) {
+       column 7: branch never true
+  301: if (n < 0) {
+       column 9: branch never true
+  310: while (!s.empty() && (s.back() == '\n' || s.back() == '\r' || s.back() == ' ')) {
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+       column 45: branch never true
+       column 45: condition never shown to decide alone (MC/DC)
+       column 65: branch never true
+       column 65: condition never shown to decide alone (MC/DC)
+  313: if (s.empty()) {
+       column 7: branch never true
+
+## minidaq/src/control/acquisition_service.cpp
+   58: {"datagrams_sent", b.datagrams_sent ? json(*b.datagrams_sent) : json(nullptr)},
+       column 29: branch never true
+   86: if (::fstat(fd, &st) != 0 || !S_ISREG(st.st_mode)) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+   97: if (n == buf.size()) {
+       column 13: branch never true
+  100: } else if (r == 0 || errno != EINTR) {
+       column 18: branch never false
+       column 18: condition never shown to decide alone (MC/DC)
+       column 28: branch never taken
+       column 28: condition never shown to decide alone (MC/DC)
+  104: if (n > max_bytes) {
+       column 9: branch never true
+  134: if (monitor_.joinable()) {
+       column 7: branch never false
+  169: if (!with_simulator && cfg.source.type == "synthetic") {
+       column 26: branch never taken
+       column 26: condition never shown to decide alone (MC/DC)
+  182: if (!parsed) {
+       column 9: branch never true
+  252: if (machine_.state() != AcqState::configured || !config_) {
+       column 51: branch never true
+       column 51: condition never shown to decide alone (MC/DC)
+  270: if (!opt_.detector || !opt_.sink) {
+       column 25: branch never true
+       column 25: condition never shown to decide alone (MC/DC)
+  280: if (!sink) {
+       column 7: branch never true
+  287: if (profile_) {
+       column 7: branch never true
+  357: if (opt_.hardware && machine_.state() == AcqState::fault) {
+       column 24: branch never false
+       column 24: condition never shown to decide alone (MC/DC)
+  384: if (pipeline_ && (s == AcqState::running || s == AcqState::stopping)) {
+       column 21: branch never false
+       column 21: condition never shown to decide alone (MC/DC)
+       column 47: branch never taken
+       column 47: condition never shown to decide alone (MC/DC)
+  393: : fault_.starts_with("hw:")     ? FaultSource::hardware
+       column 25: branch never false
+  425: if (auto f = sink_ ? sink_->fault() : std::nullopt) {
+       column 12: branch never true
+  428: if (pipeline_ && pipeline_->late_singles() > 0) {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+  437: if (triggers_on_by_ && opt_.hardware) {
+       column 26: branch never false
+       column 26: condition never shown to decide alone (MC/DC)
+  446: if (drain_by_ && opt_.hardware) {
+       column 20: branch never false
+       column 20: condition never shown to decide alone (MC/DC)
+  475: (n == 1 ? " time" : " times") + " this run",
+       column 19: branch never false
+  481: if (snapshot_latest_ && now - snapshot_latest_->taken >= opt_.interval_period) {
+       column 7: condition never shown to decide alone (MC/DC)
+  484: if (pipeline_ && pipeline_->finished()) {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+  508: losses += (losses.empty() ? "" : ", ") + l["counter"].get<std::string>() + " = " + l["count"].dump();
+       column 20: branch never false
+  598: if (snapshot_previous_ && snapshot_latest_) {
+       column 31: branch never false
+       column 31: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/acquisition_state.cpp
+    7: switch (s) {
+       column 11: branch never true
+   18: switch (e) {
+       column 11: branch never true
+   39: for (const AcqEvent x : all_events) {
+       column 25: branch never false
+
+## minidaq/src/control/adapters.cpp
+   57: description_ = n >= 0 ? buf : "simulated detector";
+       column 18: branch never false
+   74: if (c.source.type == "udp") {
+       column 7: branch never false
+   76: if (!d) {
+       column 9: branch never true
+   95: if (!o.detector) {
+       column 7: branch never false
+   98: if (!o.sink && run_key) {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+  101: if (c.output.type == "listmode") {
+       column 11: branch never false
+
+## minidaq/src/control/audit.cpp
+   15: if (gmtime_r(&t, &tm) == nullptr) {
+       column 7: branch never true
+   21: if (n == 0 || std::snprintf(buf + n, sizeof buf - n, ".%03dZ", static_cast<int>(ms)) != 5) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 17: branch never true
+       column 17: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/audit_log.cpp
+   26: if (file_ == nullptr) {
+       column 7: branch never true
+   31: ok = std::fflush(file_.get()) == 0 && ok;
+       column 41: branch never false
+       column 41: condition never shown to decide alone (MC/DC)
+   32: if (sync_) {
+       column 7: branch never true
+   33: ok = ::fsync(::fileno(file_.get())) == 0 && ok;
+       column 10: branch never taken
+       column 10: condition never shown to decide alone (MC/DC)
+       column 49: branch never taken
+       column 49: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/control_protocol.cpp
+   94: ok != response.end() && ok->is_boolean() && ok->get<bool>() ? 1U : 0U);
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+       column 33: branch never false
+       column 33: condition never shown to decide alone (MC/DC)
+  136: const std::string token = it != req.end() && it->is_string() ? it->get<std::string>() : std::string{};
+       column 29: condition never shown to decide alone (MC/DC)
+       column 48: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/control_server.cpp
+   46: if (got < 0 && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 21: branch never taken
+       column 21: condition never shown to decide alone (MC/DC)
+       column 40: branch never taken
+       column 40: condition never shown to decide alone (MC/DC)
+       column 64: branch never taken
+       column 64: condition never shown to decide alone (MC/DC)
+   53: switch (r.io) {
+       column 11: branch never true
+   57: case TlsStream::Io::want_write:
+       column 5: branch never true
+   71: if (n > 0) {
+       column 9: branch never false
+   74: return n >= 0 || errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR;
+       column 12: branch never false
+       column 12: condition never shown to decide alone (MC/DC)
+       column 22: branch never taken
+       column 22: condition never shown to decide alone (MC/DC)
+       column 41: branch never taken
+       column 41: condition never shown to decide alone (MC/DC)
+       column 65: branch never taken
+       column 65: condition never shown to decide alone (MC/DC)
+   78: if (r.io == TlsStream::Io::done) {
+       column 7: branch never false
+   81: return r.io != TlsStream::Io::error && r.io != TlsStream::Io::closed;
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+       column 42: branch never false
+       column 42: condition never shown to decide alone (MC/DC)
+  139: if (listen_fd_ < 0) {
+       column 7: branch never true
+  145: if (::bind(listen_fd_, as_sockaddr(&addr), sizeof addr) != 0) {
+       column 7: branch never true
+  148: if (::listen(listen_fd_, 8) != 0) {
+       column 7: branch never true
+  152: if (::getsockname(listen_fd_, as_sockaddr(&addr), &len) != 0) {  // the port, if port_ was 0
+       column 7: branch never true
+  157: if (wake_fd_ < 0) {
+       column 7: branch never true
+  194: if (fd < 0) {
+       column 9: branch never true
+  205: if (!s) {
+       column 11: branch never true
+  236: if (r.io == TlsStream::Io::want_read || r.io == TlsStream::Io::want_write) {
+       column 45: branch never true
+       column 45: condition never shown to decide alone (MC/DC)
+  281: const bool write = !c.out.empty() || c.tls_wants_write;
+       column 44: branch never true
+       column 44: condition never shown to decide alone (MC/DC)
+  286: if (::poll(fds.data(), fds.size(), 100) < 0 && errno != EINTR) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 52: branch never taken
+       column 52: condition never shown to decide alone (MC/DC)
+  297: const bool ready = (fds[i].revents & (POLLIN | POLLOUT | POLLHUP)) != 0 || (c.tls && c.tls->pending());
+       column 83: condition never shown to decide alone (MC/DC)
+       column 92: branch never true
+       column 92: condition never shown to decide alone (MC/DC)
+  298: if (!drop && ready && !c.handshaken) {
+       column 11: branch never false
+       column 11: condition never shown to decide alone (MC/DC)
+  304: if (!drop && c.handshaken && (!c.out.empty() || c.tls_wants_write)) {
+       column 55: branch never true
+       column 55: condition never shown to decide alone (MC/DC)
+  307: if (!drop && now > c.deadline && (!c.handshaken || c.session.identity.role == Role::none)) {
+       column 41: branch never true
+       column 41: condition never shown to decide alone (MC/DC)
+  308: if (!c.closing) {
+       column 13: branch never false
+  314: if (drop || (c.closing && c.out.empty())) {
+       column 33: branch never false
+       column 33: condition never shown to decide alone (MC/DC)
+  315: if (!drop && c.tls) {
+       column 13: condition never shown to decide alone (MC/DC)
+       column 22: branch never true
+       column 22: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/corrections_record.cpp
+none
+
+## minidaq/src/control/file_ops.cpp
+   20: if (fd < 0) {
+       column 9: branch never true
+   29: if (n >= 0) {
+       column 11: branch never false
+   32: if (errno != EINTR) {
+       column 11: branch never taken
+   38: int sync(int handle) override { return ::fsync(handle) == 0 ? 0 : errno; }
+       column 42: branch never false
+   40: int close(int handle) override { return ::close(handle) == 0 ? 0 : errno; }
+       column 43: branch never false
+   44: if (::renameat2(AT_FDCWD, from.c_str(), AT_FDCWD, to.c_str(), RENAME_NOREPLACE) == 0) {
+       column 9: branch never false
+   47: if (errno != EINVAL && errno != ENOSYS) {
+       column 9: branch never taken
+       column 9: condition never shown to decide alone (MC/DC)
+       column 28: branch never taken
+       column 28: condition never shown to decide alone (MC/DC)
+   52: if (::link(from.c_str(), to.c_str()) != 0) {
+       column 9: branch never taken
+   55: return ::unlink(from.c_str()) == 0 ? 0 : errno;
+       column 12: branch never taken
+   61: if (fd < 0) {
+       column 9: branch never true
+   64: const int r = ::fsync(fd) == 0 ? 0 : errno;
+       column 19: branch never false
+
+## minidaq/src/control/hardware.cpp
+   29: if (f == "vanished") {
+       column 7: branch never true
+   32: if (f == "weak_supply") {
+       column 7: branch never true
+   35: if (f == "hung_bus") {
+       column 7: branch never true
+   54: if (!bus) {
+       column 11: branch never false
+  102: if (in >> text) {
+       column 9: branch never false
+  103: if (const auto t = parse_number<double>(text, -40.0, 125.0)) {
+       column 22: branch never false
+
+## minidaq/src/control/listmode_sink.cpp
+   26: while (v > cur && !a.compare_exchange_weak(cur, v, std::memory_order_relaxed)) {
+       column 10: condition never shown to decide alone (MC/DC)
+       column 21: branch never true
+       column 21: condition never shown to decide alone (MC/DC)
+   31: switch (p) {
+       column 11: branch never true
+   32: case FsyncPolicy::none: return "none";
+       column 5: branch never true
+   33: case FsyncPolicy::close: return "close";
+       column 5: branch never false
+   34: case FsyncPolicy::interval: return "interval";
+       column 5: branch never true
+   56: auto bad_name = [](const std::string& s) { return s.empty() || s.find('/') != std::string::npos; };
+       column 66: branch never true
+       column 66: condition never shown to decide alone (MC/DC)
+   57: if (bad_name(cfg.run_name) || bad_name(cfg.prefix)) {
+       column 33: branch never true
+       column 33: condition never shown to decide alone (MC/DC)
+   60: if (cfg.records_per_block == 0 || cfg.records_per_block > listmode::max_block_records) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 37: branch never true
+       column 37: condition never shown to decide alone (MC/DC)
+   63: if (cfg.buffers < 2 || cfg.buffers > 65536) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 26: branch never true
+       column 26: condition never shown to decide alone (MC/DC)
+   66: if (cfg.fsync_every_blocks == 0) {
+       column 7: branch never true
+   69: if (cfg.max_block_delay.count() <= 0) {
+       column 7: branch never true
+   72: if (!cfg.metadata.is_object()) {
+       column 7: branch never true
+   75: if (ops == nullptr) {
+       column 7: branch never true
+  124: if (closed_) {
+       column 7: branch never true
+  139: if (r == Append::invalid) {
+       column 11: branch never true
+  143: if (r == Append::time_reset) {
+       column 11: branch never true
+  153: if (writer_.records() > 0 && Clock::now() - block_started_ >= cfg_.max_block_delay) {
+       column 7: condition never shown to decide alone (MC/DC)
+  244: if (!write_durably(path, text) || !cfg_.signing_key) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+  249: if (!sig) {
+       column 7: branch never true
+  260: if (!fd) {
+       column 7: branch never true
+  268: if (!r || *r == 0) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 15: branch never true
+       column 15: condition never shown to decide alone (MC/DC)
+  271: (r ? std::string{"wrote nothing"} : errno_message(r.error())));
+       column 18: branch never taken
+  281: if (const int e = ops_->close(*fd); sync_error != 0 || e != 0) {
+       column 39: branch never true
+       column 39: condition never shown to decide alone (MC/DC)
+       column 58: branch never true
+       column 58: condition never shown to decide alone (MC/DC)
+  282: set_fault((sync_error != 0 ? "fsync " : "close ") + part + ": " +
+       column 16: branch never taken
+  283: errno_message(sync_error != 0 ? sync_error : e));
+       column 29: branch never taken
+  286: if (const int e = ops_->rename_no_replace(part, path); e != 0) {
+       column 58: branch never true
+  291: if (const int e = ops_->sync_directory(cfg_.directory); e != 0) {
+       column 61: branch never true
+  304: if (fault_.empty()) {
+       column 7: branch never false
+  313: if (!r || *r == 0) {
+       column 15: branch never true
+       column 15: condition never shown to decide alone (MC/DC)
+  314: set_fault("write " + part_path(segment_) + ": " + (r ? std::string{"wrote nothing"} : errno_message(r.error())));
+       column 58: branch never true
+  338: return faulted() ? fault() : std::nullopt;
+       column 10: branch never true
+  347: if (!faulted() && cfg_.fsync != FsyncPolicy::none) {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+  349: if (const int e = ops_->sync(fd_); e != 0) {
+       column 40: branch never true
+  355: if (const int e = ops_->close(fd_); e != 0) {
+       column 39: branch never true
+  359: if (faulted()) {
+       column 7: branch never true
+  362: if (const int e = ops_->rename_no_replace(part, final_path); e != 0) {
+       column 64: branch never true
+  367: if (const int e = ops_->sync_directory(cfg_.directory); e != 0) {
+       column 61: branch never true
+  394: if (it.new_file_before && !faulted()) {
+       column 31: branch never false
+       column 31: condition never shown to decide alone (MC/DC)
+  397: if (!faulted()) {
+       column 11: branch never false
+  407: if (cfg_.fsync == FsyncPolicy::interval && ++blocks_since_sync_ >= cfg_.fsync_every_blocks && !faulted()) {
+       column 103: branch never false
+       column 103: condition never shown to decide alone (MC/DC)
+  409: if (const int e = ops_->sync(fd_); e != 0) {
+       column 46: branch never true
+  478: return static_cast<bool>(in) || in.eof();
+       column 37: branch never true
+       column 37: condition never shown to decide alone (MC/DC)
+  493: if (!j.is_object() || !j.contains("files") || !j["files"].is_array() ||
+       column 25: branch never true
+       column 25: condition never shown to decide alone (MC/DC)
+       column 49: branch never true
+       column 49: condition never shown to decide alone (MC/DC)
+  494: !j.contains("file_digests") || !j["file_digests"].is_array() ||
+       column 38: branch never true
+       column 38: condition never shown to decide alone (MC/DC)
+  521: if (!in) {
+       column 9: branch never true
+  561: s.fsync = o.fsync == "none" ? FsyncPolicy::none : o.fsync == "interval" ? FsyncPolicy::interval : FsyncPolicy::close;
+       column 13: branch never true
+       column 53: branch never true
+  595: if (!sink) {
+       column 7: branch never true
+
+## minidaq/src/control/run_integrity.cpp
+   18: (value.is_number_integer() && value.get<std::int64_t>() == 0);
+       column 22: condition never shown to decide alone (MC/DC)
+       column 51: branch never true
+       column 51: condition never shown to decide alone (MC/DC)
+   29: if (const auto it = status.find("detector_counters"); it != status.end() && it->is_object()) {
+       column 79: branch never false
+       column 79: condition never shown to decide alone (MC/DC)
+   37: if (const auto it = status.find("stages"); it != status.end() && it->is_array()) {
+       column 68: branch never false
+       column 68: condition never shown to decide alone (MC/DC)
+   48: if (const auto it = status.find("sorter_counters"); it != status.end() && it->is_object()) {
+       column 77: branch never false
+       column 77: condition never shown to decide alone (MC/DC)
+   56: if (const auto it = status.find("sink_counters"); it != status.end() && it->is_object()) {
+       column 75: branch never false
+       column 75: condition never shown to decide alone (MC/DC)
+   64: if (const auto boards = it->find("boards"); boards != it->end() && boards->is_array()) {
+       column 49: branch never false
+       column 49: condition never shown to decide alone (MC/DC)
+       column 72: branch never false
+       column 72: condition never shown to decide alone (MC/DC)
+   82: if (det != status.end() && det->is_object() && det->contains("packets_delivered") &&
+       column 32: branch never false
+   83: det->contains("packets_lost") && boards != it->end() && boards->is_array() &&
+       column 9: branch never false
+       column 42: branch never false
+       column 65: branch never false
+   84: !boards->empty()) {
+       column 9: branch never false
+   89: if (d == b.end() || !d->is_number_unsigned()) {
+       column 13: condition never shown to decide alone (MC/DC)
+   97: if (known && delivered.is_number_unsigned() && lost.is_number_unsigned()) {
+       column 20: branch never false
+       column 20: condition never shown to decide alone (MC/DC)
+       column 54: branch never false
+       column 54: condition never shown to decide alone (MC/DC)
+  106: const bool fault = status.contains("fault") && !status["fault"].is_null();
+       column 22: branch never false
+       column 22: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/service_manager.cpp
+   29: if (!socket.empty() && socket.front() != '/' && socket.front() != '@') {
+       column 26: branch never false
+       column 26: condition never shown to decide alone (MC/DC)
+   33: if (socket.size() >= sizeof(sockaddr_un::sun_path)) {
+       column 7: branch never true
+   54: if (const char* pid = env("WATCHDOG_PID"); pid != nullptr && watchdog) {
+       column 64: branch never false
+       column 64: condition never shown to decide alone (MC/DC)
+   56: if (!parse_into<long long>(pid, p, 1, 1LL << 32) || p != ::getpid()) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+   72: if (addr.sun_path[0] == '@') {
+       column 7: branch never false
+   79: if (fd < 0) {
+       column 7: branch never true
+  131: if (on_change_) {
+       column 11: branch never false
+
+## minidaq/src/control/signing.cpp
+   70: if (!f) {
+       column 9: branch never true
+   80: if (ctx && EVP_DigestVerifyInit(ctx.get(), nullptr, nullptr, nullptr, key.get()) == 1 &&
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+       column 16: branch never false
+       column 16: condition never shown to decide alone (MC/DC)
+  121: if (!impl->key || EVP_PKEY_get_id(impl->key.get()) != EVP_PKEY_ED25519) {
+       column 21: branch never true
+       column 21: condition never shown to decide alone (MC/DC)
+  126: if (EVP_PKEY_get_raw_public_key(impl->key.get(), pub.data(), &len) != 1 || len != pub.size()) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 78: branch never true
+       column 78: condition never shown to decide alone (MC/DC)
+  131: if (EVP_Digest(pub.data(), pub.size(), md.data(), &md_len, EVP_sha256(), nullptr) != 1) {
+       column 7: branch never true
+  143: if (!ctx || EVP_DigestSignInit(ctx.get(), nullptr, nullptr, nullptr, impl_->key.get()) != 1 ||
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 15: branch never true
+       column 15: condition never shown to decide alone (MC/DC)
+  144: EVP_DigestSign(ctx.get(), out, &len, bytes_of(message), message.size()) != 1 ||
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+  145: len != sig.size()) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/control/tls.cpp
+   22: out += out.empty() ? "" : ": ";
+       column 12: branch never true
+   31: if (ctx == nullptr) {
+       column 7: branch never true
+   35: if (SSL_CTX_set_min_proto_version(ctx, TLS1_3_VERSION) != 1) {
+       column 7: branch never true
+   56: if (!t.ctx_) {
+       column 7: branch never true
+   65: if (SSL_CTX_check_private_key(t.ctx_.get()) != 1) {
+       column 7: branch never true
+   74: if (!t.ctx_) {
+       column 7: branch never true
+   87: if (!s.ssl_ || SSL_set_fd(s.ssl_.get(), fd) != 1) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 18: branch never true
+       column 18: condition never shown to decide alone (MC/DC)
+   98: if (!s.ssl_ || SSL_set_fd(s.ssl_.get(), fd) != 1) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 18: branch never true
+       column 18: condition never shown to decide alone (MC/DC)
+  105: ::inet_pton(AF_INET6, host.c_str(), addr.data()) == 1;
+       column 22: branch never true
+       column 22: condition never shown to decide alone (MC/DC)
+  109: : SSL_set1_host(s.ssl_.get(), host.c_str()) == 1 &&
+       column 30: branch never false
+       column 30: condition never shown to decide alone (MC/DC)
+  110: SSL_ctrl(s.ssl_.get(), SSL_CTRL_SET_TLSEXT_HOSTNAME, TLSEXT_NAMETYPE_host_name,
+       column 34: branch never false
+       column 34: condition never shown to decide alone (MC/DC)
+  112: if (!named) {
+       column 7: branch never true
+  117: return Unexpected{drain_errors(verify == X509_V_OK ? std::string{"TLS handshake"}
+       column 36: branch never true
+  126: if (ret > 0) {
+       column 7: branch never true
+  132: case SSL_ERROR_WANT_WRITE:
+       column 5: branch never true
+  159: return ret == 1 ? Result{Io::done, sent} : result(ret);
+       column 10: branch never false
+
+## minidaq/src/control/udp_detector.cpp
+   30: if (addr.s_addr == htonl(INADDR_ANY)) {
+       column 7: branch never true
+   34: if (::getifaddrs(&list) != 0) {
+       column 7: branch never true
+   38: for (const ifaddrs* i = list; i != nullptr; i = i->ifa_next) {
+       column 33: branch never false
+   39: if (i->ifa_addr != nullptr && i->ifa_addr->sa_family == AF_INET &&
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+   41: reinterpret_cast<const sockaddr_in*>(i->ifa_addr)->sin_addr.s_addr == addr.s_addr) {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+   57: if (c->cmsg_level == SOL_SOCKET && c->cmsg_type == SO_RXQ_OVFL &&
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+       column 40: branch never false
+       column 40: condition never shown to decide alone (MC/DC)
+   58: c->cmsg_len >= CMSG_LEN(sizeof(std::uint32_t))) {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+   80: if (fd < 0) {
+       column 7: branch never true
+  106: if (struct stat st{}; ::fstat(fd, &st) == 0) {
+       column 25: branch never false
+  113: if (::getsockname(fd, reinterpret_cast<sockaddr*>(&bound), &blen) == 0) {
+       column 7: branch never false
+  124: d->description_ = n >= 0 ? buf : "UDP readout";
+       column 21: branch never false
+  177: if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 28: branch never taken
+       column 28: condition never shown to decide alone (MC/DC)
+       column 52: branch never taken
+       column 52: condition never shown to decide alone (MC/DC)
+  185: const std::size_t size = (m.msg_hdr.msg_flags & MSG_TRUNC) != 0 ? slot : m.msg_len;
+       column 32: branch never true
+  191: } else if (source_ && *source_ != p->header.source) {
+       column 18: condition never shown to decide alone (MC/DC)
+       column 29: branch never true
+       column 29: condition never shown to decide alone (MC/DC)
+  237: if (const int e = counters_.socket_errno.load(std::memory_order_relaxed); e != 0) {
+       column 77: branch never true
+
+## minidaq/src/core/crc32.cpp
+none
+
+## minidaq/src/core/flight_recorder.cpp
+   11: switch (c) {
+       column 11: branch never true
+   43: return x.ring != y.ring ? x.ring > y.ring : x.seq > y.seq;
+       column 10: branch never false
+
+## minidaq/src/format/list_mode.cpp
+   33: switch (e) {
+       column 11: branch never true
+   34: case FormatError::too_short: return "too_short";
+       column 5: branch never true
+   35: case FormatError::bad_magic: return "bad_magic";
+       column 5: branch never true
+   36: case FormatError::bad_version: return "bad_version";
+       column 5: branch never true
+   37: case FormatError::bad_header_crc: return "bad_header_crc";
+       column 5: branch never true
+   38: case FormatError::bad_field: return "bad_field";
+       column 5: branch never true
+   41: case FormatError::sequence_gap: return "sequence_gap";
+       column 5: branch never true
+  102: if (load_le<std::uint32_t>(data, 20) != 0 || load_le<std::uint32_t>(data, 24) != record_bytes ||
+       column 48: branch never true
+       column 48: condition never shown to decide alone (MC/DC)
+  103: load_le<std::uint32_t>(data, 28) != 0 || load_le<std::uint32_t>(data, crc_at + 4) != 0 || !padding_zero) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 97: branch never true
+       column 97: condition never shown to decide alone (MC/DC)
+  118: buffer.size() < block_header_bytes ? 0 : (buffer.size() - block_header_bytes) / record_bytes})} {}
+       column 30: branch never true
+  142: if (a >= tag_crystal || b >= tag_crystal || dt < std::numeric_limits<std::int32_t>::min() ||
+       column 47: branch never true
+       column 47: condition never shown to decide alone (MC/DC)
+  166: if (const auto r = place(t.time); r != Append::ok) {
+       column 37: branch never true
+  199: return data.size() >= block_header_bytes && std::equal(block_magic.begin(), block_magic.end(), data.begin()) &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+       column 47: branch never false
+       column 47: condition never shown to decide alone (MC/DC)
+  200: crc32(data.first(28)) == load_le<std::uint32_t>(data, 28);
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  221: if (n > max_block_records || (v.flags & ~(block_flag_end_of_run | block_flag_end_of_file)) != 0) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 32: branch never true
+       column 32: condition never shown to decide alone (MC/DC)
+  272: if (block_header_intact(data_.subspan(at))) {
+       column 9: branch never false
+  314: if (gap < (std::uint32_t{1} << 31)) {
+       column 11: branch never false
+
+## minidaq/src/format/packed_single.cpp
+   64: const std::size_t n = nwords < out.size() ? nwords : out.size();
+       column 25: branch never false
+
+## minidaq/src/format/raw_single.cpp
+   15: switch (e) {
+       column 11: branch never true
+
+## minidaq/src/format/readout_packet.cpp
+   12: switch (e) {
+       column 11: branch never true
+   27: if (words.empty() || words.size() > max_words || out.size() < bytes) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+   84: if (!std::has_single_bit(cfg.window_packets) || cfg.window_packets > 4096 || cfg.max_hold_ns < 0 ||
+       column 51: branch never true
+       column 51: condition never shown to decide alone (MC/DC)
+       column 80: branch never true
+       column 80: condition never shown to decide alone (MC/DC)
+   85: cfg.max_gap_packets < cfg.window_packets || cfg.max_gap_packets > (std::uint32_t{1} << 30)) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 51: branch never true
+       column 51: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/hw/mmio_bus.cpp
+   29: if (fd_to_close_ >= 0) {
+       column 7: branch never true
+   39: if (size == 0 || size % 4 != 0) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 20: branch never true
+       column 20: condition never shown to decide alone (MC/DC)
+   48: if (p == MAP_FAILED) {
+       column 7: branch never true
+   63: if (fd < 0) {
+       column 7: branch never false
+   68: if (!base) {
+       column 7: branch never taken
+   97: if (address % 4 != 0 || std::size_t{address} + 4 > size_) {
+       column 27: branch never true
+       column 27: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/hw/register.cpp
+    7: switch (e) {
+       column 11: branch never true
+    8: case HwErrc::ok:
+       column 5: branch never true
+   14: case HwErrc::bad_address:
+       column 5: branch never true
+
+## minidaq/src/hw/slow_control.cpp
+   17: switch (s) {
+       column 11: branch never true
+   31: switch (l) {
+       column 11: branch never true
+   34: case TempLevel::warning:
+       column 5: branch never true
+   80: if (b.s.state == BoardState::fault) {
+       column 7: branch never true
+  144: id, id == 0xFFFF'FFFFU ? " (all ones: the device may have gone)" : "");
+       column 29: branch never false
+  222: if (s.triggers || !triggers) {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+       column 23: branch never taken
+       column 23: condition never shown to decide alone (MC/DC)
+  228: const bool map_1_2 = major > 1 || minor >= 3;
+       column 24: branch never true
+       column 24: condition never shown to decide alone (MC/DC)
+  231: if (const auto w = write<feb::MarkerInterval>(*b.bus, settings_.marker_interval_us); !w) {
+       column 90: branch never true
+  242: if (const auto w = write_field<feb::Control::TriggerEnable>(*b.bus, triggers ? 1U : 0U); !w) {
+       column 94: branch never true
+  259: if (!sent) {
+       column 9: branch never true
+  272: if (major > 1 || minor >= 4) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+  294: if (w) {
+       column 9: branch never false
+  398: return cycles_.load(std::memory_order_relaxed) > 0 &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+  406: return cycles_.load(std::memory_order_relaxed) > 0 &&
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/net/host_counters.cpp
+   17: while (i < line.size() && (line[i] == ' ' || line[i] == '\t')) {
+       column 50: branch never true
+       column 50: condition never shown to decide alone (MC/DC)
+   21: while (i < line.size() && line[i] != ' ' && line[i] != '\t') {
+       column 49: branch never false
+       column 49: condition never shown to decide alone (MC/DC)
+   36: text = nl == std::string_view::npos ? std::string_view{} : text.substr(nl + 1);
+       column 12: branch never true
+   44: if (s.empty() || ec != std::errc{} || ptr != s.data() + s.size()) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 41: branch never true
+       column 41: condition never shown to decide alone (MC/DC)
+   59: return now >= before ? now - before : 0;  // a counter that went back was reset: no change
+       column 10: branch never false
+  119: if (f.empty()) {
+       column 9: branch never true
+  128: if (!processed || !dropped || !squeeze) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 35: branch never true
+       column 35: condition never shown to decide alone (MC/DC)
+  148: if (f.size() < 13 || f[0] == "sl" || number(f[9]) != inode) {
+       column 9: condition never shown to decide alone (MC/DC)
+  154: colon == std::string_view::npos ? std::nullopt : number(queues.substr(colon + 1), 16);
+       column 9: branch never true
+  156: if (!rx_queue || !drops) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 22: branch never true
+       column 22: condition never shown to decide alone (MC/DC)
+  176: if (now.softnet && before.softnet) {
+       column 22: branch never false
+       column 22: condition never shown to decide alone (MC/DC)
+  204: if (!interface_.empty() && interface_.find('/') == std::string::npos && interface_ != "." &&
+       column 75: branch never false
+       column 75: condition never shown to decide alone (MC/DC)
+  205: interface_ != "..") {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+  217: while (!t.empty() && (t.back() == '\n' || t.back() == ' ')) {
+       column 16: branch never false
+       column 16: condition never shown to decide alone (MC/DC)
+       column 51: branch never true
+       column 51: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/pipeline/acquisition_pipeline.cpp
+   43: if (cfg_.rt.lock_memory) {
+       column 7: branch never true
+  134: if (n == 0) {
+       column 13: branch never true
+  195: if (in == nullptr) {
+       column 11: branch never false
+  276: if (marker_ps != no_marker) {
+       column 11: branch never true
+  291: if (static_cast<std::size_t>(held.end() - end) > cfg_.batch_size) {
+       column 9: branch never true
+  298: if (from == end && marker_holds) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+       column 24: branch never taken
+       column 24: condition never shown to decide alone (MC/DC)
+  328: if (in == nullptr) {
+       column 11: branch never false
+  389: if (n_ == ring_.size()) {
+       column 9: branch never true
+  397: for (std::size_t i = 0; i < n_; ++i) {
+       column 29: branch never false
+  403: return n_ > 0 ? ring_[(head_ + n_ - 1) % ring_.size()].origin_ns : 0;
+       column 12: branch never taken
+  485: if (in == nullptr) {
+       column 11: branch never false
+  530: if (in == nullptr) {
+       column 11: branch never false
+
+## minidaq/src/processing/calibration.cpp
+none
+
+## minidaq/src/processing/coincidence_sorter.cpp
+  140: if (have_last_ && t <= last_time_) {
+       column 7: branch never false
+       column 7: condition never shown to decide alone (MC/DC)
+  165: if (first_ > 4096 && first_ * 2 > buf_.size()) {
+       column 24: branch never false
+       column 24: condition never shown to decide alone (MC/DC)
+  186: while (e < buf_.size() && buf_[e].time - t <= cfg_.delay + cfg_.window) {
+       column 31: branch never false
+       column 31: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/processing/energy_filter.cpp
+  109: switch (k) {
+       column 11: branch never true
+  110: case FilterKernel::branchy: return "branchy";
+       column 5: branch never true
+  111: case FilterKernel::branchless: return "branchless";
+       column 5: branch never true
+  112: case FilterKernel::avx2: return "avx2";
+       column 5: branch never true
+  113: case FilterKernel::avx512: return "avx512";
+       column 5: branch never false
+  114: case FilterKernel::simd: return "simd";
+       column 5: branch never true
+  115: case FilterKernel::best: return "best";
+       column 5: branch never true
+  121: switch (k) {
+       column 11: branch never true
+  144: if (kernel_available(FilterKernel::avx512)) {
+       column 9: branch never false
+  147: if (kernel_available(FilterKernel::avx2)) {
+       column 9: branch never taken
+  170: } else if (k == FilterKernel::simd || !kernel_available(k)) {
+       column 41: branch never true
+       column 41: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/processing/node_merge.cpp
+none
+
+## minidaq/src/processing/singles_counter.cpp
+none
+
+## minidaq/src/processing/sinogram.cpp
+   23: if (!(c.fov_radius_mm > 0.0) || !(c.fov_radius_mm < ScannerGeometry::inner_radius_mm)) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 35: branch never true
+       column 35: condition never shown to decide alone (MC/DC)
+   26: if (c.max_ring_difference >= num_rings) {
+       column 7: branch never true
+   29: if (c.tof_bins == 0 || c.tof_bins > 255) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 26: branch never true
+       column 26: condition never shown to decide alone (MC/DC)
+   32: if (c.tof_bins > 1 && c.tof_bin_ps <= 0) {
+       column 7: condition never shown to decide alone (MC/DC)
+       column 25: branch never true
+       column 25: condition never shown to decide alone (MC/DC)
+   35: if (c.delayed_window_ps < 0) {
+       column 7: branch never true
+   57: if (!ScannerGeometry::valid(c.first.crystal) || !ScannerGeometry::valid(c.second.crystal)) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 51: branch never true
+       column 51: condition never shown to decide alone (MC/DC)
+   63: if (!bin) {
+       column 7: branch never true
+  110: switch (p.outcome) {
+       column 11: branch never true
+  111: case Outcome::invalid_crystal: ++stats_.invalid_crystal; return;
+       column 5: branch never true
+  112: case Outcome::no_angle: ++stats_.no_angle; return;
+       column 5: branch never true
+
+## minidaq/src/processing/stream_merger.cpp
+   14: if (c.boards == 0 || c.max_skew < Picoseconds{0}) {
+       column 24: branch never true
+       column 24: condition never shown to decide alone (MC/DC)
+   40: if (b.head > 4096 && b.head * 2 > b.queue.size()) {
+       column 26: branch never false
+       column 26: condition never shown to decide alone (MC/DC)
+   74: if (cfg_.max_skew > Picoseconds{0} && hi - lo > cfg_.max_skew) {
+       column 41: branch never false
+       column 41: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/processing/timing_monitor.cpp
+   37: switch (l) {
+       column 11: branch never true
+  108: if (std::abs(M[i * blocks + c]) > std::abs(M[pivot * blocks + c])) {
+       column 11: branch never true
+  112: if (pivot != c) {
+       column 9: branch never true
+  113: for (std::size_t j = 0; j < blocks; ++j) {
+       column 31: branch never taken
+  219: if (!ScannerGeometry::valid(c.first.crystal) || !ScannerGeometry::valid(c.second.crystal)) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/rt/crash_report.cpp
+   70: if (digit != 0 || started || shift == 0) {
+       column 36: branch never true
+       column 36: condition never shown to decide alone (MC/DC)
+   79: while (done < n_ && fd_ >= 0) {
+       column 25: branch never false
+       column 25: condition never shown to decide alone (MC/DC)
+   81: if (w < 0 && errno == EINTR) {
+       column 11: branch never true
+       column 11: condition never shown to decide alone (MC/DC)
+       column 20: branch never taken
+       column 20: condition never shown to decide alone (MC/DC)
+   84: if (w <= 0) {
+       column 11: branch never true
+   94: if (n_ == buf_.size()) {
+       column 9: branch never true
+  109: if (!reporting.exchange(true)) {
+       column 7: branch never taken
+  117: if (info == nullptr || info->si_code <= 0) {  // sent by kill, raise or abort
+       column 7: branch never taken
+       column 7: condition never shown to decide alone (MC/DC)
+       column 26: branch never taken
+       column 26: condition never shown to decide alone (MC/DC)
+  128: for (std::size_t i = 0; i < info->dlpi_phnum; ++i) {
+       column 27: branch never false
+  140: if (note.n_type == NT_GNU_BUILD_ID && note.n_namesz == 4 &&
+       column 45: branch never false
+       column 45: condition never shown to decide alone (MC/DC)
+  141: std::memcmp(reinterpret_cast<const void*>(name), "GNU", 4) == 0) {
+       column 11: branch never false
+       column 11: condition never shown to decide alone (MC/DC)
+  199: if (info != nullptr) {
+       column 7: branch never false
+  237: if (::sigaltstack(&ss, nullptr) != 0) {
+       column 7: branch never true
+  245: if (::sigaction(sig, &sa, nullptr) != 0) {
+       column 9: branch never true
+
+## minidaq/src/rt/health.cpp
+   21: const auto from = last && *last > w.since ? *last : w.since;
+       column 23: condition never shown to decide alone (MC/DC)
+       column 31: condition never shown to decide alone (MC/DC)
+
+## minidaq/src/rt/realtime.cpp
+   23: while (!s.empty() && (s.front() == ' ' || s.front() == '\t' || s.front() == '\r')) {
+       column 45: branch never true
+       column 45: condition never shown to decide alone (MC/DC)
+       column 66: branch never true
+       column 66: condition never shown to decide alone (MC/DC)
+   26: while (!s.empty() && (s.back() == ' ' || s.back() == '\t' || s.back() == '\r')) {
+       column 44: branch never true
+       column 44: condition never shown to decide alone (MC/DC)
+       column 64: branch never true
+       column 64: condition never shown to decide alone (MC/DC)
+   34: return r.ec == std::errc{} && r.ptr == s.data() + s.size();
+       column 10: branch never false
+       column 10: condition never shown to decide alone (MC/DC)
+       column 33: branch never false
+       column 33: condition never shown to decide alone (MC/DC)
+   40: switch (p) {
+       column 11: branch never true
+   43: case SchedPolicy::fifo:
+       column 5: branch never true
+   60: if (const int rc = pthread_setaffinity_np(pthread_self(), sizeof(set), &set); rc != 0) {
+       column 81: branch never true
+   71: if (policy == SchedPolicy::fifo || policy == SchedPolicy::rr) {
+       column 38: branch never true
+       column 38: condition never shown to decide alone (MC/DC)
+   72: native = policy == SchedPolicy::fifo ? SCHED_FIFO : SCHED_RR;
+       column 14: branch never false
+   75: if (priority < lo || priority > hi) {
+       column 26: branch never true
+       column 26: condition never shown to decide alone (MC/DC)
+   80: if (const int rc = pthread_setschedparam(pthread_self(), native, &param); rc != 0) {
+       column 77: branch never true
+   97: if (prctl(PR_SET_TIMERSLACK, ns, 0, 0, 0) != 0) {
+       column 7: branch never true
+  124: if (auto r = pin_current_thread(s.cpu); r) {
+       column 45: branch never false
+  130: if (auto r = set_current_thread_scheduler(s.policy, s.priority); r) {
+       column 68: branch never false
+  132: } else if (!st.error) {
+       column 14: branch never taken
+  146: if (mlockall(MCL_CURRENT | MCL_FUTURE) != 0) {
+       column 7: branch never taken
+  155: if (getrusage(RUSAGE_THREAD, &u) != 0) {
+       column 7: branch never true
+  168: text = nl == std::string_view::npos ? std::string_view{} : text.substr(nl + 1);
+       column 12: branch never true
+  194: if (!parse_int(value, kib) || kib < 0 || kib > 65536) {
+       column 11: branch never true
+       column 11: condition never shown to decide alone (MC/DC)
+       column 37: branch never true
+       column 37: condition never shown to decide alone (MC/DC)
+       column 48: branch never true
+       column 48: condition never shown to decide alone (MC/DC)
+  203: if (dot == std::string_view::npos || it == stage_names.end()) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+  209: if (!parse_int(value, s.cpu) || s.cpu < -1) {
+       column 11: branch never true
+       column 11: condition never shown to decide alone (MC/DC)
+       column 39: branch never true
+       column 39: condition never shown to decide alone (MC/DC)
+  222: } else if (field == "priority") {
+       column 16: branch never false
+  223: if (!parse_int(value, s.priority) || s.priority < 0 || s.priority > 99) {
+       column 11: branch never true
+       column 11: condition never shown to decide alone (MC/DC)
+       column 44: branch never true
+       column 44: condition never shown to decide alone (MC/DC)
+  240: out += "lock_memory = " + std::string{p.lock_memory ? "true" : "false"} + "\n";
+       column 41: branch never false
+
+## minidaq/src/update/bundle.cpp
+   57: return a.pre.empty() ? std::strong_ordering::greater : std::strong_ordering::less;
+       column 12: branch never true
+   66: return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
+       column 20: branch never false
+       column 20: condition never shown to decide alone (MC/DC)
+  152: if (!ok) {
+       column 7: branch never true
+  156: if (!ok) {
+       column 7: branch never true
+  164: if (!m) {
+       column 7: branch never true
+  176: if (!ctx || EVP_DigestInit_ex(ctx.get(), EVP_sha256(), nullptr) != 1) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+       column 15: branch never true
+       column 15: condition never shown to decide alone (MC/DC)
+  186: if (std::ferror(f.get()) != 0) {
+       column 7: branch never true
+
+## minidaq/src/update/slots.cpp
+   48: if (fd < 0) {
+       column 7: branch never true
+   51: const int r = ::fsync(fd) == 0 ? 0 : errno;
+       column 17: branch never false
+   64: if (!out) {
+       column 9: branch never true
+   68: if (const int e = sync_path(tmp, false); e != 0) {
+       column 44: branch never true
+   71: if (::rename(tmp.c_str(), path.c_str()) != 0) {
+       column 7: branch never true
+   74: if (const int e = sync_path(path.parent_path(), true); e != 0) {
+       column 58: branch never true
+   95: if (out != nullptr && ::pipe2(pipe_fds.data(), O_CLOEXEC) != 0) {
+       column 7: condition never shown to decide alone (MC/DC)
+       column 25: branch never true
+       column 25: condition never shown to decide alone (MC/DC)
+  108: if (spawned == 0) {
+       column 9: branch never false
+  111: while ((n = ::read(pipe_fds[0], buf.data(), buf.size())) > 0 || (n < 0 && errno == EINTR)) {
+       column 72: branch never true
+       column 72: condition never shown to decide alone (MC/DC)
+       column 81: branch never taken
+       column 81: condition never shown to decide alone (MC/DC)
+  112: if (n > 0) {
+       column 13: branch never false
+  119: if (spawned != 0) {
+       column 7: branch never true
+  123: while (::waitpid(pid, &status, 0) < 0) {
+       column 10: branch never true
+  124: if (errno != EINTR) {
+       column 9: branch never taken
+  128: if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+       column 7: branch never true
+       column 7: condition never shown to decide alone (MC/DC)
+  174: if (!contained(path) || path.empty() || path == "." || path == "MANIFEST.sha256" ||
+       column 29: branch never true
+       column 29: condition never shown to decide alone (MC/DC)
+  182: !ec && it != fs::recursive_directory_iterator{}; it.increment(ec)) {
+       column 8: condition never shown to decide alone (MC/DC)
+  199: if (!d || d->sha256 != entry->second) {
+       column 9: branch never true
+       column 9: condition never shown to decide alone (MC/DC)
+  204: if (ec) {
+       column 7: branch never true
+  230: if (this != &other) {
+       column 7: branch never taken
+  231: if (lock_fd_ >= 0) {
+       column 9: branch never taken
+  268: if (w) {
+       column 7: branch never false
+  281: if (ec) {
+       column 7: branch never true
+  285: if (::rename(next.c_str(), link.c_str()) != 0) {
+       column 7: branch never true
+  288: if (const int e = sync_path(root_, true); e != 0) {
+       column 45: branch never true
+  303: if (s.lock_fd_ < 0) {
+       column 7: branch never true
+  328: if (j.contains("good_version")) {
+       column 9: branch never false
+  334: if (j.contains("trial_version")) {
+       column 9: branch never false
+  354: if (auto w = s.switch_to(s.state_->good); !w) {
+       column 47: branch never true
+  367: if (auto w = s.write_state(st); !w) {
+       column 37: branch never true
+  403: if (good && m.version <= *good) {
+       column 9: branch never false
+       column 9: condition never shown to decide alone (MC/DC)
+  420: if (ec) {
+       column 7: branch never true
+  436: !x) {
+       column 7: branch never true
+  459: if (auto w = write_state(next); !w) {
+       column 35: branch never true
+  463: if (auto w = switch_to(slot); !w) {
+       column 33: branch never true
+  486: if (auto w = write_state(next); !w) {
+       column 35: branch never true
+  501: if (auto w = switch_to(state_->good); !w) {
+       column 41: branch never true
+  508: if (auto w = write_state(next); !w) {
+       column 35: branch never true

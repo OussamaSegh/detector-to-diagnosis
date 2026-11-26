@@ -1,0 +1,9 @@
+soak: 1e+06 singles/s for 20.0 min, 121 samples every 10 s
+machine: vm, 4 CPUs; programs the previous release's build
+singles in: 1200027296 (1000023/s); losses 0; fault None; complete True
+resident memory: first 30.7 MiB, last 31.4 MiB, max 31.4 MiB; trend +0.018 MiB/h (standard error 0.092) over 61 samples after 10 min
+end-to-end latency over each interval: p99 max 24.64 ms, max 32.90 ms
+intervals with p99 above 10 ms: 2 of 120 (at 240 s, 910 s)
+steal time over each interval: max 1.07%, mean 0.66%, in the intervals above the limit: 0.91%, 0.37%
+per second (MDQ-PR-064): steal max 2.74%, run-queue wait of one thread max 86.72 ms, in the intervals above the limit: 26.531 ms (mdq-decode), steal 2.69%, 29.86 ms (mdq-sort), steal 0.62%
+result: PASS

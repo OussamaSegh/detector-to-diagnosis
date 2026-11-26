@@ -1,0 +1,5 @@
+# GitHub Actions runs of the 2.3.0 candidate (read 2026-11-26)
+1926017 (candidate of the release checks): ci 45777307529 success; gates 45777307569 success;
+  codeql 45777307551 success; pages 45777307475 success; kdp 45777307463 success;
+  perf 45777307627 success.
+The release commit's own runs are checked before the tag is made (MDQ-PR-016).

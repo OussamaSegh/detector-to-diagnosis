@@ -5,6 +5,15 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
+Added 2026-11-26, 16:30 UTC: **2.3.0 is released** (record `docs/regulatory/releases/2.3.0.md`,
+checks on 1926017, evidence `measurements/release-2.3.0/`). All five parts passed; acceptance 9 of 10:
+ACC-04 failed (8 of 600 slow intervals, six allowed) while ACC-10 passed (book-v2.2.0's programs had
+10 of 600 interleaved on the same machine, p 0.76), so the coordinator decided under the delegation
+to release with a deviation (SDP v25 section 8). MDQ-PR-096 stays open; closing it is a 3.0.0 item.
+CAPA-0007 closed effective; CAPA-0008 due at 3.0.0. Reproducible build identical. Tag via
+`.github/tags.txt` after the release commit's CI is green; then packages, the email and the Opus
+review of 2.3.0, whose fixes go into 3.0.0-dev.
+
 Added 2026-11-26, 08:00 UTC: **the release of 2.3.0 has started.** Theme I is done (PR #29,
 396a6ab; 256 figures, two CC0 photos, 802 pages). The internal audit of 2026-11-26 found one minor
 nonconformity: committed evidence named paths of the machines (MDQ-PR-106); `tools/evidence_paths.py`

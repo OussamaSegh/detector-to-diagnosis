@@ -1,0 +1,24 @@
+# 2026-11-26T15:55:44Z reproducibility of commit 1926017dc0ac04df6bab072eb6a5833d04ba52c5, preset product
+first checkout:  /tmp/tmp.HGXfgh3TsE/a
+second checkout: /tmp/tmp.HGXfgh3TsE/second-checkout/with-a-longer-path
+fa6e4cc6dc6a2c711ee0a902748812fe4729ebef21ed0e64282db282d00657c8  first  minidaq-2.3.0-dev-1926017dc0ac.tar
+fa6e4cc6dc6a2c711ee0a902748812fe4729ebef21ed0e64282db282d00657c8  second minidaq-2.3.0-dev-1926017dc0ac.tar
+identical: the product archive is reproducible
+programs:
+  minidaq_server   build ID b913ee60b36bdcdf99521cf41ac224895563f8ed  sha256 0633aa66d4627c4a1df21349ed79388b779668b8aa335f6d8665da1b3f7bd099
+  minidaq_ctl      build ID 5b14cf2ed6820a2b652ad84e94b94fc9c2447149  sha256 a096b5b47f38e0fb09312f8ef7d32bac1ce95800bed37cb4172df6701525154b
+manifest:
+  d08bac90eb6e9c499a1ab9269c4ea656b6177a2c991ed74c2ba14e2d7af624f0  BUILDINFO.json
+  a096b5b47f38e0fb09312f8ef7d32bac1ce95800bed37cb4172df6701525154b  bin/minidaq_ctl
+  0633aa66d4627c4a1df21349ed79388b779668b8aa335f6d8665da1b3f7bd099  bin/minidaq_server
+  fcf48f1e1a4ff64d28526ac4811d158bb7b94df8f2266bd1669c569b9927f15c  debug/minidaq_ctl.debug
+  3d79c19d5fea2ed68791be4859e0ea6d0f12cbd73aebe329be85362190b346a5  debug/minidaq_server.debug
+  15072ef7c0fe26a0348be7a94ef05afef68bbccd30b2051fbb5c46e057c8745c  sbom/minidaq.cdx.json
+toolchain:
+  binutils: GNU objcopy (GNU Binutils for Ubuntu) 2.42
+  c_library: ldd (Ubuntu GLIBC 2.39-0ubuntu8.12) 2.39
+  cmake: cmake version 3.28.3
+  compiler: g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+  ninja: 1.11.1
+  openssl: OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
+  python: Python 3.13.18

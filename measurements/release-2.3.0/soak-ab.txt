@@ -1,0 +1,69 @@
+# 2026-11-26T14:13:21Z commit 1926017 soak: release builds of 1926017 and of book-v2.2.0, 5 blocks of 20 minutes each, interleaved
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="$SCRATCH/rc230/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="$SCRATCH/rc230/.deps"
+  FETCHCONTENT_UPDATES_DISCONNECTED="ON"
+
+-- Failed to find LLVM FileCheck
+-- Google Benchmark version: v1.9.1, normalized to 1.9.1
+-- Performing Test HAVE_STD_REGEX -- success
+-- Performing Test HAVE_GNU_POSIX_REGEX -- failed to compile
+-- Performing Test HAVE_POSIX_REGEX -- success
+-- Performing Test HAVE_STEADY_CLOCK -- success
+-- Performing Test HAVE_PTHREAD_AFFINITY -- success
+-- Using the multi-header code from $SCRATCH/rc230/.deps/nlohmann_json-src/include/
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
+-- pybind11 v3.1.0 
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
+-- Configuring done (3.5s)
+-- Generating done (0.2s)
+-- Build files have been written to: $SCRATCH/rc230/build/release
+[0/2] Re-checking globbed directories...
+ninja: no work to do.
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="$SCRATCH/rc230-out/soak-ab/base-src/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="$SCRATCH/rc230-out/soak-ab/base-src/.deps"
+  FETCHCONTENT_UPDATES_DISCONNECTED="ON"
+
+-- Failed to find LLVM FileCheck
+-- Google Benchmark version: v1.9.1, normalized to 1.9.1
+-- Performing Test HAVE_STD_REGEX -- success
+-- Performing Test HAVE_GNU_POSIX_REGEX -- failed to compile
+-- Performing Test HAVE_POSIX_REGEX -- success
+-- Performing Test HAVE_STEADY_CLOCK -- success
+-- Performing Test HAVE_PTHREAD_AFFINITY -- success
+-- Using the multi-header code from $SCRATCH/rc230-out/soak-ab/base-src/.deps/nlohmann_json-src/include/
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
+-- pybind11 v3.1.0 
+-- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: $SCRATCH/rc230-out/soak-ab/base-src/build/release
+ninja: no work to do.
+base book-v2.2.0 = c4b5ca3187c72e058a6495ddc4be28b1481ac660
+base-1: done before, kept
+head-1: done before, kept
+head-2: done before, kept
+base-2: done before, kept
+base-3: done before, kept
+head-3: 20 min of build/release/minidaq/apps
+head-4: 20 min of build/release/minidaq/apps
+base-4: 20 min of $SCRATCH/rc230-out/soak-ab/base-src/build/release/minidaq/apps
+base-5: 20 min of $SCRATCH/rc230-out/soak-ab/base-src/build/release/minidaq/apps
+head-5: 20 min of build/release/minidaq/apps
+soak: 1e+06 singles/s for 100.0 min, 605 samples every 10 s, in 5 blocks interleaved with the other side's (CR-0038)
+resident memory: max 31.4 MiB; trend +0.012 MiB/h (standard error 0.041) pooled within 5 blocks, 305 samples after 10 min of each
+end-to-end latency over each interval: p99 max 26.08 ms, max 46.92 ms
+intervals with p99 above 10 ms: 8 of 600 (block 1 at 120 s, block 1 at 530 s, block 1 at 560 s, block 1 at 700 s, block 1 at 1050 s, block 3 at 1070 s, block 4 at 70 s, block 4 at 180 s)
+steal time over each interval: max 2.97%, mean 0.71%
+result: PASS
+intervals with p99 above the limit: candidate 8 of 600 (1.33%), previous release 10 of 600 (1.67%)
+Fisher's exact test, one-sided (the candidate worse): p = 0.7613, alpha 0.05
+power: 51% to find a candidate with twice the previous release's rate (1.67%)
+result: PASS
