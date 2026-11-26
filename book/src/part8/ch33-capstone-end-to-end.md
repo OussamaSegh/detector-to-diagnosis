@@ -382,6 +382,14 @@ soak gave 2.2.0's programs 2 of 600 and the candidate 5, both within the limit
 had a 9% chance of finding a candidate twice as slow. The record states that power beside the
 verdict, because a test that could not have failed proves little by passing.
 
+The release soak of 2.3.0 showed the test's other limit. The candidate had 8 slow intervals and
+2.2.0's programs 10 (p = 0.76, power 51%), but five of the candidate's eight fell in its first
+block of twenty minutes. Fisher's test counts intervals as if each were drawn on its own, and
+slow intervals come in spells, as a busy host's do; the five blocks are then nearer to five
+observations than to six hundred, and the stated power is an upper bound. Read the counts block
+by block beside the test (5 against 2, 0 against 2, 1 against 3, 2 against 1, 0 against 2): a
+pattern the blocks do not show is not one the test should be trusted to find.
+
 `tools/acceptance.py` (TL-41) evaluates the specification from one output directory of the release
 checks. Each rule reads one kind of evidence and returns whether the target is met and what was
 found:

@@ -14,6 +14,16 @@ CAPA-0007 closed effective; CAPA-0008 due at 3.0.0. Reproducible build identical
 `.github/tags.txt` after the release commit's CI is green; then packages, the email and the Opus
 review of 2.3.0, whose fixes go into 3.0.0-dev.
 
+Added 2026-11-26, 17:30 UTC (review of 2.3.0, Opus): **the review's PR** fixes the evidence
+path check, which missed a home directory after a doubled slash (one line was left in
+`measurements/ch05/flags/pgo-build.log`; MDQ-PR-107, bears on CAPA-0008's criterion at 3.0.0), and
+records that 2.3.0 went out without the SOUP review before release that the SOUP list promised
+(MDQ-PR-108): `docs.soup` asks for "### DATE: every item, before release X.Y.Z" in a release's
+VERSION from 3.0.0 on. Notes in the record of 2.3.0 and Chapter 33: ACC-10's intervals are not
+independent (five of the candidate's eight slow ones in its first block), so the stated power is an
+upper bound. The photos' license pages were still not reachable from the session (O-10 stays with
+the author). Next free: MDQ-PR-109, CAPA-0009, CR-0041, ADR 0042, TL-54.
+
 Added 2026-11-26, 08:00 UTC: **the release of 2.3.0 has started.** Theme I is done (PR #29,
 396a6ab; 256 figures, two CC0 photos, 802 pages). The internal audit of 2026-11-26 found one minor
 nonconformity: committed evidence named paths of the machines (MDQ-PR-106); `tools/evidence_paths.py`

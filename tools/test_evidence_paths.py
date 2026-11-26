@@ -27,6 +27,15 @@ class Clean(unittest.TestCase):
                               "out $SCRATCH/rel110/coverage\n")
         self.assertEqual(evidence_paths.found(out), [])
 
+    def test_a_home_after_a_doubled_slash_is_found(self):
+        # MDQ-PR-107: GCC printed a profile directory joined to an absolute object path.
+        text = ("data file 'build/pgo-data//home/someone/src/b.gcda' not found\n"
+                "see file:///home/someone/report.html\n")
+        self.assertEqual(evidence_paths.found(text), ["/home/someone", "/home/someone"])
+        self.assertEqual(evidence_paths.clean(text),
+                         "data file 'build/pgo-data/~/src/b.gcda' not found\n"
+                         "see file://~/report.html\n")
+
     def test_temporary_and_relative_paths_are_kept(self):
         text = ("run /tmp/tmp.nPtnn2ROtj/out and /tmp/minidaq-e2e-x/run.bin\n"
                 "measurements/home/root.txt, build/home/user, ~/src, $HOME/x\n")

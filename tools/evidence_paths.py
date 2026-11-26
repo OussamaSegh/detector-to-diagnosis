@@ -26,7 +26,9 @@ import sys
 
 AREAS = ("measurements", "docs")
 SCRATCH = re.compile(r"/tmp/claude-\d+(?:/-[^/\s\"'`]+/[0-9a-f]{8}-[0-9a-f-]{27}/scratchpad)?(?![\w-])")
-HOME = re.compile(r"(?<![\w.~$}/])(?:/home/[\w.-]+|/Users/[\w.-]+|/root)(?=/|\b)")
+# A home directory starts a path, or follows a doubled slash (file:///home/..., a directory
+# joined to an absolute path, MDQ-PR-107); /srv/home/x or build/home/user is not one.
+HOME = re.compile(r"(?:(?<=/)|(?<![\w.~$}/]))(?:/home/[\w.-]+|/Users/[\w.-]+|/root)(?=/|\b)")
 
 
 def clean(text):

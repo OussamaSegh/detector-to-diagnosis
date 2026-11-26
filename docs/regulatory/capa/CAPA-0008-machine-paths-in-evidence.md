@@ -4,7 +4,7 @@
 |---|---|
 | Status | implemented |
 | Opened | 2026-11-26, at the internal audit before release 2.3.0 |
-| Source | MDQ-PR-101, MDQ-PR-103 and MDQ-PR-106 |
+| Source | MDQ-PR-101, MDQ-PR-103 and MDQ-PR-106; MDQ-PR-107 (an escape of the check, after the correction) |
 | Owner | software lead |
 | Effectiveness check | release 3.0.0 |
 
@@ -62,6 +62,11 @@ path, temporary and relative paths kept, the check reading tracked evidence only
 and line endings left alone, and the command's exit status. `docs.evidence_paths` reported 668
 problems on the tree before the fix and none after. No requirement or risk control changes;
 the evidence's values are unchanged.
+
+Addendum of the review of 2.3.0 (MDQ-PR-107): the check's pattern missed a home directory
+after a doubled slash, and one line of `measurements/ch05/flags/pgo-build.log` kept one after
+the correction. The pattern and that line are corrected, with a test; the effectiveness check
+counts MDQ-PR-107 under its criterion.
 
 ## Effectiveness check
 

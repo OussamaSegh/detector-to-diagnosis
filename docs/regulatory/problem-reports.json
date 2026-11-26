@@ -2343,6 +2343,63 @@
         "category": "process",
         "escape": "No check reads the evidence for the privacy rule; reviews read the records, not every log."
       }
+    },
+    {
+      "id": "MDQ-PR-107",
+      "title": "The evidence path check misses a home directory that follows a doubled slash",
+      "found": "2026-11-26, review of release 2.3.0: a search of measurements/ for /home/ after CAPA-0008's correction",
+      "item": "tools",
+      "status": "closed",
+      "affects": [],
+      "capa": "CAPA-0008",
+      "description": "tools/evidence_paths.py takes a home directory (under home, Users or root at the top of the file system) as a path of the machine only when no word character, dot, tilde, dollar, brace or slash comes before it. GCC joins a profile directory and an absolute object path with a doubled slash, as a file URL does after its scheme, so the slash before the home directory hid it: measurements/ch05/flags/pgo-build.log kept one line naming a home directory after the fix of MDQ-PR-106, and docs.evidence_paths passed.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "Evidence of the development process; the path names a container's user, no personal data, but the privacy rule forbids it."
+      },
+      "resolution": {
+        "change": "A home directory right after a slash (the second of two) is a path of the machine too; the line of pgo-build.log is rewritten by the tool's fix mode.",
+        "verification": "tools.evidence_paths: test_a_home_after_a_doubled_slash_is_found (fails without the change); docs.evidence_paths reports that line before the fix and nothing after."
+      },
+      "root_cause": {
+        "whys": [
+          "The pattern refused a slash before the home directory to leave paths such as build/home/user alone; a word character before the slash already does that.",
+          "The tests had paths at the start of a word only, never two paths joined."
+        ],
+        "cause": "A pattern tested on the forms of path its author expected, not on the evidence it was to clean.",
+        "category": "tool",
+        "escape": "The check reported none after the fix, which was read as none left; nobody searched the corrected evidence with a looser pattern."
+      },
+      "note": "Its cause is \"evidence names a path of the machine\", the cause CAPA-0008's effectiveness criterion counts until release 3.0.0; the check at 3.0.0 judges it."
+    },
+    {
+      "id": "MDQ-PR-108",
+      "title": "Release 2.3.0 went out without the SOUP known-anomaly review before release that the SOUP list asks for",
+      "found": "2026-11-26, review of release 2.3.0, reading the release record's section SOUP review against the SOUP list",
+      "item": "process",
+      "status": "closed",
+      "affects": [
+        "2.3.0"
+      ],
+      "capa": "",
+      "description": "The SOUP list asks for each shipped item's known-anomaly review before each release, and its review of 2026-11-24 for MiniDAQ 2.3 says: before release 2.3.0 the trackers and advisories are read again, the three OpenSSL records known only from secondary sources among them. No such review was recorded; the release record of 2.3.0 cites only the review made when 2.3 began, and the internal audit (O-9) found no gap. docs.soup checks only that the last review names the current minor version, which the review at the start of 2.3 already did. Releases 2.1.0 and 2.2.0 had their review before release.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "No SOUP item, version or use changed in 2.3.0, and the CI's vulnerability scan of the SBOM passed on every push of the window, the release commit too; the review would have read the same versions. The gap is in the record of the process."
+      },
+      "resolution": {
+        "change": "tools/check_soup.py: from 3.0.0 on, a release's VERSION needs a section 4 heading '### YYYY-MM-DD: every item, before release X.Y.Z'. The release record of 2.3.0 has a note of this review. The review before release 3.0.0 reads the trackers and advisories since 2026-11-24, which covers what 2.3.0's would have read.",
+        "verification": "tools.maintenance: test_a_release_needs_its_review_before_release (fails without the change)."
+      },
+      "root_cause": {
+        "whys": [
+          "The release checklist (the release-checks skill and the release record's section) names the SOUP review but not that it must be dated before the release.",
+          "docs.soup checks the minor version only, so the review at the start of a minor version satisfies it until the next."
+        ],
+        "cause": "A step of the release with a check that a review made weeks earlier already passes.",
+        "category": "process",
+        "escape": "The internal audit read the SOUP review (O-9) for its content, not for its date against the list's own promise."
+      }
     }
   ]
 }

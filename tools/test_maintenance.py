@@ -102,6 +102,18 @@ class SupportEnds(unittest.TestCase):
         self.assertEqual(check_soup.months_later("2026-01-31", 1), "2026-02-28")
         self.assertEqual(check_soup.months_later("2026-12-01", 1), "2027-01-01")
 
+    def test_a_release_needs_its_review_before_release(self):
+        # MDQ-PR-108: release 2.3.0 went out with only the review made when 2.3 began.
+        dev = "### 2026-11-24: every item, for MiniDAQ 3.0\n"
+        self.assertEqual(check_soup.release_review_problems(dev, "3.0.0-dev"), [])
+        self.assertRegex(" ".join(check_soup.release_review_problems(dev, "3.0.0")),
+                         "before release 3.0.0")
+        done = dev + "### 2026-12-20: every item, before release 3.0.0\n"
+        self.assertEqual(check_soup.release_review_problems(done, "3.0.0"), [])
+        self.assertTrue(check_soup.release_review_problems(
+            dev + "### 2026-12-20: every item, before release 3.0.1\n", "3.0.0"))
+        self.assertEqual(check_soup.release_review_problems(dev, "2.3.0"), [])  # before 3.0.0
+
     def test_only_the_shipped_items_are_checked(self):
         # REQ: SRS-MNT-002
         text = "## 1. Shipped\n\n" + TABLE + "\n## 2. Tools\n\n" + TABLE.replace("lib", "gtest")

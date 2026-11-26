@@ -1,6 +1,6 @@
 [1/37] Building CXX object ~/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
 ~/neurolf/.deps/googlebenchmark-src/src/check.cc: In function 'void (*& benchmark::internal::GetAbortHandler())()':
-~/neurolf/.deps/googlebenchmark-src/src/check.cc:11:1: warning: '~/neurolf/build/flags-pgo-data//home/claude/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.gcda' profile count data file not found [-Wmissing-profile]
+~/neurolf/.deps/googlebenchmark-src/src/check.cc:11:1: warning: '~/neurolf/build/flags-pgo-data/~/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.gcda' profile count data file not found [-Wmissing-profile]
    11 | }  // namespace benchmark
       | ^
 [2/37] Building CXX object ~/neurolf/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o

@@ -8,6 +8,9 @@ For every FetchContent dependency, docs/regulatory/soup-list.md must
 - for a shipped item (scope "required" in tools/make_sbom.py), record a known-anomaly review
   dated YYYY-MM-DD for the current MiniDAQ minor version: "| Last review | 2026-10-25, for
   MiniDAQ 0.3 ...". A new minor version therefore needs a new review before its release.
+- in a release's VERSION (X.Y.Z, no -dev), from 3.0.0 on, hold in section 4 the review made
+  before that release, "### YYYY-MM-DD: every item, before release X.Y.Z" (MDQ-PR-108: the
+  review for 2.3 promised one before release 2.3.0, and the release went out without it).
 
 Every item of section 1 (the shipped software, platform libraries included) must also say when
 its supplier stops supporting it (Chapter 40, the maintenance plan): "| Support ends | ..." with
@@ -26,6 +29,7 @@ from make_sbom import KNOWN, dependencies  # noqa: E402  (one parser for the SBO
 
 SUPPORT_MONTHS = 24  # docs/regulatory/maintenance-plan.md, section 3
 SUPPORT = re.compile(r"^\|\s*Support ends\s*\|\s*(.+?)\s*\|\s*$", re.M)
+RELEASE_REVIEW_FROM = (3, 0, 0)  # MDQ-PR-108; releases before it are left as they were
 REVIEW = re.compile(r"^\|\s*Last review\s*\|\s*(\d{4}-\d{2}-\d{2}), for MiniDAQ (\d+\.\d+)\b", re.M)
 
 
@@ -99,7 +103,21 @@ def check(cmake_text, soup_text, minidaq_version):
             errors.append(f"{name}: last review was for MiniDAQ {m.group(2)}, this is {minor}: review again")
     for name, table in shipped_tables(soup_text).items():
         errors += support_problems(name, table)
+    errors += release_review_problems(soup_text, minidaq_version)
     return errors
+
+
+def release_review_problems(soup_text, minidaq_version):
+    """A release's tree holds the known-anomaly review made before that release (MDQ-PR-108)."""
+    m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", minidaq_version)
+    if not m or tuple(int(x) for x in m.groups()) < RELEASE_REVIEW_FROM:
+        return []
+    heading = re.compile(r"^### \d{4}-\d{2}-\d{2}: every item, before release "
+                         + re.escape(minidaq_version) + r"\s*$", re.M)
+    if heading.search(soup_text):
+        return []
+    return [f"no known-anomaly review before release {minidaq_version} in section 4 "
+            f"('### YYYY-MM-DD: every item, before release {minidaq_version}')"]
 
 
 def main(root):
