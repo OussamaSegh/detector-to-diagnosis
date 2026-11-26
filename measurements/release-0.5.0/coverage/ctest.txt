@@ -1,5 +1,5 @@
-Internal ctest changing into directory: /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/build/coverage
-Test project /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/build/coverage
+Internal ctest changing into directory: $SCRATCH/rel050/build/coverage
+Test project $SCRATCH/rel050/build/coverage
         Start  99: CoincidenceSorter.TheDelayedWindowEstimateDependsOnTheMultiplesPolicy
         Start 390: system.readout
         Start 394: system.stats

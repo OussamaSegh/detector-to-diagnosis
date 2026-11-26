@@ -2,7 +2,7 @@
 
 2026-11-24T15:43:39Z, commit 5647d2e, x86_64, 4 CPUs.
 
-Command: `tools/e2e.py build/release/minidaq/apps /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc220-out/e2e`
+Command: `tools/e2e.py build/release/minidaq/apps $SCRATCH/rc220-out/e2e`
 
 ## qc (point)
 

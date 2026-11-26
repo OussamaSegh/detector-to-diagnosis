@@ -2,7 +2,7 @@
  "context": {
   "date": "2026-11-03T19:15:20+00:00",
   "host_name": "vm",
-  "executable": "/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/ab050/build/release/benchmarks/bm_decode",
+  "executable": "$SCRATCH/ab050/build/release/benchmarks/bm_decode",
   "num_cpus": 4,
   "mhz_per_cpu": 2800,
   "cpu_scaling_enabled": false,

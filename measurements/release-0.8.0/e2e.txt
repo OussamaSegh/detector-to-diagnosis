@@ -2,7 +2,7 @@
 
 2026-11-04T12:04:46Z, commit d262ff0, x86_64, 4 CPUs.
 
-Command: `tools/e2e.py build/release/minidaq/apps /tmp/claude-0/-home-claude-detector-to-diagnosis/400bbeb4-7800-50ab-9462-aa1df2fc8ddf/scratchpad/out080/e2e`
+Command: `tools/e2e.py build/release/minidaq/apps $SCRATCH/out080/e2e`
 
 ## qc (point)
 

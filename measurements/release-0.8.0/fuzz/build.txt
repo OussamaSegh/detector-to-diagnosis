@@ -1,6 +1,6 @@
 [0/2] Re-checking globbed directories...
-[1/414] Building CXX object /tmp/claude-0/-home-claude-detector-to-diagnosis/400bbeb4-7800-50ab-9462-aa1df2fc8ddf/scratchpad/rel080/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/414] Building CXX object /tmp/claude-0/-home-claude-detector-to-diagnosis/400bbeb4-7800-50ab-9462-aa1df2fc8ddf/scratchpad/rel080/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[1/414] Building CXX object $SCRATCH/rel080/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/414] Building CXX object $SCRATCH/rel080/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
 [3/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/raw_single.cpp.o
 [4/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/packed_single.cpp.o
 [5/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/readout_packet.cpp.o
@@ -8,7 +8,7 @@
 [7/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/list_mode.cpp.o
 [8/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/core/flight_recorder.cpp.o
 [9/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/synthetic_source.cpp.o
-[10/414] Building CXX object /tmp/claude-0/-home-claude-detector-to-diagnosis/400bbeb4-7800-50ab-9462-aa1df2fc8ddf/scratchpad/rel080/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[10/414] Building CXX object $SCRATCH/rel080/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
 [11/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/detector_simulator.cpp.o
 [12/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/truth_counter.cpp.o
 [13/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/sim/readout_link.cpp.o
@@ -29,7 +29,7 @@
 [28/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/net/host_counters.cpp.o
 [29/414] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/hw/slow_control.cpp.o
 [30/414] Linking CXX static library minidaq/libminidaq_core.a
-[31/414] Building CXX object /tmp/claude-0/-home-claude-detector-to-diagnosis/400bbeb4-7800-50ab-9462-aa1df2fc8ddf/scratchpad/rel080/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[31/414] Building CXX object $SCRATCH/rel080/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [32/414] Linking CXX static library lib/libgtest.a
 [33/414] Linking CXX static library lib/libgmock.a
 [34/414] Linking CXX static library lib/libgmock_main.a

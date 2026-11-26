@@ -1,7 +1,9 @@
 # Agent files
 
-Version 1 (MiniDAQ 2.2.0-dev). Status: approved for release 2.2.0, 2026-11-24, given by the author
-(software lead) in writing on 2026-11-24 at 08:25 UTC. Owner: software lead.
+Version 2 (MiniDAQ 2.3.0-dev). Status: approved for release 2.3.0, 2026-11-26, given by the
+coordinator under the software lead's standing delegation, in writing on 2026-11-26 at 07:33 UTC.
+Version 1 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in
+writing on 2026-11-24 at 08:25 UTC. Owner: software lead.
 
 The register of the files that a coding agent reads or obeys in this repository (CR-0036,
 roadmap 2.2.0, Theme P2). Each is versioned and owned like a controlled document, and
@@ -15,7 +17,7 @@ raises its version here.
 | `CLAUDE.md` | context | 1 | software lead |
 | `.claude/settings.json` | settings | 1 | software lead |
 | `.claude/agents/trace-review.md` | agent | 2 | software lead |
-| `.claude/skills/release-checks/SKILL.md` | skill | 1 | software lead |
+| `.claude/skills/release-checks/SKILL.md` | skill | 2 | software lead |
 
 ## Principles
 
@@ -41,3 +43,4 @@ in its uncommitted `.claude/settings.local.json`, as the variable `MINIDAQ_AGENT
 | Version | Change |
 |---|---|
 | 1 | First version (CR-0036). |
+| 2 | The release-checks skill is at version 2, and may run `tools/evidence_paths.py` (CAPA-0008). |

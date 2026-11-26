@@ -2,7 +2,7 @@
   "context": {
     "date": "2026-11-10T18:35:48+00:00",
     "host_name": "vm",
-    "executable": "/tmp/claude-0/wt-ch02/build/release/benchmarks/bm_latency",
+    "executable": "$SCRATCH/wt-ch02/build/release/benchmarks/bm_latency",
     "num_cpus": 4,
     "mhz_per_cpu": 2100,
     "cpu_scaling_enabled": false,

@@ -1,6 +1,6 @@
 [0/2] Re-checking globbed directories...
-[1/439] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/439] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[1/439] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/439] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
 [3/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/raw_single.cpp.o
 [4/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/packed_single.cpp.o
 [5/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/readout_packet.cpp.o
@@ -8,7 +8,7 @@
 [7/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/list_mode.cpp.o
 [8/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/core/flight_recorder.cpp.o
 [9/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/energy_filter.cpp.o
-[10/439] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[10/439] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
 [11/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/calibration.cpp.o
 [12/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/timing_monitor.cpp.o
 [13/439] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/processing/singles_counter.cpp.o
@@ -33,7 +33,7 @@
 [32/439] Linking CXX static library minidaq/libminidaq_simulation.a
 [33/439] Building CXX object minidaq/CMakeFiles/minidaq_signing.dir/src/control/signing.cpp.o
 [34/439] Linking CXX static library minidaq/libminidaq_signing.a
-[35/439] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[35/439] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [36/439] Linking CXX static library lib/libgtest.a
 [37/439] Linking CXX static library lib/libgmock.a
 [38/439] Linking CXX static library lib/libgmock_main.a

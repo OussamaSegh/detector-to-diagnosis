@@ -2169,7 +2169,7 @@
       "affects": [
         "2.2.0"
       ],
-      "capa": "",
+      "capa": "CAPA-0008",
       "description": "tools/acceptance.py wrote 'evidence from' with the OUT directory as given, an absolute path of the machine; the reports of 1.0.0 to 2.1.0 name scratch directories the same way, and that of 2.2.0 the checkout under a home directory. The repository is public.",
       "evaluation": {
         "safety_relevant": false,
@@ -2225,7 +2225,7 @@
       "item": "tools",
       "status": "closed",
       "affects": [],
-      "capa": "",
+      "capa": "CAPA-0008",
       "description": "tools/soak.py writes the programs' directory as given; tools/release_checks.sh gives the previous release's as an absolute path under OUT, so every block summary of that side named a path of the machine, against CLAUDE.md's privacy rule, in evidence committed to a public repository (as MDQ-PR-101 for the acceptance report).",
       "evaluation": {
         "safety_relevant": false,
@@ -2299,6 +2299,49 @@
         "cause": "A timing window not checked against where the code under test holds the lock.",
         "category": "test",
         "escape": "Optimized local builds make the checks short; the window failed only where the loops are unoptimized, the CI's debug job."
+      }
+    },
+    {
+      "id": "MDQ-PR-106",
+      "title": "Committed evidence names absolute paths of the machines that wrote it, in 184 files from 0.3.0 to 2.2.0",
+      "found": "2026-11-26, internal audit before release 2.3.0, evaluating MDQ-PR-101 and MDQ-PR-103 for a CAPA: a search of measurements/ for the paths of a home or scratch directory",
+      "item": "tools",
+      "status": "closed",
+      "affects": [
+        "0.3.0",
+        "0.4.0",
+        "0.5.0",
+        "0.6.0",
+        "0.7.0",
+        "0.8.0",
+        "0.9.0",
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+        "2.0.1",
+        "2.1.0",
+        "2.2.0"
+      ],
+      "capa": "CAPA-0008",
+      "description": "MDQ-PR-101 and MDQ-PR-103 each corrected one generator of evidence. A search of every tracked file under measurements/ and docs/ found 668 lines in 184 files that name a home directory or an agent's scratch directory (/tmp/claude-N/...): CTest's output (\"Test project ...\"), Google Benchmark's executable paths, the performance suite, the end-to-end run and its provenance, coverage and property runs, in the evidence of every release since 0.3.0 and of several chapters. The repository is public, and CLAUDE.md's privacy rule forbids an absolute path of the machine.",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "Evidence of the development process; the paths name a container's user and scratch directories, no personal data, but the rule forbids them."
+      },
+      "resolution": {
+        "change": "tools/evidence_paths.py fix rewrote the 184 files, a home directory as ~ and a scratch directory as $SCRATCH, keeping the rest of each path and each file's lines and line endings; no measured value changes. docs.evidence_paths checks every tracked file under measurements/ and docs/ in the unit suite, and the release-checks skill (version 2) runs the fix on a release's evidence before its record. The repository's history keeps the old text; the paths name no person, so it is not rewritten.",
+        "verification": "tools.evidence_paths (six tests: the rewrite, what is kept, the check of tracked evidence only, binary files and line endings left alone, the command's exit status); docs.evidence_paths reports 668 problems before the fix and none after; git diff --shortstat: 667 lines changed, as many added as removed."
+      },
+      "root_cause": {
+        "whys": [
+          "Each program that writes evidence prints the directories it was given, which are absolute in a scratch worktree.",
+          "The privacy rule was checked on agent files only (TL-52), and each report fixed its own generator."
+        ],
+        "cause": "A rule on all committed files checked on one kind of file only, so each generator of evidence was corrected only when someone noticed it.",
+        "category": "process",
+        "escape": "No check reads the evidence for the privacy rule; reviews read the records, not every log."
       }
     }
   ]

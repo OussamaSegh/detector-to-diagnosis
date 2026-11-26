@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 33 (MiniDAQ 2.3.0-dev). Status: draft, the known-anomaly review for 2.3 of 2026-11-24; to be approved for release 2.3.0. Version 32 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC.
+Version 33 (MiniDAQ 2.3.0-dev). Status: approved for release 2.3.0, 2026-11-26, given by the coordinator under the software lead's standing delegation (2026-11-15 and 2026-11-23), in writing on 2026-11-26 at 07:33 UTC. Version 32 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -627,4 +627,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 30 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 29. |
 | 31 | The known-anomaly reviews for MiniDAQ 2.1, 2026-11-17 and 2026-11-23 (eight OpenSSL findings, none affecting MiniDAQ): no item changes (draft, to be approved for release 2.1.0). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
 | 32 | The known-anomaly reviews for MiniDAQ 2.2, 2026-11-23 and 2026-11-24 (CVE-2026-121481 read again: no 3.0 range): no item changes. Approved for release 2.2.0 by the author (software lead), in writing on 2026-11-24. |
-| 33 | The known-anomaly review for MiniDAQ 2.3, 2026-11-24: no item changes (draft, to be approved for release 2.3.0). |
+| 33 | The known-anomaly review for MiniDAQ 2.3, 2026-11-24: no item changes. Approved for release 2.3.0 by the coordinator under the software lead's standing delegation, in writing on 2026-11-26. |

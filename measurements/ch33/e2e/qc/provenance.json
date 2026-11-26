@@ -29,7 +29,7 @@
     "command": [
       "minidaq-qc",
       "/tmp/minidaq-e2e-873f07dz/qc/qc-20261104T074155596Z.run.json",
-      "/home/claude/detector-to-diagnosis/measurements/ch33/e2e/qc"
+      "~/detector-to-diagnosis/measurements/ch33/e2e/qc"
     ],
     "created_utc": "2026-11-04T07:42:00Z"
   }

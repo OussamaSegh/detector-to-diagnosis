@@ -3,8 +3,8 @@ Preset CMake variables:
 
   CMAKE_BUILD_TYPE="Release"
   CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
-  CMAKE_TOOLCHAIN_FILE:FILEPATH="/tmp/claude-0/rel110/cmake/toolchains/gcc.cmake"
-  FETCHCONTENT_BASE_DIR="/tmp/claude-0/rel110/.deps"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="$SCRATCH/rel110/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="$SCRATCH/rel110/.deps"
   FETCHCONTENT_UPDATES_DISCONNECTED="ON"
 
 -- Failed to find LLVM FileCheck
@@ -14,40 +14,40 @@ Preset CMake variables:
 -- Performing Test HAVE_POSIX_REGEX -- success
 -- Performing Test HAVE_STEADY_CLOCK -- success
 -- Performing Test HAVE_PTHREAD_AFFINITY -- success
--- Using the multi-header code from /tmp/claude-0/rel110/.deps/nlohmann_json-src/include/
+-- Using the multi-header code from $SCRATCH/rel110/.deps/nlohmann_json-src/include/
 -- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
 -- pybind11 v3.1.0 
 -- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
 -- Configuring done (2.4s)
 -- Generating done (0.2s)
--- Build files have been written to: /tmp/claude-0/rel110/build/release
+-- Build files have been written to: $SCRATCH/rel110/build/release
 [0/2] Re-checking globbed directories...
-[1/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
-[3/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
-[4/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
-[5/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
-[6/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
-[7/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
-[8/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
-[9/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
-[10/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
-[11/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
-[12/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
-[13/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
-[14/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
-[15/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
-[16/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
-[17/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
-[18/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
-[19/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
-[20/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
-[21/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
-[22/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
-[23/191] Building CXX object /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
-[24/191] Linking CXX static library /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/libbenchmark.a
-[25/191] Linking CXX static library /tmp/claude-0/rel110/.deps/googlebenchmark-build/src/libbenchmark_main.a
-[26/191] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[1/191] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/191] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[3/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
+[4/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
+[5/191] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[6/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
+[7/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
+[8/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
+[9/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
+[10/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
+[11/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
+[12/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
+[13/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
+[14/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
+[15/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
+[16/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
+[17/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
+[18/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
+[19/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
+[20/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
+[21/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+[22/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
+[23/191] Building CXX object $SCRATCH/rel110/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
+[24/191] Linking CXX static library $SCRATCH/rel110/.deps/googlebenchmark-build/src/libbenchmark.a
+[25/191] Linking CXX static library $SCRATCH/rel110/.deps/googlebenchmark-build/src/libbenchmark_main.a
+[26/191] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [27/191] Linking CXX static library lib/libgtest.a
 [28/191] Linking CXX static library lib/libgmock.a
 [29/191] Linking CXX static library lib/libgmock_main.a

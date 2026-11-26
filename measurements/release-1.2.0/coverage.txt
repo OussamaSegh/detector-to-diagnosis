@@ -24,4 +24,4 @@ ctl        B      82.7%   206/249    77.3%   102/132    50.0%     7/14    100.0%
 tools      -      62.7%   626/998    50.2%   278/554    12.1%    11/91     80.6%    29/36   
 -----------------------------------------------------------------------------------
 all               90.2%  9189/10189  79.8%  3936/4930   58.9%   508/863    96.3%   858/891  
-654 profiles from 10 executables; report in /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120-out/coverage
+654 profiles from 10 executables; report in $SCRATCH/rc120-out/coverage

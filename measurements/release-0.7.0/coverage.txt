@@ -24,4 +24,4 @@ ctl        B      82.7%   206/249    77.3%   102/132    50.0%     7/14    100.0%
 tools      -      62.1%   609/981    49.1%   267/544    11.2%    10/89     80.6%    29/36   
 -----------------------------------------------------------------------------------
 all               90.2%  9161/10161  79.8%  3921/4916   58.9%   507/861    96.3%   857/890  
-590 profiles from 10 executables; report in /tmp/claude-0/rel070-out/coverage
+590 profiles from 10 executables; report in $SCRATCH/rel070-out/coverage

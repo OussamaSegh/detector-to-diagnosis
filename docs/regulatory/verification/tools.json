@@ -393,6 +393,23 @@
         "tools/test_agent_hooks.py"
       ],
       "shown_to_fail": "AgentFiles.test_a_tool_outside_the_kinds_list_is_reported"
+    },
+    {
+      "id": "TL-53",
+      "name": "Evidence path check (tools/evidence_paths.py)",
+      "kind": "in-house",
+      "class": "T2",
+      "version": "the commit; Python 3.12 or later, git",
+      "use": "Checks that no tracked file under measurements/ or docs/ names a home directory or an agent's scratch directory of the machine that wrote it, run in the unit suite (docs.evidence_paths); its fix mode rewrites a folder of evidence before it is committed, as the release-checks skill does (CAPA-0008, MDQ-PR-106).",
+      "failure": "Evidence that names a path of the machine passes and is published in the public repository; or a fix that changes a measured value, a line count or a file's line endings, so that the evidence no longer is what the checks wrote.",
+      "confidence": [
+        "tools/test_evidence_paths.py rewrites each kind of path, keeps temporary and relative paths, checks only tracked evidence, leaves binary files and line endings alone, and checks the command's exit status.",
+        "Before the fix, the check found 668 lines in 184 files; after it none, with as many lines added as removed."
+      ],
+      "evidence": [
+        "tools/test_evidence_paths.py"
+      ],
+      "shown_to_fail": "Repository.test_check_names_each_path_in_tracked_evidence_only"
     }
   ]
 }

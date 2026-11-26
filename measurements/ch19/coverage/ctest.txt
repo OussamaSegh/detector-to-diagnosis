@@ -1,5 +1,5 @@
-Internal ctest changing into directory: /home/claude/neurolf/build/coverage
-Test project /home/claude/neurolf/build/coverage
+Internal ctest changing into directory: ~/neurolf/build/coverage
+Test project ~/neurolf/build/coverage
         Start  83: CoincidenceSorter.TheDelayedWindowEstimateDependsOnTheMultiplesPolicy
         Start 295: system.stats
         Start 293: system.acquisition

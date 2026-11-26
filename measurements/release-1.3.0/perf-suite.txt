@@ -3,8 +3,8 @@ Preset CMake variables:
 
   CMAKE_BUILD_TYPE="Release"
   CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
-  CMAKE_TOOLCHAIN_FILE:FILEPATH="/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/cmake/toolchains/gcc.cmake"
-  FETCHCONTENT_BASE_DIR="/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="$SCRATCH/rc130/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="$SCRATCH/rc130/.deps"
   FETCHCONTENT_UPDATES_DISCONNECTED="ON"
 
 -- The CXX compiler identification is GNU 13.3.0
@@ -69,7 +69,7 @@ Preset CMake variables:
 -- Performing Test HAVE_STEADY_CLOCK -- success
 -- Compiling and running to test HAVE_PTHREAD_AFFINITY
 -- Performing Test HAVE_PTHREAD_AFFINITY -- success
--- Using the multi-header code from /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/nlohmann_json-src/include/
+-- Using the multi-header code from $SCRATCH/rc130/.deps/nlohmann_json-src/include/
 -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found suitable version "3.0.13", minimum required is "3.0")  
 -- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
 -- pybind11 v3.1.0 
@@ -78,38 +78,38 @@ Preset CMake variables:
 -- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
 -- Configuring done (5.3s)
 -- Generating done (0.1s)
--- Build files have been written to: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/release
+-- Build files have been written to: $SCRATCH/rc130/build/release
 [0/2] Re-checking globbed directories...
-[1/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
-[3/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
-[4/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
-[5/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
-[6/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
-[7/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
-[8/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
-[9/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
-[10/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
-[11/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
-[12/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
-[13/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
-[14/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
-[15/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
-[16/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
-[17/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
-[18/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
-[19/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
-[20/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
-[21/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
-[22/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
-[23/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
-[24/493] Linking CXX static library /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/libbenchmark.a
-[25/493] Linking CXX static library /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googlebenchmark-build/src/libbenchmark_main.a
+[1/493] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/493] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[3/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_api_internal.cc.o
+[4/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_name.cc.o
+[5/493] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[6/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark.cc.o
+[7/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/check.cc.o
+[8/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/colorprint.cc.o
+[9/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_runner.cc.o
+[10/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/commandlineflags.cc.o
+[11/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/console_reporter.cc.o
+[12/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/complexity.cc.o
+[13/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/counter.cc.o
+[14/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/csv_reporter.cc.o
+[15/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/benchmark_register.cc.o
+[16/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/json_reporter.cc.o
+[17/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/perf_counters.cc.o
+[18/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/reporter.cc.o
+[19/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/string_util.cc.o
+[20/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/statistics.cc.o
+[21/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/sysinfo.cc.o
+[22/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark.dir/timers.cc.o
+[23/493] Building CXX object $SCRATCH/rc130/.deps/googlebenchmark-build/src/CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
+[24/493] Linking CXX static library $SCRATCH/rc130/.deps/googlebenchmark-build/src/libbenchmark.a
+[25/493] Linking CXX static library $SCRATCH/rc130/.deps/googlebenchmark-build/src/libbenchmark_main.a
 [26/493] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/packed_single.cpp.o
 [27/493] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/raw_single.cpp.o
 [28/493] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/format/readout_packet.cpp.o
 [29/493] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/core/crc32.cpp.o
-[30/493] Building CXX object /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[30/493] Building CXX object $SCRATCH/rc130/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [31/493] Linking CXX static library lib/libgtest.a
 [32/493] Linking CXX static library lib/libgmock.a
 [33/493] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/core/flight_recorder.cpp.o

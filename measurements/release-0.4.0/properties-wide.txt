@@ -1,5 +1,5 @@
 # 2026-10-26T13:38:51Z commit 61c2e1a property-based tests, MINIDAQ_PROP_CASES=100
-Running main() from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-final/.deps/googletest-src/googletest/src/gtest_main.cc
+Running main() from $SCRATCH/wt-final/.deps/googletest-src/googletest/src/gtest_main.cc
 Note: Google Test filter = Properties.*
 [==========] Running 12 tests from 1 test suite.
 [----------] Global test environment set-up.

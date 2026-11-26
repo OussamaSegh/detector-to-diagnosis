@@ -1,5 +1,5 @@
-Internal ctest changing into directory: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage
-Test project /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/coverage
+Internal ctest changing into directory: $SCRATCH/rc130/build/coverage
+Test project $SCRATCH/rc130/build/coverage
         Start 519: system.readout
         Start 515: tools.recon
         Start 538: tools.recon_cpp

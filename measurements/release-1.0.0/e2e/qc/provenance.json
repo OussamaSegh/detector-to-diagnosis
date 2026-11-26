@@ -29,7 +29,7 @@
     "command": [
       "minidaq-qc",
       "/tmp/minidaq-e2e-_obnob3_/qc/qc-20261108T205853785Z.run.json",
-      "/tmp/claude-0/-home-user-detector-to-diagnosis/644a8998-0eec-5556-826b-4d3c34984615/scratchpad/out100/e2e/qc"
+      "$SCRATCH/out100/e2e/qc"
     ],
     "created_utc": "2026-11-08T20:58:58Z"
   }

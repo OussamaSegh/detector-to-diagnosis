@@ -1,10 +1,10 @@
 [0/2] Re-checking globbed directories...
-[1/208] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-release/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/208] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-release/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[1/208] Building CXX object $SCRATCH/wt-release/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/208] Building CXX object $SCRATCH/wt-release/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
 [3/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_quantity.cpp.o
 [4/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_parse_number.cpp.o
 [5/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_expected.cpp.o
-[6/208] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-release/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[6/208] Building CXX object $SCRATCH/wt-release/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
 [7/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_geometry.cpp.o
 [8/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_raw_single.cpp.o
 [9/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_packed_single.cpp.o
@@ -13,7 +13,7 @@
 [12/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_crash_report.cpp.o
 [13/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_readout_packet.cpp.o
 [14/208] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_list_mode.cpp.o
-[15/208] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/wt-release/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[15/208] Building CXX object $SCRATCH/wt-release/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [16/208] Linking CXX static library lib/libgtest.a
 [17/208] Linking CXX static library lib/libgmock.a
 [18/208] Linking CXX static library lib/libgmock_main.a

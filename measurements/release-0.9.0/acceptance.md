@@ -1,6 +1,6 @@
 # MiniDAQ 1.0 acceptance specification, version 1: NOT ACCEPTED
 
-Candidate commit `c8d0800160fe`; evidence from `/home/claude/detector-to-diagnosis/measurements/release-0.9.0`.
+Candidate commit `c8d0800160fe`; evidence from `~/detector-to-diagnosis/measurements/release-0.9.0`.
 
 | Criterion | Requirements | Target | Found | Verdict |
 |---|---|---|---|---|

@@ -1,6 +1,6 @@
 # 2026-11-15T00:28:26Z commit 31527cc Exercise 18.3 in the coverage build
-Internal ctest changing into directory: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120/build/coverage
-Test project /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120/build/coverage
+Internal ctest changing into directory: $SCRATCH/rc120/build/coverage
+Test project $SCRATCH/rc120/build/coverage
     Start 1066: ch18/e3_branch_coverage/solution/coverage
 1/1 Test #1066: ch18/e3_branch_coverage/solution/coverage ...   Passed    0.60 sec
 
@@ -10,8 +10,8 @@ Label Time Summary:
 solution    =   0.60 sec*proc (1 test)
 
 Total Test time (real) =   0.65 sec
-Internal ctest changing into directory: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120/build/coverage
-Test project /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120/build/coverage
+Internal ctest changing into directory: $SCRATCH/rc120/build/coverage
+Test project $SCRATCH/rc120/build/coverage
     Start 1067: ch18/e3_branch_coverage/starter/coverage
 1/1 Test #1067: ch18/e3_branch_coverage/starter/coverage ...***Failed    0.14 sec
 
@@ -25,5 +25,5 @@ Total Test time (real) =   0.20 sec
 The following tests FAILED:
 	1067 - ch18/e3_branch_coverage/starter/coverage (Failed)
 Errors while running CTest
-Output from these tests are in: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc120/build/coverage/Testing/Temporary/LastTest.log
+Output from these tests are in: $SCRATCH/rc120/build/coverage/Testing/Temporary/LastTest.log
 Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.

@@ -24,4 +24,4 @@ ctl        B      82.7%   206/249    77.3%   102/132    50.0%     7/14    100.0%
 tools      -      62.7%   626/998    50.2%   278/554    12.1%    11/91     80.6%    29/36   
 -----------------------------------------------------------------------------------
 all               90.2%  9189/10189  79.8%  3936/4930   58.9%   508/863    96.3%   858/891  
-657 profiles from 10 executables; report in /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/out090/coverage
+657 profiles from 10 executables; report in $SCRATCH/out090/coverage

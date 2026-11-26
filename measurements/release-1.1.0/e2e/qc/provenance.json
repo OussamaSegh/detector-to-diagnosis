@@ -29,7 +29,7 @@
     "command": [
       "minidaq-qc",
       "/tmp/minidaq-e2e-u_wtw0h7/qc/qc-20261110T090454496Z.run.json",
-      "/tmp/claude-0/rel-out/release-1.1.0/e2e/qc"
+      "$SCRATCH/rel-out/release-1.1.0/e2e/qc"
     ],
     "created_utc": "2026-11-10T09:04:59Z"
   }

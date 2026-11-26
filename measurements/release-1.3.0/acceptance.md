@@ -1,6 +1,6 @@
 # MiniDAQ 1.0 acceptance specification, version 2: ACCEPTED
 
-Candidate commit `ced71e9e25fb`; evidence from `/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130-out`.
+Candidate commit `ced71e9e25fb`; evidence from `$SCRATCH/rc130-out`.
 
 | Criterion | Requirements | Target | Found | Verdict |
 |---|---|---|---|---|

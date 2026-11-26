@@ -1,116 +1,116 @@
 # 2026-11-03T17:41:40Z commit 893413d starters: ctest -L starter (every starter fails at least one test, none hangs)
-In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:7:
+In file included from $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:7:
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+    inlined from 'virtual void EventBuffer_CopyAssignIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:51:1:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:56:18:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:56:18:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:58:30:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:58:30:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:56:18:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:56:18:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer used after 'void operator delete [](void*)' [-Wuse-after-free]
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:58:30:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+    inlined from 'virtual void EventBuffer_MoveIsNoexceptAndEmptiesSource_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:58:30:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:41:1:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer may be used after 'void operator delete [](void*)' [-Wuse-after-free]
+    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:41:1:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: warning: pointer may be used after 'void operator delete [](void*)' [-Wuse-after-free]
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:38:3:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:38:3:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
-In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/build/starters/_deps/googletest-src/googletest/include/gtest/gtest.h:71,
-                 from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:1:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp: In member function 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:40:25: warning: pointer may be used after 'void operator delete [](void*)' [-Wuse-after-free]
+In file included from $SCRATCH/rel060/build/starters/_deps/googletest-src/googletest/include/gtest/gtest.h:71,
+                 from $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:1:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp: In member function 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()':
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:40:25: warning: pointer may be used after 'void operator delete [](void*)' [-Wuse-after-free]
    40 |   EXPECT_EQ(a.view()[0].crystal, 10U);
 In destructor 'ex::EventBuffer::~EventBuffer()',
-    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:38:3:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
+    inlined from 'virtual void EventBuffer_CopyIsDeep_Test::TestBody()' at $SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/tests/test_event_buffer.cpp:38:3:
+$SCRATCH/rel060/exercises/ch01/e2_rule_of_zero/starter/event_buffer.hpp:19:29: note: call to 'void operator delete [](void*)' here
    19 |   ~EventBuffer() { delete[] data_; }
       |                             ^~~~~
-In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/tests/test_ring.cpp:11:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In constructor 'ex::SinglesRing::SinglesRing(std::size_t)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:20:36: warning: unused parameter 'capacity' [-Wunused-parameter]
+In file included from $SCRATCH/rel060/exercises/ch03/e1_spsc_ring/tests/test_ring.cpp:11:
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In constructor 'ex::SinglesRing::SinglesRing(std::size_t)':
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:20:36: warning: unused parameter 'capacity' [-Wunused-parameter]
    20 |   explicit SinglesRing(std::size_t capacity) {}
       |                        ~~~~~~~~~~~~^~~~~~~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'bool ex::SinglesRing::try_push(const minidaq::Single&)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:25:45: warning: unused parameter 's' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'bool ex::SinglesRing::try_push(const minidaq::Single&)':
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:25:45: warning: unused parameter 's' [-Wunused-parameter]
    25 |   [[nodiscard]] bool try_push(const Single& s) noexcept {
       |                               ~~~~~~~~~~~~~~^
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'bool ex::SinglesRing::try_pop(minidaq::Single&)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:33:38: warning: unused parameter 'out' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'bool ex::SinglesRing::try_pop(minidaq::Single&)':
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:33:38: warning: unused parameter 'out' [-Wunused-parameter]
    33 |   [[nodiscard]] bool try_pop(Single& out) noexcept {
       |                              ~~~~~~~~^~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'std::size_t ex::SinglesRing::try_push_n(std::span<const minidaq::Single>)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:39:64: warning: unused parameter 'in' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'std::size_t ex::SinglesRing::try_push_n(std::span<const minidaq::Single>)':
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:39:64: warning: unused parameter 'in' [-Wunused-parameter]
    39 |   [[nodiscard]] std::size_t try_push_n(std::span<const Single> in) noexcept { return 0; }  // TODO
       |                                        ~~~~~~~~~~~~~~~~~~~~~~~~^~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'std::size_t ex::SinglesRing::try_pop_n(std::span<minidaq::Single>)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:41:57: warning: unused parameter 'out' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp: In member function 'std::size_t ex::SinglesRing::try_pop_n(std::span<minidaq::Single>)':
+$SCRATCH/rel060/exercises/ch03/e1_spsc_ring/starter/ring.hpp:41:57: warning: unused parameter 'out' [-Wunused-parameter]
    41 |   [[nodiscard]] std::size_t try_pop_n(std::span<Single> out) noexcept { return 0; }  // TODO
       |                                       ~~~~~~~~~~~~~~~~~~^~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp: In function 'ex::Result ex::run_pipeline(std::span<const long unsigned int>, const Config&, const WriteCallback&)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:52: warning: unused parameter 'words' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp: In function 'ex::Result ex::run_pipeline(std::span<const long unsigned int>, const Config&, const WriteCallback&)':
+$SCRATCH/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:52: warning: unused parameter 'words' [-Wunused-parameter]
    15 | Result run_pipeline(std::span<const std::uint64_t> words, const Config& cfg, const WriteCallback& on_write) {
       |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:73: warning: unused parameter 'cfg' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:73: warning: unused parameter 'cfg' [-Wunused-parameter]
    15 | Result run_pipeline(std::span<const std::uint64_t> words, const Config& cfg, const WriteCallback& on_write) {
       |                                                           ~~~~~~~~~~~~~~^~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:99: warning: unused parameter 'on_write' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e3_four_stage_pipeline/starter/pipeline.cpp:15:99: warning: unused parameter 'on_write' [-Wunused-parameter]
    15 | Result run_pipeline(std::span<const std::uint64_t> words, const Config& cfg, const WriteCallback& on_write) {
       |                                                                              ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
-In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/tests/test_sync.cpp:7:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp: In function 'std::vector<int> ex::start_together(int)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp:14:44: warning: unused parameter 'n' [-Wunused-parameter]
+In file included from $SCRATCH/rel060/exercises/ch03/e4_latch_barrier/tests/test_sync.cpp:7:
+$SCRATCH/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp: In function 'std::vector<int> ex::start_together(int)':
+$SCRATCH/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp:14:44: warning: unused parameter 'n' [-Wunused-parameter]
    14 | inline std::vector<int> start_together(int n) {
       |                                        ~~~~^
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp: In function 'ex::PhasedResult ex::phased_sums(const std::vector<std::vector<long int> >&)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp:24:79: warning: unused parameter 'values' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp: In function 'ex::PhasedResult ex::phased_sums(const std::vector<std::vector<long int> >&)':
+$SCRATCH/rel060/exercises/ch03/e4_latch_barrier/starter/sync.hpp:24:79: warning: unused parameter 'values' [-Wunused-parameter]
    24 | inline PhasedResult phased_sums(const std::vector<std::vector<std::int64_t>>& values) {
       |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
-In file included from /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/tests/test_drop.cpp:7:
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp: In function 'ex::LossReport ex::count_lost(std::span<const long unsigned int>, uint64_t)':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:53:61: warning: unused parameter 'seqs' [-Wunused-parameter]
+In file included from $SCRATCH/rel060/exercises/ch03/e5_drop_policy/tests/test_drop.cpp:7:
+$SCRATCH/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp: In function 'ex::LossReport ex::count_lost(std::span<const long unsigned int>, uint64_t)':
+$SCRATCH/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:53:61: warning: unused parameter 'seqs' [-Wunused-parameter]
    53 | inline LossReport count_lost(std::span<const std::uint64_t> seqs, std::uint64_t first) {
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:53:81: warning: unused parameter 'first' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:53:81: warning: unused parameter 'first' [-Wunused-parameter]
    53 | inline LossReport count_lost(std::span<const std::uint64_t> seqs, std::uint64_t first) {
       |                                                                   ~~~~~~~~~~~~~~^~~~~
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp: In instantiation of 'ex::PushResult ex::DropQueue<T>::push(T) [with T = int]':
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/tests/test_drop.cpp:15:3:   required from here
-/tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:30:21: warning: unused parameter 'value' [-Wunused-parameter]
+$SCRATCH/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp: In instantiation of 'ex::PushResult ex::DropQueue<T>::push(T) [with T = int]':
+$SCRATCH/rel060/exercises/ch03/e5_drop_policy/tests/test_drop.cpp:15:3:   required from here
+$SCRATCH/rel060/exercises/ch03/e5_drop_policy/starter/drop_queue.hpp:30:21: warning: unused parameter 'value' [-Wunused-parameter]
    30 |   PushResult push(T value) {
       |                   ~~^~~~~
 16% tests passed, 357 tests failed out of 424

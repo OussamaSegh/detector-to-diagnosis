@@ -29,6 +29,11 @@ the patch version.
   `synthetic_source.cpp` are formatted (MDQ-PR-102). The change request check reads the tests of the
   book's build tools (MDQ-PR-104). Exercise 29.4's GIL test no longer counts the solution's
   GIL-held checks against it (MDQ-PR-105).
+- Internal audit before release 2.3.0: committed evidence named paths of the machines that
+  wrote it in 184 files (MDQ-PR-106). `tools/evidence_paths.py` rewrites them (a home directory
+  as `~`, a scratch directory as `$SCRATCH`) and its check runs in the unit suite
+  (`docs.evidence_paths`, TL-53); the release-checks skill fixes a release's evidence before its
+  record (CAPA-0008).
 
 ## [2.2.0] - 2026-11-24
 

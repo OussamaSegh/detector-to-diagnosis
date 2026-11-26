@@ -1,6 +1,6 @@
 # MiniDAQ software system test plan
 
-Version 7 (MiniDAQ 2.3.0-dev). Status: draft for review. Version 6 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
+Version 7 (MiniDAQ 2.3.0-dev). Status: approved for release 2.3.0, 2026-11-26, given by the coordinator under the software lead's standing delegation (2026-11-15 and 2026-11-23), in writing on 2026-11-26 at 07:33 UTC. Version 6 was approved for release 2.1.0, 2026-11-23, given by the author (software lead) in writing on 2026-11-23 at 00:25 UTC. Version 5 was approved for release 2.0.0, 2026-11-16, given by the coordinator under the software lead's standing delegation of 2026-11-15.
 
 This plan says how MiniDAQ is tested as a whole: the programs that ship, run together as an
 operator runs them. It covers the topics that IEC 62304 expects of software integration and
@@ -141,4 +141,4 @@ release and per change of the readout, not per commit.
 | 4 | CI runs seven presets, `product` among them; the libraries under test. The table lists every system test file: the time base cases of Readout (CR-0031), start-up files and signed runs of Startup, and Hardware, Diagnostics and Platform, which earlier versions left out (review of 2.0.0). |
 | 5 | Approved for release 2.0.0, given by the coordinator under the software lead's standing delegation of 2026-11-15; the content is that of version 4. |
 | 6 | The release soak lasts 100 minutes (CR-0035). Approved for release 2.1.0 by the author (software lead), in writing on 2026-11-23. |
-| 7 | The release soak runs in blocks interleaved with the previous release's programs, and the two are compared (CR-0038). |
+| 7 | The release soak runs in blocks interleaved with the previous release's programs, and the two are compared (CR-0038). Approved for release 2.3.0 by the coordinator under the software lead's standing delegation, in writing on 2026-11-26. |

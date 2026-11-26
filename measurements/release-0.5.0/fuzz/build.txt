@@ -1,11 +1,11 @@
 [0/2] Re-checking globbed directories...
-[1/123] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/123] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[1/123] Building CXX object $SCRATCH/rel050/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/123] Building CXX object $SCRATCH/rel050/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
 [3/123] Building CXX object minidaq/CMakeFiles/minidaq_core.dir/src/hw/slow_control.cpp.o
 [4/123] Linking CXX static library minidaq/libminidaq_core.a
 [5/123] Linking CXX executable minidaq/apps/minidaq_jitter
 [6/123] Linking CXX executable minidaq/apps/minidaq_latency
-[7/123] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[7/123] Building CXX object $SCRATCH/rel050/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
 [8/123] Linking CXX executable minidaq/apps/minidaq_send
 [9/123] Linking CXX executable minidaq/apps/minidaq_ctl
 [10/123] Linking CXX executable minidaq/apps/minidaq_server
@@ -21,7 +21,7 @@
 [20/123] Linking CXX executable fuzz/fuzz_listmode
 [21/123] Linking CXX executable exercises/ch07/ch07_fuzz_packet_solution
 [22/123] Building CXX object minidaq/tests/CMakeFiles/minidaq_unit_tests.dir/unit/test_slow_control.cpp.o
-[23/123] Building CXX object /tmp/claude-0/-home-claude/378fdf65-44b6-5c17-bc83-0a2c4054fb1b/scratchpad/rel050/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[23/123] Building CXX object $SCRATCH/rel050/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [24/123] Linking CXX static library lib/libgtest.a
 [25/123] Linking CXX static library lib/libgtest_main.a
 [26/123] Linking CXX static library lib/libgmock.a

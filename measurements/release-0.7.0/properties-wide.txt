@@ -1,5 +1,5 @@
 # 2026-11-04T03:11:11Z commit cfb708f property-based tests, MINIDAQ_PROP_CASES=100
-Running main() from /tmp/claude-0/-home-claude-detector-to-diagnosis/b182cc83-5fa1-5138-b51f-ba1ea052c911/scratchpad/rel070/.deps/googletest-src/googletest/src/gtest_main.cc
+Running main() from $SCRATCH/rel070/.deps/googletest-src/googletest/src/gtest_main.cc
 Note: Google Test filter = Properties.*
 [==========] Running 12 tests from 1 test suite.
 [----------] Global test environment set-up.

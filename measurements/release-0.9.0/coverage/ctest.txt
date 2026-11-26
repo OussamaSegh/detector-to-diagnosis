@@ -1,5 +1,5 @@
-Internal ctest changing into directory: /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage
-Test project /tmp/claude-0/-home-claude-detector-to-diagnosis/6c085ff6-0e49-5cd8-abda-b5ebe338a85a/scratchpad/rel090/build/coverage
+Internal ctest changing into directory: $SCRATCH/rel090/build/coverage
+Test project $SCRATCH/rel090/build/coverage
         Start   1: CrashReportDeathTest.AFaultWritesTheReportAndTheProcessStillDiesOfIt
         Start   2: CrashReportDeathTest.AnAbortWritesTheReportAndTheProcessStillDiesOfIt
         Start   3: Quantity.SameUnitArithmetic

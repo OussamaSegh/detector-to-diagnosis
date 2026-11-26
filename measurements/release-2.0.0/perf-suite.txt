@@ -3,8 +3,8 @@ Preset CMake variables:
 
   CMAKE_BUILD_TYPE="Release"
   CMAKE_CXX_FLAGS_RELEASE="-O2 -DNDEBUG"
-  CMAKE_TOOLCHAIN_FILE:FILEPATH="/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/cmake/toolchains/gcc.cmake"
-  FETCHCONTENT_BASE_DIR="/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="$SCRATCH/rc130/cmake/toolchains/gcc.cmake"
+  FETCHCONTENT_BASE_DIR="$SCRATCH/rc130/.deps"
   FETCHCONTENT_UPDATES_DISCONNECTED="ON"
 
 -- Failed to find LLVM FileCheck
@@ -14,13 +14,13 @@ Preset CMake variables:
 -- Performing Test HAVE_POSIX_REGEX -- success
 -- Performing Test HAVE_STEADY_CLOCK -- success
 -- Performing Test HAVE_PTHREAD_AFFINITY -- success
--- Using the multi-header code from /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/.deps/nlohmann_json-src/include/
+-- Using the multi-header code from $SCRATCH/rc130/.deps/nlohmann_json-src/include/
 -- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter Development.Module 
 -- pybind11 v3.1.0 
 -- Found Python3: /usr/local/bin/python3 (found version "3.13.18") found components: Interpreter 
 -- Configuring done (2.1s)
 -- Generating done (0.1s)
--- Build files have been written to: /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc130/build/release
+-- Build files have been written to: $SCRATCH/rc130/build/release
 [0/2] Re-checking globbed directories...
 ninja: no work to do.
 Preparing worktree (detached HEAD 648bf4d)

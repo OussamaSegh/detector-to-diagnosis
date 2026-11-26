@@ -5,6 +5,15 @@ Diagnosis* (formerly titled after a product) and MiniDAQ if the current session 
 anything. It is kept up to date with every chapter and every release. The CHANGELOG and the git
 log record what changed. This file records why, how, and what is left.
 
+Added 2026-11-26, 08:00 UTC: **the release of 2.3.0 has started.** Theme I is done (PR #29,
+396a6ab; 256 figures, two CC0 photos, 802 pages). The internal audit of 2026-11-26 found one minor
+nonconformity: committed evidence named paths of the machines (MDQ-PR-106); `tools/evidence_paths.py`
+(TL-53) rewrote 184 files and `docs.evidence_paths` keeps them out; CAPA-0008 is due at 3.0.0, and
+the release-checks skill (version 2) runs its fix on a release's evidence. SDP v25, STP v7, SOUP v33,
+acceptance v3, the skill v2 and the audit were approved by the coordinator under the delegation.
+CAPA-0007's last part is judged in the record of 2.3.0. The author still has to read the two photos'
+license pages before 3.0.0 (audit O-10). Next free: MDQ-PR-107, CAPA-0009, CR-0041, ADR 0042, TL-54.
+
 Added 2026-11-25, 15:00 UTC (thread "Expand the book's core C++ teaching"): **3.0.0 gains Part 0
 and Part XII** at the author's request (ROADMAP-3.0.0, section 8, answer 7), planned in
 `docs/ROADMAP-3.0.0-foundations.md` and folded in as Themes F and G. Part 0, "Foundations",

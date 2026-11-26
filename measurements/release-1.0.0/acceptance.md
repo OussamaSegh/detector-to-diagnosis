@@ -1,6 +1,6 @@
 # MiniDAQ 1.0 acceptance specification, version 2: NOT ACCEPTED
 
-Candidate commit `517cd49456fa`; evidence from `/tmp/claude-0/-home-user-detector-to-diagnosis/644a8998-0eec-5556-826b-4d3c34984615/scratchpad/out100`.
+Candidate commit `517cd49456fa`; evidence from `$SCRATCH/out100`.
 
 | Criterion | Requirements | Target | Found | Verdict |
 |---|---|---|---|---|

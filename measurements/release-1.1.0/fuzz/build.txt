@@ -1,7 +1,7 @@
 [0/2] Re-checking globbed directories...
-[1/149] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
-[2/149] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
-[3/149] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[1/149] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[2/149] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[3/149] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
 [4/149] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/hardware_config.cpp.o
 [5/149] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/config/acquisition_config.cpp.o
 [6/149] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/acquisition_state.cpp.o
@@ -10,7 +10,7 @@
 [9/149] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/access.cpp.o
 [10/149] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/audit.cpp.o
 [11/149] Building CXX object minidaq/CMakeFiles/minidaq_control.dir/src/control/hardware.cpp.o
-[12/149] Building CXX object /tmp/claude-0/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[12/149] Building CXX object $SCRATCH/rel110/.deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
 [13/149] Linking CXX static library lib/libgtest.a
 [14/149] Linking CXX static library lib/libgmock.a
 [15/149] Linking CXX static library lib/libgmock_main.a

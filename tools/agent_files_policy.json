@@ -10,6 +10,7 @@
               "Bash(tools/release_checks.sh *)",
               "Bash(python3 tools/release_record.py *)",
               "Bash(python3 tools/acceptance.py *)",
+              "Bash(python3 tools/evidence_paths.py *)",
               "Bash(tail *)", "Bash(cat *)"]
   },
   "settings": {

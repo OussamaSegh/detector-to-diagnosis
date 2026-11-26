@@ -1,6 +1,6 @@
 # MiniDAQ 1.0 acceptance specification, version 2: ACCEPTED
 
-Candidate commit `dae4498b4079`; evidence from `/tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc210-out`.
+Candidate commit `dae4498b4079`; evidence from `$SCRATCH/rc210-out`.
 
 | Criterion | Requirements | Target | Found | Verdict |
 |---|---|---|---|---|

@@ -1,6 +1,6 @@
 # MiniDAQ 1.0 acceptance specification, version 2: ACCEPTED
 
-Candidate commit `9b9e96d5eb6d`; evidence from `/tmp/claude-0/rel-out/release-1.1.0`.
+Candidate commit `9b9e96d5eb6d`; evidence from `$SCRATCH/rel-out/release-1.1.0`.
 
 | Criterion | Requirements | Target | Found | Verdict |
 |---|---|---|---|---|

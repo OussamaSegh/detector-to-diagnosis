@@ -1,5 +1,5 @@
-Internal ctest changing into directory: /tmp/claude-0/rel110/build/coverage
-Test project /tmp/claude-0/rel110/build/coverage
+Internal ctest changing into directory: $SCRATCH/rel110/build/coverage
+Test project $SCRATCH/rel110/build/coverage
         Start 456: tools.recon_cpp
         Start 447: system.e2e
         Start 438: tools.calib

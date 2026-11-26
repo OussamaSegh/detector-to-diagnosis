@@ -1,6 +1,6 @@
 # 2026-11-04T03:17:31Z commit cfb708f Exercise 18.3 in the coverage build
-Internal ctest changing into directory: /tmp/claude-0/-home-claude-detector-to-diagnosis/b182cc83-5fa1-5138-b51f-ba1ea052c911/scratchpad/rel070/build/coverage
-Test project /tmp/claude-0/-home-claude-detector-to-diagnosis/b182cc83-5fa1-5138-b51f-ba1ea052c911/scratchpad/rel070/build/coverage
+Internal ctest changing into directory: $SCRATCH/rel070/build/coverage
+Test project $SCRATCH/rel070/build/coverage
     Start 1046: ch18/e3_branch_coverage/solution/coverage
 1/1 Test #1046: ch18/e3_branch_coverage/solution/coverage ...   Passed    0.60 sec
 
@@ -10,8 +10,8 @@ Label Time Summary:
 solution    =   0.60 sec*proc (1 test)
 
 Total Test time (real) =   0.66 sec
-Internal ctest changing into directory: /tmp/claude-0/-home-claude-detector-to-diagnosis/b182cc83-5fa1-5138-b51f-ba1ea052c911/scratchpad/rel070/build/coverage
-Test project /tmp/claude-0/-home-claude-detector-to-diagnosis/b182cc83-5fa1-5138-b51f-ba1ea052c911/scratchpad/rel070/build/coverage
+Internal ctest changing into directory: $SCRATCH/rel070/build/coverage
+Test project $SCRATCH/rel070/build/coverage
     Start 1047: ch18/e3_branch_coverage/starter/coverage
 1/1 Test #1047: ch18/e3_branch_coverage/starter/coverage ...***Failed    0.15 sec
 
@@ -25,5 +25,5 @@ Total Test time (real) =   0.19 sec
 The following tests FAILED:
 	1047 - ch18/e3_branch_coverage/starter/coverage (Failed)
 Errors while running CTest
-Output from these tests are in: /tmp/claude-0/-home-claude-detector-to-diagnosis/b182cc83-5fa1-5138-b51f-ba1ea052c911/scratchpad/rel070/build/coverage/Testing/Temporary/LastTest.log
+Output from these tests are in: $SCRATCH/rel070/build/coverage/Testing/Temporary/LastTest.log
 Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.

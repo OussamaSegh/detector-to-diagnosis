@@ -223,11 +223,16 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME tools.soak_ab COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_soak_ab.py)
   # CR-0039: a change request may name a test of the book's build tools.
   add_test(NAME tools.check_changes COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_check_changes.py)
+  # CAPA-0008: evidence names no absolute path of the machine that wrote it.
+  add_test(NAME tools.evidence_paths COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_evidence_paths.py)
+  add_test(NAME docs.evidence_paths COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/evidence_paths.py check
+           ${PROJECT_SOURCE_DIR})
   add_test(NAME tools.req_baseline COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_req_baseline.py)
   add_test(NAME tools.survey COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/test_survey.py)
   add_test(NAME docs.baseline COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/tools/req_baseline.py
            ${PROJECT_SOURCE_DIR} --check)
-  set_tests_properties(tools.acceptance tools.soak_ab tools.check_changes tools.req_baseline tools.survey docs.baseline PROPERTIES
+  set_tests_properties(tools.acceptance tools.soak_ab tools.check_changes tools.evidence_paths docs.evidence_paths
+                       tools.req_baseline tools.survey docs.baseline PROPERTIES
     LABELS "unit")
   # Chapter 40: the records of the maintenance plan (affected releases, SOUP end of support,
   # problem report trends; CR-0033).

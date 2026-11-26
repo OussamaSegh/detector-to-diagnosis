@@ -4,7 +4,7 @@
  "time": "2026-11-16T22:22:50Z",
  "commit": "620dc65",
  "machine": "x86_64, 4 CPUs",
- "command": "tools/e2e.py build/release/minidaq/apps /tmp/claude-0/-home-user/e363110a-cd2b-54c3-81d2-f94a70a28045/scratchpad/rc201-out/e2e",
+ "command": "tools/e2e.py build/release/minidaq/apps $SCRATCH/rc201-out/e2e",
  "ok": true,
  "acquisitions": [
   {
