@@ -8,6 +8,24 @@ the patch version.
 
 ## [Unreleased]
 
+### Added
+
+- The paperback in two volumes (roadmap 3.0.0, Theme K): `book/book.txt` marks where each
+  starts, Volume 1 "The System and the Process" (front matter, Parts I to V) and Volume 2 "From
+  Data to Diagnosis" (Parts VI on and the appendices); `book/build.sh kdp` makes one interior
+  and one full-wrap cover per volume (`book/tools/volumes.py`, test `book.volumes`). Each
+  volume has its own title page, index and page numbers; Volume 2 keeps the chapter numbers of
+  the single book, and a link into the other volume names it (`book/filters/volumes.lua`). The
+  EPUB, the screen and Boox PDFs, the web edition and the solutions manual stay single. At
+  3.0.0-dev: 529 and 277 pages.
+- CI probes Ubuntu 26.04 (debug, clang-release, asan-ubsan) without gating (Theme N).
+
+### Changed
+
+- The review of 2.3.0: the evidence path check finds a home directory after a doubled slash
+  (MDQ-PR-107); `docs.soup` requires the SOUP review before each release from 3.0.0 on
+  (MDQ-PR-108). The SOUP list's review for 3.0 (version 34).
+
 ## [2.3.0] - 2026-11-26
 
 Release notes: nothing breaks, and no shipped program changes. The last 2.x release: the latency

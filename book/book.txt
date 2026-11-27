@@ -1,4 +1,6 @@
-# Order of source files for the main book
+# Order of source files for the main book. The paperback is printed in two volumes, each
+# starting at its marker (book/tools/volumes.py); the EPUB and the screen PDF stay single.
+#volume 1: The System and the Process
 src/front/edition.md
 src/front/how-to-use.md
 src/part1/part1.md
@@ -31,6 +33,7 @@ src/part5/ch22-hardware-linux.md
 src/part5/ch23-networking.md
 src/part5/ch24-fpga-interface.md
 src/part5/ch25-embedded-platform.md
+#volume 2: From Data to Diagnosis
 src/part6/part6.md
 src/part6/ch26-calibration.md
 src/part6/ch27-corrections.md
