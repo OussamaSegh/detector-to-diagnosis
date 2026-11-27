@@ -497,6 +497,15 @@ datagram, and keeps the error of a failed receive. *Starter:*
 answer in `NOTES.md` why batching saved so little in this chapter's measurement, and when it would
 save more. *Time:* 90 minutes.
 
+**Exercise 23.5 (A): Audit an agent's loss counter.** *Goal:* an agent finished the loss
+counter of a readout link, the numbers an operator reads to judge whether a scan is complete;
+its six tests pass, and it says no edge case is left. Check that every counter means what the
+specification says, for everything a network and a link do to datagrams. *Given:*
+`exercises/ch23/audit-loss-counter/change/` (the specification, the session and the patch).
+*Acceptance:* your tests in `starter/test_audit.cpp` pass on the corrected change (`original`)
+and fail on the agent's change and on each of its defects alone (`mutant_1` to `mutant_3`);
+`REPORT.md` names each defect and what the operator would read. *Time:* 1 hour.
+
 ## MiniDAQ milestone: every drop is counted {.unnumbered}
 
 ::: box-milestone

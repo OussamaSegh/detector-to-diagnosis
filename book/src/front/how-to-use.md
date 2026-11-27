@@ -21,7 +21,8 @@ Every chapter has the same shape:
 2. **Sections** that go from the intuition to a worked example. Boxes mark common mistakes, what
    changes in regulated work, and the questions worth asking your own team.
 3. **Exercises**, marked E (easy), M (medium) or H (hard). Each has a goal, a starter, acceptance
-   tests and a time estimate. Every starter fails its acceptance tests until you have done the
+   tests and a time estimate. One chapter of each Part also has an audit, marked A: a recorded
+   agent change to review with tests (see "A second path: by skill" below). Every starter fails its acceptance tests until you have done the
    work; the solutions manual and the repository hold a solution that passes them.
 4. **A MiniDAQ milestone** with a definition of done.
 5. **Check yourself** questions, a summary, and the references.
@@ -53,6 +54,30 @@ best reason to come back to one.
 Answer the Check yourself questions from memory a day or two after you read a chapter, and keep
 a short learning log: the numbers you measured on your own machine, the questions you could not
 answer, and what to revisit.
+
+### A second path: by skill {.unnumbered}
+
+The chapters follow the system, from the detector to the archive. You can also read the book by
+the skills it trains: the eight skills of an engineer whose team uses AI agents, such as
+specifying, reviewing code you did not write and reasoning about risk. Appendix B, the skills
+map, links each skill to its chapters, exercises and records. Read by skill in this order, each
+step resting on the one before:
+
+1. **Domain and foundations:** Chapters 8, 1 to 3 and 10. You
+   cannot judge a coincidence window or a lock-free queue you do not understand.
+2. **Specify:** Chapters 14 and 18, then 33's acceptance.
+3. **Review and verify:** Chapters 21 and 37, and the audit exercises, marked A, of Parts I
+   to X: in each, you receive a recorded agent change with real defects from MiniDAQ's
+   history, and write the tests that reject it and accept the corrected change.
+4. **Risk and safety:** Chapters 15 and 17.
+5. **Architecture and interfaces:** Chapter 6 and Appendix A.
+6. **Tools under the quality system:** Chapters 16 and 20.
+7. **Debug and measure:** Chapters 5, 21 and 23.
+8. **Agent workflows:** Chapters 37 and 36.
+
+On this path, do the audit exercises even when time is short: they take an hour or less each,
+and they train the judgment the rest of the work depends on. Appendix B ends with a
+self-assessment to tell you where to go back.
 
 ## The companion repository {.unnumbered}
 

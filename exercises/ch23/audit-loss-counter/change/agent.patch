@@ -1,0 +1,44 @@
+--- a/loss_counter.hpp
++++ b/loss_counter.hpp
+@@ -30,18 +30,37 @@
+   explicit LossCounter(std::uint32_t max_gap = std::uint32_t{1} << 24) noexcept
+       : max_gap_{max_gap} {}
+ 
+-  // Only packets in order so far.
+   void offer(std::uint32_t seq) noexcept {
+     ++stats_.received;
+     if (!started_) {
+       restart(seq);
+       return;
+     }
+-    if (seq == next_) {
+-      advance(1);
++    const std::int32_t behind = sequence_distance(seq, next_);
++    if (behind > 0) {  // a late packet
++      if (static_cast<std::uint32_t>(behind) > window) {
++        ++stats_.resyncs;  // too far back to be late: the link restarted
++        restart(seq);
++        return;
++      }
++      ++stats_.reordered;  // it arrived after a higher sequence number
++      const std::uint64_t bit = std::uint64_t{1} << (behind - 1);
++      if ((seen_ & bit) != 0) {
++        ++stats_.stale;  // a copy of one we have
++        return;
++      }
++      seen_ |= bit;
++      --stats_.lost;  // it fills its gap
+       return;
+     }
+-    // TODO: gaps, late packets, copies and restarts.
++    const std::int32_t ahead = sequence_distance(next_, seq);
++    if (ahead > static_cast<std::int32_t>(max_gap_)) {
++      ++stats_.resyncs;  // a jump no network makes: the link restarted
++      restart(seq);
++      return;
++    }
++    stats_.lost += static_cast<std::uint32_t>(ahead);  // the numbers skipped
++    advance(static_cast<std::uint64_t>(static_cast<std::uint32_t>(ahead)) + 1);
+   }
+ 
+   [[nodiscard]] const LossStats& stats() const noexcept { return stats_; }

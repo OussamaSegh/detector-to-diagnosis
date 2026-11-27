@@ -587,6 +587,15 @@ the range, and impossible starts refused. Then compare with `git bisect run` and
 repository of your own, and answer in `NOTES.md` what the starter's answers would have cost a
 reviewer. *Time:* 1 hour.
 
+**Exercise 36.5 (A): Audit an agent's push guard.** *Goal:* an agent wrote the guard that
+stops another agent from rewriting published history, refusing a `git push` that forces,
+deletes or reaches a branch the session does not own; its eight tests pass, and it says the
+guard covers every form. Check that against git's own syntax. *Given:*
+`exercises/ch36/audit-push-guard/change/` (the specification, the session and the patch).
+*Acceptance:* your tests in `starter/audit.py` pass on the corrected change and fail on the
+agent's change and on each of its defects alone (`tests/test_audit.py`); `REPORT.md` names
+each command that gets through and what it does to the repository. *Time:* 45 minutes.
+
 ## MiniDAQ milestone: a history that can be checked {.unnumbered}
 
 ::: box-milestone

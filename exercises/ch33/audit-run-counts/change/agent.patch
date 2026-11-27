@@ -1,0 +1,19 @@
+--- a/run_counts.py
++++ b/run_counts.py
+@@ -7,10 +7,14 @@
+ def recorded_singles(generated_ps, end_ps):
+     """How many of the simulator's generated singles (their times, in order) the run
+     recorded, for a run that ends at end_ps."""
+-    raise NotImplementedError
++    # The simulator generates until the end of the run, so every generated single is recorded.
++    return len(generated_ps)
+ 
+ 
+ def partition_problems(c):
+     """The problems of the sorter's partition of its singles; c is its report (a dict of
+     counters). An empty list if every single is accounted for exactly once."""
+-    raise NotImplementedError
++    accounted = (c["energy_rejected"] + c["alone"] + 2 * c["pairs"] + c["in_multiples"])
++    if accounted != c["singles_in"]:
++        return [f"singles in {c['singles_in']} != accounted {accounted}"]
++    return []

@@ -604,6 +604,15 @@ DEMONSTRATED, EXCEEDED and INCONCLUSIVE. Then answer in `NOTES.md` how often ACC
 at 1% and at 3%, what it therefore shows, and what correlated intervals do to the bounds. *Time:* 1
 hour.
 
+**Exercise 33.5 (A): Audit an agent's count checks.** *Goal:* an agent wrote the two checks
+that make the end-to-end run's counts add up, the singles recorded and the sorter's partition
+of them; its tests pass, and both checks pass on this chapter's three runs. Decide whether a
+damaged run could pass them, or a good run fail them. *Given:*
+`exercises/ch33/audit-run-counts/change/` (the specification, the session and the patch).
+*Acceptance:* your tests in `starter/audit.py` pass on the corrected change and fail on the
+agent's change and on each of its defects alone (`tests/test_audit.py`); `REPORT.md` names
+each defect and the runs it lets pass or makes fail. *Time:* 45 minutes.
+
 ## MiniDAQ milestone: MiniDAQ 1.0, end to end {.unnumbered}
 
 ::: box-milestone

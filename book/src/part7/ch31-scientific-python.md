@@ -669,6 +669,15 @@ offset by 3.6e15 still give the variances, fewer than two values give NaN, and a
 range is refused. Then answer in `NOTES.md` why the mean of the chunks' means is wrong, what the sum
 of squares gives at a large offset, and what makes the offset harmless. *Time:* 1.5 hours.
 
+**Exercise 31.5 (A): Audit an agent's check of an output array.** *Goal:* an agent wrote the
+check that decides whether a caller's NumPy array can take a projector's output in place; its
+tests pass, and it says the check is exact. Decide which arrays a scientist really passes and
+whether the check accepts each one it should. *Given:*
+`exercises/ch31/audit-output-array/change/` (the specification, the session and the patch).
+*Acceptance:* your tests in `starter/audit.py` pass on the corrected change and fail on the
+agent's change (`tests/test_audit.py`); `REPORT.md` names the defect, the arrays it refuses
+and why the agent's tests could not see it. *Time:* 45 minutes.
+
 ## MiniDAQ milestone: the analysis package {.unnumbered}
 
 ::: box-milestone

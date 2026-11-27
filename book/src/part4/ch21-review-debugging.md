@@ -795,6 +795,15 @@ repository is left as it was. Then answer in
 `NOTES.md` what makes a MiniDAQ commit untestable and how the check keeps a skip from hiding a real
 failure. *Time:* 30 minutes.
 
+**Exercise 21.6 (A): Audit an agent's version rules.** *Goal:* an agent implemented the rules
+that keep VERSION honest, the version every crash report names; its five tests pass, and it
+says its rule is more robust than the specification's. Decide whether a crash report can still
+send an investigator to the wrong code. *Given:* `exercises/ch21/audit-version-check/change/`
+(the specification, the session and the patch). *Acceptance:* your tests in `starter/audit.py`
+pass on the corrected change and fail on the agent's change and on each of its defects alone
+(`tests/test_audit.py`); `REPORT.md` names each defect, the rule it breaks and what an
+investigator would do with a crash report it lets through. *Time:* 45 minutes.
+
 ## MiniDAQ milestone: a server that says what happened {.unnumbered}
 
 ::: box-milestone

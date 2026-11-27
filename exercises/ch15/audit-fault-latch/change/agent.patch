@@ -1,0 +1,54 @@
+--- a/fault_latch.hpp
++++ b/fault_latch.hpp
+@@ -7,6 +7,7 @@
+ 
+ #include <cstdint>
+ #include <string>
++#include <utility>
+ 
+ namespace ex156 {
+ 
+@@ -31,7 +32,21 @@
+     if (latched_) {
+       return;  // latched until acknowledged
+     }
+-    if (c.reads_ok && c.current_ua > limits_.max_current_ua) {
++    // A board that does not answer: count the cycles in a row with a failed access.
++    if (c.reads_ok) {
++      failed_cycles_ = 0;
++    } else {
++      ++failed_cycles_;
++    }
++    if (!c.writes_ok) {
++      ++failed_cycles_;
++    }
++    if (failed_cycles_ >= limits_.max_failed_cycles) {
++      latch(std::to_string(failed_cycles_) + " cycles in a row with a failed access");
++      return;
++    }
++    // Overcurrent, measured by us or tripped by the board.
++    if (c.board_overcurrent || (c.reads_ok && c.current_ua > limits_.max_current_ua)) {
+       latch("bias current " + std::to_string(c.current_ua) + " uA is above the limit " +
+             std::to_string(limits_.max_current_ua) + " uA");
+     }
+@@ -40,10 +55,12 @@
+   void acknowledge() {
+     latched_ = false;
+     reason_.clear();
++    failed_cycles_ = 0;
+   }
+ 
+   [[nodiscard]] bool latched() const noexcept { return latched_; }
+   [[nodiscard]] const std::string& reason() const noexcept { return reason_; }
++  [[nodiscard]] int failed_cycles() const noexcept { return failed_cycles_; }
+ 
+  private:
+   void latch(std::string why) {
+@@ -52,6 +69,7 @@
+   }
+ 
+   Limits limits_;
++  int failed_cycles_ = 0;
+   bool latched_ = false;
+   std::string reason_;
+ };

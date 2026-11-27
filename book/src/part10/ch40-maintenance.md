@@ -554,6 +554,16 @@ passes: twelve OpenSSL versions in order, the upstream ranges, seven pairs in dp
 upstream lead. Then check the version on an Ubuntu machine and answer in `NOTES.md` why an upstream
 match is a lead and what the review must record. *Time:* 1 hour.
 
+**Exercise 40.5 (A): Audit an agent's reader of an update store's state.** *Goal:* an agent
+finished the reader of state.json, which tells a scanner's updater which slot holds the good
+release and which is on trial; its six tests pass, and it says every malformed file gives
+`Damaged`. Years after the release a field engineer may have edited the file by hand: decide
+what the updater does with every file it could find. *Given:*
+`exercises/ch40/audit-update-state/change/` (the specification, the session and the patch).
+*Acceptance:* your tests in `starter/audit.py` pass on the corrected change and fail on the
+agent's change and on each of its defects alone (`tests/test_audit.py`); `REPORT.md` names
+each defect and what happens at the scanner. *Time:* 45 minutes.
+
 ## MiniDAQ milestone: a maintained product {.unnumbered}
 
 ::: box-milestone

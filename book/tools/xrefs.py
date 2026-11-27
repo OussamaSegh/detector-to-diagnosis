@@ -9,7 +9,8 @@ solutions' Markdown and reports:
 - a "Chapter N" outside the chapters that exist;
 - a "Part X" outside the Parts that exist;
 - an "Exercise N.M" that chapter N does not define ("**Exercise N.M (E|M|H): ...**"), or
-  one marked other than E, M or H (with ", extra"), the marks How to use this book explains;
+  one marked other than E, M or H (with ", extra"), or A (an audit, roadmap 3.0.0, Theme Q),
+  the marks How to use this book explains;
 - an exercise defined in a chapter whose number is not N, or whose starter directory
   (`exercises/chNN/eM_...`) does not exist or does not start with eM_;
 - a heading of the solutions manual's chapter NN for an exercise of another chapter.
@@ -27,7 +28,7 @@ LIST = r"((?:\d+(?:\.\d+)?)(?:(?:,? and |, | to |-| or |, or )(?:\d+(?:\.\d+)?))
 CHAPTER_REF = re.compile(r"\bChapters? " + LIST)
 EXERCISE_REF = re.compile(r"\bExercises? " + LIST)
 PART_REF = re.compile(r"\bParts? ((?:[IVX]+)(?:(?:,? and |, | to )(?:[IVX]+))*)\b")
-DEFINITION = re.compile(r"^\*\*Exercise (\d+)\.(\d+) \([EMH][,)]", re.M)
+DEFINITION = re.compile(r"^\*\*Exercise (\d+)\.(\d+) \([EMHA][,)]", re.M)
 STARTER = re.compile(r"\*Starter:\*\s*`(exercises/[^`]+)`")
 
 
@@ -88,9 +89,9 @@ def check(root):
                 elif not (root / starter).exists():
                     errors.append(f"{where}: Exercise {c}.{e}'s starter {starter} does not exist")
         for m in re.finditer(r"^\*\*Exercise (\d+\.\d+) \(([^)]*)\)", text, re.M):
-            if not re.fullmatch(r"[EMH](, extra)?", m.group(2)):
+            if not re.fullmatch(r"[EMH](, extra)?|A", m.group(2)):
                 errors.append(f"{path.relative_to(root)}: Exercise {m.group(1)} is marked "
-                              f"({m.group(2)}), not E, M or H")
+                              f"({m.group(2)}), not E, M, H or A")
     files = sorted((root / "book/src").rglob("*.md")) + sorted((root / "book/solutions").glob("*.md"))
     for path in files:
         text = strip_code(path.read_text())

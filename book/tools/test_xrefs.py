@@ -62,6 +62,12 @@ class Xrefs(unittest.TestCase):
         self.assertIn("marked (S)", text)
         self.assertIn("starter is exercises/ch02/e3_two", text)
 
+    def test_an_audit_is_marked_a_and_can_be_referred_to(self):
+        # Roadmap 3.0.0, Theme Q: one audit exercise per Part, marked (A).
+        audit = CH + "\n**Exercise 2.3 (A): Audit.** *Given:* `exercises/ch02/audit-x/change/`.\n"
+        self.assertEqual(self.check(chapter=audit + "\nSee Exercise 2.3.\n"), [])
+        self.assertIn("marked (A, extra)", "\n".join(self.check(chapter=audit.replace("(A)", "(A, extra)"))))
+
     def test_a_solution_under_the_wrong_chapter(self):
         self.assertTrue(self.check(solutions="## Exercise 1.1\n"))
 

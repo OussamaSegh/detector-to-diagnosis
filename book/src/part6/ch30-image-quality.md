@@ -506,6 +506,15 @@ that only the columns show, and a field too small refused. Then answer in `NOTES
 starter's 96% came from, what the smoothing does to the noise, and which number sees a defective
 block and which a wrong normalization. *Time:* 45 minutes.
 
+**Exercise 30.5 (A): Audit an agent's reader of run metadata.** *Goal:* an agent implemented
+what the daily QC report reads from a run's metadata; its five tests pass, and it says every
+failure ends in a clean message. Decide what the technologist who runs the report sees for
+every run it could be given. *Given:* `exercises/ch30/audit-qc-metadata/change/` (the
+specification, the session and the patch). *Acceptance:* your tests in `starter/audit.py` pass
+on the corrected change and fail on the agent's change and on each of its defects alone
+(`tests/test_audit.py`); `REPORT.md` names each defect and what the technologist sees.
+*Time:* 45 minutes.
+
 ## MiniDAQ milestone: image quality {.unnumbered}
 
 ::: box-milestone

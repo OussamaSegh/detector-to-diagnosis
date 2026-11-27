@@ -709,6 +709,16 @@ recovered, exponents within 0.05 of 1 for trues and scatters and within 0.1 of 2
 a sensitivity 2 to 10% lower at 8 MBq than at 1 MBq, a rising randoms fraction; in
 `NOTES.md`, why the sensitivity falls and where randoms would equal trues. *Time:* 2 hours.
 
+**Exercise 8.6 (A): Audit an agent's coincidence finder.** *Goal:* an agent added
+`find_pairs`, a coincidence finder that takes all goods, to this chapter's toolkit; its change
+passes the four tests it wrote, and it says the output is deterministic. Decide whether it is
+right, using this chapter's physics as the oracle, and write the tests that prove it. *Given:*
+`exercises/ch08/audit-coincidence-pairs/change/` (the specification, the session and the
+patch). *Acceptance:* your tests in `starter/audit.py` pass on the corrected change and fail on
+the agent's change and on each of its defects alone (`tests/test_audit.py`); `REPORT.md` names
+each defect, the sentence of the specification it breaks and its effect on a scan. *Time:* 1
+hour.
+
 ## MiniDAQ milestone: the detector simulator {.unnumbered}
 
 ::: box-milestone

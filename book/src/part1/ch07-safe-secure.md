@@ -711,7 +711,19 @@ accepts exactly the documented grammar, computes exact nanoseconds with integer 
 and refuses to overflow. *Starter:* `exercises/ch07/e5_strict_duration/` (a `strtod` version).
 *Acceptance:* `tests/test_duration.cpp` passes: five units, exact fractions (`4.1s` is
 4,100,000,000 ns, which the starter gets wrong by one), sixteen malformed inputs rejected,
-overflow rejected exactly at the boundary. *Time:* 1 hour.
+overflow rejected exactly at the boundary. *Time:* 1 hour. An agent writes a parser
+like this one reliably once the grammar is stated: if time is short, read its tests as an example
+of a strict grammar written down, and spend the hour on Exercise 7.6 instead.
+
+**Exercise 7.6 (A): Audit an agent's change to a reader of untrusted input.** *Goal:* an agent
+added a floating-point setting and a second schema version to a settings reader that must
+never throw; its change passes its own five tests, and it says the reader still never throws.
+Find out whether it does, with what a fuzzer would send, and write the tests that prove it.
+*Given:* `exercises/ch07/audit-settings-reader/change/` (the specification, the session and
+the patch). *Acceptance:* your tests in `starter/test_audit.cpp` pass on the corrected change
+(`original`) and fail on the agent's change and on each of its defects alone (`mutant_1` to
+`mutant_3`); `REPORT.md` names each defect, the sentence of the specification it breaks and its
+effect at the scanner. *Time:* 1 hour.
 
 ## MiniDAQ milestone: static analysis, fuzzing and SBOM in CI {.unnumbered}
 

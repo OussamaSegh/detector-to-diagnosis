@@ -29,3 +29,14 @@ foreach(_v solution starter)
     endif()
   endif()
 endforeach()
+
+# Exercise 7.6 (A): an audit. Your tests (starter/ or solution/) run against the
+# corrected change (original), the agent's change (mutant_1) and each of its
+# defects (mutant_2 and up); tools/audit_exercises.py checks its record.
+minidaq_mutation_exercise(audit-settings-reader MUTANTS 3)
+if(Python3_Interpreter_FOUND)
+  add_test(NAME ch07/audit-settings-reader/record
+           COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/audit_exercises.py ${PROJECT_SOURCE_DIR}
+                   exercises/ch07/audit-settings-reader)
+  set_tests_properties(ch07/audit-settings-reader/record PROPERTIES LABELS unit)
+endif()
