@@ -3,6 +3,9 @@
 #volume 1: The System and the Process
 src/front/edition.md
 src/front/how-to-use.md
+src/part0/part0.md
+src/part0/f1-cpp-from-the-ground-up.md
+src/part0/f2-modern-cpp.md
 src/part1/part1.md
 src/part1/ch01-cpp-essentials.md
 src/part1/ch02-memory.md

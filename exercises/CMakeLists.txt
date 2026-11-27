@@ -8,8 +8,10 @@
 #   ctest --preset debug -L starter -R ch03
 include(MiniDAQExercise)
 
+# ch01 to ch49, and the lettered foundation chapters of Part 0, f1 to f7 (roadmap 3.0.0, Theme F).
 file(GLOB _chapters LIST_DIRECTORIES true RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ch[0-9][0-9])
-foreach(_ch IN LISTS _chapters)
+file(GLOB _foundations LIST_DIRECTORIES true RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} f[1-7])
+foreach(_ch IN LISTS _foundations _chapters)
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_ch}/CMakeLists.txt)
     add_subdirectory(${_ch})
   endif()

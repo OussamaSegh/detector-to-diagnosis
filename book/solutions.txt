@@ -1,5 +1,7 @@
 # Order of source files for the solutions manual
 solutions/intro.md
+solutions/f1.md
+solutions/f2.md
 solutions/ch01.md
 solutions/ch02.md
 solutions/ch03.md
