@@ -32,6 +32,9 @@
 \providecommand{\nlfauthor}{}
 \providecommand{\nlfassets}{.}
 \providecommand{\nlfvolume}{book}
+% \nlfbookvol is the paperback volume (1, 2) of the book, or empty for the whole book (roadmap
+% 3.0.0, Theme K): it replaces the edition in the front's kicker and follows the spine's title.
+\providecommand*{\nlfbookvol}{}
 \def\nlfbleed{0.125}
 \ifnum\nlfwrap=1
   \edef\nlfpaperw{\fpeval{2*\nlfbleed + 2*\nlftrimw + \nlfspine}}
@@ -112,7 +115,7 @@
     \node[anchor=north west, inner sep=0, text=gold, font=\uifont\fontsize{10}{12}\selectfont]
       at (0.58,3.22) {\addfontfeatures{LetterSpace=90}PET DATA ACQUISITION};
     \node[anchor=north east, inner sep=0, text=gold, font=\uifont\fontsize{10}{12}\selectfont]
-      at (7.92,3.22) {\addfontfeatures{LetterSpace=90}SECOND EDITION};
+      at (7.92,3.22) {\addfontfeatures{LetterSpace=90}\ifx\nlfbookvol\nlfempty SECOND EDITION\else VOLUME \nlfbookvol\fi};
     \node[anchor=north west, inner sep=0, text=cream, align=left,
           font=\fontsize{52}{56}\selectfont]
       at (0.55,2.90) {Detector\\[-2pt]{\itshape\color{gold}to }Diagnosis};
@@ -196,7 +199,9 @@
     \node[rotate=-90, anchor=west, inner sep=0, text=cream,
           font=\fontsize{\fs}{\fs}\selectfont]
       at (0,10.15) {Detector {\itshape\color{gold}to} Diagnosis\ifx\nlfvolume\nlfsolutions
-        {\mdseries\fontsize{\fsol}{\fsol}\selectfont\color{gold}\enspace Solutions Manual}\fi};
+        {\mdseries\fontsize{\fsol}{\fsol}\selectfont\color{gold}\enspace Solutions Manual}\fi
+        \ifx\nlfbookvol\nlfempty\else
+        {\mdseries\fontsize{\fsol}{\fsol}\selectfont\color{gold}\enspace Volume \nlfbookvol}\fi};
     \ifx\nlfauthor\nlfempty\else
       \node[rotate=-90, anchor=east, inner sep=0, text=mute,
             font=\uifont\fontsize{\fa}{\fa}\selectfont]

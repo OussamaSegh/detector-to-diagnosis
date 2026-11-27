@@ -155,8 +155,10 @@ if(Python3_Interpreter_FOUND)
   add_test(NAME book.figure_numbers COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_figure_numbers.py)
   # Roadmap 2.3.0, Theme I (CR-0039): the photo policy's checks, on photos made by the test.
   add_test(NAME book.photos_tool COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_photos.py)
+  # Roadmap 3.0.0, Theme K: the paperback's volumes in book.txt, and the tool that reads them.
+  add_test(NAME book.volumes COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/book/tools/test_volumes.py)
   set_tests_properties(book.xrefs book.xrefs_tool book.errata book.errata_tool book.web_tool book.figure_numbers
-                       book.photos_tool PROPERTIES LABELS "unit")
+                       book.photos_tool book.volumes PROPERTIES LABELS "unit")
 endif()
 
 if(Python3_Interpreter_FOUND)

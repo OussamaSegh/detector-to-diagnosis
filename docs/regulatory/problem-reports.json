@@ -2400,6 +2400,33 @@
         "category": "process",
         "escape": "The internal audit read the SOUP review (O-9) for its content, not for its date against the list's own promise."
       }
+    },
+    {
+      "id": "MDQ-PR-109",
+      "title": "The SOUP review for MiniDAQ 3.0 read Ubuntu's notices but not OpenSSL's own advisory, and CI on main found a finding without a decision",
+      "found": "2026-11-27, CI on main (a48f9f2), job vulnerability-scan: CVE-2026-84785 in libssl3t64 3.0.13-0ubuntu3.16 had no triage decision",
+      "item": "process",
+      "status": "closed",
+      "affects": [],
+      "capa": "",
+      "description": "The known-anomaly review of 2026-11-26 for MiniDAQ 3.0 read Ubuntu's notices for openssl on noble and found none since USN-8847-1. OpenSSL had published an advisory on 2026-11-24 with four Low CVEs, which the review did not read; the next day the scanner's database matched one of them, CVE-2026-84785, to the installed package by version range. The advisory says 3.0 is not affected by it. The same advisory is the primary source for three decisions that were known only from secondary summaries (CVE-2026-84786, CVE-2026-107494, CVE-2026-121482).",
+      "evaluation": {
+        "safety_relevant": false,
+        "rationale": "CVE-2026-84785 is in QUIC stream reassembly, which OpenSSL 3.0 does not have and MiniDAQ does not use; no product or SOUP version changed. The scan stopped the push from passing, as it is meant to."
+      },
+      "resolution": {
+        "change": "docs/regulatory/security/vulnerability-triage.json: a decision for CVE-2026-84785, and the three secondary-source decisions read again from the advisory of 2026-11-24 (CVE-2026-107494 and CVE-2026-121482 do not affect 3.0; CVE-2026-84786 does, in DANE, which MiniDAQ does not enable). The SOUP list's review for 3.0 names the advisory and says that a review reads the supplier's own advisories as well as the distribution's notices.",
+        "verification": "The CI job vulnerability-scan on the commit of the fix; tools.vuln_triage."
+      },
+      "root_cause": {
+        "whys": [
+          "The review followed the previous review's sources, which for OpenSSL were Ubuntu's notices.",
+          "Ubuntu publishes its notice after OpenSSL's fixed releases, which the advisory schedules for 2026-12-01, so the distribution's list lags the supplier's by a week or more."
+        ],
+        "cause": "A review that reads a downstream source for a supplier that publishes its own advisories first.",
+        "category": "process",
+        "escape": "No check compares the review's sources with the supplier's advisory page; the CI scan caught it a day later."
+      }
     }
   ]
 }

@@ -1,6 +1,6 @@
 # MiniDAQ SOUP list
 
-Version 34 (MiniDAQ 3.0.0-dev). Status: to be approved for release 3.0.0. Version 33 was approved for release 2.3.0, 2026-11-26, given by the coordinator under the software lead's standing delegation (2026-11-15 and 2026-11-23), in writing on 2026-11-26 at 07:33 UTC. Version 32 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC.
+Version 35 (MiniDAQ 3.0.0-dev). Status: to be approved for release 3.0.0. Version 33 was approved for release 2.3.0, 2026-11-26, given by the coordinator under the software lead's standing delegation (2026-11-15 and 2026-11-23), in writing on 2026-11-26 at 07:33 UTC. Version 32 was approved for release 2.2.0, 2026-11-24, given by the author (software lead) in writing on 2026-11-24 at 08:25 UTC.
 
 SOUP is software of unknown provenance: software that MiniDAQ uses but did not
 develop under its own process. This list identifies each item exactly, says why
@@ -114,7 +114,15 @@ them.
   `openssl`. The newest is still USN-8847-1 of 2026-09-29, whose fix `3.0.13-0ubuntu3.16` is
   installed. The three records known only from secondary sources (CVE-2026-121482,
   CVE-2026-107494, CVE-2026-84786) still have no Ubuntu notice. `apt-cache policy` on 2026-11-26
-  gives `3.0.13-0ubuntu3.16` as installed and as candidate.
+  gives `3.0.13-0ubuntu3.16` as installed and as candidate. Added 2026-11-27 (MDQ-PR-109): the
+  review had not read OpenSSL's own advisories, and the CI scan of 2026-11-27 matched
+  CVE-2026-84785 by version range. OpenSSL's advisory of 2026-11-24, read on 2026-11-27, has four
+  Low CVEs, and only one of them affects 3.0: CVE-2026-84786, a possible crash of a DANE-enabled
+  TLS client, fixed in 3.0.24 for premium support only. MiniDAQ enables no DANE. CVE-2026-84785,
+  CVE-2026-107494 and CVE-2026-121482 (QUIC, QUIC and CMS with CRL checking) do not affect 3.0.
+  The decisions are in `security/vulnerability-triage.json`, now read from the advisory, not from
+  secondary summaries. From this review on, a review of OpenSSL reads the supplier's advisories
+  as well as Ubuntu's notices.
 - pybind11: PyPI, read on 2026-11-26, still names 3.1.0 as the latest release, the version
   pinned.
 - The Python packages of `analysis/requirements.lock`: `tools/lock_audit.py` on 2026-11-26
@@ -654,3 +662,4 @@ that records an older package version reports the fixed vulnerabilities as open.
 | 32 | The known-anomaly reviews for MiniDAQ 2.2, 2026-11-23 and 2026-11-24 (CVE-2026-121481 read again: no 3.0 range): no item changes. Approved for release 2.2.0 by the author (software lead), in writing on 2026-11-24. |
 | 33 | The known-anomaly review for MiniDAQ 2.3, 2026-11-24: no item changes. Approved for release 2.3.0 by the coordinator under the software lead's standing delegation, in writing on 2026-11-26. |
 | 34 | The known-anomaly review for MiniDAQ 3.0, 2026-11-26, after release 2.3.0 went out without the review promised before it (MDQ-PR-108): no item changes. |
+| 35 | OpenSSL's advisory of 2026-11-24 added to the review for MiniDAQ 3.0, on 2026-11-27 (MDQ-PR-109): only CVE-2026-84786 (DANE) affects 3.0, and MiniDAQ enables no DANE; no item changes. A review of OpenSSL reads the supplier's advisories as well as Ubuntu's notices. |

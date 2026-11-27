@@ -7,7 +7,9 @@
 #        book/build/out/detector-to-diagnosis[-solutions]-v<VERSION>-cover.{jpg,pdf}
 #   kdp  the files for an Amazon KDP paperback and Kindle eBook, checked against KDP's rules:
 #        book/build/kdp/detector-to-diagnosis[-solutions]-v<VERSION>-{interior,cover}.pdf
-#        and the EPUB. The interior has no cover, black links and an inside margin sized for
+#        and the EPUB. When book.txt marks volumes ("#volume 2: Title", book/tools/volumes.py,
+#        roadmap 3.0.0 Theme K), the book's paperback is one interior and one cover per volume,
+#        detector-to-diagnosis-vol<N>-v<VERSION>-{interior,cover}.pdf; the EPUB stays single. The interior has no cover, black links and an inside margin sized for
 #        its page count; the cover is the full wrap (back, spine, front, bleed) with the spine
 #        width computed from that page count. EPUBCheck must pass.
 #   boox the PDF for a 10.3 inch 4:3 color E Ink tablet (Onyx Boox Air 5C), page = screen,
@@ -50,6 +52,8 @@ boox_w=6.18 boox_h=8.24
 boox_side=0.32 boox_top=0.22 boox_bottom=0.12
 # A suffix of the cover's file names, so covers of other trims do not overwrite each other.
 cover_tag=""
+# The paperback volume being built (empty: the whole book), on its covers and title page.
+bookvol=""
 epubcheck_jar="${EPUBCHECK_JAR:-/usr/share/java/epubcheck.jar}"
 build="$here/build"
 out="$build/out"
@@ -63,6 +67,7 @@ export BOOK_STRICT=1
 
 common=(
   --from markdown+smart+fenced_divs+bracketed_spans+pipe_tables+grid_tables+tex_math_dollars+implicit_figures
+  --lua-filter "$here/filters/volumes.lua"
   --lua-filter "$here/filters/design.lua"
   --lua-filter "$here/filters/include-code.lua"
   --lua-filter "$here/filters/diagrams.lua"
@@ -83,13 +88,13 @@ common=(
 # and a JPEG of it for the EPUB. $1 = book or solutions. The author is part of the cover, so a
 # change of BOOK_AUTHOR rebuilds it.
 build_cover() {
-  local vol="$1" dir="$build/cover" c="cover-$1$cover_tag"
+  local vol="$1" dir="$build/cover" c="cover-$1$cover_tag${bookvol:+-vol$bookvol}"
   mkdir -p "$dir"
   if [[ ! -f "$dir/$c.jpg" || "$here/assets/cover.tex" -nt "$dir/$c.jpg" \
         || "$here/assets/cover-front-$vol.jpg" -nt "$dir/$c.jpg" \
         || "$(cat "$dir/$c.author" 2>/dev/null)" != "$author" ]]; then
     (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="$c" \
-      "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfauthor{$(cover_author)}\def\nlfassets{$here/assets}\input{$here/assets/cover.tex}" \
+      "\def\nlfvolume{$vol}\def\nlfbookvol{$bookvol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfauthor{$(cover_author)}\def\nlfassets{$here/assets}\input{$here/assets/cover.tex}" \
       >"$c.xelatex.log" 2>&1) \
       || { echo "cover failed, see $dir/$c.log"; grep -n -A3 "^!" "$dir/$c.log" | head -20; exit 1; }
     # 200 dpi; a JPEG keeps the EPUB small (the artwork is a photo-like raster).
@@ -154,7 +159,7 @@ check_kdp_interior() {
 
 # The full-wrap paperback cover. $1 = book or solutions, $2 = interior page count, $3 = output.
 build_wrap_cover() {
-  local vol="$1" pages="$2" pdf="$3" dir="$build/cover" spine perpage
+  local vol="$1" pages="$2" pdf="$3" dir="$build/cover" spine perpage w="wrap-$1${bookvol:+-vol$bookvol}"
   case "$paper" in
     white) perpage=0.002252 ;;
     cream) perpage=0.0025 ;;
@@ -162,11 +167,11 @@ build_wrap_cover() {
   esac
   spine="$(awk -v n="$pages" -v p="$perpage" 'BEGIN { printf "%.4f", n * p }')"
   mkdir -p "$dir"
-  (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="wrap-$vol" \
-    "\def\nlfvolume{$vol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfwrap{1}\def\nlfspine{$spine}\def\nlfpages{$pages}\def\nlfauthor{$(cover_author)}\def\nlfassets{$here/assets}\input{$here/assets/cover.tex}" \
-    >"wrap-$vol.xelatex.log" 2>&1) \
-    || { echo "wrap cover failed, see $dir/wrap-$vol.log"; grep -n -A3 "^!" "$dir/wrap-$vol.log" | head -20; exit 1; }
-  cp "$dir/wrap-$vol.pdf" "$pdf"
+  (cd "$dir" && xelatex -interaction=nonstopmode -halt-on-error -jobname="$w" \
+    "\def\nlfvolume{$vol}\def\nlfbookvol{$bookvol}\def\nlftrimw{$trim_w}\def\nlftrimh{$trim_h}\def\nlfwrap{1}\def\nlfspine{$spine}\def\nlfpages{$pages}\def\nlfauthor{$(cover_author)}\def\nlfassets{$here/assets}\input{$here/assets/cover.tex}" \
+    >"$w.xelatex.log" 2>&1) \
+    || { echo "wrap cover failed, see $dir/$w.log"; grep -n -A3 "^!" "$dir/$w.log" | head -20; exit 1; }
+  cp "$dir/$w.pdf" "$pdf"
   echo "built $pdf (full wrap for $pages pages on $paper paper: spine $spine in, $(pdfinfo "$pdf" | awk '/^Page size/{printf "%.3f x %.3f in", $3/72, $5/72}'))"
   if pdffonts "$pdf" | awk 'NR > 2 && $(NF-4) != "yes" {bad=1} END {exit !bad}'; then
     echo "KDP: $pdf has fonts that are not embedded"; exit 1
@@ -221,7 +226,7 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
     # The screen PDF: the cover is page 1, links are colored.
     build_pdf "$stem" "$meta" "$vol" screen "$margin_inner" "$out/$stem-v$version.pdf" "${files[@]}"
   fi
-  if [[ "$what" == all ]]; then
+  if [[ "$what" == all && "$(volume_count "$list" "$vol")" == 1 ]]; then
     # The covers for the download page: the front as a 300 dpi JPEG, and the paperback's full
     # wrap with the spine for the screen PDF's pages less its cover page. Below 829 pages the
     # KDP interior has the same inside margin, so the same count; `kdp` counts the interior.
@@ -238,21 +243,55 @@ build_one() {   # $1 = list file, $2 = output stem, $3 = metadata file, $4 = cov
     build_pdf "$stem" "$meta" "$vol" boox "$boox_side" "$out/$stem-v$version-boox-air-5c.pdf" "${files[@]}"
   fi
   if [[ "$what" == kdp ]]; then
-    # The paperback interior: no cover, black links, and an inside margin of at least KDP's
-    # gutter for the page count plus 1/8 in, and never below margin_inner. A wider margin can
-    # add pages, so build again until the margin fits the count.
-    local inner="$margin_inner" n need pdf="$out/$stem-v$version-interior.pdf"
-    for _ in 1 2 3; do
-      build_pdf "$stem" "$meta" "$vol" print "$inner" "$pdf" "${files[@]}"
-      n="$(pdf_pages "$pdf")"
-      need="$(awk -v g="$(kdp_gutter "$n")" -v b="$margin_inner" 'BEGIN { m = g + 0.125; printf "%.3f", (m > b ? m : b) }')"
-      [[ "$need" == "$(awk -v i="$inner" 'BEGIN { printf "%.3f", i }')" ]] && break
-      echo "KDP: $n pages need an inside margin of $need in; building again"
-      inner="$need"
-    done
-    check_kdp_interior "$pdf"
-    build_wrap_cover "$vol" "$(pdf_pages "$pdf")" "$out/$stem-v$version-cover.pdf"
+    local count
+    count="$(volume_count "$list" "$vol")"
+    if (( count == 1 )); then
+      kdp_paperback "$stem" "$meta" "$vol" "${files[@]}"
+    else
+      # One paperback per volume: its own title page, covers, index and page numbers; its
+      # chapters keep the single book's numbers; a link to the other volume names it.
+      python3 "$here/tools/volumes.py" check "$list" >/dev/null || { python3 "$here/tools/volumes.py" check "$list"; exit 1; }
+      python3 "$here/tools/volumes.py" ids "$list" "$build/volume-ids.tsv"
+      local n vfiles title vmeta
+      for (( n = 1; n <= count; n++ )); do
+        vfiles=()
+        while IFS= read -r f; do vfiles+=("$here/$f"); done < <(python3 "$here/tools/volumes.py" files "$list" "$n")
+        title="$(python3 "$here/tools/volumes.py" title "$list" "$n")"
+        vmeta="$build/metadata-vol$n.yaml"
+        { cat "$meta"; printf 'subtitle: |\n  %s\\\n  Volume %s: %s\n' \
+            "$(awk -F'"' '/^subtitle:/{print $2}' "$meta")" "$n" "$title"; } \
+          | awk '/^subtitle: "/ {next} {print}' > "$vmeta"
+        bookvol="$n" BOOK_VOLUME="$n" BOOK_VOLUME_IDS="$build/volume-ids.tsv" \
+          BOOK_CHAPTER_OFFSET="$(python3 "$here/tools/volumes.py" offset "$list" "$n")" \
+          kdp_paperback "$stem-vol$n" "$vmeta" "$vol" "${vfiles[@]}"
+      done
+    fi
   fi
+}
+
+# The number of paperback volumes: the book's list may mark several, the solutions are one.
+volume_count() {   # $1 = list file, $2 = book or solutions
+  if [[ "$2" == book ]]; then python3 "$here/tools/volumes.py" count "$1"; else echo 1; fi
+}
+
+# The paperback interior and its full-wrap cover. $1 = stem, $2 = metadata, $3 = cover volume,
+# then the source files. The interior has no cover, black links, and an inside margin of at least
+# KDP's gutter for the page count plus 1/8 in, and never below margin_inner. A wider margin can
+# add pages, so build again until the margin fits the count.
+kdp_paperback() {
+  local stem="$1" meta="$2" vol="$3"
+  shift 3
+  local inner="$margin_inner" n need pdf="$out/$stem-v$version-interior.pdf"
+  for _ in 1 2 3; do
+    build_pdf "$stem" "$meta" "$vol" print "$inner" "$pdf" "$@"
+    n="$(pdf_pages "$pdf")"
+    need="$(awk -v g="$(kdp_gutter "$n")" -v b="$margin_inner" 'BEGIN { m = g + 0.125; printf "%.3f", (m > b ? m : b) }')"
+    [[ "$need" == "$(awk -v i="$inner" 'BEGIN { printf "%.3f", i }')" ]] && break
+    echo "KDP: $n pages need an inside margin of $need in; building again"
+    inner="$need"
+  done
+  check_kdp_interior "$pdf"
+  build_wrap_cover "$vol" "$(pdf_pages "$pdf")" "$out/$stem-v$version-cover.pdf"
 }
 
 # One PDF. $1 = stem, $2 = metadata, $3 = cover volume, $4 = screen or print, $5 = inside
